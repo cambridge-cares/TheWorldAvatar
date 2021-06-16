@@ -4,9 +4,13 @@
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
-
+import os, sys, json
 from rdflib.graph import ConjunctiveGraph
 from rdflib.store import NO_STORE
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE)
+from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
+
 
 qres = []
 qres_ = []
@@ -36,14 +40,8 @@ def queryDigitalTwinLocation(SleepycatPath):
     return qres
 
 ###############EGen#############
-def queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat):
-    global qres
-    egen_cg = ConjunctiveGraph('Sleepycat')
-    sl = egen_cg.open(topoAndConsumpPath_Sleepycat, create = False)
-    if sl == NO_STORE:
-        print('Cannot find the UK topology sleepycat store')
-        return None
-    queryStr = """
+def queryEGenInfo(topology_Endpoint, powerPlant_Endpoint, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery):
+    queryStr_Egen = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
     PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
@@ -73,34 +71,70 @@ def queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat):
     ?PowerGeneration_EGen meta_model_topology:isConnectedTo ?Bus .
     }
     """
-    qres = list(egen_cg.query(queryStr))
-    egen_cg.close()
     
+    global qres, capa_PrimaryFuel
     
-    pp_cg = ConjunctiveGraph('Sleepycat')
-    sl = pp_cg.open(powerPlant_Sleepycat, create = False)
-    if sl == NO_STORE:
-        print('Cannot find the UK power plant store')
-        return None
-    for q in qres:
-        PowerGenerator_iri = str(q[1])
-        queryStr_capacityAndPrimaryFuel = """
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-        SELECT DISTINCT ?Capacity ?PrimaryFuel
-        WHERE
-        {
-        ?PowerPlant ontoecape_technical_system:hasRealizationAspect <%s> .
-        ?PowerPlant ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
-        ?v_capa ontocape_upper_level_system:numericalValue ?Capacity .
+    if localQuery == False and topology_Endpoint != None and powerPlant_Endpoint != None: 
+        print('remoteQuery')
+        res = json.loads(performQuery(topology_Endpoint, queryStr_Egen))
+        print('query is done')
+        qres = [[ str(r['EGen']), str(r['PowerGenerator']), str(r['FixedMO']), str(r['VarMO']), str(r['FuelCost']), str(r['CO2EmissionFactor']), str(r['Bus'])] for r in res]
         
-        <%s> ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel.
-        }
-        """ % (PowerGenerator_iri, PowerGenerator_iri)
-        qres_ = list(pp_cg.query(queryStr_capacityAndPrimaryFuel))  
-        capa_PrimaryFuel.append([float(qres_[0][0]), (str(qres_[0][1]).split('#'))[1]])  
-    pp_cg.close()
+        for q in qres:
+            PowerGenerator_iri = str(q[1])
+            queryStr_capacityAndPrimaryFuel = """
+            PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+            PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+            SELECT DISTINCT ?Capacity ?PrimaryFuel
+            WHERE
+            {
+            ?PowerPlant ontoecape_technical_system:hasRealizationAspect <%s> .
+            ?PowerPlant ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
+            ?v_capa ontocape_upper_level_system:numericalValue ?Capacity .
+            
+            <%s> ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel.
+            }
+            """ % (PowerGenerator_iri, PowerGenerator_iri)
+            # qres_ = list(pp_cg.query(queryStr_capacityAndPrimaryFuel))  
+            res = json.loads(performQuery(powerPlant_Endpoint, queryStr_capacityAndPrimaryFuel))
+            print('query is done')
+            capa_PrimaryFuel = [[ float(r['Capacity']), (str(r['PrimaryFuel']).split('#'))[1]] for r in res]
+        
+    elif topoAndConsumpPath_Sleepycat != None and powerPlant_Sleepycat != None and localQuery == True:  
+        print('localQuery')
+        egen_cg = ConjunctiveGraph('Sleepycat')
+        sl = egen_cg.open(topoAndConsumpPath_Sleepycat, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK energy consumption sleepycat store')
+            return None
+        qres = list(egen_cg.query(queryStr_Egen))
+        egen_cg.close()
+        
+        pp_cg = ConjunctiveGraph('Sleepycat')
+        sl = pp_cg.open(powerPlant_Sleepycat, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK power plant store')
+            return None
+        for q in qres:
+            PowerGenerator_iri = str(q[1])
+            queryStr_capacityAndPrimaryFuel = """
+            PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+            PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+            PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+            SELECT DISTINCT ?Capacity ?PrimaryFuel
+            WHERE
+            {
+            ?PowerPlant ontoecape_technical_system:hasRealizationAspect <%s> .
+            ?PowerPlant ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
+            ?v_capa ontocape_upper_level_system:numericalValue ?Capacity .
+            
+            <%s> ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel.
+            }
+            """ % (PowerGenerator_iri, PowerGenerator_iri)
+            qres_ = list(pp_cg.query(queryStr_capacityAndPrimaryFuel))  
+            capa_PrimaryFuel.append([float(qres_[0][0]), (str(qres_[0][1]).split('#'))[1]])  
+        pp_cg.close()
     
     if len(qres) == len(capa_PrimaryFuel):
         EGenInfo = [[ str(r[0]), str(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), str(r[6]), 0 , 0 ] for r in qres]
@@ -113,14 +147,86 @@ def queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat):
         print('The query is failed')
         return None
     return EGenInfo
+
+# def queryEGenInfo(topology_Endpoint, powerPlant_Endpoint, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat):
+#     global qres
+#     egen_cg = ConjunctiveGraph('Sleepycat')
+#     sl = egen_cg.open(topoAndConsumpPath_Sleepycat, create = False)
+#     if sl == NO_STORE:
+#         print('Cannot find the UK topology sleepycat store')
+#         return None
+#     queryStr = """
+#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+#     PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
+#     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+#     PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+#     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+#     PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+#     SELECT DISTINCT ?EGen ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus
+#     WHERE
+#     {
+#     ?EGen rdf:type ontopowsys_PowSysRealization:PowerGenerator .
+#     ?EGen ontocape_upper_level_system:isExclusivelySubsystemOf ?PowerGenerator .
     
-def queryRegionalElecConsumption(consumption_Sleepycat):
-    global qres
-    dt_cg = ConjunctiveGraph('Sleepycat')
-    sl = dt_cg.open(consumption_Sleepycat, create = False)
-    if sl == NO_STORE:
-        print('Cannot find the UK electricity consumption store')
-        return None
+#     ?EGen ontopowsys_PowSysPerformance:hasFixedMaintenanceCost/ ontocape_upper_level_system:hasValue ?v_FixedMO .
+#     ?v_FixedMO ontocape_upper_level_system:numericalValue ?FixedMO .
+    
+#     ?EGen ontopowsys_PowSysPerformance:hasCost/ ontocape_upper_level_system:hasValue ?v_VarMO .
+#     ?v_VarMO ontocape_upper_level_system:numericalValue ?VarMO .
+    
+#     ?EGen ontopowsys_PowSysPerformance:hasFuelCost/ ontocape_upper_level_system:hasValue ?v_FuelCost .
+#     ?v_FuelCost ontocape_upper_level_system:numericalValue ?FuelCost .
+    
+#     ?EGen ontoeip_powerplant:hasEmissionFactor/ ontocape_upper_level_system:hasValue ?v_CO2EmissionFactor .
+#     ?v_CO2EmissionFactor ontocape_upper_level_system:numericalValue ?CO2EmissionFactor .
+    
+#     ?PowerGeneration_EGen ontoecape_technical_system:isRealizedBy ?EGen .
+#     ?PowerGeneration_EGen meta_model_topology:isConnectedTo ?Bus .
+#     }
+#     """
+#     qres = list(egen_cg.query(queryStr))
+#     egen_cg.close()
+    
+    
+#     pp_cg = ConjunctiveGraph('Sleepycat')
+#     sl = pp_cg.open(powerPlant_Sleepycat, create = False)
+#     if sl == NO_STORE:
+#         print('Cannot find the UK power plant store')
+#         return None
+#     for q in qres:
+#         PowerGenerator_iri = str(q[1])
+#         queryStr_capacityAndPrimaryFuel = """
+#         PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+#         PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+#         PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+#         SELECT DISTINCT ?Capacity ?PrimaryFuel
+#         WHERE
+#         {
+#         ?PowerPlant ontoecape_technical_system:hasRealizationAspect <%s> .
+#         ?PowerPlant ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
+#         ?v_capa ontocape_upper_level_system:numericalValue ?Capacity .
+        
+#         <%s> ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel.
+#         }
+#         """ % (PowerGenerator_iri, PowerGenerator_iri)
+#         qres_ = list(pp_cg.query(queryStr_capacityAndPrimaryFuel))  
+#         capa_PrimaryFuel.append([float(qres_[0][0]), (str(qres_[0][1]).split('#'))[1]])  
+#     pp_cg.close()
+    
+#     if len(qres) == len(capa_PrimaryFuel):
+#         EGenInfo = [[ str(r[0]), str(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5]), str(r[6]), 0 , 0 ] for r in qres]
+#         counter = 0
+#         while counter < len(qres) :
+#             EGenInfo[counter][6] = int((EGenInfo[counter][6]).split('EBus-')[1])
+#             EGenInfo[counter][7], EGenInfo[counter][8] = capa_PrimaryFuel[counter]
+#             counter += 1
+#     else:
+#         print('The query is failed')
+#         return None
+#     return EGenInfo
+    
+def queryRegionalElecConsumption(energyConsumption_Endpoint, consumption_Sleepycat, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -134,12 +240,27 @@ def queryRegionalElecConsumption(consumption_Sleepycat):
     ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption
     }
     """
-    qres = list(dt_cg.query(queryStr))
-    dt_cg.close()
-    regionalConsumption = []
-    for con in qres:        
-        con_ = float(con[0])
-        regionalConsumption.append(con_)        
+    global qres
+    
+    if localQuery == False and energyConsumption_Endpoint != None: 
+        print('remoteQuery')
+        res = json.loads(performQuery(energyConsumption_Endpoint, queryStr))
+        print('query is done')
+        regionalConsumption = []
+        for r in res: 
+            regionalConsumption.append(float(r['TotalELecConsumption']))           
+    elif consumption_Sleepycat != None and localQuery == True:  
+        dt_cg = ConjunctiveGraph('Sleepycat')
+        sl = dt_cg.open(consumption_Sleepycat, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK electricity consumption store')
+            return None
+        qres = list(dt_cg.query(queryStr))
+        dt_cg.close()
+        regionalConsumption = []
+        for con in qres:        
+            con_ = float(con[0])
+            regionalConsumption.append(con_)        
     return regionalConsumption   
 
 ###############EBus#############
@@ -266,7 +387,8 @@ if __name__ == '__main__':
     sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
-    res = queryEGenInfo(sl_path, sl_path_pp)
+    res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     print (len(res))
-    print (res[0])
+    for r in res:
+        print(res[7])
 

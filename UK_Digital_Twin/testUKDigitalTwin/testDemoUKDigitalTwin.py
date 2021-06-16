@@ -14,6 +14,7 @@ from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopolo
 from UK_Digital_Twin_Package.BlazegraphLookupTableUpdater import updateLookUpTable
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
+from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 
 if __name__ == '__main__': 
     # # DUKES_Version = 2019
@@ -25,11 +26,20 @@ if __name__ == '__main__':
     # addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, False)
     
     # When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
-    UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
-    UKEnergyConsumption_endpoint = UKec.UKEnergyConsumption().endpoint
+    # UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
+    # UKEnergyConsumption_endpoint = UKec.UKEnergyConsumption().endpoint
     
-    updateLookUpTable(UKPowerPlant_endpoint['endpoint_iri'], UKPowerPlant_endpoint['queryendpoint_iri'], UKPowerPlant_endpoint['updateendpoint_iri'], UKPowerPlant_endpoint['lable'], True)
-    updateLookUpTable(UKEnergyConsumption_endpoint['endpoint_iri'], UKEnergyConsumption_endpoint['queryendpoint_iri'], UKEnergyConsumption_endpoint['updateendpoint_iri'], UKEnergyConsumption_endpoint['lable'], True)
+    # updateLookUpTable(UKPowerPlant_endpoint['endpoint_iri'], UKPowerPlant_endpoint['queryendpoint_iri'], UKPowerPlant_endpoint['updateendpoint_iri'], UKPowerPlant_endpoint['lable'], True)
+    # updateLookUpTable(UKEnergyConsumption_endpoint['endpoint_iri'], UKEnergyConsumption_endpoint['queryendpoint_iri'], UKEnergyConsumption_endpoint['updateendpoint_iri'], UKEnergyConsumption_endpoint['lable'], True)
+    
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    
+    # UKGridTopology_endpoint = UK_Topo.UKPowerGridTopology().endpoint
+    # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
+    
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
+    
     
     # createTopologyGraph('sleepycat',False)
     

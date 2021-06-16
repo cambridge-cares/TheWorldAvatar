@@ -2,10 +2,10 @@
 # wish to perform on the KG
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
-# import os, sys
-# BASE = os.path.dirname(os.path.abspath(__file__))
-# sys.path.insert(0, BASE)
-from jpsSingletons import jpsBaseLibGW
+import os, sys
+BASE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, BASE)
+from UK_Digital_Twin_Package.jpsSingletons import jpsBaseLibGW
 
 # create a JVM module view and use it to import the required java classes
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()

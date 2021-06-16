@@ -53,10 +53,6 @@ ukpp = UKpp.UKPowerPlant()
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
 
-# """Create an object of Class TopologicalInformationProperty"""
-# topo_info = TopoInfo.TopologicalInformation()
-
-
 """Create an object of Class UKPowerGridModel"""
 uk_ebus_model = UK_PG.UKEbusModel()
 uk_eline_model = UK_PG.UKElineModel()
@@ -67,6 +63,7 @@ defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 
 """Remote Endpoint lable"""
 powerPlant_Endpoint = ukpp.endpoint['lable']
+topology_Endpoint = uk_topo.endpoint['lable']
 
 """Root_node and root_uri"""
 root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
@@ -93,9 +90,6 @@ ontopowsys_PowSysPerformance    = owlready2.get_ontology(t_box.ontopowsys_PowSys
 ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
 
 """Data Array"""
-# busInfoArrays = readFile(topo_info.Topo_10_bus['BusInfo'])
-# branchTopoInfoArrays = readFile(topo_info.Topo_10_bus['BranchInfo'])
-# branchPropArrays = readFile(topo_info.Topo_10_bus['BranchProperty'])
 modelFactorArrays = readFile(ukmf.CO2EmissionFactor)
 
 """User specified folder path"""
@@ -135,6 +129,7 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g = Graph(store = store, identifier = URIRef(root_uri))
        
     # Import T-boxes
+    g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_network_system)))
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
     
@@ -145,9 +140,8 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     
     if addEBusNodes != None:
         g = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays) 
-# TODO: improve the func addELineNodes
     if addELineNodes != None:    
-        g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty)
+        g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery)
     if addEGenNodes != None:
         g = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery)
     
@@ -236,7 +230,7 @@ def addEBusNodes(graph, header, dataArray):
     return graph
 
 """Add nodes represent Branches"""
-def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader):  
+def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery):  
     if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
         pass
     else:
@@ -252,13 +246,9 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
        
         # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
         gpsArray = []
-        res_busGPS = list(query_topo.queryBusGPS(graph, FromBus_iri, ToBus_iri))
-        for n in str(res_busGPS[0]).split(')),'):
-            gps_ = n.split("\'")[1]
-            gpsArray.append(gps_)
-        # Calculate the Eline length
-        Eline_length = DistanceBasedOnGPDLocation(gpsArray)
-        
+        gpsArray = list(query_topo.queryBusGPS(topology_Endpoint, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
+        Eline_length = DistanceBasedOnGPDLocation(gpsArray[0])
+              
         # PowerFlow_ELine node uri
         branch_context_locator = uk_topo.PowerFlow_ELineKey + str(counter).zfill(3) 
         branch_node = tp_namespace + branch_context_locator
@@ -431,7 +421,10 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    # createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
+    createTopologyGraph('sleepycat', False, 10, 14, None, None, addEGenNodes, False)
+    
     # res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion('ukpowerplantkg', ukpp.SleepycatStoragePath, "http://dbpedia.org/resource/West_Midlands_(county)", False))
     # print (len(res_powerplant))
     # test()

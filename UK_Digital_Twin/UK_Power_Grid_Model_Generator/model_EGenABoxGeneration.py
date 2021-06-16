@@ -21,11 +21,14 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
+from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 from costFunctionParameterAgent import costFuncPara
-import SPARQLQueryUsedInModel as query_model
 from AddModelVariables import AddModelVariable
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+
+import SPARQLQueryUsedInModel as query_model
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -39,7 +42,7 @@ dt = UKDT.UKDigitalTwin()
 """Create an object of Class UKDigitalTwinTBox"""
 t_box = T_BOX.UKDigitalTwinTBox()
 
-"""Create an object of Class UKPowerPlantDataProperty"""
+"""Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
 
 """Create an object of Class CO2FactorAndGenCostFactor"""
@@ -51,8 +54,16 @@ uk_egen_model = UK_PG.UKEGenModel()
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
 
-"""Graph store"""
-store = 'default'
+"""Create an object of Class UKEnergyConsumption"""
+ukec = UKec.UKEnergyConsumption()
+
+"""Remote Endpoint lable"""
+powerPlant_Endpoint = ukpp.endpoint['lable']
+topology_Endpoint = uk_topo.endpoint['lable']
+energyConsumption_Endpoint = ukec.endpoint['lable']
+
+# """Graph store"""
+# store = 'default'
 # store = Sleepycat()
 # store.__open = True
 # store.context_aware = True
@@ -90,7 +101,8 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile = True):
+    store = LocalGraphStore(storeType)
     global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
     if isinstance(store, Sleepycat):
         print('The store is Sleepycat')
@@ -117,13 +129,13 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
         print('Store is IOMemery')        
             
     
-    EGenInfo = list(query_model.queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat))
+    EGenInfo = list(query_model.queryEGenInfo(topology_Endpoint, powerPlant_Endpoint, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery))
                     
     if EGenInfo == None:
         print('EGenInfo is empty')
         return None
     
-    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo)
+    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, localQuery)
     
     for egen in EGenInfo:         
     # if EGenInfo[0] != None: # test
@@ -137,6 +149,7 @@ def createModel_EGen(store, version_of_model, updateLocalOWLFile = True):
         # create a named graph
         g = Graph(store = store, identifier = URIRef(root_uri))
         # Import T-boxes
+        g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_mathematical_model)))
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))  
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
@@ -274,16 +287,17 @@ def initialiseEGenModelVar(EGen_Model, egen):
     return EGen_Model
 
 """Calculate the sum of capacity and total demanding"""
-def capa_demand_ratio_calculator(EGenInfo):
+def capa_demand_ratio_calculator(EGenInfo, localQuery):
     sum_of_capa = 0
     for eg in EGenInfo:
         sum_of_capa += eg[7]
     print('sum_of_capa is: ', sum_of_capa)
-    total_demand = sum(query_model.queryRegionalElecConsumption(topoAndConsumpPath_Sleepycat)) * 1000 / (24 * 365) 
+    total_demand = sum(query_model.queryRegionalElecConsumption(energyConsumption_Endpoint, topoAndConsumpPath_Sleepycat, localQuery)) * 1000 / (24 * 365) 
     print('total_demand is: ', total_demand)
     capa_demand_ratio = total_demand/sum_of_capa
     return capa_demand_ratio
 
+
 if __name__ == '__main__':    
-    createModel_EGen(store, 2019)    
+    createModel_EGen('default', False, 2019, False)    
     print('Terminated')
