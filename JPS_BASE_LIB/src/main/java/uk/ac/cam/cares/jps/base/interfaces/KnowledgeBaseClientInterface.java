@@ -15,11 +15,21 @@ import org.json.JSONArray;
  */
 public interface KnowledgeBaseClientInterface {
 
-	// Get/Put methods
+	/**
+	 * Get rdf content from store.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
+	String get(String graphName, String accept);
 	
-	String get(String resourceUrl, String accept);
-	
-	void put(String resourceUrl, String content, String contentType);
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
+	void insert(String graphName, String content, String contentType);
 	
 	// SPARQL Query methods
 	
@@ -38,7 +48,6 @@ public interface KnowledgeBaseClientInterface {
 	 * @return JSONArray
 	 */
 	JSONArray executeQuery();
-	
 
 	/**
 	 * Execute sparql query using the query variable.

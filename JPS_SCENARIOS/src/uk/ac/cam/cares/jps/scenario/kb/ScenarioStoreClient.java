@@ -35,7 +35,7 @@ public class ScenarioStoreClient {
 		
 		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
 		kbClient.setAutoWrite(false);
-		kbClient.put(null, content, contentType); //Put to default graph
+		kbClient.insert(null, content, contentType); //Put to default graph
 		kbClient.writeToFile(null, filePath, Lang.RDFXML);
 	}
 

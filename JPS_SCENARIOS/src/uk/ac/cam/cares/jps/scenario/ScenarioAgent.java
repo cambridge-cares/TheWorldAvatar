@@ -365,7 +365,7 @@ public class ScenarioAgent extends JPSAgent {
 				if (sparql != null) {
 					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
 				}    			
-				kb.put(resourceUrl, body, contentType);
+				kb.insert(resourceUrl, body, contentType);
 				break;
 		  
 			}		

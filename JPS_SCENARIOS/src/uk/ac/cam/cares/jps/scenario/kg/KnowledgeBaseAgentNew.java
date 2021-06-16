@@ -19,7 +19,6 @@ import uk.ac.cam.cares.jps.base.query.KGRouter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 @WebServlet(urlPatterns = {"/kb/*"})
@@ -93,7 +92,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 				if (!isQueryOperation && !isUpdateOperation) {
 					throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
 				}    			
-				kbClient.put(resourceUrl, body, contentType); //TODO check this
+				kbClient.insert(resourceUrl, body, contentType); //TODO check this
 			}		
 	    return JSONresult;
 	}

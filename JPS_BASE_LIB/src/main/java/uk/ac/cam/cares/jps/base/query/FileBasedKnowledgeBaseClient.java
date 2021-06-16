@@ -821,9 +821,15 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		}
 	}
 	
+	/**
+	 * Get rdf content from store.
+	 * Performs a construct query on the store and returns the model as a string.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
 	@Override
-	public
-	String get(String resourceUrl, String accept) {
+	public String get(String resourceUrl, String accept) {
 		
 		Var varS = Var.alloc("s");
 		Var varP = Var.alloc("p");
@@ -850,16 +856,21 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		return out.toString();
 	}
 	
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
 	@Override
-	public
-	void put(String resourceUrl, String content, String contentType) {
+	public void insert(String graphName, String content, String contentType) {
 		
 		Model model = ModelFactory.createDefaultModel();
 		
 		InputStream in = new ByteArrayInputStream(content.getBytes());
         if (contentType == null) {
         	//RDF/XML default
-        	//TODO base uri?
+        	//base=null, assume all uri are absolute
         	model.read(in, null); 
 		} else {
 			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
@@ -868,10 +879,10 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
         
         UpdateBuilder builder = new UpdateBuilder();
         
-        if (resourceUrl == null) {
+        if (graphName == null) {
         	builder.addInsert(model);
         } else {
-        	String graphURI = "<" + resourceUrl + ">";
+        	String graphURI = "<" + graphName + ">";
         	builder.addInsert(graphURI, model);
         }
         
