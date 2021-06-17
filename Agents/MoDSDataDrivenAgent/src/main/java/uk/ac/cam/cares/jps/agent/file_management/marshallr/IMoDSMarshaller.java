@@ -14,4 +14,6 @@ public interface IMoDSMarshaller {
 	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException;
 	
 	public String marshall() throws IOException, MoDSDataDrivenAgentException;
+
+	public void plugInModelDataDriven(List<String> dataVar, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException;
 }

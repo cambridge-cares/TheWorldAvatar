@@ -23,6 +23,21 @@ public interface IModel {
 			throws IOException, MoDSDataDrivenAgentException;
 	
 	/**
+	 * Collect all information required by MoDS to execute the model. 
+	 * 
+	 * @param pathCSV
+	 * @param mechanismIRI
+	 * @param reactionIRIList
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSDataDrivenAgentException
+	 */
+	
+	/*public ExecutableModel formExecutableModelCSV(String pathCSV, String mechanismIRI, List<String> reactionIRIList) 
+			throws IOException, MoDSDataDrivenAgentException;
+	*/
+	
+	/**
 	 * Form all files required by MoDS to execute the model. 
 	 * 
 	 * @param exeModel

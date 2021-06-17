@@ -37,6 +37,7 @@ import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgentException;
+//	public void plugInModelDataDriven(List<String> dataVar, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException;
 
 public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	private static Logger logger = LoggerFactory.getLogger(MoDSMarshaller.class);
@@ -122,7 +123,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		
 		logger.info("Model canteraLFS was added to the MoDS job.");
 	}
-
+	
 	@Override
 	public String marshall() throws IOException, MoDSDataDrivenAgentException {
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -484,6 +485,13 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		if (!folder.exists()) {
 			folder.mkdir();
 		}
+	}
+
+	@Override
+	public void plugInModelDataDriven(List<String> dataVar, String mechanismIRI, List<String> reactionIRIList,
+			String otherOptions) throws IOException, MoDSDataDrivenAgentException {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
