@@ -72,6 +72,10 @@ public class MoDSDataDrivenAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
+		return processRequestParameters(requestParams, path);
+	}
+
+	public JSONObject processRequestParameters(JSONObject requestParams, String path) {
 		System.out.println(REQUEST_RECEIVED);
 		if (path.equals(Property.JOB_REQUEST_PATH)) {
 			try {
