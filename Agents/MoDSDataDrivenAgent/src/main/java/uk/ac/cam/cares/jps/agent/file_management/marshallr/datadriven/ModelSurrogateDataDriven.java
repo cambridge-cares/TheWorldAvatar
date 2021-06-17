@@ -103,32 +103,23 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
         String csvFileOutput = new QueryBroker().readFileLocal(csvPathFileOutput);
         List<String[]> csvArrayOutput = MatrixConverter.fromCsvToArray(csvFileOutput);
         
-//		int numVarsInput = csvArrayInput.get(0).length;
-//		int numCasesInput = csvArrayInput.size();
-//		int numVarsOutput = csvArrayOutput.get(0).length;
-//		int numCasesOutput = csvArrayOutput.size();
-		
-		// -----------------  Create the new directories/folders -----------------------------------------------------
-        
-		File dirPathDataAlgorithm = createDir(csvPathFolder, "Data_Algorithm");
-		File dirPathInitial = createDir(csvPathFolder, "Initial");
-		File dirPathWorkingDir = createDir(csvPathFolder, "Working_dir");
 
-		// ----------------   Create the files in the 'Data_Algorithm' directory
-		
+		// -----------------  Create the new directories/folders -----------------------------------------------------       
+		File dirPathDataAlgorithm = createDir(jobFolderPath, "Data_Algorithm");
+
+		// ----------------   Create the files in the 'Data_Algorithm' directory		
 		createDataAlgorithFiles(csvArrayInput, dirPathDataAlgorithm.getAbsolutePath());
 	    createDataAlgorithFiles(csvArrayOutput, dirPathDataAlgorithm.getAbsolutePath());
 
 		// ----------------   Create the files in the 'Initial' directory ------------------------------------------------
 		
 		// Create 'MODS_SIM_INITFILE__AIVarInitReadFile.csv' file
-	    createAIVarInitReadFile(csvArrayInput, dirPathInitial.getPath());
+	    createAIVarInitReadFile(csvArrayInput, folderInitialPath);
 		// Create 'MODS_SIM_INITFILE__cases.csv' file
-	    createCasesFile(csvArrayOutput, dirPathInitial.getPath());
+	    createCasesFile(csvArrayOutput, folderInitialPath);
 	    
-		// ----------------   Create the 'MoDS_inputs' file in the 'Work_dir' directory ------------------------------------------------
-		
-	    createModsInputsFile(csvArrayInput, dirPathWorkingDir.getPath());
+		// ----------------   Create the 'MoDS_inputs' file in the 'Work_dir' directory ------------------------------------------------	
+	    createModsInputsFile(csvArrayInput, folderWorkingDirPath);
 
 
 
