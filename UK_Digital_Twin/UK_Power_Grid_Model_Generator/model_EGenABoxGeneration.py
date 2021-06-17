@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 May 2021          #
+# Last Update Date: 16 June 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -24,11 +24,11 @@ from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
-from costFunctionParameterAgent import costFuncPara
-from AddModelVariables import AddModelVariable
+from UK_Power_Grid_Model_Generator.costFunctionParameterAgent import costFuncPara
+from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
-import SPARQLQueryUsedInModel as query_model
+import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -61,12 +61,6 @@ ukec = UKec.UKEnergyConsumption()
 powerPlant_Endpoint = ukpp.endpoint['lable']
 topology_Endpoint = uk_topo.endpoint['lable']
 energyConsumption_Endpoint = ukec.endpoint['lable']
-
-# """Graph store"""
-# store = 'default'
-# store = Sleepycat()
-# store.__open = True
-# store.context_aware = True
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath

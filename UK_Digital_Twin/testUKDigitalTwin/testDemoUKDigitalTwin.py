@@ -10,7 +10,9 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Power_Plant_Generator.powerPlantABoxGeneration import addUKPowerPlantTriples
 from UK_Energy_Consumption_Generator.energyConsumptionABoxGeneration import addUKElectricityConsumptionTriples
-from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologyGraph
+from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologyGraph, addEBusNodes, addELineNodes, addEGenNodes
+from UK_Power_Grid_Model_Generator.model_EGenABoxGeneration import createModel_EGen
+from UK_Power_Grid_Model_Generator.model_ELineABoxGeneration import createModel_ELine
 from UK_Digital_Twin_Package.BlazegraphLookupTableUpdater import updateLookUpTable
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
@@ -37,10 +39,15 @@ if __name__ == '__main__':
     # UKGridTopology_endpoint = UK_Topo.UKPowerGridTopology().endpoint
     # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
     
+    ####### SKIPPED ########
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
+    # createTopologyGraph('default', False, 10, 14, None,  None, addELineNodes, True)
     
+    # createModel_EGen('default', False, 2019, False)
+    createModel_ELine('default', False, 10, 14, 2019, False) 
     
-    # createTopologyGraph('sleepycat',False)
+    ####### SKIPPED ########
+    
     
     print('terminated')

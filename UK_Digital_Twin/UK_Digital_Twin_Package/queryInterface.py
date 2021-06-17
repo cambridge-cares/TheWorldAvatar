@@ -16,7 +16,7 @@ def performQuery(kb, query, isQuery = True, isUpdate = False):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.KGRouter
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
-    print(type(KGRouter), type(KGClient))
+    # print(type(KGClient))
     response = KGClient.executeQuery((query))
     return str(response)
 

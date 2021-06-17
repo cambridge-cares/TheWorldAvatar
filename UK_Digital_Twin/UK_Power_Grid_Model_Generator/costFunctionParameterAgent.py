@@ -9,7 +9,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
 from UK_Digital_Twin_Package.UKPowerGridModel import UKEGenModel_CostFunc
-import SPARQLQueryUsedInModel as query_model
+import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 
 # CarbonTax = input('Carbon Tax (GBP/tCO2) is: ')
     # while int (CarbonTax) < 0:

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 June 2021         #
+# Last Update Date: 17 June 2021         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
@@ -14,6 +14,7 @@ from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
 
 qres = []
 
+# query the GPD location of both from bus node and to bus node of a branch
 def queryBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuery):
     queryStr = """
     PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -62,7 +63,8 @@ def queryBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuer
         pp_cg.close()
         return qres
 
-
+# TODO: federated query should be applied 
+# query the bus node iri and its located region
 def queryBusLocation(ConjunctiveGraph):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -167,7 +169,7 @@ def queryBusLocation(ConjunctiveGraph):
 #         pp_cg.close()
 #         return qres
 
-
+# query the iri of PowerGenerator of a power plant located in a specified location as well as its PrimaryFuel and GenerationTechnology
 def queryPowerPlantLocatedInSameRegion(remoteEndPoint, SleepycatPath, location_iri, localQuery):
     queryStr = """
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>

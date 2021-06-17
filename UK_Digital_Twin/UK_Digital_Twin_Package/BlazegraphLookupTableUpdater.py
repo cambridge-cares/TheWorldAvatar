@@ -77,29 +77,18 @@ def updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label
         print('The repository information has been modified.')
 
 def deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, isDelete = True):
-    # if isDelete == True:
-    #     delete_repo_info = """
-    #             PREFIX ontokgrouter: <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#>
-    #             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    #             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    #             DELETE DATA {
-    #                 <%s> ontokgrouter:hasQueryEndpoint "%s" .
-    #                 <%s> ontokgrouter:hasUpdateEndpoint "%s" .
-    #                 <%s> rdfs:label "%s" .                
-    #             }
-    #             """ % (endpoint_iri, queryendpoint_iri, endpoint_iri, updateendpoint_iri, endpoint_iri, label)  <%s> rdf:type ontokgrouter:TargetResource .
-        test = """
-                PREFIX ontokgrouter: <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#>
-                PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-                PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-                INSERT DATA {
-                    <%s> rdf:type ontokgrouter:TargetResource .
-                }
-                """ % (endpoint_iri)
-        performUpdate(lookupTableLable, test)  
-        # print(delete_repo_info)
-        print ('The repository information has been deleted from Blazegraph lookup table.')
-        return
+    test = """
+            PREFIX ontokgrouter: <http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#>
+            PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+            PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+            INSERT DATA {
+                <%s> rdf:type ontokgrouter:TargetResource .
+            }
+            """ % (endpoint_iri)
+    performUpdate(lookupTableLable, test)  
+    # print(delete_repo_info)
+    print ('The repository information has been deleted from Blazegraph lookup table.')
+    return
    
         
 if __name__ == '__main__': 
