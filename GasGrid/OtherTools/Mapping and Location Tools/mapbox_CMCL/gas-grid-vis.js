@@ -35,8 +35,19 @@ function resetSidePanel() {
 	document.getElementById('textContainer').innerHTML = `
 		<p>The map to the left shows a sample of gas grid data within the UK Digital Twin.
 		Intake Terminals (<span style="color:#108dcc;">blue</span>), Offtakes (<span style="color:#B42222;">red</span>), and Pipes from the gas transmission system are shown for the mainland UK.</p>
-		<p>Select an Intake node (<span style="color:#108dcc;">blue</span>) to see its recent Instantaneous Flow data. This data is pulled from the UK Digital Twin
+		<p>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to see its recent Instantaneous Flow data. This data is pulled from the UK Digital Twin
 		and is updated on a daily basis.</p>
+	`;
+
+	document.getElementById('legendContainer').style.display = "block";
+	document.getElementById('legendContainer').innerHTML = `
+		<div id="legend">
+			<b>Legend:</b><br>
+			<div id="padding" style="height: 6px;"></div>
+			<img width="24px" src="legend-terminal.svg"/>Terminals<br>
+			<img width="24px" src="legend-offtake.svg"/>Offtakes<br>
+			<img width="24px" src="legend-pipe.svg"/>Pipelines<br>
+		</div>
 		`;
 }
 
@@ -125,6 +136,9 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 	document.getElementById('textContainer').innerHTML = `
 		<p style='font-style: italic; color: grey;'>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to view Instantaneous Flow data.</p>
 	`;
+
+	// Show the legend
+	document.getElementById('legendContainer').style.display = "block";
 }
 
 // Runs when a terminal is selected, shows recent live data.
@@ -164,6 +178,9 @@ function showTerminal(nodeName, nodeType, nodePosition) {
 
 	// Hide default text
 	document.getElementById('textContainer').style.display = "none";
+
+	// Hide the legend
+	document.getElementById('legendContainer').style.display = "none";
 
 	// Show elements to display flow data
 	document.getElementById('chartContainer').style.display = "block";
@@ -242,8 +259,8 @@ function sortFunction(a, b) {
 // Generates the line chart
 function buildChart(dataPoints) {
 	// Determine the size of the chart
-	var width = 370;
-	var height = 370;
+	var width = 330;
+	var height = 300;
 
     // Parse datetimes within the sample data
 	var timeParse = d3.timeParse("%Y-%m-%dT%H:%M:%S");

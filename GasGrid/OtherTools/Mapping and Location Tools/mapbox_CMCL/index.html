@@ -33,6 +33,7 @@
         <div id="textContainer"></div>
         <div id="chartContainer"></div>
         <div id="tableContainer"></div>
+		<div id="legendContainer"></div>
         <div id="dateContainer"></div>
     </div>
 
@@ -241,7 +242,7 @@
             });
 
             // On click handler within offtake layer
-            map.on('click', 'offtakes-locations', function (e) {
+            map.on('click', 'offtake-locations', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var name = e.features[0].properties["Offtake Point (License Name)"];
                 var type = e.features[0].properties["Type of Offtake"];

@@ -96,7 +96,7 @@ h1 {
 
 #chartContainer {
 	width: auto;
-	height: 350px;
+	height: 300px;
 	margin-top: 15px;
 	margin-right: 10px;
 	margin-left: 10px;
@@ -105,13 +105,20 @@ h1 {
 
 #tableContainer {
 	width: auto;
-	height: calc(100% - 600px);
+	height: calc(100% - 535px);
 	overflow: auto;
 	overflow-x: hidden;
 	margin-left: 10px;
 	margin-right: 10px;
-	margin-top: 40px;
+	margin-top: 20px;
 	border: 1px solid #e1e1e1;
+}
+
+#legendContainer {
+	width: 400px;
+	position: fixed;
+	bottom: 45px;
+	right: 0;
 }
 
 #dateContainer {
@@ -250,4 +257,22 @@ h1 {
 body.effectsOff #tiltShift body.effectsOff #map {
 	filter: none !important;
 	-webkit-filter: none !important;
+}
+
+#legend {
+	text-align: left;
+	height: 100px;
+	margin-left: 50px;
+	margin-right: 50px;
+	padding: 10px;
+	border: 1px solid lightgrey;
+	line-height: 24px !important;
+}
+#legend img {
+	float: left;
+	margin-left: 6px;
+	margin-right: 6px;
+}
+#legend p {
+	float: left;
 }
