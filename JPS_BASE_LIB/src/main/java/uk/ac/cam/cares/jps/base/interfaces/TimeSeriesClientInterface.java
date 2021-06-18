@@ -10,13 +10,6 @@ public interface TimeSeriesClientInterface {
 	void setKBClient(KnowledgeBaseClientInterface kbClient);
 	
 	/**
-	 * optional input if the data is within a named graph
-	 * @param namedGraph
-	 */
-	
-	void setNamedGraph(String namedGraph);
-	
-	/**
 	 * Instantiates time series IRI in your endpoint
 	 * @param TimeSeries
 	 * @param timeUnit

@@ -39,9 +39,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
-	private KnowledgeBaseClientInterface kbClient;
-	// optional input if users want the time series to be instantiated within a named graph
-	private String namedGraph = null; 
+	private KnowledgeBaseClientInterface kbClient; 
 	// url and credentials for the relational database
 	private String rdbURL; 
 	private String rdbUser;
@@ -62,9 +60,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
-	}
-	public void setNamedGraph(String namedGraph) {
-        this.namedGraph = namedGraph;
 	}
 	public void setTimeUnit(String timeUnit) {
 		this.timeUnit = timeUnit;
@@ -97,7 +92,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		}
 		
 		// instantiate in KG
-		TimeSeriesSparql.initTS(this.kbClient, this.namedGraph, tsIRI, ts.getDataIRI(), this.rdbURL, this.timeUnit);
+		TimeSeriesSparql.initTS(this.kbClient, tsIRI, ts.getDataIRI(), this.rdbURL, this.timeUnit);
 		
 		// initialise connection
 		Connection conn = connect();

@@ -56,7 +56,7 @@ public class TimeSeriesSparql {
      * @param namedGraph
      */
     
-    public static void initTS(KnowledgeBaseClientInterface kbClient, String namedGraph, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+    public static void initTS(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
         Iri tsIRI = iri(timeSeriesIRI);
     	
     	ModifyQuery modify = Queries.MODIFY();
@@ -77,11 +77,6 @@ public class TimeSeriesSparql {
     	// optional to define time unit
     	if (timeUnit != null) {
     		modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
-    	}
-    	
-    	// named graph (quad)
-    	if (namedGraph != null) {
-    	    modify.with(iri(namedGraph));
     	}
 
     	kbClient.executeUpdate(modify.getQueryString());

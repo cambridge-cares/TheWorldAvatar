@@ -32,7 +32,7 @@ public class TimeSeriesSparqlTest extends TestCase{
     	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
     	kbClient.setUpdateEndpoint(endpoint);
     	
-		TimeSeriesSparql.initTS(kbClient, namedGraph, timeseries, data, url, null);
+		TimeSeriesSparql.initTS(kbClient, timeseries, data, url, null);
 	}
 	
     public void testCountTS() {
