@@ -43,6 +43,11 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
+  # Website
+  website:
+    build:
+      target: prod
+
 
 # Production network
 networks:

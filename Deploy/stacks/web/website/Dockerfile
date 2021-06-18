@@ -70,7 +70,19 @@ RUN chown -R www-data:www-data /etc/apache2/conf-enabled/rotate-logs.conf
 RUN chmod -R 775 /etc/apache2/conf-available/rotate-logs.conf
 RUN chmod -R 775 /etc/apache2/conf-enabled/rotate-logs.conf
 
-
-
 # Expose port 80
 EXPOSE 80
+
+
+##### Dev configuration #####
+FROM base as dev
+# Set the Google Tag Manager container ID 
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NWD7GLT/" ./user/themes/quark/templates/partials/gtm-header.html.twig
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NWD7GLT/" ./user/themes/quark/templates/partials/gtm-noscript.html.twig
+
+
+##### Dev configuration #####
+FROM base as prod
+# Set the Google Tag Manager container ID 
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NM7K5Z2/" ./user/themes/quark/templates/partials/gtm-header.html.twig
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NM7K5Z2/" ./user/themes/quark/templates/partials/gtm-noscript.html.twig
