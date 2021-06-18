@@ -9,6 +9,11 @@ services:
     ports:
       - 81:80
 
+  # Website
+  website:
+    build:
+      target: dev
+
 
 # Development network
 networks:
