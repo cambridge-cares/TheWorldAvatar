@@ -29,7 +29,8 @@ public class TimeSeries<T, V> {
      * @param dataIRI
      * @param data
      */
-    public TimeSeries(List<T> times, List<String> dataIRI, List<V>... data) {
+    @SafeVarargs
+	public TimeSeries(List<T> times, List<String> dataIRI, List<V>... data) {
         this.times = times;
         this.values = new HashMap<String, List<V>>();
         
@@ -44,6 +45,7 @@ public class TimeSeries<T, V> {
 
     /**
      * constructor for results given by jooq
+     * create the same one for each Record type, i.e. Record2, Record3, etc. - not done yet
      * @param data
      * @param timeColName
      */
@@ -78,6 +80,10 @@ public class TimeSeries<T, V> {
     
     public Class<?> getValueClass(String dataIRI) {
     	return values.get(dataIRI).get(0).getClass();
+    }
+    
+    public List<V> getValues(String dataIRI) {
+    	return values.get(dataIRI);
     }
     
     public List<String> getDataIRI() {

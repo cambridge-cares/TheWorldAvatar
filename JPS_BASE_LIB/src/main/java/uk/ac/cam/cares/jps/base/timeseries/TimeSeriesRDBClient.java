@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
+/**
+ * This class uses the jooq library to interact with the relational database.
+ * Currently known issues: field names are only case sensitive when they are around quotes in the SQL string,
+ * haven't figured out how to enforce quotes around names, try to stick to lowercase for now
+ * The table names generated using UUID contain dashes and also need to be in quotes, haven't found the solution
+ * @author Kok Foong Lee
+ *
+ */
+
 public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
@@ -42,11 +50,16 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	private String timeUnit = null;
 	
 	// constants
-	// this class has been only tested with postgres
 	private static final SQLDialect dialect = SQLDialect.POSTGRES;
     private static final String timeColumnName = "time";
     private static final Field<Object> timeColumn = DSL.field(timeColumnName);
 	
+    // central database table
+    private static final String dbTableName = "centraltable";
+    private static final String dataIRIcolumn = "datairi";
+    private static final String tableRefName = "tablename";
+    private static final String columnRefName = "columnname";
+    
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
@@ -97,15 +110,18 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
 		i = 1;
 		for (String dataIRI : ts.getDataIRI()) {
-			dataColumnNames.put(dataIRI, "Column"+i);
+			dataColumnNames.put(dataIRI, "column"+i);
 			i++;
 		}
 		
-		// create table for storing time series data
-		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
+		// check if database exists and create it
+		createDatabaseTable(create);
+		populateDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames);
 		
-		// check if database exists and create it, maps data IRI to the table name
-		createDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames);
+		// create table for storing time series data
+		// currently not working, the table name needs to be in quotes in the SQL query, not sure if it's possible via jooq
+		// otherwise we should stick with table names without any special characters
+		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
 		
 		closeConnection(conn);
 	}
@@ -133,23 +149,18 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		}
 	}
 	
-	public void createDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String,String> dataColumnNames) {
-		String dbTableName = "DataIRITable";
-		String dataIRIcolumn = "DataIRI";
-		String tableRefName = "TableName";
-		String columnRefName = "ColumnName";
-		
+	public void createDatabaseTable(DSLContext create) {
 		DataType<String> dataType = DefaultDataType.getDataType(dialect,String.class);
 		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn,dataType).column(tableRefName,dataType).column(columnRefName,dataType).execute();
-		
+	}
+	
+	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames) {
         Table<?> table = DSL.table(dbTableName);
 		
-		InsertValuesStep3<?, Object, Object, Object> insertValueStep = create.insertInto(table, DSL.field(dataIRIcolumn), DSL.field(tableRefName), DSL.field(columnRefName));
-		
+		InsertValuesStep3<?,Object,Object,Object> insertValueStep = create.insertInto(table, DSL.field(dataIRIcolumn), DSL.field(tableRefName), DSL.field(columnRefName));
+
 		for (int i = 0; i < dataIRI.size(); i++) {
-			List<String> row = new ArrayList<String>();
-			row.add(dataIRI.get(i));row.add(tsTable);row.add(dataColumnNames.get(dataIRI.get(i)));
-			insertValueStep = insertValueStep.values(row);
+			insertValueStep = insertValueStep.values(dataIRI.get(i),tsTable,dataColumnNames.get(dataIRI.get(i)));
 		}
 		
 		insertValueStep.execute();
@@ -178,6 +189,8 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * @param valueClassList
 	 */
 	public void initTimeSeriesTable(DSLContext create, String tablename, TimeSeries<?,?> ts, Map<String,String> dataColumnNames) {   	
+		List<String> dataIRIs = ts.getDataIRI();
+		
 		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
     	
 		Class<?> timeClass = ts.getTimeClass();
@@ -195,39 +208,31 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 
     	// send request to db
     	createStep.execute();
+    	
+    	// add values into the newly created table
+    	Table<?> table = DSL.table(tablename);
+    	
+    	Field<Object>[] columnArray = new Field[dataIRIs.size()+1];
+    	columnArray[0] = timeColumn;
+    	for (int i = 0; i < dataIRIs.size(); i++) {
+    	    columnArray[i+1] = DSL.field(dataColumnNames.get(dataIRIs.get(i)));
+    	}
+    	
+    	// column
+        InsertValuesStepN<?> insertValueStep = create.insertInto(table, columnArray);
+        for (int i=0; i<ts.getTimes().size(); i++) {
+        	// values are inserted row by row
+        	// newValues is the row elements
+			Object[] newValues = new Object[dataIRIs.size()+1];
+			newValues[0] = ts.getTimes().get(i); 
+			for (int j = 0; j < ts.getDataIRI().size(); j++) {
+				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
+			}
+			insertValueStep = insertValueStep.values(newValues);
+		}
+		insertValueStep.execute();
 	}
 	
-	public void insertValues(String tablename, TimeSeries<?,?> ts) {
-		// check time and value have the same length
-//		if (ts.getTime().size() != ts.getValues().size()) {
-//			throw new JPSRuntimeException("Array size of time and values are not the same");
-//		}
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect);
-		
-		Table<?> table = DSL.table(tablename);
-		
-		Field<Object> value1Column = DSL.field("value1");
-		Field<Object> value2Column = DSL.field("value2");
-		
-		Field<Object>[] columnArray = new Field[3];
-		columnArray[0] = timeColumn;
-		columnArray[1] = value1Column;
-		columnArray[2] = value2Column;
-		
-		// column
-//		InsertValuesStepN<?> insertValueStep = create.insertInto(table, columnArray);
-//		for (int i=0; i<ts.getTime().size(); i++) {
-//			List<Object> newValues = new ArrayList<>();
-//			newValues.add(ts.getTime().get(i)); 
-//			
-//			for (int j=0; j<2; j++) {
-//				newValues.add(ts.getValues().get(j).get(i));
-//			}
-//			insertValueStep = insertValueStep.values(newValues);
-//		}
-//		insertValueStep.execute();
-	}
 	
 	public void queryTimeSeries(String tablename, long lowerBound, long upperBound) {
 		Connection conn = connect();
