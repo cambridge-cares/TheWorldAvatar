@@ -7,14 +7,10 @@ body {
 	height: 100%;
 }
 
-h1 {
-	position: relative;
-	font-size: 20px;
-	text-align: left;
-	margin-left: 20px;
-	color: #C4C4C4;
-	font-family: Helvetica, sans-serif;
-}
+/*
+* CSS for initial static map.
+* https://docs.mapbox.com/help/tutorials/improve-perceived-performance-with-static/
+*/
 
 .mapboxgl-popup-content {
 	text-align: center;
@@ -23,132 +19,19 @@ h1 {
 	max-width: 300px;
 	height: 65px;
 }
-
 .mapboxgl-popup-content p {
 	font-style: italic;
 	color: grey;
 }
 
-#map {
-	position: absolute;
-	top: 0;
-	bottom: 0;
-	width: calc(100% - 400px);
-	height: 100%;
-}
-
-#side-panel {
-	width: 100px;
-	position: fixed;
-	top: 0;
-	right: 0;
-	display: block;
-	z-index: 1;
-	box-sizing: border-box; 
-	overflow-x: hidden;
-
-	font-family: 'Open Sans', sans-serif;	
-	text-align: center; 
-	border-left: 2px solid #707070;
-	background-color: #ffffff;
-	transition: 0.5s;
-}
-
-#titleContainer {
-	height: 70px;
-	
-	margin-right: 50px;
-	margin-left: 50px;
-	margin-top: 30px;
-	
-	display: flex;
-    flex-direction: column;
-    justify-content: center;
-	font-weight: bold;
-	
-	border-bottom: 1px solid #e1e1e1;
-}
-
-
-#metadataContainer {
-	text-align: left;
-	margin-top: 15px;
-	margin-bottom: 10px;
-	margin-right: 50px;
-	margin-left: 50px;
-	font-size: 9pt;
-}
-
-#metadataContainer a {
-	color: black;
-}
-
-#metadataContainer a:hover {
-	color: blue;
-}
-
-#textContainer {
-	margin-top: 20px;
-	margin-left: 20px;
-	margin-right: 20px;
-	font-size: 11pt;
-}
-
-#chartContainer {
-	width: auto;
-	height: 300px;
-	margin-top: 15px;
-	margin-right: 10px;
-	margin-left: 10px;
-	margin-bottom: 10px;
-}
-
-#tableContainer {
-	width: auto;
-	height: calc(100% - 535px);
-	overflow: auto;
-	overflow-x: hidden;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-top: 20px;
-	border: 1px solid #e1e1e1;
-}
-
-#legendContainer {
-	width: 400px;
-	position: fixed;
-	bottom: 45px;
-	right: 0;
-}
-
-#dateContainer {
-	width: 375px;
-	position: fixed;
-	bottom: 0;
-	right: 0;
-	
-	height: 20px;
-	margin: 10px;
-	text-align: center;
-	font-size: 9pt;
-	font-style: italic;
-	color: grey;
-}
-
-.listening-rect {
-	fill: transparent;
-  }
-  
 .line {
 	fill: none;
 	stroke: #199edf;
 }
-
 .points {
 	fill: #199edf;
 	stroke: #199edf;
 }
-
 .axis text {
 	color: grey;
 	font-size: 6.5pt;
@@ -163,17 +46,14 @@ h1 {
 	margin-bottom: 10px;
 	font-size: 12pt;
 }
-
 #dataTable tr {
 	width: 50%;
 }
-
 #dataTable th {
 	border: 1px solid #e1e1e1;
 	font-weight: bold;
 	height: 30px;
 }
-
 #dataTable td {
 	border: 1px solid #e1e1e1;
 	padding: 0;
@@ -189,58 +69,8 @@ h1 {
     flex-direction: column;
     justify-content: center;
 }
-
 #noData p {
 	color: #707070;
-}
-
-
-#resetContainer {
-	height: 25px; 
-	width: 120px;
-	position: fixed; 
-	left: 10px;
-	top: 45px; 
-	line-height: 25px;
-	font-size: 11pt;
-	text-align: center;
-	border-radius: 6px;
-	background-color: rgba(0, 0, 0, 0.2);
-	font-family: 'Open Sans', sans-serif;	
-}
-
-#resetContainer a {
-	color: white;
-	text-decoration: none;
-}
-
-#resetContainer:hover {
-	background-color: rgba(0, 0, 0, 0.4);
-	text-decoration: underline;
-}
-
-#pitchedContainer {
-	height: 25px; 
-	width: 100px;
-	position: fixed; 
-	left: 140px;
-	top: 45px; 
-	line-height: 25px;
-	font-size: 11pt;
-	text-align: center;
-	border-radius: 6px;
-	background-color: rgba(0, 0, 0, 0.2);
-	font-family: 'Open Sans', sans-serif;	
-}
-
-#pitchedContainer a {
-	color: white;
-	text-decoration: none;
-}
-
-#pitchedContainer:hover {
-	background-color: rgba(0, 0, 0, 0.4);
-	text-decoration: underline;
 }
 
 #tiltShift {
@@ -253,7 +83,6 @@ h1 {
 	z-index: 2;
 	pointer-events: none;
 }
-
 body.effectsOff #tiltShift body.effectsOff #map {
 	filter: none !important;
 	-webkit-filter: none !important;

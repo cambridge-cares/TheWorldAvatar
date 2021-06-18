@@ -21,26 +21,26 @@ var lastLocation = null;
 // Cached flow data
 var flowData = null;
 
-// Setup initial state of UI elements
+// Setup initial state of side panel components
 function resetSidePanel() {
 	document.getElementById('chartContainer').style.display = "none";
 	document.getElementById('metadataContainer').style.display = "none";
 	document.getElementById('tableContainer').style.display = "none";
 
-	document.getElementById('titleContainer').innerHTML = `
+	var titleHTML = `
 		<h2>UK Gas Grid</h2>
 	`;
+	setSidePanelTitle(titleHTML);
 
-	document.getElementById('textContainer').style.display = "block";
-	document.getElementById('textContainer').innerHTML = `
+	var textHTML = `
 		<p>The map to the left shows a sample of gas grid data within the UK Digital Twin.
 		Intake Terminals (<span style="color:#108dcc;">blue</span>), Offtakes (<span style="color:#B42222;">red</span>), and Pipes from the gas transmission system are shown for the mainland UK.</p>
 		<p>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to see its recent Instantaneous Flow data. This data is pulled from the UK Digital Twin
 		and is updated on a daily basis.</p>
 	`;
+	setSidePanelText(textHTML);
 
-	document.getElementById('legendContainer').style.display = "block";
-	document.getElementById('legendContainer').innerHTML = `
+	var legendHTML = `
 		<div id="legend">
 			<b>Legend:</b><br>
 			<div id="padding" style="height: 6px;"></div>
@@ -48,7 +48,8 @@ function resetSidePanel() {
 			<img width="24px" src="legend-offtake.svg"/>Offtakes<br>
 			<img width="24px" src="legend-pipe.svg"/>Pipelines<br>
 		</div>
-		`;
+	`;
+	setSidePanelLegend(legendHTML);
 }
 
 // Runs when an offtake is selected, shows meta-data
@@ -63,18 +64,16 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 	resetSidePanel(); 
 	
 	// Set title to offtake name
-	document.getElementById('titleContainer').innerHTML = `
+	setSidePanelTitle(`
 		<h2 style="color: #B42222 !important;">` + nodeName + `</h2>
-	`;
+	`);
 
 	// Pretty-print location
 	var prettyLocation = "lat: " + roundN(nodePosition[1], 5) + ", long: " + roundN(nodePosition[0], 5);
 	prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
 
 	// Show meta data
-	document.getElementById('metadataContainer').style.display = "block";
-
-	var newHTML = `
+	var metaHTML = `
 		<table width="100%">
 			<tr>
 				<td width="25%">Type:</td>
@@ -88,7 +87,7 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 
 	// Only add if present
 	if(LinepackZoneStr != null) {
-		newHTML += `
+		metaHTML += `
 			<tr>
 				<td width="35%">Linepack Zone:</td>
 				<td width="65%" style="text-align: right;">` + LinepackZoneStr + `</td>
@@ -98,7 +97,7 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 
 	// Only add if present
 	if(NTSExitArea != null) {
-		newHTML += `
+		metaHTML += `
 			<tr>
 				<td width="35%">NTS Exit Area:</td>
 				<td width="65%" style="text-align: right;">` + NTSExitArea + `</td>
@@ -108,7 +107,7 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 
 	// Only add if present
 	if(NTSExitZone != null) {
-		newHTML += `
+		metaHTML += `
 			<tr>
 				<td width="35%">NTS Exit Zone:</td>
 				<td width="65%" style="text-align: right;">` + NTSExitZone + `</td>
@@ -121,7 +120,7 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 		var parts = Pipeline.split("/");
 		Pipeline = parts[parts.length - 1].replace("Connection", "");
 
-		newHTML += `
+		metaHTML += `
 			<tr>
 				<td width="35%">Connection:</td>
 				<td width="65%" style="text-align: right;">` + Pipeline + `</td>
@@ -129,16 +128,13 @@ function showOfftake(nodeName, nodeType, nodePosition, LinepackZoneStr, NTSExitA
 		`;
 	}
 		
-	newHTML += "</table>";
-	document.getElementById('metadataContainer').innerHTML = newHTML;
+	metaHTML += "</table>";
+	setSidePanelMeta(metaHTML);
 
 	// Update text container 
-	document.getElementById('textContainer').innerHTML = `
+	setSidePanelText(`
 		<p style='font-style: italic; color: grey;'>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to view Instantaneous Flow data.</p>
-	`;
-
-	// Show the legend
-	document.getElementById('legendContainer').style.display = "block";
+	`);
 }
 
 // Runs when a terminal is selected, shows recent live data.
@@ -153,17 +149,16 @@ function showTerminal(nodeName, nodeType, nodePosition) {
 	resetSidePanel(); 
 	
 	// Set title to terminal name
-	document.getElementById('titleContainer').innerHTML = `
+	setSidePanelTitle(`
 		<h2 style="color: #108dcc !important;">` + nodeName + `</h2>
-	`;
+	`);
 
 	// Pretty-print location
 	var prettyLocation = "lat: " + roundN(nodePosition[1], 5) + ", long: " + roundN(nodePosition[0], 5);
 	prettyLocation = "<a href='javascript:void(0)' onclick='panToLast()'>" + prettyLocation + "</a>"
 
 	// Show meta data
-	document.getElementById('metadataContainer').style.display = "block";
-	document.getElementById('metadataContainer').innerHTML = `
+	setSidePanelMeta(`
 		<table width="100%">
 			<tr>
 				<td width="30%">Type:</td>
@@ -174,12 +169,10 @@ function showTerminal(nodeName, nodeType, nodePosition) {
 				<td width="70%" style="text-align: right;">` + prettyLocation + `</td>
 			</tr>
 		</table>
-	`;
+	`);
 
-	// Hide default text
+	// Hide unused side-panel components
 	document.getElementById('textContainer').style.display = "none";
-
-	// Hide the legend
 	document.getElementById('legendContainer').style.display = "none";
 
 	// Show elements to display flow data
@@ -197,36 +190,54 @@ function showTerminal(nodeName, nodeType, nodePosition) {
 	buildTable(flows);
 }
 
-
-// Loads the flow data json file
+/**
+ * Loads the flow-data.json file containing recent flow data for
+ * all input terminals.
+ */
 function loadFlowData() {
 	if(flowData == null) {
-		$.getJSON( "geoJSON_assets/flow-data.json", function(data) {
-			flowData = data;
-					
-			var dateContainer = document.getElementById('dateContainer');
-			var dateString = "Unknown";
-			
-			try {
-				var req = new XMLHttpRequest();
-				req.open("HEAD", "geoJSON_assets/flow-data.json", false);
-				req.send(null);
-				if(req.status== 200){
-					dateString = req.getResponseHeader("Last-Modified");
-				} 
-			} catch(er) {
-				console.log("Could not get modified date of flow-data.json");
-				console.log(er.message);
-			}
-			
-			dateContainer.innerHTML = "Data last updated on " + dateString;
-			console.log("Flow data has been loaded.");
+		$.ajax({
+			url: "geoJSON_assets/flow-data.json",
+			type: "get",
+			dataType: "json",
+			cache: true,
+			success: flowSuccess,
+			failure: flowFailure,
+			async: true
 		});
 	}
 }
 
+/**
+ * Fired when flow data is downloaded successfully.
+ * 
+ * @param data - flow data
+ * @param status - return status
+ * @param xhr - response header
+ */
+function flowSuccess(data, status, xhr) {
+	flowData = data;
+	dateString = xhr.getResponseHeader("Last-Modified");
+	setSidePanelDate("Data updated on " + dateString);
+	console.log("Flow data has been loaded.");
+}
 
-// Searches the cached flow data for all entries relating to the input terminal name
+/**
+ * Fired when flow data could not be downloaded.
+ */
+function flowFailure() {
+	console.log("Could not get modified date of flow-data.json");
+	console.log(status);
+}
+
+
+/**
+ * Searches the cached flow data for all entries relating to the input terminal name.
+ * 
+ * @param nodeName - name of Input Terminal to get data for.
+ * 
+ * @returns resulting flow data array.
+ */
 function findFlowData(nodeName) {
 	var flows = [];
 	
@@ -245,7 +256,12 @@ function findFlowData(nodeName) {
 }
 
 
-// Sorts a 2D array by the first entry
+/**
+ * Sorts 2D arrays by their first entry.
+ * 
+ * @param a - 2D array
+ * @param b - 2D array
+ */
 function sortFunction(a, b) {
     if (a[0] === b[0]) {
         return 0;
@@ -256,7 +272,11 @@ function sortFunction(a, b) {
 }
 
 
-// Generates the line chart
+/**
+ * Generates the line chart.
+ * 
+ * @param dataPoints - flow data.
+ */
 function buildChart(dataPoints) {
 	// Determine the size of the chart
 	var width = 330;
@@ -375,8 +395,7 @@ function buildTable(dataPoints) {
 	htmlTable += "</table>"
 	
 	// Add the HTML table
-	var tableContainer = document.getElementById('tableContainer');
-	tableContainer.innerHTML = htmlTable;
+	setSidePanelTable(htmlTable);
 }
 
 

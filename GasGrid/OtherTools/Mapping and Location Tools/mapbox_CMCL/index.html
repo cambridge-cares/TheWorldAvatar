@@ -7,15 +7,17 @@
 
     <!-- JS libraries -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
 	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+    <script src='https://d3js.org/d3.v6.min.js'></script>
     <script src='gas-grid-vis.js'></script>
 
     <!-- Stylesheets -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
 	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
+	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
     <link href='style.css' rel='stylesheet' />
 
 </head>
@@ -25,49 +27,37 @@
     <div id="tiltShift"></div>
 	<div id="controlsParent"></div>
 	
-    <div id="side-panel" style="height:100%; width:400px; float:right;">
-        <div id="titleContainer">
-            <h2>UK Gas Grid</h2>
-        </div>
-        <div id="metadataContainer"></div>
-        <div id="textContainer"></div>
-        <div id="chartContainer"></div>
-        <div id="tableContainer"></div>
-		<div id="legendContainer"></div>
-        <div id="dateContainer"></div>
-    </div>
-
     <script>
-		// Add map controls
+		// Add MapBox controls (from mapbox-controls.js)
 		document.getElementById("controlsParent").innerHTML = getControls();
 
-        // Initial state of UI elements
+        // Initial state of side-panel (from side-panel.js)
+		initialiseSidePanel(document.getElementById("map"));
         resetSidePanel();
 
-		// Pre-load the flow data
-		loadFlowData();
-
-        // Loading icon
-        document.getElementById("textContainer").innerHTML += `
+        // Show loading icon whilst stuff spins up
+        var loadingHTML = `
             <br><br><br><br><br>
             <img width='150' src='loading.gif'></img>
             <br>
             <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
         `;
+		appendSidePanelText(loadingHTML);
 
-        // MapBox API Token
+		// Pre-load the flow data for all input terminals
+		loadFlowData();
+
+        // Initialise the MapBox map
         mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
-
-        // Create map (options may be overriden later)
         var map = new mapboxgl.Map(getDefaultMapOptions());
         
-		// MapBox popup
+		// Initialise MapBox popup for mouse-overs
 		var popup =  popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
 		});
 
-        // Change colors depending on selected style
+        // Change some layer colors depending on selected style
 		var inner_text = '#3E3E3E';
 		var outer_text = '#FFFFFF';
 		var pipe_color = '#B1B1B1';
@@ -102,14 +92,13 @@
 		map.on("load", function() {
 			resetSidePanel();
 		});
-
-
+		
         // On style loaded...
         map.on('style.load', function () {
 			console.log("INFO: New style has been loaded.");
 			refresh();
 
-			 // ============ TERMINALS ===========	
+			// ============ TERMINALS ===========	
             // Add the geoJSON data for terminals
             map.addSource('terminals-source', {
                 'type': 'geojson',
@@ -297,7 +286,6 @@
 				type: 'geojson',
 				data: '/geoJSON_assets/pipe_network.geojson'
 			});
-
 
             // Add layer style for NTS
             map.addLayer({
