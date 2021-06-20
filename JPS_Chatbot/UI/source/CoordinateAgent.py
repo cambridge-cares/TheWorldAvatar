@@ -78,10 +78,21 @@ class CoordinateAgent:
             else:
                 try:
                     result = self.jps_interface.analyse_questions(question)
-                    if result is None:
-                        pass
+
+                    print('RESULT RETURNED BY JPS', result)
+                    if 'result' in result:
+                        result_obj = json.loads(result)
+                        result_list = result_obj['result']
+                        if len(result_list) == 0:
+                            pass
+                        else:
+                            if 'http://localhost:8080/ldfserver/Empty' in result:
+                                return 'Nothing'
+                            else:
+                                return result
+
                     else:
-                        return result
+                        pass
                 except:
                     print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                     pass

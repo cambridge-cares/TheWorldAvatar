@@ -9,7 +9,7 @@ from typing import TextIO
 from pattern.en import pluralize, singularize
 import nltk
 
-from UI.data_preparation.Wiki_basic_info.util.property_processor import *
+from .util.property_processor import *
 
 
 def pluralize_class(c):

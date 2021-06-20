@@ -58,4 +58,4 @@ RUN npm install pm2 -g
 
  
 
-ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /usr/local/tomcat/bin/startup.sh && pm2-runtime comunica_node.js && bash"]
+ENTRYPOINT ["/bin/bash","-c", "redis-server --daemonize yes && /usr/local/tomcat/bin/startup.sh && pm2-runtime runstream.js && bash"]

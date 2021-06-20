@@ -47,7 +47,8 @@ class Chatbot:
 
     def simple_replace(self, question):
         # replace '==>' '==' '->' '+'
-        question = re.sub(r'([-]>)|([=]+>)|([=]+)|([=]\])', 'equation_seperator', question)
+        if 'CH2=CHCHO'.lower() not in question.lower():
+            question = re.sub(r'([-]>)|([=]+>)|([=]+)|([=]\])', 'equation_seperator', question)
         return question.replace('+', 'add_sign')
 
     def analyse_questions(self, question):

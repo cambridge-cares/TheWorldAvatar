@@ -108,4 +108,4 @@ ARG DEBIAN_FRONTEND=newt
 RUN echo -e "Image installation completed."
 
 # Set the entrypoint (start flask on container creation)
-# ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]
+ENTRYPOINT ["/bin/bash", "-c", "cd /usr/local/jps-chatbot/UI/source && python -m flask run --host=0.0.0.0"]

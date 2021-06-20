@@ -109,7 +109,7 @@ router.get('/query', function(req, res){
 		status_dictionary[parameter_hash] = false;
 		
 		// ================ redis initiation =========================
-		redis.set_value(parameter_hash, JSON.stringify([]))
+		// redis.set_value(parameter_hash, JSON.stringify([]))
 		 
     	(async () => {
 		const result = await myEngine.query(query,parameters);
@@ -117,7 +117,7 @@ router.get('/query', function(req, res){
 		result.bindingsStream.on('data', (binding) => {
 			r = parse_bindings(binding);
 			result_dictionary[parameter_hash].push(r);
-			redis.set_value(parameter_hash, JSON.stringify([])) // set the value in redis
+			// redis.set_value(parameter_hash, JSON.stringify([])) // set the value in redis
 			
 			
 			if (result_dictionary[parameter_hash].length == 10){
@@ -165,8 +165,8 @@ app.use('/', cors(), router, (error, req, res, next) => {
  res.status(500).send(error);
 });
 
-app.listen(process.env.port || 3002);
-console.log('Running at Port 3002');	
+app.listen(process.env.port || 3000);
+console.log('Running at Port 3000');	
 	
 	
 
