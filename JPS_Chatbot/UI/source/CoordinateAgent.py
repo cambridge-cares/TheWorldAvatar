@@ -86,7 +86,7 @@ class CoordinateAgent:
                         if len(result_list) == 0:
                             pass
                         else:
-                            if 'http://localhost:8080/ldfserver/Empty' in result:
+                            if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
                                 return 'Nothing'
                             else:
                                 return result
