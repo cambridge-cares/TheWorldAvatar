@@ -70,6 +70,7 @@ class CoordinateAgent:
                     if result is None:
                         pass
                     else:
+                        print('RESULT RETURNED BY WIKI', result)
                         return result
                 except:
                     print('[Error Coordinate Agent: 73]: Wiki Interface failed to process the question')

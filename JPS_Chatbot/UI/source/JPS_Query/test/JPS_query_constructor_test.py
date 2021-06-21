@@ -128,6 +128,25 @@ def test_3000():
     # print(round(end_time - start_time, 2), 'seconds')
 
 
-iterations = 1
-for i in range(iterations):
-    test_3000()
+# iterations = 1
+# for i in range(iterations):
+#     test_3000()
+query_pubchem = '''
+PREFIX sachem: <http://bioinfo.uochb.cas.cz/rdf/v1.0/sachem#>
+
+SELECT * WHERE {
+?COMPOUND sachem:substructureSearch [
+    sachem:query "CC(=O)Oc1ccccc1C(O)=O" ].
+}
+LIMIT 1000
+'''
+
+url = 'https://pubchem.ncbi.nlm.nih.gov/rest/rdf/query?'
+values = {'query': query_pubchem}
+full_url = url + urllib.parse.urlencode(values)
+
+print(full_url)
+
+req = urllib.request.Request(full_url)
+response = urllib.request.urlopen(req).read()
+print(response)

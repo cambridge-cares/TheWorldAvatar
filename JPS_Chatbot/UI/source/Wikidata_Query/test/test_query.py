@@ -1,4 +1,4 @@
-endpoint_url = "https://query.wikidata.org/sparql"
+# endpoint_url = "https://query.wikidata.org/sparql"
 import _thread
 import sys
 from pprint import pprint
@@ -18,14 +18,24 @@ q2 = '''
         FILTER(?x > -100 ).  } # comparison numerical_value  
 
 '''
+endpoint_url = 'https://idsm.elixir-czech.cz/sparql/endpoint/idsm'
 
+query_pubchem = '''
+PREFIX sachem: <http://bioinfo.uochb.cas.cz/rdf/v1.0/sachem#>
+
+SELECT * WHERE {
+?COMPOUND sachem:substructureSearch [
+    sachem:query "CC(=O)Oc1ccccc1C(O)=O" ].
+}
+LIMIT 1000
+'''
 
 def run_query():
     print('=================  the result from %s is =================')
     user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
 
     sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
-    sparql.setQuery(q2)
+    sparql.setQuery(query_pubchem)
     sparql.setReturnFormat(JSON)
     result = sparql.query().convert()
     pprint(result)
@@ -57,5 +67,5 @@ SELECT ?oLabel ?v ?unitLabel
 
 # qs = [query, q2]
 # process_multiple_queries(qs)
-
+run_query()
 
