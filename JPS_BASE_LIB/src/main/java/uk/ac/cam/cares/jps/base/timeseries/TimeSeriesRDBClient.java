@@ -29,9 +29,6 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 /**
  * This class uses the jooq library to interact with the relational database.
- * Currently known issues: field names are only case sensitive when they are around quotes in the SQL string,
- * haven't figured out how to enforce quotes around names, try to stick to lowercase for now
- * The table names generated using UUID contain dashes and also need to be in quotes, haven't found the solution
  * @author Kok Foong Lee
  *
  */
@@ -50,13 +47,13 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	// constants
 	private static final SQLDialect dialect = SQLDialect.POSTGRES;
     private static final String timeColumnName = "time";
-    private static final Field<Object> timeColumn = DSL.field(timeColumnName);
+    private static final Field<Object> timeColumn = DSL.field(DSL.name(timeColumnName));
 	
     // central database table
-    private static final String dbTableName = "centraltable";
-    private static final String dataIRIcolumn = "datairi";
-    private static final String tableRefName = "tablename";
-    private static final String columnRefName = "columnname";
+    private static final String dbTableName = "dbTable";
+    private static final String dataIRIcolumn = "dataIri";
+    private static final String tableRefName = "tableName";
+    private static final String columnRefName = "columnName";
     
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
@@ -114,8 +111,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		populateDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames);
 		
 		// create table for storing time series data
-		// currently not working, the table name needs to be in quotes in the SQL query, not sure if it's possible via jooq
-		// otherwise we should stick with table names without any special characters
 		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
 		
 		closeConnection(conn);
@@ -149,10 +144,8 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn,dataType).column(tableRefName,dataType).column(columnRefName,dataType).execute();
 	}
 	
-	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames) {
-        Table<?> table = DSL.table(dbTableName);
-		
-		InsertValuesStep3<?,Object,Object,Object> insertValueStep = create.insertInto(table, DSL.field(dataIRIcolumn), DSL.field(tableRefName), DSL.field(columnRefName));
+	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames) {	
+		InsertValuesStep3<?,Object,Object,Object> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), DSL.field(DSL.name(dataIRIcolumn)), DSL.field(DSL.name(tableRefName)), DSL.field(DSL.name(columnRefName)));
 
 		for (int i = 0; i < dataIRI.size(); i++) {
 			insertValueStep = insertValueStep.values(dataIRI.get(i),tsTable,dataColumnNames.get(dataIRI.get(i)));
@@ -205,12 +198,12 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	createStep.execute();
     	
     	// add values into the newly created table
-    	Table<?> table = DSL.table(tablename);
+    	Table<?> table = DSL.table(DSL.name(tablename));
     	
     	Field<Object>[] columnArray = new Field[dataIRIs.size()+1];
     	columnArray[0] = timeColumn;
     	for (int i = 0; i < dataIRIs.size(); i++) {
-    	    columnArray[i+1] = DSL.field(dataColumnNames.get(dataIRIs.get(i)));
+    	    columnArray[i+1] = DSL.field(DSL.name(dataColumnNames.get(dataIRIs.get(i))));
     	}
     	
     	// column
