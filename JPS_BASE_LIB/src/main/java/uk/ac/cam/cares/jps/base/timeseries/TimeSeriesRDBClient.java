@@ -14,7 +14,7 @@ import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.DataType;
 import org.jooq.Field;
-import org.jooq.InsertValuesStep3;
+import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record2;
 import org.jooq.Result;
@@ -51,7 +51,8 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	
     // central database table
     private static final String dbTableName = "dbTable";
-    private static final String dataIRIcolumn = "dataIri";
+    private static final String dataIRIcolumn = "dataIRI";
+    private static final String tsIRIcolumn = "timeseriesIRI";
     private static final String tableRefName = "tableName";
     private static final String columnRefName = "columnName";
     
@@ -108,7 +109,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		
 		// check if database exists and create it
 		createDatabaseTable(create);
-		populateDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames);
+		populateDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames, tsIRI);
 		
 		// create table for storing time series data
 		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
@@ -141,14 +142,16 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	
 	public void createDatabaseTable(DSLContext create) {
 		DataType<String> dataType = DefaultDataType.getDataType(dialect,String.class);
-		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn,dataType).column(tableRefName,dataType).column(columnRefName,dataType).execute();
+		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn,dataType).column(tsIRIcolumn,dataType)
+		.column(tableRefName,dataType).column(columnRefName,dataType).execute();
 	}
 	
-	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames) {	
-		InsertValuesStep3<?,Object,Object,Object> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), DSL.field(DSL.name(dataIRIcolumn)), DSL.field(DSL.name(tableRefName)), DSL.field(DSL.name(columnRefName)));
+	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
+		InsertValuesStep4<?,Object,Object,Object,Object> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), 
+				DSL.field(DSL.name(dataIRIcolumn)), DSL.field(DSL.name(tsIRIcolumn)), DSL.field(DSL.name(tableRefName)), DSL.field(DSL.name(columnRefName)));
 
 		for (int i = 0; i < dataIRI.size(); i++) {
-			insertValueStep = insertValueStep.values(dataIRI.get(i),tsTable,dataColumnNames.get(dataIRI.get(i)));
+			insertValueStep = insertValueStep.values(dataIRI.get(i),tsIRI,tsTable,dataColumnNames.get(dataIRI.get(i)));
 		}
 		
 		insertValueStep.execute();
