@@ -202,8 +202,10 @@ function registerLayer(layerName, layerIDs, groupName, selected) {
 
 /**
  * Build the checkbox tree for selectable groups and layers.
+ * 
+ * @param type - type of tree ("radio", "checkbox")
  */
-function buildLayerTree() {
+function buildLayerTree(type) {
 	var htmlString = `<p>Layers:</p><ul class="checktree">`;
 
 	for(groupName in registeredLayers) {
@@ -225,15 +227,15 @@ function buildLayerTree() {
 
 				if(groupLayers[layerName]["selected"]) {
 					selectedLayers += 1;
-					layerHTML += `<input type="checkbox" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `" checked>`;
+					layerHTML += `<input type="` + type + `" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `" checked>`;
 				} else {
-					layerHTML += `<input type="checkbox" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `">`;
+					layerHTML += `<input type="` + type + `" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `">`;
 				}
 
 				layerHTML += `
 					<label for="` + layerName + `">` + layerName + `</label>
 					</li>
-				`;
+				`;		
 			}
 			layerHTML += "</ul>";
 		}
@@ -245,9 +247,9 @@ function buildLayerTree() {
 			groupHTML += `<li class="groupCheck">`;
 
 			if(selectedLayers == Object.keys(groupLayers).length) {
-				groupHTML += `<input type="checkbox" onclick="onGroupChange(this);" id="` + groupName + `" checked>`;
+				groupHTML += `<input type="` + type + `" onclick="onGroupChange(this);" id="` + groupName + `" checked>`;
 			} else {
-				groupHTML += `<input type="checkbox" onclick="onGroupChange(this);" id="` + groupName + `">`;
+				groupHTML += `<input type="` + type + `" onclick="onGroupChange(this);" id="` + groupName + `">`;
 			}
 			groupHTML += `<label for="` + groupName + `">` + groupName + `</label>`;
 		}
