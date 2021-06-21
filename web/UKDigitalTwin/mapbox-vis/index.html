@@ -6,12 +6,17 @@
 	<meta charset="utf-8">
 	
 	<!-- Javascript -->
-	<script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
+	<script src='mapbox-controls.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+	<script src='power-system.js'></script>
 
 	<!-- Stylesheets -->
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
 	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
+	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
 	<link href='style.css' rel='stylesheet' />
 </head>
 
@@ -21,42 +26,98 @@
 	<div id="controlsParent"></div>
 
 	<script>
-		// Add map controls
-		window.addEventListener("load", function(){
-			document.getElementById("controlsParent").innerHTML = getControls();
-		});
+		var currentLayer = "power";
 
-		// Access token
+		// Add map controls
+		document.getElementById("controlsParent").innerHTML = getControls();
+
+		// Initial state of side-panel (from side-panel.js)
+		initialiseSidePanel(document.getElementById("map"));
+        resetSidePanel();
+
+		// Show loading icon whilst stuff spins up
+        var loadingHTML = `
+            <br><br><br><br><br>
+            <img width='150' src='loading.gif'></img>
+            <br>
+            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+        `;
+		appendSidePanelText(loadingHTML);
+
+		// Initialise the MapBox map
 		mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
-	
-		// Create map (options may be override later)
 		var map = new mapboxgl.Map(getDefaultMapOptions());
 
-		// Change text color depending on selected style
+		// Initialise MapBox popup for mouse-overs
+		var popup =  popup = new mapboxgl.Popup({
+			closeButton: false,
+			closeOnClick: false
+		});
+
+		// Change some layer colors depending on selected style
 		var inner_text = '#3E3E3E';
 		var outer_text = '#FFFFFF';
-
+	
 		function terrainCallback(terrainType) {
 			if(terrainType === "light") {
-				outer_text = '#FFFFFF';
-				inner_text = '#3E3E3E';
+                inner_text = '#3E3E3E';
+		        outer_text = '#FFFFFF'; 
 			} else {
-				inner_text = '#FFFFFF';
-				outer_text = '#3E3E3E';
+                inner_text = '#FFFFFF';
+		        outer_text = '#000000'; 
 			}
 			console.log("INFO: Updated label colors.");
 		}		
 
+		function cameraCallback() {
+			popup.remove();
+			resetSidePanel();
+			updateLegend(currentLayer);
+		}
+
+		function layerCallback(layerID, enabled) {
+			if(layerID == "power" && enabled) {
+				map.setPaintProperty(
+					"plant_locations",
+					"circle-color",
+					["get", "marker-color"]
+				);
+
+				currentLayer = "power";
+				updateLegend("power");
+
+			} else if(layerID == "indicator" && enabled) {
+				map.setPaintProperty(
+					"plant_locations",
+					"circle-color",
+					["get", "sdgcolor"]
+				);
+
+				currentLayer = "indicator";
+				updateLegend("indicator");
+			}
+		}
+
 		// Setup map with mapbox-controls.js
-		setup(map, null, terrainCallback);
-		addTiltShiftSupport();
+		setup(map, cameraCallback, terrainCallback, layerCallback);
+	
+
+		// Add tilt shift effect
+		// Note: I've disabled this for now as the map is becoming unresponsive.
+		// Once we've had time for some optimisation, we can enable it.
+		//addTiltShiftSupport();
+
+		// On initial load...
+			map.on("load", function() {
+			resetSidePanel();
+			updateLegend(currentLayer);
+		});
 
 		map.on('style.load', function() {
 			console.log("INFO: New style has been loaded.");
-
-			// Initialise the map options 
 			refresh();
 			
+			// ============ PLANTS ===========	
 			// Add the powerplant data
 			map.addSource('powerplants', {
 				type: 'geojson',
@@ -68,10 +129,12 @@
 				'id': 'plant_locations',
 				'type': 'circle',
 				'source': 'powerplants',
-				'layout': {},
+				'layout': {
+					'visibility': 'visible'
+				},
 				'paint': {
 					'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-					'circle-color': ["get", "marker-color"],
+					'circle-color': (currentLayer == "power") ? ["get", "marker-color"] : ["get", "sdgcolor"],
 					'circle-stroke-width': 1,
 					'circle-stroke-color': inner_text,
 				}
@@ -79,10 +142,11 @@
 
 			// Powerplant labels
 			map.addLayer({
-				id: 'capac_label',
+				id: 'plant_labels',
 				type: 'symbol',
 				source: 'powerplants',
 				layout: {
+					'visibility': 'visible',
 					'text-field': ['concat',
 						['get', 'name'],
 						'\n Capacity: ',
@@ -104,18 +168,44 @@
 			});
 
 			// On mouse enter
-			map.on('mouseenter', 'plant_locations', function () {
+			map.on('mouseenter', 'plant_locations', function (e) {
 				map.getCanvas().style.cursor = 'pointer';
+
+				if(map.getZoom() < 7.5) {
+					var coordinates = e.features[0].geometry.coordinates.slice();
+					var name = e.features[0].properties["name"];
+					name = name.replaceAll("_", " ");
+
+					var fuel = e.features[0].properties["fuel"];
+
+					var html = `
+						<b> ` + name + `</b><br>
+						Fuel: ` + fuel + `
+						<br><p>Click for more details.</p>
+					`;
+					popup.setLngLat(coordinates).setHTML(html).addTo(map);
+				}
 			});
 
 			// On mouse exit
-			map.on('mouseleave', 'plant_locations', function () {
+			map.on('mouseleave', 'plant_locations', function (e) {
 				map.getCanvas().style.cursor = '';
+				popup.remove();
 			});
 
 			// On selection
 			map.on('click', 'plant_locations', function (e) {
-				var coordinates = e.features[0].geometry.coordinates;
+				var coordinates = e.features[0].geometry.coordinates.slice();
+				var name = e.features[0].properties["name"];
+				name = name.replaceAll("_", " ");
+
+				var fuel = e.features[0].properties["fuel"];
+				var capacity = e.features[0].properties["capacity"];
+				var indicator = e.features[0].properties["sdg941"];
+
+				selectPlant(name, fuel, capacity, indicator, coordinates);
+				//updateLegend(currentLayer);
+
 				map.flyTo({
 					center: coordinates,
 					curve: 1.9,
@@ -126,6 +216,15 @@
 				});
 			});
 		});
+
+		// Register the power layer 
+		registerLayer("Power Generation", ["power"], null, (currentLayer == "power"));
+		registerLayer("SDG Indicator", ["indicator"], null, (currentLayer == "indicator"));
+
+		// ============ PLANTS ===========	
+
+		// Build the layer selection tree
+		buildLayerTree("radio");
 	</script>
 
 </body>
