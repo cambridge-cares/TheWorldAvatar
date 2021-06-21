@@ -291,6 +291,7 @@ let address = cmcl_address
     var start_time  = d.getMilliseconds();
     $.get(address + "chemistry_chatbot/query?type=worldavatar&question=" + msg, function( data ) {
 
+      console.log('raw data from twa', data, typeof(data))
       displayResults(data, 'jps')
       var d = new Date();
       var end_time  = d.getMilliseconds();

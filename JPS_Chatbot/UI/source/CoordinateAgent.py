@@ -90,7 +90,7 @@ class CoordinateAgent:
                             if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
                                 return 'Nothing'
                             else:
-                                return result
+                                return result_list
 
                     else:
                         pass
