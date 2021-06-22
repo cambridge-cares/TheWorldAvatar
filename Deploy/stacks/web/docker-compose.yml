@@ -76,14 +76,14 @@ services:
   # UK Power System
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-power-system:
-    image: docker.cmclinnovations.com/uk-power-system:e1ce3d6
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT
     container_name: "uk-power-system"
     restart: unless-stopped
     ports:
-      - 3001:3001 
+      - 3001:80
     labels:
-      description: "NodeJS hosted google maps visualisation of UK power plant data pulled from KG."
-      authors: "wx243@cam.ac.uk, support@cmclinnovations"
+      description: "MapBox visualisation of UK power plant data pulled from KG."
+      authors: " support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
     
@@ -91,11 +91,9 @@ services:
   # UK Gas Grid
   # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   uk-gas-grid:
-    image: docker.cmclinnovations.com/uk-gas-grid:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT
     container_name: "uk-gas-grid"
     restart: unless-stopped
-    ports:
-      - 4001:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UK gas network based on static geoJSON files."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
@@ -112,8 +110,6 @@ services:
       dockerfile: "./docker/Dockerfile"
     container_name: "un-goals"
     restart: unless-stopped
-    ports:
-      - 4002:80
     labels:
       description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
       authors: "support@cmclinnovations"

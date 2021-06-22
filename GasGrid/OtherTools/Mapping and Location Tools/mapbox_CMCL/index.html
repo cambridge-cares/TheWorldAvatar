@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lan="eng">
+
+<head>
+    <title>Gas Grid Visualisation</title>
+	<meta charset="utf-8">
+
+    <!-- JS libraries -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src='gas-grid-vis.js'></script>
+
+    <!-- Stylesheets -->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
+    <link href='style.css' rel='stylesheet' />
+</head>
+
+<body>
+    <div id="map"></div>
+    <div id="tiltShift"></div>
+	<div id="controlsParent"></div>
+	
+    <div id="side-panel" style="height:100%; width:400px; float:right;">
+        <div id="titleContainer">
+            <h2>UK Gas Grid</h2>
+        </div>
+        <div id="metadataContainer"></div>
+        <div id="textContainer"></div>
+        <div id="chartContainer"></div>
+        <div id="tableContainer"></div>
+        <div id="dateContainer"></div>
+    </div>
+
+    <script>
+		// Add map controls
+		window.addEventListener("load", function(){
+			document.getElementById("controlsParent").innerHTML = getControls();
+		});
+
+        // Initial state of UI elements
+        resetSidePanel();
+
+		// Pre-load the flow data
+		loadFlowData();
+
+        // Loading icon
+        document.getElementById("textContainer").innerHTML += `
+            <br><br><br><br><br>
+            <img width='150' src='loading.gif'></img>
+            <br>
+            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+        `;
+
+        // MapBox API Token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA';
+
+        // Create map (options may be overriden later)
+        var map = new mapboxgl.Map(getDefaultMapOptions());
+        
+		// MapBox popup
+		var popup =  popup = new mapboxgl.Popup({
+			closeButton: false,
+			closeOnClick: false
+		});
+
+        // Change colors depending on selected style
+		var inner_text = '#3E3E3E';
+		var outer_text = '#FFFFFF';
+		var pipe_color = '#B1B1B1';
+
+		function terrainCallback(terrainType) {
+			if(terrainType === "light") {
+				pipe_color = '#B1B1B1';
+                inner_text = '#3E3E3E';
+		        outer_text = '#FFFFFF'; 
+			} else {
+				pipe_color = '#F6F6F4';
+                inner_text = '#FFFFFF';
+		        outer_text = '#000000'; 
+			}
+			console.log("INFO: Updated label colors.");
+		}	
+		
+		function cameraCallback() {
+			popup.remove();
+			resetSidePanel();
+		}
+
+		// Setup map with mapbox-controls.js
+		setup(map, cameraCallback, terrainCallback);
+		addTiltShiftSupport();
+
+		// On initial load...
+		map.on("load", function() {
+			resetSidePanel();
+		});
+
+        // On style loaded...
+        map.on('style.load', function () {
+			console.log("INFO: New style has been loaded.");
+			refresh();
+
+            // ============ PIPES ===========	
+            // Add the geoJSON data for NTS
+            map.addSource('National Transmission System', {
+                type: 'geojson',
+                data: '/geoJSON_assets/pipe_network.geojson'
+            });
+
+            // Add layer style for NTS
+            map.addLayer({
+                'id': 'National Transmission System',
+                'type': 'line',
+                'source': 'National Transmission System',
+                'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                },
+                'paint': {
+                    'line-color': pipe_color,
+                    'line-width': 4
+                }
+            });
+
+            // ============ OFFTAKES ===========	
+            // Add the geoJSON data for offtakes
+            map.addSource('offtakes', {
+                type: 'geojson',
+                data: '/geoJSON_assets/offtakes.geojson'
+            });
+
+            // Add layer style for offtakes
+            map.addLayer({
+                'id': 'offtakes_loc',
+                'type': 'circle',
+                'source': 'offtakes',
+                'paint': {
+                    'circle-radius': 6,
+                    'circle-color': '#B42222',
+                    "circle-stroke-width": 1,
+                    "circle-stroke-color": '#FFFFFF',
+                }
+            });
+
+            // On click handler within offtake layer
+            map.on('click', 'offtakes_loc', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties["Offtake Point (License Name)"];
+                var type = e.features[0].properties["Type of Offtake"];
+                var LinepackZone = e.features[0].properties["Linepack Zone"];
+                var NTSExitArea = e.features[0].properties["NTS Exit Area"];
+                var NTSExitZone = e.features[0].properties["NTS Exit Zone"];
+                var Pipeline = e.features[0].properties["Connected to Pipeline"];
+                console.log(coordinates,LinepackZone,NTSExitArea,NTSExitZone,Pipeline)
+
+                // Fire selection logic
+                showOfftake(name, type, coordinates,LinepackZone,NTSExitArea,NTSExitZone,Pipeline);
+
+                map.flyTo({
+                    center: coordinates,
+                    curve: 1.9,
+                    speed: 1.6,
+                    pitch: 75,
+                    zoom: 15.5
+                });
+            });
+
+			map.addLayer({
+                id: 'offtakes_name',
+                type: 'symbol',
+                source: 'offtakes',
+				minzoom: 8.5,
+                layout: {
+                    'text-field': ['concat', ['get', 'Offtake Point (License Name)'], '\n Offtake Type: ', ['get', 'Type of Offtake'], '\n | \n | \n |'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset': [0, -3.5],
+					'text-max-width': 25
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 1,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
+                }
+            });
+
+
+            // On mouse enter within offtake layer
+            map.on('mouseenter', 'offtakes_loc', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+
+				if(map.getZoom() < 8.5) {
+					var coordinates = e.features[0].geometry.coordinates.slice();
+					var name = e.features[0].properties["Offtake Point (License Name)"];
+					var type = e.features[0].properties["Type of Offtake"];
+
+					var html = `
+						<span style='color: #B42222;'> ` + name + `</span><br>` + type +
+						`<br><p>Click for more details.</p>`;
+					popup.setLngLat(coordinates).setHTML(html).addTo(map);
+				} 
+            });
+
+            // On mouse leave within offtake layer
+            map.on('mouseleave', 'offtakes_loc', function () {
+                map.getCanvas().style.cursor = '';
+				popup.remove();
+            });
+
+            // ============ TERMINALS ===========	
+            // Add the geoJSON data for terminals
+            map.addSource('terminals_s', {
+                'type': 'geojson',
+                'data': '/geoJSON_assets/terminals.geojson'
+            });
+
+            // Layer style for terminals
+            map.addLayer({
+                'id': 'terminals',
+                'type': 'circle',
+                'source': 'terminals_s',
+                'paint': {
+                    'circle-radius': 8,
+                    'circle-color': '#108dcc',
+                    "circle-stroke-width": 1,
+                    "circle-stroke-color": '#FFFFFF',
+                }
+            });
+
+            // On click handler within offtake layer
+            map.on('click', 'terminals', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties.name;
+                var type = "Terminal";
+
+                map.flyTo({
+                    center: coordinates,
+                    curve: 1.9,
+                    speed: 1.6,
+                    pitch: 60,
+                    zoom: 16
+                });
+
+                // Update the side panel
+                showTerminal(name, type, coordinates);
+            });
+
+            map.addLayer({
+                id: 'terminals_name',
+                type: 'symbol',
+                source: 'terminals_s',
+				minzoom: 7.5,
+                layout: {
+                    'text-field': ['concat', ['get', 'name'], '\n |\n|\n|'],
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset': [0, -2.5],
+					'text-max-width': 25
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 1,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 5, 0, 7, 1]
+                }
+            });
+
+             // On mouse enter within terminals layer
+			 map.on('mouseenter', 'terminals', function (e) {
+                map.getCanvas().style.cursor = 'pointer';
+
+				if(map.getZoom() < 7.5) {
+					var coordinates = e.features[0].geometry.coordinates.slice();
+					var name = e.features[0].properties["name"];
+
+					var html = `
+						<span style='color: #108dcc;'> ` + name + `</span><br>Terminal
+						<br><p>Click for more details.</p>`;
+					popup.setLngLat(coordinates).setHTML(html).addTo(map);
+				}
+            });
+
+            // On mouse leave within terminals layer
+            map.on('mouseleave', 'terminals', function () {
+                map.getCanvas().style.cursor = '';
+				popup.remove();
+            });
+
+			// Ensure the terminal and offtake markers are the top layers
+			map.moveLayer('offtakes_loc');
+			map.moveLayer('terminals');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,115 @@
+
+- GasGrid Ontology
+  - GasNetwork ontology namespace: http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl      
+	  - (GasNetworkSystem, hasRealization, NetworkSystem)- This should be resolved!!! -Solved
+	  - (NetworkSystem hasRealizationAspect GasNetworkSystem)	  
+      - Gas Network ontology inside GasGrid ontology space import Network system ontology that is inside OntoCape ontology space.
+      - In OntoGasGrid ontology we use Meta Model and Upper Layer from OntoCAPE.
+  - Geographical regions ontology to represent very specific geographical regions
+       - borrow some ontology for Geo regions
+  - some others ontologies
+        - GridComponent ontology: Real time data are related to grid component only. 
+        - GridPipeLine (Data pipe pline for Grid pipe pline) ontology
+
+- GasGrid Ontology development:
+  
+   - GasNetwork ontology  
+ 
+
+Q: What list of features (terms) we must implement in GasGrid ontology?
+
+
+- - - - -  - - - - - 
+Date: 2021/01/29
+
+Comments:
+   - Gas Network System IRI: "http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_system.owl"
+   - Gas network is a heath of gas grid system and we start modeling ontology from this point.
+   - In this phase of development we use OntoCape ontology, i.e we borrow IRIs from OntoCape and we did not import whole OntoCape ontology.
+
+To model GasNetwork ontology we reuse topology ontology and system_network ontology from the JPS. That ontology is component of OntoCape.
+
+- http://theworldavatar.com/ontology/meta_model/topology/topology.owl
+
+This ontology imports the following ontologies:
+
+- <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl"/>
+
+   - impots: <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl"/>
+         - Comment: 
+		    - Classes that we are reusing from OntoCape do not have OntoCape IRIs, such as: http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#FeatureSpace
+		      See page 62 in the book [1]. This is probably because of resolvability of IRIs. 
+            
+			- The ontology fundamental_concepts.owl is consistent (checked using HermiT reasoner).
+			
+- Comment: Mereology ontology is on the top of OntoCape structure hiearchy.  			
+
+The gas_network_system.owl is implementation of GasNetwork model. In order to model gas_netwok_system.owl,  gas_network_system.owl imports from the OntoCape the following ontologies:
+
+    1. topology ontology with base IRI:  http://theworldavatar.com/ontology/meta_model/topology/topology.owl
+	2. network system ontology with base IRI: http://theworldavatar.com/ontology/ontocape/upper_level/network_system.owl
+	3. technical system ontology: "http://theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"
+	
+		<!-- Ontologies below are imported manually because tboxgenerator tool does not suport importing ontologies automatically. -->
+		<owl:imports rdf:resource="http://theworldavatar.com/ontology/meta_model/topology/topology.owl"/>
+	    <owl:imports rdf:resource="http://theworldavatar.com/ontology/ontocape/upper_level/network_system.owl"/>
+	    <owl:imports rdf:resource="http://theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
+
+	NOTE: In OntoCape System ontology imports network system ontology and meta model ontology. 
+	We did not  follow this approach because meta model ontology imports not only topoly. 
+	It imports other ontologies from the meta model that we do not need them.
+
+	NOTE: GasNetwork system and GasNetworkSystem relaization are using object property hasRealizationAspect to model phisical gas network. 
+	It is not modeling apstraction, hense specific realization aspect of phisical system.
+
+- Monday, 2021/02/01: We need to add Tbox concept expression in LaTex for GasNetwork Ontology. We have to add only OntoCAPE extensions. 
+
+- 2021/02/01: It remains to implement hasLat/hasLng for pipeline start/end using geographical regions ontology.
+
+- Geographical regions ontology to represent very specific geographical regions
+       - borrow some ontology for Geo regions
+  - some others ontologies
+        - GridComponent ontology
+        - GridPipeLine (Data pipe pline for Grid pipe pline) ontology
+		
+
+  - The geographical regions ontology (Tbox) development: 	
+
+   - Automatically download data from http://statistics.data.gov.uk/data_home and brrow:
+     - http://statistics.data.gov.uk/resource?uri=http%3A%2F%2Fstatistics.data.gov.uk%2Fdata%2Fgeography
+	 - http://statistics.data.gov.uk/data_home	 
+     - http://statistics.data.gov.uk/resource.ttl?uri=http%3A%2F%2Fstatistics.data.gov.uk%2Fdef%2Fstatistical-geography
+	 - http://statistics.data.gov.uk/resource?uri=http%3A%2F%2Fstatistics.data.gov.uk%2Fdata%2Fgeometry
+	 - http://statistics.data.gov.uk/graph/geography/metadata	 
+	 - https://geoportal.statistics.gov.uk/
+	 
+
+Populate GasGrid ontology with data:
+
+Tasks:
+- Automatically download all data (resources) from given URLs to local hard drive.
+- Automatically populate our GasGrid ontology with these data by genearting valid (consistent) Abox with respect to GasGrid Tbox.
+- Test generated Abox-es on DLs consistency.
+- Evaluate /Validate Tbox and Abox ontologies.
+
+- It includes:
+  - Automatically convert (transform) source data (XML, etc) format into OWL/RDF.
+  - Download (automatically ?) all data in one folder and then run the code that will go through the folder and generate OWL/RDF files as Abox of Gas Grid ontology.
+     - example: Populating automatically OntoCompChem ontology with data using MolHub service.
+	 - Population GasGrid in distributed environment.
+		   
+- To populate the  GasNetwork ontology we use resources from 
+   - https://www.gov.uk/government/statistics/sub-national-estimates-of-households-not-connected-to-the-gas-network
+  
+  
+   Tuesday, 2021/02/02:
+   - 
+   - 
+  
+
+		
+		
+references:
+
+[1]  Marquardt, W., Morbach, J., Wiesner, A., Yang, A., OntoCAPE, A Re-Usable Ontology for Chemical Process Engineering, doi: 10.1007/978-3-642-04655-1
+http://www.theworldavatar.com/OntoCAPE/Marquardt%20et%20al%20-%20OntoCAPE_%20A%20Re-Usable%20Ontology%20for%20Chemical%20Process%20Engineering%20%282010%29.pdf
