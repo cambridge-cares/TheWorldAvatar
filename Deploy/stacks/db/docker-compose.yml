@@ -23,6 +23,21 @@ services:
     volumes:
       - blazegraph_data:/data
 
+    # Blazegraph geo
+  blazegraph_geo:
+    build:
+      context: blazegraph_geo
+    container_name: "blazegraph_geo-${MODE}"
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    labels:
+      authors: "msff2@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
+      hash: "${HASH}"
+    restart: unless-stopped
+    volumes:
+      - blazegraph_geo_data:/data
+
   # RDF4J
   rdf4j:
     build:
@@ -60,6 +75,8 @@ secrets:
 volumes:
   blazegraph_data:
     name: "blazegraph_data"
+  blazegraph_geo_data:
+    name: "blazegraph_geo_data"
   rdf4j_data:
     name: "rdf4j_data"
   rdf4j_logs:

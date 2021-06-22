@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lan="eng">
+
+<head>
+    <style>
+        h1 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+
+        h2 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+
+        h3 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+
+        body {
+            margin: auto;
+            height: 90vh;
+            width: 90vw;
+        }
+
+    </style>
+
+
+    <h1 style="font-family: Open Sans, sans-serif">
+        Tom Savage - CoMo 2020
+    </h1>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body style="background-color:#CBD2D3;">
+    <div id='map' style='width: 100%; height: 100%;'></div>
+    <script>
+
+        // TO MAKE THE MAP APPEAR YOU MUST
+        // ADD YOUR ACCESS TOKEN FROM
+        // https://account.mapbox.com
+
+        mapboxgl.accessToken = 'pk.eyJ1IjoidG9tc2F2YWdlIiwiYSI6ImNram01MDFvczI5aHUyeG83N21obzBrcWsifQ.T_j8LAT55g3kuwCQFlNPuA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/dark-v9', // stylesheet location
+            center: [-3, 54.25], // starting position [lng, lat]
+            zoom: 5, // starting zoom
+            pitch: 0,
+            bearing: 0,
+        });
+
+
+        // Loading 3D terrain
+        map.on('load', function () {
+
+            map.addSource('mapbox-dem', {
+                'type': 'raster-dem',
+                'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                'tileSize': 512,
+                'maxzoom': 14
+            });
+
+
+            // This section is concerned with plotting the geojson file
+            map.addSource('Contour', {
+                type: 'geojson',
+                data: 'contour.geojson'
+            });
+
+            map.addLayer({
+                'id': 'Contour-Fill',
+                'type': 'fill',
+                'source': 'Contour',
+                'layout': {},
+                'paint': {
+                'fill-color': {
+                    type: 'identity',
+                    property: 'fill',
+                    },
+                'fill-opacity': {
+                    type: 'identity',
+                    property: 'fill-opacity'
+                    }
+                }
+                });
+        });
+
+    </script>
+</body>
+
+</html>

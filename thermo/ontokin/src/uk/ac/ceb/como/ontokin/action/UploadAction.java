@@ -1,9 +1,9 @@
 package uk.ac.ceb.como.ontokin.action;
 
 import java.io.File;
-import java.io.FileWriter;
+//import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
+//import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,12 +11,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.eclipse.rdf4j.RDF4JException;
-import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import org.eclipse.rdf4j.rio.RDFFormat;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
 import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
@@ -24,6 +18,7 @@ import com.cmclinnovations.ontochem.model.exception.OntoException;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
 
+import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
 //import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.ceb.como.ontokin.bean.ChemkinUploadReport;
 import uk.ac.ceb.como.ontokin.model.FolderManager;
@@ -678,75 +673,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		}
 		return true;
 	}
-
-	
-	/**
-	 * Converts the intermidate XML format to OWL.
-	 * 
-	 */
-//	private boolean convertXMLToOWL(String ontoKinJarFilePath, String owlFolderPath, String xmlFilePath) {
-//		try {
-//			if (new File(ontoKinJarFilePath).exists() && new File(xmlFilePath).exists()) {
-//				String command = "java -cp " + ontoKinJarFilePath + " com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter " +xmlFilePath + " " + owlFolderPath;
-//				Process p = Runtime.getRuntime().exec(command);
-//				p.waitFor();
-//			} else {
-//				if (!(new File(ontoKinJarFilePath).exists())) {
-//					logger.error("The following OntoKin jar file does not exist: " + ontoKinJarFilePath);
-//				}
-//				if (!(new File(xmlFilePath).exists())) {
-//					logger.error("The following XML file does not exist: " + xmlFilePath);
-//				}
-//				logger.info("Therefore, the tool could not finish the conversion.");
-//				return false;
-//			}
-//		} catch (IOException e) {
-//			logger.error("Failed to convert to the OntoKin OWL format.");
-//			e.printStackTrace();
-//			return false;
-//		} catch (InterruptedException e) {
-//			logger.error("Failed to convert to the OntoKin OWL format.");
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return true;
-//	}
-
-	/**
-	 * Converts the intermidate XML format to OWL.
-	 * 
-	 */
-//	private boolean convertXMLToOWL(String ontoKinBatchFilePath, String ontoKinJarFilePath, String owlFolderPath, String xmlFilePath) {
-//		try {
-//			if (new File(ontoKinBatchFilePath).exists() && new File(ontoKinJarFilePath).exists() && new File(xmlFilePath).exists()) {
-//				String command = ontoKinBatchFilePath + " " + ontoKinJarFilePath + " " +xmlFilePath + " " + owlFolderPath;
-//				Process p = Runtime.getRuntime().exec(command);
-//				p.waitFor();
-//			} else {
-//				if (!(new File(ontoKinBatchFilePath).exists())) {
-//					logger.error("The following OntoKin Batch file does not exist: " + ontoKinBatchFilePath);
-//				}
-//				if (!(new File(ontoKinJarFilePath).exists())) {
-//					logger.error("The following OntoKin jar file does not exist: " + ontoKinJarFilePath);
-//				}
-//				if (!(new File(xmlFilePath).exists())) {
-//					logger.error("The following XML file does not exist: " + xmlFilePath);
-//				}
-//				logger.info("Therefore, the tool could not finish the conversion.");
-//				return false;
-//			}
-//		} catch (IOException e) {
-//			logger.error("Failed to convert to the OntoKin OWL format.");
-//			e.printStackTrace();
-//			return false;
-//		} catch (InterruptedException e) {
-//			logger.error("Failed to convert to the OntoKin OWL format.");
-//			e.printStackTrace();
-//			return false;
-//		}
-//		return true;
-//	}
-
 	
 	/**
 	 * Loads an ontology to the Ontokin KB repository. It also creates</br>
@@ -761,25 +687,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 * @throws OntoException
 	 */
 	public void loadOntology(String serverURL, String mechanismName, String mechanismFilePath, String baseURI, String repositoryID) throws Exception{
-		try {
-			Repository repo = new HTTPRepository(serverURL, repositoryID);
-			repo.initialize();
-			RepositoryConnection con = repo.getConnection();
-			ValueFactory f = repo.getValueFactory();
-			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOKIN_KB_URL.concat(mechanismName));
-			try {
-				URL url = new URL("file:/".concat(mechanismFilePath).concat(mechanismName));
-				con.add(url, url.toString(), RDFFormat.RDFXML, context);
-			} finally {
-				con.close();
-			}
-		} catch (RDF4JException e) {
-			logger.error("RDF4JException occurred.");
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.out.println("IOException occurred.");
-			e.printStackTrace();
-		}
+		KnowledgeRepository kr = new KnowledgeRepository();
+		System.out.println("Started uploading the converted OWL file...");
+		kr.uploadOntology(serverURL, repositoryID, mechanismFilePath+mechanismName);
+		System.out.println("Finished uploading the converted OWL file...");
 	}
-
 }
