@@ -130,9 +130,16 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	}
 	
     public void addData(TimeSeries<?,?> ts) {
-		// first ensure that each provided column is located in the same table by checking its time series IRI
     	List<String> dataIRI = ts.getDataIRI();
     	
+    	// check if time series is initialised
+		for (String s : dataIRI) {
+			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+			}
+		}
+    	
+		// first ensure that each provided column is located in the same table by checking its time series IRI
     	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
@@ -162,6 +169,13 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
      * @param dataIRI
      */
     public TimeSeries<?,?> getData(List<String> dataIRI) {
+    	// check if time series is initialised
+		for (String s : dataIRI) {
+			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+			}
+		}
+    	
     	// make sure they are in the same table
     	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
