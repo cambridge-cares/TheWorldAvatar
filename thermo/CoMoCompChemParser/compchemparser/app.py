@@ -1,4 +1,5 @@
 from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
+from compchemparser.aboxwriter import write_abox
 from bz2 import __author__
 
 from rdflib import Graph
@@ -23,7 +24,7 @@ def run(args):
             errno.ENOENT, os.strerror(errno.ENOENT), args['<logFileOrDir>'])
 
 def parseLog(logFile,output_json,output_owl):
-    CompChemObj = OntoCompChemData()
+    CompChemObj = OntoCompChemData(write_abox)
     CompChemObj.getData(logFile)
 
 
@@ -32,7 +33,7 @@ def parseLog(logFile,output_json,output_owl):
         if output_json:
                 CompChemObj.outputjson()
         if output_owl:
-                CompChemObj.output_owls()
+                CompChemObj.output_abox_csv()
 
             # CompChemObj.outputowl(ontocompchem_graph,file_name, r)
     else:

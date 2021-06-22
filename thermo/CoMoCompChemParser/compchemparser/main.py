@@ -1,10 +1,10 @@
 from compchemparser.app import run as runParser
 from docopt import docopt, DocoptExit
 
-__doc__ = """ccparser
+__doc__ = """ccparse
 
 Usage:
-    ccparser parse <logFileOrDir> [options]
+    ccparse parse <logFileOrDir> [options]
 
     options:
         -j                        Generate output json file(s)
