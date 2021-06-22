@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>OntoKin</artifactId>
+    <artifactId>CMCLOntoKin</artifactId>
     <version>0.0.1</version>
     <packaging>jar</packaging>
     <name>OntoKin</name>
