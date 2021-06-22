@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	/**
 	 * Initialise Time Series in RDF and RDB
 	 */
-	public void init(List<String> dataIRI, List<Class<?>> dataClass, Class<?> timeClass) {
+	public void init(Class<?> timeClass, List<String> dataIRI, List<Class<?>> dataClass) {
 		// check if data already exists
 		for (String s : dataIRI) {
 			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -165,7 +166,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
      * returns the entire time series
      * @param dataIRI
      */
-    public void getData(List<String> dataIRI) {
+	public TimeSeries getTimeSeries(List<String> dataIRI) {
     	// check if time series is initialised
 		for (String s : dataIRI) {
 			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -184,31 +185,40 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     		}
     	}
     	
-    	// initialise connection
+    	// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	Field<Object>[] columnArray = new Field[dataIRI.size()+1];
-    	columnArray[0] = timeColumn;
-    	
-    	Map<String,String> dataColumnNames = new HashMap<String,String>();
+    	// create map between data IRI and the corresponding column field in the table
+    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
 		for (String data : dataIRI) {
 			String columnName = getColumnName(dsl, data);
-			dataColumnNames.put(data, columnName);
-			dataColumnNames.put(columnName, data);
+			Field<Object> field = DSL.field(DSL.name(columnName));
+			dataColumnFields.put(data, field);
 		}
-		
-    	for (int i = 0; i < dataIRI.size(); i++) {
-    	    columnArray[i+1] = DSL.field(DSL.name(dataColumnNames.get(dataIRI.get(i))));
+    	
+    	List<Field<Object>> columnList = new ArrayList<>();
+    	columnList.add(timeColumn);
+    	for (String data : dataIRI) {
+    	    columnList.add(dataColumnFields.get(data));
     	}
     	
-    	Result<? extends Record> queryResult = dsl.select(columnArray).from(table).fetch();
-//    	TimeSeries<?,?> ts = new TimeSeries<Object, Object>(queryResult, timeColumnName, dataColumnNames);
-//    	
-//    	return ts;
+    	// perform query
+    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).fetch();
+    	
+    	// collect results and return a TimeSeries object
+    	List<Object> timeValues = queryResult.getValues(timeColumn);
+    	List<List<?>> dataValues = new ArrayList<>();
+    	for (String data : dataIRI) {
+    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
+    		dataValues.add(column);
+    	} 
+    	TimeSeries ts = new TimeSeries(timeValues, dataIRI, dataValues);
+    	
+    	return ts;
     }
     
 	/**

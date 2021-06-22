@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.jooq.Record;
-import org.jooq.Result;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -29,56 +27,29 @@ public class TimeSeries {
      * @param dataIRI
      * @param data
      */
-    @SafeVarargs
-	public TimeSeries(List<?> times, List<String> dataIRI, List<?>... data) {
+	public TimeSeries(List<?> times, List<String> dataIRI, List<List<?>> values) {
         this.times = times;
         this.values = new HashMap<String, List<?>>();
         
-        if (dataIRI.size() != data.length) {
+        if (dataIRI.size() != values.size()) {
         	throw new JPSRuntimeException("TimeSeries: Length of data IRI is different from provided data.");
         }
         
         for (int i = 0; i < dataIRI.size(); i++) {
-            this.values.put(dataIRI.get(i), data[i]);
+            this.values.put(dataIRI.get(i), values.get(i));
         }
     }
 
-//    /**
-//     * constructor for results given by jooq
-//     * @param data
-//     * @param timeColName
-//     */
-//    public TimeSeries(Result<? extends Record> data, String timeColName, Map<String,String> dataColumnNames) { 
-//        values = data.fieldsRow().fieldStream()
-//                // Skip the time column
-//                .filter(field -> !field.getName().equals(timeColName))
-//                .collect(
-//                        Collectors.toMap(
-//                                // Use the field Name as the column name
-//                                field -> dataColumnNames.get(field.getName()),
-//                                // Get the values for the column
-//                                field -> data.getValues(field).stream()
-//                                        // Cast the values to the value type (V) stored in this TimeSeries
-//                                        .map(value -> (V) value)
-//                                        .collect(Collectors.toList())
-//                        )
-//                );
-//        times = data.getValues(timeColName).stream()
-//                // Cast the times to the time type (T) stored in this TimeSeries
-//                .map(value -> (T) value)
-//                .collect(Collectors.toList());
-//    }
+    public List<Double> getTimesAsDouble() {
+    	if (times.get(0) instanceof Number) {
+    		return times.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
+    	} else {
+    		throw new JPSRuntimeException("TimeSeries: Time cannot be converted to double");
+    	}
+    }
     
     public List<?> getTimes() {
-        return times;
-    }
-
-    public Class<?> getTimeClass() {
-    	return times.get(0).getClass();
-    }
-    
-    public Class<?> getValueClass(String dataIRI) {
-    	return values.get(dataIRI).get(0).getClass();
+    	return times;
     }
     
     public List<?> getValues(String dataIRI) {
