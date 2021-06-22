@@ -391,14 +391,14 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 
     	Table<?> table = DSL.table(DSL.name(tablename));
     	
-    	Field<Object>[] columnArray = new Field[dataIRIs.size()+1];
-    	columnArray[0] = timeColumn;
-    	for (int i = 0; i < dataIRIs.size(); i++) {
-    	    columnArray[i+1] = DSL.field(DSL.name(dataColumnNames.get(dataIRIs.get(i))));
+    	List<Field<Object>> columnList = new ArrayList<>();
+    	columnList.add(timeColumn);
+    	for (String data : dataIRIs) {
+    		columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
     	}
     	
     	// column
-        InsertValuesStepN<?> insertValueStep = dsl.insertInto(table, columnArray);
+        InsertValuesStepN<?> insertValueStep = dsl.insertInto(table, columnList);
         for (int i=0; i<ts.getTimes().size(); i++) {
         	// values are inserted row by row
         	// newValues is the row elements
