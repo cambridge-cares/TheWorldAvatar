@@ -412,18 +412,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		insertValueStep.execute();
 	}
 	
-	public void queryTimeSeries(String tablename, long lowerBound, long upperBound) {
-		Connection conn = connect();
-		Table<?> table = DSL.table(tablename);
-		Field<Object> valueColumn = DSL.field("value");
-		DSLContext create = DSL.using(conn, dialect);
-		Result<Record2<Object, Object>> result = create.select(timeColumn, valueColumn).from(table).where(timeColumn.between(lowerBound, upperBound)).fetch();
-	    
-		List<Long> timeList = result.getValues(timeColumn).stream().map(t->(Long)t).collect(Collectors.toList()); 
-		List<Double> valueList = result.getValues(valueColumn).stream().map(t->(Double)t).collect(Collectors.toList()); 
-//		TimeSeries ts = new TimeSeries(timeList,valueList);
-	}
-	
 	public void deleteRows(String tablename, long lowerBound, long upperBound) {
 		Connection conn = connect();
 		Table<?> table = DSL.table(tablename);
