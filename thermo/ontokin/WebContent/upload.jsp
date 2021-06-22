@@ -1008,7 +1008,7 @@ $( function() {
 			data: {queryString},
 			success: data => {
 				let trimmedResult = data.slice(1, data.length-2);
-				let resultArray = trimmedResult.split('}');
+				let resultArray = trimmedResult.split('},');
 				if (resultArray.length == 1) {
 					$("#chartCanvas").hide();
 					$("#chartCanvasRateAE").hide();

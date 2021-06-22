@@ -42,9 +42,7 @@ RUN chmod 755 /usr/local/start-up.sh
 
 # Copy in the files
 WORKDIR /var/www/html
-COPY index.html index.html
-COPY style.css style.css
-COPY JSON_Generator.py JSON_Generator.py
+COPY . .
 
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/

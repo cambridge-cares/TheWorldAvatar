@@ -1,0 +1,62 @@
+/**
+ * This Stylesheet provides CSS for the custom MapBox controls
+ * outlined in the mapbox-controls.js script.
+ * 
+ * Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+ */
+
+#controlContainer {
+	width: 200px;
+	height: 300px;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	margin: 10px;
+	z-index: 999;
+
+	color: white;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+}
+#controlContainer p {
+	margin: 0 0 5px 0;
+	font-weight: bold;
+	font-size: 12pt;
+}
+#controlContainer a {
+	color: white;
+	text-decoration: none;
+	padding-left: 10px;
+}
+#controlContainer a:hover {
+	color: lightskyblue;
+	text-decoration: underline;
+}
+#controlContainer label:hover {
+	color: lightskyblue;
+	text-decoration: underline;
+}
+
+#cameraContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	margin-bottom: 10px;
+	padding: 10px;
+}
+#cameraContainer:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+#terrainContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	padding: 10px;
+}
+#terrainContainer:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+#tiltShift {
+	display: block;
+}

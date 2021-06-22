@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,Ontology,ABoxOntoSpeciesSMILES,http://www.w3.org/2002/07/owl#imports,,
-http://www.theworldavatar.com/kb/ontospecies,Ontology,ABoxOntoSpeciesSMILES,base,,
+ABoxOntoSpeciesSMILES,Ontology,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoSpeciesSMILES,Ontology,http://www.theworldavatar.com/kb/ontospecies,base,,
 http://www.theworldavatar.com/kb/ontospecies/s00000529.owl/Species_7257798755438000,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
 http://www.theworldavatar.com/kb/ontospecies/s00000531.owl/Species_7257798808507500,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
 http://www.theworldavatar.com/kb/ontospecies/s00000532.owl/Species_7257798865410100,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
