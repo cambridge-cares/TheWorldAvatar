@@ -1003,8 +1003,8 @@ $( function() {
 		$("#spinner").show();
 		$.ajax({
 			type: 'GET',
-			//url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
-			url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
+			url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
+			//url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
 			data: {queryString},
 			success: data => {
 				let trimmedResult = data.slice(1, data.length-2);
