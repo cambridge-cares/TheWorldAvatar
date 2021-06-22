@@ -1,0 +1,313 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:OntoMessage="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 June 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">178fb9eb4280daf2485c258f58b5adfd1535ab60</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for recording messages exchanged between agents.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasContent -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasContent">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a message and its actual content. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasObjective -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasObjective">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between message content and the desired output of the message request. The range of this object property usually is a list of concepts in the TBoxes of ontologies. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasPerformative -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasPerformative">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a message and the communicative act used to classify the message. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasReceiver -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasReceiver">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a message and its targeting agent. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasSender -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasSender">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a message and the agent that created the message. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasStatus -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasStatus">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a message and its historical status. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#known -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#known">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between message content and the known facts in the knowledge graph. The range of this object property usually is a list of instances in the ABoxes of ontologies. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#repliesTo -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#repliesTo">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between two messages that the later message follows up to the previous message. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#timeStamp -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#timeStamp">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Message"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute that indicates the time when the message was created or when the status of a message is updated. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Agree -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Agree">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Agree is the action of agreeing to perform some actions, but it does not guarantee when to perform. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Closed -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Closed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Closed is the status that the message is already replied to and no longer active. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Communicative act describes a function or an action represented by the message. This term is defined by FIPA-ACL (SC00037) based on speech act theory which defines the functions of simply specified actions. For more information, please visit: http://www.fipa.org/specs/fipa00037/SC00037J.html [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Content -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Content">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasObjective"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#known"/>
+                <owl:allValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Content is the actual information exchanged between the agents in a message. The receiving agent is responsible for understanding and processing the message content. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Inform -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Inform">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inform is the action that the sender informs the receiver that a given job request is done, likely also the results of that job request. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Message -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Message">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasStatus"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasContent"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Content"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasPerformative"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasReceiver"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#hasSender"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#repliesTo"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Message"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A message is a recording of the information exchanged between two agents. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Request -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Request">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#CommunicativeAct"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Request is the action that the sender requests the receiver to perform some actions. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The status indicates the state of a message. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#WaitingForResponse -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#WaitingForResponse">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl#Status"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Waiting for response is the status that the receiver of the message has not yet responded to the message. [The World Avatar]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
