@@ -278,6 +278,28 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	}
 	
 	/**
+	 * note that this will delete the entire row (in addition to the given dataIRI)
+	 * @param dataIRI
+	 * @param lowerBound
+	 * @param upperBound
+	 */
+	public void deleteRows(String dataIRI, Object lowerBound, Object upperBound) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
+	}
+	
+	/**
 	 * returns the table name containing the time series given the data IRI, if it exists
 	 * @param dataIRI
 	 */
@@ -410,14 +432,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 			insertValueStep = insertValueStep.values(newValues);
 		}
 		insertValueStep.execute();
-	}
-	
-	public void deleteRows(String tablename, long lowerBound, long upperBound) {
-		Connection conn = connect();
-		Table<?> table = DSL.table(tablename);
-		DSLContext create = DSL.using(conn, dialect);
-		Field<Object> timeColumn = DSL.field("time");
-		create.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
 	}
 	
 	public void clearTable(String tablename) {
