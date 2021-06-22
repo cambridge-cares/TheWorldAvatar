@@ -22,10 +22,9 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 @WebServlet(urlPatterns = {"/kb/*"})
 public class KnowledgeBaseAgentNew extends JPSAgent{
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -55,14 +54,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 			}		
 	    return JSONresult;
 	}
-	
-	
-	public KnowledgeBaseClientInterface getStoreClient(JSONObject requestParams, boolean isQueryOperation, boolean isUpdateOperation) {
-		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI); //TODO check this is always present
-		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
-		return kbClient;
-	}
-	
+		
 	/**
 	 * Perform http get: sparql query or get all triples from graph
 	 * @param requestParams
@@ -76,29 +68,33 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
 		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);
-		
-		//////////////
-		//TODO try catch with exception and logInputParams
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
 		String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);		
 	    String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);		
-		logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparqlquery, null, false);
-		//////////////////
+	    String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 		
-		KnowledgeBaseClientInterface kbClient = getStoreClient(requestParams, true, false);
+		try {
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, sparqlquery, false);
+			
+			KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, true, false);
+			
+			JSONObject JSONresult = new JSONObject();
+			String result = null;
+			if (sparqlquery != null) { 
+				//query
+				result = kbClient.execute(sparqlquery);
+				JSONresult.put("result",result);
+			}else {		//TODO: defaulting to this could be dangerous for large triple store
+				//get
+				result = kbClient.get(resourceUrl, accept);
+				JSONresult.put("result",result);
+			}
+			return JSONresult;
 		
-		JSONObject JSONresult = new JSONObject();
-		String result = null;
-		if (sparqlquery != null) { 
-			//query
-			result = kbClient.execute(sparqlquery);
-			JSONresult.put("result",result);
-		}else {		//TODO: defaulting to this could be dangerous for large triple store
-			//get
-			result = kbClient.get(resourceUrl, accept);
-			JSONresult.put("result",result);
+		} catch (RuntimeException e) {
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, sparqlquery, true);
+			throw new JPSRuntimeException(e);
 		}
-		return JSONresult;
 	}
 	
 	/**
@@ -107,17 +103,27 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	 */
 	public void put(JSONObject requestParams) {
 		
-		KnowledgeBaseClientInterface kbClient = getStoreClient(requestParams, false, true);
-		
 		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
 		String datasetUrl = getDatasetUrl(requestUrl);
 		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
-		
+		String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);		
 		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
-	    			
-		kbClient.insert(resourceUrl, body, contentType);
+	    String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);	
+	    String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
+	    
+		try {
+			logInputParams("PUT", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, null, false);
+			
+			//TODO check target or datasetUrl for this
+			KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(datasetUrl, false, true);
+			
+			kbClient.insert(resourceUrl, body, contentType);
+		} catch (RuntimeException e) {
+			logInputParams("PUT", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, null, true);
+			throw new JPSRuntimeException(e);
+		}
 	}
 	
 	/**
@@ -126,81 +132,101 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	 */
 	public void post(JSONObject requestParams) {	
 		
+		//TODO UPdate in the body or header?
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
+		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		
-		KnowledgeBaseClientInterface kbClient = getStoreClient(requestParams, false, true);
+		String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);		
+		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
+		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
+		String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);	
+		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
+		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 		
-		if (sparqlupdate!=null) {
-			//perform update
-			kbClient.executeUpdate(sparqlupdate);
-		}else {
-			throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+		try {
+			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, null, false);
+			
+			//TODO check target or datasetUrl for this
+			KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, false, true);
+			
+			if (sparqlupdate!=null) {
+				//perform update
+				kbClient.executeUpdate(sparqlupdate);
+			}else {
+				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
+			}
+		} catch (RuntimeException e) {
+			logInputParams("POST", requestUrl, path, paramDatasetUrl, paramResourceUrl, targetResourceIRIOrPath, contentType, null, true);
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
-	//TODO validate all parameters
 	@Override
-	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {	    
+		
 	    if (requestParams.isEmpty()) {
 	        throw new BadRequestException();
 	    }
 	    try {
-	    	String iriOrPath = requestParams.getString(JPSConstants.TARGETIRI);
-	        boolean q = InputValidator.checkIfURLpattern(iriOrPath);
-	        boolean v = InputValidator.checkIfFilePath(iriOrPath);
+	    	
+	    	String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
+	        if (method == null) {
+	        	return false;
+	        }
+	    	
+	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
+	        if(!q) {return false;};
+	    	
+	        
 	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 			String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
-			if ((sparqlquery == null && sparqlupdate == null )||// if both are empty
-					(sparqlquery != null && sparqlupdate != null)) { //or if both are filled. 
+			if (sparqlquery != null && sparqlupdate != null) { //both query and update are filled. 
 				return false;
-			}else if (sparqlquery != null) {
-				if (InputValidator.checkIfValidQuery(sparqlquery )!= true){
-					return false;
+			}else {
+				if (sparqlquery != null) { 
+					if (InputValidator.checkIfValidQuery(sparqlquery)!= true){
+						return false;
 					}
-			}else if (sparqlupdate!= null) {
-				if (InputValidator.checkIfValidUpdate(sparqlupdate)!= true){
-					return false;
+				}
+				if (sparqlupdate == null) {
+					if (InputValidator.checkIfValidUpdate(sparqlupdate)!= true){
+						return false;
 					}
+				}
 			}
+			
+			String iriOrPath = requestParams.getString(JPSConstants.TARGETIRI);
+	        boolean isURL = InputValidator.checkIfURLpattern(iriOrPath);
+	        boolean isPath = InputValidator.checkIfFilePath(iriOrPath);
+	        return( isURL || isPath);
 	        
-	        return( q || v);
 	    }catch (JSONException ex) {
 	    	return false;
 	    }
 	}
 	
-	protected void logInputParams(String httpVerb, String requestUrl, String path, String datasetUrl, String resourceUrl, String contentType, String sparqlquery, String sparqlupdate, boolean hasErrorOccured) {
+	protected void logInputParams(String httpVerb, String requestUrl, String path, String datasetUrl, String resourceUrl, String targetResourceIRIOrPath, String contentType, String sparql, boolean hasErrorOccured) {
 		StringBuffer b = new StringBuffer(httpVerb);
 		b.append(" with requestedUrl=").append(requestUrl);
 		b.append(", path=").append(path);
 		b.append(", datasetUrl=").append(datasetUrl);
 		b.append(", resourceUrl=").append(resourceUrl);
+		b.append(", targetResourceIRIOrPath=").append(targetResourceIRIOrPath);
 		b.append(", contentType=").append(contentType);
 		if (hasErrorOccured) {
-			b.append(", sparqlquery=" + sparqlquery);
-			b.append(", sparqlupdate=" + sparqlupdate);
+			b.append(", sparql=" + sparql);
 			logger.error(b.toString());
 		} else {
-			if (sparqlquery != null) {
-				int i = sparqlquery.toLowerCase().indexOf("select");
+			if (sparql != null) {
+				int i = sparql.toLowerCase().indexOf("select");
 				if (i > 0) {
-					sparqlquery = sparqlquery.substring(i);
+					sparql = sparql.substring(i);
 				}
-				if (sparqlquery.length() > 150) {
-					sparqlquery = sparqlquery.substring(0, 150);
+				if (sparql.length() > 150) {
+					sparql = sparql.substring(0, 150);
 				}
 			}
-			if (sparqlupdate != null) {
-				int i = sparqlupdate.toLowerCase().indexOf("select");
-				if (i > 0) {
-					sparqlupdate = sparqlupdate.substring(i);
-				}
-				if (sparqlupdate.length() > 150) {
-					sparqlupdate = sparqlupdate.substring(0, 150);
-				}
-			}
-			b.append(", sparqlquery (short)=" + sparqlquery);
-			b.append(", sparqlupdate (short)=" + sparqlupdate);
+			b.append(", sparql (short)=" + sparql);
 			logger.info(b.toString());
 		}
 	}
