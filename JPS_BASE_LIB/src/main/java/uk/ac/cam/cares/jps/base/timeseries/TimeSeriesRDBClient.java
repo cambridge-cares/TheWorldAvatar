@@ -126,7 +126,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		closeConnection(conn);
 	}
 	
-    public void addData(TimeSeries<?,?> ts) {
+    public void addData(TimeSeries ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
     	// check if time series is initialised
@@ -165,7 +165,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
      * returns the entire time series
      * @param dataIRI
      */
-    public TimeSeries<?,?> getData(List<String> dataIRI) {
+    public void getData(List<String> dataIRI) {
     	// check if time series is initialised
 		for (String s : dataIRI) {
 			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -206,9 +206,9 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	}
     	
     	Result<? extends Record> queryResult = dsl.select(columnArray).from(table).fetch();
-    	TimeSeries<?,?> ts = new TimeSeries<Object, Object>(queryResult, timeColumnName, dataColumnNames);
-    	
-    	return ts;
+//    	TimeSeries<?,?> ts = new TimeSeries<Object, Object>(queryResult, timeColumnName, dataColumnNames);
+//    	
+//    	return ts;
     }
     
 	/**
@@ -320,7 +320,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	createStep.execute();
 	}
 	
-	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<?,?> ts, Map<String,String> dataColumnNames) {
+	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries ts, Map<String,String> dataColumnNames) {
 		List<String> dataIRIs = ts.getDataIRI();
 
     	Table<?> table = DSL.table(DSL.name(tablename));

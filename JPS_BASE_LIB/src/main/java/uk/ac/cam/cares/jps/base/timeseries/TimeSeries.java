@@ -18,10 +18,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @param <T>
  * @param <V>
  */
-public class TimeSeries<T, V> {
+public class TimeSeries {
 
-    private final List<T> times;
-    private final Map<String, List<V>> values;
+    private final List<?> times;
+    private final Map<String, List<?>> values;
 
     /**
      * standard constructor
@@ -30,9 +30,9 @@ public class TimeSeries<T, V> {
      * @param data
      */
     @SafeVarargs
-	public TimeSeries(List<T> times, List<String> dataIRI, List<V>... data) {
+	public TimeSeries(List<?> times, List<String> dataIRI, List<?>... data) {
         this.times = times;
-        this.values = new HashMap<String, List<V>>();
+        this.values = new HashMap<String, List<?>>();
         
         if (dataIRI.size() != data.length) {
         	throw new JPSRuntimeException("TimeSeries: Length of data IRI is different from provided data.");
@@ -43,33 +43,33 @@ public class TimeSeries<T, V> {
         }
     }
 
-    /**
-     * constructor for results given by jooq
-     * @param data
-     * @param timeColName
-     */
-    public TimeSeries(Result<? extends Record> data, String timeColName, Map<String,String> dataColumnNames) { 
-        values = data.fieldsRow().fieldStream()
-                // Skip the time column
-                .filter(field -> !field.getName().equals(timeColName))
-                .collect(
-                        Collectors.toMap(
-                                // Use the field Name as the column name
-                                field -> dataColumnNames.get(field.getName()),
-                                // Get the values for the column
-                                field -> data.getValues(field).stream()
-                                        // Cast the values to the value type (V) stored in this TimeSeries
-                                        .map(value -> (V) value)
-                                        .collect(Collectors.toList())
-                        )
-                );
-        times = data.getValues(timeColName).stream()
-                // Cast the times to the time type (T) stored in this TimeSeries
-                .map(value -> (T) value)
-                .collect(Collectors.toList());
-    }
+//    /**
+//     * constructor for results given by jooq
+//     * @param data
+//     * @param timeColName
+//     */
+//    public TimeSeries(Result<? extends Record> data, String timeColName, Map<String,String> dataColumnNames) { 
+//        values = data.fieldsRow().fieldStream()
+//                // Skip the time column
+//                .filter(field -> !field.getName().equals(timeColName))
+//                .collect(
+//                        Collectors.toMap(
+//                                // Use the field Name as the column name
+//                                field -> dataColumnNames.get(field.getName()),
+//                                // Get the values for the column
+//                                field -> data.getValues(field).stream()
+//                                        // Cast the values to the value type (V) stored in this TimeSeries
+//                                        .map(value -> (V) value)
+//                                        .collect(Collectors.toList())
+//                        )
+//                );
+//        times = data.getValues(timeColName).stream()
+//                // Cast the times to the time type (T) stored in this TimeSeries
+//                .map(value -> (T) value)
+//                .collect(Collectors.toList());
+//    }
     
-    public List<T> getTimes() {
+    public List<?> getTimes() {
         return times;
     }
 
@@ -81,7 +81,7 @@ public class TimeSeries<T, V> {
     	return values.get(dataIRI).get(0).getClass();
     }
     
-    public List<V> getValues(String dataIRI) {
+    public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);
     }
     
