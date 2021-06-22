@@ -45,18 +45,17 @@ public class TimeSeries<T, V> {
 
     /**
      * constructor for results given by jooq
-     * create the same one for each Record type, i.e. Record2, Record3, etc. - not done yet
      * @param data
      * @param timeColName
      */
-    TimeSeries(Result<? extends Record> data, String timeColName) { 
+    public TimeSeries(Result<? extends Record> data, String timeColName, Map<String,String> dataColumnNames) { 
         values = data.fieldsRow().fieldStream()
                 // Skip the time column
                 .filter(field -> !field.getName().equals(timeColName))
                 .collect(
                         Collectors.toMap(
                                 // Use the field Name as the column name
-                                field -> field.getName(),
+                                field -> dataColumnNames.get(field.getName()),
                                 // Get the values for the column
                                 field -> data.getValues(field).stream()
                                         // Cast the values to the value type (V) stored in this TimeSeries

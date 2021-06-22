@@ -16,6 +16,8 @@ import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
+import org.jooq.Record;
+import org.jooq.Record1;
 import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
@@ -113,12 +115,115 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		
 		// create table for storing time series data
 		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
+		populateTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
 		
 		closeConnection(conn);
 	}
 	
-	public void addData(TimeSeries<?,?> ts) {
+    public void addData(TimeSeries<?,?> ts) {
+		// first ensure that each provided column is located in the same table by checking its time series IRI
+    	List<String> dataIRI = ts.getDataIRI();
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	if (dataIRI.size() > 1) {
+    		for (int i = 1; i < dataIRI.size(); i++) {
+    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			if (!tsIRItmp.contentEquals(tsIRI)) {
+    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    			}
+    		}
+    	}
+    	
+    	// initialise connection
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	// assign column name for each value, name for time column is fixed
+		Map<String,String> dataColumnNames = new HashMap<String,String>();
+		for (String s : dataIRI) {
+			dataColumnNames.put(s, getColumnName(dsl, s));
+		}
 		
+		populateTimeSeriesTable(dsl, tsTableName, ts, dataColumnNames);
+	}
+	
+    /** 
+     * returns the entire time series
+     * @param dataIRI
+     */
+    public TimeSeries<?,?> getData(List<String> dataIRI) {
+    	// make sure they are in the same table
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	if (dataIRI.size() > 1) {
+    		for (int i = 1; i < dataIRI.size(); i++) {
+    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			if (!tsIRItmp.contentEquals(tsIRI)) {
+    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    			}
+    		}
+    	}
+    	
+    	// initialise connection
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	Field<Object>[] columnArray = new Field[dataIRI.size()+1];
+    	columnArray[0] = timeColumn;
+    	
+    	Map<String,String> dataColumnNames = new HashMap<String,String>();
+		for (String data : dataIRI) {
+			String columnName = getColumnName(dsl, data);
+			dataColumnNames.put(data, columnName);
+			dataColumnNames.put(columnName, data);
+		}
+		
+    	for (int i = 0; i < dataIRI.size(); i++) {
+    	    columnArray[i+1] = DSL.field(DSL.name(dataColumnNames.get(dataIRI.get(i))));
+    	}
+    	
+    	Result<? extends Record> queryResult = dsl.select(columnArray).from(table).fetch();
+    	TimeSeries<?,?> ts = new TimeSeries<Object, Object>(queryResult, timeColumnName, dataColumnNames);
+    	
+    	return ts;
+    }
+    
+	/**
+	 * returns the table name containing the time series given the data IRI, if it exists
+	 * @param dataIRI
+	 */
+	private String getTableName(DSLContext dsl, String tsIRI) {
+		// table
+		Table<?> table = DSL.table(DSL.name(dbTableName));
+		// column
+		Field<Object> tableColumn = DSL.field(DSL.name(tableRefName));
+		Field<Object> tsColumn =  DSL.field(DSL.name(tsIRIcolumn));
+		
+		Result<Record1<Object>> queryResult = dsl.select(tableColumn).from(table).where(tsColumn.eq(tsIRI)).fetch();
+		String tableName = (String) queryResult.getValue(0, tableColumn);
+		
+		return tableName;
+	}
+	
+	/**
+	 * get column name in the time series table for the given data IRI
+	 * @param dsl
+	 * @param dataIRI
+	 */
+	private String getColumnName(DSLContext dsl, String dataIRI) {
+		// table
+		Table<?> table = DSL.table(DSL.name(dbTableName));
+		// column
+		Field<Object> dataColumn = DSL.field(DSL.name(dataIRIcolumn));
+		Field<Object> columnRef =  DSL.field(DSL.name(columnRefName));
+		
+		Result<Record1<Object>> queryResult = dsl.select(columnRef).from(table).where(dataColumn.eq(dataIRI)).fetch();
+		String columnName = (String) queryResult.getValue(0, columnRef);
+		
+		return columnName;
 	}
 	
 	private Connection connect() {
@@ -199,8 +304,11 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 
     	// send request to db
     	createStep.execute();
-    	
-    	// add values into the newly created table
+	}
+	
+	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<?,?> ts, Map<String,String> dataColumnNames) {
+		List<String> dataIRIs = ts.getDataIRI();
+
     	Table<?> table = DSL.table(DSL.name(tablename));
     	
     	Field<Object>[] columnArray = new Field[dataIRIs.size()+1];
@@ -210,7 +318,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	}
     	
     	// column
-        InsertValuesStepN<?> insertValueStep = create.insertInto(table, columnArray);
+        InsertValuesStepN<?> insertValueStep = dsl.insertInto(table, columnArray);
         for (int i=0; i<ts.getTimes().size(); i++) {
         	// values are inserted row by row
         	// newValues is the row elements
@@ -223,7 +331,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		}
 		insertValueStep.execute();
 	}
-	
 	
 	public void queryTimeSeries(String tablename, long lowerBound, long upperBound) {
 		Connection conn = connect();

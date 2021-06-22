@@ -102,27 +102,18 @@ public class TimeSeriesSparql {
     	
     	return queryresult;
 	}
-
-	/**
-	 * same function, but only counts the time series in the given graph
-	 * @param kbClient
-	 * @param namedGraph
-	 * @return
-	 */
-	public static int countTS(KnowledgeBaseClientInterface kbClient, String namedGraph) {
-		From graph = SparqlBuilder.from(iri(namedGraph));
+	
+	public static String getTimeSeriesIRI(KnowledgeBaseClientInterface kbClient, String dataIRI) {
 		SelectQuery query = Queries.SELECT();
-    	String queryKey = "numtimeseries";
-    	Variable ts = query.var();
-    	Variable numtimeseries = SparqlBuilder.var(queryKey);
-    	GraphPattern querypattern = ts.isA(TimeSeries);
-    	Assignment count = Expressions.count(ts).as(numtimeseries);
-    	
-    	query.select(count).where(querypattern).from(graph);
-    	kbClient.setQuery(query.getQueryString());
-    	
-    	int queryresult = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
-    	
-    	return queryresult;
+		String queryKey = "tsIRI";
+		Variable ts = SparqlBuilder.var(queryKey);
+		GraphPattern queryPattern = iri(dataIRI).has(hasTimeSeries,ts);
+		//construct query
+		query.prefix(p_timeseries).select(ts).where(queryPattern);
+		
+		kbClient.setQuery(query.getQueryString());
+		
+		String tsIRI = kbClient.executeQuery().getJSONObject(0).getString(queryKey);
+		return tsIRI;
 	}
 }
