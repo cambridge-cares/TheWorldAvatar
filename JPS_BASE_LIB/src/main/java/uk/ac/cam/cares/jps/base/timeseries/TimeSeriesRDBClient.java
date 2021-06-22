@@ -278,7 +278,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	}
 	
 	/**
-	 * note that this will delete the entire row (in addition to the given dataIRI)
+	 * note that this will delete the entire row linked to this data (in addition to the given dataIRI)
 	 * @param dataIRI
 	 * @param lowerBound
 	 * @param upperBound
@@ -297,6 +297,32 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
+	}
+	
+	/**
+	 * note that this will delete all time series information related to this data IRI, including other data in the same table
+	 * @param dataIRI
+	 */
+	public void deleteTimeSeries(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    
+    	//delete time series table
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	dsl.dropTable(DSL.table(DSL.name(tsTableName))).execute();
+    	
+    	//delete entry in the main table
+    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
+    	Field<Object> column = DSL.field(DSL.name(tsIRIcolumn));
+    	dsl.delete(dbTable).where(column.equal(tsIRI)).execute();
 	}
 	
 	/**
@@ -432,18 +458,5 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 			insertValueStep = insertValueStep.values(newValues);
 		}
 		insertValueStep.execute();
-	}
-	
-	public void clearTable(String tablename) {
-		Connection conn = connect();
-		Table<?> table = DSL.table(tablename);
-		DSLContext create = DSL.using(conn, dialect);
-		create.delete(table).execute();
-	}
-	
-	public void dropTable(String tablename) {
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect);
-		create.dropTable(tablename).execute();
 	}
 }

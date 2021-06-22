@@ -14,6 +14,8 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
@@ -122,5 +124,25 @@ public class TimeSeriesSparql {
 		
 		String tsIRI = kbClient.executeQuery().getJSONObject(0).getString(queryKey);
 		return tsIRI;
+	}
+	
+	public static void removeTimeSeries(KnowledgeBaseClientInterface kbClient, String tsIRI) {
+		// sub query to search for all triples with tsIRI as the subject/object
+		SubSelect sub = GraphPatterns.select();
+		Variable predicate1 = SparqlBuilder.var("a");
+		Variable predicate2 = SparqlBuilder.var("b");
+		Variable subject = SparqlBuilder.var("c");
+		Variable object = SparqlBuilder.var("d");
+		
+		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1,object);
+		TriplePattern delete_tp2 = subject.has(predicate2,iri(tsIRI));		
+		sub.select(predicate1,predicate2,subject,object).where(delete_tp1,delete_tp2);
+		
+		// insert subquery into main sparql update
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp1,delete_tp2).where(sub);
+		
+		kbClient.setQuery(modify.getQueryString());
+		kbClient.executeUpdate();
 	}
 }
