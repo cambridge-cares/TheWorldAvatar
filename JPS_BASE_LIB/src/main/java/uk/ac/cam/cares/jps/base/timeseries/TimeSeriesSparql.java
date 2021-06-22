@@ -48,6 +48,13 @@ public class TimeSeriesSparql {
     	return timeSeriesExists;
     }
     
+    public static boolean checkDataHasTimeSeries(KnowledgeBaseClientInterface kbClient,String dataIRI) {
+    	String query = String.format("ask {<%s> <%shasTimeSeries> ?x}",dataIRI,namespace);
+    	kbClient.setQuery(query);
+    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    	return timeSeriesExists;
+    }
+    
     /**
      * Instantiates the time series instance, named graph and time unit are optional
      * @param kbClient

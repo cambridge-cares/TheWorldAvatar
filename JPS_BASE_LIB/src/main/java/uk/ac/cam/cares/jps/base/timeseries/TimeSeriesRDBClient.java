@@ -80,6 +80,15 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * Initialise Time Series in RDF and RDB
 	 */
 	public void init(TimeSeries<?,?> ts) {
+		List<String> dataIRI = ts.getDataIRI();
+		
+		// check if data already exists
+		for (String s : dataIRI) {
+			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance");
+			}
+		}
+		
 		//generate IRI for time series
 		int numTS = TimeSeriesSparql.countTS(kbClient);
 		String tsIRI = TimeSeriesSparql.namespace + "ts" + (numTS+1);
@@ -104,8 +113,8 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		// assign column name for each value, name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
 		i = 1;
-		for (String dataIRI : ts.getDataIRI()) {
-			dataColumnNames.put(dataIRI, "column"+i);
+		for (String s : dataIRI) {
+			dataColumnNames.put(s, "column"+i);
 			i++;
 		}
 		
@@ -290,9 +299,6 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
     	
 		Class<?> timeClass = ts.getTimeClass();
-		if (timeClass == Object.class) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: You must specify a suitable class for the time column");
-		}
 		
     	// create time column
     	createStep = createStep.column(timeColumnName, DefaultDataType.getDataType(dialect,timeClass));
