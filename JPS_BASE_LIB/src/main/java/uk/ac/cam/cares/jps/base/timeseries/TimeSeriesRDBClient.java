@@ -79,9 +79,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	/**
 	 * Initialise Time Series in RDF and RDB
 	 */
-	public void init(TimeSeries<?,?> ts) {
-		List<String> dataIRI = ts.getDataIRI();
-		
+	public void init(List<String> dataIRI, List<Class<?>> dataClass, Class<?> timeClass) {
 		// check if data already exists
 		for (String s : dataIRI) {
 			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -101,7 +99,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		}
 		
 		// instantiate in KG
-		TimeSeriesSparql.initTS(this.kbClient, tsIRI, ts.getDataIRI(), this.rdbURL, this.timeUnit);
+		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
 		
 		// initialise connection
 		Connection conn = connect();
@@ -120,11 +118,10 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		
 		// check if database exists and create it
 		createDatabaseTable(create);
-		populateDatabaseTable(create, tsTableName, ts.getDataIRI(), dataColumnNames, tsIRI);
+		populateDatabaseTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
 		
 		// create table for storing time series data
-		initTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
-		populateTimeSeriesTable(create, tsTableName, ts, dataColumnNames);
+		initTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass, timeClass);
 		
 		closeConnection(conn);
 	}
@@ -307,19 +304,16 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * @param timeClass
 	 * @param valueClassList
 	 */
-	public void initTimeSeriesTable(DSLContext create, String tablename, TimeSeries<?,?> ts, Map<String,String> dataColumnNames) {   	
-		List<String> dataIRIs = ts.getDataIRI();
-		
+	public void initTimeSeriesTable(DSLContext create, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI,
+			List<Class<?>> dataClass, Class<?> timeClass) {   	
 		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
-    	
-		Class<?> timeClass = ts.getTimeClass();
 		
     	// create time column
     	createStep = createStep.column(timeColumnName, DefaultDataType.getDataType(dialect,timeClass));
     	
     	// create 1 column for each value
-    	for (String dataIRI : ts.getDataIRI()) {
-    		createStep = createStep.column(dataColumnNames.get(dataIRI), DefaultDataType.getDataType(dialect,ts.getValueClass(dataIRI)));
+    	for (int i = 0; i < dataIRI.size(); i++) {
+    		createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
     	}
 
     	// send request to db
