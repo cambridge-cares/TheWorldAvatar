@@ -79,6 +79,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	
 	/**
 	 * Initialise Time Series in RDF and RDB
+	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 */
 	public void init(Class<?> timeClass, List<String> dataIRI, List<Class<?>> dataClass) {
 		// check if data already exists
@@ -221,6 +222,61 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	return ts;
     }
     
+	public TimeSeries getTimeSeriesWithinBounds(List<String> dataIRI, Object lowerBound, Object upperBound) {
+		// check if time series is initialised
+		for (String s : dataIRI) {
+			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+			}
+		}
+    	
+    	// make sure they are in the same table
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	if (dataIRI.size() > 1) {
+    		for (int i = 1; i < dataIRI.size(); i++) {
+    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			if (!tsIRItmp.contentEquals(tsIRI)) {
+    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    			}
+    		}
+    	}
+    	
+    	// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	// create map between data IRI and the corresponding column field in the table
+    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
+		for (String data : dataIRI) {
+			String columnName = getColumnName(dsl, data);
+			Field<Object> field = DSL.field(DSL.name(columnName));
+			dataColumnFields.put(data, field);
+		}
+    	
+    	List<Field<Object>> columnList = new ArrayList<>();
+    	columnList.add(timeColumn);
+    	for (String data : dataIRI) {
+    	    columnList.add(dataColumnFields.get(data));
+    	}
+    	
+    	// perform query
+    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound)).fetch();
+    	
+    	// collect results and return a TimeSeries object
+    	List<Object> timeValues = queryResult.getValues(timeColumn);
+    	List<List<?>> dataValues = new ArrayList<>();
+    	for (String data : dataIRI) {
+    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
+    		dataValues.add(column);
+    	} 
+    	TimeSeries ts = new TimeSeries(timeValues, dataIRI, dataValues);
+    	
+    	return ts;
+	}
+	
 	/**
 	 * returns the table name containing the time series given the data IRI, if it exists
 	 * @param dataIRI
