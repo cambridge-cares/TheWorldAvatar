@@ -18,7 +18,7 @@ LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Power System Visualisation"
 
 # Install utilities
-RUN apt update && apt-get install -y cron procps nano
+RUN apt update && apt-get install -y cron procps nano dos2unix
 
 # Install web server (to host geojson files for download)
 RUN apt update && apt install -y apache2
@@ -39,6 +39,7 @@ RUN python -m pip install -r requirements.txt
 # Set the default working directory, then copy the Python source code into it
 COPY docker/start-up.sh /usr/local/start-up.sh
 RUN chmod 755 /usr/local/start-up.sh
+RUN dos2unix /usr/local/start-up.sh
 
 # Copy in the files
 WORKDIR /var/www/html
