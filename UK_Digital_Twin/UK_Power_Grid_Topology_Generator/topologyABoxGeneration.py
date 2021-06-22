@@ -313,9 +313,6 @@ def test():
     
     for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
         print(bus_location)
-        # if str(bus_location[1]) == "http://dbpedia.org/resource/West_Midlands_(county)":
-        #     print('bug point')
-        # else:
         res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location), False))        
            
     return    
@@ -332,9 +329,12 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
         return None
     
     res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph))
+    
     print('#########START addEGenNodes##############')
     for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
-        print(bus_location[1])       
+        print(bus_location[1])     
+        if bus_location[1] == "http://dbpedia.org/resource/West_Midlands_(county)":
+            continue 
         res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))        
         local_counter = 1
         while local_counter <= len(res_powerplant):
@@ -369,7 +369,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
                 else:
                     graph = AddCostAttributes(graph, counter, 7, modelFactorArrays)
                 
-                counter += 1                
+                counter += 1               
                 local_counter += 1
             
         print('Counter is ', counter)

@@ -27,7 +27,7 @@ if __name__ == '__main__':
     # ElectricityConsumption_Version = int(input('Specify Electricity Consumption Data Version: '))
     # addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, False)
     
-    # When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
+    # # When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
     # UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
     # UKEnergyConsumption_endpoint = UKec.UKEnergyConsumption().endpoint
     
@@ -39,13 +39,13 @@ if __name__ == '__main__':
     # UKGridTopology_endpoint = UK_Topo.UKPowerGridTopology().endpoint
     # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
     
-    ####### SKIPPED ########
-    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    ###### SKIPPED ########
+    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
-    # createTopologyGraph('default', False, 10, 14, None,  None, addELineNodes, True)
+    # createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, True)
     
     # createModel_EGen('default', False, 2019, False)
-    createModel_ELine('default', False, 10, 14, 2019, False) 
+    # createModel_ELine('default', False, 10, 14, 2019, False) 
     
     ####### SKIPPED ########
     
