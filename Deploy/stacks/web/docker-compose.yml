@@ -5,7 +5,7 @@ services:
 
   # Knowledge Graph Website
   website:
-    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
     build: "./website"
     container_name: "website"
     restart: unless-stopped

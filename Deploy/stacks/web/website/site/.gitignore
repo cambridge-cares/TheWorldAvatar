@@ -3,10 +3,6 @@
 composer.lock
 cache/*
 bin/*
-assets/*
-logs/*
-images/*
-user/data/*
 
 # OS Generated
 .DS_Store*

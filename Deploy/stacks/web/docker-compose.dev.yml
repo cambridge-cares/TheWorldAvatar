@@ -8,6 +8,11 @@ services:
     # Map http to port 81
     ports:
       - 81:80
+
+  # Website
+  website:
+    build:
+      target: dev
       
   # Power System and SDG Visualisation
   uk-power-system:
