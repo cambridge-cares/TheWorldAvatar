@@ -42,8 +42,8 @@ body.effectsOff #tiltShift body.effectsOff #map {
 #legend {
 	text-align: left;
 	font-size: 11pt;
-	margin-left: 50px;
-	margin-right: 50px;
+	margin-left: 25px;
+	margin-right: 25px;
 	padding: 10px;
 	border: 1px solid lightgrey;
 	line-height: 24px !important;

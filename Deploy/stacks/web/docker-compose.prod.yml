@@ -43,6 +43,11 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
+  # Power System and SDG Visualisation
+  uk-power-system:
+    build:
+      target: production
+
 
 # Production network
 networks:
