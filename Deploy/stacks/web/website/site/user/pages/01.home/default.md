@@ -4,7 +4,7 @@ visible: false
 body_classes: 'title-center title-h1h2'
 metadata:
 	author: "CMCL Innovations"
-	description: "Our Knowledge Graph (KG) services leverage advanced agent-based operation and ontology representations, thus bringing automation and semantic context to machine-assisted solutions for the problems at hand. This allows us to introduce a semantic framework to seamlessly connect humans, machines, and agents, making them able to infer new knowledge from available data."
+	description: "Our Knowledge Graph (KG) services leverage advanced agent-based operation and ontology representations, to bring automation and semantic context to machine-assisted solutions."
 	keywords: "Knowledge Graph, Linked Data, Ontology, Digitalisation"
 ---
 
