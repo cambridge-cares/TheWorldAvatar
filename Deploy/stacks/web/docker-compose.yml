@@ -73,16 +73,18 @@ services:
       hash: "${HASH}"
   
   
-  # UK Power System
-  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  # Power System and SDG Visualisation
   uk-power-system:
-    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
+    build:
+        context: "../../../web/UKDigitalTwin/mapbox-vis"
+        dockerfile: "./docker/Dockerfile"
     container_name: "uk-power-system"
     restart: unless-stopped
     ports:
       - 3001:80
     labels:
-      description: "MapBox visualisation of UK power plant data pulled from KG."
+      description: "MapBox visualisation of Power Plant and SDG data pulled from KG."
       authors: " support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"

@@ -5,18 +5,22 @@
 	<title>Power System Visualisation</title>
 	<meta charset="utf-8">
 	
-	<!-- Javascript -->
+	<!-- External JS and CSS -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
-	<script src='power-system.js'></script>
-
-	<!-- Stylesheets -->
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
-	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
-	<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
+
+	<!--
+	Remote CMCL JS and CSS are loaded from another file that is populated when building a Docker Image;
+	this is because the imports differ for development and production environments, so a different
+	version of 'head.html' can be generated depending on the target environment.
+
+	If running locally (i.e. without Docker), copy 'head-dev.html' to 'head.html' temporarily.
+	-->
+	<?php include 'head-dev.html'; ?>
+
+	<!-- Local JS and CSS -->
+	<script src='power-system.js'></script>
 	<link href='style.css' rel='stylesheet' />
 </head>
 
