@@ -2,7 +2,7 @@ package com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.prop
 
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.property.IndicatorParseStatus;
 
-public class DataGroupPropertyDerivedPropertyFeatureIndicatorParseStatus extends IndicatorParseStatus {
+public class DerivedPropertyFeatureIndicatorParseStatus extends IndicatorParseStatus {
 	boolean dataGroupPropertyDerivedPropertyFeatureIndicator = false;
 	
 	public boolean isIndicator() {

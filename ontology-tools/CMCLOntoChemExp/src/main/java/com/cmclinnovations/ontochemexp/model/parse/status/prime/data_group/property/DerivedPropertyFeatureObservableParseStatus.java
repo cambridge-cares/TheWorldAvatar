@@ -2,7 +2,7 @@ package com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.prop
 
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.property.ObservableParseStatus;
 
-public class DataGroupPropertyDerivedPropertyFeatureObservableParseStatus extends ObservableParseStatus {
+public class DerivedPropertyFeatureObservableParseStatus extends ObservableParseStatus {
 	boolean dataGroupPropertyDerivedPropertyFeatureObservable = false;
 	
 	public boolean isObservable() {
