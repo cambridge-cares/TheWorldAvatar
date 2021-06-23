@@ -251,7 +251,9 @@ def query_to_geoJSON(endpoint, class_label):
 
   sdg_addition_col = np.array([sdg_addition]).T
   colors_ar = []
-  cmap = matplotlib.cm.get_cmap('RdYlGn')
+  
+  cmap =  matplotlib.colors.LinearSegmentedColormap.from_list("", ["green","yellow","red"])
+    
   scaled_sdg = sdg_addition / np.max(sdg_addition)
   for i in range(len(sdg_addition)):
     rgba = cmap(scaled_sdg[i])
