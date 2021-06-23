@@ -29,6 +29,7 @@ redirects:
   /services/digital-twin/un_goals: '/explore/digital-twin/power-system'
   /services/un_goals: '/explore/digital-twin/power-system'
   
+  /chemistry_chatbot: '/explore/marie'
   /services/search-engine: '/explore/marie'
   /services/marie: '/explore/marie'
 routes: null
