@@ -42,11 +42,11 @@ public class TimeSeriesSparqlTest extends TestCase{
         TimeSeriesSparql.countTS(kbClient);
     }
     
-    public void testCountTSinNamedGraph() {
+    public void testCheck() {
     	String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	String namedGraph = "http://namedgraph";
     	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
         kbClient.setQueryEndpoint(endpoint);
-        TimeSeriesSparql.countTS(kbClient,namedGraph);
+        String dataIRI = "http://data1";
+        TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI);
     }
 }

@@ -13,14 +13,5 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 public class TimeSeriesTest extends TestCase{
-	public void testTable() {
-		List<Integer> timestamps = List.of(1, 2, 3);
-        List<String> dataIRI = List.of("data1", "data2", "data3");
-        List<Double> data1 = List.of(1.0,2.0,3.0);
-        List<Double> data2 = List.of(1.0,2.0,3.0);
-        List<Double> data3 = List.of(1.0,2.0,3.0);
-        
-        TimeSeries<Integer,Double> ts = new TimeSeries<Integer,Double>(timestamps,dataIRI,data1,data2,data3);
-	}
 
 }
