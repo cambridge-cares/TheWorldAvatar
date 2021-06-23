@@ -33,10 +33,9 @@ function resetSidePanel() {
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
-		<p>The map to the left shows a sample of gas grid data within the UK Digital Twin.
-		Intake Terminals (<span style="color:#108dcc;">blue</span>), Offtakes (<span style="color:#B42222;">red</span>), and Pipes from the gas transmission system are shown for the mainland UK.</p>
-		<p>Select an Intake Terminal (<span style="color:#108dcc;">blue</span>) to see its recent Instantaneous Flow data. This data is pulled from the UK Digital Twin
-		and is updated on a daily basis.</p>
+		<p>The map to the left shows a sample of the power system data within the UK Digital Twin.</p>
+		<p>Intake terminals (<span style="color:#108dcc;">blue</span>), offtakes (<span style="color:#B42222;">red</span>), and pipes (<span style="color:#B1B1B1;">grey</span>) from the gas transmission system are shown for the mainland UK.</p>
+		<p>Select an Intake terminal(<span style="color:#108dcc;">blue</span>) to see the recent flow of gas into the grid. This data is pulled from the UK Digital Twin and is updated on a daily basis.​</p>
 	`;
 	setSidePanelText(textHTML);
 
