@@ -22,7 +22,7 @@ LABEL description = "Gas Grid Agent"
 RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Install utilities
-RUN apt update && apt-get install -y rsyslog cron procps nano 
+RUN apt update && apt-get install -y rsyslog cron procps nano dos2unix
 
 # Install web server (to host geojson files for download)
 RUN apt update && apt install -y apache2
@@ -49,6 +49,7 @@ RUN chmod 755 start-up.sh
 # Copy in the cron jobs file
 COPY docker/cron-jobs cron-jobs 
 RUN chmod 755 cron-jobs 
+RUN dos2unix cron-jobs
 
 # Scripts relating to gathering data and inputting it to the KG
 RUN mkdir input
