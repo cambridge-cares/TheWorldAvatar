@@ -215,12 +215,14 @@
 					bearing: Math.random() * 90
 				});
 			});
+
+			// Ensure the plant locations is the top layer
+			map.moveLayer('plant_locations');
 		});
 
 		// Register the power layer 
 		registerLayer("Power Generation", ["power"], null, (currentLayer == "power"));
 		registerLayer("SDG Indicator", ["indicator"], null, (currentLayer == "indicator"));
-
 		// ============ PLANTS ===========	
 
 		// Build the layer selection tree
