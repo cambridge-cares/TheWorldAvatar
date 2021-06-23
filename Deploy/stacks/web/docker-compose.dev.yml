@@ -14,7 +14,11 @@ services:
     build:
       target: development
 
-
+  # Gas Grid Visualisation
+  uk-gas-grid:
+    build:
+      target: development
+      
 # Development network
 networks:
   default:
