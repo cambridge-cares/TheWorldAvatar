@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -9,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
@@ -19,12 +19,12 @@ import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
 import org.jooq.Record1;
-import org.jooq.Record2;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
+import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
@@ -128,7 +128,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		closeConnection(conn);
 	}
 	
-    public void addData(TimeSeries ts) {
+    public void addTimeSeries(TimeSeries ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
     	// check if time series is initialised
@@ -275,6 +275,31 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	TimeSeries ts = new TimeSeries(timeValues, dataIRI, dataValues);
     	
     	return ts;
+	}
+	
+	public double getAverage(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	// create map between data IRI and the corresponding column field in the table
+		String columnName = getColumnName(dsl, dataIRI);
+		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+    	
+    	List<Field<?>> columnList = new ArrayList<>();
+    	Field<Object> timeField = DSL.field(DSL.name(timeColumnName));
+    	columnList.add(timeField); columnList.add(columnField);
+    	
+    	Result<Record1<BigDecimal>> queryResult = dsl.select(avg(columnField)).from(table).fetch();
+    	return queryResult.getValue(0, columnField);
 	}
 	
 	/**

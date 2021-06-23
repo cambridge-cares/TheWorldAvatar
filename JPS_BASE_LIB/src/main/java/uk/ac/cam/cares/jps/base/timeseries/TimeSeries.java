@@ -48,10 +48,19 @@ public class TimeSeries {
     	}
     }
     
+    /**
+     * If this object is returned from the TimeSeriesRDBClient, it will be in List<Object>
+     * @return
+     */
     public List<?> getTimes() {
     	return times;
     }
     
+    /**
+     * If this object is returned from the TimeSeriesRDBClient, it will be in List<Object>
+     * @param dataIRI
+     * @return
+     */
     public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);
     }
