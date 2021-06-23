@@ -7,7 +7,7 @@ taxonomies:
   - category
   - tag
 metadata:
-  description: 'Grav is an easy to use, yet powerful, open source flat-file CMS'
+  description: 'Our Knowledge Graph (KG) services leverage advanced agent-based operation and ontology representations, to bring automation and semantic context to machine-assisted solutions.'
 summary:
   enabled: true
   format: short
