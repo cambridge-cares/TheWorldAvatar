@@ -2,7 +2,7 @@ package com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properti
 
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.property.AmountParseStatus;
 
-public class CommonPropertiesPropertyComponentAmountParseStatus extends AmountParseStatus {
+public class ComponentAmountParseStatus extends AmountParseStatus {
 	boolean commonPropertiesPropertyComponentAmount = false;
 	
 	public boolean isAmount() {

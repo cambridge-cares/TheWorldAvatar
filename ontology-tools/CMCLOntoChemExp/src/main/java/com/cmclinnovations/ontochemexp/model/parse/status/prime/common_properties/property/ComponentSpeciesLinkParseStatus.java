@@ -2,7 +2,7 @@ package com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properti
 
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.property.SpeciesLinkParseStatus;
 
-public class CommonPropertiesPropertyComponentSpeciesLinkParseStatus extends SpeciesLinkParseStatus {
+public class ComponentSpeciesLinkParseStatus extends SpeciesLinkParseStatus {
 	boolean commonPropertiesPropertyComponentSpeciesLink = false;
 
 	public boolean isSpeciesLink() {
