@@ -17,7 +17,7 @@
 
 	If running locally (i.e. without Docker), copy 'head-dev.html' to 'head.html' temporarily.
 	-->
-	<?php include 'head-dev.html'; ?>
+	<?php include 'head.html'; ?>
 
 	<!-- Local JS and CSS -->
 	<script src='power-system.js'></script>

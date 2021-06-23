@@ -30,6 +30,11 @@ RUN mkdir -p /var/www/html/
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/
 
+# Copy in custom Apache configuration
+COPY apache2.conf /etc/apache2/apache2.conf
+RUN dos2unix /etc/apache2/apache2.conf
+RUN chmod 644 /etc/apache2/apache2.conf
+
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
 
