@@ -37,21 +37,32 @@ public class TimeSeries<T> {
         }
     }
     
+	public List<T> getTimes() {
+    	return times;
+    }
+	
     /**
-     * Returns values as double
+     * Various methods to get values in a specific class
      * @param dataIRI
      * @return
      */
     public List<Double> getValuesAsDouble(String dataIRI) {
     	return values.get(dataIRI).stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
     }
-    
-    public List<?> getValues(String dataIRI) {
-    	return values.get(dataIRI);
+    public List<Integer> getValuesAsInteger(String dataIRI) {
+    	return values.get(dataIRI).stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());
+    }
+    public List<String> getValuesAsString(String dataIRI) {
+    	return values.get(dataIRI).stream().map(value -> ((Object) value).toString()).collect(Collectors.toList());
     }
     
-    public List<T> getTimes() {
-    	return times;
+    /**
+     * this will return the values column in whatever form returned from the jooq API, not recommended
+     * @param dataIRI
+     * @return
+     */
+    public List<?> getValues(String dataIRI) {
+    	return values.get(dataIRI);
     }
     
     public List<String> getDataIRI() {

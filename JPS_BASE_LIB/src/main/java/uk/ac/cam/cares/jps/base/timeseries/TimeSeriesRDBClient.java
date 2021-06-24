@@ -13,12 +13,10 @@ import java.util.UUID;
 
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
-import org.jooq.DataType;
 import org.jooq.Field;
 import org.jooq.InsertValuesStep4;
 import org.jooq.InsertValuesStepN;
 import org.jooq.Record;
-import org.jooq.Record1;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
@@ -53,10 +51,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     
     // central database table
     private static final String dbTableName = "dbTable";
-    private static final String dataIRIcolumn = "dataIRI";
-    private static final String tsIRIcolumn = "timeseriesIRI";
-    private static final String tableRefName = "tableName";
-    private static final String columnRefName = "columnName";
+    private static final Field<String> dataIRIcolumn = DSL.field(DSL.name("dataIRI"), String.class);
+    private static final Field<String> tsIRIcolumn = DSL.field(DSL.name("timeseriesIRI"), String.class);
+    private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
+    private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
     
     public TimeSeriesRDBClient(Class<T> timeClass) {
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
@@ -164,6 +162,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		}
 		
 		populateTimeSeriesTable(dsl, tsTableName, ts, dataColumnNames);
+		closeConnection(conn);
 	}
 	
     /** 
@@ -407,8 +406,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	
     	//delete entry in the main table
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
-    	Field<Object> column = DSL.field(DSL.name(tsIRIcolumn));
-    	dsl.delete(dbTable).where(column.equal(tsIRI)).execute();
+    	dsl.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	closeConnection(conn);
 	}
 	
@@ -419,12 +417,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	private String getTableName(DSLContext dsl, String tsIRI) {
 		// table
 		Table<?> table = DSL.table(DSL.name(dbTableName));
-		// column
-		Field<Object> tableColumn = DSL.field(DSL.name(tableRefName));
-		Field<Object> tsColumn =  DSL.field(DSL.name(tsIRIcolumn));
 		
-		Result<Record1<Object>> queryResult = dsl.select(tableColumn).from(table).where(tsColumn.eq(tsIRI)).fetch();
-		String tableName = (String) queryResult.getValue(0, tableColumn);
+		List<String> queryResult = dsl.select(tsTableNameColumn).from(table).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
+		String tableName = queryResult.get(0);
 		
 		return tableName;
 	}
@@ -437,12 +432,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	private String getColumnName(DSLContext dsl, String dataIRI) {
 		// table
 		Table<?> table = DSL.table(DSL.name(dbTableName));
-		// column
-		Field<Object> dataColumn = DSL.field(DSL.name(dataIRIcolumn));
-		Field<Object> columnRef =  DSL.field(DSL.name(columnRefName));
 		
-		Result<Record1<Object>> queryResult = dsl.select(columnRef).from(table).where(dataColumn.eq(dataIRI)).fetch();
-		String columnName = (String) queryResult.getValue(0, columnRef);
+		List<String> queryResult = dsl.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(columnNameColumn);
+		String columnName = queryResult.get(0);
 		
 		return columnName;
 	}
@@ -467,14 +459,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	}
 	
 	public void createDatabaseTable(DSLContext create) {
-		DataType<String> dataType = DefaultDataType.getDataType(dialect,String.class);
-		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn,dataType).column(tsIRIcolumn,dataType)
-		.column(tableRefName,dataType).column(columnRefName,dataType).execute();
+		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
+		.column(tsTableNameColumn).column(columnNameColumn).execute();
 	}
 	
 	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
-		InsertValuesStep4<?,Object,Object,Object,Object> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), 
-				DSL.field(DSL.name(dataIRIcolumn)), DSL.field(DSL.name(tsIRIcolumn)), DSL.field(DSL.name(tableRefName)), DSL.field(DSL.name(columnRefName)));
+		InsertValuesStep4<Record, String, String, String, String> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), 
+				dataIRIcolumn, tsIRIcolumn, tsTableNameColumn, columnNameColumn);
 
 		for (int i = 0; i < dataIRI.size(); i++) {
 			insertValueStep = insertValueStep.values(dataIRI.get(i),tsIRI,tsTable,dataColumnNames.get(dataIRI.get(i)));
