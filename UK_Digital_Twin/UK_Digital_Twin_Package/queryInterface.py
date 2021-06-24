@@ -2,6 +2,13 @@
 # wish to perform on the KG
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
+# For further information, please check the jps-base_lib, py4jps
+
+###############################################
+# Extended by: Wanni Xie (wx243@cam.ac.uk)    #
+# Last Update Date: 24 June 2021              #
+###############################################
+
 import os, sys
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE)
@@ -16,15 +23,17 @@ def performQuery(kb, query, isQuery = True, isUpdate = False):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.KGRouter
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
-    print(type(KGClient))
+    if type(KGClient) == 'NoneType':       
+        print('KGClient in the query interfaced has not been created successfully. Please check if the endpoint is already added into the lookup table of Blazegraph.')
     response = KGClient.executeQuery((query))
-    # response = str(response).replace('\'', '\"')
     return str(response)
 
 def performUpdate(kb, query, isQuery = True, isUpdate = True):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.KGRouter
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
+    if type(KGClient) == 'NoneType':       
+        print('KGClient in the query interfaced has not been created successfully. Please check if the endpoint is already added into the lookup table of Blazegraph.')
     response = KGClient.executeUpdate((query))
     return str(response)
 
@@ -37,7 +46,6 @@ def performFederatedQuery(query, *queryendpoints):
     endpoints = []
     for ed in queryendpoints:
         endpoints.append(str(ed))       
-    # endpoints = ["https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"]
     response = RemoteKnowledgeBaseClient.executeFederatedQuery(endpoints, query)
     return str(response)
 

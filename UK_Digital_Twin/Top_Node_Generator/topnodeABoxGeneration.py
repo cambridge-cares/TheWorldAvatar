@@ -23,20 +23,15 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKEnergyConsumption as UK_con
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
-import SPARQLQueryUsedInTopNode as query_topNode
+import Top_Node_Generator.SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
 """Notation used in URI construction"""
 HASH = '#'
 SLASH = '/'
 UNDERSCORE = '_'
 OWL = '.owl'
-
-"""Local Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
 
 """Create an instance of Class UKDigitalTwin"""
 dt = UKDT.UKDigitalTwin()
@@ -157,8 +152,6 @@ def addThirdLevelNode(graph):
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
     return graph
 
-
-#TODO: upload the energy consumption data to the como rdf4j and test the remote query
 """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
 def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):
     if localQuery == False and remoteEndPoint != None:
@@ -186,7 +179,6 @@ def addFourthLevelNode_gridModel(graph):
         graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
     return graph
 
-#TODO: up load the model KG to the remote triple store in como
 """Add Fifth level nodes (Model_EGen-001, Model_Eline-001, Model_EBus-001, etc.) to Fourth Level node (Model_EGen, Model_Eline and Model_EBus)"""
 def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):     
    if localQuery == False:
@@ -213,7 +205,8 @@ def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = Non
     
 
 """####Main function: Create or update the top node owl file####"""
-def generateTopNodeGraph(store, localQuery, updateLocalOWLFile = True):
+def generateTopNodeGraph(storeType, localQuery, updateLocalOWLFile = True):
+    store = LocalGraphStore(storeType)
     baseURI = (Top_Level_Node['UKDigitalTwin'].split('#'))[0]
     
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
@@ -248,6 +241,7 @@ def generateTopNodeGraph(store, localQuery, updateLocalOWLFile = True):
     g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
     g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
     g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    print('#########TOP NODE GRAPH IS GENERATED#######')
     
     global filepath, userSpecified
     
@@ -271,5 +265,5 @@ def generateTopNodeGraph(store, localQuery, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-   generateTopNodeGraph(store, False, True)
+   generateTopNodeGraph('default', False, False)
    

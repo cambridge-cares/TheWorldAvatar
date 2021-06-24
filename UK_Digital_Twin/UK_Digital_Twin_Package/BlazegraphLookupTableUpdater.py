@@ -92,15 +92,9 @@ def deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateen
    
         
 if __name__ == '__main__': 
-    # new repo
-    # endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplantkg"
-    # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG"
-    # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG/statements"
-    # label = "ukpowerplantkg"
-    
-    endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukpowergrid"
-    queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid"
-    updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid/statements"
-    label = "ukpowergrid"
+    endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukpowergridmodel"
+    queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"
+    updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel/statements"
+    label = "ukpowergridmodel"
     # deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label)
-    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, False, True )
+    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True, False)

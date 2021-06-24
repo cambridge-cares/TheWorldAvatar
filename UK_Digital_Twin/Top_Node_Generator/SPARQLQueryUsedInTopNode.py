@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 June 2021         #
+# Last Update Date: 24 June 2021         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK top node graph"""
@@ -20,6 +20,7 @@ capa_PrimaryFuel = []
 qres_capa = []
 allCapacity = []
 
+# query the power plant iri
 def queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> 
@@ -43,6 +44,7 @@ def queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
+#query the location iri in energy consumption graph
 def queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """    
     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
@@ -56,12 +58,12 @@ def queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     } 
     """
     global qres
-    if SleepycatPath == None and localQuery == False:  
+    if remoteEndPoint != None and localQuery == False:  
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["place"])
         return qres    
-    elif SleepycatPath != None:
+    elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:
@@ -71,6 +73,7 @@ def queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
+# query Model_EGen iri
 def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -84,12 +87,12 @@ def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     } 
     """
     global qres
-    if SleepycatPath == None and localQuery == False:    
+    if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_EGen"])
         return qres    
-    elif SleepycatPath != None:
+    elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:
@@ -99,6 +102,7 @@ def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
+# query Model_EBus iri
 def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -112,12 +116,12 @@ def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     } 
     """
     global qres
-    if SleepycatPath == None and localQuery == False:    
+    if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_EBus"])
         return qres
-    elif SleepycatPath != None:      
+    elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:
@@ -127,6 +131,7 @@ def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         dt_cg.close()
         return qres
 
+# query Model_ELine iri
 def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
@@ -140,12 +145,12 @@ def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     } 
     """
     global qres
-    if SleepycatPath == None and localQuery == False:    
+    if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         for r in res:
             qres.append(r["Model_ELine"])
         return qres
-    elif SleepycatPath != None:       
+    elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:

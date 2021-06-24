@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 20 May 2021          #
+# Last Update Date: 24 June 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -20,9 +20,11 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
+from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
-import SPARQLQueryUsedInModel as query_model
-from AddModelVariables import AddModelVariable
+import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
+from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
+from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -45,11 +47,12 @@ uk_ebus_model = UK_PG.UKEbusModel()
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
 
-"""Graph store"""
-# store = 'default'
-store = Sleepycat()
-store.__open = True
-store.context_aware = True
+"""Create an object of Class UKEnergyConsumption"""
+ukec = UKec.UKEnergyConsumption()
+
+"""Remote Endpoint lable and queryendpoint_iri"""
+topology_ferderated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
+energyConsumption_ferderated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
@@ -79,7 +82,8 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_model, updateLocalOWLFile = True):
+    store = LocalGraphStore(storeType)
     global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
@@ -103,9 +107,10 @@ def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
         else:
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
     else:
+        topoAndConsumpPath_Sleepycat = None
         print('Store is IOMemery')
         
-    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat))
+    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat, localQuery, topology_ferderated_query_Endpoint, energyConsumption_ferderated_query_Endpoint))
     EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
     
     if EBus == None:
@@ -125,6 +130,7 @@ def createModel_EBus(store, version_of_model, updateLocalOWLFile = True):
         # create a named graph
         g = Graph(store = store, identifier = URIRef(root_uri))
         # Import T-boxes
+        g.set((g.identifier, RDF.type, OWL_NS['Ontology']))
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_mathematical_model)))
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))  
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
@@ -233,5 +239,5 @@ def initialiseEBusModelVar(EBus_Model, EBus):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus(store, 2019)       
+    createModel_EBus('default', False, 2019, False)       
     print('Terminated')

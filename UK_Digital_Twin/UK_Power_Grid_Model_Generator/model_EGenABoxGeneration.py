@@ -57,10 +57,14 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
-"""Remote Endpoint lable"""
+"""Remote Endpoint lable and queryendpoint_iri"""
+UKDigitalTwin_Endpoint = dt.endpoint['lable']
 powerPlant_Endpoint = ukpp.endpoint['lable']
 topology_Endpoint = uk_topo.endpoint['lable']
 energyConsumption_Endpoint = ukec.endpoint['lable']
+powerPlant_ferderated_query_Endpoint = ukpp.endpoint['queryendpoint_iri']
+topology_ferderated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
+# energyConsumption_ferderated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
@@ -123,13 +127,14 @@ def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile
         print('Store is IOMemery')        
             
     
-    EGenInfo = list(query_model.queryEGenInfo(topology_Endpoint, powerPlant_Endpoint, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery))
+    EGenInfo = list(query_model.queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, topology_ferderated_query_Endpoint, powerPlant_ferderated_query_Endpoint))
                     
     if EGenInfo == None:
         print('EGenInfo is empty')
         return None
     
     capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, localQuery)
+    location = query_model.queryDigitalTwinLocation(UKDigitalTwin_Endpoint, dt.SleepycatStoragePath, localQuery)
     
     for egen in EGenInfo:         
     # if EGenInfo[0] != None: # test
@@ -159,7 +164,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile
         ###add cost function parameters###
         # calculate a, b, c
         uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version = version_of_model)
-        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen)
+        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location,  localQuery)
         
         if uk_egen_costFunc != None:
             pass
@@ -293,5 +298,5 @@ def capa_demand_ratio_calculator(EGenInfo, localQuery):
 
 
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, False)    
+    createModel_EGen('default', False, 2019, True)    
     print('Terminated')
