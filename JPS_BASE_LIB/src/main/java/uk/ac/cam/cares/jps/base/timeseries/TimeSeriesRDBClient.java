@@ -320,6 +320,58 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	return queryResult.get(0).doubleValue();
 	}
 	
+	public double getMaxValue(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	// create map between data IRI and the corresponding column field in the table
+		String columnName = getColumnName(dsl, dataIRI);
+		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+    	
+    	List<Field<?>> columnList = new ArrayList<>();
+    	columnList.add(timeColumn); columnList.add(columnField);
+    	
+    	List<Double> queryResult = dsl.select(max(columnField)).from(table).fetch(max(columnField));
+    	closeConnection(conn);
+    	
+    	return queryResult.get(0).doubleValue();
+	}
+	
+	public double getMinValue(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	// create map between data IRI and the corresponding column field in the table
+		String columnName = getColumnName(dsl, dataIRI);
+		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+    	
+    	List<Field<?>> columnList = new ArrayList<>();
+    	columnList.add(timeColumn); columnList.add(columnField);
+    	
+    	List<Double> queryResult = dsl.select(min(columnField)).from(table).fetch(min(columnField));
+    	closeConnection(conn);
+    	
+    	return queryResult.get(0).doubleValue();
+	}
+	
 	public T getMaxTime(String dataIRI) {
 		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
