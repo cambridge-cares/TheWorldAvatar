@@ -40,9 +40,9 @@ if __name__ == '__main__':
     # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
     
     ###### SKIPPED ########
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
-    # createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, True)
+    createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, False)
     
     # createModel_EGen('default', False, 2019, False)
     # createModel_ELine('default', False, 10, 14, 2019, False) 

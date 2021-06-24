@@ -22,6 +22,7 @@ from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
+from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
@@ -53,6 +54,9 @@ ukpp = UKpp.UKPowerPlant()
 """Create an object of Class CO2FactorAndGenCostFactor"""
 ukmf = ModelFactor.ModelFactor()
 
+"""Create an object of Class UKEnergyConsumption"""
+ukec = UKec.UKEnergyConsumption()
+
 """Create an object of Class UKPowerGridModel"""
 uk_ebus_model = UK_PG.UKEbusModel()
 uk_eline_model = UK_PG.UKElineModel()
@@ -64,6 +68,8 @@ defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 """Remote Endpoint lable"""
 powerPlant_Endpoint = ukpp.endpoint['lable']
 topology_Endpoint = uk_topo.endpoint['lable']
+topology_federated_query_ep = uk_topo.endpoint['queryendpoint_iri']
+energyConsumption_federated_query_ep = ukec.endpoint['queryendpoint_iri']
 
 """Root_node and root_uri"""
 root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
@@ -124,6 +130,8 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
         sl = cg_topo_ukec.open(defaultPath_Sleepycat, create = False)
         if sl == NO_STORE:
             print('Cannot find the specified sleepycat store')
+    else:
+        cg_topo_ukec = None
     
     # create a named graph
     g = Graph(store = store, identifier = URIRef(root_uri))
@@ -303,22 +311,6 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
         
     return graph 
 
-##########################################################BUG FIXING############################################
-def test():   
-    print('#########BUG TESTING##############')
-    res_BusLocatedRegion = ["https://dbpedia.org/page/South_East_England", "https://dbpedia.org/page/South_West_England", "https://dbpedia.org/page/London", "https://dbpedia.org/page/East_of_England", \
-                            "https://dbpedia.org/page/East_Midlands", "https://dbpedia.org/page/West_Midlands_(county)", "https://dbpedia.org/page/North_West_England", \
-                                "https://dbpedia.org/page/Yorkshire_and_the_Humber", "https://dbpedia.org/page/Wales", "https://dbpedia.org/page/Scotland" ]
-  
-    
-    for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
-        print(bus_location)
-        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location), False))        
-           
-    return    
-##########################################################BUG FIXING############################################
-
-
 """Add nodes represent Branches"""
 def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery): 
     global counter
@@ -328,13 +320,11 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
         print('The bus model factor data header is not matched, please check the data file')
         return None
     
-    res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph))
-    
+    res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph, localQuery, topology_federated_query_ep, energyConsumption_federated_query_ep))
     print('#########START addEGenNodes##############')
     for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
+        bus_location[1] = str(bus_location[1]).replace('http:', 'https:')
         print(bus_location[1])     
-        if bus_location[1] == "http://dbpedia.org/resource/West_Midlands_(county)":
-            continue 
         res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))        
         local_counter = 1
         while local_counter <= len(res_powerplant):
@@ -371,9 +361,8 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
                 
                 counter += 1               
                 local_counter += 1
-            
-        print('Counter is ', counter)
-        print('Local counter is ', local_counter)           
+        # print('Counter is ', counter)
+        # print('Local counter is ', local_counter)           
     return graph   
 
 def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
@@ -421,11 +410,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    # createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, True)
+    # createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, False)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
-    createTopologyGraph('sleepycat', False, 10, 14, None, None, addEGenNodes, False)
-    
-    # res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion('ukpowerplantkg', ukpp.SleepycatStoragePath, "http://dbpedia.org/resource/West_Midlands_(county)", False))
-    # print (len(res_powerplant))
-    # test()
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, False)
     print('Terminated')
