@@ -50,7 +50,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	private final Field<T> timeColumn;
 	// constants
 	private static final SQLDialect dialect = SQLDialect.POSTGRES;
-    private static final String timeColumnName = "time";
     
     // central database table
     private static final String dbTableName = "dbTable";
@@ -60,7 +59,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     private static final String columnRefName = "columnName";
     
     public TimeSeriesRDBClient(Class<T> timeClass) {
-    	timeColumn = DSL.field(DSL.name(timeColumnName), timeClass);
+    	timeColumn = DSL.field(DSL.name("time"), timeClass);
     }
     
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
@@ -213,6 +212,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	
     	// perform query
     	Result<? extends Record> queryResult = dsl.select(columnList).from(table).fetch();
+    	closeConnection(conn);
     	
     	// collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -275,6 +275,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	
     	// perform query
     	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound)).fetch();
+    	closeConnection(conn);
     	
     	// collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -311,10 +312,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
     	List<Field<?>> columnList = new ArrayList<>();
-    	Field<Object> timeField = DSL.field(DSL.name(timeColumnName));
-    	columnList.add(timeField); columnList.add(columnField);
+    	columnList.add(timeColumn); columnList.add(columnField);
     	
     	List<BigDecimal> queryResult = dsl.select(avg(columnField)).from(table).fetch(avg(columnField));
+    	closeConnection(conn);
     	
     	return queryResult.get(0).doubleValue();
 	}
@@ -333,6 +334,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	List<T> queryResult = dsl.select(max(timeColumn)).from(table).fetch(max(timeColumn));
+    	closeConnection(conn);
     	
     	T maxTime = queryResult.get(0);
     	
@@ -353,6 +355,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	List<T> queryResult = dsl.select(min(timeColumn)).from(table).fetch(min(timeColumn));
+    	closeConnection(conn);
     	
     	T minTime = queryResult.get(0);
     	
@@ -379,6 +382,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
+    	closeConnection(conn);
 	}
 	
 	/**
@@ -405,6 +409,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
     	Field<Object> column = DSL.field(DSL.name(tsIRIcolumn));
     	dsl.delete(dbTable).where(column.equal(tsIRI)).execute();
+    	closeConnection(conn);
 	}
 	
 	/**
