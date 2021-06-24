@@ -12,13 +12,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 /**
  * 
  * @author Kok Foong Lee
- *
- * @param <T>
- * @param <V>
  */
-public class TimeSeries {
+public class TimeSeries<T> {
 
-    private final List<?> times;
+    private final List<T> times;
     private final Map<String, List<?>> values;
 
     /**
@@ -27,7 +24,7 @@ public class TimeSeries {
      * @param dataIRI
      * @param data
      */
-	public TimeSeries(List<?> times, List<String> dataIRI, List<List<?>> values) {
+	public TimeSeries(List<T> times, List<String> dataIRI, List<List<?>> values) {
         this.times = times;
         this.values = new HashMap<String, List<?>>();
         
@@ -39,30 +36,22 @@ public class TimeSeries {
             this.values.put(dataIRI.get(i), values.get(i));
         }
     }
-
-    public List<Double> getTimesAsDouble() {
-    	if (times.get(0) instanceof Number) {
-    		return times.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
-    	} else {
-    		throw new JPSRuntimeException("TimeSeries: Time cannot be converted to double");
-    	}
-    }
     
     /**
-     * If this object is returned from the TimeSeriesRDBClient, it will be in List<Object>
-     * @return
-     */
-    public List<?> getTimes() {
-    	return times;
-    }
-    
-    /**
-     * If this object is returned from the TimeSeriesRDBClient, it will be in List<Object>
+     * Returns values as double
      * @param dataIRI
      * @return
      */
+    public List<Double> getValuesAsDouble(String dataIRI) {
+    	return values.get(dataIRI).stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
+    }
+    
     public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);
+    }
+    
+    public List<T> getTimes() {
+    	return times;
     }
     
     public List<String> getDataIRI() {

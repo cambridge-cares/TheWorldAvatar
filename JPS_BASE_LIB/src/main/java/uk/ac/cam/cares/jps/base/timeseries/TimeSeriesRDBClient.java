@@ -36,7 +36,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
  *
  */
 
-public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
+public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
 	private KnowledgeBaseClientInterface kbClient; 
@@ -47,17 +47,21 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	// time unit (in IRI)
 	private String timeUnit = null;
 	
+	private final Field<T> timeColumn;
 	// constants
 	private static final SQLDialect dialect = SQLDialect.POSTGRES;
     private static final String timeColumnName = "time";
-    private static final Field<Object> timeColumn = DSL.field(DSL.name(timeColumnName));
-	
+    
     // central database table
     private static final String dbTableName = "dbTable";
     private static final String dataIRIcolumn = "dataIRI";
     private static final String tsIRIcolumn = "timeseriesIRI";
     private static final String tableRefName = "tableName";
     private static final String columnRefName = "columnName";
+    
+    public TimeSeriesRDBClient(Class<T> timeClass) {
+    	timeColumn = DSL.field(DSL.name(timeColumnName), timeClass);
+    }
     
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
@@ -81,7 +85,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * Initialise Time Series in RDF and RDB
 	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 */
-	public void init(Class<?> timeClass, List<String> dataIRI, List<Class<?>> dataClass) {
+	public void init(List<String> dataIRI, List<Class<?>> dataClass) {
 		// check if data already exists
 		for (String s : dataIRI) {
 			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -123,12 +127,12 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 		populateDatabaseTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
 		
 		// create table for storing time series data
-		initTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass, timeClass);
+		initTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
 		
 		closeConnection(conn);
 	}
 	
-    public void addTimeSeries(TimeSeries ts) {
+    public void addTimeSeries(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
     	// check if time series is initialised
@@ -167,7 +171,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
      * returns the entire time series
      * @param dataIRI
      */
-	public TimeSeries getTimeSeries(List<String> dataIRI) {
+	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
     	// check if time series is initialised
 		for (String s : dataIRI) {
 			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -201,7 +205,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 			dataColumnFields.put(data, field);
 		}
     	
-    	List<Field<Object>> columnList = new ArrayList<>();
+    	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
     	    columnList.add(dataColumnFields.get(data));
@@ -211,18 +215,25 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	Result<? extends Record> queryResult = dsl.select(columnList).from(table).fetch();
     	
     	// collect results and return a TimeSeries object
-    	List<Object> timeValues = queryResult.getValues(timeColumn);
+    	List<T> timeValues = queryResult.getValues(timeColumn);
     	List<List<?>> dataValues = new ArrayList<>();
     	for (String data : dataIRI) {
     		List<?> column = queryResult.getValues(dataColumnFields.get(data));
     		dataValues.add(column);
     	} 
-    	TimeSeries ts = new TimeSeries(timeValues, dataIRI, dataValues);
+    	TimeSeries<T> ts = new TimeSeries<T>(timeValues, dataIRI, dataValues);
     	
     	return ts;
     }
     
-	public TimeSeries getTimeSeriesWithinBounds(List<String> dataIRI, Object lowerBound, Object upperBound) {
+	/**
+	 * only returns time series within the given time bounds
+	 * @param dataIRI
+	 * @param lowerBound
+	 * @param upperBound
+	 * @return
+	 */
+	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
 		// check if time series is initialised
 		for (String s : dataIRI) {
 			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -256,7 +267,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 			dataColumnFields.put(data, field);
 		}
     	
-    	List<Field<Object>> columnList = new ArrayList<>();
+    	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
     	    columnList.add(dataColumnFields.get(data));
@@ -266,17 +277,22 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound)).fetch();
     	
     	// collect results and return a TimeSeries object
-    	List<Object> timeValues = queryResult.getValues(timeColumn);
+    	List<T> timeValues = queryResult.getValues(timeColumn);
     	List<List<?>> dataValues = new ArrayList<>();
     	for (String data : dataIRI) {
     		List<?> column = queryResult.getValues(dataColumnFields.get(data));
     		dataValues.add(column);
     	} 
-    	TimeSeries ts = new TimeSeries(timeValues, dataIRI, dataValues);
+    	TimeSeries<T> ts = new TimeSeries<>(timeValues, dataIRI, dataValues);
     	
     	return ts;
 	}
 	
+	/**
+	 * queries the average value of a column, stored data should be in numerics
+	 * @param dataIRI
+	 * @return
+	 */
 	public double getAverage(String dataIRI) {
 		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -298,8 +314,49 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	Field<Object> timeField = DSL.field(DSL.name(timeColumnName));
     	columnList.add(timeField); columnList.add(columnField);
     	
-    	Result<Record1<BigDecimal>> queryResult = dsl.select(avg(columnField)).from(table).fetch();
-    	return queryResult.getValue(0, columnField);
+    	List<BigDecimal> queryResult = dsl.select(avg(columnField)).from(table).fetch(avg(columnField));
+    	
+    	return queryResult.get(0).doubleValue();
+	}
+	
+	public T getMaxTime(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	List<T> queryResult = dsl.select(max(timeColumn)).from(table).fetch(max(timeColumn));
+    	
+    	T maxTime = queryResult.get(0);
+    	
+    	return maxTime;
+	}
+	
+	public T getMinTime(String dataIRI) {
+		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsTableName = getTableName(dsl, tsIRI);
+    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	
+    	List<T> queryResult = dsl.select(min(timeColumn)).from(table).fetch(min(timeColumn));
+    	
+    	T minTime = queryResult.get(0);
+    	
+    	return minTime;
 	}
 	
 	/**
@@ -308,7 +365,7 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * @param lowerBound
 	 * @param upperBound
 	 */
-	public void deleteRows(String dataIRI, Object lowerBound, Object upperBound) {
+	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
 		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
 		}
@@ -444,11 +501,11 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
 	 * @param valueClassList
 	 */
 	public void initTimeSeriesTable(DSLContext create, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI,
-			List<Class<?>> dataClass, Class<?> timeClass) {   	
+			List<Class<?>> dataClass) {   	
 		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
 		
     	// create time column
-    	createStep = createStep.column(timeColumnName, DefaultDataType.getDataType(dialect,timeClass));
+    	createStep = createStep.column(timeColumn);
     	
     	// create 1 column for each value
     	for (int i = 0; i < dataIRI.size(); i++) {
@@ -459,12 +516,12 @@ public class TimeSeriesRDBClient implements TimeSeriesClientInterface{
     	createStep.execute();
 	}
 	
-	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries ts, Map<String,String> dataColumnNames) {
+	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
 		List<String> dataIRIs = ts.getDataIRI();
 
     	Table<?> table = DSL.table(DSL.name(tablename));
     	
-    	List<Field<Object>> columnList = new ArrayList<>();
+    	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRIs) {
     		columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
