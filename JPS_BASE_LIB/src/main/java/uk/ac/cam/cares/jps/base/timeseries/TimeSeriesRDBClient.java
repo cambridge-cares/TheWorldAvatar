@@ -210,7 +210,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	}
     	
     	// perform query
-    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).fetch();
+    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();
     	closeConnection(conn);
     	
     	// collect results and return a TimeSeries object
@@ -273,7 +273,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	}
     	
     	// perform query
-    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound)).fetch();
+    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
+    			.orderBy(timeColumn.asc()).fetch();
     	closeConnection(conn);
     	
     	// collect results and return a TimeSeries object
