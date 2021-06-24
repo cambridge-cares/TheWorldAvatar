@@ -9,12 +9,12 @@ http://purl.org/gc/CalculationResult,Class,http://purl.org/gc/CalculationConcept
 http://purl.org/gc/Frequency,Class,http://purl.org/gc/CalculationResult,IS-A,,,,Frequency is defined as the number of occurrences of a repeating event per unit of time. Definition given by Dr Daniel Nurkowski (danieln@cmclinnovations.com).,https://cmclinnovations.com/,
 http://purl.org/gc/SystemEnergies,Class,http://purl.org/gc/CalculationResult,IS-A,,,,A class for various types of energies associated with molecular system.,http://chemicalsemantics.com/,
 ElectronicAndZPEEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,Electronic and ZPEEnergy
-HomoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,HOMO stands for Highest Occupied Molecular Orbital. Definition given by Angiras Menon. Email: am2145@cam.ac.uk,,
-HomoMinusOneEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,Homo minus one energy
-HomoMinusTwoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,Homo minus two energy
-LumoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,LUMO stands for Lowest Unoccupied Molecular Orbital. Definition given by Angiras Menon. Email: am2145,,
-LumoPlusOneEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,
-LumoPlusTwoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,
+HomoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the highest occupied molecular orbital (HOMO).,,
+HomoMinusOneEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the second highest occupied molecular orbital (HOMO).,,Homo minus one energy
+HomoMinusTwoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the third highest occupied molecular orbital (HOMO).,,Homo minus two energy
+LumoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the lowest unoccupied molecular orbital (LUMO).,,
+LumoPlusOneEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the second lowest unoccupied molecular orbital (LUMO).,,
+LumoPlusTwoEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,The energy of the third lowest unoccupied molecular orbital (LUMO).,,
 ScfEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,
 ZeroPointEnergy,Class,http://purl.org/gc/SystemEnergies,IS-A,,,,,,
 http://purl.org/gc/MethodologyFeature,Class,CalculationConcept,IS-A,,,,A class for specific features or properties of a given methodology.,http://chemicalsemantics.com/,
