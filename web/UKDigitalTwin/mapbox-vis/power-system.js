@@ -17,9 +17,11 @@ function resetSidePanel() {
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
-		<p>The map to the left shows a sample of the power system data within the UK Digital Twin.</p>
-		<p>Each node on the map represents a generator with the size of the node corresponding to the capacity of the generator, and the color 
-		corresponding to the value of the estimated emissions intensity, or SDG indicator (depending on layer selection).</p>
+		<p>The map to the left shows a sample of the power system data within the UK Digital Twin.​</p>
+		<p>Each node on the map represents a generator with the size of the node corresponding to the capacity of the 
+		generator. The colour of the nodes either shows the type of fuel used by the generators (on the Power Generation 
+		layer) or an estimate of the contribution of the generators to Indicator 9.4.1 of the UN Sustainable Development 
+		Goals (on the SDG Indicator layer).​</p>
 	`;
 	setSidePanelText(textHTML);
 }
@@ -110,7 +112,7 @@ function updateLegend(type) {
 		`;
 	} else if(type == "indicator") {
 		html += `
-			<img src="legend-sdg.png" class="legend-sdg" width="275px"/>
+			<img src="legend-sdg.png" class="legend-sdg" width="325px"/>
 		`;
 	}
 	html += `</div>`;

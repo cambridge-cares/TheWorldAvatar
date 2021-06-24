@@ -2,7 +2,7 @@ package com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properti
 
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.property.UncertaintyParseStatus;
 
-public class CommonPropertiesPropertyComponentUncertaintyParseStatus extends UncertaintyParseStatus {
+public class ComponentUncertaintyParseStatus extends UncertaintyParseStatus {
 	boolean commonPropertiesPropertyComponentUncertainty = false;
 
 	public boolean isUncertainty() {
