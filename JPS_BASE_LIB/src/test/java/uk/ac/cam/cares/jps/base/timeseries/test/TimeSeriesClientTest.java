@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -12,116 +14,86 @@ public class TimeSeriesClientTest extends TestCase{
 	String user = "postgres";
 	String password = "postgres";
 	
-    public void testInit() {
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-        List<String> dataIRI = List.of("http://data1", "http://data2", "http://data3");
-        List<Class<?>> dataClass = List.of(Double.class,Double.class,Integer.class);
-
-        tsClient.init(Integer.class, dataIRI, dataClass);
-    }
-    
-    public void testAddData() {
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-    	// mock TimeSeries object
-    	List<Integer> timestamps = List.of(4, 5, 6);
-        List<String> dataIRI = List.of("http://data1", "http://data3");
-        List<Double> data1 = List.of(1.0,2.0,3.0);
-        List<Integer> data2 = List.of(1,2,3);
-        
-        List<List<?>> data = List.of(data1,data2);
-        
-        TimeSeries ts = new TimeSeries(timestamps,dataIRI,data);
-        
-        tsClient.addData(ts);
-    }
-    
-    public void testGetData() {
-    	List<String> dataIRI = List.of("http://data1", "http://data2");
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-    	tsClient.getTimeSeries(dataIRI);
-    }
-    
-    public void testGetDataWithinBounds() {
-    	List<String> dataIRI = List.of("http://data1", "http://data2");
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-    	tsClient.getTimeSeriesWithinBounds(dataIRI,4,5);
-    }
-    
-    public void testDeleteRows() {
-    	String dataIRI = "http://data1";
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-    	tsClient.deleteRows(dataIRI,4,5);
-    }
-    
-    public void testDeleteTimeSeries() {
-    	String dataIRI = "http://data1";
-    	// kb client
-        String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
-    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-    	kbClient.setUpdateEndpoint(endpoint);
-    	kbClient.setQueryEndpoint(endpoint);
-    	
-    	TimeSeriesRDBClient tsClient = new TimeSeriesRDBClient();
-    	tsClient.setRdbURL(dbURL);
-    	tsClient.setRdbUser(user);
-    	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
-    	
-    	tsClient.deleteTimeSeries(dataIRI);
-    }
+	/**
+	 * example code on how to use the TimeSeriesClient
+	 */
+	public void testExample() {
+//		// set up a kb client that points to the location of your instance
+//		// this can be the a RemoteKnowledgeBaseClient or the FileBasedKnowledgeBaseClient
+//		String endpoint = "http://localhost:8080/blazegraph/namespace/timeseries/sparql";
+//    	RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+//    	kbClient.setUpdateEndpoint(endpoint);
+//    	kbClient.setQueryEndpoint(endpoint);
+//    	
+//    	// set up TimeSeriesRDBClient to interact with RDB (PostgreSQL)
+//    	// you must specify the class of the time values, this example uses the Instant class
+//    	// you can use classes such as LocalDateTime, Timestamp, Integer, Double, etc.
+//    	// once you initialise it with a certain class, you should stick to it
+//    	// if the class is not supported, the Jooq API should throw an exception
+//    	TimeSeriesRDBClient<Instant> tsClient = new TimeSeriesRDBClient<>(Instant.class);
+//    	tsClient.setRdbURL(dbURL);
+//    	tsClient.setRdbUser(user);
+//    	tsClient.setRdbPassword(password);
+//    	tsClient.setKBClient(kbClient);
+//    	
+//    	// next step is to initialise the time series instance in RDF and RDB
+//    	// in this example I have three instances that share the same timestamp, so they are initialised together
+//    	List<String> dataIRI = List.of("http://data1", "http://data2", "http://data3");
+//    	// next specify the type of data for each column, I expect most data will be in doubles, but you can specify
+//    	// different data types if you wish
+//    	List<Class<?>> dataClass = List.of(Double.class,String.class,Integer.class);
+//    	
+//    	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
+//    	// at the same time, the tables will be created in RDB according to the class specified
+//    	tsClient.init(dataIRI, dataClass);
+//    	
+//    	// to add data, you need to create a TimeSeries object
+//    	List<Instant> timeList = new ArrayList<>();
+//    	List<Double> data1 = new ArrayList<>();
+//    	List<String> data2 = new ArrayList<>();
+//    	List<Integer> data3 = new ArrayList<>();
+//    	
+//    	for (int i = 0; i < 10; i++) {
+//    		timeList.add(Instant.now().plusSeconds(i));
+//    		data1.add(Double.valueOf(i));
+//    		data2.add(String.valueOf(i));
+//    		data3.add(Integer.valueOf(i));
+//    	}
+//    	List<List<?>> dataToAdd = List.of(data1,data2,data3);
+//    	// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+//    	TimeSeries<Instant> tsToAdd = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
+//    	
+//    	// supply the TimeSeries object as an argument to the Time series client
+//    	tsClient.addTimeSeries(tsToAdd);
+//    	
+//    	// you can query the entire TimeSeries table by providing the data IRIs
+//    	TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI);
+//    	// or you can specify the time range you want
+//    	TimeSeries<Instant> ts2 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2),timeList.get(4));
+//    	
+//    	// the time column
+//    	List<Instant> timeColumn = ts1.getTimes();
+//    	
+//    	// you can then obtain the values associated with a data IRI by
+//    	List<Double> column1 = ts1.getValuesAsDouble(dataIRI.get(0));
+//    	List<String> column2 = ts1.getValuesAsString(dataIRI.get(1));
+//    	List<Integer> column3 = ts1.getValuesAsInteger(dataIRI.get(2));
+//    	
+//    	// getting the maximum time, providing any data IRI within the set will yield the same answer
+//    	Instant maxTime = tsClient.getMaxTime(dataIRI.get(0));
+//    	
+//    	// similarly for min time
+//    	Instant minTime = tsClient.getMinTime(dataIRI.get(1));
+//    	
+//    	// currently we have min/max/average, contact KFL if you need additional properties
+//    	double average = tsClient.getAverage(dataIRI.get(0));
+//    	double maxValue = tsClient.getMaxValue(dataIRI.get(0));
+//    	double minValue = tsClient.getMinValue(dataIRI.get(0));
+//    	
+//    	// you can remove specific rows from your table by specifying the time range
+//    	tsClient.deleteRows(dataIRI.get(0), timeList.get(2), timeList.get(4));
+//    	
+//    	// or delete all time series related data, this will remove the data in the same table, even if it's not included
+//    	tsClient.deleteTimeSeries(dataIRI.get(0));
+	}
 }
