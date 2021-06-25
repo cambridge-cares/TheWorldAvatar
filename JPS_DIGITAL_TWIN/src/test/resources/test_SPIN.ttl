@@ -1,0 +1,161 @@
+# baseURI: http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/processSPIN.ttl
+# imports: http://spinrdf.org/spl
+# imports: http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl
+# prefix: processSPIN
+
+@prefix arg: <http://spinrdf.org/arg#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix phase_system: <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix process: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> .
+@prefix processSPIN: <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/processSPIN.ttl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix spin: <http://spinrdf.org/spin#> .
+@prefix spl: <http://spinrdf.org/spl#> .
+@prefix system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/processSPIN.ttl>
+  a owl:Ontology ;
+  owl:imports <http://spinrdf.org/spl> ;
+  owl:imports <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl> ;
+  owl:versionInfo "Created with TopBraid Composer" ;
+.
+processSPIN:MoleFraction_002
+  a system:ScalarValue ;
+  system:numericalValue "0.05" ;
+.
+processSPIN:MoleFraction_1
+  a phase_system:MoleFraction ;
+.
+processSPIN:Molefraction_001
+  a system:ScalarValue ;
+.
+phase_system:MoleFraction
+  spin:constraint [
+      a sp:Ask ;
+      sp:where (
+          [
+            sp:object [
+                sp:varName "s" ;
+              ] ;
+            sp:predicate <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#leaves> ;
+            sp:subject spin:_this ;
+          ]
+          [
+            sp:object [
+                sp:varName "type" ;
+              ] ;
+            sp:predicate rdf:type ;
+            sp:subject [
+                sp:varName "s" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "mf1" ;
+              ] ;
+            sp:predicate system:hasProperty ;
+            sp:subject [
+                sp:varName "s" ;
+              ] ;
+          ]
+          [
+            sp:object phase_system:MoleFraction ;
+            sp:predicate rdf:type ;
+            sp:subject [
+                sp:varName "mf1" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "v_mf1" ;
+              ] ;
+            sp:predicate system:hasValue ;
+            sp:subject [
+                sp:varName "mf1" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "mf1_num_value" ;
+              ] ;
+            sp:predicate system:numericalValue ;
+            sp:subject [
+                sp:varName "v_mf1" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "mf2" ;
+              ] ;
+            sp:predicate system:hasProperty ;
+            sp:subject [
+                sp:varName "s" ;
+              ] ;
+          ]
+          [
+            sp:object phase_system:MoleFraction ;
+            sp:predicate rdf:type ;
+            sp:subject [
+                sp:varName "mf2" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "v_mf2" ;
+              ] ;
+            sp:predicate system:hasValue ;
+            sp:subject [
+                sp:varName "mf2" ;
+              ] ;
+          ]
+          [
+            sp:object [
+                sp:varName "mf2_num_value" ;
+              ] ;
+            sp:predicate system:numericalValue ;
+            sp:subject [
+                sp:varName "v_mf2" ;
+              ] ;
+          ]
+          [
+            a sp:Filter ;
+            sp:expression [
+                a sp:lt ;
+                sp:arg1 [
+                    sp:varName "mf2_num_value" ;
+                  ] ;
+                sp:arg2 0.973 ;
+              ] ;
+          ]
+        ) ;
+      rdfs:comment "Validates whether sum of all mole fraction of some process stream is not equal to 1." ;
+    ] ;
+.
+system:ScalarValue
+  spin:constraint [
+      a sp:Ask ;
+      sp:where (
+          [
+            sp:object [
+                sp:varName "nv_value" ;
+              ] ;
+            sp:predicate system:numericalValue ;
+            sp:subject spin:_this ;
+          ]
+          [
+            a sp:Filter ;
+            sp:expression [
+                a sp:lt ;
+                sp:arg1 [
+                    sp:varName "nv_value" ;
+                  ] ;
+                sp:arg2 0.973 ;
+              ] ;
+          ]
+        ) ;
+      rdfs:comment "Deviation in frequency is outside the limit of +/- 0.2." ;
+    ] ;
+.
