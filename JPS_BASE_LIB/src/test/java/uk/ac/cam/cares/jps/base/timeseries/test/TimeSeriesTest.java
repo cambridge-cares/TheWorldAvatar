@@ -1,17 +1,63 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.google.common.collect.ArrayTable;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-public class TimeSeriesTest extends TestCase{
-
+public class TimeSeriesTest extends TestCase {
+	TimeSeries<Instant> ts;
+	List<String> dataIRI = List.of("http://data1", "http://data2", "http://data3");
+	List<Instant> timeList = new ArrayList<>();
+	List<Double> data1 = new ArrayList<>();
+	List<String> data2 = new ArrayList<>();
+	List<Integer> data3 = new ArrayList<>();
+	
+	public void initialise() {
+		for (int i = 0; i < 10; i++) {
+			timeList.add(Instant.now().plusSeconds(i));
+			data1.add(Double.valueOf(i));
+			data2.add(String.valueOf(i));
+			data3.add(Integer.valueOf(i));
+		}
+		List<List<?>> dataToAdd = List.of(data1,data2,data3);
+		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
+	}
+	
+    public void testGetTimes() {
+    	initialise();
+    	assertEquals(ts.getTimes(), timeList);
+    }
+    
+    public void testGetDataIRI() {
+    	initialise();
+    	for (String iri : ts.getDataIRI()) {
+    		assertTrue(dataIRI.contains(iri));
+    	}
+    }
+    
+    public void testGetValues() {
+    	initialise();
+    	assertEquals(ts.getValues(dataIRI.get(0)),data1);
+    	assertEquals(ts.getValues(dataIRI.get(1)),data2);
+    	assertEquals(ts.getValues(dataIRI.get(2)),data3);
+    }
+    
+    public void testGetValuesAsDouble() {
+    	initialise();
+    	assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
+    }
+    
+    public void testGetValuesAsString() {
+    	initialise();
+    	assertEquals(ts.getValuesAsString(dataIRI.get(1)).get(0).getClass(), String.class);
+    }
+    
+    public void testGetValuesAsInteger() {
+    	initialise();
+    	assertEquals(ts.getValuesAsInteger(dataIRI.get(2)).get(0).getClass(), Integer.class);
+    }
 }
