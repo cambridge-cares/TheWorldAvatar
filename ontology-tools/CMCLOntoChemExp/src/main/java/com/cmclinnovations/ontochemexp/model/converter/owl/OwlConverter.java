@@ -227,7 +227,7 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 	public ArrayList<String> readObjPropertyPreferredKey(String interestedInstance) throws OntoChemExpException {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
-				ontoChemExpVocabulary.getObjPropertyhasPreferredKey());
+				ontoChemExpVocabulary.getOntoChemExpExpSpecs());
 		performMultilineAnswerQuery(q, 1);
 		Collections.sort(queryResult);
 		ArrayList<String> ObjPropertyInstances = queryResult;
@@ -261,17 +261,6 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
 				ontoChemExpVocabulary.getObjPropertyhasProperty());
-		performMultilineAnswerQuery(q, 1);
-		Collections.sort(queryResult);
-		ArrayList<String> ObjPropertyInstances = queryResult;
-		queryResult = new ArrayList<String>();
-		return ObjPropertyInstances;
-	}
-
-	public ArrayList<String> readObjPropertyValue(String interestedInstance) throws OntoChemExpException {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
-				ontoChemExpVocabulary.getObjPropertyhasValue());
 		performMultilineAnswerQuery(q, 1);
 		Collections.sort(queryResult);
 		ArrayList<String> ObjPropertyInstances = queryResult;
@@ -432,6 +421,13 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 	 * @return
 	 */
 
+	public String readDataPropertyExpType(String interestedInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
+				ontoChemExpVocabulary.getOntoChemExpExpSpecshasExpType());
+		return performQuery(q, 1);
+	}
+	
 	public String readDataPropertyValue(String interestedInstance) {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), interestedInstance,
@@ -529,25 +525,11 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 				ontoChemExpVocabulary.getDataPropertyhasPrimeID());
 		return performQuery(q, 1);
 	}
-
-	public String readDataPropertyXmlns(String experimentInstance) {
+	
+	public String readDataPropertyDOI(String bibliographyLinkInstance) {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXmlns());
-		return performQuery(q, 1);
-	}
-
-	public String readDataPropertyXmlnsXsi(String experimentInstance) {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXmlnsXsi());
-		return performQuery(q, 1);
-	}
-
-	public String readDataPropertyXsiSchemaLocation(String experimentInstance) {
-		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
-				ontoChemExpKB.getOntoChemExpKbTBoxIri(), experimentInstance,
-				ontoChemExpVocabulary.getDataPropertyhasXsiSchemaLocation());
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), bibliographyLinkInstance,
+				ontoChemExpVocabulary.getDataPropertyhasDOI());
 		return performQuery(q, 1);
 	}
 
@@ -590,6 +572,27 @@ public class OwlConverter extends PrimeConverterState implements IOwlConverter {
 		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
 				ontoChemExpKB.getOntoChemExpKbTBoxIri(), propertyInstance,
 				ontoChemExpVocabulary.getDataPropertyhasPropertyID());
+		return performQuery(q, 1);
+	}
+	
+	public String readDataPropertyCAS(String propertyInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), propertyInstance,
+				ontoChemExpVocabulary.getDataPropertyhasCAS());
+		return performQuery(q, 1);
+	}
+	
+	public String readDataPropertyInChI(String propertyInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), propertyInstance,
+				ontoChemExpVocabulary.getDataPropertyhasInChI());
+		return performQuery(q, 1);
+	}
+	
+	public String readDataPropertySMILES(String propertyInstance) {
+		String q = formQueryWithBaseURL(ontoChemExpKB.getOntoChemNamespace().concat(COLON),
+				ontoChemExpKB.getOntoChemExpKbTBoxIri(), propertyInstance,
+				ontoChemExpVocabulary.getDataPropertyhasSMILES());
 		return performQuery(q, 1);
 	}
 }

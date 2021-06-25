@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -14,9 +13,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.sparql.core.Var;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -53,40 +50,48 @@ public class BatteryEntityCreator extends JPSAgent {
 	static Individual xaxis;
 	static Individual yaxis;
 	static Individual length;
+	private static final String TWA_Ontology= "http://www.theworldavatar.com/ontology"; 
+	private static final String TWA_spacetime= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"; 
+	private static final String TWA_spacetime_extended= TWA_Ontology+"/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"; 
+	private static final String TWA_coordinate_system = TWA_Ontology+"/ontocape/upper_level/coordinate_system.owl#" ;
+	private static final String TWA_upperlevel_system = TWA_Ontology+ "/ontocape/upper_level/system.owl#";
+	private static final String TWA_POWSYSBEHAVIOR = TWA_Ontology + "/ontopowsys/PowSysBehavior.owl#";
+	private static final String TWA_physical_dimension = TWA_Ontology+ "/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#";
+	private static final String TWA_SIUNIT= TWA_Ontology+"/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"; 
 	
 	/** assign property values to variables
 	 * 
 	 * @param jenaOwlModel
 	 */
 	protected void initOWLClasses(OntModel jenaOwlModel) {
-		coordinateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#AngularCoordinate");
-		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
-		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
-		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
-		powerbalanceclass= jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#ActivePowerBalance");
+		coordinateclass = jenaOwlModel.getOntClass(TWA_spacetime+"AngularCoordinate");
+		coordinatesystemclass = jenaOwlModel.getOntClass(TWA_spacetime_extended+"ProjectedCoordinateSystem");
+		valueclass = jenaOwlModel.getOntClass(TWA_coordinate_system+"CoordinateValue");
+		scalarvalueclass = jenaOwlModel.getOntClass(TWA_upperlevel_system +"ScalarValue");
+		powerbalanceclass= jenaOwlModel.getOntClass( TWA_POWSYSBEHAVIOR +"ActivePowerBalance");
 		
-		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+		numval = jenaOwlModel.getDatatypeProperty(TWA_upperlevel_system +"numericalValue");
 		
-		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
-		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
-		hasActivePowerInjection=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerInjection");
-		hascoordinatesystem = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem");
-		hasx = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x");
-		hasy = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y");
-		referto = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#refersToAxis");
-		hasdimension = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension");
+		hasvalue = jenaOwlModel.getObjectProperty(TWA_upperlevel_system + "hasValue");
+		hasunit = jenaOwlModel.getObjectProperty(TWA_upperlevel_system +"hasUnitOfMeasure");
+		hasActivePowerInjection=jenaOwlModel.getObjectProperty( TWA_POWSYSBEHAVIOR +"hasActivePowerInjection");
+		hascoordinatesystem = jenaOwlModel.getObjectProperty(TWA_spacetime_extended +"hasGISCoordinateSystem");
+		hasx = jenaOwlModel.getObjectProperty(TWA_spacetime_extended +"hasProjectedCoordinate_x");
+		hasy = jenaOwlModel.getObjectProperty(TWA_spacetime_extended +"hasProjectedCoordinate_y");
+		referto = jenaOwlModel.getObjectProperty(TWA_coordinate_system +"refersToAxis");
+		hasdimension = jenaOwlModel.getObjectProperty(TWA_upperlevel_system +"hasDimension");
 		
-		length=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length");
-		xaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis");
-		yaxis=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis");
-		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
-		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
+		length=jenaOwlModel.getIndividual(TWA_physical_dimension +"length");
+		xaxis=jenaOwlModel.getIndividual(TWA_spacetime +"x-axis");
+		yaxis=jenaOwlModel.getIndividual(TWA_spacetime +"y-axis");
+		degree=jenaOwlModel.getIndividual(TWA_SIUNIT +"degree");
+		MW=jenaOwlModel.getIndividual(TWA_SIUNIT +"MW");
 	}
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new BadRequestException("Battery Entity Creator: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String ENIRI=requestParams.getString("electricalnetwork");
 		String storagetype=requestParams.getString("storage");
@@ -99,7 +104,7 @@ public class BatteryEntityCreator extends JPSAgent {
 			listbat = createBatteryOwlFile(model, storagetype,valueboundary);
 			requestParams.put("batterylist", listbat);
 		} catch (IOException e) {
-			throw new JPSRuntimeException("Battery Entity Creator: IOException.\n");
+			throw new JPSRuntimeException("");
 		}
 		return requestParams;
 		
@@ -129,11 +134,11 @@ public class BatteryEntityCreator extends JPSAgent {
 	 * @return List<String[]>
 	 */
 	public List<String[]> prepareSelectedBranch(OntModel model, double valueboundary){
-		String branchoutputInfo  = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#")
-				.addPrefix("j4", "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#")
-				.addPrefix("j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#")				
+		String branchoutputInfo  = new SelectBuilder().addPrefix("j1",TWA_Ontology+"/ontopowsys/PowSysRealization.owl#" )
+				.addPrefix("j2",TWA_upperlevel_system)
+				.addPrefix("j3", TWA_Ontology+"/ontopowsys/model/PowerSystemModel.owl#")
+				.addPrefix("j4", TWA_Ontology+"/meta_model/topology/topology.owl#")
+				.addPrefix("j5", TWA_Ontology+"/ontocape/model/mathematical_model.owl#")				
 				.addVar("?entity").addVar("?vplossvalue").addVar("?bus1").addVar("?bus2")
 				.addWhere("?entity" ,"a", "j1:UndergroundCable")
 				.addWhere("?entity" ,"j2:isModeledBy", "?model")
@@ -179,8 +184,8 @@ public class BatteryEntityCreator extends JPSAgent {
 			//requires iri to be allocated first as a Node, rather than copying and pasting in iri
 			SelectBuilder sb = new SelectBuilder();
 			
-			String buscoordinate  = sb.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-					.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
+			String buscoordinate  = sb.addPrefix("j2",TWA_upperlevel_system )
+					.addPrefix("j7", TWA_spacetime_extended)
 					.addVar("?valueofx").addVar("?valueofy")
 					.addWhere("<"+iri+">" ,"j7:hasGISCoordinateSystem", "?coorsys")
 					.addWhere("?coorsys" ,"j7:hasProjectedCoordinate_x", "?x")

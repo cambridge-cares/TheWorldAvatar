@@ -59,20 +59,5 @@ public class ExperimentQuery extends OwlConverter implements IExperimentQuery{
 		if (primeID != null && !primeID.isEmpty()) {
 			experiment.setPrimeID(primeID);
 		}
-		
-		String xmlns = readDataPropertyXmlns(experimentInstance);
-		if (xmlns != null && !xmlns.isEmpty()) {
-			experiment.setXmlns(xmlns);
-		}
-		
-		String xmlnsXsi = readDataPropertyXmlnsXsi(experimentInstance);
-		if (xmlnsXsi != null && !xmlnsXsi.isEmpty()) {
-			experiment.setXmlnsXsi(xmlnsXsi);
-		}
-		
-		String xsiSchemaLocation = readDataPropertyXsiSchemaLocation(experimentInstance);
-		if (xsiSchemaLocation != null && !xsiSchemaLocation.isEmpty()) {
-			experiment.setXsiSchemaLocation(xsiSchemaLocation);
-		}
 	}
 }

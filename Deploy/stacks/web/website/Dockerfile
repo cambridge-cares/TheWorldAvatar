@@ -47,11 +47,8 @@ RUN pecl install apcu \
     && pecl install yaml-2.0.4 \
     && docker-php-ext-enable apcu yaml
 	
-# Install sendmail
-RUN apt-get update && apt-get install -y sendmail sendmail-cf m4
-
 # Install bash
-RUN apt-get update && apt-get install -y bash
+RUN apt-get install -y bash
 
 # Copy in site files
 COPY site /var/www/html/
@@ -60,5 +57,32 @@ COPY site /var/www/html/
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/
 
+# Location for access logs
+RUN mkdir /var/log/apache2/daily-access
+RUN chown -R www-data:www-data /var/log/apache2/
+RUN chmod -R 775 /var/log/apache2/
+
+# Copy in custom configuration file(s)
+COPY rotate-logs.conf /etc/apache2/conf-available/rotate-logs.conf
+RUN ln -s /etc/apache2/conf-available/rotate-logs.conf /etc/apache2/conf-enabled/rotate-logs.conf
+RUN chown -R www-data:www-data /etc/apache2/conf-available/rotate-logs.conf
+RUN chown -R www-data:www-data /etc/apache2/conf-enabled/rotate-logs.conf
+RUN chmod -R 775 /etc/apache2/conf-available/rotate-logs.conf
+RUN chmod -R 775 /etc/apache2/conf-enabled/rotate-logs.conf
+
 # Expose port 80
 EXPOSE 80
+
+
+##### Dev configuration #####
+FROM base as dev
+# Set the Google Tag Manager container ID 
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NWD7GLT/" ./user/themes/quark/templates/partials/gtm-header.html.twig
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NWD7GLT/" ./user/themes/quark/templates/partials/gtm-noscript.html.twig
+
+
+##### Dev configuration #####
+FROM base as prod
+# Set the Google Tag Manager container ID 
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NM7K5Z2/" ./user/themes/quark/templates/partials/gtm-header.html.twig
+RUN sed -i "s/GTM_CONTAINER_ID/GTM-NM7K5Z2/" ./user/themes/quark/templates/partials/gtm-noscript.html.twig

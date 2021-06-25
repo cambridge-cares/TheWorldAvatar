@@ -23,9 +23,9 @@ public class ExperimentParser extends PrimeConverter implements IExperimentParse
 		// the PrIMe root tag, which is experiment
 		parseExperiment(qName, attributes);
 		parseExperimentPrimeID(qName, attributes);
-		parseExperimentXmlns(qName, attributes);
-		parseExperimentXmlnsXsi(qName, attributes);
-		parseExperimentXsiSchemaLocation(qName, attributes);
+//		parseExperimentXmlns(qName, attributes);
+//		parseExperimentXmlnsXsi(qName, attributes);
+//		parseExperimentXsiSchemaLocation(qName, attributes);
 	}
 	
 	/**
@@ -51,37 +51,37 @@ public class ExperimentParser extends PrimeConverter implements IExperimentParse
 		}
 	}
 	
-	private void parseExperimentXmlns(String qName, Attributes attributes) {
-		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
-			String xmlns = attributes.getValue("xmlns");
-			if (xmlns != null) {
-				experiment.setXmlns(xmlns);
-				experimentParseStatus.setXmlns(true);
-				experimentParseStatus.setExperiment(true);
-			}
-		}
-	}
-	
-	private void parseExperimentXmlnsXsi(String qName, Attributes attributes) {
-		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
-//			String xmlnsXsi = attributes.getValue(primeVocabulary.getAttribXmlnsXsi());
-			String xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance";
-			if (xmlnsXsi != null) {
-				experiment.setXmlnsXsi(xmlnsXsi);
-				experimentParseStatus.setXmlnsXsi(true);
-				experimentParseStatus.setExperiment(true);
-			}
-		}
-	}
-	
-	private void parseExperimentXsiSchemaLocation(String qName, Attributes attributes) {
-		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
-			String xsiSchemaLocation = attributes.getValue(primeVocabulary.getAttribXsiSchemaLocation());
-			if (xsiSchemaLocation != null) {
-				experiment.setXsiSchemaLocation(xsiSchemaLocation);
-				experimentParseStatus.setXsiSchemaLocation(true);
-				experimentParseStatus.setExperiment(true);
-			}
-		}
-	}
+//	private void parseExperimentXmlns(String qName, Attributes attributes) {
+//		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
+//			String xmlns = attributes.getValue("xmlns");
+//			if (xmlns != null) {
+//				experiment.setXmlns(xmlns);
+//				experimentParseStatus.setXmlns(true);
+//				experimentParseStatus.setExperiment(true);
+//			}
+//		}
+//	}
+//	
+//	private void parseExperimentXmlnsXsi(String qName, Attributes attributes) {
+//		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
+////			String xmlnsXsi = attributes.getValue(primeVocabulary.getAttribXmlnsXsi());
+//			String xmlnsXsi = "http://www.w3.org/2001/XMLSchema-instance";
+//			if (xmlnsXsi != null) {
+//				experiment.setXmlnsXsi(xmlnsXsi);
+//				experimentParseStatus.setXmlnsXsi(true);
+//				experimentParseStatus.setExperiment(true);
+//			}
+//		}
+//	}
+//	
+//	private void parseExperimentXsiSchemaLocation(String qName, Attributes attributes) {
+//		if (qName.equalsIgnoreCase(primeVocabulary.getElemExperiment())) {
+//			String xsiSchemaLocation = attributes.getValue(primeVocabulary.getAttribXsiSchemaLocation());
+//			if (xsiSchemaLocation != null) {
+//				experiment.setXsiSchemaLocation(xsiSchemaLocation);
+//				experimentParseStatus.setXsiSchemaLocation(true);
+//				experimentParseStatus.setExperiment(true);
+//			}
+//		}
+//	}
 }

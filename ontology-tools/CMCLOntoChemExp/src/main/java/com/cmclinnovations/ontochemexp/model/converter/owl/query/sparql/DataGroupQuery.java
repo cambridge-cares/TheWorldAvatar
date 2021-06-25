@@ -158,17 +158,11 @@ public class DataGroupQuery extends OwlConverter implements IDataGroupQuery {
 	}
 
 	private void queryPropertyValue(String propertyInstance) throws OntoChemExpException {
-		ArrayList<String> valueInstance = readObjPropertyValue(propertyInstance);
-
-		if (valueInstance.size() > 0 && valueInstance.size() < 2) {
-			String propertyValue = readDataPropertyValue(valueInstance.get(0));
-			if (propertyValue != null && !propertyValue.isEmpty()) {
-				dataGroupPropertyValue.setValueValue(propertyValue);
-				dataGroupProperty.setPropertyValue(dataGroupPropertyValue);
-				dataGroupPropertyValue = new Value();
-			}
-		} else if (valueInstance.size() > 1) {
-			logger.error("There should not be more than one instance of property value of dataGroupProperty.");
+		String propertyValue = readDataPropertyValue(propertyInstance);
+		if (propertyValue != null && !propertyValue.isEmpty()) {
+			dataGroupPropertyValue.setValueValue(propertyValue);
+			dataGroupProperty.setPropertyValue(dataGroupPropertyValue);
+			dataGroupPropertyValue = new Value();
 		}
 	}
 
@@ -234,6 +228,21 @@ public class DataGroupQuery extends OwlConverter implements IDataGroupQuery {
 					dataGroupPropertyComponentSpeciesLink.setSpeciesLinkPrimeID(primeID);
 				}
 				
+				String cas = readDataPropertyCAS(componentSpeciesLink);
+				if (cas != null && !cas.isEmpty()) {
+					dataGroupPropertyComponentSpeciesLink.setCas(cas);
+				}
+				
+				String inchi = readDataPropertyInChI(componentSpeciesLink);
+				if (inchi != null && !inchi.isEmpty()) {
+					dataGroupPropertyComponentSpeciesLink.setInchi(inchi);
+				}
+				
+				String smiles = readDataPropertySMILES(componentSpeciesLink);
+				if (smiles != null && !smiles.isEmpty()) {
+					dataGroupPropertyComponentSpeciesLink.setSmiles(smiles);
+				}
+				
 				String sLValue = readDataPropertyValue(componentSpeciesLink);
 				if (sLValue != null && !sLValue.isEmpty()) {
 					dataGroupPropertyComponentSpeciesLink.setSpeciesLinkValue(sLValue);
@@ -265,6 +274,21 @@ public class DataGroupQuery extends OwlConverter implements IDataGroupQuery {
 			String primeID = readDataPropertyPrimeID(speciesLinkInstance.get(0));
 			if (primeID != null && !primeID.isEmpty()) {
 				dataGroupPropertySpeciesLink.setSpeciesLinkPrimeID(primeID);
+			}
+			
+			String cas = readDataPropertyCAS(speciesLinkInstance.get(0));
+			if (cas != null && !cas.isEmpty()) {
+				dataGroupPropertySpeciesLink.setCas(cas);
+			}
+			
+			String inchi = readDataPropertyInChI(speciesLinkInstance.get(0));
+			if (inchi != null && !inchi.isEmpty()) {
+				dataGroupPropertySpeciesLink.setInchi(inchi);
+			}
+			
+			String smiles = readDataPropertySMILES(speciesLinkInstance.get(0));
+			if (smiles != null && !smiles.isEmpty()) {
+				dataGroupPropertySpeciesLink.setSmiles(smiles);
 			}
 
 			String value = readDataPropertyValue(speciesLinkInstance.get(0));

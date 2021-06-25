@@ -3,6 +3,21 @@ version: "3.8"
 # Services
 services:
 
+  # Gas Grid Agent
+  gas-grid-agent:
+    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    container_name: "gas-grid-agent"
+    restart: unless-stopped
+    ports:
+      - 4005:80
+    labels:
+      description: "Gas Grid Agent."
+      authors: "support@cmclinnovations.com"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+      
+      
+      
   # Local execution environment for SRM Driver.
   # Note: This Image contains the SRM Driver and Intel MPI files (without
   #       any queueing functionality).

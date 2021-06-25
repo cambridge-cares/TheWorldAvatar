@@ -29,6 +29,13 @@ case $stack in
     exit 2
 esac
 
+# Check that we're in the right directory
+stack_dir="./$stack"
+if [ ! -d $stack_dir ]; then
+  echo "Stack directory not found at $stack_dir - make sure you're running this script in the current directory"
+  exit 3
+fi
+
 compose_files="docker-compose.yml"
 
 # Set args to docker-compose itself, including the file specifiers
@@ -39,7 +46,7 @@ compose_opts="$compose_file_args --env-file $env_filename"
 printf "Pushing all images in the $stack stack\n\n"
 
 # Switch to stack dir to simplify finding config files
-cd ./$stack
+cd $stack_dir
 
 if [ ! -e $env_filename ]; then
   echo "Warning: no env vars file at $stack/$env_filename, '$stack' stack may not have been started. Trying to stop it anyway..."

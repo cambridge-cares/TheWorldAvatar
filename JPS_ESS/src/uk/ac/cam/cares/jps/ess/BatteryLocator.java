@@ -1,11 +1,9 @@
 package uk.ac.cam.cares.jps.ess;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -29,7 +27,7 @@ public class BatteryLocator extends JPSAgent {
     @Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 	    if (!validateInput(requestParams)) {
-			throw new BadRequestException("BatteryLocatorAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
     	// runs simulation with ENAgent
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", requestParams.toString());

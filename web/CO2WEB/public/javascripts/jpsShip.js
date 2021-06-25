@@ -172,7 +172,7 @@ function getRelevantFolder(typeOfEmission, city){
         var agentInfo = prefix +  "/JPS_SHIP/GetExtraInfo";
         // Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
         console.log(agentInfo)
-        $.get(agentInfo, {path:data}).done(function (data) {
+        $.get(agentInfo, {filepath:data}).done(function (data) {
             var info=JSON.parse(data);
             //Part 3: Handle Ships if they are there
             var shipsIRI = info.ship.collection.items; 

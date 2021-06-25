@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.des;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
@@ -17,7 +16,7 @@ public class FrontEndCoordination  extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("FrontEndCoordination: Input parameters are non-empty.\n");
+			throw new BadRequestException();
 		}
     	JSONObject responseParams = requestParams;
     	String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", requestParams.toString());

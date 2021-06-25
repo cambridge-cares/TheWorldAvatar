@@ -77,9 +77,8 @@ public class MenTableAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	
-		logger.info("MEN_Table Agent start");
 		if (!validateInput(requestParams)) {
-			throw new JSONException("MenAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		
 		// read form fields	
@@ -211,11 +210,9 @@ public class MenTableAgent extends JPSAgent{
         		}
         	
     	} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
     	 if (intMarketBool &&carbBool&&intBool && yrBool== true) {
     		 return true;

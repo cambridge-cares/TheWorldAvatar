@@ -13,6 +13,6 @@ public interface IBibliographyLinkWriter {
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(IBibliographyLinkWriter.class);
 //	public void writer(char ch[], int start, int length) throws SAXException;
 	public void writer(String qName) throws SAXException;
-	public void writeValue();
+//	public void writeValue();
 	public void setUP();
 }

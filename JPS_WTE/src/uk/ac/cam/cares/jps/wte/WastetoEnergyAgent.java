@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.http.client.methods.HttpPost;
@@ -14,7 +13,6 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -22,13 +20,11 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -44,9 +40,7 @@ public class WastetoEnergyAgent extends JPSAgent {
     /**
      *  create logger to log changes attached to WasteToEnergyAgent class. 
      */
-    protected Logger logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
-	
-	
+    protected Logger logger = null;	
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
@@ -73,10 +67,10 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 */
 	public static String getTransportQuery() {
 		SelectBuilder sb = new SelectBuilder()
-				.addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
-				.addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addPrefix("j7", "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#")
-				.addPrefix("j8", "http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#")
+				.addPrefix("j1", FCQuerySource.TWA_OntoWaste)
+				.addPrefix("j2",FCQuerySource.TWA_upperlevel_system)
+				.addPrefix("j7", FCQuerySource.TWA_spacetime_extended)
+				.addPrefix("j8", FCQuerySource.TWA_OntoTransport)
 				.addVar("?Unit_transport_capacity").addVar("?Unit_transport_cost")
 				.addVar("?pollutionTransportTax").addVar("?dieselConsTruck")
 		.addWhere("?entity", "a","j8:TransportationRoute").addWhere("?entity", "j8:suitFor","?truck")
@@ -94,42 +88,35 @@ public class WastetoEnergyAgent extends JPSAgent {
 		.addWhere("?vTemission", "j2:numericalValue","?dieselConsTruck");
 		Query q = sb.build();
 		return q.toString();
-	}
-	
-	
+	}	
 	
 	/** gets the OffsiteWasteTreatmentFacility's 
 	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
 	 */
 	public static String returnUpperBoundQuery() {
-		SelectBuilder sb = new SelectBuilder().addPrefix("j1","http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#" )
+		SelectBuilder sb = new SelectBuilder().addPrefix("j1",FCQuerySource.TWA_OntoWaste)
 				.addVar("?entity").addVar("?tech1upp").addVar("?tech2upp").addVar("?tech3upp")
 				.addWhere("?entity" ,"j1:hasOffsiteIncinerationUpperBound", "?tech1upp")
 				.addWhere("?entity" ,"j1:hasOffsiteCoDigestionUpperBound", "?tech2upp")
 				.addWhere("?entity" ,"j1:hasOffsiteAnerobicDigestionUpperBound", "?tech3upp");
 		return sb.buildString();
 	}
+	
 	/** main function. Reads the values in and copies the templates back. 
 	 * 
 	 */
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		if (!validateInput(requestParams)) {
-			throw new JSONException("WTE:processSimulationAgent: Input parameters not found.\n");
+			throw new BadRequestException();
 		}
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
-		
 		//render ontological model of waste network
-		OntModel model= readModelGreedy(wasteIRI);
+		OntModel model= FCQuerySource.readModelGreedy(wasteIRI);
 		//creates the csv of FCs, with Site_xy reading for location, waste containing the level of waste in years 1-15
 		//in baseUrl folder
-		prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
+		 prepareCSVFC("Site_xy.csv","Waste.csv", baseUrl,model,15); 
 		// searches for number of clusters to agglomerate (i.e. number of onsite WTF max)
 		String n_cluster= requestParams.getString("n_cluster");
 		//TODO: Can put this as input to matlab, but I don't know Matlab well enough for this, so having a txt to read from 
@@ -162,7 +149,7 @@ public class WastetoEnergyAgent extends JPSAgent {
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
                     path.replace(COORDINATION_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new JPSRuntimeException("");
 		}
 		return requestParams;
 	}
@@ -180,65 +167,12 @@ public class WastetoEnergyAgent extends JPSAgent {
         try {
         String iriofnetwork = requestParams.getString("wastenetwork");
         String nCluster = requestParams.getString("n_cluster");
-        return ((InputValidator.checkIfValidIRI(iriofnetwork)  || InputValidator.checkIfFilePath(iriofnetwork))
-        		& InputValidator.checkIfInteger(nCluster));
+        return InputValidator.checkIfValidIRI(iriofnetwork) & InputValidator.checkIfInteger(nCluster);
         } catch (JSONException ex) {
         	return false;
         }
     }
 	
-	/** reads the topnode into an OntModel of all its subsystems. 
-	 * @param iriofnetwork
-	 * @return
-	 */
-	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
-		if  (InputValidator.checkIfValidIRI(iriofnetwork)) {
-			iriofnetwork = FCQuerySource.tempIRItoFile(iriofnetwork);
-			}
-		SelectBuilder sb = new SelectBuilder().addPrefix("j2","http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" )
-				.addWhere("?entity" ,"a", "j2:CompositeSystem").addWhere("?entity" ,"j2:hasSubsystem", "?component");
-		String wasteInfo = sb.build().toString();
-		JSONObject requestParams = new JSONObject().put(JPSConstants.QUERY_SPARQL_QUERY, wasteInfo)
-				.put(JPSConstants.TARGETIRI , iriofnetwork);
-		String result = AgentCaller.executeGetWithJsonParameter("jps/kb", requestParams.toString()); 
-		return readModelGreedyCon(result);
-	}
-	/** Submethod for readModelGreedy
-	 * 
-	 * @param greedyResult
-	 * @return
-	 */
-	public static OntModel readModelGreedyCon(String greedyResult) {
-		
-		JSONArray ja = new JSONArray(new JSONObject(greedyResult).getString("results"));
-		
-		List<String> nodesToVisit = new ArrayList<String>();
-		for (int i=0; i<ja.length(); i++) {
-			JSONObject row = ja.getJSONObject(i);
-			for (String current : row.keySet()) {
-				String potentialIri =  row.getString(current);
-				if (potentialIri.startsWith("http")) {
-					int index = potentialIri.lastIndexOf("#");
-					if (index > 0) {
-						potentialIri = potentialIri.substring(0, index);
-					}
-					if (!nodesToVisit.contains(potentialIri)) {
-						nodesToVisit.add(potentialIri);
-					} 
-				}
-			}
-		}
-		
-		
-		//OntModel model = ModelFactory.createOntologyModel();
-		OntModel model = JenaHelper.createModel();
-		for (String current : nodesToVisit) {
-			current = ResourcePathConverter.convert(current);
-			model.read(current, null); 
-		}
-		
-		return model;
-	}
 	
 	/** Creates the CSV of the foodcourt for the Matlab code to read. 
 	 * a. reading the model and getting the number of FC *number of years of waste levels 
@@ -251,7 +185,7 @@ public class WastetoEnergyAgent extends JPSAgent {
 	 * @param model
 	 * @return
 	 */
-	public List<String[]> prepareCSVFC(String filename,String filename2, String baseUrl,OntModel model, int noOfYears) { //create csv for food court and giving the list of complete food court iri
+	public void prepareCSVFC(String filename,String filename2, String baseUrl,OntModel model, int noOfYears) { //create csv for food court and giving the list of complete food court iri
 		//csv input file		
 		ResultSet resultSet = JenaHelper.query(model,getFCQuery());
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -286,8 +220,6 @@ public class WastetoEnergyAgent extends JPSAgent {
         resultxy.add(0,header);
         //resultwaste.add(0,headerwaste);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy));
-    	
-        return resultfcmapper;
 	}
 	/** prepares the CSV file for the offsite Waste treatment facility and it's xy coordinates. 
 	 * 
