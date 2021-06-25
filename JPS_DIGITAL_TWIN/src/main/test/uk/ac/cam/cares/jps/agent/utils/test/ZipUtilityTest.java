@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.utils.test;
 
-import org.apache.commons.io.FileUtils;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
