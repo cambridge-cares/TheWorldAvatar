@@ -30,11 +30,12 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 /**
  * This class uses the jooq library to interact with the relational database.
+ * T is the class type for the time values
  * @author Kok Foong Lee
  *
  */
 
-public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
+public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
 	private KnowledgeBaseClientInterface kbClient = null; 
@@ -311,9 +312,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
-    	List<Field<?>> columnList = new ArrayList<>();
-    	columnList.add(timeColumn); columnList.add(columnField);
-    	
     	List<BigDecimal> queryResult = dsl.select(avg(columnField)).from(table).fetch(avg(columnField));
     	closeConnection(conn);
     	
@@ -337,9 +335,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
-    	List<Field<?>> columnList = new ArrayList<>();
-    	columnList.add(timeColumn); columnList.add(columnField);
-    	
     	List<Double> queryResult = dsl.select(max(columnField)).from(table).fetch(max(columnField));
     	closeConnection(conn);
     	
@@ -362,9 +357,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	// create map between data IRI and the corresponding column field in the table
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-    	
-    	List<Field<?>> columnList = new ArrayList<>();
-    	columnList.add(timeColumn); columnList.add(columnField);
     	
     	List<Double> queryResult = dsl.select(min(columnField)).from(table).fetch(min(columnField));
     	closeConnection(conn);
