@@ -253,26 +253,10 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring-version}</version>
 		</dependency>
-		<!-- postgresql for time series database -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.20</version>
-		</dependency>
 		<!-- jooq for constructing SQL queries -->
 		<dependency>
 		    <groupId>org.jooq</groupId>
 		    <artifactId>jooq</artifactId>
-		    <version>3.14.9</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.jooq</groupId>
-		    <artifactId>jooq-meta</artifactId>
-		    <version>3.14.9</version>
-		</dependency>
-		<dependency>
-		    <groupId>org.jooq</groupId>
-		    <artifactId>jooq-codegen</artifactId>
 		    <version>3.14.9</version>
 		</dependency>
 		<!-- for constructing sparql queries, used in time series -->
