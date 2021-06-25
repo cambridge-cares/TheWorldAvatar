@@ -46,18 +46,31 @@ public class TimeSeriesTest extends TestCase {
     	assertEquals(ts.getValues(dataIRI.get(2)),data3);
     }
     
+    /**
+     * to use this, the original data must be an instance of "Number"
+     */
     public void testGetValuesAsDouble() {
     	initialise();
     	assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
+    	assertEquals(ts.getValuesAsDouble(dataIRI.get(2)).get(0).getClass(), Double.class);
     }
     
+    /** 
+     * if the original class has a toString() method, this should work
+     */
     public void testGetValuesAsString() {
     	initialise();
-    	assertEquals(ts.getValuesAsString(dataIRI.get(1)).get(0).getClass(), String.class);
+    	for (String data : dataIRI) {
+    		assertEquals(ts.getValuesAsString(data).get(0).getClass(), String.class);
+    	}
     }
     
+    /**
+     * to use this, the original data must be an instance of "Number"
+     */
     public void testGetValuesAsInteger() {
     	initialise();
+    	assertEquals(ts.getValuesAsInteger(dataIRI.get(0)).get(0).getClass(), Integer.class);
     	assertEquals(ts.getValuesAsInteger(dataIRI.get(2)).get(0).getClass(), Integer.class);
     }
 }
