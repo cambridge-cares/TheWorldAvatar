@@ -511,12 +511,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		}
 	}
 	
-	public void createDatabaseTable(DSLContext create) {
+	private void createDatabaseTable(DSLContext create) {
 		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
 		.column(tsTableNameColumn).column(columnNameColumn).execute();
 	}
 	
-	public void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
+	private void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
 		InsertValuesStep4<Record, String, String, String, String> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), 
 				dataIRIcolumn, tsIRIcolumn, tsTableNameColumn, columnNameColumn);
 
@@ -527,7 +527,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		insertValueStep.execute();
 	}
 	
-	public static String generateUniqueTableName(String tsIRI) {
+	private static String generateUniqueTableName(String tsIRI) {
 		String source = tsIRI;
 
 		byte[] bytes = null;
@@ -549,7 +549,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	 * @param timeClass
 	 * @param valueClassList
 	 */
-	public void initTimeSeriesTable(DSLContext create, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI,
+	private void initTimeSeriesTable(DSLContext create, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI,
 			List<Class<?>> dataClass) {   	
 		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
 		
@@ -565,7 +565,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
     	createStep.execute();
 	}
 	
-	public void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
+	private void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
 		List<String> dataIRIs = ts.getDataIRI();
 
     	Table<?> table = DSL.table(DSL.name(tablename));
