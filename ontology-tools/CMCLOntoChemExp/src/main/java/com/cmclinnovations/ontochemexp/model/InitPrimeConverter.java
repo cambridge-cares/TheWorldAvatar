@@ -109,9 +109,9 @@ import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.ModePa
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.property.ApparatusPropertyUncertaintyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.property.ApparatusPropertyValueParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.CommonPropertiesPropertyParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentAmountParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.ComponentAmountParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentSpeciesLinkParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.ComponentSpeciesLinkParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyUncertaintyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyValueParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataGroupDataGroupLinkParseStatus;
@@ -119,9 +119,9 @@ import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataG
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataPointParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataPointXParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyComponentParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureIndicatorParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureObservableParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureIndicatorParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureObservableParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertySpeciesLinkParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyValueParseStatus;
