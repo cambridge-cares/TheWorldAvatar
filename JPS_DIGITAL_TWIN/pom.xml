@@ -224,6 +224,11 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.7</version>
 		</dependency>
+		<dependency>
+			<groupId>commons-codec</groupId>
+			<artifactId>commons-codec</artifactId>
+			<version>1.15</version>
+		</dependency>
 	<!-- https://mvnrepository.com/artifact/au.com.bytecode/opencsv -->
 		<dependency>
    		<groupId>au.com.bytecode</groupId>
@@ -261,8 +266,8 @@
     <groupId>org.topbraid</groupId>
     <artifactId>spin</artifactId>
     <version>2.0.0</version>
-    <scope>system</scope>
-    <systemPath>C:/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/mvn/spin-2.0.0.jar</systemPath>
+	<!--<scope>system</scope>
+     <systemPath>C:/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/mvn/spin-2.0.0.jar</systemPath> -->
 </dependency>
 
 		<!-- Testing -->
