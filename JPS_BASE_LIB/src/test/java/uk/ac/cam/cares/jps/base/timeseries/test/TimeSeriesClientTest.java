@@ -128,25 +128,25 @@ public class TimeSeriesClientTest extends TestCase{
 		Field rdbPasswordField = tsClient.getClass().getDeclaredField("rdbPassword");
 		rdbPasswordField.setAccessible(true);
 		assertNull(rdbPasswordField.get(tsClient));
-		tsClient.setRdbPassword("password");
+		tsClient.setRdbPassword(password);
 		assertNotNull(rdbPasswordField.get(tsClient));
-		assertEquals(rdbPasswordField.get(tsClient), "password");
+		assertEquals(rdbPasswordField.get(tsClient), password);
 		
 		// rdb user
 		Field rdbUserField = tsClient.getClass().getDeclaredField("rdbUser");
 		rdbUserField.setAccessible(true);
 		assertNull(rdbUserField.get(tsClient));
-		tsClient.setRdbUser("user");
+		tsClient.setRdbUser(user);
 		assertNotNull(rdbUserField.get(tsClient));
-		assertEquals(rdbUserField.get(tsClient), "user");
+		assertEquals(rdbUserField.get(tsClient), user);
 		
 		// rdb url
 		Field rdbUrlField = tsClient.getClass().getDeclaredField("rdbURL");
 		rdbUrlField.setAccessible(true);
 		assertNull(rdbUrlField.get(tsClient));
-		tsClient.setRdbURL("url");
+		tsClient.setRdbURL(dbURL);
 		assertNotNull(rdbUrlField.get(tsClient));
-		assertEquals(rdbUrlField.get(tsClient),"url");
+		assertEquals(rdbUrlField.get(tsClient),dbURL);
 		
 		// time unit
 		Field timeUnitField = tsClient.getClass().getDeclaredField("timeUnit");
