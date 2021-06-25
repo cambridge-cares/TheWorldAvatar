@@ -42,10 +42,13 @@ public class TimeSeriesClientTest extends TestCase{
 //    	
 //    	// next step is to initialise the time series instance in RDF and RDB
 //    	// in this example I have three instances that share the same timestamp, so they are initialised together
-//    	List<String> dataIRI = List.of("http://data1", "http://data2", "http://data3");
+//    	List<String> dataIRI = new ArrayList<>();
+//    	dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); 
+//    	dataIRI.add(endpoint);
 //    	// next specify the type of data for each column, I expect most data will be in doubles, but you can specify
 //    	// different data types if you wish
-//    	List<Class<?>> dataClass = List.of(Double.class,String.class,Integer.class);
+//    	List<Class<?>> dataClass = new ArrayList<>();
+//    	dataClass.add(Double.class); dataClass.add(String.class); dataClass.add(Integer.class);
 //    	
 //    	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
 //    	// at the same time, the tables will be created in RDB according to the class specified
@@ -63,7 +66,8 @@ public class TimeSeriesClientTest extends TestCase{
 //    		data2.add(String.valueOf(i));
 //    		data3.add(Integer.valueOf(i));
 //    	}
-//    	List<List<?>> dataToAdd = List.of(data1,data2,data3);
+//    	List<List<?>> dataToAdd = new ArrayList<>();
+//    	dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
 //    	// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
 //    	TimeSeries<Instant> tsToAdd = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
 //    	
