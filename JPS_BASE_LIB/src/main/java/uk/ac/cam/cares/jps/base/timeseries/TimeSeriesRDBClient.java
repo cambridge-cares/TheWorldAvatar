@@ -37,11 +37,11 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
-	private KnowledgeBaseClientInterface kbClient; 
+	private KnowledgeBaseClientInterface kbClient = null; 
 	// url and credentials for the relational database
-	private String rdbURL; 
-	private String rdbUser;
-	private String rdbPassword;
+	private String rdbURL = null; 
+	private String rdbUser = null;
+	private String rdbPassword = null;
 	// time unit (in IRI)
 	private String timeUnit = null;
 	
@@ -496,6 +496,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface{
 		Connection conn = null;
 		try {
         	conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
+        	System.out.println("Connected to " + this.rdbURL);
 			return conn;
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e);
