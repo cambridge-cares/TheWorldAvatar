@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.impl.DSL;
+
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
@@ -95,5 +99,61 @@ public class TimeSeriesClientTest extends TestCase{
 //    	
 //    	// or delete all time series related data, this will remove the data in the same table, even if it's not included
 //    	tsClient.deleteTimeSeries(dataIRI.get(0));
+	}
+	
+	public void testConstructorAndSetters() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		// test constructor
+		Class<?> timeClass = Instant.class;
+		TimeSeriesRDBClient<Instant> tsClient = new TimeSeriesRDBClient<>(Instant.class);
+		Field timeColumnField = tsClient.getClass().getDeclaredField("timeColumn");
+		timeColumnField.setAccessible(true);
+		// this only compares the query string - "time", the class is not checked here
+		assertNotNull(timeColumnField.get(tsClient));
+		assertEquals(timeColumnField.get(tsClient), DSL.field(DSL.name("time"),timeClass));
+		
+		// check that kbClient is set correctly
+		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		Field kbClientField = tsClient.getClass().getDeclaredField("kbClient");
+		kbClientField.setAccessible(true);
+		assertNull(kbClientField.get(tsClient));
+		tsClient.setKBClient(kbClient);
+		assertNotNull(kbClientField.get(tsClient));
+		assertEquals(kbClientField.get(tsClient), kbClient);
+		
+		FileBasedKnowledgeBaseClient kbClient2 = new FileBasedKnowledgeBaseClient();
+		tsClient.setKBClient(kbClient2);
+		assertEquals(kbClientField.get(tsClient), kbClient2);
+		
+		// rdb password
+		Field rdbPasswordField = tsClient.getClass().getDeclaredField("rdbPassword");
+		rdbPasswordField.setAccessible(true);
+		assertNull(rdbPasswordField.get(tsClient));
+		tsClient.setRdbPassword("password");
+		assertNotNull(rdbPasswordField.get(tsClient));
+		assertEquals(rdbPasswordField.get(tsClient), "password");
+		
+		// rdb user
+		Field rdbUserField = tsClient.getClass().getDeclaredField("rdbUser");
+		rdbUserField.setAccessible(true);
+		assertNull(rdbUserField.get(tsClient));
+		tsClient.setRdbUser("user");
+		assertNotNull(rdbUserField.get(tsClient));
+		assertEquals(rdbUserField.get(tsClient), "user");
+		
+		// rdb url
+		Field rdbUrlField = tsClient.getClass().getDeclaredField("rdbURL");
+		rdbUrlField.setAccessible(true);
+		assertNull(rdbUrlField.get(tsClient));
+		tsClient.setRdbURL("url");
+		assertNotNull(rdbUrlField.get(tsClient));
+		assertEquals(rdbUrlField.get(tsClient),"url");
+		
+		// time unit
+		Field timeUnitField = tsClient.getClass().getDeclaredField("timeUnit");
+		timeUnitField.setAccessible(true);
+		assertNull(timeUnitField.get(tsClient));
+		tsClient.setTimeUnit("http://s");
+		assertNotNull(timeUnitField.get(tsClient));
+		assertEquals(timeUnitField.get(tsClient),"http://s");
 	}
 }
