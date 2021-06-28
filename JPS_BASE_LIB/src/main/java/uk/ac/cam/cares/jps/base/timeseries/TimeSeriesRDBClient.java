@@ -88,9 +88,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		Connection conn = connect();
 		DSLContext create = DSL.using(conn, dialect); 
 		
+		// check if database (look up table) exists and create it
+		createDatabaseTable(create);
+		
 		// check if data already exists
 		for (String s : dataIRI) {
-			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+			if(checkDataHasTimeSeries(create, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance");
 			}
 		}
@@ -120,8 +123,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			i++;
 		}
 		
-		// check if database exists and create it
-		createDatabaseTable(create);
 		populateDatabaseTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
 		
 		// create table for storing time series data
@@ -175,27 +176,27 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
      * @param dataIRI
      */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
     	// check if time series is initialised
 		for (String s : dataIRI) {
-			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+			if(!checkDataHasTimeSeries(dsl, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
 			}
 		}
     	
     	// make sure they are in the same table
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
     				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
     			}
     		}
     	}
-    	
-    	// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
@@ -238,27 +239,27 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
+		// initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+		
 		// check if time series is initialised
 		for (String s : dataIRI) {
-			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+			if(!checkDataHasTimeSeries(dsl, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
 			}
 		}
     	
     	// make sure they are in the same table
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
     				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
     			}
     		}
     	}
-    	
-    	// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
@@ -300,15 +301,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getAverage(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+    	
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -323,15 +324,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	public double getMaxValue(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
+		
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
     	
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -346,15 +347,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	public double getMinValue(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -369,15 +370,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	public T getMaxTime(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+    	
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -390,15 +391,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	public T getMinTime(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+    	
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -417,14 +418,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param upperBound
 	 */
 	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
-		String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
@@ -438,16 +440,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeries(String dataIRI) {
-		if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
-		String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI);
-		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
-		
 		// initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
+		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
     
     	//delete time series table
     	String tsTableName = getTableName(dsl, tsIRI);

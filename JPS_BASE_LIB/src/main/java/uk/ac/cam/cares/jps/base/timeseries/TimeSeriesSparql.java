@@ -51,13 +51,6 @@ public class TimeSeriesSparql {
     	return timeSeriesExists;
     }
     
-    public static boolean checkDataHasTimeSeries(KnowledgeBaseClientInterface kbClient,String dataIRI) {
-    	String query = String.format("ask {<%s> <%shasTimeSeries> ?x}",dataIRI,namespace);
-    	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
-    }
-    
     /**
      * Instantiates the time series instance, named graph and time unit are optional
      * @param kbClient
@@ -111,20 +104,6 @@ public class TimeSeriesSparql {
     	int queryresult = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
     	
     	return queryresult;
-	}
-	
-	public static String getTimeSeriesIRI(KnowledgeBaseClientInterface kbClient, String dataIRI) {
-		SelectQuery query = Queries.SELECT();
-		String queryKey = "tsIRI";
-		Variable ts = SparqlBuilder.var(queryKey);
-		GraphPattern queryPattern = iri(dataIRI).has(hasTimeSeries,ts);
-		//construct query
-		query.prefix(p_timeseries).select(ts).where(queryPattern);
-		
-		kbClient.setQuery(query.getQueryString());
-		
-		String tsIRI = kbClient.executeQuery().getJSONObject(0).getString(queryKey);
-		return tsIRI;
 	}
 	
 	public static void removeTimeSeries(KnowledgeBaseClientInterface kbClient, String tsIRI) {
