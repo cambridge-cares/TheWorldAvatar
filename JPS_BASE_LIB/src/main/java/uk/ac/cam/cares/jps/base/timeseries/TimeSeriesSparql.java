@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -17,6 +18,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
@@ -143,5 +145,25 @@ public class TimeSeriesSparql {
 		
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
+	}
+	
+	public static List<String> getAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
+		String queryString = "ts";
+		SelectQuery query = Queries.SELECT();
+		
+		Variable ts = SparqlBuilder.var(queryString);
+		TriplePattern queryPattern = ts.isA(TimeSeries);
+		
+		query.select(ts).where(queryPattern).prefix(p_timeseries);
+		
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		
+		List<String> tsIRI = new ArrayList<String>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			tsIRI.add(queryResult.getJSONObject(i).getString(queryString));
+		}
+		
+		return tsIRI;
 	}
 }
