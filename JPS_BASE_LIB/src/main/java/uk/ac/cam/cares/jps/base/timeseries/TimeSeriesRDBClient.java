@@ -137,27 +137,27 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     public void addTimeSeries(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
+    	// initialise connection
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
     	// check if time series is initialised
 		for (String s : dataIRI) {
-			if(!TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
+			if(!checkDataHasTimeSeries(dsl, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
 			}
 		}
     	
 		// first ensure that each provided column is located in the same table by checking its time series IRI
-    	String tsIRI = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(0));
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = TimeSeriesSparql.getTimeSeriesIRI(kbClient, dataIRI.get(i));
+    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
     				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
     			}
     		}
     	}
-    	
-    	// initialise connection
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	// assign column name for each value, name for time column is fixed
@@ -614,5 +614,18 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			insertValueStep = insertValueStep.values(newValues);
 		}
 		insertValueStep.execute();
+	}
+	
+	private boolean checkDataHasTimeSeries(DSLContext dsl, String dataIRI) {
+		// look for the entry dataIRI in dbTable
+		Table<?> table = DSL.table(DSL.name(dbTableName));
+		return dsl.fetchExists(selectOne().from(table).where(dataIRIcolumn.eq(dataIRI)));
+	}
+	
+	private String getTimeSeriesIRI(DSLContext dsl, String dataIRI) {
+		// look for the entry dataIRI in dbTable
+		Table<?> table = DSL.table(DSL.name(dbTableName));
+		List<String> queryresult = dsl.select(tsIRIcolumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(tsIRIcolumn);
+	    return queryresult.get(0);
 	}
 }
