@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * 
+ * <T> is the class for your time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  * @author Kok Foong Lee
  */
 public class TimeSeries<T> {
