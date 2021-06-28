@@ -281,6 +281,12 @@
             <artifactId>rdf4j-sparqlbuilder</artifactId>
             <version>3.4.3</version>
         </dependency>
+		<!-- driver for connecting to postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.22</version>
+		</dependency>
 	</dependencies>
 
 </project>
