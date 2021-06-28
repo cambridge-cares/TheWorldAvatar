@@ -14,7 +14,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 public class TimeSeriesClientTest extends TestCase{
-	String dbURL = "jdbc:postgresql:timeseries";
+	// timeseries is the name of your database, analogous to a triple-store endpoint
+	// you need to create this beforehand, for more info see https://jdbc.postgresql.org/documentation/80/connect.html
+	String dbURL = "jdbc:postgresql:timeseries"; 
 	String user = "postgres";
 	String password = "postgres";
 	
@@ -44,7 +46,6 @@ public class TimeSeriesClientTest extends TestCase{
 //    	// in this example I have three instances that share the same timestamp, so they are initialised together
 //    	List<String> dataIRI = new ArrayList<>();
 //    	dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); 
-//    	dataIRI.add(endpoint);
 //    	// next specify the type of data for each column, I expect most data will be in doubles, but you can specify
 //    	// different data types if you wish
 //    	List<Class<?>> dataClass = new ArrayList<>();
@@ -103,6 +104,9 @@ public class TimeSeriesClientTest extends TestCase{
 //    	
 //    	// or delete all time series related data, this will remove the data in the same table, even if it's not included
 //    	tsClient.deleteTimeSeries(dataIRI.get(0));
+//    	
+//    	//the following will delete everything
+//    	tsClient.deleteAll();
 	}
 	
 	public void testConstructorAndSetters() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
