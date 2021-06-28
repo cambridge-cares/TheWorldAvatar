@@ -84,6 +84,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 */
 	public void init(List<String> dataIRI, List<Class<?>> dataClass) {
+		// initialise connection
+		Connection conn = connect();
+		DSLContext create = DSL.using(conn, dialect); 
+		
 		// check if data already exists
 		for (String s : dataIRI) {
 			if(TimeSeriesSparql.checkDataHasTimeSeries(kbClient, s)) {
@@ -104,10 +108,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		// instantiate in KG
 		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
-		
-		// initialise connection
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect); 
 		
 		// generate unique table name for this time series, cannot use data IRI as table names directly
 		String tsTableName = generateUniqueTableName(tsIRI);
@@ -130,6 +130,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		closeConnection(conn);
 	}
 	
+	/**
+	 * appends data to the already existing table
+	 * If certain columns within the table are not provided, they will be nulls
+	 */
     public void addTimeSeries(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
@@ -227,7 +231,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     }
     
 	/**
-	 * only returns time series within the given time bounds
+	 * returns time series within the given time bounds
 	 * @param dataIRI
 	 * @param lowerBound
 	 * @param upperBound
@@ -424,7 +428,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
-    	
+
     	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
     	closeConnection(conn);
 	}
@@ -453,6 +457,33 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
     	dsl.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	closeConnection(conn);
+	}
+	
+	/**
+	 * deletes everything related to time series
+	 */
+	public void deleteAll() {
+		List<String> tsIRI = TimeSeriesSparql.getAllTimeSeries(kbClient);
+		
+		if (!tsIRI.isEmpty()) {
+			Connection conn = connect();
+	    	DSLContext dsl = DSL.using(conn, dialect); 
+	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
+			// remove triples in KG and the time series table
+			for (String ts : tsIRI) {
+				TimeSeriesSparql.removeTimeSeries(kbClient, ts);
+				
+		    	//delete time series table
+		    	String tsTableName = getTableName(dsl, ts);
+		    	dsl.dropTable(DSL.table(DSL.name(tsTableName))).execute();
+		    	
+		    	//delete entry in the main table
+		    	dsl.delete(dbTable).where(tsIRIcolumn.equal(ts)).execute();
+			}
+			
+			// delete lookup table
+			dsl.dropTable(dbTable).execute();
+		}
 	}
 	
 	/**
@@ -487,6 +518,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private Connection connect() {
 		Connection conn = null;
 		try {
+			Class.forName("org.postgresql.Driver");
         	conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
         	System.out.println("Connected to " + this.rdbURL);
 			return conn;
