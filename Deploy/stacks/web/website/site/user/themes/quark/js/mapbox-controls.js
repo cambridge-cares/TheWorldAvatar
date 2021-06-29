@@ -37,7 +37,7 @@ const controlHTML = `
 `;
 
 // Default parameters for the Bird's Eye camera
-const defaultBird = {
+var defaultBird = {
 	curve: 1.9,
 	speed: 1.6,
 	zoom: 5,
@@ -47,7 +47,7 @@ const defaultBird = {
 };
 
 // Default parameters for the Pitched camera
-const defaultPitch = {
+var defaultPitch = {
 	curve: 1.9,
 	speed: 1.6,
 	zoom: 7,
@@ -58,7 +58,7 @@ const defaultPitch = {
 
 // Default options that should be used when initialising
 // a new MapBox map instance
-const defaultOptions = {
+var defaultOptions = {
 	container: "map",
 	style: "mapbox://styles/mapbox/light-v10?optimize=true",
 	center: [-2, 54.5],
@@ -84,6 +84,34 @@ var layerCallback = null;
 
 // Ditionary of registered layer names to IDs
 var registeredLayers = {};
+
+/**
+* Overrides the default settings for the bird camera option.
+*
+* @param newDefaults - new default options for bird camera
+*/
+function overrideDefaultBird(newDefaults) {
+	defaultBird = newDefaults;
+}
+
+/**
+* Overrides the default settings for the pitch camera option.
+*
+* @param newDefaults - new default options for pitch camera
+*/
+function overrideDefaultPitch(newDefaults) {
+	defaultPitch = newDefaults;
+}
+
+/**
+* Overrides the default mapbox settings for the map.
+*
+* @param newDefaults - new default options for map
+*/
+function overrideDefaultMap(newDefaults) {
+	defaultOptions = newDefaults;
+}
+
 
 /**
  * Map options to be used for new maps.
@@ -278,8 +306,8 @@ function onGroupChange(checkbox) {
 		var ids = layers[layerName]["ids"];
 
 		ids.forEach((layerID) => {
-			layerCallback(layerID, checkbox.checked);
 			console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[layerName]["selected"]);
+			layerCallback(layerID, checkbox.checked);
 		});
 	}
 }
@@ -295,8 +323,8 @@ function onLayerChange(checkbox) {
 	var ids = layers[checkbox.id]["ids"];
 
 	ids.forEach((layerID) => {
-		layerCallback(layerID, checkbox.checked);
 		console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[layerName]["selected"]);
+		layerCallback(layerID, checkbox.checked);
 	});
 }
 
