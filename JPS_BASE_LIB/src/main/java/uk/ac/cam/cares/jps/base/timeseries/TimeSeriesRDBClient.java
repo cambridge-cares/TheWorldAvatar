@@ -621,7 +621,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private boolean checkDataHasTimeSeries(DSLContext dsl, String dataIRI) {
 		// look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
-		return dsl.fetchExists(selectOne().from(table).where(dataIRIcolumn.eq(dataIRI)));
+		return dsl.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));
 	}
 	
 	private String getTimeSeriesIRI(DSLContext dsl, String dataIRI) {
