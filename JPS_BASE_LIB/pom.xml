@@ -263,11 +263,30 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring-version}</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-tools-federation -->
+		<dependency>
+	    	<groupId>org.eclipse.rdf4j</groupId>
+	    	<artifactId>rdf4j-tools-federation</artifactId>
+	    	<version>3.1.0</version>
+		</dependency>
+		<!-- jooq for constructing SQL queries -->
+		<dependency>
+		    <groupId>org.jooq</groupId>
+		    <artifactId>jooq</artifactId>
+		    <version>3.14.9</version>
+		</dependency>
+		<!-- for constructing sparql queries, used in time series -->
 		<dependency>
             <groupId>org.eclipse.rdf4j</groupId>
             <artifactId>rdf4j-sparqlbuilder</artifactId>
             <version>3.4.3</version>
         </dependency>
+		<!-- driver for connecting to postgresql -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.2.22</version>
+		</dependency>
 	</dependencies>
 
 </project>

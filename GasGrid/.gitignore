@@ -1,0 +1,28 @@
+/OtherTools/.vscode
+HadUKandHeatPumps/OutputImages/
+/.vscode
+.vscode/
+OntoGasGrid/query_tools/geoJSON_output/
+__pycache__/
+node_modules/
+OntoGasGrid/abox-tbox/tbox/gas_grid_network_spin.ttl
+OntoGasGrid/abox-tbox/pipeline_abox/
+OntoGasGrid/pipeline_owl_generator/.vscode/settings.json
+OntoGasGrid/pipeline_owl_generator/pipeline_split.csv
+OntoGasGrid/statistical_gas_population/Copy of LSOA_domestic_gas_2010-19.xlsx
+OtherTools/Mapping and Location Tools/mapbox_CMCL/.vscode/launch.json
+OtherTools/Mapping and Location Tools/real_time_integration_example/.vscode/settings.json
+OtherTools/Mapping and Location Tools/real_time_integration_example/geckodriver.log
+/OntoGasGridOffline
+/env
+OntoGasGrid/scotland_lsoa_populations/scottish_LSOA.csv
+OntoGasGrid/use_cases/pipe_network_output.geojson
+HadUKandHeatPumps/HadUK Files/
+OntoGasGrid/abox-tbox/ons_abox/
+HadUKandHeatPumps/temp_array
+HadUKandHeatPumps/gas_array
+HadUKandHeatPumps/meters_array
+HadUKandHeatPumps/shapes_array
+OtherTools/Mapping and Location Tools/mapbox_CMCL/geoJSON_assets/
+
+
