@@ -1,3 +1,6 @@
+// Array for defining colors for crops in map. This is taken from Tom's 
+// previous work, it may not cover all crops, just those in use within
+// Cambridgeshire.
 var colors = [
 	"match",
 	["get", "name"],

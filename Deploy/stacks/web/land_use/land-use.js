@@ -6,6 +6,16 @@
 *		- JQuery
 */
 
+const svgTemplate = `
+	<tr id="legend-item">
+		<td width="24px">
+			<svg width="18" height="18">
+				<circle cx="9" cy="9" r="9" fill="COLOR" />
+			</svg>
+		</td>
+		<td width="100%">NAME</td>
+	</tr>
+`;
 
 // Last selected location
 var lastLocation = null;
@@ -31,9 +41,34 @@ function resetSidePanel() {
 		<div id="legend">
 			<b>Legend:</b><br>
 			<div id="padding" style="height: 6px;"></div>
-			<img width="24px" src="legend-terminal.svg"/>Terminals<br>
-		</div>
+			<table>
 	`;
+
+	var legendItems = [];
+
+	for(var i = 1; i < colors.length; i++) {
+		var current = colors[i];
+		if(Array.isArray(current)) {
+			current = current[0];
+		}
+
+
+		if(current.startsWith("#") && current !== "#000000") {
+			var crop = crops[colors[i - 1]];
+
+			var legendItem = svgTemplate.replace("COLOR", current);
+			legendItem = legendItem.replace("NAME", crop);
+			legendItems.push([crop, legendItem]);
+		}
+	}
+
+	// Sort legend items by crop name
+	legendItems.sort(sortFunction);
+
+	for(var i = 0; i < legendItems.length; i++) {
+		legendHTML += legendItems[i][1];
+	}
+	legendHTML += "</table></div>";
 	setSidePanelLegend(legendHTML);
 }
 
@@ -56,8 +91,26 @@ function setupLayerControl() {
 		var crop = items[i][1];
 		crop = crop.replace(/\w\S*/g, (w) => (w.replace(/^\w/, (c) => c.toUpperCase())));
 
-		registerLayer(crop, [iri], "Crops", true);
+		if(inColors(iri)) {
+			registerLayer(crop, [iri], "Crops", true);
+		}
 	}
+}
+
+// Returns true if the input IRI appears in the colors array
+function inColors(iri) {
+	for(var i = 0; i < colors.length; i++) {
+		var item = colors[i];
+		if(Array.isArray(item)) {
+			item = colors[i][0];
+		}
+
+		if(item === iri) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -114,4 +167,14 @@ function panToLast() {
 			zoom: 16
 		});
 	}
+}
+
+// Sort 2D array by first item
+function sortFunction(a, b) {
+    if (a[0] === b[0]) {
+        return 0;
+    }
+    else {
+        return (a[0] < b[0]) ? -1 : 1;
+    }
 }

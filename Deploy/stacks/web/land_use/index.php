@@ -54,7 +54,7 @@
 			overrideDefaultPitch({
 				curve: 1.9,
 				speed: 1.6,
-				zoom: 9.3,
+				zoom: 9.5,
 				pitch: 65,
 				bearing: -30,
 				center: [0.10904, 52.25656]
@@ -138,6 +138,15 @@
 					url: 'mapbox://cmclinnovations.b1r3ybo9'
 				});
 
+				var layers = map.getStyle().layers;
+				var firstSymbolId;
+				for (var i = 0; i < layers.length; i++) {
+					if (layers[i].type === 'symbol') {
+						firstSymbolId = layers[i].id;
+						break;
+					}
+				}
+
 				map.addLayer({
 					"id": "crop-map-layer",
 					"source": "crop-map-data",
@@ -156,7 +165,8 @@
 							15
                 		],
                 		"circle-color": colors
-           			}
+           			},
+					firstSymbolId
 				});
 
 				// On click handler within offtake layer
