@@ -1,5 +1,5 @@
 from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
-from compchemparser.aboxwriter import write_abox
+from compchemparser.aboxwriters import write_abox
 from bz2 import __author__
 
 from rdflib import Graph
