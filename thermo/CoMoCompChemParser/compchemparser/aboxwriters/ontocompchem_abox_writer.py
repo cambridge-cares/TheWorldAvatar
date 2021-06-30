@@ -30,17 +30,23 @@ unit_pref = 'http://data.nasa.gov/qudt/owl/'
 
 endpoint = 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql' #Location of ontology to query from
 
-def write_abox(json_file):
-    
+
+def write_abox(json_file,csv_name="", init_num="",calc_id=""):
+    basedir = os.path.dirname(json_file)
     data, name = read_json(json_file)
     inchi = obConvert('xyz','inchi',create_xyz(data))
     spec_IRI = get_species_iri(inchi)
-    init_num = str(time.time()) #Random generated number for the writing. 
     
-    calc_id = str(uuid.uuid4()) #Get a randomly generated identifier for creation of the ABox. 
+    if not init_num:
+        init_num = str(time.time()) #Random generated number for the writing. 
     
+    if not calc_id:
+        calc_id = str(uuid.uuid4()) #Get a randomly generated identifier for creation of the ABox. 
     
-    with open('ABox_' + name + '.csv', 'w', newline='') as csvfile:
+    if not csv_name: 
+        csv_name = os.path.join(basedir,'ABox_' + name + '.csv')
+        
+    with open(csv_name, 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=',',
                                   quotechar='"', quoting=csv.QUOTE_MINIMAL)
         spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
@@ -59,6 +65,9 @@ def write_abox(json_file):
         write_geom_opt(spamwriter,calc_id,init_num,data)
         write_atom_info(spamwriter,calc_id,init_num,data)
         write_metadata(spamwriter,calc_id,init_num,data)
+       
+    
+    return csv_name
     
 def read_json(json_file):
     with open(json_file) as f:
