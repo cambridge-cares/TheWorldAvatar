@@ -102,7 +102,7 @@ WHERE {
 
 
 # querying terminals from ontogasgrid
-endpoint = "http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql"
+endpoint = "http://192.168.1.218:8989/blazegraph/namespace/ontocropmapgml/sparql"
 class_namespace = 'http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#'
 class_name = 'CropMap'
 class_label = 'Cam'
