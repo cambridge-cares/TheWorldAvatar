@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -12,7 +14,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
-import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -24,23 +28,22 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 
-import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.KnowledgeBaseAgentNew;
 
 public class TestKnowledgeBA   {
 
-
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
+	
 	private String filePath;
-	private String filePathOWL;
 	private String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
-
 	
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
@@ -51,65 +54,54 @@ public class TestKnowledgeBA   {
 		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
-		
-		// Test owl file
-		Path testResourcePathOWL = Paths.get(filePathDir+"/testOWL.owl");
-		Path tempFilePathOWL = Paths.get(tempFolder.getRoot().toString() + "/testOWL.owl");
-		Files.copy(testResourcePathOWL, tempFilePathOWL, StandardCopyOption.REPLACE_EXISTING);
-		filePathOWL = tempFilePathOWL.toString();
 	}
+	
 	/** assert that KBANew is created 
 	 * 
 	 */
 	@Test
 	 public void testNewKBAgent() {
-	        KnowledgeBaseAgentNew jpsa = null;
-	        try {
-	            jpsa = new KnowledgeBaseAgentNew();
-	        } finally {
-	            assertNotNull(jpsa);
-	        }
-	    }
-	 /** Test Sparql query with String. Should return result as String.
-	  */
+        KnowledgeBaseAgentNew jpsa = null;
+        try {
+            jpsa = new KnowledgeBaseAgentNew();
+        } finally {
+            assertNotNull(jpsa);
+        }
+    }
+	
 	@Test
-	public void testBaseQueryDirect() {
-		JSONObject jo = new JSONObject()
-				.put(JPSConstants.TARGETIRI, filePath)
-				.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
-//		AgentCaller.executeGetWithJsonParameter("jps/kb/scenarioFolder", jo.toString());
-
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-        JSONObject result = jpsa.main(jo);		
-		JSONArray ja = new JSONArray(result.getString("result")); 
-		jo = ja.getJSONObject(0); 
-		assertEquals("OH",jo.get("o").toString());
+	public void testProcessRequestParameters() {
+		
+		KnowledgeBaseAgentNew agent = Mockito.spy(KnowledgeBaseAgentNew.class);
+		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
+		Mockito.doReturn(null).when(agent).get(any(JSONObject.class));
+		Mockito.doNothing().when(agent).put(any(JSONObject.class));
+		Mockito.doNothing().when(agent).post(any(JSONObject.class));
+		
+		JSONObject requestParams;
+		
+		//test http get
+		requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
+		agent.processRequestParameters(requestParams, null);
+		verify(agent).validateInput(requestParams);
+		verify(agent).get(requestParams);
+		
+		//test http put
+		requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpPut.METHOD_NAME);
+		agent.processRequestParameters(requestParams, null);
+		verify(agent).validateInput(requestParams);
+		verify(agent).put(requestParams);
+		
+		//test http post
+		requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
+		agent.processRequestParameters(requestParams, null);
+		verify(agent).validateInput(requestParams);
+		verify(agent).post(requestParams);
 	}
 	
-
-	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
-	 * 
-	 * @throws ParseException
-	 */
-	@Test
-	public void testBaseUpdateDirect() throws ParseException {
-		
-		testBaseQueryDirect();
-		String testUpdate = getUpdateRequest().toString();
-		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-		JSONObject jo = new JSONObject()
-		.put(JPSConstants.TARGETIRI,  filePath)
-		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
-        jpsa.main(jo);
-        String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
-        jo = new JSONObject()
-        		.put(JPSConstants.TARGETIRI,  filePath)
-        		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
-        JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
-		jo = ja.getJSONObject(0); 
-		assertEquals("TEST",jo.get("o").toString());
-	}
 	/** test inputValidate() method of KnowledgeBaseAgent
 	 * @throws ParseException 
 	 * @throws JSONException 
@@ -118,10 +110,11 @@ public class TestKnowledgeBA   {
 	@Test
 	public void testValidateInput() throws JSONException, ParseException {
 		JSONObject jo = new JSONObject()
-				.put(JPSConstants.TARGETIRI,  filePath);
-
+				.put(JPSConstants.TARGETIRI,  filePath)
+				.put(JPSConstants.REQUESTURL, "http://www.example.com/jps/kb/test")
+				.put(JPSConstants.METHOD, "GET");
+		
 		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-		assertFalse(jpsa.validateInput(jo)); // No query/update
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 		jo.put(JPSConstants.QUERY_SPARQL_QUERY , queryString );
 		assertTrue(jpsa.validateInput(jo));// Query present
@@ -131,31 +124,164 @@ public class TestKnowledgeBA   {
 		jo.remove(JPSConstants.QUERY_SPARQL_UPDATE );
 		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , getUpdateRequest().toString());
 		assertTrue(jpsa.validateInput(jo));// Update present
-		
 	}
-	/** Test Sparql update with String. Should return result as String. Uses testBaseQueryDirect
-	 *  Uses AgentCaller
-	 * @throws ParseException
-	 */
+	
 	@Test
-	public void testBaseUpdateAgent() throws ParseException {
-		
-		testBaseQueryDirect();
-		String testUpdate = getUpdateRequest().toString();
-		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
-		 JSONObject jo = new JSONObject()
-		.put(JPSConstants.TARGETIRI,  filePath)
-		.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
-		AgentCaller.executeGetWithJsonParameter("jps/kb", jo.toString());
-		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
-        jo = new JSONObject()
-        		.put(JPSConstants.TARGETIRI,  filePath)
-        		.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
-        JSONObject result = jpsa.main(jo);
-        JSONArray ja = new JSONArray(result.getString("result")); 
+	public void testGetWithSparqlQuery() {
+
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "GET")
+			.put(JPSConstants.TARGETIRI, filePath)
+			.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
+
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        JSONObject result = jpsa.get(jo);		
+		JSONArray ja = new JSONArray(result.getString("result")); 
 		jo = ja.getJSONObject(0); 
-		assertEquals("TEST",jo.get("o").toString());
+		assertEquals("OH",jo.get("o").toString());
 	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testGetWithSparqlUpdate() throws ParseException {
+		
+		String testUpdate = getUpdateRequest().toString();
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "GET")
+			.put(JPSConstants.TARGETIRI, filePath)
+			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
+
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        @SuppressWarnings("unused")
+		JSONObject result = jpsa.get(jo);		
+	}
+	
+	@Test
+	public void testGetWithoutQuery() {
+		
+		// write a test file to temporary folder
+		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
+		String folderPath = tempFolder.getRoot().toString();
+		String testFilePath = folderPath + "/TestGet.nt";
+		FileUtil.writeFileLocally(testFilePath, content); 
+		
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "GET")
+			.put(JPSConstants.TARGETIRI, testFilePath)
+			.put(JPSConstants.HEADERS, "application/n-triples");
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        JSONObject result = jpsa.get(jo);		
+		String strResult = result.getString("result"); 
+		
+		assertEquals(content, strResult);		
+	}
+	
+	@Test
+	public void testPut() {
+		
+		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";			
+		String contentRDF = "<rdf:RDF\r\n"+
+	    "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
+	    "    xmlns:j.0=\"http://www.w3.org/2008/05/skos#\">\r\n"+
+	    "  <rdf:Description rdf:about=\"http://www.theworldavatar.com/kb/species/species.owl#species_10\">\r\n"+
+	    "    <j.0:altLabel>Ar</j.0:altLabel>\r\n"+
+	    "  </rdf:Description>\r\n"+
+	    "</rdf:RDF>\r\n";
+		
+		String folderPath = tempFolder.getRoot().toString();
+		String testFilePath = folderPath + "/TestPut.nt"; 
+		
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "PUT")
+			.put(JPSConstants.TARGETIRI, testFilePath)
+			.put(JPSConstants.CONTENT, content)
+			.put(JPSConstants.CONTENTTYPE, "application/n-triples");
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.put(jo);		
+		
+        String strResult = FileUtil.readFileLocally(testFilePath);
+		
+		assertEquals(contentRDF, strResult);		
+	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testPutWithSparqlUpdate() throws ParseException {
+				
+		String testUpdate = getUpdateRequest().toString();
+		
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "PUT")
+			.put(JPSConstants.TARGETIRI, filePath)
+			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.put(jo);
+	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testPutWithSparqlQuery() {
+				
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "PUT")
+			.put(JPSConstants.TARGETIRI, filePath)
+			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.put(jo);								
+	}
+	
+	@Test
+	public void testPost() throws ParseException {
+		
+		String testUpdate = getUpdateRequest().toString();
+		
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "POST")
+			.put(JPSConstants.TARGETIRI,  filePath)
+			.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.post(jo);		
+        
+        FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+        JSONArray ja = kbClient.executeQuery(queryString);
+		JSONObject result = ja.getJSONObject(0); 
+		assertEquals("TEST",result.get("o").toString());      
+	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testPostWithSparqlQuery() {
+				
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "POST")
+			.put(JPSConstants.TARGETIRI, filePath)
+			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.post(jo);								
+	}
+	
+	@Test(expected = JPSRuntimeException.class)
+	public void testPostWithoutSparqlUpdate() {
+				
+		JSONObject jo = new JSONObject();
+		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+			.put(JPSConstants.METHOD, "POST")
+			.put(JPSConstants.TARGETIRI, filePath);
+		
+        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+        jpsa.post(jo);								
+	}	
+	
 	/**
 	 * Returns the test Sparql update.
 	 * 
@@ -183,5 +309,4 @@ public class TestKnowledgeBA   {
 		
 		return builder.buildRequest();
 	}
-	 
 }
