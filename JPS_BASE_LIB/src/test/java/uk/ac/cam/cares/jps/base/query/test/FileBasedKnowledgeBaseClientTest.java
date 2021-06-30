@@ -330,7 +330,6 @@ public class FileBasedKnowledgeBaseClientTest {
   		Model model2 = fieldValue.getDefaultModel();
   		assertTrue(model2.isEmpty());
   		assertTrue(kbClient.getPath(null) == null);
-  		assertTrue(kbClient.getLang(null) == null);
 	}
 	
 	/**
@@ -346,16 +345,6 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals(filePath, kbClient.getPath(null));
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
-	}
-	
-	/**
-	 * Test exception thrown by giving bad file path to load.
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testLoadBadFile() {
-	
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load("Example/does/not/exist");
 	}
 	
 	////  Test errors thrown by edge cases
@@ -553,7 +542,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		kbClient = new FileBasedKnowledgeBaseClient();
 		
-	    assertEquals(null,kbClient.getLang(null));
+	    assertEquals(Lang.RDFXML,kbClient.getLang(null));
 	    
 	    //Set lang to NQ
 		kbClient.setOutputLang(Lang.NQ);
@@ -577,7 +566,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		kbClient.load(filePathNQ);
 		List<String> names = kbClient.getGraphNames();
 		
-	    assertEquals(null, kbClient.getLang("default"));
+	    assertEquals(Lang.RDFXML, kbClient.getLang("default"));
 	    assertEquals(Lang.NQUADS, kbClient.getLang(names.get(0)));
 	}
 

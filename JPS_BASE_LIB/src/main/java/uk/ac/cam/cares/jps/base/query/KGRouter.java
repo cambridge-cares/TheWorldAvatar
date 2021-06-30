@@ -101,10 +101,7 @@ public class KGRouter{
 					logger.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
 			}else{
-				File file = new File(targetResourceIRIOrPath);
-				if(file.exists()){
-					kbClient = new FileBasedKnowledgeBaseClient(targetResourceIRIOrPath);
-				}
+				kbClient = new FileBasedKnowledgeBaseClient(targetResourceIRIOrPath);
 			}
 		}
 		return kbClient;

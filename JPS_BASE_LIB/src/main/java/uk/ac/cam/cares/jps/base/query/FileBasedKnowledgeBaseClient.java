@@ -67,7 +67,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	class GraphData{
 		String name = null;
 		String path = null;
-		Lang lang = null;
+		Lang lang = Lang.RDFXML;
 		
 		//Constructors
 		GraphData(){}
@@ -95,7 +95,6 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 */
 	public FileBasedKnowledgeBaseClient() {
 		init();
-		autoWrite = false;
 	}
 	
 	/**
@@ -165,8 +164,11 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	public void load(String graphName, String filePath) {
 	
 		GraphData graph = new GraphData(graphName, filePath);
-		
-		loadGraph(graph);
+
+		File f= new File(graph.path);
+		if(f.exists()) {
+			loadGraph(graph);
+		}
 
 		if(graph != null) {
 			if(graph.name == null) {
@@ -673,7 +675,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	public int executeUpdate(UpdateRequest update) {
 		
 		//Attempt to load files if the dataset is empty.
-		if(isEmpty()) {load();}
+		//if(isEmpty()) {load();}
 		
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
