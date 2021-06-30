@@ -14,10 +14,13 @@ import sys
 import json
 from datetime import datetime as dt
 from SPARQLWrapper import SPARQLWrapper, JSON
+from geojson import Point, Feature, FeatureCollection, dump
 
 # Local KG location (fallback)
 FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
+# Global GeoJSON object
+features = []
 
 
 def getKGLocation():
@@ -62,7 +65,7 @@ def buildQuery(county):
 
 	queryString = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 		PREFIX vocabTerm: <http://vocab.datex.org/terms#>
-		PREFIX ns: <http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#>
+		PREFIX ns:<http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#>
 		PREFIX nskg: <http://www.theworldavatar.com/kb/ontocropmapgml/>
 		PREFIX ontocitygml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
 
@@ -82,7 +85,6 @@ def runQuery(county) :
 	'''
 		Runs the relevant query for the input county and returns the result.
 	'''
-
 	# Get the KG URL
 	kgLocation = getKGLocation()
 	print("INFO: Determined KG endpoint as '" + kgLocation + "'.")
@@ -90,25 +92,24 @@ def runQuery(county) :
 	# Get the query string
 	queryString = buildQuery(county)
 
+	# Submit the query and await the result
 	sparql = SPARQLWrapper(kgLocation)
 	sparql.setReturnFormat(JSON)
 	sparql.setQuery(queryString)
-
-	# Submit the query and await the result
-	print("INFO: Submitting request at",  dt.now())
+	print("INFO: Submitting request for '" + county + "' at",  dt.now())
 
 	try:
 		# Get results 
 		result = sparql.queryAndConvert()
 		print("INFO: Request returned at",  dt.now())
 	except Exception as error:
-		onFailure(error)
+		onFailure(error, county)
 		
-	onSuccess(result)
+	onSuccess(result, county)
 
 
 
-def onSuccess(data):
+def onSuccess(data, county):
 	"""
 		Runs when data is successfully returned by the query.
 		
@@ -117,21 +118,38 @@ def onSuccess(data):
 	"""
 
 	results = data["results"]["bindings"]
-	print("INFO: SPARQL query successful, data received.")
+	print("INFO: SPARQL query for '" + county + "' successful, data received.")
 	print("INFO: Number of results is", len(results))
-   
-	print("SUCCESS: Script completed.")
-		
+
+	# Add to global GeoJSON file
+	for result in results:
+
+		# Parse the location
+		lat = float(result["location"]["value"].split("#")[0])
+		lng = float(result["location"]["value"].split("#")[1])
+		point = Point((lat, lng))
+
+		# Get te IRI
+		iri = result["label"]["value"]
+
+		features.append(Feature(
+			geometry = point,
+			properties = {
+				"name": iri,
+				"county": county.lower()
+			}
+		))
+   		
 
 
-def onFailure(error):
+def onFailure(error, county):
 	"""
 		Runs when query results in a failure/exception.
 		
 		Arguments:
 			error - thrown errot
 	"""
-	print("ERROR: Could not complete SPARQL query, error is as follows...")
+	print("ERROR: Could not complete SPARQL query for '" + county + "', error is as follows...")
 	print("\n" + str(error) + "\n")
 	sys.exit()
 
@@ -142,7 +160,18 @@ def main():
 		Main function.
 	"""
 	print("\n")
+
+	# Run query for each county
 	runQuery("CAMBRIDGESHIRE")
+	#runQuery("NORFOLK")
+	#runQuery("SUFFOLK")
+
+	# Write results into single geoJSON file
+	featureCollection = FeatureCollection(features)
+	with open("land-use.geojson", "w") as f:
+		dump(featureCollection, f)
+
+	print("SUCCESS: Script completed.")
 
 
 # Entry point, calls main function
