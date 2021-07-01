@@ -3,7 +3,10 @@ package uk.ac.cam.cares.jps.base.derivedquantity;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -27,24 +30,29 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  *
  */
 public class DerivedQuantitySparql{
+	private static String derivednamespace = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
-	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri("http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#"));
+	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
 	private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
 	
-	// types
+	// classes
 	private static Iri Service = p_agent.iri("Service");
     private static Iri TimePosition = p_time.iri("TimePosition");
+    private static Iri DerivedQuantity = p_derived.iri("DerivedQuantity");
+    private static Iri DerivedQuantityWithTimeSeries = p_derived.iri("DerivedQuantityWithTimeSeries");
 	
-	// relations
+	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
 	private static Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
+	private static Iri belongsTo = p_derived.iri("belongsTo");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	
 	/**
 	 * use this to instantiate a derived quantity with multiple inputs
+	 * 
 	 * @param kbClient
 	 * @param derivedQuantity
 	 * @param inputs
@@ -65,11 +73,11 @@ public class DerivedQuantitySparql{
 		
 		// add time stamp instance for the derived quantity
 		int numTime = DerivedQuantitySparql.countTimeInstance(kbClient);
-		String derivedQuantityTime = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#time" + numTime;
+		String derivedQuantityTime = derivednamespace + "time" + numTime;
 		
 		while (checkTimeExists(kbClient, derivedQuantityTime)) {
 			numTime += 1;
-			derivedQuantityTime = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#time" + numTime;
+			derivedQuantityTime = derivednamespace + "time" + numTime;
 		}
 
 		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
@@ -86,6 +94,98 @@ public class DerivedQuantitySparql{
 	}
 	
 	/**
+	 * creates a new instance of derived quantity, grouping the given entities under this instance
+	 * whenever this derived quantity gets updated, the provided entities will get deleted by the client
+	 * @param kbClient
+	 * @param entities
+	 * @param agentIRI
+	 * @param agentURL
+	 * @param inputs
+	 */
+	public static void createDerivedQuantity(KnowledgeBaseClientInterface kbClient, 
+			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
+	    ModifyQuery modify = Queries.MODIFY();
+		
+		// create a unique IRI for this new derived quantity
+		int numDerived = countDerived(kbClient);
+		
+		String derivedQuantity = derivednamespace + "derived" + numDerived;
+		while (checkDerivedExists(kbClient, derivedQuantity)) {
+			numDerived += 1;
+			derivedQuantity = derivednamespace + "derived" + numDerived;
+		}
+		
+		Iri derived_iri = iri(derivedQuantity);
+		
+		for (String entity : entities) {
+			modify.insert(iri(entity).has(belongsTo, derived_iri));
+		}
+		
+		// link to agent
+		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		// add agent url
+		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl,agentURL));
+		
+		// add time stamp instance for the derived quantity
+		long timestamp = 0;
+		int numTime = DerivedQuantitySparql.countTimeInstance(kbClient);
+		String derivedQuantityTime = derivednamespace + "time" + numTime;
+		
+		while (checkTimeExists(kbClient, derivedQuantityTime)) {
+			numTime += 1;
+			derivedQuantityTime = derivednamespace + "time" + numTime;
+		}
+
+		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
+	    modify.insert(derived_iri.has(hasTime,derivedQuantityTime_iri));
+	    modify.insert(derivedQuantityTime_iri.isA(TimePosition).andHas(numericPosition,timestamp));
+	    
+	    // link to each input
+	    for (String input : inputs) {
+	    	modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+	    }
+	    
+	    modify.prefix(p_time,p_derived,p_agent);
+	    
+	    kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+	    kbClient.executeUpdate();
+	}
+	
+	/**
+	 * counts the number of derived quantity instances
+	 * @param kbClient
+	 */
+	private static int countDerived(KnowledgeBaseClientInterface kbClient) {
+		SelectQuery query = Queries.SELECT();
+		String queryKey = "numDerived";
+		Variable numDerived = SparqlBuilder.var(queryKey);
+		Variable derived = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(derived.isA(DerivedQuantity),
+				derived.isA(DerivedQuantityWithTimeSeries));
+		
+		Assignment count = Expressions.count(derived).as(numDerived);
+		
+		query.prefix(p_derived).select(count).where(queryPattern);
+		
+		kbClient.setQuery(query.getQueryString());
+		return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
+	}
+	
+	/**
+	 * checks if an instance already exists to avoid IRI clash
+	 * @param kbClient
+	 * @param derived
+	 */
+	private static boolean checkDerivedExists(KnowledgeBaseClientInterface kbClient, String derived) {
+		// includes DerivedQuantity and DerivedQuantityWithTimeSeries 
+		String query = String.format("ask {<%s> a ?x}",derived);
+		kbClient.setQuery(query);
+		boolean derivedExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+		return derivedExists;
+	}
+	
+	/**
 	 * add a time stamp instance to your input if it does not exist
 	 * this should be dealt with by a class specifically for input agents
 	 * @param kbClient
@@ -95,12 +195,12 @@ public class DerivedQuantitySparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		// add time stamp instance for the derived quantity
-		int numTime = DerivedQuantitySparql.countTimeInstance(kbClient);
-		String inputTime = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#time" + numTime;
+		int numTime = countTimeInstance(kbClient);
+		String inputTime = derivednamespace + "time" + numTime;
 		
 		while (checkTimeExists(kbClient, inputTime)) {
 			numTime += 1;
-			inputTime = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#time" + numTime;
+			inputTime = derivednamespace + "time" + numTime;
 		}
 
 		long timestamp = Instant.now().getEpochSecond();
