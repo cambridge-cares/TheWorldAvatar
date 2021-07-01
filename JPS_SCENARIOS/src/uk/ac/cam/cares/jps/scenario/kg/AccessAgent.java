@@ -23,7 +23,7 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
 
 @WebServlet(urlPatterns = {"/kb/*"})
-public class KnowledgeBaseAgentNew extends JPSAgent{
+public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseAgent.class);
@@ -43,7 +43,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		
 		JSONObject JSONresult = new JSONObject();
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
-		
+		System.out.println("METHOD: "+ method);
 		switch (method) {
 			case HttpGet.METHOD_NAME:	
 				JSONresult = get(requestParams);

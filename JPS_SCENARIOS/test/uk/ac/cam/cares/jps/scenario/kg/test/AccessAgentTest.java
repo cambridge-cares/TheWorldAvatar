@@ -35,9 +35,9 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.scenario.kg.KnowledgeBaseAgentNew;
+import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
 
-public class TestKnowledgeBA   {
+public class AccessAgentTest   {
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -61,9 +61,9 @@ public class TestKnowledgeBA   {
 	 */
 	@Test
 	 public void testNewKBAgent() {
-        KnowledgeBaseAgentNew jpsa = null;
+		AccessAgent jpsa = null;
         try {
-            jpsa = new KnowledgeBaseAgentNew();
+            jpsa = new AccessAgent();
         } finally {
             assertNotNull(jpsa);
         }
@@ -72,7 +72,7 @@ public class TestKnowledgeBA   {
 	@Test
 	public void testProcessRequestParameters() {
 		
-		KnowledgeBaseAgentNew agent = Mockito.spy(KnowledgeBaseAgentNew.class);
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
 		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
 		Mockito.doReturn(null).when(agent).get(any(JSONObject.class));
 		Mockito.doNothing().when(agent).put(any(JSONObject.class));
@@ -114,7 +114,7 @@ public class TestKnowledgeBA   {
 				.put(JPSConstants.REQUESTURL, "http://www.example.com/jps/kb/test")
 				.put(JPSConstants.METHOD, "GET");
 		
-		KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
 		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 		jo.put(JPSConstants.QUERY_SPARQL_QUERY , queryString );
 		assertTrue(jpsa.validateInput(jo));// Query present
@@ -135,7 +135,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
 
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         JSONObject result = jpsa.get(jo);		
 		JSONArray ja = new JSONArray(result.getString("result")); 
 		jo = ja.getJSONObject(0); 
@@ -152,7 +152,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         @SuppressWarnings("unused")
 		JSONObject result = jpsa.get(jo);		
 	}
@@ -172,7 +172,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, testFilePath)
 			.put(JPSConstants.HEADERS, "application/n-triples");
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         JSONObject result = jpsa.get(jo);		
 		String strResult = result.getString("result"); 
 		
@@ -201,7 +201,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.CONTENT, content)
 			.put(JPSConstants.CONTENTTYPE, "application/n-triples");
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.put(jo);		
 		
         String strResult = FileUtil.readFileLocally(testFilePath);
@@ -220,7 +220,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.put(jo);
 	}
 	
@@ -233,7 +233,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.put(jo);								
 	}
 	
@@ -248,7 +248,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI,  filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.post(jo);		
         
         FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
@@ -266,7 +266,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.post(jo);								
 	}
 	
@@ -278,7 +278,7 @@ public class TestKnowledgeBA   {
 			.put(JPSConstants.METHOD, "POST")
 			.put(JPSConstants.TARGETIRI, filePath);
 		
-        KnowledgeBaseAgentNew jpsa = new KnowledgeBaseAgentNew();
+		AccessAgent jpsa = new AccessAgent();
         jpsa.post(jo);								
 	}	
 	
