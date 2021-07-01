@@ -1,16 +1,10 @@
 from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
 from compchemparser.aboxwriters import write_abox
-from bz2 import __author__
-
-from rdflib import Graph
-from pathlib import Path
-import random
-
 import os
 import errno
 import glob
 
-def run(args):
+def runParser(args):
 
     if os.path.isfile(args['<logFileOrDir>']):
         parseLog(args['<logFileOrDir>'],args['-n'])
@@ -34,3 +28,7 @@ def parseLog(logFile,suppressOutput):
             CompChemObj.output_abox_csv()
     else:
         print('No data to output/upload, check if log file is not empty or quantum job terminated correctly.')
+
+
+def runScan(args):
+    print("scan command under construction")
