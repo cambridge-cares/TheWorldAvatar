@@ -359,11 +359,21 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param range
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLDataProperty(String propertyName, String domain, String range) throws TBoxManagementException {
+	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws TBoxManagementException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			addDomain(dataProperty, domain);
 			addRange(dataProperty, range);
+			OWLDataProperty parentProperty = null;
+			if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
+				// Creates the target property.
+				parentProperty = createDataProperty(targetName);
+				if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubDataPropertyOfAxiom(dataProperty, parentProperty)));
+				} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentDataPropertiesAxiom(dataProperty, parentProperty)));				
+				}
+			}
 	}
 	
 	
