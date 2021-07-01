@@ -8,11 +8,29 @@ public class ExecutableModel {
 	private LinkedHashMap<String, String> activeParameters;
 	private List<String> passiveParameters;
 	private List<String> outputResponses;
+	private List<Double> averageInputVars;
+	private List<Double> averageOutputVars;
 	private List<String> expFiles;
 	private List<String> caseNames;
 
 	public String getModelName() {
 		return modelName;
+	}
+	
+	public void setInputVarsAve(List<Double> averageInputVars) {
+		this.averageInputVars = averageInputVars;
+	}
+	
+	public List<Double> getInputVarsAve() {
+		return averageInputVars;
+	}
+	
+	public void setOutputVarsAve(List<Double> averageOutputVars) {
+		this.averageOutputVars = averageOutputVars;
+	}
+	
+	public List<Double> getOutputVarsAve() {
+		return averageOutputVars;
 	}
 
 	public void setModelName(String modelName) {
