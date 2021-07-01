@@ -1,15 +1,12 @@
-from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
 import json
 import os
-import sys
+from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
 from compchemparser.aboxwriters import write_abox as write_compchem_abox
 from compchemparser.helpers.utils import readFile
 import pytest
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 parser = CcGaussianParser()
-
-gaussianTestsLog = os.path.join(THIS_DIR, 'gaussianTests.log')
 
 def getRefName(testLog,jobIndex,numJobs):
     if numJobs > 1:
