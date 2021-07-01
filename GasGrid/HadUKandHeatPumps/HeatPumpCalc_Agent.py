@@ -8,6 +8,7 @@ import geopandas as gpd
 from datetime import datetime
 import imageio
 import rdflib
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 import pandas as pd 
 import uuid 
 import time
@@ -203,10 +204,10 @@ filename = 'temp_array'
 gas_filename = 'gas_array'
 meters_filename = 'meters_array'
 
-# results = region_query(limit=False)
+# all_results = region_query(limit=False)
 # #-----------------# 
 # outfile = open(filename,'wb')
-# pickle.dump(results,outfile)
+# pickle.dump(all_results,outfile)
 # outfile.close()
 
 # gas_results = region_usage_query(limit=False)
@@ -385,13 +386,13 @@ monthly_total_demand = [9.7358,7.389,7.17968,8.073659,5.4084,4.4428,3.93779,3.39
 total_uk_demand = sum(monthly_total_demand)
 
 months = ['January','February','March','April','May','June','July','August','September','October','November','December']
-plt.figure()
-plt.grid()
-plt.title('Monthly UK gas demand')
-plt.ylabel('Billion cubic meters')
-plt.plot(np.arange(len(monthly_total_demand)),monthly_total_demand)
-plt.xticks(np.arange(len(months)),months)
-plt.show()
+# plt.figure()
+# plt.grid()
+# plt.title('Monthly UK gas demand')
+# plt.ylabel('Billion cubic meters')
+# plt.plot(np.arange(len(monthly_total_demand)),monthly_total_demand)
+# plt.xticks(np.arange(len(months)),months)
+# plt.show()
 
 scaled_monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
@@ -511,24 +512,49 @@ my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
 
 
 
-fig,axs = plt.subplots(1,4)
-my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[3])
-my_geo_df.plot(column='gas',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[0])
-my_geo_df.plot(column='temp',legend=True,cmap='OrRd',antialiased=False,ax=axs[2])
-my_geo_df.plot(column='cop',legend=True,cmap='OrRd',antialiased=False,ax=axs[1])
-axs[0].set_title('gas consumption')
-axs[3].set_title('heat pump consumption')
-axs[2].set_title('temperature')
-axs[1].set_title('COP')
-plt.show()
+# fig,axs = plt.subplots(1,4)
+# my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[3])
+# my_geo_df.plot(column='gas',norm=cl.LogNorm(vmin=10000, vmax=10000000),legend=True,cmap='OrRd',antialiased=False,ax=axs[0])
+# my_geo_df.plot(column='temp',legend=True,cmap='OrRd',antialiased=False,ax=axs[2])
+# my_geo_df.plot(column='cop',legend=True,cmap='OrRd',antialiased=False,ax=axs[1])
+# axs[0].set_title('gas consumption')
+# axs[3].set_title('heat pump consumption')
+# axs[2].set_title('temperature')
+# axs[1].set_title('COP')
+# plt.show()
 
-fig,axs = plt.subplots(1,4)
-my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=10000000),cmap='OrRd',antialiased=False,ax=axs[3])
-my_geo_df.plot(column='gas',norm=cl.LogNorm(vmin=10000, vmax=10000000),cmap='OrRd',antialiased=False,ax=axs[0])
-my_geo_df.plot(column='temp',cmap='OrRd',antialiased=False,ax=axs[2])
-my_geo_df.plot(column='cop',cmap='OrRd',antialiased=False,ax=axs[1])
-axs[0].set_title('gas consumption')
-axs[3].set_title('heat pump consumption')
-axs[2].set_title('temperature')
-axs[1].set_title('COP')
+plt.rc('text', usetex=True)
+plt.rc('font', family='sans-serif')
+import os
+print(os.environ['PATH'])
+
+#plt.subplots_adjust(wspace=0, right=0.927, left=0.102)
+
+fig,axs = plt.subplots(2,2,figsize=(7,7))
+
+
+cbar_ax = fig.add_axes([0.45, 0.15, 0.025, 0.7])
+tl = my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axs[0,0],legend=True,cax=cbar_ax,)
+cbar_ax = fig.add_axes([0.92, 0.15, 0.025, 0.7])
+tr = my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axs[0,1],legend=True,cax=cbar_ax)
+axs[0,0].set_title('Gas Consumption (kWh/year)')
+axs[0,1].set_title('Temperature (°C )')
+axs[0,0].set_xlabel('Longitude')
+axs[0,0].set_ylabel('Latitude')
+axs[0,1].set_xlabel('Longitude')
+
+axs[0,1].set_ylabel('Latitude')
+plt.subplots_adjust(wspace=0.574,hspace=0.183)
+bl = my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axs[1,0])
+br = my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axs[1,1])
+axs[1,0].set_title('Gas Consumption (kWh/year)')
+axs[1,1].set_title('Temperature (°C)')
+axs[1,0].set_xlabel('Longitude')
+axs[1,0].set_ylabel('Latitude')
+axs[1,1].set_xlabel('Longitude')
+axs[1,1].set_ylabel('Latitude')
+axs[1,0].set_xlim(-0.2,0.1)
+axs[1,1].set_xlim(-0.2,0.1)
+axs[1,0].set_ylim(51.65,51.35)
+axs[1,1].set_ylim(51.65,51.35)
 plt.show()
