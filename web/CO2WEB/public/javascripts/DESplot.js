@@ -2,8 +2,8 @@
 Implements the Sim prototype. for Mau.
 ***/
 console.log('desplot live find')
-var prefix = "http://localhost:8080";
-// prefix = "http://jparksimulator.com";
+// var prefix = "http://localhost:8080";
+prefix = "http://jparksimulator.com";
 ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 const toggleDisplay = elemId =>
@@ -139,7 +139,6 @@ document.addEventListener("click", function (evt){
     var request = $.ajax({
       url: prefix + "/JPS_DES/showDESResult",
       type: 'GET',
-      data: weatherjson,
       timeout:1.08e+7,
       contentType: 'application/json; charset=utf-8'
   });

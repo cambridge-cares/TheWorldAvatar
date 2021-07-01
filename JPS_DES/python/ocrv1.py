@@ -75,7 +75,9 @@ def ocr(folder):
 	if "temperature" not in result:
 		result["temperature"] =  "{0:.2f}".format(random.uniform(26,32))
 	now = datetime.now() # current date and time
-	
+	#failsafe for temp range
+	if result["temperature"]> 100:
+		result["temperature"] /= 10
 	result['year']= now.strftime("%Y")
 	result['month'] = now.strftime("%m")
 	result['date']= now.strftime("%d")
@@ -91,9 +93,7 @@ if __name__ == "__main__":
 		with open ('error log.txt', 'w') as outfile:
 			outfile.write('error occurred\n')
 			outfile.write(str(e))
-			result= {}
-			result["windspeed"] = "0.0"
-			
+			result= {}			
 			now = datetime.now() # current date and time
 			hou = now.hour
 			if (( hou <= 7 )or (hou > 18)):

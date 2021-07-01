@@ -1,0 +1,83 @@
+version: "3.8"
+
+# Services
+services:
+
+  # Blazegraph
+  blazegraph:
+    build:
+      context: blazegraph
+    container_name: "blazegraph-${MODE}"
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    labels:
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
+      hash: "${HASH}"
+    restart: unless-stopped
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+    volumes:
+      - blazegraph_data:/data
+
+    # Blazegraph geo
+  blazegraph_geo:
+    build:
+      context: blazegraph_geo
+    container_name: "blazegraph_geo-${MODE}"
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    labels:
+      authors: "msff2@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
+      hash: "${HASH}"
+    restart: unless-stopped
+    volumes:
+      - blazegraph_geo_data:/data
+
+  # RDF4J
+  rdf4j:
+    build:
+      context: rdf4j
+    container_name: "rdf4j-${MODE}"
+    environment:
+      RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
+      RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
+    labels:
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "RDF4J with BASIC authentication for the server and workbench."
+      hash: "${HASH}"
+    restart: unless-stopped
+    # Add secrets to set BASIC authentication passwords for both the workbench and server
+    secrets:
+      - rdf4j_admin_password
+      - rdf4j_user_password
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - rdf4j_logs:/usr/local/tomcat/logs 
+
+
+# Secrets to supply Blazegraph, RDF4J passwords for BASIC authentication
+secrets:
+  blazegraph_password:
+    file: blazegraph/secrets/blazegraph_password
+  rdf4j_admin_password:
+    file: rdf4j/secrets/rdf4j_admin_password
+  rdf4j_user_password:
+    file: rdf4j/secrets/rdf4j_user_password
+
+# Volumes to handle triplestore data and logging for Blazegraph, RDF4J
+volumes:
+  blazegraph_data:
+    name: "blazegraph_data"
+  blazegraph_geo_data:
+    name: "blazegraph_geo_data"
+  rdf4j_data:
+    name: "rdf4j_data"
+  rdf4j_logs:
+    name: "rdf4j_logs"

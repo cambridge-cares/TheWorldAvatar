@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<experiment xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns="http://purl.org/NET/prime/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://purl.org/NET/prime/ http://cki-know.org/schema/experiment.xsd">
+	<copyright></copyright>
+	<bibliographyLink doi="https://doi.org/10.1038/sdata.2016.86"/>
+	<apparatus>
+		<kind></kind>
+		<mode></mode>
+		<mode></mode>
+		<mode></mode>
+	</apparatus>
+	<experimentType>organic solar cell</experimentType>
+	<ifThereAreOtherSpecsForThisTypeOfExperiment_delete_this_if_not_in_use potential_attribute_1="" potential_attribute_2=""/>
+	<commonProperties>
+		<property name="junction architecture" label="junction architecture" description="solar cell junction architecture">
+			<value></value>
+		</property>
+		<property name="donor construction type" label="donor construction type" description="solar cell donor construction type">
+			<value></value>
+		</property>
+		<property name="acceptor" label="acceptor" description="solar cell acceptor molecule">
+			<component>
+				<specieslink preferredKey="" CAS="" InChI="" SMILES="" chemName=""></specieslink>
+				<amount></amount>
+			</component>
+		</property>
+		<property name="donor" label="donor" description="solar cell donor molecule">
+			<component>
+				<specieslink preferredKey="" CAS="" InChI="" SMILES="" chemName=""></specieslink>
+				<amount></amount>
+			</component>
+		</property>
+	</commonProperties>
+	<dataGroup id="dg1" label="dg1" dataPointForm="XML">
+		<property name="homo" id="x1" label="homo" units="eV" description="highest occupied molecular orbital energy"></property>
+		<property name="lumo" id="x2" label="lumo" units="eV" description="lowest unoccupied molecular orbital energy"></property>
+		<property name="homo-lumo gap" id="x3" label="homo-lumo gap" units="eV" description="homo-lumo gap"></property>
+		<property name="optical gap" id="x4" label="optical gap" units="eV" description="optical gap"></property>
+		<property name="voc" id="x5" label="voc" units="V" description="open circuit potential"></property>
+		<property name="jsc" id="x6" label="jsc" units="mA/cm^2" description="short circuit current density"></property>
+		<property name="pce" id="x7" label="pce" units="%" description="power conversion efficiency"></property>
+		<property name="fill factor" id="x8" label="ff" units="%" description="fill factor"></property>
+		<dataPoint id="dp1">
+			<x1></x1>
+			<x2></x2>
+			<x3></x3>
+			<x4></x4>
+			<x5></x5>
+			<x6></x6>
+			<x7></x7>
+			<x8></x8>
+		</dataPoint>
+	</dataGroup>
+</experiment>

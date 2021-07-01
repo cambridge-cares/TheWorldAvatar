@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.scenario.kg;
 
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
 import org.json.JSONException;
@@ -15,7 +14,7 @@ import uk.ac.cam.cares.jps.base.query.KGRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet(urlPatterns = {"/kb-new/*"})
+@WebServlet(urlPatterns = {"/kb/*"})
 public class KnowledgeBaseAgentNew extends JPSAgent{
 	/**
 	 * 
@@ -23,15 +22,9 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		JSONObject result = processRequestParameters(requestParams,null);
-		return result;
-	}
-	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
 		if (!validateInput(requestParams)) {
-			throw new BadRequestException("KBAgent: Input parameters not found.\n ");
+			throw new BadRequestException();
 		}
-		System.out.println("KBA: JSONPARAMS: " + requestParams.toString());
 		return main(requestParams);
 		
 		}
@@ -43,11 +36,11 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
 		if (sparqlquery != null) isQueryOperation = true;
 		else if (sparqlupdate != null) isUpdateOperation = true;
-		String targetResourceIRIOrPath = requestParams.getString("resourceURL");
+		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
 		if (isQueryOperation) { 
 			String result = kbClient.execute(sparqlquery);
-			JSONresult.put("result",result);
+			JSONresult.put("results",result);
 			}
 		else if (isUpdateOperation) {
 			//perform update
@@ -68,7 +61,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 	        throw new BadRequestException();
 	    }
 	    try {
-	    	String iriOrPath = requestParams.getString("resourceURL");
+	    	String iriOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 	        boolean q = InputValidator.checkIfURLpattern(iriOrPath);
 	        boolean v = InputValidator.checkIfFilePath(iriOrPath);
 	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);

@@ -1,0 +1,107 @@
+<#-- @license ©2015 Miel Vander Sande - Multimedia Lab / iMinds / Ghent University -->
+<#setting url_escaping_charset='UTF-8'>
+<div resource="${datasourceUrl}" typeof="void:datasource hydra:Collection">
+<h2><a href="${datasourceUrl}">${datasource.getTitle()?cap_first}</a></h2>
+
+<form action="?" method="GET" property="hydra:search" resource="#triplePattern">
+  <fieldset resource="#triplePattern">
+    <legend>Query ${datasource.getTitle()} by triple pattern</legend>
+    <ul>
+<#list ['subject', 'predicate', 'object'] as component>
+      <li property="hydra:mapping" resource="#${component}">
+        <label for="${component}>"
+               about="#${component}" property="hydra:variable" lang="">${component}</label>
+       <input class="uri" id="${component}" name="${component}"
+              about="#${component}" property="hydra:property" resource="rdf:${component}" value="${(query[component])!""}" />
+      </li>
+</#list>
+    </ul>
+  </fieldset>
+  <p>
+    <input type="submit" value="Find matching triples" />
+  </p>
+</form>
+</div>
+
+<h3>Matches in ${datasource.getTitle()} for <em class="pattern">${ (query.getPatternString())!"" }</em></h3>
+
+<div class="counts">
+<#if (triples?size > 0)>
+  Showing triples ${ start } to ${ end } of
+  <#if totalEstimate != end>±</#if>
+  <span property="void:triples hydra:totalItems" datatype="xsd:integer" content="${ totalEstimate }">${ totalEstimate }</span>
+  with <span property="hydra:itemsPerPage" datatype="xsd:integer" content="${ itemsPerPage }">${
+    itemsPerPage
+  }</span> triples per page.
+  <@pageLinks/>
+<#else>
+  <p>
+    ${datasource.getTitle()} contains
+    <span property="void:triples hydra:totalItems" datatype="xsd:integer" content="0">
+      no <#if (totalEstimate > 0) >more</#if>
+    </span>
+    triples that match this pattern.
+  </p>
+</#if>
+</div>
+
+<ul class="triples">
+<#list triples as triple>
+<#assign subject = triple.getSubject().asNode().toString()>
+<#assign predicate = triple.getPredicate().asNode().toString()>
+<#assign object = triple.getObject().asNode().toString()>
+    <li>
+      <a href="?subject=${subject?url}">
+        <abbr title="${ subject }">
+            <#if (subject?last_index_of("#") > -1) >
+            ${ subject?keep_after_last("#") }
+            <#elseif (subject?last_index_of("/") > -1)>
+            ${ subject?keep_after_last("/") }
+            <#else>
+            ${ subject }
+            </#if>
+        </abbr>
+      </a>
+      <a href="?predicate=${predicate?url}">
+        <abbr title="${ predicate }">
+            <#if (predicate?last_index_of("#") > -1) >
+            ${ predicate?keep_after_last("#") }
+            <#elseif (predicate?last_index_of("/") > -1)>
+            ${ predicate?keep_after_last("/") }
+            <#else>
+            ${ predicate }
+            </#if>
+        </abbr>
+      </a>
+      <#if !triple.getObject().isLiteral()>
+      <a href="?object=${object?url}" resource="${ subject}">
+          <abbr title="${ object }" property="${ predicate }" resource="${ object }">
+            <#if (object?last_index_of("#") > -1) >
+            ${ object?keep_after_last("#") }
+            <#elseif (object?last_index_of("/") > -1)>
+            ${ object?keep_after_last("/") }
+            <#else>
+            ${ object }
+            </#if>
+          </abbr>
+      </a>.
+      <#else>
+      <a href="?object=${object?url}" resource="${ subject}">${object}</a>.
+      </#if>
+    </li>
+</#list>
+</ul>
+
+<@pageLinks/>
+
+<#macro pageLinks>
+ <ul class="links">
+   <#if previousPage??>
+   <li><a href="${ firstPage }" rel="first" property="hydra:firstPage">first</a></li>
+   <li><a href="${ previousPage }" rel="prev" property="hydra:previousPage">previous</a></li>
+   </#if>
+   <#if nextPage??>
+   <li><a href="${ nextPage }" rel="next" property="hydra:nextPage">next</a></li>
+   </#if>
+ </ul>
+</#macro>

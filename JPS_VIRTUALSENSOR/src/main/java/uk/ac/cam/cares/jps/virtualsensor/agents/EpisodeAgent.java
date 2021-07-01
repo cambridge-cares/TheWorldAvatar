@@ -42,6 +42,7 @@ import java.nio.file.Files;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Point;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Scope;
@@ -51,13 +52,16 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentConfiguration;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.EpisodeAgentProperty;
+import uk.ac.cam.cares.jps.virtualsensor.configuration.SensorVenv;
 import uk.ac.cam.cares.jps.virtualsensor.objects.Ship;
 import uk.ac.cam.cares.jps.virtualsensor.objects.WeatherStation;
 import uk.ac.cam.cares.jps.virtualsensor.sparql.DispSimSparql;
+import uk.ac.cam.cares.jps.virtualsensor.sparql.SensorSparql;
 
 @WebServlet(urlPatterns = {"/EpisodeAgent"})
 public class EpisodeAgent extends JPSAgent{
@@ -137,8 +141,7 @@ public class EpisodeAgent extends JPSAgent{
             try { //for control file
                 createControlWeatherORCityChemFile(inputPath, "run_file.asc", mainStation,subStation,sc);
                 createControlWeatherORCityChemFile(inputPath, "citychem_restart.txt",mainStation,subStation,sc);
-                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_LSE.inp",sc);
-                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta_PSE.inp",sc);
+                createControlEmissionFile(ship_iri.length,inputPath,"cctapm_meta.inp",sc);
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -465,20 +468,14 @@ public class EpisodeAgent extends JPSAgent{
 
 			return fileContext;
 
-		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
-			int size = inputparameter.getInt("sourceinput");
-            String lseORpse=filename.split("_")[2].split(".inp")[0];     
-            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir","cctapm_meta.inp").toString());
+		} else if (filename.contains("cctapm_meta.inp")) {
+			int size = inputparameter.getInt("sourceinput");    
+            File file = new File(Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "workingdir",filename).toString());
    			fileContext = FileUtils.readFileToString(file);   
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
 			List<String> newcontent = new ArrayList<String>();
-			for (int r = 0; r < 9; r++) {
-				newcontent.add(lineoffile.get(r));
-			}
-			String line10b = separator + "!" + separator + lineoffile.get(9).split("!")[1];
-			newcontent.add(" '"+lseORpse+"'"+ line10b);
-			for (int r = 10; r < 12; r++) {
+			for (int r = 0; r < 12; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			String line13b = separator + "!" + separator + lineoffile.get(12).split("!")[1];
@@ -958,30 +955,51 @@ public class EpisodeAgent extends JPSAgent{
 
 			JSONObject jobInfo = new JSONObject(Files.readAllLines(Paths.get(jobFolder.getAbsolutePath(), "input.json")).get(0));
 			String outputPath = jobInfo.getString(outputPathKey); // scenario folder written during job submission
-			long simStart = jobInfo.getLong(simStartKey);
 			String sim_iri = jobInfo.getString(DispSimSparql.SimKey);
 			
-			String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
-			
-			File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
-			String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
-
-			File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
-			String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
-
-			File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
-			String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
-
-			// copy to scenario folder
-			new QueryBroker().putLocal(destinationUrl, file); 
-			new QueryBroker().putLocal(destinationUrl2, file2);
-			new QueryBroker().putLocal(destinationUrl3, file3);
-			System.out.println("metadata annotation started");
-
-			// update triple-store
-			DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
-
-			System.out.println("metadata annotation finished");
+			if (!DispSimSparql.CheckOutputPathExist(sim_iri, outputPath)) { 
+				// avoid duplicate annotation, sometimes the slurm api submits the same job twice
+				long simStart = jobInfo.getLong(simStartKey); // time stamp
+				
+				String destDir = Paths.get(jobFolder.getAbsolutePath(), "output").toString();
+				
+				File file = new File(destDir.concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+				String destinationUrl = Paths.get(outputPath, FILE_NAME_3D_MAIN_CONC_DATA).toString();
+	
+				File file2 = new File(Paths.get(destDir, FILE_NAME_ICM_HOUR).toString());
+				String destinationUrl2 = Paths.get(outputPath, FILE_NAME_ICM_HOUR).toString();
+	
+				File file3 = new File(Paths.get(destDir, FILE_NAME_PLUME_SEGMENT).toString());
+				String destinationUrl3 = Paths.get(outputPath, FILE_NAME_PLUME_SEGMENT).toString();
+	
+				// copy to scenario folder
+				new QueryBroker().putLocal(destinationUrl, file); 
+				new QueryBroker().putLocal(destinationUrl2, file2);
+				new QueryBroker().putLocal(destinationUrl3, file3);
+				
+				// python script reads in conc file and produces a geojson file next to it
+				createGeoJSON(outputPath,DispSimSparql.GetSimCRS(sim_iri));
+				
+				System.out.println("metadata annotation started");
+	
+				// update triple-store
+				DispSimSparql.AddOutputPath(sim_iri, outputPath, simStart);
+	
+				// update all air quality stations associated with this sim
+				String[] station_iri = DispSimSparql.GetAirQualityStations(sim_iri);
+				
+				if (station_iri != null) {
+					for (int i=0; i < station_iri.length; i++) {
+						JSONObject request = new JSONObject();
+						request.put(SensorSparql.keyAirStationIRI, station_iri[i]);
+						AgentCaller.executeGetWithJsonParameter("JPS_VIRTUALSENSOR/SensorUpdaterAgent", request.toString());
+					}
+				}
+				
+				System.out.println("metadata annotation finished");
+			} else {
+				System.out.println("Duplicate detected, skipping annotation");
+			}
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			logger.error("EpisodeAgent: Output Annotating Task could not finish");
@@ -990,5 +1008,20 @@ public class EpisodeAgent extends JPSAgent{
 			return false;
 		}
 		return true;
+	}
+	
+	private void createGeoJSON(String destDir, String simCRS) {
+		Path pyWorkingDir =  Paths.get(AgentLocator.getCurrentJpsAppDirectory(this), "python");
+		ArrayList<String> args = new ArrayList<String>();
+
+		args.add(SensorVenv.pyexe.toString());
+		args.add("sensorpy.py");
+		args.add("postprocessEpisode");
+		args.add("--pathToConcFile");
+		args.add(destDir);
+		args.add("--simCRS");
+		args.add(simCRS);
+
+		CommandHelper.executeCommands(pyWorkingDir.toString(), args);
 	}
 }

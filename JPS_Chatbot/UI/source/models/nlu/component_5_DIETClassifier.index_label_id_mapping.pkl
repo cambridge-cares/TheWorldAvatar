@@ -1,1 +1,0 @@
-{"0": "batch_restriction_query", "1": "batch_restriction_query_numerical", "2": "batch_restriction_query_numerical_and_attribute", "3": "item_attribute_query"}

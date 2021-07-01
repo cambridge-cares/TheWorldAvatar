@@ -1,4 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
+ABoxOntoLandUse,Ontology,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoLandUse,Ontology,http://www.theworldavatar.com/kb/ontolanduse,base,,
 England,Instance,Administrative Division,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,England,,England is a country that is part of the United Kingdom. It shares land borders with Wales to its west and Scotland to its north. The Irish Sea lies northwest of England and the Celtic Sea to the southwest. England is separated from continental Europe by the North Sea to the east and the English Channel to the south.,string
 Cereal Crop,Instance,Land Cover,,,

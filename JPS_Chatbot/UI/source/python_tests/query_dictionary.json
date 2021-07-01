@@ -1,6 +1,0 @@
-{"vibration_frequency": "PREFIX compchemkb: <https://como.cheng.cam.ac.uk/kb/compchem.owl#>\nPREFIX gc: <http://purl.org/gc/>\nPREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nPREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nPREFIX ontocompchem:<http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>\nSELECT DISTINCT   ?frequency ?name ?unit_short\nWHERE  {\n?g_calculation rdf:type ontocompchem:G09 .\n?g_calculation ontocompchem:hasInitialization ?initialization .\n?initialization gc:hasMoleculeProperty ?molecule_property .\n?molecule_property gc:hasName ?name .\nFILTER regex(?name, \"^H 2 O 2 $\")\n\n# ============ to match molecule =========================\n?g_calculation  gc:isCalculationOn  ?VibrationalAnalysis .\n?VibrationalAnalysis rdf:type gc:VibrationalAnalysis .\n?VibrationalAnalysis gc:hasResult ?result .\n?result ontocompchem:hasFrequencies ?frequency .\nOPTIONAL {\n?result gc:hasUnit ?unit .\nBIND(REPLACE(STR(?unit),\"http://purl.org/gc/\",\"\") AS ?unit_short) .\n}\n}\n",
-  
-
-
-
-}
