@@ -7,8 +7,7 @@ Usage:
     ccparse parse <logFileOrDir> [options]
 
     options:
-        -j                        Generate output json file(s)
-        -o                        Generate output owl file(s)
+        -n                        Suppress output files (json and csv)
         --logExt=LOGEXT           Log files file extension for log file directory input [default: *.log]
 """
 
