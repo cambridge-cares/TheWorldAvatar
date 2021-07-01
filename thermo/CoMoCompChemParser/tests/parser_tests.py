@@ -15,7 +15,7 @@ def getRefName(testLog,jobIndex,numJobs):
         refName = testLog + '.json'
     return refName
 
-#@pytest.mark.skip
+@pytest.mark.skip
 @pytest.mark.parametrize("testType, testLog",
 [
 ('g1','co2_g1_g09.log'),
@@ -54,7 +54,7 @@ def getRefName(testLog,jobIndex,numJobs):
 ('failed_jobs','c2h4_opt_dft_g09_powercut.log'),
 ('failed_jobs','co2_linked_g09.log'),
 #scans
-#('scans','ethane_scan_short.log')
+('scans\\singlelogscans\\relaxed','ethane_scan_short.log')
 ]
 )
 def test_parser(testType, testLog, regenerateResults=False):
@@ -94,7 +94,10 @@ def test_parser(testType, testLog, regenerateResults=False):
         print()
 
 @pytest.mark.parametrize("testType, testJSON",[
-('dft','co2_freq_g09.log.json')
+('dft','co2_freq_g09.log.json'),
+('scans\\singlelogscans\\relaxed','ethane_scan_short.log_1.json'),
+('scans\\singlelogscans\\relaxed','ethane_scan_short.log_2.json'),
+('scans\\singlelogscans\\relaxed','ethane_scan_short.log_3.json')
 ])
 def test_ontocompchem_abox_writer(testType, testJSON, regenerateResults=False):
     print('========================================================')
@@ -115,7 +118,7 @@ def test_ontocompchem_abox_writer(testType, testJSON, regenerateResults=False):
     test_abox_data = readFile(test_abox_csv)
     ref_abox_data = readFile(ref_abox_csv)
     assert test_abox_data == ref_abox_data
-
+    os.remove(test_abox_csv)
     print('========================================================')
     print()
     print()

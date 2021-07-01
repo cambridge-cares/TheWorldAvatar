@@ -207,11 +207,24 @@ class CcGaussianParser():
 
             return log_names
         #---------------------------------------------
-        def split(a, n):
-            #This function splits a list into k parts of approximately equal length.
-            k, m = divmod(len(a), n)
-            return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
-
+        def data_splitter(data):
+            data_list = [data]
+            if 'ScanFlag' in data:
+                flat_scanpoints = [item for sublist in data['Scan Points'] for item in sublist]
+                no_points = len(flat_scanpoints) 
+                
+                if no_points > 1 : 
+                    data_list = []
+                    for k in range(no_points):
+                        temp_data = data.copy()
+                        temp_data['Geometry'] = data['Geometry'][k]
+                        if 'Electronic energy' in data:
+                            temp_data['Electronic energy'] = data['Electronic energy'][k]
+                        if 'Electronic and ZPE energy' in data:
+                            temp_data['Electronic and ZPE energy'] = data['Electronic and ZPE energy'][k]
+                        temp_data['Scan Points'] = flat_scanpoints[k]
+                        data_list.append(temp_data)
+            return data_list
         #================================================
 
         #================================================
@@ -225,8 +238,10 @@ class CcGaussianParser():
         # loop thorugh each log and parse it
         for log in split_logs:
             parseddata = self.parse_log(log)
-            json_data = json.dumps(parseddata)
-            uploaddata.append(json_data)
+            parseddata = data_splitter(parseddata)
+            for listdata in parseddata:                                    
+                json_data = json.dumps(listdata)
+                uploaddata.append(json_data)
             #dict_data = json.loads(json_data)
             #with open(log.replace('.log','.json'), 'w') as outfile:
                 #json.dump(dict_data, outfile, indent = 4)
