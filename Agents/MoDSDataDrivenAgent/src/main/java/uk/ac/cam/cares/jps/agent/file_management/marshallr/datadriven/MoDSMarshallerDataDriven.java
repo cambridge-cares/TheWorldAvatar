@@ -54,6 +54,6 @@ public class MoDSMarshallerDataDriven extends MoDSMarshaller {
 		modsSurrogate.formFiles(exeModel, otherOptions);
 		modsSurrogate.setUpMoDS();
 		
-		logger.info("Model canteraLFS was added to the MoDS job.");
+		logger.info("Model DataDriven was added to the MoDS job.");
 	}
 }
