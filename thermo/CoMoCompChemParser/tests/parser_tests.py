@@ -15,7 +15,7 @@ def getRefName(testLog,jobIndex,numJobs):
         refName = testLog + '.json'
     return refName
 
-@pytest.mark.skip
+#@pytest.mark.skip
 @pytest.mark.parametrize("testType, testLog",
 [
 ('g1','co2_g1_g09.log'),
