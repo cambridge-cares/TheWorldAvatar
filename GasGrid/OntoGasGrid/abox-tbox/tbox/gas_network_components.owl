@@ -129,17 +129,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#atGasVolumeRate -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#atGasVolumeRate">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Gas"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents a rate of gas consumption or production in million cubic meters (mcm) / day.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#atUTC -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#atUTC">
@@ -157,28 +146,6 @@
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Thing"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Indicates the validity of a class instance before an end time.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasGasEnergy -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasGasEnergy">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Gas"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents an amount of gas on an energy basis</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasGasVolume -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasGasVolume">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Gas"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents a unit of gas on a volumetric basis.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
