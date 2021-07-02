@@ -20,12 +20,24 @@ public class DerivedQuantityClient {
     
     /**
      * Links the given derived quantity to its inputs and the agent used to derived it
+     * Use this for instances that get replaced by agents
      * @param derivedQuantityIRI
      * @param inputsIRI
      * @param agentIRI
      */
-    public void initDerivedQuantity(String derivedQuantityIRI, String agentIRI, String agentURL, String... inputsIRI) {
-    	DerivedQuantitySparql.initDerivedQuantity(this.kbClient, derivedQuantityIRI, agentIRI, agentURL, inputsIRI);
+    public void createDerivedQuantity(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	DerivedQuantitySparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    }
+    
+    /**
+     * use this if all the agent does to the instance is appending time series data, entity do not get replaced
+     * @param entity
+     * @param agentIRI
+     * @param agentURL
+     * @param inputsIRI
+     */
+    public void createDerivedQuantityWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	DerivedQuantitySparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
     }
     
     /**
@@ -75,7 +87,7 @@ public class DerivedQuantityClient {
 				}
 				
 				// replace triples involving old IRI to preserve the link to the new instance
-				DerivedQuantitySparql.replaceDerivedTriples(this.kbClient,instance,newInstance);
+//				DerivedQuantitySparql.replaceDerivedTriples(this.kbClient,instance,newInstance);
 				DerivedQuantitySparql.updateTimeStamp(kbClient, newInstance);
 			}
 		}
