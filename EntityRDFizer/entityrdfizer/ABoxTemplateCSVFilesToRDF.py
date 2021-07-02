@@ -32,4 +32,4 @@ def convert(input_folder_path, output_folder_path):
 residing in a folder into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert(select_folder(), "C:\\Users\\msff2\\Documents\\c4eWorkInProgress\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")
+    convert(select_folder(), "")

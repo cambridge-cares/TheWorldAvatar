@@ -10,7 +10,7 @@ Usage:
     entrdifizer <fileOrDirPath> [--outDir=<OUT_DIR>]
 
 Options:
---outDir=<OUT_DIR>   Output directory path [default: ]
+--outDir=<OUT_DIR>   Output directory path
 """
 
 def main():

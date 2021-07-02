@@ -17,6 +17,7 @@ import entityrdfizer.ABoxGeneration as aboxgen
 import os
 import os.path as path
 import glob
+from pathlib import Path as PathlibPath
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -199,17 +200,23 @@ input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABo
 output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
 """
 def convert_into_rdf(input_file_path, output_file_path):
+    input_file_path = PathlibPath(input_file_path)
+    input_dir = os.path.dirname(input_file_path)
+    input_name = os.path.basename(input_file_path)
     """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""
     if not path.exists(input_file_path):
         print('The following input file path does not exist:',input_file_path)
         return
+
     """Checks if the output file path exists. If the path does not exist, it creates the path"""
-    if not path.exists(output_file_path):
-        os.makedirs(output_file_path)
-    """Replaces the user provided file path separator with the default separator supported by
-    the platform (Windows or Linux) where the code runs"""
-    if "\\" in output_file_path:
-        output_file_path = output_file_path.replace("\\", os.path.sep)
+    if output_file_path:
+        output_file_path = PathlibPath(output_file_path)
+        if not path.exists(output_file_path):
+            os.makedirs(output_file_path)
+    else:
+        output_file_path = os.path.dirname(input_file_path)
+    output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
+
     print('Provided file path:', input_file_path)
     if not path.isfile(input_file_path):
         print('The provided file path is not valid.')
@@ -231,10 +238,9 @@ def convert_into_rdf(input_file_path, output_file_path):
                process_data(row)
            line_count +=1
            print('[', line_count, ']', row)
-    g.serialize(destination=output_file_path+os.path.sep+propread.getABoxFileName()+propread.readABoxFileExtension(),
-                format="application/rdf+xml")
+    g.serialize(destination=output_file_path,format="application/rdf+xml")
 
 """This block of codes calls the function that converts the content of an ABox CSV template file into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
-    convert_into_rdf(select_file(), "C:\\Users\\msff2\\Documents\\TestSolveMechConversion\\TheWorldAvatar\\JPS_Ontology\\KBTemplates\\ABoxRDFFiles\\test\\path")
+    convert_into_rdf(select_file(), "")
