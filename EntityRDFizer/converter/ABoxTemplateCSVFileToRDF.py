@@ -12,8 +12,8 @@ from rdflib.namespace import RDF, RDFS, Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
-import converter.PropertyReader as propread
-import converter.ABoxGeneration as aboxgen
+import entityrdfizer.PropertyReader as propread
+import entityrdfizer.ABoxGeneration as aboxgen
 import os
 import os.path as path
 import glob
@@ -196,7 +196,7 @@ def create_namespace(IRI):
 content of the template is converted into RDF.
 Some example input and output file paths are provided below:
 input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
-output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles" 
+output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
 """
 def convert_into_rdf(input_file_path, output_file_path):
     """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""

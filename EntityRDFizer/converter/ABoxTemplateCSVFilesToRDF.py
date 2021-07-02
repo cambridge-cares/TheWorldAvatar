@@ -6,7 +6,7 @@
 """This module can convert all ABox template CSV files available in a folder into RDF files."""
 
 import glob,os
-import converter.ABoxTemplateCSVFileToRDF as csv2rdf
+from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_into_rdf
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askdirectory
 
@@ -26,9 +26,9 @@ def convert(input_folder_path, output_folder_path):
     csv_files = glob.glob(os.path.join(input_folder_path, "*.csv"))
     """Iterates over the list of CSV files"""
     for csv_file in csv_files:
-        csv2rdf.convert_into_rdf(csv_file, output_folder_path)
+        convert_into_rdf(csv_file, output_folder_path)
 
-"""This block of codes calls the function that converts the content of all ABox CSV template files 
+"""This block of codes calls the function that converts the content of all ABox CSV template files
 residing in a folder into RDF"""
 if __name__ == '__main__':
     """Calls the RDF conversion function"""
