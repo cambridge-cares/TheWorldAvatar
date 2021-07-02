@@ -5,16 +5,22 @@ import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.json.JSONObject;
+import org.junit.*;
+import org.junit.rules.TemporaryFolder;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import uk.ac.cam.cares.jps.agent.matlab.JPSMatlabAgent;
 import uk.ac.cam.cares.jps.agent.spin.SpinChemical;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpinChemicalTest {
 
@@ -23,6 +29,10 @@ public class SpinChemicalTest {
     private final PrintStream originalOut = System.out;
     // Turtle file containing a small ontology with instances and SPIN constraints
     public String testTurtleFile;
+
+    // Folder for temporary files required by different tests that gets deleted after the tests
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Before
     public void setTurtleFile() throws URISyntaxException {
@@ -51,11 +61,23 @@ public class SpinChemicalTest {
     }
 
     @Test
-    public void testQueryRDF4J() {
-        // TODO: Can not be tested as the method requires a knowledge graph to run on the localhost for querying
-        // SpinChemical spinChemical = new SpinChemical();
-        // String csvFilePath = spinChemical.queryRDF4J("https://example.url", null);
-        // Assert.assertNull(csvFilePath);
+    public void testQueryRDF4J() throws IOException {
+        // Create a test file which path is returned by the mockup query result
+        File file = folder.newFile("test.txt");
+        // Absolute path to the file which is JSON safe
+        String filePath = file.getAbsolutePath().replace(System.getProperty("file.separator"), "/");
+        JPSMatlabAgent agent = new JPSMatlabAgent();
+        String agentIRI = "http://test.com/agent";
+        List<String> lst = new ArrayList<>();
+        // Mock query result returned instead of actually querying for meta data (needs to be in SPARQL JSON return format)
+        JSONObject mockedResult = new JSONObject();
+        mockedResult.put("head", new JSONObject("{'vars': [ 'file']}"));
+        mockedResult.put("results", new JSONObject("{'bindings': [ {'file': {'type': 'literal', 'value': '"+filePath+"'}} ]}"));
+        try (MockedStatic<MetaDataQuery> theMock = Mockito.mockStatic(MetaDataQuery.class)) {
+            theMock.when(() -> MetaDataQuery.queryResources(null, null, null, agentIRI, null, null, null, lst))
+                    .thenReturn(mockedResult.toString());
+            Assert.assertEquals(filePath, agent.queryRDF4J(agentIRI, lst));
+        }
     }
 
     @Test
