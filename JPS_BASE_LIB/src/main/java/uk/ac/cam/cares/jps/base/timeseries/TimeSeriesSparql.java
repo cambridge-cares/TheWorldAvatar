@@ -30,13 +30,13 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 public class TimeSeriesSparql {
 	//namespace
-	public static final String namespace = "http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#";
+	public static final String namespace = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
 	
 	//prefix
 	private static final Prefix p_timeseries = SparqlBuilder.prefix(iri(namespace));
 	
 	// RDF type
-	private static final String TimeSeriesString = "http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#TimeSeries";
+	private static final String TimeSeriesString = namespace + "TimeSeries";
     private static final Iri TimeSeries = iri(TimeSeriesString);
     
     // relation
