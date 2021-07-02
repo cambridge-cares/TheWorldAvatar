@@ -177,7 +177,46 @@ for i in tqdm(range(int(len(LSOA)))):
                 break
     for month_it in range(len(months)):
         LSOA_vars_full = nc_vars_full[month_it][assoc_mask,:]
-        LSOA_vars = np.mean(LSOA_vars_full,axis=0)
+
+        '''
+        Following code is responsible for aggregating mean minimum and maximum temperature values
+
+        LSOA_vars_full contains a matrix with columns of tasmin, tas and tasmax
+        and respective rows for every grid point that falls within a region.
+
+        if the variable is tasmin then the minimum of these values is taken, mean for tas and max for tasmax
+
+        [[tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax],
+         [tasmin ,  tas   , tasmax]]
+
+        [[   |   ,   |    ,   |   ],
+         [   |   ,   |    ,   |   ],
+         [   |   ,   |    ,   |   ],
+         [np.min ,np.mean , np.max],
+         [   |   ,   |    ,   |   ],
+         [   |   ,   |    ,   |   ],
+         [   |   ,   |    ,   |   ]]
+
+
+         [np.min ,np.mean , np.max]
+
+        '''
+        post_proc_vars = np.zeros(3)
+        for k in range(3):
+
+            if clim_vars[k] == 'tasmin':
+                post_proc_vars[k] = np.min(LSOA_vars_full[:,k])
+            elif clim_vars[k] == 'tas': 
+                post_proc_vars[k] = np.mean(LSOA_vars_full[:,k])
+            else:
+                post_proc_vars[k] = np.max(LSOA_vars_full[:,k])
+
+        LSOA_vars = post_proc_vars
         LSOA_IRI = LSOA[i,0]
         month_str = str(month_it+1)
         month_str_len = len(month_str)
