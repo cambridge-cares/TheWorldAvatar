@@ -5,6 +5,8 @@ from tqdm import tqdm
 import numpy as np 
 import matplotlib.pyplot as plt
 import geopandas as gpd
+from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from datetime import datetime
 import imageio
 import rdflib
@@ -528,33 +530,40 @@ plt.rc('font', family='sans-serif')
 import os
 print(os.environ['PATH'])
 
-#plt.subplots_adjust(wspace=0, right=0.927, left=0.102)
+fig,axs = plt.subplots(1,2,figsize=(10,5))
+plt.subplots_adjust(wspace=0.31,left=0.074,right=0.93)
+divider = make_axes_locatable(axs[0])
+cax1 = divider.append_axes("right", size="5%", pad=0.05)
+divider = make_axes_locatable(axs[1])
+cax2 = divider.append_axes("right", size="5%", pad=0.05)
+tl = my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axs[0],legend=True,cax=cax1,legend_kwds={'label':'kWh'})
+tr = my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axs[1],legend=True,cax=cax2,legend_kwds={'label':'°C'})
 
-fig,axs = plt.subplots(2,2,figsize=(7,7))
+axs[0].set_title('Gas Consumption')
+axs[1].set_title('Mean Air Temperature')
+axs[0].set_xlabel('Longitude')
+axs[0].set_ylabel('Latitude')
+axs[1].set_xlabel('Longitude')
+axs[1].set_ylabel('Latitude')
+
+axins2 = zoomed_inset_axes(axs[0], zoom=6, loc=1)
+plt.setp(axins2.get_xticklabels(), visible=False)
+plt.setp(axins2.get_yticklabels(), visible=False)
+axins2.set_xlim(-2.5,-2)
+axins2.set_ylim(53.4,53.9)
+my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axins2)
+mark_inset(axs[0],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
 
 
-cbar_ax = fig.add_axes([0.45, 0.15, 0.025, 0.7])
-tl = my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axs[0,0],legend=True,cax=cbar_ax,)
-cbar_ax = fig.add_axes([0.92, 0.15, 0.025, 0.7])
-tr = my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axs[0,1],legend=True,cax=cbar_ax)
-axs[0,0].set_title('Gas Consumption (kWh/year)')
-axs[0,1].set_title('Temperature (°C )')
-axs[0,0].set_xlabel('Longitude')
-axs[0,0].set_ylabel('Latitude')
-axs[0,1].set_xlabel('Longitude')
+axins2 = zoomed_inset_axes(axs[1], zoom=6, loc=1)
+plt.setp(axins2.get_xticklabels(), visible=False)
+plt.setp(axins2.get_yticklabels(), visible=False)
+axins2.set_xlim(-2.5,-2)
+axins2.set_ylim(53.4,53.9)
+my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axins2)
+mark_inset(axs[1],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
 
-axs[0,1].set_ylabel('Latitude')
-plt.subplots_adjust(wspace=0.574,hspace=0.183)
-bl = my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axs[1,0])
-br = my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axs[1,1])
-axs[1,0].set_title('Gas Consumption (kWh/year)')
-axs[1,1].set_title('Temperature (°C)')
-axs[1,0].set_xlabel('Longitude')
-axs[1,0].set_ylabel('Latitude')
-axs[1,1].set_xlabel('Longitude')
-axs[1,1].set_ylabel('Latitude')
-axs[1,0].set_xlim(-0.2,0.1)
-axs[1,1].set_xlim(-0.2,0.1)
-axs[1,0].set_ylim(51.65,51.35)
-axs[1,1].set_ylim(51.65,51.35)
+
+
 plt.show()
+
