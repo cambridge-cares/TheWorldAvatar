@@ -3,9 +3,13 @@
 # Date: 07 Dec 2020                      #
 ##########################################
 import configparser
+import pkg_resources
+import os
+
+ENTRDF_PROP_FILE = pkg_resources.resource_filename(__name__,os.path.join('conf','EntityRDFizer.properties'))
 
 config = configparser.RawConfigParser()
-config.read('./conf/EntityRDFizer.properties')
+config.read(ENTRDF_PROP_FILE)
 
 """Created variables to be used globally to maintain the values
 read from a property file and to update the variables if users set
