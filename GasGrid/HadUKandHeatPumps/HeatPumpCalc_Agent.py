@@ -546,20 +546,38 @@ axs[0].set_ylabel('Latitude')
 axs[1].set_xlabel('Longitude')
 axs[1].set_ylabel('Latitude')
 
-axins2 = zoomed_inset_axes(axs[0], zoom=6, loc=1)
-plt.setp(axins2.get_xticklabels(), visible=False)
-plt.setp(axins2.get_yticklabels(), visible=False)
-axins2.set_xlim(-2.5,-2)
-axins2.set_ylim(53.4,53.9)
-my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axins2)
-mark_inset(axs[0],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
-
-
+# MANCHESTER
 axins2 = zoomed_inset_axes(axs[1], zoom=6, loc=1)
 plt.setp(axins2.get_xticklabels(), visible=False)
 plt.setp(axins2.get_yticklabels(), visible=False)
 axins2.set_xlim(-2.5,-2)
 axins2.set_ylim(53.4,53.9)
+
+# # WESTMINSTER
+# axins2 = zoomed_inset_axes(axs[0], zoom=43, loc=1)
+# plt.setp(axins2.get_xticklabels(), visible=False)
+# plt.setp(axins2.get_yticklabels(), visible=False)
+# axins2.set_xlim(-0.19,-0.09)
+# axins2.set_ylim(51.48,51.51)
+
+my_geo_df.plot(column='energy',norm=cl.LogNorm(vmin=10000, vmax=500000),cmap='coolwarm',antialiased=False,ax=axins2)
+mark_inset(axs[0],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
+
+
+# MANCHESTER
+axins2 = zoomed_inset_axes(axs[1], zoom=6, loc=1)
+plt.setp(axins2.get_xticklabels(), visible=False)
+plt.setp(axins2.get_yticklabels(), visible=False)
+axins2.set_xlim(-2.5,-2)
+axins2.set_ylim(53.4,53.9)
+
+# # WESTMINSTER
+# axins2 = zoomed_inset_axes(axs[1], zoom=43, loc=1)
+# plt.setp(axins2.get_xticklabels(), visible=False)
+# plt.setp(axins2.get_yticklabels(), visible=False)
+# axins2.set_xlim(-0.19,-0.09)
+# axins2.set_ylim(51.48,51.51)
+
 my_geo_df.plot(column='temp',cmap='coolwarm',antialiased=False,ax=axins2)
 mark_inset(axs[1],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
 
