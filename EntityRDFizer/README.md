@@ -34,7 +34,7 @@ The above commands will create and activate the virtual environment `entityrdfiz
 To install the `entityrdfizer` simply run the following command:
 
 ```sh
-(entityrdfizer_venv) $ pip install entityrdfizer_venv
+(entityrdfizer_venv) $ pip install entityrdfizer
 ```
 
 ## Installation from the version-controlled source (for developers)
