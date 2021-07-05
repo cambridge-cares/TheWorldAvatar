@@ -1,4 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
+ABoxOntoKGRouter,Ontology,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoKGRouter,Ontology,http://www.theworldavatar.com/kb/ontokgrouter,base,,
 ontokin,Instance,Target Resource,,,
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasQueryEndpoint,Data Property,ontokin,,http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql,string
 http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#hasUpdateEndpoint,Data Property,ontokin,,http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql,string
