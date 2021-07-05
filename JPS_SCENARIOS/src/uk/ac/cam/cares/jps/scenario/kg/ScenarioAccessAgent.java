@@ -5,20 +5,13 @@ import java.io.IOException;
 import java.util.Date;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -29,51 +22,24 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.scenario.ScenarioAgent;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 import uk.ac.cam.cares.jps.scenario.ScenarioMockManager;
 import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
-public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgent (for getResourceUrl logInputParameters) or JPSAgent? 
+public class ScenarioAccessAgent  extends AccessAgent { 
 
 	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = LoggerFactory.getLogger(ScenarioAgent.class);
+	private static Logger logger = LoggerFactory.getLogger(ScenarioAccessAgent.class);
 	
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {
-		return new JSONObject();
-	}
-
-	//TODO done
-	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {	
-		if (!validateInput(requestParams)) {
-			throw new JSONException("ScenarioAccessAgent: Input parameters not found.\n ");
-		}
-		
-		JSONObject JSONresult = new JSONObject();
-		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
-		System.out.println("METHOD: "+ method);
-		switch (method) {
-			case HttpGet.METHOD_NAME:	
-				JSONresult = get(requestParams);
-			    break;
-			case HttpPost.METHOD_NAME:
-				post(requestParams);
-				break;
-			case HttpPut.METHOD_NAME:
-				put(requestParams);
-				break;
-			}		
-	    return JSONresult;
-	}
+	//Methods inherited from AccessAgent:
+	//public JSONObject processRequestParameters(JSONObject requestParams)
+    //public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) 
+	//public boolean validateInput(JSONObject requestParams) throws BadRequestException
 	
-	//TODO done
 	@Override
 	public JSONObject get(JSONObject requestParams) {
 		
@@ -166,7 +132,6 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 		}
 	}
 	
-	//TODO done
 	public String getOrQuery(JSONObject requestParams, String scenarioName, boolean copyOnRead) {
 
 		String requestUrl =  MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
@@ -176,6 +141,10 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 		String paramDatasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
 	
+		if(sparqlupdate != null) {
+		   	throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
+		}
+		 
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
@@ -195,9 +164,50 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 			return result;
 
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			logInputParams(requestParams, sparqlquery, true);
-			throw e;
+			throw new JPSRuntimeException(e);
+		}
+	}
+	
+	protected String getFromKnowledgeBase(ScenarioStoreClient storeClient, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
+		if (storeClient.exists(resourceUrl)) {
+			return storeClient.get(resourceUrl, accept);
+		} 
+		
+		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
+		if (copyOnRead) {
+			storeClient.put(resourceUrl, content, accept);
+			if (accept != null) {
+				// read it again but this time form the knowledge base and in the correct format
+				return storeClient.get(resourceUrl, accept);
+			} 
+		}
+		return content;
+	}
+	
+	protected String queryKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql, boolean copyOnRead) {
+
+		logger.info("queryKnowledgeBase");
+		
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			// will not work with current knowledge base implementation for Fuseki
+			//String datasetUrl = kb.getDatasetUrl();
+			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
+			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
+		}
+		
+		if (storeClient.exists(resourceUrl)) {
+			return storeClient.query(resourceUrl, sparql);
+		} 
+		
+		if (copyOnRead) {
+			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			storeClient.put(resourceUrl, content, null);
+			return storeClient.query(resourceUrl, sparql);
+		} else {
+			logger.info("query from KnowledgeBaseClient");	
+			return KnowledgeBaseClient.query(null, resourceUrl, sparql);
 		}
 	}
 	
@@ -210,12 +220,13 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
 		
+		if(sparqlquery!=null && sparqlupdate!=null) {
+	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
+	    									+ JPSConstants.QUERY_SPARQL_UPDATE + " are not allowed");
+	    }
+		
 		try {
 			logInputParams(requestParams, null, false);
-			
-			if (sparqlquery != null && sparqlupdate != null) {
-				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
-			}
 			
 			String scenarioUrl = getDatasetUrl(requestUrl); //TODO check this, getScenarioUrl?
 			ScenarioStoreClient storeClient = new ScenarioStoreClient(scenarioUrl);
@@ -225,9 +236,8 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 			storeClient.put(resourceUrl, body, contentType);
 
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			logInputParams(requestParams, null, true);
-			throw e;
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
@@ -238,6 +248,10 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
 		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
+		
+		if(sparqlquery != null) {
+			throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
+		}
 		
 		try {
 			logInputParams(requestParams, sparqlupdate, false);
@@ -253,28 +267,31 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 			updateKnowledgeBase(storeClient, resourceUrl, sparqlupdate);
 			
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			logInputParams(requestParams, sparqlupdate, true);
-			throw e;
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
-	@Override
-	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-	    if (requestParams.isEmpty()) {
-	        throw new BadRequestException();
-	    }
-	    try {
-	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
-	        String method = MiscUtil.optNullKey(requestParams,JPSConstants.METHOD);
-	        if (method == null) {
-	        	return false;
-	        }
-	        return q;
-	    }catch (JSONException ex) {
-	    	ex.printStackTrace();
-	    	return false;
-	    }
+	protected void updateKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql) {
+		
+		logger.info("updateKnowledgeBase");
+		
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			// at the moment, the knowledge base impl for Fuseki does not support SPARQL update if the named graph is given as extra resource URL
+			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
+			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
+			// (which is done bz the MetaDataAnnotator)
+			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
+			return;
+		}
+		
+		if (!storeClient.exists(resourceUrl)) {
+			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			storeClient.put(resourceUrl, content, null);
+		}
+		storeClient.update(resourceUrl, sparql);
 	}
 	
 	private void setOptions(JSONObject jo, String scenarioName, ScenarioLog log) {
@@ -558,71 +575,6 @@ public class ScenarioAccessAgent  extends AccessAgent { //TODO extend AccessAgen
 				}
 			} 
 			// else skip the scenario log json file
-		}
-	}
-	
-	protected void updateKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql) {
-		
-		logger.info("updateKnowledgeBase");
-		
-		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
-		
-		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
-			// at the moment, the knowledge base impl for Fuseki does not support SPARQL update if the named graph is given as extra resource URL
-			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
-			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
-			// (which is done bz the MetaDataAnnotator)
-			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
-			return;
-		}
-		
-		if (!storeClient.exists(resourceUrl)) {
-			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
-			storeClient.put(resourceUrl, content, null);
-		}
-		storeClient.update(resourceUrl, sparql);
-	}
-	
-	protected String getFromKnowledgeBase(ScenarioStoreClient storeClient, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
-		if (storeClient.exists(resourceUrl)) {
-			return storeClient.get(resourceUrl, accept);
-		} 
-		
-		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
-		if (copyOnRead) {
-			storeClient.put(resourceUrl, content, accept);
-			if (accept != null) {
-				// read it again but this time form the knowledge base and in the correct format
-				return storeClient.get(resourceUrl, accept);
-			} 
-		}
-
-		return content;
-	}
-	
-	protected String queryKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql, boolean copyOnRead) {
-
-		logger.info("queryKnowledgeBase");
-		
-		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
-		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
-			// will not work with current knowledge base implementation for Fuseki
-			//String datasetUrl = kb.getDatasetUrl();
-			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
-			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
-		}
-		
-		if (storeClient.exists(resourceUrl)) {
-			return storeClient.query(resourceUrl, sparql);
-		} 
-		
-		if (copyOnRead) {
-			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
-			storeClient.put(resourceUrl, content, null);
-			return storeClient.query(resourceUrl, sparql);
-		} else {
-			logger.info("query from KnowledgeBaseClient");	
-			return KnowledgeBaseClient.query(null, resourceUrl, sparql);
 		}
 	}
 }

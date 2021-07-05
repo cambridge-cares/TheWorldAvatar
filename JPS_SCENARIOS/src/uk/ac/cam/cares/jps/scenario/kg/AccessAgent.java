@@ -38,7 +38,7 @@ public class AccessAgent extends JPSAgent{
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		System.out.println("JSON PARAMS" + requestParams.toString());
 		if (!validateInput(requestParams)) {
-			throw new JSONException("KnowledgeBaseAgent: Input parameters not found.\n");
+			throw new JSONException("AccessAgent: Input parameters not found.\n");
 		}
 		
 		JSONObject JSONresult = new JSONObject();
