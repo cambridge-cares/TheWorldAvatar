@@ -52,41 +52,12 @@ public class PrefixToUrlMapTest{
 	public void testgetPrefixforSPARQL()
 	{
 		//prefixes for standard ontologies
-		Assert.assertEquals("PREFIX dbpediao:<http://dbpedia.org/ontology/> \r\n",PrefixToUrlMap.getPrefixForSPARQL("dbpediao")); //Test whether getPrefixForSPARQL method is able to build the string correctly
-		//Subsequent tests on whether the string contains the appropriate characters such as PREFIX, : , < , >
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediap").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("dbpediap").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("dbpediap").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediar").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("dbpediar").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("dbpediar").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dc").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("dc").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("dc").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dcam").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("dcam").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("dcam").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("foaf").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("foaf").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("foaf").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("rdf").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("rdf").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("rdf").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("rdfs").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("rdfs").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("rdfs").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("skos").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("skos").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("skos").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("time").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("time").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("time").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("xsd").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("xsd").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("xsd").contains(">"));
-		
-	
-		// prefixes for OntoCape
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPBEHA").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPBEHA").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPBEHA").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPGEOM").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPGEOM").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPGEOM").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPMATE").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPMATE").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPMATE").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPMATH").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPMATH").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPMATH").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPPHAS").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPPHAS").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPPHAS").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPSPAC").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPSPAC").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPSPAC").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPSYST").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPSYST").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPSYST").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPTECH").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPTECH").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPTECH").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OCPTOPO").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OCPTOPO").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OCPTOPO").contains(">"));
-		
-
-		// prefixes for OntoPowerSys
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OPSBEHA").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OPSBEHA").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OPSBEHA").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OPSMODE").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OPSMODE").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OPSMODE").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("OPSREAL").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("OPSREAL").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("OPSREAL").contains(">"));
-		
-		
-		// prefixes for other JPS ontologies
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("JPSAGEN").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("JPSAGEN").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("JPSAGEN").contains(">"));
-		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("JPSLAND").contains("PREFIX") && PrefixToUrlMap.getPrefixForSPARQL("JPSLAND").contains(":<") && PrefixToUrlMap.getPrefixForSPARQL("JPSLAND").contains(">"));
+		//Test whether the string contains the appropriate characters such as PREFIX, : , < , >
+		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediao").contains("PREFIX"));
+		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediao").contains(":<"));
+		Assert.assertTrue(PrefixToUrlMap.getPrefixForSPARQL("dbpediao").contains(">"));
+		//Test whether getPrefixForSPARQL method is able to build the string correctly		
+		Assert.assertEquals("PREFIX dbpediao:<http://dbpedia.org/ontology/> \r\n",PrefixToUrlMap.getPrefixForSPARQL("dbpediao")); 
 		
 	}
 
