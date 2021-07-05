@@ -62,20 +62,29 @@ function create_env {
 		echo ""
 }
 
+function get_pip_path {
+    if [[ $CREATE_VENV == 'y' ]]
+	then        
+	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+            PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
+		else
+		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
+		fi
+	else
+        PIPPATH=pip3
+	fi
+}
+
 function install_project {
 	echo "Installing the project"
     echo "-----------------------------------------------"
     echo
-    if [[ $CREATE_VENV == 'y' ]]
-	then
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
-            $VENV_DIR"/"$VENV_NAME/bin/pip3 --disable-pip-version-check install $DEV_INSTALL $SPATH
-		else
-		    $VENV_DIR"/"$VENV_NAME/Scripts/pip3 --disable-pip-version-check install $DEV_INSTALL $SPATH
-		fi
-	else
-        pip3 --disable-pip-version-check install $DEV_INSTALL $SPATH
-	fi
+    get_pip_path
+    $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
+    if [[ "${DEV_INSTALL}" == "-e" ]];
+    then
+        $PIPPATH --disable-pip-version-check install -r dev_requirements.txt
+    fi
     if [ $? -eq 0 ]; then
     	echo ""
     	echo "    INFO: installation complete."
@@ -106,7 +115,7 @@ case $key in
 	-n) VENV_NAME=$2; shift 2;;
 	-d) VENV_DIR=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
-	-e) DEV_INSTALL=' -e '; shift;;
+	-e) DEV_INSTALL='-e'; shift;;
     *)
 	# otherwise print the usage
     usage
