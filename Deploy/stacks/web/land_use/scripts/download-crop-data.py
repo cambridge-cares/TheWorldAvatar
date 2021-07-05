@@ -22,10 +22,6 @@ FALLBACK_KG = "http://localhost:9999/blazegraph/"
 # Maximum batch size for results
 BATCH_SIZE = 100000
 
-# Global GeoJSON object
-FEATURES = []
-
-
 def getKGLocation():
 	'''
 		Determines the correct URL for the KG's SPARQL endpoint.
@@ -41,7 +37,6 @@ def getKGLocation():
 		return kgRoot +  "namespace/ontocropmapgml/sparql"
 	else:
 		return kgRoot +  "/namespace/ontocropmapgml/sparql"
-
 
 
 def buildQuery(county):
@@ -83,8 +78,7 @@ def buildQuery(county):
 	return queryString
 
 
-
-def runQuery(kgLocation, county) :
+def runQuery(kgLocation, county, features) :
 	'''
 		Runs the relevant query for the input county and returns the result.
 	'''
@@ -96,65 +90,76 @@ def runQuery(kgLocation, county) :
 	gotAllResults = False
 	offset = 1
 	iteration = 1
+	totalResults = 0
 
 	# Run query in batches
-	while gotAllResults:
+	while not gotAllResults:
 		print("INFO: Submitting request #" + str(iteration) + " for '" + county + "' at",  dt.now())
-
+		
 		# Update the queryString
-		queryString += " LIMIT " + BATCH_SIZE + " OFFSET " + offset
+		print("INFO: Limit is " + str(BATCH_SIZE) + ", offset is " + str(offset))
+		newQuery = queryString + " LIMIT " + str(BATCH_SIZE) + " OFFSET " + str(offset)
 
 		# Submit the query and await the result
 		sparql = SPARQLWrapper(kgLocation)
 		sparql.setReturnFormat(JSON)
-		sparql.setQuery(queryString)
+		sparql.setQuery(newQuery)
 		
 		try:
 			# Get results 
 			results = sparql.queryAndConvert()["results"]["bindings"]
 			print("INFO: Request returned at",  dt.now())
 			print("INFO: Found " + str(len(results)) + " more results...")
-
+			
 			# Process results
-			onSuccess(results, county)
+			onSuccess(results, county, features)
 
 			# Check if we have all results
 			if len(results) < BATCH_SIZE:
 				gotAllResults = True
 			else:
-				offset += (BATCH_SIZE - 1)
+				if totalResults == 0:
+					offset += (BATCH_SIZE - 1)
+				else:	
+					offset += BATCH_SIZE
+
 				iteration += 1
+				totalResults += len(results)
 
 		except Exception as error:
 			onFailure(error, county)
-	
-		print("\n")
 
 	print("INFO: Finished all queries for '" + county + "' county.")
+	print("INFO: There were a total of " + str(totalResults) + " results.")
+
+	# Write results into single geoJSON file
+	print("INFO: Queries complete, writing to file '" + county.lower() + ".geojson'")
+
+	featureCollection = FeatureCollection(features)
+	with open(county.lower() + ".geojson", "w") as f:
+		dump(featureCollection, f)
+
 	print("----------")
 
 
-
-def onSuccess(data, county):
+def onSuccess(data, county, features):
 	"""
 		Runs when data is successfully returned by the query.
 		
 		Arguments:
 			data - resulting data from KG
 	"""
-	print("INFO: SPARQL query for '" + county + "' successful, data received.")
-
 	# Add to global GeoJSON file
 	for result in data:
 		# Parse the location
-		lat = float(result["location"]["value"].split("#")[0])
-		lng = float(result["location"]["value"].split("#")[1])
+		lat = float(result["location"]["value"].split("#")[1])
+		lng = float(result["location"]["value"].split("#")[0])
 		point = Point((lat, lng))
 
 		# Get the IRI
 		iri = result["label"]["value"]
 
-		FEATURES.append(Feature(
+		features.append(Feature(
 			geometry = point,
 			properties = {
 				"name": iri,
@@ -162,7 +167,6 @@ def onSuccess(data, county):
 			}
 		))
    		
-
 
 def onFailure(error, county):
 	"""
@@ -176,31 +180,24 @@ def onFailure(error, county):
 	sys.exit()
 
 
-
 def main():
 	"""
 		Main function.
 	"""
 	print("\n")
-	print("INFO: Running queries, this could take a while...")
+	print("INFO: Running queries, this could take up to 30 minutes...")
 
 	# Get the KG URL
 	kgLocation = getKGLocation()
 	print("INFO: Determined KG endpoint as '" + kgLocation + "'.")
 
 	# Run query for each county
-	runQuery(kgLocation, "CAMBRIDGESHIRE")
-	runQuery(kgLocation, "NORFOLK")
-	runQuery(kgLocation, "SUFFOLK")
-
-	# Write results into single geoJSON file
-	print("INFO: Queries complete, writing to file...")
-
-	featureCollection = FeatureCollection(FEATURES)
-	with open("land-use.geojson", "w") as f:
-		dump(featureCollection, f)
+	runQuery(kgLocation, "CAMBRIDGESHIRE", [])
+	runQuery(kgLocation, "NORFOLK", [])
+	runQuery(kgLocation, "SUFFOLK", [])
 
 	print("SUCCESS: Script completed.")
+	exit()
 
 
 # Entry point, calls main function

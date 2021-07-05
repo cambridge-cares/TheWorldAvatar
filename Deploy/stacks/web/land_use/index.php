@@ -29,8 +29,37 @@
 		<div id="map"></div>
 		<div id="tiltShift"></div>
 		<div id="controlsParent"></div>
-				
+
+		<!-- Custom content for country controls -->
+		<div id="countyContainer">
+			<p>County:</p>
+			<input type="radio" id="cambs" name="county" onclick="onCountyChange(0)" checked>
+			<label for="cambs">Cambridgeshire</label>
+			<br>
+			<input type="radio" id="norf" name="county" onclick="onCountyChange(1)">
+			<label for="norf">Norfolk</label>
+			<br>
+			<input type="radio" id="suff" name="county" onclick="onCountyChange(2)">
+			<label for="suff">Suffolk</label>
+		</div>
+
 		<script>
+			// URIs of tilesets for each county
+			var datasets = [
+				"mapbox://cmclinnovations.2r3dmaiz",	// Cambridgeshire
+				"mapbox://cmclinnovations.aauu9r35",	// Norfolk
+				"mapbox://cmclinnovations.cbyd44fh"		// Suffolk
+			];
+
+			// Fired on county selection
+			function onCountyChange(value) {
+				currentCounty = datasets[value];
+				map.getSource("crop-map-data").setUrl(currentCounty);
+			}
+
+			// Currently selected dataset
+			var currentCounty = datasets[0];
+
 			// Create set of enabled crop IRIs
 			var enabledCrops = new Set();
 			Object.entries(crops).forEach(([iri, name]) => {
@@ -40,32 +69,39 @@
 			// Add MapBox controls (from mapbox-controls.js)
 			document.getElementById("controlsParent").innerHTML = getControls();
 
+			// Insert county controls
+			var controls = document.getElementById("controlContainer");
+			controls.insertBefore(
+				document.getElementById("countyContainer"),
+				controls.childNodes[2]
+			);
+
 			// Override default bird camera defined in mapbox-controls.js
 			overrideDefaultBird({
 				curve: 1.9,
 				speed: 1.6,
-				zoom: 8.8,
+				zoom: 8.1,
 				pitch: 0.0,
 				bearing: 0.0,
-				center: [0.00502, 52.36978]
+				center: [0.46723, 52.34311]
 			});
 
 			// Override default pitch camera defined in mapbox-controls.js
 			overrideDefaultPitch({
 				curve: 1.9,
 				speed: 1.6,
-				zoom: 9.5,
+				zoom: 8.5,
 				pitch: 65,
 				bearing: -30,
-				center: [0.10904, 52.25656]
+				center: [0.60090, 52.25456]
 			});
 
 			// Override default map options defined in mapbox-controls.js
 			overrideDefaultMap({
 				container: "map",
 				style: "mapbox://styles/mapbox/light-v10?optimize=true",
-				center: [0.00502, 52.36978],
-				zoom: 8.8,
+				center: [0.46723, 52.34311],
+				zoom: 8.1,
 				pitch: 0.0,
 				bearing: 0.0
 			});
@@ -128,14 +164,13 @@
 				resetSidePanel();
 			});
 
-			// On style loaded...
-			map.on('style.load', function () {
+			function reloadMap() {
 				console.log("INFO: New style has been loaded.");
 				refresh();
 
 				map.addSource('crop-map-data', {
 					type: 'vector',
-					url: 'mapbox://cmclinnovations.b1r3ybo9'
+					url: currentCounty,
 				});
 
 				var layers = map.getStyle().layers;
@@ -209,7 +244,10 @@
 					map.getCanvas().style.cursor = '';
 					popup.remove();
 				});
-			});
+			}
+
+			// On style loaded...
+			map.on('style.load', reloadMap);
 
 			// Build the layer selection tree
 			buildLayerTree("checkbox");

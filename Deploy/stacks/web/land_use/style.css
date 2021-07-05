@@ -67,6 +67,29 @@ body {
     margin-right: 5px;
 }
 
+#countyContainer {
+	margin: 0 0 5px 0;
+    font-weight: bold;
+    font-size: 12pt;
+	background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+#countyContainer p {
+    font-weight: bold;
+}
+#countyContainer label {
+	font-weight: normal;
+	color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+}
+#countyContainer:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
+
 /* custom scrollbar */
 ::-webkit-scrollbar {
 	width: 20px;
