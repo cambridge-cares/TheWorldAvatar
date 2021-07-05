@@ -73,7 +73,7 @@
 			var controls = document.getElementById("controlContainer");
 			controls.insertBefore(
 				document.getElementById("countyContainer"),
-				controls.childNodes[2]
+				controls.childNodes[controls.childNodes.length - 2]
 			);
 
 			// Override default bird camera defined in mapbox-controls.js
