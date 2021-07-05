@@ -26,6 +26,12 @@ def removeNodeId(fileString):
     return re.sub(nodeId_re,'',fileString)
 
 def prepareFileForComparison(filePath,writePreparedFile=False):
+    """This function expands the namespace tags and removes the
+       random nodeId attribtue from the ref and test owl files.
+       This is because the rdfizer csv->owl converter does not
+       preserve which tag is associated to which namespace and
+       also adds a random nodeId so the raw files created by
+       the converter are not easily comparable."""
     with open(filePath, 'r') as file:
         fileString = file.read()
     fileString = removeNodeId(fileString)
