@@ -10,7 +10,7 @@ public class PrefixToUrlMapTest{
 	@Test
 	public void testgetPrefixUrl()
 	{
-		//prefixes for standard ontologiesAssert.
+		//prefixes for standard ontologies
 		Assert.assertEquals("http://dbpedia.org/ontology/",PrefixToUrlMap.getPrefixUrl("dbpediao"));
 		Assert.assertEquals("http://dbpedia.org/property/",PrefixToUrlMap.getPrefixUrl("dbpediap"));
 		Assert.assertEquals("http://dbpedia.org/resource/",PrefixToUrlMap.getPrefixUrl("dbpediar"));
