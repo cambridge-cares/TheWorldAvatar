@@ -151,10 +151,12 @@ def onSuccess(data, county, features):
 	"""
 	# Add to global GeoJSON file
 	for result in data:
-		# Parse the location
-		lat = float(result["location"]["value"].split("#")[1])
-		lng = float(result["location"]["value"].split("#")[0])
-		point = Point((lat, lng))
+		# Parse the location (KG should store lat-long)
+		lat = float(result["location"]["value"].split("#")[0])
+		lng = float(result["location"]["value"].split("#")[1])
+
+		# GeoJSON requires long-lat
+		point = Point((lng, lat))
 
 		# Get the IRI
 		iri = result["label"]["value"]

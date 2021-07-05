@@ -80,7 +80,7 @@
 			overrideDefaultBird({
 				curve: 1.9,
 				speed: 1.6,
-				zoom: 8.1,
+				zoom: 7.75,
 				pitch: 0.0,
 				bearing: 0.0,
 				center: [0.46723, 52.34311]
@@ -101,7 +101,7 @@
 				container: "map",
 				style: "mapbox://styles/mapbox/light-v10?optimize=true",
 				center: [0.46723, 52.34311],
-				zoom: 8.1,
+				zoom: 7.75,
 				pitch: 0.0,
 				bearing: 0.0
 			});
