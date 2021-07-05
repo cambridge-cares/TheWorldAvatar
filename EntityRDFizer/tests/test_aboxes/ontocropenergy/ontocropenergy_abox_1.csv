@@ -1,0 +1,1018 @@
+Source,Type,Target,Relation,Value,Data Type
+ABoxOntoCropEnergy,Ontology,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoCropEnergy,Ontology,http://www.theworldavatar.com/kb/ontocropenergy,base,,
+Spring Barley,Instance,Barley,,,
+Spring Barley,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC01,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Beet,Instance,Beet,,,
+Beet,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC03,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Carrot,Instance,Carrot,,,
+Carrot,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC07,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Chicory,Instance,Chicory,,,
+Chicory,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC09,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Lettuce,Instance,Lettuce,,,
+Lettuce,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC15,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Linseed,Instance,Linseed,,,
+Spring Linseed,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC16,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Maize,Instance,Maize,,,
+Maize,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC17,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Oats,Instance,Oats,,,
+Spring Oats,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC19,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Onions,Instance,Onions,,,
+Onions,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC20,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Rye,Instance,Rye,,,
+Spring Rye,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC24,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Strawberry,Instance,Strawberry,,,
+Strawberry,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC27,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Triticale,Instance,Triticale,,,
+Spring Triticale,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC30,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Wheat,Instance,Wheat,,,
+Spring Wheat,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC32,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Cabbage,Instance,Cabbage,,,
+Spring Cabbage,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC34,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Turnip,Instance,Turnip,,,
+Turnip,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC35,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Oilseed,Instance,Oilseed,,,
+Spring Oilseed,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC36,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Potato,Instance,Potato,,,
+Potato,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC44,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Tomato,Instance,Tomato,,,
+Tomato,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC45,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Barley,Instance,Barley,,,
+Winter Barley,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC63,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Linseed,Instance,Linseed,,,
+Winter Linseed,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC64,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Oats,Instance,Oats,,,
+Winter Oats,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC65,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Wheat,Instance,Wheat,,,
+Winter Wheat,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC66,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Oilseed,Instance,Oilseed,,,
+Winter Oilseed,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC67,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Rye,Instance,Rye,,,
+Winter Rye,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC68,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Triticale,Instance,Triticale,,,
+Winter Triticale,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC69,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Cabbage,Instance,Cabbage,,,
+Winter Cabbage,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC70,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Sunflower,Instance,Sunflower,,,
+Sunflower,Instance,http://www.theworldavatar.com/kb/ontolanduse/AC88,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Field Beans,Instance,Field Beans,,,
+Spring Field Beans,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG03,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Green Beans,Instance,Green Beans,,,
+Green Beans,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG04,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Spring Peas,Instance,Peas,,,
+Spring Peas,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG07,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Field Beans,Instance,Field Beans,,,
+Winter Field Beans,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG20,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Winter Peas,Instance,Peas,,,
+Winter Peas,Instance,http://www.theworldavatar.com/kb/ontolanduse/LG21,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+Miscanthus,Instance,Miscanthus,,,
+Miscanthus,Instance,http://www.theworldavatar.com/kb/ontolanduse/TC01,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Miscanthus,,"Many different crops are included in the TC01 Land Use Code classification; for simplicity, it has been assumed that miscanthus can be taken to represent this Lucode.",string
+Gross Calorific Value_1,Instance,Gross Calorific Value,,,
+Gross Calorific Value_2,Instance,Gross Calorific Value,,,
+Gross Calorific Value_6,Instance,Gross Calorific Value,,,
+Gross Calorific Value_7,Instance,Gross Calorific Value,,,
+Gross Calorific Value_8,Instance,Gross Calorific Value,,,
+Gross Calorific Value_9,Instance,Gross Calorific Value,,,
+Gross Calorific Value_10,Instance,Gross Calorific Value,,,
+Gross Calorific Value_12,Instance,Gross Calorific Value,,,
+Gross Calorific Value_13,Instance,Gross Calorific Value,,,
+Gross Calorific Value_16,Instance,Gross Calorific Value,,,
+Gross Calorific Value_18,Instance,Gross Calorific Value,,,
+Gross Calorific Value_19,Instance,Gross Calorific Value,,,
+Gross Calorific Value_20,Instance,Gross Calorific Value,,,
+Gross Calorific Value_21,Instance,Gross Calorific Value,,,
+Gross Calorific Value_22,Instance,Gross Calorific Value,,,
+Gross Calorific Value_23,Instance,Gross Calorific Value,,,
+Gross Calorific Value_24,Instance,Gross Calorific Value,,,
+Gross Calorific Value_25,Instance,Gross Calorific Value,,,
+Gross Calorific Value_27,Instance,Gross Calorific Value,,,
+Gross Calorific Value_28,Instance,Gross Calorific Value,,,
+Gross Calorific Value_29,Instance,Gross Calorific Value,,,
+Gross Calorific Value_31,Instance,Gross Calorific Value,,,
+Gross Calorific Value_33,Instance,Gross Calorific Value,,,
+Net Calorific Value_1,Instance,Net Calorific Value,,,
+Net Calorific Value_2,Instance,Net Calorific Value,,,
+Net Calorific Value_6,Instance,Net Calorific Value,,,
+Net Calorific Value_7,Instance,Net Calorific Value,,,
+Net Calorific Value_8,Instance,Net Calorific Value,,,
+Net Calorific Value_9,Instance,Net Calorific Value,,,
+Net Calorific Value_10,Instance,Net Calorific Value,,,
+Net Calorific Value_12,Instance,Net Calorific Value,,,
+Net Calorific Value_13,Instance,Net Calorific Value,,,
+Net Calorific Value_16,Instance,Net Calorific Value,,,
+Net Calorific Value_18,Instance,Net Calorific Value,,,
+Net Calorific Value_19,Instance,Net Calorific Value,,,
+Net Calorific Value_20,Instance,Net Calorific Value,,,
+Net Calorific Value_21,Instance,Net Calorific Value,,,
+Net Calorific Value_22,Instance,Net Calorific Value,,,
+Net Calorific Value_23,Instance,Net Calorific Value,,,
+Net Calorific Value_24,Instance,Net Calorific Value,,,
+Net Calorific Value_25,Instance,Net Calorific Value,,,
+Net Calorific Value_27,Instance,Net Calorific Value,,,
+Net Calorific Value_28,Instance,Net Calorific Value,,,
+Net Calorific Value_29,Instance,Net Calorific Value,,,
+Net Calorific Value_31,Instance,Net Calorific Value,,,
+Net Calorific Value_33,Instance,Net Calorific Value,,,
+Crop Yield_1,Instance,Crop Yield,,,
+Crop Yield_2,Instance,Crop Yield,,,
+Crop Yield_3,Instance,Crop Yield,,,
+Crop Yield_4,Instance,Crop Yield,,,
+Crop Yield_5,Instance,Crop Yield,,,
+Crop Yield_6,Instance,Crop Yield,,,
+Crop Yield_7,Instance,Crop Yield,,,
+Crop Yield_8,Instance,Crop Yield,,,
+Crop Yield_9,Instance,Crop Yield,,,
+Crop Yield_10,Instance,Crop Yield,,,
+Crop Yield_11,Instance,Crop Yield,,,
+Crop Yield_12,Instance,Crop Yield,,,
+Crop Yield_13,Instance,Crop Yield,,,
+Crop Yield_14,Instance,Crop Yield,,,
+Crop Yield_15,Instance,Crop Yield,,,
+Crop Yield_16,Instance,Crop Yield,,,
+Crop Yield_17,Instance,Crop Yield,,,
+Crop Yield_18,Instance,Crop Yield,,,
+Crop Yield_19,Instance,Crop Yield,,,
+Crop Yield_20,Instance,Crop Yield,,,
+Crop Yield_21,Instance,Crop Yield,,,
+Crop Yield_22,Instance,Crop Yield,,,
+Crop Yield_23,Instance,Crop Yield,,,
+Crop Yield_24,Instance,Crop Yield,,,
+Crop Yield_25,Instance,Crop Yield,,,
+Crop Yield_26,Instance,Crop Yield,,,
+Crop Yield_27,Instance,Crop Yield,,,
+Crop Yield_28,Instance,Crop Yield,,,
+Crop Yield_29,Instance,Crop Yield,,,
+Crop Yield_30,Instance,Crop Yield,,,
+Crop Yield_31,Instance,Crop Yield,,,
+Crop Yield_32,Instance,Crop Yield,,,
+Crop Yield_33,Instance,Crop Yield,,,
+Weblink_1,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_1,,https://phyllis.nl/Biomass/View/435,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_1,,17/02/2021,string
+Weblink_2,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_2,,https://phyllis.nl/Biomass/View/417,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_2,,17/02/2021,string
+Weblink_6,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_6,,https://phyllis.nl/Biomass/View/521,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_6,,17/02/2021,string
+Weblink_7,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_7,,https://phyllis.nl/Biomass/View/533,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_7,,17/02/2021,string
+Weblink_8,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_8,,https://phyllis.nl/Biomass/View/2816,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_8,,17/02/2021,string
+Weblink_9,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_9,,https://phyllis.nl/Biomass/View/3068,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_9,,17/02/2021,string
+Weblink_10,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_10,,https://phyllis.nl/Biomass/View/547,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_10,,17/02/2021,string
+Weblink_12,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_12,,https://phyllis.nl/Biomass/View/484,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_12,,17/02/2021,string
+Weblink_13,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_13,,https://phyllis.nl/Biomass/View/703,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_13,,17/02/2021,string
+Weblink_16,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_16,,https://phyllis.nl/Biomass/View/539,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_16,,17/02/2021,string
+Weblink_18,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_18,,https://phyllis.nl/Biomass/View/2887,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_18,,17/02/2021,string
+Weblink_19,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_19,,https://phyllis.nl/Biomass/View/435,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_19,,17/02/2021,string
+Weblink_20,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_20,,https://phyllis.nl/Biomass/View/521,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_20,,17/02/2021,string
+Weblink_21,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_21,,https://phyllis.nl/Biomass/View/2816,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_21,,17/02/2021,string
+Weblink_22,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_22,,https://phyllis.nl/Biomass/View/703,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_22,,17/02/2021,string
+Weblink_23,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_23,,https://phyllis.nl/Biomass/View/539,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_23,,17/02/2021,string
+Weblink_24,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_24,,https://phyllis.nl/Biomass/View/547,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_24,,17/02/2021,string
+Weblink_25,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_25,,https://phyllis.nl/Biomass/View/484,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_25,,17/02/2021,string
+Weblink_27,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_27,,https://phyllis.nl/Biomass/View/2747,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_27,,17/02/2021,string
+Weblink_28,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_28,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_28,,17/02/2021,string
+Weblink_29,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_29,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_29,,17/02/2021,string
+Weblink_31,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_31,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_31,,17/02/2021,string
+Weblink_33,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_33,,https://phyllis.nl/Biomass/View/573,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_33,,17/02/2021,string
+Weblink_34,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_34,,https://phyllis.nl/Biomass/View/435,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_34,,17/02/2021,string
+Weblink_35,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_35,,https://phyllis.nl/Biomass/View/417,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_35,,17/02/2021,string
+Weblink_39,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_39,,https://phyllis.nl/Biomass/View/521,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_39,,17/02/2021,string
+Weblink_40,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_40,,https://phyllis.nl/Biomass/View/533,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_40,,17/02/2021,string
+Weblink_41,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_41,,https://phyllis.nl/Biomass/View/2816,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_41,,17/02/2021,string
+Weblink_42,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_42,,https://phyllis.nl/Biomass/View/3068,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_42,,17/02/2021,string
+Weblink_43,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_43,,https://phyllis.nl/Biomass/View/547,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_43,,17/02/2021,string
+Weblink_45,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_45,,https://phyllis.nl/Biomass/View/484,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_45,,17/02/2021,string
+Weblink_46,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_46,,https://phyllis.nl/Biomass/View/703,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_46,,17/02/2021,string
+Weblink_49,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_49,,https://phyllis.nl/Biomass/View/539,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_49,,17/02/2021,string
+Weblink_51,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_51,,https://phyllis.nl/Biomass/View/2887,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_51,,17/02/2021,string
+Weblink_52,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_52,,https://phyllis.nl/Biomass/View/435,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_52,,17/02/2021,string
+Weblink_53,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_53,,https://phyllis.nl/Biomass/View/521,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_53,,17/02/2021,string
+Weblink_54,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_54,,https://phyllis.nl/Biomass/View/2816,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_54,,17/02/2021,string
+Weblink_55,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_55,,https://phyllis.nl/Biomass/View/703,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_55,,17/02/2021,string
+Weblink_56,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_56,,https://phyllis.nl/Biomass/View/539,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_56,,17/02/2021,string
+Weblink_57,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_57,,https://phyllis.nl/Biomass/View/547,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_57,,17/02/2021,string
+Weblink_58,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_58,,https://phyllis.nl/Biomass/View/484,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_58,,17/02/2021,string
+Weblink_60,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_60,,https://phyllis.nl/Biomass/View/2747,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_60,,17/02/2021,string
+Weblink_61,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_61,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_61,,17/02/2021,string
+Weblink_62,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_62,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_62,,17/02/2021,string
+Weblink_64,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_64,,https://phyllis.nl/Biomass/View/2888,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_64,,17/02/2021,string
+Weblink_66,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_66,,https://phyllis.nl/Biomass/View/573,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_66,,17/02/2021,string
+Weblink_67,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_67,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_67,,17/02/2021,string
+Weblink_68,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_68,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_68,,17/02/2021,string
+Weblink_69,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_69,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_69,,17/02/2021,string
+Weblink_70,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_70,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_70,,17/02/2021,string
+Weblink_71,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_71,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_71,,17/02/2021,string
+Weblink_72,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_72,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_72,,17/02/2021,string
+Weblink_73,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_73,,https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/946161/structure-jun2020final-uk-22dec20.pdf,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_73,,17/02/2021,string
+Weblink_74,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_74,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_74,,17/02/2021,string
+Weblink_75,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_75,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_75,,17/02/2021,string
+Weblink_76,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_76,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_76,,17/02/2021,string
+Weblink_77,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_77,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_77,,17/02/2021,string
+Weblink_78,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_78,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_78,,17/02/2021,string
+Weblink_79,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_79,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_79,,17/02/2021,string
+Weblink_80,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_80,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_80,,17/02/2021,string
+Weblink_81,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_81,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_81,,17/02/2021,string
+Weblink_82,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_82,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_82,,17/02/2021,string
+Weblink_83,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_83,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_83,,17/02/2021,string
+Weblink_84,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_84,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_84,,17/02/2021,string
+Weblink_85,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_85,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_85,,17/02/2021,string
+Weblink_86,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_86,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_86,,17/02/2021,string
+Weblink_87,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_87,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_87,,17/02/2021,string
+Weblink_88,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_88,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_88,,17/02/2021,string
+Weblink_89,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_89,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_89,,17/02/2021,string
+Weblink_90,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_90,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_90,,17/02/2021,string
+Weblink_91,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_91,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_91,,17/02/2021,string
+Weblink_92,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_92,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_92,,17/02/2021,string
+Weblink_93,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_93,,https://www.yara.co.uk/crop-nutrition/novel-crops/sunflower/,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_93,,17/02/2021,string
+Weblink_94,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_94,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_94,,17/02/2021,string
+Weblink_95,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_95,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_95,,17/02/2021,string
+Weblink_96,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_96,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_96,,17/02/2021,string
+Weblink_97,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_97,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_97,,17/02/2021,string
+Weblink_98,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_98,,http://www.fao.org/faostat/en/#data/QC,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_98,,17/02/2021,string
+Weblink_99,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Weblink,,,
+http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL,Data Property,Weblink_99,,https://www.forestresearch.gov.uk/tools-and-resources/biomass-energy-resources/fuel/energy-crops/grasses/,string
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#dateOfAccess,Data Property,Weblink_99,,17/02/2021,string
+Spring Barley,Instance,Gross Calorific Value_1,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Barley,Instance,Net Calorific Value_1,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Barley,Instance,Crop Yield_1,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Beet,Instance,Gross Calorific Value_2,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Beet,Instance,Net Calorific Value_2,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Beet,Instance,Crop Yield_2,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Carrot,Instance,Crop Yield_3,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Chicory,Instance,Crop Yield_4,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Lettuce,Instance,Crop Yield_5,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Linseed,Instance,Gross Calorific Value_6,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Linseed,Instance,Net Calorific Value_6,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Linseed,Instance,Crop Yield_6,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Maize,Instance,Gross Calorific Value_7,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Maize,Instance,Net Calorific Value_7,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Maize,Instance,Crop Yield_7,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Oats,Instance,Gross Calorific Value_8,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Oats,Instance,Net Calorific Value_8,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Oats,Instance,Crop Yield_8,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Onions,Instance,Gross Calorific Value_9,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Onions,Instance,Net Calorific Value_9,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Onions,Instance,Crop Yield_9,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Rye,Instance,Gross Calorific Value_10,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Rye,Instance,Net Calorific Value_10,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Rye,Instance,Crop Yield_10,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Strawberry,Instance,Crop Yield_11,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Triticale,Instance,Gross Calorific Value_12,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Triticale,Instance,Net Calorific Value_12,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Triticale,Instance,Crop Yield_12,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Wheat,Instance,Gross Calorific Value_13,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Wheat,Instance,Net Calorific Value_13,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Wheat,Instance,Crop Yield_13,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Cabbage,Instance,Crop Yield_14,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Turnip,Instance,Crop Yield_15,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Oilseed,Instance,Gross Calorific Value_16,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Oilseed,Instance,Net Calorific Value_16,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Oilseed,Instance,Crop Yield_16,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Potato,Instance,Crop Yield_17,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Tomato,Instance,Gross Calorific Value_18,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Tomato,Instance,Net Calorific Value_18,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Tomato,Instance,Crop Yield_18,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Barley,Instance,Gross Calorific Value_19,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Barley,Instance,Net Calorific Value_19,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Barley,Instance,Crop Yield_19,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Linseed,Instance,Gross Calorific Value_20,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Linseed,Instance,Net Calorific Value_20,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Linseed,Instance,Crop Yield_20,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Oats,Instance,Gross Calorific Value_21,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Oats,Instance,Net Calorific Value_21,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Oats,Instance,Crop Yield_21,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Wheat,Instance,Gross Calorific Value_22,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Wheat,Instance,Net Calorific Value_22,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Wheat,Instance,Crop Yield_22,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Oilseed,Instance,Gross Calorific Value_23,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Oilseed,Instance,Net Calorific Value_23,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Oilseed,Instance,Crop Yield_23,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Rye,Instance,Gross Calorific Value_24,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Rye,Instance,Net Calorific Value_24,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Rye,Instance,Crop Yield_24,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Triticale,Instance,Gross Calorific Value_25,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Triticale,Instance,Net Calorific Value_25,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Triticale,Instance,Crop Yield_25,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Cabbage,Instance,Crop Yield_26,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Sunflower,Instance,Gross Calorific Value_27,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Sunflower,Instance,Net Calorific Value_27,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Sunflower,Instance,Crop Yield_27,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Field Beans,Instance,Gross Calorific Value_28,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Spring Field Beans,Instance,Net Calorific Value_28,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Spring Field Beans,Instance,Crop Yield_28,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Green Beans,Instance,Gross Calorific Value_29,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Green Beans,Instance,Net Calorific Value_29,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Green Beans,Instance,Crop Yield_29,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Spring Peas,Instance,Crop Yield_30,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Field Beans,Instance,Gross Calorific Value_31,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Winter Field Beans,Instance,Net Calorific Value_31,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Winter Field Beans,Instance,Crop Yield_31,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Winter Peas,Instance,Crop Yield_32,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Miscanthus,Instance,Gross Calorific Value_33,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasGrossCalorificValue,,
+Miscanthus,Instance,Net Calorific Value_33,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasNetCalorificValue,,
+Miscanthus,Instance,Crop Yield_33,http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropYield,,
+Gross Calorific Value_1,Instance,Weblink_1,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_1_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_1_1,,16.94,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_1_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_1,Instance,Gross Calorific Value_1_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_1,,"barley (#435), based on ""as received"" value",string
+Gross Calorific Value_2,Instance,Weblink_2,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_2_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_2_1,,17.7,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_2_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_2,Instance,Gross Calorific Value_2_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_2,,"sugarbeet (#417), based on ""dry"" value",string
+Gross Calorific Value_6,Instance,Weblink_6,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_6_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_6_1,,19.26,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_6_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_6,Instance,Gross Calorific Value_6_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_6,,"flax (#521), based on ""dry"" value",string
+Gross Calorific Value_7,Instance,Weblink_7,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_7_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_7_1,,18.92,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_7_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_7,Instance,Gross Calorific Value_7_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_7,,"maize (#533), based on ""dry"" value",string
+Gross Calorific Value_8,Instance,Weblink_8,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_8_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_8_1,,17.39,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_8_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_8,Instance,Gross Calorific Value_8_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_8,,"oat straw (#2816), based on ""as received"" value",string
+Gross Calorific Value_9,Instance,Weblink_9,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_9_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_9_1,,14.62,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_9_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_9,Instance,Gross Calorific Value_9_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_9,,"onion peel (#3068), based on ""as received"" value but HHV_Milne",string
+Gross Calorific Value_10,Instance,Weblink_10,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_10_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_10_1,,18.79,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_10_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_10,Instance,Gross Calorific Value_10_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_10,,"rye straw (#547), based on ""dry"" value",string
+Gross Calorific Value_12,Instance,Weblink_12,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_12_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_12_1,,15.91,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_12_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_12,Instance,Gross Calorific Value_12_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_12,,"wheat + rye (#484), based on ""dry"" value",string
+Gross Calorific Value_13,Instance,Weblink_13,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_13_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_13_1,,16.05,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_13_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_13,Instance,Gross Calorific Value_13_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_13,,"wheat straw (#703), based on ""as received"" value",string
+Gross Calorific Value_16,Instance,Weblink_16,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_16_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_16_1,,16.96,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_16_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_16,Instance,Gross Calorific Value_16_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_16,,"rape (#539), based on ""as received"" value",string
+Gross Calorific Value_18,Instance,Weblink_18,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_18_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_18_1,,1.55,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_18_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_18,Instance,Gross Calorific Value_18_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_18,,"tomato plant (#2887), based on ""as received"" value",string
+Gross Calorific Value_19,Instance,Weblink_19,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_19_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_19_1,,16.94,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_19_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_19,Instance,Gross Calorific Value_19_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_19,,"barley (#435), based on ""as received"" value",string
+Gross Calorific Value_20,Instance,Weblink_20,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_20_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_20_1,,19.26,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_20_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_20,Instance,Gross Calorific Value_20_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_20,,"flax (#521), based on ""dry"" value",string
+Gross Calorific Value_21,Instance,Weblink_21,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_21_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_21_1,,17.39,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_21_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_21,Instance,Gross Calorific Value_21_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_21,,"oat straw (#2816), based on ""as received"" value",string
+Gross Calorific Value_22,Instance,Weblink_22,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_22_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_22_1,,16.05,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_22_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_22,Instance,Gross Calorific Value_22_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_22,,"wheat straw (#703), based on ""as received"" value",string
+Gross Calorific Value_23,Instance,Weblink_23,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_23_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_23_1,,16.96,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_23_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_23,Instance,Gross Calorific Value_23_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_23,,"rape (#539), based on ""as received"" value",string
+Gross Calorific Value_24,Instance,Weblink_24,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_24_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_24_1,,18.79,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_24_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_24,Instance,Gross Calorific Value_24_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_24,,"rye straw (#547), based on ""dry"" value",string
+Gross Calorific Value_25,Instance,Weblink_25,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_25_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_25_1,,15.91,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_25_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_25,Instance,Gross Calorific Value_25_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_25,,"wheat + rye (#484), based on ""dry"" value",string
+Gross Calorific Value_27,Instance,Weblink_27,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_27_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_27_1,,15.78,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_27_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_27,Instance,Gross Calorific Value_27_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_27,,"sunflower pellets (#2747), based on ""as received"" value",string
+Gross Calorific Value_28,Instance,Weblink_28,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_28_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_28_1,,2.46,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_28_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_28,Instance,Gross Calorific Value_28_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_28,,"bean plant (#2888), based on ""as received"" value",string
+Gross Calorific Value_29,Instance,Weblink_29,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_29_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_29_1,,2.46,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_29_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_29,Instance,Gross Calorific Value_29_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_29,,"bean plant (#2888), based on ""as received"" value",string
+Gross Calorific Value_31,Instance,Weblink_31,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_31_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_31_1,,2.46,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_31_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_31,Instance,Gross Calorific Value_31_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_31,,"bean plant (#2888), based on ""as received"" value",string
+Gross Calorific Value_33,Instance,Weblink_33,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Gross Calorific Value_33_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Gross Calorific Value_33_1,,11.79,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Gross Calorific Value_33_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Gross Calorific Value_33,Instance,Gross Calorific Value_33_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Gross Calorific Value_33,,"miscanthus (#573), based on ""as received"" value",string
+Net Calorific Value_1,Instance,Weblink_34,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_1_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_1_1,,15.56,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_1_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_1,Instance,Net Calorific Value_1_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_1,,"barley (#435), based on ""as received"" value",string
+Net Calorific Value_2,Instance,Weblink_35,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_2_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_2_1,,16.6,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_2_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_2,Instance,Net Calorific Value_2_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_2,,"sugarbeet (#417), based on ""dry"" value",string
+Net Calorific Value_6,Instance,Weblink_39,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_6_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_6_1,,18.07,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_6_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_6,Instance,Net Calorific Value_6_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_6,,"flax (#521), based on ""dry"" value",string
+Net Calorific Value_7,Instance,Weblink_40,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_7_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_7_1,,17.71,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_7_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_7,Instance,Net Calorific Value_7_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_7,,"maize (#533), based on ""dry"" value",string
+Net Calorific Value_8,Instance,Weblink_41,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_8_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_8_1,,16.02,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_8_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_8,Instance,Net Calorific Value_8_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_8,,"oat straw (#2816), based on ""as received"" value",string
+Net Calorific Value_9,Instance,Weblink_42,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_9_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_9_1,,12.47,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_9_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_9,Instance,Net Calorific Value_9_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_9,,"onion peel (#3068), based on ""as received"" value but HHV_Milne",string
+Net Calorific Value_10,Instance,Weblink_43,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_10_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_10_1,,17.63,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_10_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_10,Instance,Net Calorific Value_10_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_10,,"rye straw (#547), based on ""dry"" value",string
+Net Calorific Value_12,Instance,Weblink_45,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_12_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_12_1,,14.5,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_12_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_12,Instance,Net Calorific Value_12_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_12,,"wheat + rye (#484), based on ""dry"" value",string
+Net Calorific Value_13,Instance,Weblink_46,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_13_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_13_1,,14.7,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_13_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_13,Instance,Net Calorific Value_13_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_13,,"wheat straw (#703), based on ""as received"" value",string
+Net Calorific Value_16,Instance,Weblink_49,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_16_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_16_1,,15.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_16_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_16,Instance,Net Calorific Value_16_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_16,,"rape (#539), based on ""as received"" value",string
+Net Calorific Value_18,Instance,Weblink_51,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_18_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_18_1,,-0.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_18_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_18,Instance,Net Calorific Value_18_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_18,,"tomato plant (#2887), based on ""as received"" value",string
+Net Calorific Value_19,Instance,Weblink_52,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_19_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_19_1,,15.56,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_19_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_19,Instance,Net Calorific Value_19_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_19,,"barley (#435), based on ""as received"" value",string
+Net Calorific Value_20,Instance,Weblink_53,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_20_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_20_1,,18.07,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_20_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_20,Instance,Net Calorific Value_20_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_20,,"flax (#521), based on ""dry"" value",string
+Net Calorific Value_21,Instance,Weblink_54,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_21_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_21_1,,16.02,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_21_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_21,Instance,Net Calorific Value_21_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_21,,"oat straw (#2816), based on ""as received"" value",string
+Net Calorific Value_22,Instance,Weblink_55,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_22_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_22_1,,14.7,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_22_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_22,Instance,Net Calorific Value_22_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_22,,"wheat straw (#703), based on ""as received"" value",string
+Net Calorific Value_23,Instance,Weblink_56,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_23_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_23_1,,15.73,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_23_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_23,Instance,Net Calorific Value_23_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_23,,"rape (#539), based on ""as received"" value",string
+Net Calorific Value_24,Instance,Weblink_57,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_24_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_24_1,,17.63,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_24_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_24,Instance,Net Calorific Value_24_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_24,,"rye straw (#547), based on ""dry"" value",string
+Net Calorific Value_25,Instance,Weblink_58,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_25_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_25_1,,14.5,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_25_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_25,Instance,Net Calorific Value_25_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_25,,"wheat + rye (#484), based on ""dry"" value",string
+Net Calorific Value_27,Instance,Weblink_60,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_27_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_27_1,,14.23,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_27_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_27,Instance,Net Calorific Value_27_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_27,,"sunflower pellets (#2747), based on ""as received"" value",string
+Net Calorific Value_28,Instance,Weblink_61,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_28_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_28_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_28_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_28,Instance,Net Calorific Value_28_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_28,,"bean plant (#2888), based on ""as received"" value",string
+Net Calorific Value_29,Instance,Weblink_62,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_29_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_29_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_29_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_29,Instance,Net Calorific Value_29_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_29,,"bean plant (#2888), based on ""as received"" value",string
+Net Calorific Value_31,Instance,Weblink_64,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_31_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_31_1,,0.22,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_31_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_31,Instance,Net Calorific Value_31_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_31,,"bean plant (#2888), based on ""as received"" value",string
+Net Calorific Value_33,Instance,Weblink_66,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Net Calorific Value_33_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Net Calorific Value_33_1,,10.12,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Net Calorific Value_33_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Net Calorific Value_33,Instance,Net Calorific Value_33_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Net Calorific Value_33,,"miscanthus (#573), based on ""as received"" value",string
+Crop Yield_1,Instance,Weblink_67,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_1,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_1,,6.926,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_1,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_1,Instance,Crop Yield Value_1,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_1,,Barley - 2019 data,string
+Crop Yield_2,Instance,Weblink_68,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_2,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_2,,68.9815,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_2,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_2,Instance,Crop Yield Value_2,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_2,,Sugarbeet - 2019 data,string
+Crop Yield_3,Instance,Weblink_69,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_3,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_3,,58.7503,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_3,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_3,Instance,Crop Yield Value_3,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_3,,Carrots and turnips - 2019 data,string
+Crop Yield_4,Instance,Weblink_70,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_4,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_4,,23.0584,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_4,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_4,Instance,Crop Yield Value_4,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_4,,Lettuce and chicory - 2019 data,string
+Crop Yield_5,Instance,Weblink_71,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_5,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_5,,23.0584,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_5,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_5,Instance,Crop Yield Value_5,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_5,,Lettuce and chicory - 2019 data,string
+Crop Yield_6,Instance,Weblink_72,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_6,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_6,,1.8,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_6,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_6,Instance,Crop Yield Value_6,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_6,,Linseed - 2019 data,string
+Crop Yield_7,Instance,Weblink_73,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_7,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_7,,2.9,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_7,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_7,Instance,Crop Yield Value_7,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_7,,Minor cereals - June 2020 DEFRA statistics,string
+Crop Yield_8,Instance,Weblink_74,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_8,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_8,,5.9121,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_8,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_8,Instance,Crop Yield Value_8,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_8,,Oats - 2019 data,string
+Crop Yield_9,Instance,Weblink_75,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_9,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_9,,40.167,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_9,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_9,Instance,Crop Yield Value_9,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_9,,"Onions, dry - 2019 data",string
+Crop Yield_10,Instance,Weblink_76,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_10,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_10,,2.3814,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_10,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_10,Instance,Crop Yield Value_10,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_10,,Rye - 2019 data,string
+Crop Yield_11,Instance,Weblink_77,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_11,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_11,,29.6594,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_11,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_11,Instance,Crop Yield Value_11,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_11,,Strawberries - 2019 data,string
+Crop Yield_12,Instance,Weblink_78,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_12,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_12,,4.4716,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_12,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_12,Instance,Crop Yield Value_12,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_12,,Triticale - 2019 data,string
+Crop Yield_13,Instance,Weblink_79,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_13,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_13,,8.9345,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_13,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_13,Instance,Crop Yield Value_13,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_13,,Wheat - 2019 data,string
+Crop Yield_14,Instance,Weblink_80,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_14,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_14,,22.245,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_14,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_14,Instance,Crop Yield Value_14,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_14,,Cabbages and other brassicas - 2019 data,string
+Crop Yield_15,Instance,Weblink_81,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_15,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_15,,58.7503,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_15,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_15,Instance,Crop Yield Value_15,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_15,,Carrots and turnips - 2019 data,string
+Crop Yield_16,Instance,Weblink_82,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_16,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_16,,3.3057,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_16,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_16,Instance,Crop Yield Value_16,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_16,,Rapeseed - 2019 data,string
+Crop Yield_17,Instance,Weblink_83,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_17,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_17,,36.4722,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_17,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_17,Instance,Crop Yield Value_17,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_17,,Potatoes - 2019 data,string
+Crop Yield_18,Instance,Weblink_84,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_18,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_18,,354.0291,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_18,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_18,Instance,Crop Yield Value_18,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_18,,Tomatoes - 2019 data,string
+Crop Yield_19,Instance,Weblink_85,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_19,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_19,,6.926,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_19,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_19,Instance,Crop Yield Value_19,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_19,,Barley - 2019 data,string
+Crop Yield_20,Instance,Weblink_86,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_20,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_20,,1.8,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_20,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_20,Instance,Crop Yield Value_20,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_20,,Linseed - 2019 data,string
+Crop Yield_21,Instance,Weblink_87,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_21,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_21,,5.9121,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_21,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_21,Instance,Crop Yield Value_21,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_21,,Oats - 2019 data,string
+Crop Yield_22,Instance,Weblink_88,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_22,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_22,,8.9345,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_22,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_22,Instance,Crop Yield Value_22,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_22,,Wheat - 2019 data,string
+Crop Yield_23,Instance,Weblink_89,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_23,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_23,,3.3057,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_23,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_23,Instance,Crop Yield Value_23,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_23,,Rapeseed - 2019 data,string
+Crop Yield_24,Instance,Weblink_90,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_24,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_24,,2.3814,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_24,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_24,Instance,Crop Yield Value_24,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_24,,Rye - 2019 data,string
+Crop Yield_25,Instance,Weblink_91,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_25,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_25,,4.4716,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_25,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_25,Instance,Crop Yield Value_25,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_25,,Triticale - 2019 data,string
+Crop Yield_26,Instance,Weblink_92,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_26,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_26,,22.245,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_26,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_26,Instance,Crop Yield Value_26,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_26,,Cabbages and other brassicas - 2019 data,string
+Crop Yield_27,Instance,Weblink_93,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_27,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_27,,2.2,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_27,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_27,Instance,Crop Yield Value_27,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_27,,Average yield for sem-dwarf varieties that are adapted to UK conidtions,string
+Crop Yield_28,Instance,Weblink_94,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_28,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_28,,4,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_28,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_28,Instance,Crop Yield Value_28,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_28,,"Broad beans, horse beans, dry - 2019 data",string
+Crop Yield_29,Instance,Weblink_95,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_29,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_29,,5.5724,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_29,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_29,Instance,Crop Yield Value_29,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_29,,"Beans, green - 2019 data",string
+Crop Yield_30,Instance,Weblink_96,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_30,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_30,,3.9221,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_30,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_30,Instance,Crop Yield Value_30,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_30,,"Peas, green - 2019 data",string
+Crop Yield_31,Instance,Weblink_97,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_31,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_31,,4,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_31,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_31,Instance,Crop Yield Value_31,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_31,,"Broad beans, horse beans, dry - 2019 data",string
+Crop Yield_32,Instance,Weblink_98,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_32,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_32,,3.9221,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_32,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_32,Instance,Crop Yield Value_32,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_32,,"Peas, green - 2019 data",string
+Crop Yield_33,Instance,Weblink_99,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWeblink,,
+Crop Yield Value_33,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,Crop Yield Value_33,,14,string
+http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,Instance,http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision,,,
+Crop Yield Value_33,Instance,http://theworldavatar.com/resource/ontouom/megajoule_per_kilogram,http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,,
+Crop Yield_33,Instance,Crop Yield Value_33,http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,,
+http://www.w3.org/2000/01/rdf-schema#comment,Data Property,Crop Yield_33,,"Miscanthus yield under UK conditions, although this can vary from 12 to 14 tonnes per hectare from the third year onwards",string

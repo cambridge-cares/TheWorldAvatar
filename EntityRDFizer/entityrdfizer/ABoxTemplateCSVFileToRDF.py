@@ -199,7 +199,7 @@ Some example input and output file paths are provided below:
 input_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox/ABoxOntoSpecies.csv"
 output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDFFiles"
 """
-def convert_into_rdf(input_file_path, output_file_path):
+def convert_into_rdf(input_file_path, output_file_path=None):
     input_file_path = PathlibPath(input_file_path)
     input_dir = os.path.dirname(input_file_path)
     input_name = os.path.basename(input_file_path)

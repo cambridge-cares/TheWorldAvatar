@@ -21,7 +21,7 @@ def select_folder():
 """This function retrieves all ABox CSV template files from folder_path and calls the converter function.
 The value of folder_path should be an absolute path as shown below:
 folder_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABox" """
-def convert(input_folder_path, output_folder_path):
+def convert(input_folder_path,output_folder_path=None):
     """Retrieves all ABox template CSV files from the folder path given"""
     csv_files = glob.glob(os.path.join(input_folder_path, "*.csv"))
     """Iterates over the list of CSV files"""
