@@ -19,6 +19,6 @@ Be aware that the VERSION tag should match the current version of the visualisat
 + To build the image:
   + `docker build --rm --no-cache --target development -t docker.cmclinnovations.com/land-use-vis:VERSION-dev -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 4002:80 --restart always --name "land-use" -it docker.cmclinnovations.com/land-use-vis:VERSION-dev`
+  + `docker run -d -p 4003:80 --restart always --name "land-use" -it docker.cmclinnovations.com/land-use-vis:VERSION-dev`
 + To push the image to the CMCL registry:
   + `docker image push docker.cmclinnovations.com/land-use-vis:VERSION`
