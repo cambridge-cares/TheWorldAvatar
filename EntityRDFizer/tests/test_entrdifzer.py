@@ -11,7 +11,7 @@ rdfRDF_re = re.compile('<rdf:RDF.*?>',re.DOTALL)
 namesp_re = re.compile('xmlns:(.*?=.*?http:.*?")+?',re.DOTALL)
 nodeId_re = re.compile(':node[iI][dD]=".*?"',re.MULTILINE)
 
-def get_namespecies(fileString):
+def get_namespaces(fileString):
     namespacesDict = {}
     rdfRDFBlock = rdfRDF_re.search(fileString)
     if rdfRDFBlock:
@@ -35,7 +35,7 @@ def prepareFileForComparison(filePath,writePreparedFile=False):
     with open(filePath, 'r') as file:
         fileString = file.read()
     fileString = removeNodeId(fileString)
-    namespacesDict = get_namespecies(fileString)
+    namespacesDict = get_namespaces(fileString)
     if namespacesDict:
         for namespTag, namespValue in namespacesDict.items():
             fileString = fileString.replace(namespTag,namespValue)
@@ -67,11 +67,11 @@ def test_csv2abox(testDir, testFile, regenerateResults=False):
     targetOWLFile = testFile +'.owl'
     if regenerateResults:
         if os.path.exists(refOWLFile): os.remove(refOWLFile)
-        convertFile(testFile,None)
+        convertFile(testFile)
         os.rename(targetOWLFile,refOWLFile)
 
     refOwlFileString = prepareFileForComparison(refOWLFile)
-    convertFile(testFile,None)
+    convertFile(testFile)
     testOwlFileString = prepareFileForComparison(targetOWLFile)
 
     assert refOwlFileString==testOwlFileString
