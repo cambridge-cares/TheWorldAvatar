@@ -22,7 +22,7 @@ LABEL description = "Power System Visualisation"
 RUN apt update && apt-get install -y cron procps nano dos2unix
 
 # Install PHP
-RUn apt update && apt-get install -y php libapache2-mod-php
+RUN apt update && apt-get install -y php libapache2-mod-php
 
 # Install web server 
 RUN apt update && apt install -y apache2

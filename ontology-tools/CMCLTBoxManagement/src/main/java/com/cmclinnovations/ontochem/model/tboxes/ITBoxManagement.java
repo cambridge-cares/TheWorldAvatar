@@ -43,24 +43,28 @@ public interface ITBoxManagement {
 	 */
 	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException, TBoxManagementException;
 	/**
-	 * Creates an ontology data property.
+	 * Creates an ontological data property.
 	 * 
 	 * @param propertyName
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLDataProperty(String propertyName, String domain, String range) throws TBoxManagementException;
+	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws TBoxManagementException;
 	/**
-	 * Creates an ontology object property.
+	 * Creates an ontological object property.
 	 * 
 	 * @param propertyName
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLObjectProperty(String propertyName, String domain, String range, String quantifier) throws TBoxManagementException;
+	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws TBoxManagementException;
 	
 	/**
 	 * Adds the definition as a comment to the OWL class.
