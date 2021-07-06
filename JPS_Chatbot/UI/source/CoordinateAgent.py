@@ -7,6 +7,7 @@ from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
 from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
 from LDA.LDA_classifier import LDAClassifier
 from UI.source.JPS_Query.chatbot_interface import Chatbot
+from UI.source.LogWriter import LogWriter
 
 from rasa.nlu.model import Interpreter
 import os
@@ -40,6 +41,7 @@ class CoordinateAgent:
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
         self.jps_interface = Chatbot(socketio)
         self.socket = socketio
+        self.logwriter = LogWriter()
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
@@ -71,6 +73,7 @@ class CoordinateAgent:
         self.lda_classifier = LDAClassifier()
         print('LDA init')
         topics = self.lda_classifier.classify(question)
+        self.logwriter.write_to_log(question, 'Topics identified %s \n' % json.dumps(topics))
         print('============== topics ==============')
         print(topics)
 
@@ -95,26 +98,30 @@ class CoordinateAgent:
                     pass
 
             else:
-                try:
-                    result = self.jps_interface.analyse_questions(question)
-
-                    print('RESULT RETURNED BY JPS', result)
-                    if 'result' in result:
-                        result_obj = json.loads(result)
-                        result_list = result_obj['result']
-                        if len(result_list) == 0:
-                            pass
-                        else:
-                            if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
-                                return 'Nothing'
-                            else:
-                                return result_list
-
-                    else:
-                        pass
-                except:
-                    print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
+                if ' CH2=CHCHO'.lower() in question.lower():
                     pass
+                else:
+                    try:
+                        result = self.jps_interface.analyse_questions(question)
+                        self.logwriter.write_to_log(question, 'Result %s \n' % str(result))
+
+                        print('RESULT RETURNED BY JPS', result)
+                        if 'result' in result:
+                            result_obj = json.loads(result)
+                            result_list = result_obj['result']
+                            if len(result_list) == 0:
+                                pass
+                            else:
+                                if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
+                                    return 'Nothing'
+                                else:
+                                    return result_list
+
+                        else:
+                            pass
+                    except:
+                        print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
+                        pass
         return 'Nothing'
 
     # @lru_cache(maxsize=64)
@@ -134,8 +141,11 @@ class CoordinateAgent:
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         print('CoordinateAgent - 120')
         pprint(intent_and_entities_with_uris)
+        self.logwriter.write_to_log(question, 'Intents and entities %s \n' % json.dumps(intent_and_entities_with_uris))
 
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
+        self.logwriter.write_to_log(question, 'SPARQL constructed %s \n' % json.dumps(sparqls))
+
         if sparqls is None:
             print('No valid SPARQL is returned')
             return None
@@ -143,6 +153,8 @@ class CoordinateAgent:
             sparqls = sparqls[:5]
 
         result = self.sparql_query.start_queries(sparqls)
+        self.logwriter.write_to_log(question, 'Result got %s \n' % json.dumps(result[0]))
+
         return result[0]
 
 

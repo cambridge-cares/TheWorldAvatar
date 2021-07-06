@@ -7,7 +7,7 @@ import sys
 
 from pprint import pprint
 
-from flask import Flask, request
+from flask import Flask, request,send_file
 from flask import render_template, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit
@@ -26,10 +26,7 @@ socketio.init_app(app, cors_allowed_origins="*")
 
 @app.route('/log')
 def get_log():
-    with open('chatbot-log.txt') as f:
-        log = json.loads(f.read())
-
-    return json.dumps(log)
+    return send_file('question-log.txt')
 
 
 @app.route('/chemistry_chatbot/static/<path:path>')
