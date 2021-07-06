@@ -1,5 +1,5 @@
 from rapidfuzz import process, fuzz
-from load_dicts import FORMULA_URI_DICT, SMILES_URI_DICT, NAME_URI_DICT, \
+from .load_dicts import FORMULA_URI_DICT, SMILES_URI_DICT, NAME_URI_DICT, \
     FORMULA_KEYS, NAME_KEYS, SMILES_KEYS, ATTRIBUTE_URI_DICT, \
     ATTRIBUTE_KEYS, CLASS_URI_DICT, CLASS_KEYS, process_species, process_species_reversed
 
@@ -12,8 +12,8 @@ def find_nearest_match(entity_value, entity_type):
         rst = find_nearest_match_classes(entity_value)
     elif entity_type == 'species':
         rst = find_nearest_match_species(entity_value)
-
-    URI = rst[0]
+    URI = [u.replace('http://www.wikidata.org/entity/', '') for u in rst[0]]
+    print('find_nearest_match - 16', URI)
     score = rst[1]
     candidate = rst[2]
     return URI, candidate
