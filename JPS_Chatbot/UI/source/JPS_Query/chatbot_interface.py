@@ -54,6 +54,8 @@ class Chatbot:
     def analyse_questions(self, question):
         question = self.simple_replace(question)
         result = self.jps_classifier.interpret(question)
+        print('chatbot-interface 57')
+        pprint(result)
         answer = self.jps_query_constructor.construct_query(result)
         if type(answer) == tuple:
             answer = answer[0]

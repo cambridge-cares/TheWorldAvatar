@@ -70,8 +70,10 @@ def rename_keys(es):
 def fill_sparql_query_for_one_intent(intent, template, order, entities, index_order):
     list_of_sparqls = []
     # this function takes the template, entities, the order, returns a list of sparql queries
-    if intent == 'batch_restriction_query_numerical_and_attribute':
+    if intent == 'attribute_batch_attribute_query_numerical':
         entities = rename_keys(entities)
+        print('SPARQLConstructor - 75')
+        pprint(entities)
     r = retrieve_uris_from_entities(entities, order=order)
     combinations = generate_combinations(r)
     # x = input()
@@ -102,7 +104,57 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
 class SPARQLConstructor:
     def __init__(self):
         self.templates = {
-            'batch_restriction_query': '''
+
+            'rank_query_list': '''
+             
+            SELECT  ?oLabel ?v  ?unitLabel
+            WHERE 
+            {
+              ?o wdt:P31 wd:%s . # class
+              ?o wdt:%s ?v . # attribute
+              
+                        OPTIONAL {
+                            ?o p:%s/psv:%s ?value . # attribute x 2 
+                            ?value wikibase:quantityAmount ?v2 .
+                            ?value wikibase:quantityUnit ?unit .
+                      }
+              
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            
+            } 
+            ORDER BY DESC(?v)
+            
+            ''',
+
+            'batch_query': '''
+            
+             SELECT ?o ?oLabel 
+            WHERE 
+            {
+              ?o wdt:P31 wd:%s.
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+            }
+                       
+            ''',
+
+
+            'about_query':
+
+                '''
+            PREFIX schema: <http://schema.org/>
+            SELECT *
+            WHERE 
+            {
+              wd:%s rdfs:label ?v .
+              wd:%s schema:description ?v2.
+              SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+              FILTER ( lang(?v) = "en" )
+              FILTER ( lang(?v2) = "en" )
+            }
+            
+            ''',
+
+            'batch_attribute_query': '''
             
         SELECT ?oLabel ?v ?v2 ?unitLabel
         WHERE
@@ -118,7 +170,7 @@ class SPARQLConstructor:
         } LIMIT 50 # class, attribute, attribute, attribute
          ''',
 
-            'batch_restriction_query_numerical': '''
+            'batch_attribute_query_numerical': '''
             
         SELECT ?oLabel ?v ?v2 ?unitLabel
         WHERE
@@ -133,6 +185,19 @@ class SPARQLConstructor:
           }
           SERVICE wikibase:label { bd:serviceParam wikibase:language  "[AUTO_LANGUAGE],en". }
         } LIMIT 50 # class, attribute, comparison, numerical_value, attribute, attribute
+        ''',
+
+            'attribute_batch_attribute_query_numerical': '''
+          SELECT ?oLabel ?v ?v2 ?unitLabel
+        WHERE
+         {
+          ?o wdt:P31 wd:%s . # class
+          ?o wdt:%s ?v . # attribute_2
+          ?o wdt:%s ?v2 . # attribute_1
+          FILTER (?v %s %s) # comparison, number
+          SERVICE wikibase:label { bd:serviceParam wikibase:language  "[AUTO_LANGUAGE],en". }
+        } LIMIT 50 # class, attribute, comparison, numerical_value, attribute, attribute
+        
         ''',
 
             'item_attribute_query': '''
@@ -181,19 +246,35 @@ class SPARQLConstructor:
         template = self.templates[intent]
 
         if intent == 'item_attribute_query':
-            order = ['attribute', 'entity']
+            order = ['attribute', 'species']
             index_order = [1, 0, 1, 0, 0, 1]
-        elif intent == 'batch_restriction_query_numerical_and_attribute':
-            order = ['attribute_1', 'attribute_2', 'class', 'comparison', 'numerical_value']  # first attribute is the
+
+        elif intent == 'rank_query_list':
+            order = ['class', 'attribute']
+            index_order = [0,1,1,1]
+
+        elif intent == 'batch_query':
+            order = ['class']
+            index_order = [0]
+
+        elif intent == 'about_query':
+            order = ['species']
+            index_order = [0,0]
+
+        elif intent == 'attribute_batch_attribute_query_numerical':
+            print('SPARQLConstrcutor - 205')
+            print('template', template)
+            print('entities', entities)
+            print('intent', intent)
+            order = ['attribute_1', 'attribute_2', 'class', 'comparison', 'number']  # first attribute is the
             index_order = [2, 1, 0, 3, 4]  # ['class', 'a2', 'a1', 'comparison', 'number']
 
-            # attribute_1
-
-        elif intent == 'batch_restriction_query_numerical':
-            order = ['class', 'attribute', 'comparison', 'numerical_value']
+        elif intent == 'batch_attribute_query_numerical':
+            order = ['class', 'attribute', 'comparison', 'number']
             index_order = [0, 1, 2, 3, 1, 1]
             # class, attribute, comparison, numerical_value, attribute, attribute
-        elif intent == 'batch_restriction_query':
+        elif intent == 'batch_attribute_query':
+            print('SPARQLConstructor - 197', entities)
             # class, attribute, attribute, attribute
             order = ['class', 'attribute']
             index_order = [0, 1, 1, 1]

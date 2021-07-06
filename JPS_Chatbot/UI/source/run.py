@@ -24,6 +24,13 @@ CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 
+@app.route('/log')
+def get_log():
+    with open('chatbot-log.txt') as f:
+        log = json.loads(f.read())
+
+    return json.dumps(log)
+
 
 @app.route('/chemistry_chatbot/static/<path:path>')
 def send_js(path):

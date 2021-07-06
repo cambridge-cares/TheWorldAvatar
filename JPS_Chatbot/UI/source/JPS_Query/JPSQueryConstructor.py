@@ -1,7 +1,10 @@
 import json
+import os
 import re
 import urllib.parse
 import urllib.request
+from pprint import pprint
+
 from .species_validator import SpeciesValidator
 from .attribute_mapping import AttributeMapper
 from .locations import JPS_SPARQL_TEMPLATE_PATH, CONFIG_PATH
@@ -40,9 +43,13 @@ class JPSQueryConstructor:
         with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
 
-        with open(CONFIG_PATH) as f:
-            self.config = json.loads(f.read())
-
+        if os.path.isfile(CONFIG_PATH):
+            with open(CONFIG_PATH) as f:
+                self.config = json.loads(f.read())
+        else:
+            self.config = {'ldf_host': 'jps-ldf:3000/marie/ldf', 'ldf_port': -1}
+        print('JPSQueryConstructor 51')
+        pprint(self.config)
         self.serach_interface = SearchInterface()
         self.socketio = socketio
         self.validator = SpeciesValidator()
@@ -50,7 +57,7 @@ class JPSQueryConstructor:
 
     # Builds the base URL for all LDF queries
     def build_base_url(self):
-
+        print('JPSQueryConstructor - 59')
         # Get the URL listed in the config
         host = str(self.config['ldf_host'])
         print("LDF Host: ", host)
@@ -132,11 +139,12 @@ class JPSQueryConstructor:
 
     def extract_info(self, intents):
         intent = intents['intent']['name']
-        entity_pairs = JPSQueryConstructor.extract_entity_pairs(intents['entities'])
-        self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(
-            entity_pairs) + '-----------------')
+        # entity_pairs = JPSQueryConstructor.extract_entity_pairs(intents['entities'])
+        # self.socketio.emit('coordinate_agent', 'Looking up entities in JPS KG<br/> -----------------' + str(
+        #     entity_pairs) + '-----------------')
 
         if intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
+            print('JPSQueryConstructor 146')
             result = {'intent': intent}
             for e in intents['entities']:
                 entity_type = e['entity']
@@ -221,6 +229,7 @@ class JPSQueryConstructor:
     def construct_query(self, intents):
         result = self.extract_info(intents)
         intent = result['intent']
+        print('JPSConstructor 230')
         rst = None
         if intent == 'query_reaction_property':
             try:
@@ -234,6 +243,8 @@ class JPSQueryConstructor:
             if rst is None:
                 return None
         elif intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
+            print('JPSQueryConstructor - 241')
+            pprint(result)
             rst = self.query_quantum_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
@@ -241,6 +252,7 @@ class JPSQueryConstructor:
             rst = self.query_thermo_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
+        print('JPSQueryConstructor 254')
 
         return rst.replace('[=]', '->').replace('=]', '->')
 

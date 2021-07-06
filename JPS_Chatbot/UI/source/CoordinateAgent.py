@@ -1,4 +1,6 @@
 import json
+from pprint import pprint
+
 from UI.source.Wikidata_Query.Interpretation_parser import InterpretationParser
 from UI.source.Wikidata_Query.SearchEngine import SearchEngine
 from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
@@ -39,6 +41,14 @@ class CoordinateAgent:
         self.jps_interface = Chatbot(socketio)
         self.socket = socketio
 
+    def remove_stop_words(self, question):
+        stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
+        question = question.strip()
+        question = question.lower()
+        words = question.split(' ')
+        words = [w for w in words if w not in stopwords]
+        return ' '.join(words)
+
     def question_classification(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
         return intent_and_entities['intent']
@@ -63,9 +73,17 @@ class CoordinateAgent:
         topics = self.lda_classifier.classify(question)
         print('============== topics ==============')
         print(topics)
+
+        # TODO: implement multi-threading here. Collect the results after ward ...
+
+        # try the multi-threading
+        # collect both the answers, select the
+
         for topic in topics:
             if topic == 'wiki':
                 try:
+                    print('CoordinateAgent - 69', question)
+                    question = self.remove_stop_words(question)
                     result = self.wiki_query(question)
                     if result is None:
                         pass
@@ -102,6 +120,9 @@ class CoordinateAgent:
     # @lru_cache(maxsize=64)
     def wiki_query(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
+        print('CoordinateAgent - 106')
+        pprint(intent_and_entities)
+        # TODO: connect the new dictionary ...
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         if intent_and_entities_with_uris is None:
             return None
@@ -111,6 +132,9 @@ class CoordinateAgent:
             intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
 
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
+        print('CoordinateAgent - 120')
+        pprint(intent_and_entities_with_uris)
+
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
         if sparqls is None:
             print('No valid SPARQL is returned')
@@ -124,10 +148,12 @@ class CoordinateAgent:
 
 if __name__ == '__main__':
     ca = CoordinateAgent(None)
-    ca.run('what reactions produce NO2 + O2')
-    ca.run('find all the fatty acids with molecular weight more than 100')
-    ca.run('the kindling point of C2HBrClF3')
-    ca.run('what is the molecular weight of benzene')
-    ca.run('show me the heat capacity of glucose')
-    ca.run('what is the chemical structure of glucose')
-    ca.run('show me the boliing point of ch4')
+
+    ca.run('  show me the vibration frequency of H2O2')
+    # ca.run('what reactions produce NO2 + O2')
+    # ca.run('find all the fatty acids with molecular weight more than 100')
+    # ca.run('the kindling point of C2HBrClF3')
+    # ca.run('what is the molecular weight of benzene')
+    # ca.run('show me the heat capacity of glucose')
+    # ca.run('what is the chemical structure of glucose')
+    # ca.run('show me the boliing point of ch4')
