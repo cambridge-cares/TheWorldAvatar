@@ -31,8 +31,8 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.tools.CloningTool;
 
 /**
@@ -144,8 +144,8 @@ public class CloningToolTest {
 		public void testSingleStepClone() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
 			CloningTool cloningTool = new CloningTool();
-			KnowledgeBaseClientInterface source = createTestClient();
-			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			StoreClientInterface source = createTestClient();
+			FileBasedStoreClient target = new FileBasedStoreClient();
 			
 			String graph = null;
 			
@@ -160,7 +160,7 @@ public class CloningToolTest {
 			assertEquals("[]", target.execute(getQuery(testContext, "4")));	//named graph not cloned
 			
 			//clone named graph			
-			FileBasedKnowledgeBaseClient target2 = new FileBasedKnowledgeBaseClient();
+			FileBasedStoreClient target2 = new FileBasedStoreClient();
 			cloningTool.singleStepClone(source, testContext, target2, testContext);
 			
 			//check copied
@@ -178,8 +178,8 @@ public class CloningToolTest {
 			
 			CloningTool cloningTool = new CloningTool(1);
 			cloningTool.setQuadsStore();
-			KnowledgeBaseClientInterface source = createTestClient();
-			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			StoreClientInterface source = createTestClient();
+			FileBasedStoreClient target = new FileBasedStoreClient();
 			
 			cloningTool.clone(source, target);
 			
@@ -222,8 +222,8 @@ public class CloningToolTest {
 			
 			CloningTool cloningTool = new CloningTool(1);
 			cloningTool.setTripleStore();
-			KnowledgeBaseClientInterface source = createTestClient();
-			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			StoreClientInterface source = createTestClient();
+			FileBasedStoreClient target = new FileBasedStoreClient();
 			
 			cloningTool.clone(source, target);
 			
@@ -267,8 +267,8 @@ public class CloningToolTest {
 			CloningTool cloningTool1 = new CloningTool();
 			CloningTool cloningTool = Mockito.spy(cloningTool1);
 			
-			KnowledgeBaseClientInterface source = createTestClient();
-			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			StoreClientInterface source = createTestClient();
+			FileBasedStoreClient target = new FileBasedStoreClient();
 			
 			cloningTool.clone(source, target);
 			
@@ -294,8 +294,8 @@ public class CloningToolTest {
 		public void testCloneWithNamedGraph() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 			
 			CloningTool cloningTool = new CloningTool(1);
-			KnowledgeBaseClientInterface source = createTestClient();
-			FileBasedKnowledgeBaseClient target = new FileBasedKnowledgeBaseClient();
+			StoreClientInterface source = createTestClient();
+			FileBasedStoreClient target = new FileBasedStoreClient();
 			
 			cloningTool.clone(source, target, testContext);
 			
@@ -329,11 +329,11 @@ public class CloningToolTest {
 		public void testCreateTag() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 			
 			CloningTool cloningTool = new CloningTool();
-			KnowledgeBaseClientInterface kbClient = createTestClient();
+			StoreClientInterface kbClient = createTestClient();
 			
 			Method method = null;
-			assertNotNull(cloningTool.getClass().getDeclaredMethod("createTag", KnowledgeBaseClientInterface.class));
-			method = cloningTool.getClass().getDeclaredMethod("createTag", KnowledgeBaseClientInterface.class);
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("createTag", StoreClientInterface.class));
+			method = cloningTool.getClass().getDeclaredMethod("createTag", StoreClientInterface.class);
 			method.setAccessible(true);
 			method.invoke(cloningTool, kbClient);
 			
@@ -351,7 +351,7 @@ public class CloningToolTest {
 		public void testCheckCount() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 			
 			CloningTool cloningTool = new CloningTool();
-			KnowledgeBaseClientInterface kbClient = createTestClient();
+			StoreClientInterface kbClient = createTestClient();
 			
 			assertFalse(cloningTool.checkCount(kbClient, null));
 			
@@ -370,7 +370,7 @@ public class CloningToolTest {
 			
 			CloningTool cloningTool = new CloningTool();
 			
-			KnowledgeBaseClientInterface kbClient = createTestClient();
+			StoreClientInterface kbClient = createTestClient();
 			String graph = null;
 			
 			assertTrue(cloningTool.checkNoTags(kbClient, graph));
@@ -394,7 +394,7 @@ public class CloningToolTest {
 		public void testCountTriples() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException {
 			
 			CloningTool cloningTool = new CloningTool();
-			KnowledgeBaseClientInterface kbClient = createTestClient();
+			StoreClientInterface kbClient = createTestClient();
 			
 			Var[] sparqlArgs = getSparqlArgs();
 			Var varS = sparqlArgs[0];
@@ -407,8 +407,8 @@ public class CloningToolTest {
 			int expectedValue = 12;
 			
 			Method method = null;
-			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClientInterface.class, String.class, WhereBuilder.class));
-			method = cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClientInterface.class, String.class, WhereBuilder.class);
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", StoreClientInterface.class, String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("countTriples", StoreClientInterface.class, String.class, WhereBuilder.class);
 			method.setAccessible(true);
 			int value = (int) method.invoke(cloningTool, kbClient, graph, where);
 			assertEquals(expectedValue, value);
@@ -417,8 +417,8 @@ public class CloningToolTest {
 			graph = testContext;
 			expectedValue = 6; 
 			
-			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClientInterface.class, String.class, WhereBuilder.class));
-			method = cloningTool.getClass().getDeclaredMethod("countTriples", KnowledgeBaseClientInterface.class, String.class, WhereBuilder.class);
+			assertNotNull(cloningTool.getClass().getDeclaredMethod("countTriples", StoreClientInterface.class, String.class, WhereBuilder.class));
+			method = cloningTool.getClass().getDeclaredMethod("countTriples", StoreClientInterface.class, String.class, WhereBuilder.class);
 			method.setAccessible(true);
 			value = (int) method.invoke(cloningTool, kbClient, graph, where);
 			assertEquals(expectedValue, value);
@@ -794,8 +794,8 @@ public class CloningToolTest {
 			return model;
 		}
 		
-		private KnowledgeBaseClientInterface createTestClient() {
-			FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
+		private StoreClientInterface createTestClient() {
+			FileBasedStoreClient kbClient = new FileBasedStoreClient();
 			kbClient.load(filePath1);
 			kbClient.load(testContext, filePath2);			
 			return kbClient;

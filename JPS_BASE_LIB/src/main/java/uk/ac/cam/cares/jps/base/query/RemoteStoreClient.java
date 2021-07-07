@@ -28,7 +28,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge repositories<p>
@@ -50,7 +50,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
+public class RemoteStoreClient implements StoreClientInterface {
 
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";
@@ -69,7 +69,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	/**
 	 * The default constructor.
 	 */
-	public RemoteKnowledgeBaseClient(){
+	public RemoteStoreClient(){
 		
 	}
 	
@@ -78,7 +78,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * 
 	 * @param queryEndpoint
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint){
+	public RemoteStoreClient(String queryEndpoint){
 		this.queryEndpoint = queryEndpoint;
 	}
 	
@@ -90,7 +90,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param queryEndpoint
 	 * @param updateEndpoint
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -102,7 +102,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
 	}
 	
@@ -115,7 +115,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -131,28 +131,11 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password 
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
 		this.query = query;
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
-	
-	///////////////////////////
-	// Read and write methods
-	///////////////////////////
-
-	public void load() {
-		// do nothing
-		// connection established during query/update execution
-	}
-	
-	public void end() {
-		// do nothing
-	}
-		
-	///////////////////////////
-	// Read and write methods
-	///////////////////////////
 
 	/**
 	 * Returns the available query.

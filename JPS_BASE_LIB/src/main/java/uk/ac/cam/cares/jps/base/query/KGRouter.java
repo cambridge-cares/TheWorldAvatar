@@ -8,7 +8,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class is developed to work as an instance factory for KnowledgeBaseClient.<br>
@@ -70,10 +70,10 @@ public class KGRouter{
 	 *  can be true at the same time.
 	 * @return
 	 */
-	public static KnowledgeBaseClientInterface getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static StoreClientInterface getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
-		KnowledgeBaseClientInterface kbClient = null;
+		StoreClientInterface kbClient = null;
 		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
 			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
 				if (kgRouter == null) {
@@ -86,11 +86,11 @@ public class KGRouter{
 					updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
-					kbClient = new RemoteKnowledgeBaseClient(queryIRI);
+					kbClient = new RemoteStoreClient(queryIRI);
 				}
 				if (updateIRI != null && !updateIRI.isEmpty()) {
 					if (kbClient == null) {
-						kbClient = new RemoteKnowledgeBaseClient();
+						kbClient = new RemoteStoreClient();
 					}
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
@@ -101,7 +101,7 @@ public class KGRouter{
 					logger.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
 			}else{
-				kbClient = new FileBasedKnowledgeBaseClient(targetResourceIRIOrPath);
+				kbClient = new FileBasedStoreClient(targetResourceIRIOrPath);
 			}
 		}
 		return kbClient;
@@ -125,7 +125,7 @@ public class KGRouter{
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
-		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
@@ -157,7 +157,7 @@ public class KGRouter{
 				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT) );
-		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);

@@ -35,18 +35,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class uses RDFConnection to load and provide SPARQL access to file based datasets.
- * The behaviour is designed to be analogous to RemoteKnowledgeBaseClient with the methods
+ * The behaviour is designed to be analogous to RemoteStoreClient with the methods
  * declared in KnowledgeBaseClientInterface.
  * Files are automatically loaded when a file path is supplied via the class constructor or 
  * set methods (in this case, files are loaded prior to sparql query/update).
  * By default, data is automatically written to file after a SPARQL update.
  * Further read/write functionality is provided through the load and writeToFile methods 
  * including support for multiple files loaded to different contexts/named graphs. 
- * Note that the FileBasedKnowledgeBaseClient only supports loading a single file to a single 
+ * Note that the FileBasedStoreClient only supports loading a single file to a single 
  * context (including the default graph) and will throw an error if a context already exists 
  * in the dataset (or the default graph is not empty). 
  * Files containing more than one context are also not supported.
@@ -54,7 +54,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterface {
+public class FileBasedStoreClient implements StoreClientInterface {
 
 	private Dataset dataset;
 	private RDFConnection conn;
@@ -93,7 +93,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	/**
 	 * Default constructor. Creates a file-based client without loading a file.
 	 */
-	public FileBasedKnowledgeBaseClient() {
+	public FileBasedStoreClient() {
 		init();
 	}
 	
@@ -101,7 +101,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * Constructor loads a triples to the default graph and quads to a named graph.
 	 * @param filePath
 	 */
-	public FileBasedKnowledgeBaseClient(String filePath) {
+	public FileBasedStoreClient(String filePath) {
 		init();
 		load(filePath);
 	}
@@ -111,7 +111,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * @param graph name/context
 	 * @param filePath
 	 */
-	public FileBasedKnowledgeBaseClient(String graph, String filePath) {
+	public FileBasedStoreClient(String graph, String filePath) {
 		init();
 		load(graph, filePath);
 	}
