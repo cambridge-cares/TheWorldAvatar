@@ -543,7 +543,7 @@ start += end
 start = str(start).replace("'", '"')
 start = start.replace(' ','')
 start = start.replace('/n','')
-geojson_written = open('LSOA.geojson','w')
+geojson_written = open('geojson_output/LSOA.geojson','w')
 geojson_written.write(start)
 geojson_written.close() 
 print('Succesfully created geoJSON file')

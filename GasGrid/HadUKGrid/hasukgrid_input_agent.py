@@ -32,7 +32,7 @@ def read_nc(var_name,loc=True):
     Given a variable in the HadUK Grid dataset, reads the file
     and returns the grid of observations.
     '''
-    fn = 'HadUK Files/'+var_name+'_hadukgrid_uk_1km_mon_201901-201912.nc'
+    fn = 'hasuk_files/'+var_name+'_hadukgrid_uk_1km_mon_201901-201912.nc'
     ds = nc.Dataset(fn)
     var_grid = ds.variables[var_name][:]
     if loc == True:

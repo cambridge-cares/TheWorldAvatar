@@ -202,9 +202,9 @@ def region_meters_query(limit):
     return usage_vals
 
 
-filename = 'temp_array'
-gas_filename = 'gas_array'
-meters_filename = 'meters_array'
+filename = 'pickle_files/temp_array'
+gas_filename = 'pickle_files/gas_array'
+meters_filename = 'pickle_files/meters_array'
 
 # all_results = region_query(limit=False)
 # #-----------------# 
@@ -467,7 +467,7 @@ def query_poly(limit):
     return LSOA_shapes
 
 
-shapes_filename = 'shapes_array'
+shapes_filename = 'pickle_files/shapes_array'
 # LSOA_shapes = query_poly(limit=False)
 # #-----------------# 
 # outfile = open(shapes_filename,'wb')
