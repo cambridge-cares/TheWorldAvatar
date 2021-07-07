@@ -86,7 +86,11 @@ RUN apt-get install firefox -y --fix-missing
 
 # JPS Chatbot installation
 RUN echo -e "Installing the chatbot..."
+RUN apt-get install mysql-server -y
+RUN apt-get install libmysqlclient-dev -y 
 RUN (python3.7 -m pip install -r requirements.txt)
+RUN (python3.7 -m pip install rapidfuzz)
+RUN (python3.7 -m pip install yagmail)
 RUN export PATH=$PATH:.
 RUN python docker/install_nltk.py
 RUN echo -e "Chatbot installed..."
@@ -100,7 +104,13 @@ RUN chmod +x /etc/init.d/flask
 RUN update-rc.d flask defaults
 RUN echo -e "Flask started."
 
+# Set up crontab 
+RUN apt-get update \
+    && apt-get install -y cron \
+    && apt-get autoremove -y
 
+COPY ./docker/cronpy /etc/cron.d/cronpy
+CMD ["cron", "-f"]
 
 
 # Reset arguments and finish
