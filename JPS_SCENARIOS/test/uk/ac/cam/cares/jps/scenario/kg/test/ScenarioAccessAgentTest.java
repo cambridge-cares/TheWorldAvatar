@@ -32,6 +32,10 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.scenario.ScenarioLog;
+import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
+import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 import uk.ac.cam.cares.jps.scenario.kg.ScenarioAccessAgent;
 
 public class ScenarioAccessAgentTest {
@@ -42,8 +46,14 @@ public class ScenarioAccessAgentTest {
 	private String filePath;
 	private String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
+	String scenarioName = "testScenario";
+	String scenarioResource = "http://example.com/test/scenarioResource.owl";
+	String accept = "application/n-triples";
+	
+	String scenarioUrl;
+	
 	@Before
-	public void setUp() throws URISyntaxException, IOException {
+	public void setUp() throws URISyntaxException, IOException { //TODO
 		// Test rdf file
 		String filePathDir = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" ;
 		
@@ -52,10 +62,26 @@ public class ScenarioAccessAgentTest {
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
 	}
+			
 	
-	/** assert that KBANew is created 
-	 * 
-	 */
+	private JSONObject createRequestParams() {
+		
+		scenarioUrl = ScenarioAccessAgent.getScenarioUrl(scenarioName);
+		
+		JSONObject requestParams;
+		requestParams = new JSONObject()
+				.put(JPSConstants.METHOD, HttpGet.METHOD_NAME)
+				.put(JPSConstants.PATH, "/"+scenarioName)
+				.put(JPSConstants.REQUESTURL, scenarioUrl)
+				.put(JPSConstants.SCENARIO_RESOURCE, scenarioResource)
+				.put(JPSConstants.SCENARIO_DATASET, "test")
+				.put(JPSConstants.CONTENTTYPE, accept)
+				.put(JPSConstants.HEADERS, accept)
+				.put(JPSConstants.TARGETIRI, "test");
+		
+		return requestParams;
+	}
+	
 	@Test
 	 public void testScenarioAccessAgent() {
 		ScenarioAccessAgent agent = null;
@@ -99,41 +125,182 @@ public class ScenarioAccessAgentTest {
 		verify(agent).post(requestParams);
 	}
 	
-	/** test inputValidate() method of KnowledgeBaseAgent
-	 * @throws ParseException 
-	 * @throws JSONException 
-	 * 
+	
+	
+	@Test
+	public void testGetScenarioUrl() {
+		String scenarioUrl = ScenarioAccessAgent.getScenarioUrl(scenarioName);
+		assertNotNull(scenarioUrl);
+		assertTrue(scenarioUrl.contains(scenarioName));
+	}
+
+	@Test 
+	public void testGet() {	//TODO
+		
+		String getOrQuery = "getOrQueryCalled";
+		String call = "callCalled";
+		
+		ScenarioAccessAgent agent = Mockito.spy(ScenarioAccessAgent.class);
+		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
+		Mockito.doReturn(getOrQuery).when(agent).getOrQuery(any(JSONObject.class), any(String.class), any(boolean.class));
+		Mockito.doReturn(call).when(agent).call(any(JSONObject.class),any(String.class),any(ScenarioLog.class));
+		
+		JSONObject requestParams = createRequestParams();
+		JSONObject result;
+		
+		//No operation
+		result = agent.get(requestParams);
+		verify(agent).get(requestParams);
+		verify(agent).getOrQuery(any(JSONObject.class), any(String.class), any(boolean.class));
+		assertEquals(getOrQuery,result.getString("result"));
+		
+		//Operations
+		requestParams.put(JPSConstants.PATH, "/"+scenarioName+"/call");
+		requestParams.put(JPSConstants.REQUESTURL, scenarioUrl+"/call");
+		result = agent.get(requestParams);
+		verify(agent,Mockito.times(2)).get(requestParams);
+		verify(agent).call(any(JSONObject.class),any(String.class),any(ScenarioLog.class));
+		assertEquals(call,result.getString("result"));
+	}
+	
+	/**
+	 * Test getFromKnowledgeBase is called when no sparql query is provided.
 	 */
 	@Test
-	public void testValidateInput() throws JSONException, ParseException {
-		JSONObject jo = new JSONObject()
-				.put(JPSConstants.TARGETIRI,  filePath)
-				.put(JPSConstants.REQUESTURL, "http://www.example.com/jps/kb/test")
-				.put(JPSConstants.METHOD, "GET");
+	public void testGetOrQuery() {
 		
-		ScenarioAccessAgent jpsa = new ScenarioAccessAgent();
-		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
-		jo.put(JPSConstants.QUERY_SPARQL_QUERY , queryString );
-		assertTrue(jpsa.validateInput(jo));// Query present
-		jo.remove(JPSConstants.QUERY_SPARQL_QUERY );
-		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , queryString);
-		assertFalse(jpsa.validateInput(jo));//Update wrong format
-		jo.remove(JPSConstants.QUERY_SPARQL_UPDATE );
-		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , getUpdateRequest().toString());
-		assertTrue(jpsa.validateInput(jo));// Update present
+		String getKG = "getFromKG";
+		String queryKG = "queryKG";
+		
+		ScenarioAccessAgent agent = Mockito.spy(ScenarioAccessAgent.class);
+		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
+		Mockito.doReturn(getKG).when(agent).getFromKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class),any(String.class));
+		Mockito.doReturn(queryKG).when(agent).queryKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class));
+		
+		JSONObject requestParams = createRequestParams();
+		
+		String result = agent.getOrQuery(requestParams,scenarioName,false);
+		
+		verify(agent).getFromKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class),any(String.class));
+		verify(agent,Mockito.times(0)).queryKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class));
+		assertEquals(result,getKG);
 	}
+	
+	/**
+	 * Test queryKnowledgeBase is called when a sparql query is provided. 
+	 */
+	@Test
+	public void testGetOrQueryWithSparqlQuery() {
+		
+		String getKG = "getFromKG";
+		String queryKG = "queryKG";
+		
+		ScenarioAccessAgent agent = Mockito.spy(ScenarioAccessAgent.class);
+		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
+		Mockito.doReturn(getKG).when(agent).getFromKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class),any(String.class));
+		Mockito.doReturn(queryKG).when(agent).queryKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class));
+		
+		JSONObject requestParams = createRequestParams();	
+		requestParams.put(JPSConstants.QUERY_SPARQL_QUERY, "test");
+		
+		String result;
+		result = agent.getOrQuery(requestParams,scenarioName,false);
+		
+		verify(agent,Mockito.times(0)).getFromKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class),any(String.class));
+		verify(agent).queryKnowledgeBase(any(ScenarioStoreClient.class),any(String.class),any(String.class),any(boolean.class));
+		assertEquals(result,queryKG);
+	}
+	
+	/**
+	 * Test exception is thrown if a sparql update is given in Http Get request. 
+	 */
+	@Test(expected = JPSRuntimeException.class)
+	public void testGetOrQueryWithSparqlUpdate() {
+				
+		ScenarioAccessAgent agent = Mockito.spy(ScenarioAccessAgent.class);
+		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
+		
+		JSONObject requestParams  = createRequestParams();
+		requestParams.put(JPSConstants.QUERY_SPARQL_UPDATE, "test");
+		
+		agent.getOrQuery(requestParams,scenarioName,false);		
+	}
+	
+	/**
+	 * Test get from existing file in scenario folder
+	 */
+	@Test
+	public void testGetFromKnowledgeBaseFileExists() {
+		
+		String getReturn = "getCalled!";
+		ScenarioStoreClient storeClient = Mockito.mock(ScenarioStoreClient.class);
+		Mockito.when(storeClient.exists(scenarioResource)).thenReturn(true);
+		Mockito.when(storeClient.get(scenarioResource, accept)).thenReturn(getReturn);
+		 
+		ScenarioAccessAgent agent = new ScenarioAccessAgent();
+		String result = agent.getFromKnowledgeBase(storeClient, (String) null, scenarioResource, false, accept);
+		 
+		assertEquals(getReturn,result);
+		verify(storeClient).exists(scenarioResource);
+		verify(storeClient).get(scenarioResource, accept);
+		verify(storeClient, Mockito.times(0)).put(any(String.class),any(String.class),any(String.class));
+	}
+
+	//TODO copy on read
+	//TODO this call KBC -> KBAgent
+	/*
+	@Test 
+	public void testGetFromKnowledgeBase() {
+
+		String getReturn = "getCalled!";
+		
+		ScenarioStoreClient storeClient = Mockito.mock(ScenarioStoreClient.class);
+		Mockito.when(storeClient.exists(scenarioResource)).thenReturn(false);
+		Mockito.when(storeClient.get(scenarioResource, accept)).thenReturn(getReturn);
+		 
+		ScenarioAccessAgent agent = new ScenarioAccessAgent();
+		String result = agent.getFromKnowledgeBase(storeClient, (String) null, filePath, false, accept);
+		
+		assertEquals(getReturn,result);
+		verify(storeClient).exists(scenarioResource);
+		verify(storeClient, Mockito.times(0)).get(scenarioResource, accept);
+		verify(storeClient, Mockito.times(0)).put(any(String.class),any(String.class),any(String.class));
+	}
+	*/
+	
+	
+	/*
+	@Test
+	public void testQueryKnowledgeBase() {
+	
+		String getReturn = "getCalled!";
+		ScenarioStoreClient storeClient = Mockito.mock(ScenarioStoreClient.class);
+		Mockito.when(storeClient.exists(scenarioResource)).thenReturn(true);
+		Mockito.when(storeClient.get(scenarioResource, accept)).thenReturn(getReturn);
+		 
+		ScenarioAccessAgent agent = new ScenarioAccessAgent();
+		String result = agent.queryKnowledgeBase(storeClient, (String) null, scenarioResource, false);
+		
+		assertEquals(getReturn,result);
+		verify(storeClient).exists(scenarioResource);
+		verify(storeClient).get(scenarioResource, accept);
+		verify(storeClient, Mockito.times(0)).put(any(String.class),any(String.class),any(String.class));
+	}
+	*/
+	
+	/////////////////////////
 	
 	/*
 	@Test
 	public void testGetWithSparqlQuery() {
 
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
+		jo.put(JPSConstants.REQUESTURL, "/jps/scenario/test")
 			.put(JPSConstants.METHOD, "GET")
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
 
-		AccessAgent jpsa = new AccessAgent();
+		ScenarioAccessAgent jpsa = new ScenarioAccessAgent();
         JSONObject result = jpsa.get(jo);		
 		JSONArray ja = new JSONArray(result.getString("result")); 
 		jo = ja.getJSONObject(0); 
@@ -177,6 +344,7 @@ public class ScenarioAccessAgentTest {
 		assertEquals(content, strResult);		
 	}
 	
+	/*
 	@Test
 	public void testPut() {
 		

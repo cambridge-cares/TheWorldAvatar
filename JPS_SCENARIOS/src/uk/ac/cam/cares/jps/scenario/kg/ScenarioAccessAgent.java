@@ -55,7 +55,6 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		String scenariourl = JPSContext.getScenarioUrl(requestParams);
 		String usecaseurl = JPSContext.getUsecaseUrl(requestParams);
 		
-
 		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
 		//logger.debug("with input param=" + jo);
 		//logger.debug("with query string=" + request.getQueryString());
@@ -132,6 +131,13 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		}
 	}
 	
+	/**
+	 * Perform Get or sparql query.
+	 * @param requestParams
+	 * @param scenarioName
+	 * @param copyOnRead
+	 * @return
+	 */
 	public String getOrQuery(JSONObject requestParams, String scenarioName, boolean copyOnRead) {
 
 		String requestUrl =  MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
@@ -148,19 +154,18 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			String scenarioUrl = getScenarioUrl(scenarioName);
 			ScenarioStoreClient storeClient = new ScenarioStoreClient(scenarioUrl);
 			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
-			String result = "";	
+			String result = "";
+			
 			if (sparqlquery == null) {
-				//result = kb.get(resourceUrl, accept);
 				result = getFromKnowledgeBase(storeClient, paramDatasetUrl, resourceUrl, copyOnRead, accept);
 			} else {
-				//result = kb.query(resourceUrl, sparql);
 				result = queryKnowledgeBase(storeClient, resourceUrl, sparqlquery, copyOnRead);
 			}
-			
+		
 			return result;
 
 		} catch (RuntimeException e) {
@@ -169,7 +174,20 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		}
 	}
 	
-	protected String getFromKnowledgeBase(ScenarioStoreClient storeClient, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
+	public static String getScenarioUrl(String scenarioName) {
+		return ScenarioManagementAgent.getScenarioUrl(scenarioName);
+	}
+	
+	/**
+	 * Perform get.
+	 * @param storeClient
+	 * @param externalDatasetUrl
+	 * @param resourceUrl
+	 * @param copyOnRead
+	 * @param accept
+	 * @return
+	 */
+	public String getFromKnowledgeBase(ScenarioStoreClient storeClient, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
 		if (storeClient.exists(resourceUrl)) {
 			return storeClient.get(resourceUrl, accept);
 		} 
@@ -185,7 +203,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		return content;
 	}
 	
-	protected String queryKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql, boolean copyOnRead) {
+	public String queryKnowledgeBase(ScenarioStoreClient storeClient, String resourceUrl, String sparql, boolean copyOnRead) {
 
 		logger.info("queryKnowledgeBase");
 		
@@ -305,7 +323,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		log.logMessage(scenarioName, message);
 	}
 	
-	private String call(JSONObject jo, String scenarioName, ScenarioLog log) {
+	public String call(JSONObject jo, String scenarioName, ScenarioLog log) {
 		System.out.println("CALL METHOD " + "1: ");
 //		if (jo.isNull(JPSConstants.SCENARIO_AGENT_URL)) {
 //			throw new JPSRuntimeException("missing input parameter scenarioagenturl");
