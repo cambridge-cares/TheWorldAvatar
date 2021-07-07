@@ -23,46 +23,12 @@ public class ScenarioStoreClient {
 		this.scenarioUrl = scenarioUrl; 
 	}
 
-	/**
-	 * Create new file and insert contents
-	 * @param resourceUrl
-	 * @param content
-	 * @param contentType
-	 */
-	public void put(String resourceUrl, String content, String contentType) {
-		logger.info("put resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
-		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
-		
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.setAutoWrite(false);
-		kbClient.insert(null, content, contentType); //Put to default graph
-		kbClient.writeToFile(null, filePath, Lang.RDFXML);
+	public String getScenarioUrl() {
+		return scenarioUrl;
 	}
-
-	public void update(String resourceUrl, String sparql) {
-		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
-		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
-		
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
-		kbClient.executeUpdate(sparql);
-	}
-
-	public String get(String resourceUrl, String accept) {
-		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
-		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
-
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath); //load to default graph
-		String result = kbClient.get(null, accept);
-		return result;
-	}
-
-	public String query(String resourceUrl, String sparql) {
-		logger.info("query resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
-		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
-
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
-		String result = kbClient.execute(sparql);
-		return result;
+	
+	public String getFilePath(String resourceUrl) {
+		return BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
 	}
 	
 	/**
@@ -71,13 +37,68 @@ public class ScenarioStoreClient {
 	 * @return
 	 */
 	public boolean exists(String resourceUrl) {
-		String filePath = BucketHelper.getLocalPath(resourceUrl, scenarioUrl);
+		String filePath = getFilePath(resourceUrl);
 		boolean exists = new File(filePath).exists();
 		logger.info("exists=" + exists + " for resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		return exists;
 	}
 	
-	public String getScenarioUrl() {
-		return scenarioUrl;
+	/**
+	 * Create a new file (resource) in the scenario folder and insert content with given content type
+	 * @param resourceUrl
+	 * @param content
+	 * @param contentType
+	 */
+	public void put(String resourceUrl, String content, String contentType) {
+		logger.info("put resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
+		String filePath = getFilePath(resourceUrl);
+		
+		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient.setAutoWrite(false);
+		kbClient.insert(null, content, contentType); //Put to default graph
+		kbClient.writeToFile(null, filePath, Lang.RDFXML);
+	}
+
+	/**
+	 * Perform a sparql update on a resource (file) in the scenario folder
+	 * @param resourceUrl
+	 * @param sparql
+	 */
+	public void update(String resourceUrl, String sparql) {
+		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
+		String filePath = getFilePath(resourceUrl);
+		
+		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		kbClient.executeUpdate(sparql);
+	}
+
+	/**
+	 * Get content of a resource (file) in the scenario folder
+	 * @param resourceUrl
+	 * @param accept
+	 * @return
+	 */
+	public String get(String resourceUrl, String accept) {
+		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
+		String filePath = getFilePath(resourceUrl);
+
+		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath); //load to default graph
+		String result = kbClient.get(null, accept);
+		return result;
+	}
+
+	/**
+	 * Perform a sparql query on a resource (file) in the scenario folder
+	 * @param resourceUrl
+	 * @param sparql
+	 * @return
+	 */
+	public String query(String resourceUrl, String sparql) {
+		logger.info("query resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
+		String filePath = getFilePath(resourceUrl);
+
+		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		String result = kbClient.execute(sparql);
+		return result;
 	}
 }
