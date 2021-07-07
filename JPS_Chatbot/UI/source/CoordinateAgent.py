@@ -8,6 +8,7 @@ from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
 from LDA.LDA_classifier import LDAClassifier
 from UI.source.JPS_Query.chatbot_interface import Chatbot
 from UI.source.LogWriter import LogWriter
+from UI.source.dashboard.Messenger import Messenger
 
 from rasa.nlu.model import Interpreter
 import os
@@ -42,6 +43,7 @@ class CoordinateAgent:
         self.jps_interface = Chatbot(socketio)
         self.socket = socketio
         self.logwriter = LogWriter()
+        self.msg = Messenger()
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
@@ -113,7 +115,7 @@ class CoordinateAgent:
                                 pass
                             else:
                                 if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
-                                    return 'Nothing'
+                                    pass
                                 else:
                                     return result_list
 
@@ -122,6 +124,8 @@ class CoordinateAgent:
                     except:
                         print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                         pass
+
+        self.msg.send_failed_message(question)
         return 'Nothing'
 
     # @lru_cache(maxsize=64)
