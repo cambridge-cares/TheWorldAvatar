@@ -22,7 +22,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 
@@ -128,7 +128,7 @@ public class ScenarioStoreClientTest {
 		storeClient.update(testResourceUrl, getUpdateRequest().toString());
 		
 		//use a file based client to query for the changes
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
         JSONArray ja = kbClient.executeQuery(queryString);
 		JSONObject result = ja.getJSONObject(0); 
 		assertEquals("TEST",result.get("o").toString());
