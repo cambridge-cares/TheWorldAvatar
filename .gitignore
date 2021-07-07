@@ -83,3 +83,9 @@ geckodriver.log
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_info
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/smiles
 /JPS_Chatbot/UI/data_preparation/Wiki_basic_info/test/data/nlu.md
+/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_property_mapping_random_3000
+/JPS_Chatbot/UI/data_preparation/Wiki_basic_info/instance_property_mapping_first_2000
+nlu.md
+/JPS_Chatbot/UI/source/Wikidata_Query/models
+/JPS_Chatbot/UI/source/JPS_Query/training/data/nlu.md
+/JPS_Chatbot/UI/source/Wikidata_Query/models/fingerprint.json
