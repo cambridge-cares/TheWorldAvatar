@@ -1,9 +1,6 @@
 intents:
-  - select_mechanism_by_reaction
-  - select_reaction_by_species
-  - query_reaction_property
-  - query_quantum_chemistry
-  - query_thermodynamic
+  - pce_agent
+  - weather_agent
 
 entities:
   - to

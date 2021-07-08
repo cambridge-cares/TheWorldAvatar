@@ -7,7 +7,7 @@ import sys
 
 from pprint import pprint
 
-from flask import Flask, request,send_file
+from flask import Flask, request, send_file
 from flask import render_template, send_from_directory
 from flask_cors import CORS
 from flask_socketio import SocketIO, send, emit
@@ -18,11 +18,20 @@ from functools import lru_cache
 from UI.source.wolfram_alpha_and_google.GoogleAPI import GoogleAPI
 from UI.source.wolfram_alpha_and_google.WolframGoogle import WolframGoogle
 from UI.source.CoordinateAgent import CoordinateAgent
+from UI.source.full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
+
+
+@app.route('/start_test')
+def start_test():
+    ft = FullTest()
+    ft.start()
+    return 'starting the full test'
+
 
 @app.route('/log')
 def get_log():
@@ -32,6 +41,13 @@ def get_log():
 @app.route('/chemistry_chatbot/static/<path:path>')
 def send_js(path):
     return send_from_directory('static', path)
+
+
+@app.route('/chemistry_chatbot/mock_pce_agent')
+def pce_agent():
+    species = request.args.get('species')
+    print(species)
+    return '0.55'
 
 
 # this serves as a web interface for the http request from agent wrapper, Question classification
@@ -79,7 +95,6 @@ def make_query():
 @app.route('/')
 def hello_world():
     return render_template('index_dln22.html')
-
 
 
 google_api = GoogleAPI()
