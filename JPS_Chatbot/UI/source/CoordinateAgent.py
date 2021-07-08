@@ -125,6 +125,13 @@ class CoordinateAgent:
                         print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                         pass
 
+        # TODO: integrate the fallback mechanism for agents
+        # e.g. what is the power conversion efficiency of benzene
+        # 1. will this question fail? how do you make sure the question fails? adjust the threshold of lookup
+        # TODO: increase the threshold of lookup in JPS (for PCE)
+        # 2. fallback to the agent channel
+        #   a) You need to create the agent instances
+        #   b) You need to train the model with the agent instances
         self.msg.send_failed_message(question)
         return 'Nothing'
 

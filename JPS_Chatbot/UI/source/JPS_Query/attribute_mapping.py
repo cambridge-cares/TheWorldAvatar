@@ -17,9 +17,13 @@ class AttributeMapper:
                                     'hasGeometryType': 'geometry_type'}
 
     def find_closest_attribute(self, intent, attribute):
+        # TODO: increase the threshold
+        lookup_threshold = 35
         if intent == 'query_thermodynamic':
-            score_map = sorted([(word, fuzz.ratio(attribute, word)) for word in self.THERMO_ATTRIBUTES],
+            score_map = sorted([(word, fuzz.ratio(attribute, word)) for word in self.THERMO_ATTRIBUTES if fuzz.ratio(attribute, word) > 34],
                                key=lambda x: x[1], reverse=True)
+            print('============== Score map ==============')
+            print(score_map)
             return score_map[0][0]
 
         elif intent == 'query_quantum_chemistry':
@@ -27,8 +31,10 @@ class AttributeMapper:
             print('intent', intent)
             print('attribute', attribute)
 
-            score_map = sorted([(word, fuzz.ratio(attribute, word)) for word in self.QUANTUM_ATTRIBUTES],
+            score_map = sorted([(word, fuzz.ratio(attribute, word)) for word in self.QUANTUM_ATTRIBUTES if fuzz.ratio(attribute, word) > 34],
                                key=lambda x: x[1], reverse=True)
+            print('============== Score map ==============')
+            print(score_map)
             return score_map[0][0]
 
     def map_to_quantum_queries(self, attribute_iri):
