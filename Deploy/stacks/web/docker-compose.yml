@@ -98,7 +98,7 @@ services:
         dockerfile: "./docker/Dockerfile"
     container_name: "uk-gas-grid"
     restart: unless-stopped
-     ports:
+    ports:
       - 4001:80
     labels:
       description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
@@ -106,14 +106,13 @@ services:
       builder: "${BUILDER}"
       hash: "${HASH}"
     
-    
    
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
-    #build:
-      #context: "./land_use"
-      #dockerfile: "./docker/Dockerfile"
+    build:
+      context: "./land_use"
+      dockerfile: "./docker/Dockerfile"
     container_name: "land-use"
     restart: unless-stopped
     ports:
