@@ -16,7 +16,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.query.KGRouter;
+import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -81,7 +81,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			StoreClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, true, false);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, true, false);
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
@@ -127,7 +127,7 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, null, false);
 			
 			//TODO check target or datasetUrl for this
-			StoreClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, false, true);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, false, true);
 			
 			kbClient.insert(resourceUrl, body, contentType);
 		} catch (RuntimeException e) {
@@ -154,7 +154,7 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, sparqlupdate, false);
 			
 			//TODO check target or datasetUrl for this
-			StoreClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, false, true);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, false, true);
 			
 			if (sparqlupdate!=null) {
 				//perform update
