@@ -1,3 +1,4 @@
+import json
 import time
 
 import yagmail
@@ -18,8 +19,12 @@ class Messenger:
     def starting_a_test(self):
         self.yag.send(to=self.main_developer, subject="Marie is starting a self-test", contents="")
 
-    def finished_a_test(self):
-        self.yag.send(to=self.main_developer, subject="Marie fininshed the self-test", contents="")
+    def finished_a_test(self, failed_questions):
+        if len(failed_questions) == 0:
+            content = 'All testing questions passed the test'
+        else:
+            content = 'The following questions failed the test <br/>' +  json.dumps(failed_questions)
+        self.yag.send(to=self.main_developer, subject="Marie fininshed the self-test", contents= content)
 
 
     def send_error_message(self, error_message):
