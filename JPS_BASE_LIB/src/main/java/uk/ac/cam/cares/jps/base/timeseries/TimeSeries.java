@@ -32,6 +32,9 @@ public class TimeSeries<T> {
         	throw new JPSRuntimeException("TimeSeries: Length of data IRI is different from provided data.");
         }
         
+        // mh807: insert Nulls if length of timesteps != length of values (?)
+        // how does postgres interpret/insert data if values series shorter than timeseries --> currently throw error
+        
         for (int i = 0; i < dataIRI.size(); i++) {
             this.values.put(dataIRI.get(i), values.get(i));
         }

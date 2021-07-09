@@ -92,6 +92,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		createDatabaseTable(create);
 		
 		// check if data already exists
+		// mh807: throwing an error prevents tests if dbTable already exists
 		for (String s : dataIRI) {
 			if(checkDataHasTimeSeries(create, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance");
