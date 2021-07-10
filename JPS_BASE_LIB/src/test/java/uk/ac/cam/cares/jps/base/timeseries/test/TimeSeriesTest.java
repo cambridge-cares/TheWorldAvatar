@@ -34,6 +34,16 @@ public class TimeSeriesTest {
 		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
 	}
 	
+	/**
+	 * Constructor tests
+	 */
+	
+	@Test (expected = JPSRuntimeException.class)
+	public void testConstructorWithoutDataIRI() {
+		// call constructor with empty DataIRI and data series ArrayLists
+		ts = new TimeSeries<Instant>(timeList, new ArrayList<>(), new ArrayList<>());
+	}
+	
 	@Test (expected = JPSRuntimeException.class)
 	public void testConstructorWithWrongDataIRIsize() {
 		// drop last data series to create mismatch between number of DataIRIs and data series
@@ -43,23 +53,25 @@ public class TimeSeriesTest {
 	
 	@Test (expected = JPSRuntimeException.class)
 	public void testConstructorWithWrongDataSeriesLength() {
-		// drop last entry of each data series to create mismatch between length of time series and data series
-		for (List l : dataToAdd) {
-			l.remove(l.size()-1);
-		}
+		// drop first entry of first data series to create mismatch between length of time series and data series
+		dataToAdd.get(0).remove(0);
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
 	}
 	
+	/**
+	 *  Method tests
+	 */
+	
 	@Test
     public void testGetTimes() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	Assert.assertEquals(ts.getTimes(), timeList);
     }
     
 	@Test
     public void testGetDataIRI() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	for (String iri : ts.getDataIRI()) {
     		Assert.assertTrue(dataIRI.contains(iri));
@@ -68,7 +80,7 @@ public class TimeSeriesTest {
     
 	@Test
     public void testGetValues() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	Assert.assertEquals(ts.getValues(dataIRI.get(0)),data1);
     	Assert.assertEquals(ts.getValues(dataIRI.get(1)),data2);
@@ -80,7 +92,7 @@ public class TimeSeriesTest {
      */
 	@Test
     public void testGetValuesAsDouble() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
     	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(2)).get(0).getClass(), Double.class);
@@ -91,11 +103,10 @@ public class TimeSeriesTest {
      */
 	@Test
     public void testGetValuesAsString() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	for (String data : dataIRI) {
     		Assert.assertEquals(ts.getValuesAsString(data).get(0).getClass(), String.class);
-    		// mh807: include test for String time series
     	}
     }
     
@@ -104,7 +115,7 @@ public class TimeSeriesTest {
      */
 	@Test
     public void testGetValuesAsInteger() {
-		// the constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(0)).get(0).getClass(), Integer.class);
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(2)).get(0).getClass(), Integer.class);

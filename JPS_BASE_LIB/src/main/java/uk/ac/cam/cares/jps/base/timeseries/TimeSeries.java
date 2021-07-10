@@ -28,13 +28,20 @@ public class TimeSeries<T> {
         this.times = times;
         this.values = new HashMap<String, List<?>>();
         
+        if (dataIRI.size() == 0) {
+        	throw new JPSRuntimeException("TimeSeries: No data IRI has been provided.");
+        }
+        
         if (dataIRI.size() != values.size()) {
         	throw new JPSRuntimeException("TimeSeries: Length of data IRI is different from provided data.");
         }
         
-        // mh807: insert Nulls if length of timesteps != length of values (?)
-        // how does postgres interpret/insert data if values series shorter than timeseries --> currently throw error
-        
+        for (List<?> v : values) {
+        	if (v.size() != times.size()) {
+        		throw new JPSRuntimeException("TimeSeries: Number of time steps does not match number of values for all series.");
+        	}
+        }
+    
         for (int i = 0; i < dataIRI.size(); i++) {
             this.values.put(dataIRI.get(i), values.get(i));
         }
