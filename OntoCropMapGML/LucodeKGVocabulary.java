@@ -23,7 +23,7 @@ import org.openrdf.model.impl.URIImpl;
 */
 public class LucodeKGVocabulary extends BigdataCoreVocabulary_v20160317 {
 
-private String[] uris = {"http://theworldavatar.com/ontology/datatype/hexagon",
+private String[] uris = {"http://www.theworldavatar.com/ontology/datatype/hexagon",
         "http://my-lat-lon-starttime-endtime-dt"};
 
 /**
