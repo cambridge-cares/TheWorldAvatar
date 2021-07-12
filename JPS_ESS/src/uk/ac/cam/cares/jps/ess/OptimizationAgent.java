@@ -20,24 +20,17 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/OptimizationAgent"})
 /** returns appropriate Battery Agent based on criteria
- * 
- * @author Laura Ong
+ * There's only one return (based on total losses, given by locateBattery)
+ * But more options should be given. 
  *
  */
 public class OptimizationAgent extends JPSAgent {
 	
-	//suggesting the optimization model used based on storage technology chosen
-	
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-		if (!validateInput(requestParams)) {
-			throw new BadRequestException("ESSOptimizationAgent: Input parameters not found.\n");
+	    if (!validateInput(requestParams)) {
+			throw new BadRequestException();
 		}
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
 		String gencoordinate = new SelectBuilder()
@@ -53,7 +46,7 @@ public class OptimizationAgent extends JPSAgent {
 		String localUrl = ScenarioHelper.cutHash(batIRI);
 		localUrl = ResourcePathConverter.convert(localUrl);
 		ResultSet resultSet = JenaHelper.queryUrl(localUrl, gencoordinate);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);System.out.println(result);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
@@ -63,14 +56,13 @@ public class OptimizationAgent extends JPSAgent {
 			}		
 		JSONObject resultofOptimization=new JSONObject();
 		resultofOptimization.put("optimization",path);
-		return resultofOptimization;
-		
-		
+		return resultofOptimization;		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
 	        String storageFormat = requestParams.getString("storage");

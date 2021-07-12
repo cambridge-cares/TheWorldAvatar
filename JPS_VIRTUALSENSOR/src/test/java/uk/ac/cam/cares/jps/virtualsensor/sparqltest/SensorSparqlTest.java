@@ -73,7 +73,7 @@ public class SensorSparqlTest extends TestCase{
 	
 	public void testAddSensorValue() {
 		String station_iri_string = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
-		SensorSparql.addSensorValue(station_iri_string,SensorSparql.CO2,30,false);
+		SensorSparql.addSensorValue(station_iri_string,"CO2",30,1);
 	}
 	
 	public void testQueryAirStationProperties() {
@@ -82,11 +82,32 @@ public class SensorSparqlTest extends TestCase{
 		result.getJSONObject(0);
 	}
 	
-	public void testQueryAllStations() {
-		SensorSparql.queryAllAirStations();
+	public void testGetNumAirStations() {
+		SensorSparql.GetNumAirStations();
 	}
 	
 	public void testGetNumWeatherStation() {
 		SensorSparql.GetNumWeatherStation();
+	}
+	
+	public void testQueryDataIRI() {
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql.queryDataIRI(station_iri, "OutsideNOConcentration");
+	}
+	
+	public void testGetNumData() {
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		String data_iri = SensorSparql.queryDataIRI(station_iri, "OutsideNOConcentration");
+		SensorSparql.GetNumData(data_iri);
+	}
+	
+	public void testGetLatestTimeStamp() {
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql.GetLatestTimeStamp(station_iri);
+	}
+	
+	public void testGetTimeSeriesConc() {
+		String station_iri = "http://www.theworldavatar.com/ontology/ontostation/OntoStation.owl#virtualsensor1";
+		SensorSparql.GetTimeSeriesConc(station_iri);
 	}
 }

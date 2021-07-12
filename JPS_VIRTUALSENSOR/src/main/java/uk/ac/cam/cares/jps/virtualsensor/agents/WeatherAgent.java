@@ -59,7 +59,7 @@ public class WeatherAgent extends JPSAgent {
 	        WeatherStation[] weatherStations = new WeatherStation[queryResult.length()];
 	        for (int i = 0; i < queryResult.length(); i++) {
 	        	weatherStations[i] = new WeatherStation();
-	        	weatherStations[i].setStationiri(queryResult.getJSONObject(i).getString("stationiri"));
+	        	weatherStations[i].setStationiri(queryResult.getJSONObject(i).getString(SensorSparql.keyAirStationIRI));
 	            weatherStations[i].setXcoord(queryResult.getJSONObject(i).getDouble("xvalue"));
 	            weatherStations[i].setYcoord(queryResult.getJSONObject(i).getDouble("yvalue"));
 	            Point stnloc = new Point();

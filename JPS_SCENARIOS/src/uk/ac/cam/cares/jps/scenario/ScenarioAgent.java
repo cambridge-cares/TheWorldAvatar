@@ -207,7 +207,6 @@ public class ScenarioAgent extends JPSAgent {
 			Http.printToResponse(result, resp);
 
 		} catch (RuntimeException e) {
-			e.printStackTrace();
 			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
 			throw e;
 		}

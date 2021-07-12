@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lan="eng">
+<head>
+    <style>
+        h1 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+        h2 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+        h3 {
+            text-align: center;
+            color: #6B6B6B;
+        }
+        body {
+            margin: auto;
+            height: 90vh;
+            width: 90vw;
+        }
+    </style>
+
+    <h1 style="font-family: Open Sans, sans-serif">
+        Zachary Harper & David Soutar - CoMo 2021
+    </h1>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.0.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+<body style="background-color:#CBD2D3;">
+    <div id='map' style='width: 100%; height: 100%;'></div>
+    <script>
+        // TO MAKE THE MAP APPEAR YOU MUST
+        // ADD YOUR ACCESS TOKEN FROM
+        // https://account.mapbox.com
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZG5sczIiLCJhIjoiY2ttcTU4dXRlMmw3aTJ2bnpvN2J6c3VibyJ9.1si8y2IihMEPNt4811PsMg';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v9', // stylesheet location
+            center: [-3, 54.25], // starting position [lng, lat]
+            zoom: 5, // starting zoom
+            pitch: 0,
+            bearing: 0,
+        });
+
+        // Loading 3D terrain
+        map.on('load', function () {
+            map.addSource('mapbox-dem', {
+                'type': 'raster-dem',
+                'url': 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                'tileSize': 512,
+                'maxzoom': 14
+            });
+
+            // This section is concerned with plotting the geojson file
+            map.addSource('cam', {
+                type: 'mbtiles',
+                data: 'data/cam.mbtiles'
+            });
+            map.addLayer({
+                'id': 'Cam-layer',
+                'type': 'circle',
+                'source': 'cam',
+                'paint':{
+                    "circle-radius":1,
+                    "circle-color": [
+                        "match", ["get", "name"],
+                        "http://theworldavatar.com/kb/ontolanduse/AC01", '#A7AB3D',
+                        "http://theworldavatar.com/kb/ontolanduse/AC03", '#FF0000',
+                        "http://theworldavatar.com/kb/ontolanduse/AC10", '#EFD45C',
+                        "http://theworldavatar.com/kb/ontolanduse/AC16", '#6C55CA',
+                        "http://theworldavatar.com/kb/ontolanduse/AC17", '#FF9300',
+                        "http://theworldavatar.com/kb/ontolanduse/AC19", '#F8DBAD',
+                        "http://theworldavatar.com/kb/ontolanduse/AC20", '#FFCEFF',
+                        "http://theworldavatar.com/kb/ontolanduse/AC32", '#DEB74E',
+                        "http://theworldavatar.com/kb/ontolanduse/AC34", '#8BFFBF',
+                        "http://theworldavatar.com/kb/ontolanduse/AC44", '#6E2400',
+                        "http://theworldavatar.com/kb/ontolanduse/AC58", '#CF6600',
+                        "http://theworldavatar.com/kb/ontolanduse/AC63", '#A7AB3D',
+                        "http://theworldavatar.com/kb/ontolanduse/AC65", '#F8DBAD',
+                        "http://theworldavatar.com/kb/ontolanduse/AC66", '#DEB74E',
+                        "http://theworldavatar.com/kb/ontolanduse/AC67", '#FFFF00',
+                        "http://theworldavatar.com/kb/ontolanduse/AC68", '#647132',
+                        "http://theworldavatar.com/kb/ontolanduse/AC69", '#A19440',
+                        "http://theworldavatar.com/kb/ontolanduse/LG03", '#A8C19F',
+                        "http://theworldavatar.com/kb/ontolanduse/LG07", '#8EFA00',
+                        "http://theworldavatar.com/kb/ontolanduse/LG08", '#73FB79',
+                        "http://theworldavatar.com/kb/ontolanduse/LG11", '#A7CE58',
+                        "http://theworldavatar.com/kb/ontolanduse/LG20", '#A8C19F',
+                        "http://theworldavatar.com/kb/ontolanduse/FA01", '#D9D9D9',
+                        "http://theworldavatar.com/kb/ontolanduse/HE02", '#BA8591',
+                        "http://theworldavatar.com/kb/ontolanduse/HEAT", '#C15EC6',
+                        "http://theworldavatar.com/kb/ontolanduse/PG01", '#00B050',
+                        "http://theworldavatar.com/kb/ontolanduse/NA01", '#5E5E5E',
+                        "http://theworldavatar.com/kb/ontolanduse/WA01", '#0432FF',
+                        "http://theworldavatar.com/kb/ontolanduse/TC01", '#945200',
+                        "http://theworldavatar.com/kb/ontolanduse/WO12", '#375623',
+                        'white'
+                        ]
+                },
+                'layout': {}
+            });
+        });
+    </script>
+</body>
+</html>

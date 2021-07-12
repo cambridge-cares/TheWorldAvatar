@@ -1,5 +1,4 @@
 import json, re, time, random
-import nltk
 
 # returns all_c_labels, all_i_labels, all_p_labels
 def further_process_labels():

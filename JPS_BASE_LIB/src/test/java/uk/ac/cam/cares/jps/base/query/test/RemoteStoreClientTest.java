@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.base.query.test;
 import static org.junit.Assert.*;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
@@ -231,6 +233,33 @@ public class RemoteStoreClientTest {
 	}
 	
 	/**
+	 * Tests if the HTTP request to run a federated SPARQL query returns the expected<p>
+	 * result. It also verifies if the mock service created for this test<p>
+	 * executes the correct method.
+	 * @throws Exception 
+	 */
+	@Test
+	public void performMechanismCountQueryTest() throws Exception{
+		RemoteKnowledgeBaseClient kbClient = mock(RemoteKnowledgeBaseClient.class);
+		JSONArray jsonArray = new JSONArray();
+		JSONObject jsonObject = new JSONObject();
+		jsonObject.put("scfEnergyValue", "-464.940687165");
+		jsonArray.put(jsonObject);
+		List<String> endpoints = new ArrayList<>();
+		String queryEndpointOntoSpeciesKB = "http://localhost:8080/blazegraph/namespace/ontospecies/sparql";
+		String queryEndpointOntoCompChemKB = "http://localhost:8080/blazegraph/namespace/ontocompchem/sparql";
+		endpoints.add(queryEndpointOntoSpeciesKB);
+		endpoints.add(queryEndpointOntoCompChemKB);
+		kbClient.setQueryEndpoint(queryEndpoint);
+		when(kbClient.executeFederatedQuery(endpoints, formFederatedQuery())).thenReturn(jsonArray);
+		JSONArray result = kbClient.executeFederatedQuery(endpoints, formFederatedQuery());
+		System.out.println("Expected federated query result      :" + jsonArray.toString()
+				+ "\n matched with the actual one :" + result);
+		assertEquals(jsonArray.toString(), result.toString());
+		verify(kbClient).executeFederatedQuery(endpoints, formFederatedQuery());
+	}
+
+	/**
 	 * Tests if the HTTP request to run a SPARQL query returns the expected<p>
 	 * result. It also verifies if the mock service created for this test<p>
 	 * executes the correct method.
@@ -238,7 +267,7 @@ public class RemoteStoreClientTest {
 	 * @throws SQLException
 	 */
 	@Test
-	public void performMechanismCountQueryTest() throws SQLException{
+	public void performFederatedQueryTest() throws SQLException{
 		RemoteStoreClient kbClient = mock(RemoteStoreClient.class);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
@@ -252,6 +281,7 @@ public class RemoteStoreClientTest {
 		assertEquals(jsonArray.toString(), result);
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
+
 	
 	/**
 	 * Test insert
@@ -382,4 +412,34 @@ public class RemoteStoreClientTest {
 			query = query.concat("DELETE DATA { <http://www.theworldavatar.com/kb/ontokin/POLIMI_H2CO_1412.owl#ArrheniusCoefficient_182161099217501> ontokin:hasTemperatureExponent \"-0.7\" }");
 			return query;
 	}
+	
+	/**
+	 * A federated query developed to eqecute against the endpoints of OntoSpecies and OntoCompChem Knowledge Bases.  
+	 * @return
+	 */
+	public static String formFederatedQuery() {
+		String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
+				+ "PREFIX gc: <http://purl.org/gc/> "
+				+ "SELECT DISTINCT ?species ?compchemspecies ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue "
+				+ "WHERE { "
+				+ "?species OntoSpecies:casRegistryID ?crid . "
+				+ "?species OntoSpecies:hasAtomicBond ?atomicBond . "
+				+ "?species OntoSpecies:hasGeometry ?geometry . "
+				+ "?species OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
+				+ "?enthalpy OntoSpecies:value ?enthalpyOfFormationValue ."
+				+ "?compchemspecies ontocompchem:hasUniqueSpecies ?species . "
+				+ "?compchemspecies gc:isCalculationOn ?scfEnergy . "
+				+ "?scfEnergy a ontocompchem:ScfEnergy . "
+				+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
+				+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
+				+ "?compchemspecies gc:isCalculationOn ?zeroEnergy . "
+				+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
+				+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
+				+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
+				+ "}";
+		
+		return query;
+	}
+
 }

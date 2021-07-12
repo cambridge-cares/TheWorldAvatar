@@ -23,18 +23,128 @@ td img {
 
 /* Horizontal rules */
 hr {
-	border-color: #dcdcdc;
-	border-width: 1px;
-	border-style: solid;
+	color: LightGrey;
 }
 
-/* ========== Common custom classes ========== */
+p {
+	font-size: 12pt;
+	color: black;
+}
+
+.footer p {
+	font-size: 10pt;
+	color: white;
+}
+
+.grey-link a {
+	color: grey;
+}
+
+/* ===== Navigation ===== */
+
+/* Container for nav menu */
+.container.grid-lg {
+    max-width: 1280px;
+	padding-right: 75px;
+	padding-left: 75px;
+}
+
+/* Height when scrolled */
+body.header-fixed.header-animated #header.scrolled {
+    height: 3rem;
+}
+body.header-fixed.header-animated #header.scrolled .navbar-section {
+    height: 3rem;
+}
+body.header-fixed.header-animated #header.scrolled .logo img, body.header-fixed.header-animated #header.scrolled .logo svg {
+    height: 52px;
+}
 
 /* Site logo in header */
 #header .logo img, #header .logo svg {
     display: inherit;
     height: 65px;
 }
+
+/* Link-free elements in nav menu */
+.linkless {
+	display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+/* Non-links in the nav menu */
+.dropmenu ul li span {
+    display: block;
+    padding: 7px 30px 7px 20px;
+    text-decoration: none;
+}
+
+/* Prevent drop down symbol */
+.dropmenu ul ul li a:before {
+    content: none !important;
+}
+
+
+/* ===== Introduction Section ===== */
+/* Introduction section of all explore pages */
+
+/* Container used for introduction image and text */
+.intro-container {
+	width: 100%;
+	display: flex;
+	justify-content: center;
+}
+.intro-container p {
+	font-size: 10pt;
+}
+.intro-container img {
+	width: 250px;
+	height: 250px;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 10%);
+}
+.intro-container img:hover {
+	box-shadow: 0 4px 8px 0 rgb(0 0 0 / 60%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+}
+
+/* Left element of introduction content (image) */
+.intro-left {
+	min-width: 300px;
+	max-width: 300px;
+	float: left;
+	margin-right: 30px;
+		
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+/* Center element of introduction content (text) */
+.intro-center {
+	float: left;
+}
+
+/* Right element of introduction content (optional image) */
+.intro-right {
+	min-width: 300px;
+	max-width: 300px;
+	float: right;
+	margin-left: 30px;
+		
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.thumb-image {
+	margin-top: 20px;
+	width: 150px;
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 10%);
+}
+.thumb-image:hover {
+    box-shadow: 0 4px 8px 0 rgb(0 0 0 / 30%), 0 6px 20px 0 rgb(0 0 0 / 40%);
+}
+
 
 /* Full width element */
 .full-width {
@@ -44,10 +154,12 @@ hr {
   left: 50% !important;
 }
 
-/* Featured images in service pages */
-.header-image {
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-	vertical-align: middle;
+/* 3/4 element */
+.three-quarter-width {
+  width: 75vw !important;
+  position: relative !important;
+  margin-left: -37.5vw !important;
+  left: 50% !important;
 }
 
 /* Custom buttons */
@@ -105,9 +217,7 @@ hr {
 .accordion.active {
 	border-radius: 6px 6px 0px 0px;
 }
-.active, .accordion:hover {
-  background-color: #dcdcdc;
-}
+
 .accordion-panel {
 	border-style: solid;
 	border-width: 0px 1px 1px 1px;

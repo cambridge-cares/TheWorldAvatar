@@ -7,13 +7,31 @@ taxonomies:
   - category
   - tag
 metadata:
-  description: 'Grav is an easy to use, yet powerful, open source flat-file CMS'
+  description: 'Our Knowledge Graph (KG) services leverage advanced agent-based operation and ontology representations, to bring automation and semantic context to machine-assisted solutions.'
 summary:
   enabled: true
   format: short
   size: 300
   delimiter: '==='
-redirects: null
+redirects:
+  /services/digital-twin/land-use: '/explore/digital-twin/land-use'
+  /services/land-use: '/explore/digital-twin/land-use'
+  /services/land_use: '/explore/digital-twin/land-use'
+  
+  /services/digital-twin/power-system: '/explore/digital-twin/power-system'
+  /services/power-system: '/explore/digital-twin/power-system'
+  
+  /services/digital-twin/gas-grid: '/explore/digital-twin/gas-grid'
+  /services/gas-grid: '/explore/digital-twin/gas-grid'
+  
+  /services/digital-twin/sustainable-goals: '/explore/digital-twin/power-system'
+  /services/sustainable-goals: '/explore/digital-twin/power-system'
+  /services/digital-twin/un_goals: '/explore/digital-twin/power-system'
+  /services/un_goals: '/explore/digital-twin/power-system'
+  
+  /chemistry_chatbot: '/explore/marie'
+  /services/search-engine: '/explore/marie'
+  /services/marie: '/explore/marie'
 routes: null
 blog:
   route: /blog

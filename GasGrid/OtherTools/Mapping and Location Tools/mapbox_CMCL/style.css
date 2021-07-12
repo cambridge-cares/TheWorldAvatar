@@ -1,0 +1,107 @@
+body {
+	overflow: hidden;
+	background-color: #191A1A;
+	padding: 0px;
+	margin: 0px;
+	width: 100%;
+	height: 100%;
+}
+
+/*
+* CSS for initial static map.
+* https://docs.mapbox.com/help/tutorials/improve-perceived-performance-with-static/
+*/
+
+.mapboxgl-popup-content {
+	text-align: center;
+	font-size: 9pt;
+	min-width: 150px;
+	max-width: 300px;
+	height: 65px;
+}
+.mapboxgl-popup-content p {
+	font-style: italic;
+	color: grey;
+}
+
+.line {
+	fill: none;
+	stroke: #199edf;
+}
+.points {
+	fill: #199edf;
+	stroke: #199edf;
+}
+.axis text {
+	color: grey;
+	font-size: 6.5pt;
+}
+.axisLabel {
+	font-size: 9pt;
+}
+
+#dataTable {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 10px;
+	font-size: 12pt;
+}
+#dataTable tr {
+	width: 50%;
+}
+#dataTable th {
+	border: 1px solid #e1e1e1;
+	font-weight: bold;
+	height: 30px;
+}
+#dataTable td {
+	border: 1px solid #e1e1e1;
+	padding: 0;
+	height: 20px;
+	font-size: 11pt;
+}
+
+#noData {
+	width: 100%;
+	height: 100%;
+	background-color:#e1e1e1;
+	display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+#noData p {
+	color: #707070;
+}
+
+#tiltShift {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+body.effectsOff #tiltShift body.effectsOff #map {
+	filter: none !important;
+	-webkit-filter: none !important;
+}
+
+#legend {
+	text-align: left;
+	height: 100px;
+	margin-left: 50px;
+	margin-right: 50px;
+	padding: 10px;
+	border: 1px solid lightgrey;
+	line-height: 24px !important;
+}
+#legend img {
+	float: left;
+	margin-left: 6px;
+	margin-right: 6px;
+}
+#legend p {
+	float: left;
+}
