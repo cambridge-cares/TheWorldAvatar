@@ -1,0 +1,22 @@
+#
+# This file lists the library requirements for the scripts that
+# will be copied into the Gas Grid Agent Image.
+#
+# At the time of writing, only requirements for the following 
+# scripts are covered:
+#
+#	- real_time_terminal_population/teminal-update.py
+#	- geoJSON_output_agent/all_offtakes_to_geojson.py
+#	- geoJSON_output_agent/all_pipes_query_to_geojson.py
+#	- geoJSON_output_agent/all_terminals_to_geojson.py
+#
+
+bs4 
+numpy
+pandas
+py4jps
+requests_html
+SPARQLWrapper
+tabulate
+tqdm
+wget

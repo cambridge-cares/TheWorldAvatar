@@ -348,8 +348,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	
 	/**
 	 * Processes and extracts the following info to send this to the 
-	 * generateDataProperty method:
+	 * callPropertyGenerateor method:
 	 * 1. Property name;</br>
+	 * 2. Target name;</br>
+	 * 3. Relation;</br>
 	 * 2. Domain, which can have multiple values; </br> 
 	 * 3. Range, which can have multiple values.
 	 * 
@@ -360,12 +362,18 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	private void generateProperty(int propertyType, String[] tokens) throws IOException, TBoxManagementException {
 		int i = 0;
 		String propertyName = "";
+		String targetName = "";
+		String relation = "";
 		String domain = "";
 		String range = "";
 		String quantifier = "";
 		for(String token: tokens){
 			if(++i==1){
 				propertyName = token;
+			} if(i==3){
+				targetName = token;
+			} if(i==4){
+				relation = token;
 			} if(i==5){
 				domain = token;
 			} if (i==6){
@@ -374,7 +382,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 				quantifier = token;
 			}
 		}
-		callPropertyGenerateor(propertyType, propertyName, domain, range, quantifier);
+		callPropertyGenerateor(propertyType, propertyName, targetName, relation, domain, range, quantifier);
 	}
 	
 	/**
@@ -390,10 +398,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 */
 	private void callPropertyGenerateor(int propertyType, String...strings) throws IOException, TBoxManagementException {
 		if(propertyType==1){
-			generateDataProperty(strings[0], strings[1], strings[2]);
+			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4]);
 		}
 		if(propertyType==2){
-			generateObjectProperty(strings[0], strings[1], strings[2], strings[3]);
+			generateObjectProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]);
 		}
 	}
 	
@@ -479,17 +487,32 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	/**
 	 * Generates an OWL data property with the name originated from the current</br>
 	 * template CSV file. If the domain(s) and range(s) are provided, it</br>
-	 * generates them as well.
+	 * generates them as well. If the target name that refer to the target</br>
+	 * property and relation are provided, it creates the relation. 
 	 * 
 	 * @param propertyName
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 */
-	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException{
-		iTBoxManagement.createOWLDataProperty(propertyName, domain, range);
+	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, TBoxManagementException{
+		iTBoxManagement.createOWLDataProperty(propertyName, targetName, relation, domain, range);
 	}
 	
-	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, TBoxManagementException{
-		iTBoxManagement.createOWLObjectProperty(propertyName, domain, range, quantifier);
+	/**
+	 * Generates an OWL object property with the name originated from the current</br>
+	 * template CSV file. If the domain(s) and range(s) are provided, it</br>
+	 * generates them as well.
+	 * 
+	 * @param propertyName
+	 * @param targetName
+	 * @param relation
+	 * @param domain
+	 * @param range
+	 * @param quantifier
+	 */
+	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, TBoxManagementException{
+		iTBoxManagement.createOWLObjectProperty(propertyName, targetName, relation, domain, range, quantifier);
 	}
  }

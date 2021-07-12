@@ -1,0 +1,19 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Message,Class,,,,,,A record of information exchanged between two agents.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+CommunicativeAct,Class,,,,,,"Describes a function or an action represented by a message. This term is defined by FIPA-ACL (SC00037) based on speech act theory which defines the functions of simply specified actions. For more information, please visit: http://www.fipa.org/specs/fipa00037/SC00037J.html",http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Request,Class,CommunicativeAct,IS-A,,,,The action with which the sender requests the receiver to perform some actions.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Agree,Class,CommunicativeAct,IS-A,,,,"The action of agreeing to perform some actions (without guaranteeing when).",http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Inform,Class,CommunicativeAct,IS-A,,,,"The action with which the sender informs the receiver that a given job request is done, likely also the results of that job request.",http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Content,Class,,,,,,The actual information exchanged between agents in a message. The receiving agent is responsible for understanding and processing the message content.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Status,Class,,,,,,Indicates the state of a message.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+Closed,Class,Status,IS-A,,,,The status that the message is already replied to and no longer active.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+WaitingForResponse,Class,Status,IS-A,,,,The status that the receiver of the message has not yet responded to the message.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasReceiver,Object Property,,,Message,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,exactly 1,A relation between a message and its targeting agent.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasSender,Object Property,,,Message,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,exactly 1,A relation between a message and the agent that created the message.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+repliesTo,Object Property,,,Message,Message,exactly 1,A relation between two messages that the later message follows up to the previous message.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasPerformative,Object Property,,,Message,CommunicativeAct,exactly 1,A relation between a message and the communicative act used to classify the message.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasContent,Object Property,,,Message,Content,exactly 1,A relation between a message and its actual content.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasStatus,Object Property,,,Message,Status,only,A relation between a message and its status.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+known,Object Property,,,Content,http://www.w3.org/2002/07/owl#Thing,only,A relation between message content and the known facts in the knowledge graph. The range of this object property usually is a list of instances.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+hasObjective,Object Property,,,Content,http://www.w3.org/2002/07/owl#Thing,only,A relation between message content and the desired output of the message request. The range of this object property usually is a list of concepts.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
+timeStamp,Data Property,,,Message UNION Status,dateTime,,An attribute that indicates the time when the message was created or when the status of a message was updated.,http://www.theworldavatar.com/ontology/ontomessage/OntoMessage.owl
