@@ -240,7 +240,7 @@ public class RemoteStoreClientTest {
 	 */
 	@Test
 	public void performMechanismCountQueryTest() throws Exception{
-		RemoteKnowledgeBaseClient kbClient = mock(RemoteKnowledgeBaseClient.class);
+		RemoteStoreClient kbClient = mock(RemoteStoreClient.class);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("scfEnergyValue", "-464.940687165");
