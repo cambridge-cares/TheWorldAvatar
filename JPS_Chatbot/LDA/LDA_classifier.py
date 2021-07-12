@@ -40,7 +40,9 @@ class LDAClassifier:
     def classify(self, question):
         question = self.lemmatization(tokenize_word(question))[0]
         bow = self.lda_model.id2word.doc2bow(question)
-        return self.lookup_topic(self.lda_model.get_document_topics(bow))
+        rst = self.lda_model.get_document_topics(bow)
+        print('LDA_classifier', rst)
+        return self.lookup_topic(rst)
 
     def lemmatization(self, texts, allowed_postags=None):
         """https://spacy.io/api/annotation"""
@@ -58,7 +60,9 @@ class LDAClassifier:
 
         if len(topics) == 4 and (round(topics[0][1], 2) == 0.25):
             # Houston, we have a problem
-            return 'ERROR002' # Error 002, no topic is identified.
+            print('ERROR002 - No topic is identified')
+            return ['wiki', 'ontokin']
+            # return 'ERROR002' # Error 002, no topic is identified.
 
         else:
             sorted_topics = sorted(topics, key=lambda tup: tup[1], reverse=True)

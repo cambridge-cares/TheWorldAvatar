@@ -14,7 +14,7 @@ from rasa.nlu.model import Interpreter
 import os
 import tarfile
 
-from UI.source.location import WIKI_MODELS_DIR
+from UI.source.location import WIKI_MODELS_DIR, AGENT_MODELS_DIR
 
 
 # 0. get the topic model result, choose which direction it goes
@@ -40,10 +40,29 @@ class CoordinateAgent:
         self.stopwords = ['all', 'the']
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
+
+        self.agent_nlu_model_directory = os.path.join(AGENT_MODELS_DIR, 'nlu')
+        self.agent_interpreter = Interpreter.load(self.agent_nlu_model_directory)
+
         self.jps_interface = Chatbot(socketio)
         self.socket = socketio
         self.logwriter = LogWriter()
         self.msg = Messenger()
+
+    def return_for_more(self, agent_id):
+        pass
+
+    def agent_query(self, question):
+        rst = self.agent_interpreter.parse(question)
+        # the result will give
+        #  - the name of the agent
+        #  - the entities
+        # TODO: Talk to Daniel about the extra parameters
+        # 2. check the requirement of the agent ... any other parameters ?
+        # 3.
+
+        print('========================= agent query =====================')
+        pprint(rst)
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
@@ -69,6 +88,7 @@ class CoordinateAgent:
         self.interpreter_parser = InterpretationParser(self.socket)
         self.interpreter_parser.interpreter = self.interpreter
         print('Loading interpreter')
+
         self.sparql_constructor = SPARQLConstructor()
         self.sparql_query = SPARQLQuery(self.socket)
         print('SPARQL Query init')
@@ -128,10 +148,13 @@ class CoordinateAgent:
         # TODO: integrate the fallback mechanism for agents
         # e.g. what is the power conversion efficiency of benzene
         # 1. will this question fail? how do you make sure the question fails? adjust the threshold of lookup
+        # 2. go to the agent model, interpret the question with the agent nlu
+
         # TODO: increase the threshold of lookup in JPS (for PCE)
         # 2. fallback to the agent channel
         #   a) You need to create the agent instances
         #   b) You need to train the model with the agent instances
+        self.agent_query(question)
         self.msg.send_failed_message(question)
         return 'Nothing'
 

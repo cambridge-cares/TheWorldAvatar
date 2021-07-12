@@ -48,6 +48,8 @@ class JPSQueryConstructor:
                 self.config = json.loads(f.read())
         else:
             self.config = {'ldf_host': 'jps-ldf:3000/marie/ldf', 'ldf_port': -1}
+
+
         print('JPSQueryConstructor 51')
         pprint(self.config)
         self.serach_interface = SearchInterface()

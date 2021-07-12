@@ -1,15 +1,10 @@
 intents:
-  - pce_agent
+  - Service__PCE_Agent.owl
   - weather_agent
 
 entities:
-  - to
-  - reaction
-  - indicator
   - species
-  - class
   - attribute
-
 
 session_config:
   session_expiration_time: 60

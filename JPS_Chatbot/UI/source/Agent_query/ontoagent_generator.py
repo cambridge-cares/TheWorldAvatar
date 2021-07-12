@@ -14,6 +14,11 @@ class OntoAgentGenerator:
         self.name = agent_name
         self.this_agent = get_ontology('http://www.theworldavatar.com/kb/agents/Service__%s.owl#' % self.name)
 
+        with self.ontoagent:
+            class hasNerLabel(DataProperty):
+                domain = [self.ontoagent.MessagePart]
+                range = [str]
+
         # check the integrity of the core classes and attributes
         pprint(self.ontoagent.Service)
         pprint(self.ontoagent.Operation)  # http://www.theworldavatar.com/kb/agents/Service__DFT.owl#
@@ -41,6 +46,7 @@ class OntoAgentGenerator:
         data_name = parameters['data_name']
         data_type = parameters['data_type']
         is_array = parameters['is_array']
+        ner_label = parameters['ner_label']
 
         # 4. create MessageContent
         message_content = self.ontoagent.MessageContent(self.generate_id('MessageContent', extra_info=data_name),
@@ -60,6 +66,7 @@ class OntoAgentGenerator:
         message_part.hasType.append(data_type)
         message_part.hasName.append(data_name)
         message_part.isArray.append(is_array)
+        message_part.hasNerLabel.append(ner_label)
         # 8. connect MessagePart to MessageContent
         message_content.hasMandatoryPart.append(message_part)
 
@@ -84,26 +91,28 @@ class OntoAgentGenerator:
         for output in outputs:
             self.attach_input_output(operation, output, 'output')
 
-
-if __name__ == '__main__':
-    agent = {
-        "http_url": "http://somewhereincmcl.com/pce",
-        "outputs": [
-            {
-                "data_name": "power conversion efficiency",
-                "data_type": "http://fake_concept_for_power_conversion_efficiency",
-                "is_array": False
-            }
-        ],
-        "inputs": [
-            {
-                "data_name": "species",
-                "data_type": "http://fake_concept_for_species",
-                "is_array": True
-            }
-        ]
-    }
-
-    og = OntoAgentGenerator('PCE_Agent')
-    og.create_instance(agent)
-    og.this_agent.save('test', format='rdfxml')
+#
+# if __name__ == '__main__':
+#     agent = {
+#         "http_url": "http://somewhereincmcl.com/pce",
+#         "outputs": [
+#             {
+#                 "data_name": "power conversion efficiency",
+#                 "data_type": "http://fake_concept_for_power_conversion_efficiency",
+#                 "is_array": False,
+#                 "ner_label": "attribute"
+#             }
+#         ],
+#         "inputs": [
+#             {
+#                 "data_name": "species",
+#                 "data_type": "http://fake_concept_for_species",
+#                 "is_array": False,
+#                 "ner_label": "species"
+#             }
+#         ]
+#     }
+#
+#     og = OntoAgentGenerator('PCE_Agent')
+#     og.create_instance(agent)
+#     og.this_agent.save('test', format='rdfxml')
