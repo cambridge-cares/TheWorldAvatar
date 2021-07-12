@@ -146,6 +146,7 @@ def createModel_EBus(storeType, localQuery, version_of_model, updateLocalOWLFile
         ###add EBus model parametor###
         uk_ebus_model_ = UK_PG.UKEbusModel(version = version_of_model)
         uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model_, ebus) 
+        print('the bus type is ',uk_ebus_model_.TYPE)
         
         if uk_ebus_model_ != None:
             pass
@@ -230,14 +231,13 @@ def initialiseEBusModelVar(EBus_Model, EBus):
         print('The first argument should be an instence of UKEbusModel')
         return None
     EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
-    
     if EBus_Model.BUS == 1:
-        EBus_Model.Type = 3
+        EBus_Model.TYPE = 3
     
     EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
     
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, False)       
+    createModel_EBus('default', False, 2019, True)       
     print('Terminated')

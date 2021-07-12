@@ -156,9 +156,10 @@ def addThirdLevelNode(graph):
 def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):
     if localQuery == False and remoteEndPoint != None:
         if nodeName == "UKPowerPlant2019": 
-            nodeList = query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery)
+            nodeList = query_topNode.queryPowerPlantNodeURL(remoteEndPoint, None, localQuery)           
         elif nodeName == "UKEnergyConsumption2017": 
-            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery)       
+            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, None, localQuery)    
+        print(nodeList)
     elif SleepycatPath != None and localQuery == True:   
         if nodeName == "UKPowerPlant2019": 
             nodeList = list(query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery))
@@ -235,8 +236,9 @@ def generateTopNodeGraph(storeType, localQuery, updateLocalOWLFile = True):
     g = Graph(store = store, identifier = URIRef(baseURI)) # graph(store='default', identifier)
     g = addTopAndSecondLevelNode(g)
     g = addThirdLevelNode(g)
-    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat, powerPlant_Endpoint)
+    
     g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKEnergyConsumption2017", localQuery, topoAndConsumpPath_Sleepycat, energyConsumption_Endpoint)
+    g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat, powerPlant_Endpoint)
     g = addFourthLevelNode_gridModel(g)    
     g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
     g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
@@ -265,5 +267,5 @@ def generateTopNodeGraph(storeType, localQuery, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-   generateTopNodeGraph('default', False, False)
+   generateTopNodeGraph('default', False, True)
    

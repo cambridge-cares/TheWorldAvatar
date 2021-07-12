@@ -9,7 +9,7 @@ import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -120,7 +120,8 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
         planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
         energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
         gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
-        primaryfuel = ''.join(primaryfuelArrays[counter]).strip('\n').strip(' ')
+        primaryfueltype = ''.join(primaryfuelArrays[counter][0]).strip('\n').strip(' ')
+        primaryfuellabel = ''.join(primaryfuelArrays[counter][1]).strip('\n').strip(' ')
         designcapacity = ''.join(designcapacityArrays[counter]).strip('\n').strip(' ')
         builtyear = ''.join(builtYearArrays[counter]).strip('\n').strip(' ')
         owner = ''.join(ownerArrays[counter]).strip('\n').strip(' ')
@@ -148,6 +149,7 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
+            graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
             
             # Add connection between its father node
             graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
@@ -159,13 +161,15 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
             graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), URIRef(ontoecape_technical_system.realizes.iri),\
                         URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
             
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
+            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))                
             graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri),\
                         URIRef(t_box.ontoeip_powerplant + gentech)))
+                
             graph.add((URIRef(t_box.ontoeip_powerplant + gentech), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
             graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.consumesPrimaryFuel.iri),\
-                        URIRef(t_box.ontoeip_powerplant + primaryfuel)))
-            graph.add((URIRef(t_box.ontoeip_powerplant + primaryfuel), RDF.type, URIRef(ontoeip_powerplant.PrimaryFuel.iri)))
+                        URIRef(t_box.ontoeip_powerplant + primaryfueltype)))
+            graph.add((URIRef(t_box.ontoeip_powerplant + primaryfueltype), RDF.type, URIRef(ontoeip_powerplant.PrimaryFuel.iri)))
+            graph.add((URIRef(t_box.ontoeip_powerplant + primaryfueltype), RDFS.label, Literal(str(primaryfuellabel))))
             
             # Add Functional Aspect  
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasFunctionalAspect.iri), URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
@@ -200,15 +204,15 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
             graph.add((URIRef(pp_root_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))
             graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
-                       URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
                        URIRef(pp_namespace + ukpp.LongitudeKey + plantname)))
+            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
+                       URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
             graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))  
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
             graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
+            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
+            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
             graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
                        URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname)))
             graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
@@ -250,5 +254,5 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-    addUKPowerPlantTriples('default', 2019, False)
+    addUKPowerPlantTriples('default', 2019, True)
     print('terminated')

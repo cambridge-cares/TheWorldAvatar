@@ -96,7 +96,7 @@ ontopowsys_PowSysPerformance    = owlready2.get_ontology(t_box.ontopowsys_PowSys
 ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
 
 """Data Array"""
-modelFactorArrays = readFile(ukmf.CO2EmissionFactor)
+modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
 """User specified folder path"""
 filepath = None

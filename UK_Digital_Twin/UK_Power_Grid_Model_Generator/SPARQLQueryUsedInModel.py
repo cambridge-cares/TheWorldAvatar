@@ -352,6 +352,30 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
             return None    
     return ELineTopoInfo 
 
+def testLabel():
+    qstr = """
+    PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> 
+    PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> 
+    PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> 
+    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> 
+    PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+    SELECT DISTINCT ?Model_EGen ?b_value 
+    WHERE
+    {
+    ?Model_EGen   j5:hasModelVariable ?b .
+	?b  a  j3:genCostcn-2  .
+	?b  rdfs:label  "Parameter_b"  .
+	?b  j2:hasValue ?v_bcostn2 .
+	?v_bcostn2   j2:numericalValue ?b_value .
+    }
+    
+    """
+    res = json.loads(performQuery('ukpowergridmodel', qstr))
+    print(len(res))
+    print(res)
+    return
+
 if __name__ == '__main__': 
     # sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     # sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
@@ -365,8 +389,9 @@ if __name__ == '__main__':
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
-    res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
-    print(res)
+    # res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
+    # print(res)
     # for r in res:
     #     print(res[7])
+    testLabel()
 

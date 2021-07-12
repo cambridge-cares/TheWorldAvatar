@@ -9,7 +9,7 @@ class ModelFactor:
     
     """ File path """
     DataPath = '../Data files/CO2FactorAndCostFactor/'
-    CO2EmissionFactor = DataPath + 'CO2EmissionFactorAndCostFactor.csv' 
+    CO2EmissionFactorAndCostFactor = DataPath + 'CO2EmissionFactorAndCostFactor.csv' 
     
     """Source Data"""
     __ModelFactor = DataPath + "-Node-24h-Tax-Auto - Template.xlsx"

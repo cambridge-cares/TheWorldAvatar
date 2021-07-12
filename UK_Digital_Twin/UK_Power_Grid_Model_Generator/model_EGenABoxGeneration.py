@@ -10,7 +10,7 @@ import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -186,7 +186,9 @@ def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile
                              t_box.ontopowsys_PowerSystemModel + 'genCostcn-2', ontocape_mathematical_model.Parameter.iri) # undified unit
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_costFunc.genCost_cKey, uk_egen_costFunc.c, t_box.ontocape_derived_SI_units + 'GBP/MWh', \
                              t_box.ontopowsys_PowerSystemModel + 'genCostcn-2', ontocape_mathematical_model.Parameter.iri) # undified unit
-            
+        g.add((URIRef(namespace + uk_egen_costFunc.genCost_aKey + node_locator), RDFS.label, Literal('Parameter_a')))   
+        g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
+        g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
         ###add EGen model parametor###
         uk_egen_model_ = UK_PG.UKEGenModel(version = version_of_model)
         uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, egen)

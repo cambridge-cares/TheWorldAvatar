@@ -21,13 +21,13 @@ from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 
 if __name__ == '__main__': 
-    # DUKES_Version = 2019
-    DUKES_Version = int(input('Specify DUKES Data Version: '))
-    addUKPowerPlantTriples('default', DUKES_Version, False)
+    # # DUKES_Version = 2019
+    # DUKES_Version = int(input('Specify DUKES Data Version: '))
+    # addUKPowerPlantTriples('default', DUKES_Version, True)
     
-    # ElectricityConsumption_Version = 2017
-    ElectricityConsumption_Version = int(input('Specify Electricity Consumption Data Version: '))
-    addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, False)
+    # # ElectricityConsumption_Version = 2017
+    # ElectricityConsumption_Version = int(input('Specify Electricity Consumption Data Version: '))
+    # addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, True)
     
     ## When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
     # UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
@@ -40,15 +40,15 @@ if __name__ == '__main__':
     # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
     
     
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
-    createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, False)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
+    # createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, True)
     
-    createModel_EGen('default', False, 2019, False)
-    createModel_EBus('default', False, 2019, False)   
-    createModel_ELine('default', False, 10, 14, 2019, False) 
+    # createModel_EGen('default', False, 2019, True)
+    # createModel_EBus('default', False, 2019, True)   
+    createModel_ELine('default', False, 10, 14, 2019, True) 
     
     ## Generate the top node of UK digital twin
-    generateTopNodeGraph('default', False, False)
+    # generateTopNodeGraph('default', False, True)
        
     print('terminated')
