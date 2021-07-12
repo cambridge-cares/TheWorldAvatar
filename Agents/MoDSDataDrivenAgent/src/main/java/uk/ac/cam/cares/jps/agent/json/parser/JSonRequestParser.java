@@ -79,19 +79,19 @@ public class JSonRequestParser {
 	}
 	
 	public static String getTopNForRxns(String jsonString) throws JsonProcessingException, IOException {
-		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("dataDriven").path("topN");
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensana").path("topN");
 		
 		return locateNode.asText();
 	}
 	
 	public static String getRelPerturb(String jsonString) throws JsonProcessingException, IOException {
-		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("dataDriven").path("relPerturbation");
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensana").path("relPerturbation");
 		
 		return locateNode.asText();
 	}
 	
 	public static String getMaxOrAvg(String jsonString) throws JsonProcessingException, IOException {
-		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("dataDriven").path("maxORavg");
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensana").path("maxORavg");
 		
 		return locateNode.asText();
 	}
