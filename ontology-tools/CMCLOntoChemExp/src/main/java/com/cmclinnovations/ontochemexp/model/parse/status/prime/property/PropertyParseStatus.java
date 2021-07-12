@@ -8,6 +8,11 @@ public class PropertyParseStatus {
 	boolean units = false;
 	boolean description = false;
 	boolean derivedPropertyExists = false;
+	boolean sourceType = false;
+	boolean reference = false;
+	boolean kind = false;
+	boolean bound = false;
+	boolean method = false;
 
 	public boolean isProperty() {
 		return property;
@@ -63,5 +68,53 @@ public class PropertyParseStatus {
 	
 	public void setDerivedPropertyExists(boolean derivedPropertyExists) {
 		this.derivedPropertyExists = derivedPropertyExists;
+	}
+
+	public boolean isId() {
+		return id;
+	}
+
+	public void setId(boolean id) {
+		this.id = id;
+	}
+
+	public boolean isSourceType() {
+		return sourceType;
+	}
+
+	public void setSourceType(boolean sourceType) {
+		this.sourceType = sourceType;
+	}
+
+	public boolean isReference() {
+		return reference;
+	}
+
+	public void setReference(boolean reference) {
+		this.reference = reference;
+	}
+
+	public boolean isKind() {
+		return kind;
+	}
+
+	public void setKind(boolean kind) {
+		this.kind = kind;
+	}
+
+	public boolean isBound() {
+		return bound;
+	}
+
+	public void setBound(boolean bound) {
+		this.bound = bound;
+	}
+
+	public boolean isMethod() {
+		return method;
+	}
+
+	public void setMethod(boolean method) {
+		this.method = method;
 	}
 }

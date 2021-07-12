@@ -1,16 +1,12 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Query;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
-import java.util.logging.Logger;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -22,8 +18,6 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class KnowledgeBaseClient{
-	
-	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 		
 	/**
 	 * Default constructor

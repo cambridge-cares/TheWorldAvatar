@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
@@ -23,6 +24,14 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
+import org.eclipse.rdf4j.federated.FedXFactory;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -630,6 +639,67 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	private String getUpdateEndpointConnectionParameter(){
 		return RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT
 				.concat("=");
+	}
+	
+	/**
+	 * If a list of SPARQL endpoints and a query are passed to this method, it evaluates<br>
+	 * the query against all the endpoints and returns the result in JSON format.<br>
+	 * <br>
+	 * Endpoints should be provided as shown in the following two examples:<br>
+	 * 1. OntoSpecies KB endpoint: http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql
+	 * 2. OntoCompChem KB endpoint: http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql
+	 * 
+	 * @param endpoints a list of endpoints.
+	 * @param query a SPARQL query.
+	 * @return
+	 * @throws Exception
+	 */
+	public JSONArray executeFederatedQuery(List<String> endpoints, String query) throws Exception {
+		// Declares a JSONArray and JSONObject to produce the query output in JSON format. 
+		JSONArray json = new JSONArray();
+		JSONObject obj;
+		BindingSet bSet;
+		// Creates a federation with all provided endpoints.
+		Repository repository = FedXFactory.createSparqlFederation(endpoints);
+		try {
+			// Establishes a connection with all the endpoints.
+			RepositoryConnection conn = repository.getConnection();
+			// Prepares the query for execution against all the endpoints.
+			TupleQuery tq = conn.prepareTupleQuery(query);
+			try {
+				// Evaluates the query against all the endpoints.
+				TupleQueryResult tqRes = tq.evaluate();
+				// Processes the result 
+				while (tqRes.hasNext()) {
+					obj = new JSONObject();
+					bSet = tqRes.next();
+					for (String bindingName : bSet.getBindingNames()) {
+						// If the value of a variable provided in the SPARQL query is found
+						// within double quotes, they are removed as the JSON Object also adds
+						// double quotes to the value.
+						if (bSet.getValue(bindingName).toString().startsWith("\"")
+								&& bSet.getValue(bindingName).toString().endsWith("\"")) {
+							obj.put(bindingName, bSet.getValue(bindingName).toString().substring(1,
+									bSet.getValue(bindingName).toString().length() - 1));
+						} 
+						// A value found without double quotes is codified as a JSON Object
+					    // without modification.
+						else { 
+							obj.put(bindingName, bSet.getValue(bindingName).toString());
+
+						}
+					}
+					json.put(obj);
+				}
+			} catch (TupleQueryResultHandlerException e) {
+				e.printStackTrace();
+			}
+			conn.close();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		repository.shutDown();
+		return json;
 	}
 	
 	/**

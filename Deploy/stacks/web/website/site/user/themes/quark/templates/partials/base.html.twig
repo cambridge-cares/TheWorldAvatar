@@ -9,6 +9,8 @@
     <meta charset="utf-8" />
     <title>{% if page.title %}{{ page.title|e('html') }} {% endif %}</title>
 
+    {% include 'partials/gtm-header.html.twig' %}
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% include 'partials/metadata.html.twig' %}
@@ -36,8 +38,10 @@
     {{ assets.css()|raw }}
     {{ assets.js()|raw }}
 {% endblock %}
+
 </head>
 <body id="top" class="{% block body_classes %}{{ body_classes }}{% endblock %}">
+    {% include 'partials/gtm-noscript.html.twig' %}
     <div id="page-wrapper">
     {% block header %}
         <section id="header" class="section">
@@ -57,8 +61,7 @@
                         {% if config.plugins.login.enabled and grav.user.username %}
                             <span class="login-status-wrapper"><i class="fa fa-user"></i> {% include 'partials/login-status.html.twig' %}</span>
                         {% endif %}
-
-                    </section>
+						                    </section>
                 </nav>
             </section>
         </section>
