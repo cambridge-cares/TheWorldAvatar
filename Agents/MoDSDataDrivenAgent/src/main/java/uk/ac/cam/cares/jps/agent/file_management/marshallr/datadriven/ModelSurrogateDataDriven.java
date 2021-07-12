@@ -86,11 +86,6 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 
 		// create ontology kg instance for query
 		OntoKinKG ontoKinKG = new OntoKinKG(modsDataDrivenAgentProperty);
-		// query active parameters
-		//LinkedHashMap<String, String> activeParameters = ontoKinKG.queryAllReactions(mechanismIRI);
-		//LinkedHashMap<String, String> activeParameters = null;
-		// collect experiment information
-		//List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> headers = new ArrayList<>();
 		List<List<String>> dataCollection = new ArrayList<>();
 
@@ -124,54 +119,12 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// Create 'MODS_SIM_INITFILE__cases.csv' file
 		averageOutputVars = createCasesFile(csvArrayOutput, folderInitialPath);
 	    
-		// ----------------   Create the 'MoDS_inputs' file in the 'Work_dir' directory ------------------------------------------------	
-	    //setUpMoDS();
-	    
-	    //createModsInputsFile(csvArrayInput, folderWorkingDirPath);
+		
+		modelFiles.add("MODS_SIM_INITFILE__cases.csv");
+		modelFiles.add("MODS_SIM_INITFILE__AIVarInitReadFile.csv");
 
-
-
-
-//		for (String experiment : experimentIRI) {
-//			OntoChemExpKG ocekg = new OntoChemExpKG(modsDataDrivenAgentProperty);
-//			DataTable dataTable = ocekg.formatFlameSpeedExpDataTable(experiment);
-//			headers.add(dataTable.getTableHeader());
-//			dataCollection.addAll(dataTable.getTableData());
-//		}
-//		for (int i = 1; i < headers.size(); i++) {
-//			if (!headers.get(i).equals(headers.get(i - 1))) {
-//				logger.error("The headers of all experimental data tables should be consistent.");
-//			}
-//		}
-//		// form exp data csv file
-//		List<String[]> dataLines;
-//		dataLines = new ArrayList<>();
-//		dataLines.add(headers.get(0).toArray(new String[0]));
 		List<String> caseList = new ArrayList<>();
 		caseList.add("CaseGroup_Case");
-//		int i = 0;
-//		for (List<String> dataSingleLine : dataCollection) {
-//			dataLines.add(dataSingleLine.toArray(new String[0]));
-//			// generate the list of cases
-//			caseList.add(Property.MODEL_CANTERA.getPropertyName().concat("_case_" + i));
-//			i += 1;
-//		}
-
-		// File expDataCSV = new
-		// File(folderTemporaryPath.concat(FRONTSLASH).concat(Property.MODEL_CANTERA.getPropertyName().concat(UNDERSCORE+FILE_MODEL_EXPDATA_SUFFIX)));
-
-
-		// obtain passive parameters and output responses from header of exp data csv
-		// file
-//		List<String> passiveParameters = new ArrayList<>();
-//		List<String> outputResponses = new ArrayList<>();
-//		for (String param : headers.get(0)) {
-//			if (param.toLowerCase().contains("flame") && param.toLowerCase().contains("speed")) {
-//				outputResponses.add(param);
-//			} else if (param.toLowerCase().contains("phi")) {
-//				passiveParameters.add(param);
-//			}
-//		}
 
 		// create model instance
 		ExecutableModel modsSurrogate = new ExecutableModel();
@@ -197,9 +150,6 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		
 		
 		// set up model exp files
-//		List<String> expFiles = new ArrayList<>();
-//		expFiles.add(expDataCSV.getName());
-//		expFiles.add(FILE_MECHANISM);
 		modsSurrogate.setExpFiles(expFiles);
 
 		// set up model case names
@@ -280,10 +230,9 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// create files in the initial folder
 		List<String> initialFiles = new ArrayList<>();
 		String initialActiveFile = createActiveParametersFile(activeParameterBaseMechanismFilePath, mech);
-		String initialPassiveFile = createPassiveParametersAndOutputsFile(passiveParametersAndOutputsFilePath, expData,
-				caseNames);
+		//String initialPassiveFile = createPassiveParametersAndOutputsFile(passiveParametersAndOutputsFilePath, expData, caseNames);
 		initialFiles.add(initialActiveFile);
-		initialFiles.add(initialPassiveFile);
+		//initialFiles.add(initialPassiveFile);
 
 		logger.info("Folder /Initial required by " + modelName + " is prepared. ");
 
@@ -685,13 +634,13 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, LinkedHashMap<String, String>> models = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 		LinkedHashMap<String, String> model = new LinkedHashMap<String, String>();
 		model.put("fnames_for_dependent_models", "");
-		model.put("arg", "");
+		model.put("args", "");
 		model.put("executable_name", "");
 		model.put("model_type", "Executable");
 		model.put("working_directory", "");
 
 		models.put(modelName, model);
-		
+
 		collectModels(models);
 		
 		// set up cases
@@ -699,38 +648,43 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		List<String> caseModel = new ArrayList<>();
 		caseModel.add(modelName);
 		cases.put("CaseGroup_Case", caseModel);
-		//cases.put(caseNames, caseModel);
-		// CaseGroup_Case
-//		for (String caseName : caseNames) {
-//			cases.put(caseName, caseModel);
-//		}
+
 		collectCases(cases);
 		
 		// set up files
-		LinkedHashMap<String, LinkedHashMap<String, String>> files = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 		for (String modelFile : modelFiles) {
+
+			LinkedHashMap<String, LinkedHashMap<String, String>> files = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> file = new LinkedHashMap<String, String>();
-			if (modelFile.endsWith(".xml")) {
-				file.put("file_type", "XML");
-				if (modelFile.contains(FILE_KINETICS_INPUTPARAMS)) {
-					file.put("XML_namespace", "http://como.cheng.cam.ac.uk/srm");
-				}
-			} else if (modelFile.endsWith(".csv")) {
-				file.put("file_type", "DSV");
-				file.put("delimiter", ",");
-			}
+	
+			file.put("file_type", "DSV");
+			file.put("delimiter", ",");
+				
 			files.put(modelFile, file);
+			
+			collectFiles(files);
+		
 		}
-		collectFiles(files);
+		
+//		// set up files
+//		LinkedHashMap<String, LinkedHashMap<String, String>> files = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+//		for (String modelFile : modelFiles) {
+//			LinkedHashMap<String, String> file = new LinkedHashMap<String, String>();
+//			if (modelFile.endsWith(".xml")) {
+//				file.put("file_type", "XML");
+//				if (modelFile.contains(FILE_KINETICS_INPUTPARAMS)) {
+//					file.put("XML_namespace", "http://como.cheng.cam.ac.uk/srm");
+//				}
+//			} else if (modelFile.endsWith(".csv")) {
+//				file.put("file_type", "DSV");
+//				file.put("delimiter", ",");
+//			}
+//			files.put(modelFile, file);
+//		}
+//		collectFiles(files);
 		
 		// set up parameters
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row
-//		String row = new String();
-//		for (int j = 0; j < caseNames.size(); j++) {
-//			row = row.concat(";"+j);
-//		}
-//		row = row.substring(1);
 		
 		// active parameters
 		for (String i : activeParameters.keySet()) {
@@ -759,42 +713,7 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			
 			parameters.add(param);
 		}
-//		// passive parameters
-//		for (String i : passiveParameters) {
-//			Parameter param = new Parameter();
-//			param.setType("passive_input");
-//			param.setName(i);
-//			param.setSubtype("subtype_"+i);
-//			param.setCaseDetailSep(";");
-//			param.setPreserveWhiteSpace("true");
-//			param.setCaseNamesList(caseNames);
-//			param.setModelList(caseModel);
-//			
-//			String path = new String();
-//			if (i.contains("Temp")) {
-//				path = "//srm_inputs/property_group[@ref='Reactor']/property[@ref='IniTemp']/value";
-//			} else if (i.contains("Pres")) {
-//				path = "//srm_inputs/property_group[@ref='Reactor']/property[@ref='IniPres']/value";
-//			} else {
-//				path = "//srm_inputs/mixtures[@type='composition']/composition[@name='"+NAME_OXIDISER+"']/value[@species='"+i+"']";
-//			}
-//			
-//			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
-//			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
-//			initialRead.put("column", i);
-//			initialRead.put("row", row);
-//			initialRead.put("read_function", "Get_DSV_double");
-//			
-//			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
-//			workingWrite.put("path", path);
-//			workingWrite.put("write_function", "Set_XML_double");
-//			
-//			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_PASSIVE_SUFFIX, initialRead);
-//			fileHash.put("workingWrite "+FILE_KINETICS_INPUTPARAMS, workingWrite);
-//			
-//			param.setFileHash(fileHash);
-//			parameters.add(param);
-//		}
+
 		// output response
 		for (String i : outputResponses) {
 			Parameter param = new Parameter();
