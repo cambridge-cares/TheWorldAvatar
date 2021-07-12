@@ -41,28 +41,28 @@ class CoordinateAgent:
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
 
-        self.agent_nlu_model_directory = os.path.join(AGENT_MODELS_DIR, 'nlu')
-        self.agent_interpreter = Interpreter.load(self.agent_nlu_model_directory)
+        # self.agent_nlu_model_directory = os.path.join(AGENT_MODELS_DIR, 'nlu')
+        # self.agent_interpreter = Interpreter.load(self.agent_nlu_model_directory)
 
         self.jps_interface = Chatbot(socketio)
         self.socket = socketio
         self.logwriter = LogWriter()
         self.msg = Messenger()
 
-    def return_for_more(self, agent_id):
-        pass
-
-    def agent_query(self, question):
-        rst = self.agent_interpreter.parse(question)
-        # the result will give
-        #  - the name of the agent
-        #  - the entities
-        # TODO: Talk to Daniel about the extra parameters
-        # 2. check the requirement of the agent ... any other parameters ?
-        # 3.
-
-        print('========================= agent query =====================')
-        pprint(rst)
+    # def return_for_more(self, agent_id):
+    #     pass
+    #
+    # def agent_query(self, question):
+    #     rst = self.agent_interpreter.parse(question)
+    #     # the result will give
+    #     #  - the name of the agent
+    #     #  - the entities
+    #     # TODO: Talk to Daniel about the extra parameters
+    #     # 2. check the requirement of the agent ... any other parameters ?
+    #     # 3.
+    #
+    #     print('========================= agent query =====================')
+    #     pprint(rst)
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
@@ -154,7 +154,7 @@ class CoordinateAgent:
         # 2. fallback to the agent channel
         #   a) You need to create the agent instances
         #   b) You need to train the model with the agent instances
-        self.agent_query(question)
+        # self.agent_query(question)
         self.msg.send_failed_message(question)
         return 'Nothing'
 
