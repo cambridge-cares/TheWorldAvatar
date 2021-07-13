@@ -16,10 +16,12 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -186,8 +188,8 @@ public class DerivedQuantitySparql{
 		Variable numDerived = SparqlBuilder.var(queryKey);
 		Variable derived = query.var();
 		
-		GraphPattern queryPattern = GraphPatterns.and(derived.isA(DerivedQuantity),
-				derived.isA(DerivedQuantityWithTimeSeries));
+		GraphPattern queryPattern = GraphPatterns.and(derived.isA(DerivedQuantity).optional(),
+				derived.isA(DerivedQuantityWithTimeSeries).optional());
 		
 		Assignment count = Expressions.count(derived).as(numDerived);
 		
@@ -334,6 +336,42 @@ public class DerivedQuantitySparql{
 		}
 		
 		return inputs;
+	}
+	
+	/**
+	 * in addition to the inputs, this includes the derived quantity instances that the input is part of
+	 * @param kbClient
+	 * @param derivedQuantity
+	 */
+	public static List<String> getInputsAndDerived(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
+		String inputQueryKey = "input";
+		String derivedQueryKey = "derived";
+		
+		Variable input = SparqlBuilder.var(inputQueryKey);
+		Variable derived = SparqlBuilder.var(derivedQueryKey);
+		
+		GraphPattern inputPattern = iri(derivedQuantity).has(isDerivedFrom,input);
+		// some inputs may be a part of a derived instance
+		GraphPattern derivedPattern = input.has(belongsTo, derived).optional();
+		
+		SelectQuery query = Queries.SELECT();
+		
+		query.prefix(p_derived).where(inputPattern,derivedPattern).select(input,derived);
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		
+		List<String> inputsAndDerived = new ArrayList<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			inputsAndDerived.add(queryResult.getJSONObject(i).getString(inputQueryKey));
+			
+			// some inputs may be a derived quantity
+			String derivedIRI = queryResult.getJSONObject(i).optString(derivedQueryKey);
+			if (derivedIRI.length() > 0) {
+				inputsAndDerived.add(derivedIRI);
+			}
+		}
+		
+		return inputsAndDerived;
 	}
 	
 	public static long getTimestamp(KnowledgeBaseClientInterface kbClient, String instance) {
