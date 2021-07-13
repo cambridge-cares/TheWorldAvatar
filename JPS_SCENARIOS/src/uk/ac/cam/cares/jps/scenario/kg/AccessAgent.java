@@ -22,7 +22,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
 
-@WebServlet(urlPatterns = {"/kb/*"})
+//@WebServlet(urlPatterns = {"/kb/*"})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
