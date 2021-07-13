@@ -23,6 +23,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
@@ -381,16 +382,33 @@ public class DerivedQuantitySparql{
 		
 		Iri instanceIRI = iri(instance);
 		
+		// here we try to match two triple patterns
+		// type 1: this may be a derived instance or an input with a time stamp directly attached to it
+		// type 2: this is an input that is part of a derived quantity
+		// instances with timestamps directly attached
 		Iri[] predicates = {hasTime,numericPosition};
-		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, instanceIRI, time);
+		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, instanceIRI, time).optional();
+
+		// instances that do not have time stamp directly attached, but belongs to a derived instance
+		Iri[] predicates2 = {belongsTo, hasTime, numericPosition};
+		GraphPattern queryPattern2 = getQueryGraphPattern(query, predicates2, null, instanceIRI, time).optional();
 		
-		query.prefix(p_time).where(queryPattern).select(time);
+		query.prefix(p_time,p_derived).where(queryPattern, queryPattern2).select(time);
 		
-		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 		
-		long timestamp = kbClient.executeQuery().getJSONObject(0).getLong(queryKey);
+		if (queryResult.length() > 1) {
+			throw new JPSRuntimeException("DerivedQuantitySparql: More than 1 time instance associated with <" +instance + ">");
+		}
 		
-	    return timestamp;
+		try {
+			long timestamp = queryResult.getJSONObject(0).getLong(queryKey);
+			return timestamp;
+		}
+		catch (JSONException e) {
+			throw new JPSRuntimeException("No timestamp for <" + instance + ">. This is probably an input and you should consider "
+					+ "adding a timestamp using addTimeInstance", e);
+		}
 	}
 	
 	/**
