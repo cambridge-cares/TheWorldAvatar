@@ -13,7 +13,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testConstructor() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'timeColumn' of the client to check its value
         Field timeColumnField = client.getClass().getDeclaredField("timeColumn");
         timeColumnField.setAccessible(true);
@@ -24,7 +24,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testPrivateDatabaseRelatedFields() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
         Field tableNameField = client.getClass().getDeclaredField("dbTableName");
         tableNameField.setAccessible(true);
@@ -58,7 +58,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testSetKBClient() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'kbClient' of the client to check its value
         Field kbClientField = client.getClass().getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
@@ -71,7 +71,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testSetTimeUnit() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'timeUnit' of the client to check its value
         Field timeUnitField = client.getClass().getDeclaredField("timeUnit");
         timeUnitField.setAccessible(true);
@@ -83,7 +83,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testSetRdbURL() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbURL' of the client to check its value
         Field rdbURLField = client.getClass().getDeclaredField("rdbURL");
         rdbURLField.setAccessible(true);
@@ -95,7 +95,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testSetRdbUser() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbUser' of the client to check its value
         Field rdbUserField = client.getClass().getDeclaredField("rdbUser");
         rdbUserField.setAccessible(true);
@@ -107,7 +107,7 @@ public class TimeSeriesRDBClientTest {
 
     @Test
     public void testSetRdbPassword() throws NoSuchFieldException, IllegalAccessException {
-        TimeSeriesRDBClient client = new TimeSeriesRDBClient(Instant.class);
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbPassword' of the client to check its value
         Field rdbPasswordField = client.getClass().getDeclaredField("rdbPassword");
         rdbPasswordField.setAccessible(true);
