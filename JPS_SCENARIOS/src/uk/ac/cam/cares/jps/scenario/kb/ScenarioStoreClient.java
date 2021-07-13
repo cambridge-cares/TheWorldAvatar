@@ -6,7 +6,7 @@ import org.apache.jena.riot.Lang;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 
 public class ScenarioStoreClient {
@@ -53,7 +53,7 @@ public class ScenarioStoreClient {
 		logger.info("put resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		String filePath = getFilePath(resourceUrl);
 		
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient();
+		FileBasedStoreClient kbClient = new FileBasedStoreClient();
 		kbClient.setAutoWrite(false);
 		kbClient.insert(null, content, contentType); //Put to default graph
 		kbClient.writeToFile(null, filePath, Lang.RDFXML);
@@ -68,7 +68,7 @@ public class ScenarioStoreClient {
 		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		String filePath = getFilePath(resourceUrl);
 		
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
 		kbClient.executeUpdate(sparql);
 	}
 
@@ -82,7 +82,7 @@ public class ScenarioStoreClient {
 		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		String filePath = getFilePath(resourceUrl);
 
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath); //load to default graph
+		FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath); //load to default graph
 		String result = kbClient.get(null, accept);
 		return result;
 	}
@@ -97,7 +97,7 @@ public class ScenarioStoreClient {
 		logger.info("query resourceUrl=" + resourceUrl + " (kb url=" + scenarioUrl + ")");
 		String filePath = getFilePath(resourceUrl);
 
-		FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
 		String result = kbClient.execute(sparql);
 		return result;
 	}

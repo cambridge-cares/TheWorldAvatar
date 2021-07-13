@@ -7,13 +7,13 @@ import org.json.JSONArray;
 
 
 /**
- * This interface is to be implemented by knowledge base clients 
+ * This interface is to be implemented by store clients 
  * that establish a connection and perform SPARQL queries and updates
  * on remote triple stores, owl files etc. 
  *  
  * @author Casper Lindberg
  */
-public interface KnowledgeBaseClientInterface {
+public interface StoreClientInterface {
 
 	/**
 	 * Get rdf content from store.

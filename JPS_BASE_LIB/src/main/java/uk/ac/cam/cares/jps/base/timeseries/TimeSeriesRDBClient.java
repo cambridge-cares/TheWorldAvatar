@@ -25,7 +25,7 @@ import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 /**
@@ -38,7 +38,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
-	private KnowledgeBaseClientInterface kbClient = null; 
+	private StoreClientInterface kbClient = null; 
 	// url and credentials for the relational database
 	private String rdbURL = null; 
 	private String rdbUser = null;
@@ -61,7 +61,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
     }
     
-	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
+	public void setKBClient(StoreClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
 	public void setTimeUnit(String timeUnit) {

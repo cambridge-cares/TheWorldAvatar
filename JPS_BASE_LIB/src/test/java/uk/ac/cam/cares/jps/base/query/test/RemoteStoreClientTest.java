@@ -22,17 +22,17 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * This class covers both unit tests and regression tests on KnowledgeBaseClient,<p>
+ * This class covers both unit tests and regression tests on RemoteStoreClient,<p>
  * which is designed to perform query and update operations on virtually any<p>
  * SPARQL Endpoints.
  * 
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClientTest {
+public class RemoteStoreClientTest {
 
 	String queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 	String updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
@@ -40,7 +40,7 @@ public class RemoteKnowledgeBaseClientTest {
 	String password = "password";
 	
 	/**
-	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
+	 * Verifies if the StoreClient constructor that is designed to<p>
 	 * set the query endpoint (URL) assigns the value to the corresponding<p>
 	 * member variable. 
 	 * 
@@ -48,13 +48,13 @@ public class RemoteKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void queryEndpointSetupTest() throws SQLException{
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertEquals(queryEndpoint, kbClient.getQueryEndpoint());
 	}
 	
 	/**
-	 * Verifies if the KnowledgeBaseClient constructor that is designed to<p>
+	 * Verifies if the StoreClient constructor that is designed to<p>
 	 * set both the query and update endpoints (URLs) assigns the values to<p>
 	 * the corresponding member variables. 
 	 * 
@@ -62,7 +62,7 @@ public class RemoteKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void queryAndUpdateEndpointsSetupTest() throws SQLException{
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertEquals(updateEndpoint, kbClient.getQueryEndpoint());
@@ -70,7 +70,7 @@ public class RemoteKnowledgeBaseClientTest {
 	}
 	
 	/**
-	 * Checks if the KnowledgeBaseClient constructor that is designed to<p>
+	 * Checks if the StoreClient constructor that is designed to<p>
 	 * set the query and update endpoints (URLs) and query assigns the values<p>
 	 * to the corresponding member variables. 
 	 * 
@@ -80,7 +80,7 @@ public class RemoteKnowledgeBaseClientTest {
 	public void endpointsAndQuerySetupTest() throws SQLException{
 		userName = "user";
 		password = "password";
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismCountQuery(), userName, password);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint, formMechanismCountQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -89,7 +89,7 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(formMechanismCountQuery(), kbClient.getQuery());
 		queryEndpoint = "/test/Query/Endpoint";
 		updateEndpoint = "/test/Update/Endpoint";
-		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery(), userName, password);
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint, formMechanismIRIsQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -98,7 +98,7 @@ public class RemoteKnowledgeBaseClientTest {
 		assertEquals(formMechanismIRIsQuery(), kbClient.getQuery());
 		queryEndpoint = "/extended/Test/QueryEndpoint";
 		updateEndpoint = "/extended/Test/UpdateEndpoint";
-		kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint, formInsertQuery(), userName, password);
+		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint, formInsertQuery(), userName, password);
 		assertNotNull(kbClient.getQueryEndpoint());
 		assertNotNull(kbClient.getUpdateEndpoint());
 		assertNotNull(kbClient.getQuery());
@@ -116,7 +116,7 @@ public class RemoteKnowledgeBaseClientTest {
 	@Test
 	public void connectionURLForQueryEndpointTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing a query operation is set as expected.");
 		assertNotNull(kbClient.getConnectionUrl());
@@ -136,7 +136,7 @@ public class RemoteKnowledgeBaseClientTest {
 	public void connectionURLForQueryAndInsertEndpointsTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
 		updateEndpoint = "http://localhost:8080/test";
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing an insert operation is set as expected.");
@@ -156,7 +156,7 @@ public class RemoteKnowledgeBaseClientTest {
 	public void connectionURLForQueryAndDeleteEndpointsTest() throws SQLException {
 		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
 		System.out.println(
 				"\nTesting if the URL to connect to an endpoint for performing a delete query is set as expected.");
@@ -177,39 +177,39 @@ public class RemoteKnowledgeBaseClientTest {
 	public void connectionHttpURLTest() throws SQLException{
 		// Tests the query endpoint
 		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		RemoteStoreClient rKBClient = new RemoteStoreClient(queryEndpoint);
 		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
 		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		rKBClient = new RemoteStoreClient(queryEndpoint);
 		assertTrue(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
 		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint);
+		rKBClient = new RemoteStoreClient(queryEndpoint);
 		assertFalse(rKBClient.isConnectionQueryUrlValid(rKBClient.getConnectionUrl()));
 		// Tests the update endpoint with the update URL only 
 		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient = new RemoteStoreClient();
 		rKBClient.setUpdateEndpoint(updateEndpoint);
 		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient = new RemoteStoreClient();
 		rKBClient.setUpdateEndpoint(updateEndpoint);
 		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient();
+		rKBClient = new RemoteStoreClient();
 		rKBClient.setUpdateEndpoint(updateEndpoint);
 		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 		// Tests the update endpoint with both the query URL and update URL
 		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		rKBClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 		queryEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		updateEndpoint = "https://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		rKBClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertTrue(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 		queryEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		updateEndpoint = "httpss://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		rKBClient = new RemoteKnowledgeBaseClient(queryEndpoint, updateEndpoint);
+		rKBClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertFalse(rKBClient.isConnectionUpdateUrlValid(rKBClient.getConnectionUrl()));
 	}
 	
@@ -224,7 +224,7 @@ public class RemoteKnowledgeBaseClientTest {
 		userName = "user";
 		password = "password";
 		queryEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
-		RemoteKnowledgeBaseClient remoteKBClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient remoteKBClient = new RemoteStoreClient();
 		remoteKBClient.setQueryEndpoint(queryEndpoint);
 		remoteKBClient.setUser(userName);
 		remoteKBClient.setPassword(password);
@@ -240,7 +240,7 @@ public class RemoteKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void performMechanismCountQueryTest() throws Exception{
-		RemoteKnowledgeBaseClient kbClient = mock(RemoteKnowledgeBaseClient.class);
+		RemoteStoreClient kbClient = mock(RemoteStoreClient.class);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("scfEnergyValue", "-464.940687165");
@@ -268,7 +268,7 @@ public class RemoteKnowledgeBaseClientTest {
 	 */
 	@Test
 	public void performFederatedQueryTest() throws SQLException{
-		RemoteKnowledgeBaseClient kbClient = mock(RemoteKnowledgeBaseClient.class);
+		RemoteStoreClient kbClient = mock(RemoteStoreClient.class);
 		JSONArray jsonArray = new JSONArray();
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("count", "1");
@@ -296,7 +296,7 @@ public class RemoteKnowledgeBaseClientTest {
 		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
 		"</rdf:RDF>\r\n";
 		
-		RemoteKnowledgeBaseClient kbClient = Mockito.spy(RemoteKnowledgeBaseClient.class);
+		RemoteStoreClient kbClient = Mockito.spy(RemoteStoreClient.class);
 		Mockito.doReturn(1).when(kbClient).executeUpdate(any(UpdateRequest.class));
 		
 		kbClient.insert(null, content, null);
@@ -324,7 +324,7 @@ public class RemoteKnowledgeBaseClientTest {
 				ResourceFactory.createProperty("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"), ResourceFactory.createResource("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt"));
 		model.add(s);
 		
-		RemoteKnowledgeBaseClient kbClient = Mockito.spy(RemoteKnowledgeBaseClient.class);
+		RemoteStoreClient kbClient = Mockito.spy(RemoteStoreClient.class);
 		Mockito.doReturn(model).when(kbClient).executeConstruct(any(Query.class));
 		
 		String resourceUrl = null;

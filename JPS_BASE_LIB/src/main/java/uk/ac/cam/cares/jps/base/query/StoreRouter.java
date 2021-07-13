@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.query;
 
-import java.io.File;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
@@ -8,10 +7,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This class is developed to work as an instance factory for KnowledgeBaseClient.<br>
+ * This class is developed to work as an instance factory for StoreClient.<br>
  * It reduces the burden of users to modify the SPARQL Endpoints for different<br>
  * knowledge bases when the web server changes. The users will always refer to<br>
  * the knowledge bases using the same IRI. For example, for ontokin the IRI will be<be>
@@ -20,15 +19,15 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class KGRouter{
-	private static Logger logger = LoggerFactory.getLogger(KGRouter.class);
+public class StoreRouter{
+	private static Logger logger = LoggerFactory.getLogger(StoreRouter.class);
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String KB="kb";
 	public static final String BACKSLASH="/";
 	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(BACKSLASH);
 	public static final String EMPTY = "";
-	private static final String KGROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
+	private static final String STOREROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String RDF_PREFIX = "rdf";
@@ -48,11 +47,11 @@ public class KGRouter{
 	public static final String OWL_FILE_EXTENSION = ".owl";
 	public static final String RDF_FILE_EXTENSION = ".rdf";
 	
-	static KGRouter kgRouter = null;
+	static StoreRouter storeRouter = null;
 	
 	/**
 	 * Based on a target resource IRI or path provided as the input, it returns the<br>
-	 * corresponding KnowledgeBaseClient. For query and/or update operations, it<br>
+	 * corresponding StoreClient. For query and/or update operations, it<br>
 	 * supports two types of resources: a) a repository/namespace and b) an ontology<br>
 	 * file. Some examples of these resources are provided below:<br>
 	 * a) Example repositories/namespaces are:<br>
@@ -70,27 +69,27 @@ public class KGRouter{
 	 *  can be true at the same time.
 	 * @return
 	 */
-	public static KnowledgeBaseClientInterface getKnowledgeBaseClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static StoreClientInterface getStoreClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
-		KnowledgeBaseClientInterface kbClient = null;
+		StoreClientInterface kbClient = null;
 		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
 			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
-				if (kgRouter == null) {
-					kgRouter = new KGRouter();
+				if (storeRouter == null) {
+					storeRouter = new StoreRouter();
 				}
 				if (isQueryOperation) {
-					queryIRI = kgRouter.getQueryIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
+					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (isUpdateOperation) {
-					updateIRI = kgRouter.getUpdateIRI(KGROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
+					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
-					kbClient = new RemoteKnowledgeBaseClient(queryIRI);
+					kbClient = new RemoteStoreClient(queryIRI);
 				}
 				if (updateIRI != null && !updateIRI.isEmpty()) {
 					if (kbClient == null) {
-						kbClient = new RemoteKnowledgeBaseClient();
+						kbClient = new RemoteStoreClient();
 					}
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
@@ -101,7 +100,7 @@ public class KGRouter{
 					logger.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
 			}else{
-				kbClient = new FileBasedKnowledgeBaseClient(targetResourceIRIOrPath);
+				kbClient = new FileBasedStoreClient(targetResourceIRIOrPath);
 			}
 		}
 		return kbClient;
@@ -125,7 +124,7 @@ public class KGRouter{
 				.addVar( QUESTION_MARK.concat(QUERY_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_QUERY_ENDPOINT), QUESTION_MARK.concat(QUERY_ENDPOINT) );
-		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);
@@ -157,7 +156,7 @@ public class KGRouter{
 				.addVar( QUESTION_MARK.concat(UPDATE_ENDPOINT) )
 				.addWhere( getCommonKGRouterWhereBuilder() )
 			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_UPDATE_ENDPOINT), QUESTION_MARK.concat(UPDATE_ENDPOINT) );
-		RemoteKnowledgeBaseClient rKBClient = new RemoteKnowledgeBaseClient(kgrouterEndpoint);
+		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
 		System.out.println(builder.toString());
 		String json = rKBClient.execute(builder.toString());
 		JSONArray jsonArray = new JSONArray(json);

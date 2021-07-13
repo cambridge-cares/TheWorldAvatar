@@ -33,7 +33,7 @@ import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
 
@@ -251,7 +251,7 @@ public class AccessAgentTest   {
 		AccessAgent jpsa = new AccessAgent();
         jpsa.post(jo);		
         
-        FileBasedKnowledgeBaseClient kbClient = new FileBasedKnowledgeBaseClient(filePath);
+        FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
         JSONArray ja = kbClient.executeQuery(queryString);
 		JSONObject result = ja.getJSONObject(0); 
 		assertEquals("TEST",result.get("o").toString());      
