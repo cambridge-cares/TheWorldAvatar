@@ -32,8 +32,8 @@ function resetSidePanel() {
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
-		<p>The map to the left shows a sample of the land use data from Cambridgeshire, UK.</p>
-		<p>Crop designations can be seen by hovering over the map, or using the legend below. Use the mouse wheel to zoom the map and provide a higher resolution of crop areas.</p>
+		<p>The map to the left shows a sample of the land use data from the East Anglia region, in the UK.</p>
+		<p>Crop designations for the current county can be seen by hovering over the map, or using the legend below. Use the mouse wheel to zoom the map and provide a higher resolution of crop areas.</p>
 	`;
 	setSidePanelText(textHTML);
 

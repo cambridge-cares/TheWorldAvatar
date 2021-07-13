@@ -43,8 +43,9 @@ RUN python -m pip install -r requirements.txt
 
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
-COPY docker/start-up.sh start-up.sh
-RUN chmod 755 start-up.sh
+COPY docker/start-up.sh /app/start-up.sh
+RUN chmod 755 /app/start-up.sh
+RUN dos2unix /app/start-up.sh
 
 # Copy in the cron jobs file
 COPY docker/cron-jobs cron-jobs 
@@ -59,6 +60,7 @@ RUN chmod +x input/terminal-update.py
 # Scripts relating to querying data in the KG and formatting it
 RUN mkdir output
 COPY docker/run-outputs.sh /app/output/run-outputs.sh
+RUN dos2unix /app/output/run-outputs.sh
 COPY OntoGasGrid/flow_data_generator/output_flow_data.py output/output_flow_data.py
 COPY OntoGasGrid/geoJSON_output_agent/all_offtakes_to_geojson.py output/all_offtakes_to_geojson.py
 COPY OntoGasGrid/geoJSON_output_agent/all_pipes_query_to_geojson.py output/all_pipes_query_to_geojson.py
@@ -73,6 +75,7 @@ RUN chmod 777 /var/log/gas-grid
 # TODO: Read this from the docker-compose file in future.
 ENV TARGET_MODE="CMCL"
 ENV KG_LOCATION="http://kg.cmclinnovations.com:8055/blazegraph"
+ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
 
 # Expose port for HTTP server
 EXPOSE 80

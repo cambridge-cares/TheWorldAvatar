@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+   xmlns:ns2="http://purl.org/dc/elements/1.1/"
+   xmlns:ns3="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#"
+   xmlns:ns4="http://www.w3.org/2002/07/owl#"
+   xmlns:ns5="http://www.w3.org/2004/02/skos/core#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+    <ns1:casRegistryID rdf:datatype="http://www.w3.org/2001/XMLSchema#string">124-38-9</ns1:casRegistryID>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+    <ns2:identifier rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6</ns2:identifier>
+    <ns5:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide</ns5:altLabel>
+    <ns1:SMILES rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C(=O)=O</ns1:SMILES>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CO2</rdfs:label>
+    <ns1:hasGeometry rdf:datatype="http://www.w3.org/2001/XMLSchema#string">C 17.0000 10.0000 0.0000 O 18.0221 10.5679 0.0000 O 15.9779 9.4321 0.0000</ns1:hasGeometry>
+    <ns1:hasStandardEnthalpyOfFormation rdf:resource="http://www.theworldavatar.com/kb/ontospecies/StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6"/>
+    <ns5:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dry ice</ns5:altLabel>
+    <ns1:hasCharge rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6"/>
+    <ns1:hasMolecularWeight rdf:resource="http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6"/>
+    <ns1:hasAtomicBond rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1 2 2 1 3 2</ns1:hasAtomicBond>
+    <ns1:hasMolecularFormula rdf:resource="http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <ns3:hasElement rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Element_O"/>
+    <ns3:hasElementNumber rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1"/>
+    <ns3:hasElementNumber rdf:resource="http://www.theworldavatar.com/kb/ontospecies/ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula"/>
+    <ns3:hasElement rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Element_C"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MolecularFormula_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/Element_O">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Element_O</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">StandardEnthalpyOfFormation_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#StandardEnthalpyOfFormation"/>
+    <ns1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">-393.51 ± 0.13</ns1:value>
+    <ns1:units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">kJ/mol</ns1:units>
+    <ns1:hasReferenceTemperature rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <ns1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">44.009</ns1:value>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MolecularWeight_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+    <ns1:units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">g/mol</ns1:units>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Temperature"/>
+    <ns1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">298.15</ns1:value>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+    <ns1:units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">K</ns1:units>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge"/>
+    <ns1:units rdf:datatype="http://www.w3.org/2001/XMLSchema#string">e</ns1:units>
+    <ns1:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">0</ns1:value>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Charge_00b7e248-ae24-35bf-b7a0-b470b923ddf6</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2">
+    <ns3:hasNumberOfElement rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</ns3:hasNumberOfElement>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_2</rdfs:label>
+    <ns3:indicatesNumberOf rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Element_O"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber"/>
+    <ns3:indicatesNumberOf rdf:resource="http://www.theworldavatar.com/kb/ontospecies/Element_C"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ElementNumber_00b7e248-ae24-35bf-b7a0-b470b923ddf6_1</rdfs:label>
+    <ns3:hasNumberOfElement rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns3:hasNumberOfElement>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontospecies/Element_C">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Element_C</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nb32818f5d4c24b0b8e83380e242ae8f1">
+    <ns4:imports rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl"/>
+  </rdf:Description>
+</rdf:RDF>

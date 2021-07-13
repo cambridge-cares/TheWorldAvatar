@@ -1,0 +1,4 @@
+include entityrdfizer/conf/EntityRDFizer.properties
+include LICENSE
+global-exclude *.py[cod] __pycache__ assets .vscode .pytest_cache *venv
+global-exclude tests

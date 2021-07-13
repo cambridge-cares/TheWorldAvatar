@@ -1,0 +1,316 @@
+@prefix gc: <http://purl.org/gc/> .
+@prefix ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix table: <http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#> .
+@prefix unit: <http://data.nasa.gov/qudt/owl/unit#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#> a owl:Ontology ;
+    owl:imports <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#ethane_mod> a ontocompchem:G09,
+        owl:Thing ;
+    gc:isCalculationOn <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_geometry_optimization_C2H6_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_geometry_type_C2H6_fdaeecd5-2035-3a84-8874-7161078bd0c0_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_electronic_energy_C2H6_7bdc9c28-f33d-359c-a265-7ccc679804af_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_one_electronic_energy_C2H6_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_two_electronic_energy_C2H6_227a9315-b21e-3c18-8589-9ed236d5f00a_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_electronic_energy_C2H6_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_one_electronic_energy_C2H6_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_two_electronic_energy_C2H6_422306b5-3f92-37fb-b83f-636dbe097c5b_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_rotational_constants_C2H6_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_scf_energy_C2H6_dbb0518a-18e9-3b85-99bc-8a38879462de_1> ;
+    ontocompchem:hasEnvironment <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#job_module_has_environment_module_C2H6_1> ;
+    ontocompchem:hasInitialization <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#job_module_has_initilization_module_C2H6_1> .
+
+<http://theworldavatar.com/data/ontocompchem/ethane_mod/ethane_mod.log> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl> a ontocompchem:OutputSource,
+        owl:Thing .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_geometry_optimization_C2H6_1> a gc:GeometryOptimization,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_molecule_C2H6_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_geometry_type_C2H6_fdaeecd5-2035-3a84-8874-7161078bd0c0_1> a ontocompchem:GeometryType,
+        owl:Thing ;
+    ontocompchem:hasGeometryType "nonlinear" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+        owl:Thing ;
+    gc:hasAtomCoordinateX <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 8.1537e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -8.1537e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 8.1537e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -8.1537e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_x3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.193012e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.5e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.5e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.5e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.5e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_y3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.95452e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.4e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.4e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.4e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 1.4e-05 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_coordinate_z3_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue -1.008079e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.20107e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_mass_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Dalton ;
+    gc:hasValue 1.00783e+00 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_molecule_C2H6_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_C1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_atom_C2H6_H2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasFormalCharge <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_molecule_formal_charge_C2H6_1> ;
+    ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_has_molecule_formal_charge_C2H6_1> a gc:IntegerValue,
+        owl:Thing ;
+    gc:hasUnit gc:atomicUnit ;
+    gc:hasValue 0 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_electronic_energy_C2H6_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a ontocompchem:HomoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_electronic_energy_value_C2H6_7bdc9c28-f33d-359c-a265-7ccc679804af_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_electronic_energy_value_C2H6_7bdc9c28-f33d-359c-a265-7ccc679804af_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -3.4257e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_one_electronic_energy_C2H6_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a ontocompchem:HomoMinusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_one_electronic_energy_value_C2H6_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_one_electronic_energy_value_C2H6_f9d8ccb3-3236-3cf0-b379-a934c7d4f423_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -3.491e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_two_electronic_energy_C2H6_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a ontocompchem:HomoMinusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_two_electronic_energy_value_C2H6_227a9315-b21e-3c18-8589-9ed236d5f00a_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_homo_minus_two_electronic_energy_value_C2H6_227a9315-b21e-3c18-8589-9ed236d5f00a_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -3.491e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_electronic_energy_C2H6_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a ontocompchem:LumoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_electronic_energy_value_C2H6_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_electronic_energy_value_C2H6_cb2109c3-5fa7-3ae0-9b23-1bd076a2d8da_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 1.048e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_one_electronic_energy_C2H6_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a ontocompchem:LumoPlusOneEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_C2H6_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_one_electronic_energy_value_C2H6_ea22bfb4-795c-34cc-ac56-013b3eb69edf_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 1.4823e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_two_electronic_energy_C2H6_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a ontocompchem:LumoPlusTwoEnergy,
+        owl:Thing ;
+    gc:hasSystemEnergiesResult <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_C2H6_422306b5-3f92-37fb-b83f-636dbe097c5b_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_lumo_plus_two_electronic_energy_value_C2H6_422306b5-3f92-37fb-b83f-636dbe097c5b_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue 1.7039e-01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_rotational_constants_C2H6_82d4edb1-9b4a-348e-b496-3c1470b1dbda_1> a ontocompchem:RotationalConstants,
+        owl:Thing ;
+    gc:hasUnit unit:GigaHertz ;
+    ontocompchem:hasRotationalConstants "18.21134400 18.21142670 79.26000760"^^xsd:string ;
+    ontocompchem:hasRotationalConstantsCount "3"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_scf_energy_C2H6_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a ontocompchem:ScfEnergy,
+        owl:Thing ;
+    gc:hasElectronicEnergy <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_scf_energy_value_C2H6_dbb0518a-18e9-3b85-99bc-8a38879462de_1> .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#finalization_module_scf_energy_value_C2H6_dbb0518a-18e9-3b85-99bc-8a38879462de_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Hartree ;
+    gc:hasValue -7.982636e+01 .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#has_atom_C2H6_C2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:C .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#has_atom_C2H6_H6_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+        owl:Thing ;
+    gc:isElement table:H .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_basis_set_parameter_C2H6_1> a gc:BasisSet,
+        owl:Thing ;
+    gc:hasBasisSet "6-31G(d)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_level_of_theory_parameter_C2H6_1> a gc:MethodologyFeature,
+        ontocompchem:LevelOfTheory,
+        owl:Thing ;
+    ontocompchem:hasLevelOfTheory "RB3LYP/6-31G(d)" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_C2H6_C2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#has_atom_C2H6_C2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "2"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_C2H6_H6_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+        owl:Thing ;
+    gc:hasAtom <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#has_atom_C2H6_H6_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasNumberOfAtoms "6"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_property_C2H6_1> a gc:MoleculeProperty,
+        owl:Thing ;
+    gc:hasMolecule <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_C2H6_C2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_C2H6_H6_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasName "C2H6" .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#job_module_has_environment_module_C2H6_1> a gc:SourcePackage,
+        owl:Thing ;
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/ethane_mod/ethane_mod.log>,
+        <http://theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl> ;
+    ontocompchem:hasProgram "Gaussian"^^xsd:string ;
+    ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;
+    ontocompchem:hasRunDate "Wed May 26 17:24:33 2021"^^xsd:string .
+
+<http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#job_module_has_initilization_module_C2H6_1> a ontocompchem:InitializationModule,
+        owl:Thing ;
+    gc:hasMoleculeProperty <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_molecule_property_C2H6_1> ;
+    gc:hasParameter <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_basis_set_parameter_C2H6_1>,
+        <http://www.theworldavatar.com/kb/ontocompchem/ethane_mod/ethane_mod.log.owl#initialization_module_has_level_of_theory_parameter_C2H6_1> .
+
+table:C a table:Element,
+        owl:Thing .
+
+table:H a table:Element,
+        owl:Thing .
+
