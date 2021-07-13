@@ -22,7 +22,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * Cloning Tool
@@ -130,7 +130,7 @@ public class CloningTool {
 	 * @param sourceKB
 	 * @param targetKB
 	 */  
-	public void clone(KnowledgeBaseClientInterface sourceKB, KnowledgeBaseClientInterface targetKB) {
+	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB) {
 		clone(sourceKB, null, targetKB, null);
 	}
 	
@@ -140,7 +140,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void clone(KnowledgeBaseClientInterface sourceKB, KnowledgeBaseClientInterface targetKB, String graph) {
+	public void clone(StoreClientInterface sourceKB, StoreClientInterface targetKB, String graph) {
 		clone(sourceKB, graph, targetKB, graph); 
 	}
 	
@@ -151,7 +151,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param targetGraph
 	 */
-	public void clone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
+	public void clone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
 		
 		WhereBuilder whereCountAll = new WhereBuilder()
 				.addWhere(varS, varP, varO);		    
@@ -175,7 +175,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param graph
 	 */
-	public void singleStepClone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
+	public void singleStepClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
 		
 		//Get model using construct query
 		Query construct = buildSparqlConstruct(sourceGraph);
@@ -197,7 +197,7 @@ public class CloningTool {
 	 * @param targetKB
 	 * @param target graph
 	 */
-	private void performClone(KnowledgeBaseClientInterface sourceKB, String sourceGraph, KnowledgeBaseClientInterface targetKB, String targetGraph) {
+	private void performClone(StoreClientInterface sourceKB, String sourceGraph, StoreClientInterface targetKB, String targetGraph) {
 		
 		createTag(sourceKB);
 
@@ -279,7 +279,7 @@ public class CloningTool {
 	 * Creates a tag by hashing the source KB endpoint and current date and time.
 	 * @param sourceKB
 	 */
-	private void createTag(KnowledgeBaseClientInterface kbClient) {
+	private void createTag(StoreClientInterface kbClient) {
 		LocalDateTime dateTime = LocalDateTime.now();
 		String name = kbClient.getQueryEndpoint() + dateTime.toString();
 		int hash = name.hashCode();
@@ -295,7 +295,7 @@ public class CloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkCount(KnowledgeBaseClientInterface kbClient, String graph) {
+	public boolean checkCount(StoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO);
@@ -309,7 +309,7 @@ public class CloningTool {
 	 * @param kbClient store to check
 	 * @param graph default/named graph to check
 	 */
-	public boolean checkNoTags(KnowledgeBaseClientInterface kbClient, String graph) {
+	public boolean checkNoTags(StoreClientInterface kbClient, String graph) {
 
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
@@ -331,7 +331,7 @@ public class CloningTool {
 	 * @param where statement
 	 * @return
 	 */
-	private int countTriples(KnowledgeBaseClientInterface kbClient, String graph, WhereBuilder where) {
+	private int countTriples(StoreClientInterface kbClient, String graph, WhereBuilder where) {
 		String query = countQuery(graph, where);
 		JSONArray result = kbClient.executeQuery(query);
 	    JSONObject jsonobject = result.getJSONObject(0);

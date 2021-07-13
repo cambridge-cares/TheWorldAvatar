@@ -7,15 +7,30 @@ import org.json.JSONArray;
 
 
 /**
- * This interface is to be implemented by knowledge base clients 
+ * This interface is to be implemented by store clients 
  * that establish a connection and perform SPARQL queries and updates
  * on remote triple stores, owl files etc. 
  *  
  * @author Casper Lindberg
  */
-public interface KnowledgeBaseClientInterface {
+public interface StoreClientInterface {
 
-
+	/**
+	 * Get rdf content from store.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
+	String get(String graphName, String accept);
+	
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
+	void insert(String graphName, String content, String contentType);
+	
 	// SPARQL Query methods
 	
 	/**
@@ -33,7 +48,6 @@ public interface KnowledgeBaseClientInterface {
 	 * @return JSONArray
 	 */
 	JSONArray executeQuery();
-	
 
 	/**
 	 * Execute sparql query using the query variable.

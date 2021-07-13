@@ -30,17 +30,17 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 
 /**
- * JUnit tests for FileBasedKnowledgeClient
+ * JUnit tests for FileBasedStoreClient
  * 
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClientTest {
+public class FileBasedStoreClientTest {
 
-	private FileBasedKnowledgeBaseClient kbClient;
+	private FileBasedStoreClient kbClient;
 	
 	// temporary folder for testing
 	@Rule
@@ -93,7 +93,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testConstructorWithFilePath() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient(filePath);
+		kbClient = new FileBasedStoreClient(filePath);
 		assertEquals(filePath, kbClient.getPath(null));
 		assertEquals(null, kbClient.getQuery());
 		assertTrue(kbClient.isConnected());
@@ -110,7 +110,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testNamedGraphConstructor() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
-		kbClient = new FileBasedKnowledgeBaseClient("http://example.com/triples", filePath);
+		kbClient = new FileBasedStoreClient("http://example.com/triples", filePath);
 		
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
@@ -137,7 +137,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testInit() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchMethodException, SecurityException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		// access private member
 		assertNotNull(kbClient.getClass().getDeclaredMethod("init"));
@@ -168,7 +168,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		graphs[0] = "http://example.com/triples";
 		graphs[1] = "http://example.com/context";
 				
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(graphs, filePaths);
 		
 		assertTrue(kbClient.isConnected());
@@ -209,7 +209,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testLoadGraphAndWrite() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException, NoSuchFieldException, IOException {
 	
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 	
 		// TEST LOAD
 		
@@ -272,7 +272,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testLoadQuadOverwriteName() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException, NoSuchMethodException, InvocationTargetException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		String wrongContext = "http://example.com/differentContext"; 
 		String context = "http://example.com/context";
@@ -308,7 +308,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testLoadQuadDefault() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		String context = "http://example.com/context";
 		
@@ -330,7 +330,6 @@ public class FileBasedKnowledgeBaseClientTest {
   		Model model2 = fieldValue.getDefaultModel();
   		assertTrue(model2.isEmpty());
   		assertTrue(kbClient.getPath(null) == null);
-  		assertTrue(kbClient.getLang(null) == null);
 	}
 	
 	/**
@@ -339,23 +338,13 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testLoadFileToDefault() {
 	
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		kbClient.load(filePath);
 		
 		assertEquals(filePath, kbClient.getPath(null));
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());
-	}
-	
-	/**
-	 * Test exception thrown by giving bad file path to load.
-	 */
-	@Test(expected = JPSRuntimeException.class)
-	public void testLoadBadFile() {
-	
-		kbClient = new FileBasedKnowledgeBaseClient();
-		kbClient.load("Example/does/not/exist");
 	}
 	
 	////  Test errors thrown by edge cases
@@ -366,7 +355,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test(expected = JPSRuntimeException.class)
 	public void testMultipleContexts() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load("http://example.com/context", filePathNQ2);
 	}
 	
@@ -376,7 +365,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test(expected = JPSRuntimeException.class)
 	public void testSameContext() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load("http://example.com/context", filePathNQ);
 		kbClient.load("http://example.com/context2", filePathNQ);
 	}
@@ -387,7 +376,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test(expected = JPSRuntimeException.class)
 	public void testSameGraph() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load("http://example.com/context", filePathOWL);
 		kbClient.load("http://example.com/context", filePath);
 	}
@@ -398,7 +387,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test(expected = JPSRuntimeException.class)
 	public void testMultipleDefault() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePathOWL);
 		kbClient.load(filePath);
 	}
@@ -412,7 +401,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testWriteGraphToFile() throws IOException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		//TEST WRITE DEFAULT
 		
@@ -446,7 +435,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testEnd() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		assertTrue(kbClient.isConnected());
 		assertFalse(kbClient.isEmpty());		
@@ -474,7 +463,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testSetGetFilePath() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.setPath(filePath);
 	    assertEquals(filePath, kbClient.getPath(null));
 	}
@@ -490,7 +479,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testSetGetQueryEndpoint() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 	
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 	
 		assertEquals(filePath, kbClient.setQueryEndpoint(filePath));
 	    assertEquals(filePath, kbClient.getPath(null));
@@ -508,7 +497,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test 
 	public void testSetGetUpdateEndpoint() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		assertEquals(filePath, kbClient.setUpdateEndpoint(filePath));
 	    assertEquals(filePath, kbClient.getPath(null));
@@ -526,7 +515,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testSetGetQuery() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		assertEquals(testQuery, kbClient.setQuery(testQuery));
 		
@@ -551,9 +540,9 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testSetOutputLang() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
-	    assertEquals(null,kbClient.getLang(null));
+	    assertEquals(Lang.RDFXML,kbClient.getLang(null));
 	    
 	    //Set lang to NQ
 		kbClient.setOutputLang(Lang.NQ);
@@ -572,12 +561,12 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testOutputLang() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 	
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		
 		kbClient.load(filePathNQ);
 		List<String> names = kbClient.getGraphNames();
 		
-	    assertEquals(null, kbClient.getLang("default"));
+	    assertEquals(Lang.RDFXML, kbClient.getLang("default"));
 	    assertEquals(Lang.NQUADS, kbClient.getLang(names.get(0)));
 	}
 
@@ -592,7 +581,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testSetOutputLangs() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 	
 		kbClient.load(filePath);
 		kbClient.load(filePathNQ);
@@ -618,7 +607,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteUpdate() throws ParseException {
 
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 
 		String result = kbClient.execute(testQuery);
@@ -633,7 +622,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals("[{\"o\":\"TEST\"}]", result);
 		
 		//check file is written after update
-		FileBasedKnowledgeBaseClient kbClientNew = new FileBasedKnowledgeBaseClient();
+		FileBasedStoreClient kbClientNew = new FileBasedStoreClient();
 		kbClientNew.load(filePath);	
 		String resultNew = kbClientNew.execute(testQuery);
 		assertEquals("[{\"o\":\"TEST\"}]", resultNew);
@@ -646,7 +635,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteUpdateWithStringArgument() throws ParseException {
 
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		kbClient.setAutoWrite(false); //turn off autowrite
 		
@@ -660,7 +649,7 @@ public class FileBasedKnowledgeBaseClientTest {
 		assertEquals("[{\"o\":\"TEST\"}]", result);
 
 		//check file is not written after update
-		FileBasedKnowledgeBaseClient kbClientNew = new FileBasedKnowledgeBaseClient();
+		FileBasedStoreClient kbClientNew = new FileBasedStoreClient();
 		kbClientNew.load(filePath);	
 		String resultNew = kbClientNew.execute(testQuery);
 		assertEquals("[{\"o\":\"OH\"}]", resultNew);
@@ -673,7 +662,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteUpdateWithUpdateRequestArgument() throws ParseException {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 
 		String result = kbClient.execute(testQuery);
@@ -692,7 +681,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecute() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		kbClient.setQuery(testQuery);
 		
@@ -709,7 +698,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteWithArgument() {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		
 		String result = kbClient.execute(testQuery);
@@ -727,7 +716,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteQuery() throws JSONException {
 		 
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		kbClient.setQuery(testQuery);
 		
@@ -745,7 +734,7 @@ public class FileBasedKnowledgeBaseClientTest {
 	@Test
 	public void testExecuteQueryWithArgument () {
 		
-		kbClient = new FileBasedKnowledgeBaseClient();
+		kbClient = new FileBasedStoreClient();
 		kbClient.load(filePath);
 		
 		JSONArray result = kbClient.executeQuery(testQuery);
@@ -753,6 +742,44 @@ public class FileBasedKnowledgeBaseClientTest {
 		
 		assertEquals("OH", jo.get("o").toString());
 	}	
+	
+	/**
+	 * Test insert and get methods
+	 */
+	@Test
+	public void testInsertAndGet() {
+		
+		String content = 
+		"<rdf:RDF\r\n"+
+		"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
+		"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
+		"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
+		"</rdf:RDF>\r\n";
+		
+		kbClient = new FileBasedStoreClient();
+		kbClient.insert(null, content, null);
+		
+		//check insert was successful
+		String result = kbClient.execute("SELECT ?o WHERE {?s ?p ?o}");
+		assertEquals("[{\"o\":\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt\"}]",result);
+		
+		//test get
+		
+		//rdfxml
+		result = kbClient.get(null, null);
+		assertEquals(content, result);
+		
+		result = kbClient.get(null, "application/rdf+xml");
+		assertEquals(content, result);		
+		
+		//n-triples
+		String contentNT = 
+		"<http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001> "+
+		"<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#FoodCourt> .\n";
+		
+		result = kbClient.get(null, "application/n-triples");
+		assertEquals(contentNT, result);
+	}
 	
 	/**
 	 * Returns the test Sparql update.
