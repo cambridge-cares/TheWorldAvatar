@@ -1,15 +1,32 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+import org.jooq.CreateTableColumnStep;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.postgresql.util.PSQLException;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.time.Instant;
+import java.util.ArrayList;
 
 public class TimeSeriesRDBClientTest {
+
+    private DSLContext context = Mockito.mock(DSLContext.class, Mockito.RETURNS_DEEP_STUBS);
+    private CreateTableColumnStep create = Mockito.mock(CreateTableColumnStep.class);
+    private Connection connection = Mockito.mock(Connection.class);
 
     @Test
     public void testConstructor() throws NoSuchFieldException, IllegalAccessException {
@@ -115,6 +132,43 @@ public class TimeSeriesRDBClientTest {
         Assert.assertNull(rdbPasswordField.get(client));
         client.setRdbPassword("password");
         Assert.assertEquals("password", rdbPasswordField.get(client));
+    }
+
+    @Test
+    public void testInitConnectionException() {
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        // To be able to mock the connection to the database we use Mockito
+        // (whenever DriverManager is used in the try block we can mock the behaviour)
+        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class)) {
+            mockDriver.when(() -> DriverManager.getConnection(null, null, null))
+                    .thenThrow(PSQLException.class);
+            client.init(new ArrayList<>(), new ArrayList<>());
+            // Exception is not thrown
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertEquals(PSQLException.class, e.getCause().getClass());
+        }
+    }
+
+    @Disabled("Works until the knowledge graph is queried in the init.")
+    @Test
+    public void testInitConnection() {
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        // To be able to mock the connection to the database we use Mockito
+        // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
+        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
+            mockDriver.when(() -> DriverManager.getConnection(null, null, null))
+                    .thenReturn(connection);
+            mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
+                    .thenReturn(context);
+            client.init(new ArrayList<>(), new ArrayList<>());
+            // Mocks the behaviour of the the context when used to create a table
+            Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any())
+                    .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
+                    .thenReturn(1);
+            Mockito.verify(context, Mockito.times(1)).createDatabaseIfNotExists("dbTable");
+        }
     }
 
 }

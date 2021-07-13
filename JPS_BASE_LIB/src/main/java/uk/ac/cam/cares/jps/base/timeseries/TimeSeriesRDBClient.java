@@ -83,6 +83,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Initialise Time Series in RDF and RDB
 	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 */
+	// Niklas: Should be split into initializing the global table and initializing the table for the specific time series
+	// and corresponding entries in the global table.
 	public void init(List<String> dataIRI, List<Class<?>> dataClass) {
 		// initialise connection
 		Connection conn = connect();
