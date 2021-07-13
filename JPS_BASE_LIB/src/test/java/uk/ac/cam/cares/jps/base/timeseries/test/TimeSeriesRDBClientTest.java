@@ -42,6 +42,11 @@ public class TimeSeriesRDBClientTest {
     @Test
     public void testPrivateDatabaseRelatedFields() throws NoSuchFieldException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        // Retrieve the value of the private field 'dialect' of the client to check its value
+        Field dialectField = client.getClass().getDeclaredField("dialect");
+        dialectField.setAccessible(true);
+        SQLDialect dialect = (SQLDialect) dialectField.get(client);
+        Assert.assertEquals(SQLDialect.POSTGRES, dialect);
         // Retrieve the value of the private field 'dbTableName' of the client to check its value
         Field tableNameField = client.getClass().getDeclaredField("dbTableName");
         tableNameField.setAccessible(true);
@@ -151,9 +156,10 @@ public class TimeSeriesRDBClientTest {
         }
     }
 
-    @Disabled("Works until the knowledge graph is queried in the init.")
+
     @Test
-    public void testInitConnection() {
+    @Disabled("Works until the knowledge graph is queried in the init.")
+    public void testInit() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // To be able to mock the connection to the database we use Mockito
         // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
