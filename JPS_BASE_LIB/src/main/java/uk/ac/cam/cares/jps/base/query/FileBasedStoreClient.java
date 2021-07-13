@@ -1,14 +1,19 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.query.Query;
@@ -17,29 +22,31 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class uses RDFConnection to load and provide SPARQL access to file based datasets.
- * The behaviour is designed to be analogous to RemoteKnowledgeBaseClient with the methods
+ * The behaviour is designed to be analogous to RemoteStoreClient with the methods
  * declared in KnowledgeBaseClientInterface.
  * Files are automatically loaded when a file path is supplied via the class constructor or 
  * set methods (in this case, files are loaded prior to sparql query/update).
  * By default, data is automatically written to file after a SPARQL update.
  * Further read/write functionality is provided through the load and writeToFile methods 
  * including support for multiple files loaded to different contexts/named graphs. 
- * Note that the FileBasedKnowledgeBaseClient only supports loading a single file to a single 
+ * Note that the FileBasedStoreClient only supports loading a single file to a single 
  * context (including the default graph) and will throw an error if a context already exists 
  * in the dataset (or the default graph is not empty). 
  * Files containing more than one context are also not supported.
@@ -47,7 +54,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Casper Lindberg
  *
  */
-public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterface {
+public class FileBasedStoreClient implements StoreClientInterface {
 
 	private Dataset dataset;
 	private RDFConnection conn;
@@ -60,7 +67,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	class GraphData{
 		String name = null;
 		String path = null;
-		Lang lang = null;
+		Lang lang = Lang.RDFXML;
 		
 		//Constructors
 		GraphData(){}
@@ -76,7 +83,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	// Default graph
 	private GraphData defaultGraph = new GraphData();
 	
-	// Dataset written to file after sparql update by default
+	// Dataset written to file after sparql update by default unless default constructor used
 	private boolean autoWrite = true;	
 	
 	///////////////////////////
@@ -86,7 +93,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	/**
 	 * Default constructor. Creates a file-based client without loading a file.
 	 */
-	public FileBasedKnowledgeBaseClient() {
+	public FileBasedStoreClient() {
 		init();
 	}
 	
@@ -94,7 +101,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * Constructor loads a triples to the default graph and quads to a named graph.
 	 * @param filePath
 	 */
-	public FileBasedKnowledgeBaseClient(String filePath) {
+	public FileBasedStoreClient(String filePath) {
 		init();
 		load(filePath);
 	}
@@ -104,7 +111,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	 * @param graph name/context
 	 * @param filePath
 	 */
-	public FileBasedKnowledgeBaseClient(String graph, String filePath) {
+	public FileBasedStoreClient(String graph, String filePath) {
 		init();
 		load(graph, filePath);
 	}
@@ -157,8 +164,11 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	public void load(String graphName, String filePath) {
 	
 		GraphData graph = new GraphData(graphName, filePath);
-		
-		loadGraph(graph);
+
+		File f= new File(graph.path);
+		if(f.exists()) {
+			loadGraph(graph);
+		}
 
 		if(graph != null) {
 			if(graph.name == null) {
@@ -628,7 +638,8 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	
 	/**
 	 * Executes the update operation supplied by the calling method.
-	 * writeToFile() or end() must be called to save changes to file.
+	 * Changes are saved to file automatically if autoWrite = true
+	 * This is the default if file loaded by the constructor 
 	 * 
 	 * @param update as String
 	 * @return
@@ -664,7 +675,7 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 	public int executeUpdate(UpdateRequest update) {
 		
 		//Attempt to load files if the dataset is empty.
-		if(isEmpty()) {load();}
+		//if(isEmpty()) {load();}
 		
 		if( conn != null) {
 			conn.begin( TxnType.WRITE );
@@ -810,5 +821,79 @@ public class FileBasedKnowledgeBaseClient implements KnowledgeBaseClientInterfac
 		} else {
 			throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: client not initialised.");
 		}
+	}
+	
+	/**
+	 * Get rdf content from store.
+	 * Performs a construct query on the store and returns the model as a string.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
+	@Override
+	public String get(String resourceUrl, String accept) {
+		
+		Var varS = Var.alloc("s");
+		Var varP = Var.alloc("p");
+		Var varO = Var.alloc("o");
+		
+		ConstructBuilder builder = new ConstructBuilder()
+				.addConstruct( varS, varP, varO);
+		
+		if (resourceUrl == null) {
+			//Default graph
+			builder.addWhere(varS, varP, varO);
+		}else {	
+			//Named graph
+			String graphURI = "<" + resourceUrl + ">";
+			builder.addGraph(graphURI, varS, varP, varO);	
+		}
+		
+		Model model = executeConstruct(builder.build());
+		
+		Lang syntax;
+		if (accept != null) {
+			syntax = RDFLanguages.contentTypeToLang(accept);
+		}else {
+			//default to application/rdf+xml
+			syntax = Lang.RDFXML; 
+		}
+		
+		StringWriter out = new StringWriter();
+		model.write(out, syntax.getName());
+		return out.toString();
+	}
+	
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
+	@Override
+	public void insert(String graphName, String content, String contentType) {
+		
+		Model model = ModelFactory.createDefaultModel();
+		
+		InputStream in = new ByteArrayInputStream(content.getBytes());
+        if (contentType == null) {
+        	//RDF/XML default
+        	//base=null, assume all uri are absolute
+        	model.read(in, null); 
+		} else {
+			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			model.read(in,null,syntax.getName());
+		}
+        
+        UpdateBuilder builder = new UpdateBuilder();
+        
+        if (graphName == null) {
+        	builder.addInsert(model);
+        } else {
+        	String graphURI = "<" + graphName + ">";
+        	builder.addInsert(graphURI, model);
+        }
+        
+		executeUpdate(builder.buildRequest());	
 	}
 }

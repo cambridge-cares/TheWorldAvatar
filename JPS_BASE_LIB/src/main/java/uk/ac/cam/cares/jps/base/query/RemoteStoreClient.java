@@ -1,20 +1,28 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 
+import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.jdbc.JenaDriver;
 import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
 import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.TxnType;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdfconnection.RDFConnection;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.rdfconnection.RDFConnectionRemoteBuilder;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
+import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
 import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -29,7 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class allows to establish connection with remote knowledge repositories<p>
@@ -51,7 +59,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
+public class RemoteStoreClient implements StoreClientInterface {
 
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";
@@ -70,7 +78,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	/**
 	 * The default constructor.
 	 */
-	public RemoteKnowledgeBaseClient(){
+	public RemoteStoreClient(){
 		
 	}
 	
@@ -79,7 +87,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * 
 	 * @param queryEndpoint
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint){
+	public RemoteStoreClient(String queryEndpoint){
 		this.queryEndpoint = queryEndpoint;
 	}
 	
@@ -91,7 +99,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param queryEndpoint
 	 * @param updateEndpoint
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -103,7 +111,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
 	}
 	
@@ -116,7 +124,7 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
@@ -132,28 +140,11 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 	 * @param user
 	 * @param password 
 	 */
-	public RemoteKnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
+	public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String query, String user, String password){
 		this.query = query;
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
 	}
-	
-	///////////////////////////
-	// Read and write methods
-	///////////////////////////
-
-	public void load() {
-		// do nothing
-		// connection established during query/update execution
-	}
-	
-	public void end() {
-		// do nothing
-	}
-		
-	///////////////////////////
-	// Read and write methods
-	///////////////////////////
 
 	/**
 	 * Returns the available query.
@@ -692,5 +683,80 @@ public class RemoteKnowledgeBaseClient implements KnowledgeBaseClientInterface {
 		}
 		repository.shutDown();
 		return json;
+	}
+	
+	/**
+	 * Get rdf content from store.
+	 * Performs a construct query on the store and returns the model as a string.
+	 * @param graphName (if any)
+	 * @param accept
+	 * @return String
+	 */
+	@Override
+	public
+	String get(String resourceUrl, String accept) {
+		
+		Var varS = Var.alloc("s");
+		Var varP = Var.alloc("p");
+		Var varO = Var.alloc("o");
+		
+		ConstructBuilder builder = new ConstructBuilder()
+				.addConstruct( varS, varP, varO);
+				
+		if (resourceUrl == null) {
+			//Default graph
+			builder.addWhere(varS, varP, varO);
+		}else {	
+			//Named graph
+			String graphURI = "<" + resourceUrl + ">";
+			builder.addGraph(graphURI, varS, varP, varO);	
+		}
+		
+		Model model = executeConstruct(builder.build());
+	
+		Lang syntax;
+		if (accept != null) {
+			syntax = RDFLanguages.contentTypeToLang(accept);
+		}else {
+			//default to application/rdf+xml
+			syntax = Lang.RDFXML; 
+		}		
+		
+		StringWriter out = new StringWriter();
+		model.write(out, syntax.getName());
+		return out.toString();
+	}
+	
+	/**
+	 * Insert rdf content into store. 
+	 * @param graphName (if any)
+	 * @param content
+	 * @param contentType
+	 */
+	@Override
+	public void insert(String graphName, String content, String contentType) {
+		
+		Model model = ModelFactory.createDefaultModel();
+		
+		InputStream in = new ByteArrayInputStream(content.getBytes());
+        if (contentType == null) {
+        	//RDF/XML default
+        	//base=null, assume all uri are absolute
+        	model.read(in, null); 
+		} else {
+			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			model.read(in,null,syntax.getName());
+		}
+        
+        UpdateBuilder builder = new UpdateBuilder();
+        
+        if (graphName == null) {
+        	builder.addInsert(model);
+        } else {
+        	String graphURI = "<" + graphName + ">";
+        	builder.addInsert(graphURI, model);
+        }
+        
+		executeUpdate(builder.buildRequest());
 	}
 }

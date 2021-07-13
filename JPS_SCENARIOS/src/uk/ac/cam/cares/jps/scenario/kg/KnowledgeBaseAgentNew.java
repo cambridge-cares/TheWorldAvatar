@@ -9,8 +9,8 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
-import uk.ac.cam.cares.jps.base.query.KGRouter;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
@@ -37,7 +37,7 @@ public class KnowledgeBaseAgentNew extends JPSAgent{
 		if (sparqlquery != null) isQueryOperation = true;
 		else if (sparqlupdate != null) isUpdateOperation = true;
 		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
-		KnowledgeBaseClientInterface kbClient = KGRouter.getKnowledgeBaseClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
+		StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, isQueryOperation,isUpdateOperation);
 		if (isQueryOperation) { 
 			String result = kbClient.execute(sparqlquery);
 			JSONresult.put("results",result);

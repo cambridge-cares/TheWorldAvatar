@@ -21,7 +21,7 @@ import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.region.Scope;
 
 public class ShipSparql {
@@ -226,14 +226,14 @@ public class ShipSparql {
     }
 
     private static void performUpdate(ModifyQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+        RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         System.out.println("kbClient.executeUpdate():"+kbClient.executeUpdate());
     }
 
     private static JSONArray performQuery(SelectQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+    	RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         JSONArray result = null;
