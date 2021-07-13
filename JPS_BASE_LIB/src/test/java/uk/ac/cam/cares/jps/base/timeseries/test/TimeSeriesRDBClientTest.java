@@ -7,7 +7,6 @@ import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
-import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.postgresql.util.PSQLException;
@@ -142,10 +141,11 @@ public class TimeSeriesRDBClientTest {
     @Test
     public void testInitConnectionException() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        client.setRdbURL("http://localhost:5342");
         // To be able to mock the connection to the database we use Mockito
         // (whenever DriverManager is used in the try block we can mock the behaviour)
         try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class)) {
-            mockDriver.when(() -> DriverManager.getConnection(null, null, null))
+            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
                     .thenThrow(PSQLException.class);
             client.init(new ArrayList<>(), new ArrayList<>());
             // Exception is not thrown
@@ -161,10 +161,11 @@ public class TimeSeriesRDBClientTest {
     @Disabled("Works until the knowledge graph is queried in the init.")
     public void testInit() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        client.setRdbURL("http://localhost:5342");
         // To be able to mock the connection to the database we use Mockito
         // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
         try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
-            mockDriver.when(() -> DriverManager.getConnection(null, null, null))
+            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
                     .thenReturn(connection);
             mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
                     .thenReturn(context);
