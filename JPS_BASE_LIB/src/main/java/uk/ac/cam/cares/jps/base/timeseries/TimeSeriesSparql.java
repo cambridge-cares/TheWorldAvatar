@@ -29,55 +29,57 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
  */
 
 public class TimeSeriesSparql {
-	//namespace
-	public static final String namespace = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	// Namespaces for ontology and kb
+	public static final String ns_ontology = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 	
-	//prefix
-	private static final Prefix p_timeseries = SparqlBuilder.prefix(iri(namespace));
+	// Prefixes
+	private static final Prefix prefix_ontology = SparqlBuilder.prefix(iri(ns_ontology));
+	private static final Prefix prefix_kb = SparqlBuilder.prefix(iri(ns_kb));
 	
 	// RDF type
-	private static final String TimeSeriesString = namespace + "TimeSeries";
+	private static final String TimeSeriesString = ns_ontology + "TimeSeries";
     private static final Iri TimeSeries = iri(TimeSeriesString);
     
-    // relation
-    private static final Iri hasTimeSeries = p_timeseries.iri("hasTimeSeries");
-    private static final Iri hasRDB = p_timeseries.iri("hasRDB");
-    private static final Iri hasTimeUnit = p_timeseries.iri("hasTimeUnit");
+    // Relationships
+    private static final Iri hasTimeSeries = prefix_ontology.iri("hasTimeSeries");
+    private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
+    private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
     
-    public static boolean checkTimeSeriesExists(KnowledgeBaseClientInterface kbClient,String timeSeriesIRI) {
-    	String query = String.format("ask {<%s> a <%s>}",timeSeriesIRI,TimeSeriesString);
+    public static boolean checkTimeSeriesExists(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI) {
+    	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, TimeSeriesString);
     	kbClient.setQuery(query);
     	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     	return timeSeriesExists;
     }
     
     /**
-     * Instantiates the time series instance, named graph and time unit are optional
+     * Instantiate the time series instance (time unit is optional)
      * @param kbClient
      * @param timeSeriesIRI
      * @param dataIRI
-     * @param namedGraph
-     */
-    
+     * @param dbURL
+     * @param timeUnit
+     */    
     public static void initTS(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
         Iri tsIRI = iri(timeSeriesIRI);
     	
     	ModifyQuery modify = Queries.MODIFY();
 
-    	//set prefix
-    	modify.prefix(p_timeseries);
+    	// set prefix
+    	modify.prefix(prefix_ontology);
     	// define type
     	modify.insert(tsIRI.isA(TimeSeries));
-    	// db URL
-    	modify.insert(tsIRI.has(hasRDB,dbURL));
+    	// relational database URL
+    	modify.insert(tsIRI.has(hasRDB, dbURL));
     	
     	// link each data to time series
     	for (String data : dataIRI) {
-    		TriplePattern ts_tp = iri(data).has(hasTimeSeries,tsIRI);
+    		TriplePattern ts_tp = iri(data).has(hasTimeSeries, tsIRI);
     		modify.insert(ts_tp);
     	}
 
-    	// optional to define time unit
+    	// optional: define time unit
     	if (timeUnit != null) {
     		modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
     	}
@@ -86,7 +88,7 @@ public class TimeSeriesSparql {
     }
     
     /**
-     * counts number of time series IRI in kb, mainly used to generate a new unique IRI
+     * Count number of time series IRIs in kb (previously used to generate a new unique time series IRI)
      * @param kbClient
      * @return
      */
@@ -106,6 +108,11 @@ public class TimeSeriesSparql {
     	return queryresult;
 	}
 	
+    /**
+     * Remove time series and all associated connections from kb
+     * @param kbClient
+     * @param tsIRI
+     */
 	public static void removeTimeSeries(KnowledgeBaseClientInterface kbClient, String tsIRI) {
 		// sub query to search for all triples with tsIRI as the subject/object
 		SubSelect sub = GraphPatterns.select();
@@ -114,18 +121,23 @@ public class TimeSeriesSparql {
 		Variable subject = SparqlBuilder.var("c");
 		Variable object = SparqlBuilder.var("d");
 		
-		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1,object);
-		TriplePattern delete_tp2 = subject.has(predicate2,iri(tsIRI));		
-		sub.select(predicate1,predicate2,subject,object).where(delete_tp1,delete_tp2);
+		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
+		TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));		
+		sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
 		
 		// insert subquery into main sparql update
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1,delete_tp2).where(sub);
+		modify.delete(delete_tp1, delete_tp2).where(sub);
 		
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
 	}
 	
+    /**
+     * Extract all time series IRIs from kb
+     * @param kbClient
+     * @return
+     */
 	public static List<String> getAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
 		String queryString = "ts";
 		SelectQuery query = Queries.SELECT();
@@ -133,7 +145,7 @@ public class TimeSeriesSparql {
 		Variable ts = SparqlBuilder.var(queryString);
 		TriplePattern queryPattern = ts.isA(TimeSeries);
 		
-		query.select(ts).where(queryPattern).prefix(p_timeseries);
+		query.select(ts).where(queryPattern).prefix(prefix_kb);
 		
 		kbClient.setQuery(query.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();

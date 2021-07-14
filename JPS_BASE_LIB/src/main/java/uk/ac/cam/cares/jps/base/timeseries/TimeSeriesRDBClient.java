@@ -103,12 +103,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		//generate IRI for time series
 		int numTS = TimeSeriesSparql.countTS(kbClient);
-		String tsIRI = TimeSeriesSparql.namespace + "ts" + (numTS+1);
+		String tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+1);
 		
 		int i = 2;
 		// ensure generated IRI is unique in the endpoint
 		while (TimeSeriesSparql.checkTimeSeriesExists(kbClient, tsIRI)) {
-			tsIRI = TimeSeriesSparql.namespace + "ts" + (numTS+i);
+			tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+i);
 			i++;
 		}
 		
