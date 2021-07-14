@@ -15,7 +15,6 @@ public class PropertyTest extends TestCase{
 		assertEquals(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName(),"Slurm.sh");
 	}
 	
-	
 	// test getValue
 	public void testgetValue() {
 		assertEquals(Property.JOB_WORKSPACE_PARENT_DIR.getValue(), 0);
