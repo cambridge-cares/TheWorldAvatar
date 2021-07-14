@@ -40,13 +40,13 @@ public class TimeSeriesTest {
 	
 	@Test (expected = JPSRuntimeException.class)
 	public void testConstructorWithoutDataIRI() {
-		// call constructor with empty DataIRI and data series ArrayLists
+		// call constructor with empty dataIRI and data series ArrayLists
 		ts = new TimeSeries<Instant>(timeList, new ArrayList<>(), new ArrayList<>());
 	}
 	
 	@Test (expected = JPSRuntimeException.class)
 	public void testConstructorWithWrongDataIRIsize() {
-		// drop last data series to create mismatch between number of DataIRIs and data series
+		// drop last data series to create mismatch between number of dataIRIs and data series
 		dataToAdd.remove(dataToAdd.size()-1);
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
 	}
