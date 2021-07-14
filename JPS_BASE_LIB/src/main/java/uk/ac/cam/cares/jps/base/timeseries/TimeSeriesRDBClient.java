@@ -102,6 +102,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 		
 		//generate IRI for time series
+		UUID uuid = UUID.randomUUID();
+		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid.toString();
+		
+		/* old:
 		int numTS = TimeSeriesSparql.countTS(kbClient);
 		String tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+1);
 		
@@ -111,6 +115,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+i);
 			i++;
 		}
+		*/
 		
 		// instantiate in KG
 		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
@@ -120,7 +125,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		// assign column name for each value, name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
-		i = 1;
+		int i = 1;
 		for (String s : dataIRI) {
 			dataColumnNames.put(s, "column"+i);
 			i++;
