@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * PowerFlowModelVariable interface stores the model variables of power flow analysis according to
+ * PowerFlowModelVariable class stores the model variables of power flow analysis according to
  * the model variables format of MATPOWER.
  * It used to construct the query strings.
  * 
@@ -25,7 +25,7 @@ public class PowerFlowModelVariable {
 			"RatioCoefficient", "Angle", "BranchStatus", "AngleMin", "AngleMax");
 	List<String> GeneratorModelVariables = Arrays.asList("BusNumber", "Pg", "Qg", "QMax", "QMin", "Vg", "mBase", "Status",
 			"PMax", "PMin", "Pc1", "Pc2", "QC1Min", "QC1Max", "QC2Min", "QC2Max", "Rampagc", "Ramp10", "Ramp30", "Rampq", "APF"); 
-	List<String> GenCostFuncVariables = Arrays.asList("CostModel", "StartCost", "StopCost", "genCostn", "genCostcn-2", "label");
+	List<String> GenCostFuncVariables = Arrays.asList("CostModel", "StartCost", "StopCost", "genCostn", "genCostcn-2");
 
 	String[] GenCostFuncParameterLabels = {"Parameter_a", "Parameter_b", "Parameter_c", "Parameter_d", "Parameter_e", "Parameter_f"};
 

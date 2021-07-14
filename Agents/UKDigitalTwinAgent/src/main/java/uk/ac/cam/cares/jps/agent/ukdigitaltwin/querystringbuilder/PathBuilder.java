@@ -19,10 +19,14 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
  * @author Wanni Xie (wx243@cam.ac.uk)
  * 
  */
-public class PathBuilder implements Paths{
-	private int costFuncOrder; 
+public class PathBuilder{
 	
-	public static ArrayList<List<String>> buildPFOrOPFModelVarValusePredicateEdge(String varKey, int... costFuncOrder){
+	public static ArrayList<List<String>> buildPFOrOPFModelVarValusePredicateEdge(String varKey, Boolean label, int... costFuncOrder){
+		
+		PowerFlowModelVariable pfmv = new PowerFlowModelVariable(costFuncOrder[0]);
+		if(pfmv.get(varKey_) {
+			
+		}
 		PathBuilder pb = new PathBuilder(costFuncOrder[0]);
 		if(!PowerFlowModelVariable.PowerFlowModelVariablesMap.containsKey(varKey)) {
 			System.out.print("The variable key is not contained in the PF model variable keys");
