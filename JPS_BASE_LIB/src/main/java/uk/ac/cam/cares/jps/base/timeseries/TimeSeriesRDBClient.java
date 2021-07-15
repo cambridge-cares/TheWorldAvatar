@@ -58,7 +58,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
     private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
     
-    /*
+    /**
      * Standard constructor
      * @param timeClass
      */
@@ -128,10 +128,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			i++;
 		}
 		
-		populateDatabaseTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
+		populateCentralTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
 		
 		// create table for storing time series data
-		initTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
+		createEmptyTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
 		
 		closeConnection(conn);
 	}
@@ -577,25 +577,42 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		.column(tsTableNameColumn).column(columnNameColumn).execute();
 	}
 	
-	private void populateDatabaseTable(DSLContext create, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
-		InsertValuesStep4<Record, String, String, String, String> insertValueStep = create.insertInto(DSL.table(DSL.name(dbTableName)), 
+	/**
+	 * Add new entries to central RDB lookup table
+	 * @param dsl
+	 * @param tsTable
+	 * @param dataIRI
+	 * @param dataColumnNames
+	 * @param tsIRI
+	 */
+	private void populateCentralTable(DSLContext dsl, String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
+		InsertValuesStep4<Record, String, String, String, String> insertValueStep = dsl.insertInto(DSL.table(DSL.name(dbTableName)),
 				dataIRIcolumn, tsIRIcolumn, tsTableNameColumn, columnNameColumn);
-
+		
+		// mh807: Necessary to check whether dataIRI is already present in central table?
+		//		  Necessary to check whether dataIRI and dataColumnNames have same length?
+		
+		// Populate columns row by row
 		for (int i = 0; i < dataIRI.size(); i++) {
-			insertValueStep = insertValueStep.values(dataIRI.get(i),tsIRI,tsTable,dataColumnNames.get(dataIRI.get(i)));
+			insertValueStep = insertValueStep.values(dataIRI.get(i), tsIRI, tsTable, dataColumnNames.get(dataIRI.get(i)));
 		}
 		
 		insertValueStep.execute();
 	}
 	
+	/**
+	 * Generate unique (RDB) table name based on time series IRI
+	 * @param tsIRI
+	 * @return  
+	 */
 	private static String generateUniqueTableName(String tsIRI) {
 		String source = tsIRI;
 
 		byte[] bytes = null;
 		try {
 			bytes = source.getBytes("UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+		}
+		catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 
@@ -605,42 +622,56 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Creates an empty table with the given data types
+	 * Create an empty RDB table with the given data types for the respective columns
+	 * @param dsl
 	 * @param tablename
-	 * @param timeClass
-	 * @param valueClassList
+	 * @param dataColumnNames
+	 * @param dataIRI
+	 * @param dataClass
 	 */
-	private void initTimeSeriesTable(DSLContext create, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI,
-			List<Class<?>> dataClass) {   	
-		CreateTableColumnStep createStep = create.createTableIfNotExists(tablename);
+	private void createEmptyTimeSeriesTable(DSLContext dsl, String tablename, Map<String,String> dataColumnNames, List<String> dataIRI, 
+											List<Class<?>> dataClass) {   	
+		// mh807: Necessary to check whether dataColumnNames, dataIRI, and dataClass have same length?
+		//		  How to ensure that dataIRI and dataClass have same order?
 		
-    	// create time column
+		// Create table
+		CreateTableColumnStep createStep = dsl.createTableIfNotExists(tablename);
+		
+    	// Create time column
     	createStep = createStep.column(timeColumn);
     	
-    	// create 1 column for each value
+    	// Create 1 column for each value
     	for (int i = 0; i < dataIRI.size(); i++) {
     		createStep = createStep.column(dataColumnNames.get(dataIRI.get(i)), DefaultDataType.getDataType(dialect, dataClass.get(i)));
     	}
 
-    	// send request to db
+    	// Send consolidated request to RDB
     	createStep.execute();
 	}
 	
+	/**
+	 * Append time series data from ts Object to (existing) RDB table
+	 * @param dsl
+	 * @param tablename
+	 * @param ts
+	 * @param dataColumnNames
+	 */
 	private void populateTimeSeriesTable(DSLContext dsl, String tablename, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
 		List<String> dataIRIs = ts.getDataIRI();
 
     	Table<?> table = DSL.table(DSL.name(tablename));
     	
     	List<Field<?>> columnList = new ArrayList<>();
+    	// Retrieve list of corresponding column names for dataIRIs
     	columnList.add(timeColumn);
     	for (String data : dataIRIs) {
+    		// mh807: Necessary to check whether dataIRI from ts Object is present in table and to throw Exception if not?  
     		columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
     	}
     	
-    	// column
+    	// Populate columns row by row
         InsertValuesStepN<?> insertValueStep = dsl.insertInto(table, columnList);
         for (int i=0; i<ts.getTimes().size(); i++) {
-        	// values are inserted row by row
         	// newValues is the row elements
 			Object[] newValues = new Object[dataIRIs.size()+1];
 			newValues[0] = ts.getTimes().get(i); 
@@ -652,14 +683,26 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		insertValueStep.execute();
 	}
 	
+	/**
+	 * Check whether dataIRI has a tsIRI associated with it (i.e. respective tsIRI entry not null)
+	 * @param dsl
+	 * @param dataIRI
+	 * @return
+	 */
 	private boolean checkDataHasTimeSeries(DSLContext dsl, String dataIRI) {
-		// look for the entry dataIRI in dbTable
+		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		return dsl.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));
 	}
 	
+	/**
+	 * Retrieve tsIRI, which corresponds to provided dataIRI, from central database lookup table
+	 * @param dsl
+	 * @param dataIRI
+	 * @return
+	 */
 	private String getTimeSeriesIRI(DSLContext dsl, String dataIRI) {
-		// look for the entry dataIRI in dbTable
+		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		List<String> queryresult = dsl.select(tsIRIcolumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(tsIRIcolumn);
 	    return queryresult.get(0);
