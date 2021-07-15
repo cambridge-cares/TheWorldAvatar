@@ -58,6 +58,33 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropSurfacePowerDensity -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasCropSurfacePowerDensity">
@@ -132,6 +159,15 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#hasURL">
@@ -154,46 +190,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The physical units of a quantity.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value -->
-
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#CropYield"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#GrossCalorificValue"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#NetCalorificValue"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocropenergy/OntoCropEnergy.owl#SurfacePowerDensity"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The value of a property.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
-    </owl:DatatypeProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -202,6 +198,18 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/UnitDivision"/>
     
 
 
