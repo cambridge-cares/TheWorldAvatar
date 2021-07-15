@@ -27,7 +27,7 @@ public class TimeSeriesClientTest {
 	 * example code on how to use the TimeSeriesClient
 	 */
 	@Test
-	@Ignore("Test requires available Blazegraph endpoint.")
+	//@Ignore("Test requires available Blazegraph endpoint.")
 	public void testExample() {
 		// set up a kb client that points to the location of your instance
 		// this can be the a RemoteKnowledgeBaseClient or the FileBasedKnowledgeBaseClient
@@ -45,7 +45,7 @@ public class TimeSeriesClientTest {
     	tsClient.setRdbURL(dbURL);
     	tsClient.setRdbUser(user);
     	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
+    	//tsClient.setKBClient(kbClient);
     	
     	// next step is to initialise the time series instance in RDF and RDB
     	// in this example I have three instances that share the same timestamp, so they are initialised together
@@ -59,6 +59,7 @@ public class TimeSeriesClientTest {
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
     	tsClient.init(dataIRI, dataClass);
+    	//tsClient.initCentralTable();
     	
     	// to add data, you need to create a TimeSeries object
     	List<Instant> timeList = new ArrayList<>();
@@ -115,6 +116,7 @@ public class TimeSeriesClientTest {
 	}
 	
 	@Test
+	@Ignore
 	public void testConstructorAndSetters() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		// test constructor
 		Class<?> timeClass = Instant.class;
@@ -125,13 +127,13 @@ public class TimeSeriesClientTest {
 		Field kbClientField = tsClient.getClass().getDeclaredField("kbClient");
 		kbClientField.setAccessible(true);
 		Assert.assertNull(kbClientField.get(tsClient));
-		tsClient.setKBClient(kbClient);
-		Assert.assertNotNull(kbClientField.get(tsClient));
-		Assert.assertEquals(kbClientField.get(tsClient), kbClient);
-		
-		FileBasedKnowledgeBaseClient kbClient2 = new FileBasedKnowledgeBaseClient();
-		tsClient.setKBClient(kbClient2);
-		Assert.assertEquals(kbClientField.get(tsClient), kbClient2);
+//		tsClient.setKBClient(kbClient);
+//		Assert.assertNotNull(kbClientField.get(tsClient));
+//		Assert.assertEquals(kbClientField.get(tsClient), kbClient);
+//		
+//		FileBasedKnowledgeBaseClient kbClient2 = new FileBasedKnowledgeBaseClient();
+//		tsClient.setKBClient(kbClient2);
+//		Assert.assertEquals(kbClientField.get(tsClient), kbClient2);
 		
 	}
 }

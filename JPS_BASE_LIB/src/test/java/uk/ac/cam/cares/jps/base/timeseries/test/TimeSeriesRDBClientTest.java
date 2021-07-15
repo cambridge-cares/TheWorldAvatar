@@ -79,19 +79,19 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals(String.class, columnNameColumn.getType());
     }
 
-    @Test
-    @Ignore("To be moved to KB client class")
-    public void testSetKBClient() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        // Retrieve the value of the private field 'kbClient' of the client to check its value
-        Field kbClientField = client.getClass().getDeclaredField("kbClient");
-        kbClientField.setAccessible(true);
-
-        Assert.assertNull(kbClientField.get(client));
-        KnowledgeBaseClientInterface kbClient = new RemoteKnowledgeBaseClient();
-        client.setKBClient(kbClient);
-        Assert.assertSame(kbClient, kbClientField.get(client));
-    }
+//    @Test
+//    @Ignore("To be moved to KB client class")
+//    public void testSetKBClient() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+//        // Retrieve the value of the private field 'kbClient' of the client to check its value
+//        Field kbClientField = client.getClass().getDeclaredField("kbClient");
+//        kbClientField.setAccessible(true);
+//
+//        Assert.assertNull(kbClientField.get(client));
+//        KnowledgeBaseClientInterface kbClient = new RemoteKnowledgeBaseClient();
+//        client.setKBClient(kbClient);
+//        Assert.assertSame(kbClient, kbClientField.get(client));
+//    }
 
     @Test
     public void testSetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -164,26 +164,26 @@ public class TimeSeriesRDBClientTest {
     }
 
 
-    @Test
-    @Ignore("Works until the knowledge graph is queried in the init.")
-    public void testInit() {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        client.setRdbURL("http://localhost:5342");
-        // To be able to mock the connection to the database we use Mockito
-        // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
-        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
-            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
-                      .thenReturn(connection);
-            mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
-                   .thenReturn(context);
-            client.init(new ArrayList<>(), new ArrayList<>());
-            // Mocks the behaviour of the context when used to create a table
-            Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any())
-                   .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
-                   .thenReturn(1);
-            // Verify that method (with given argument) was invoked exactly once
-            Mockito.verify(context, Mockito.times(1)).createDatabaseIfNotExists("dbTable");
-        }
-    }
+//    @Test
+//    @Ignore("Works until the knowledge graph is queried in the init.")
+//    public void testInit() {
+//        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+//        client.setRdbURL("http://localhost:5342");
+//        // To be able to mock the connection to the database we use Mockito
+//        // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
+//        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
+//            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
+//                      .thenReturn(connection);
+//            mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
+//                   .thenReturn(context);
+//            client.init(new ArrayList<>(), new ArrayList<>());
+//            // Mocks the behaviour of the context when used to create a table
+//            Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any())
+//                   .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
+//                   .thenReturn(1);
+//            // Verify that method (with given argument) was invoked exactly once
+//            Mockito.verify(context, Mockito.times(1)).createDatabaseIfNotExists("dbTable");
+//        }
+//    }
 
 }
