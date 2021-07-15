@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:OntoCropMapGML="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 July 2021</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing crop maps.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
