@@ -4,12 +4,16 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-public class SlurmJobPropertyTest{ 
+public class SlurmJobPropertyTest {
 	
 	SlurmJobProperty test = new SlurmJobProperty();
 	
 	@Test
+<<<<<<< HEAD
 	public void getHpcServerLoginUserNameTest() {
+=======
+	public void testSetAndGetHpcServerLoginUserNameTest() {
+>>>>>>> af51d25e1592982f8355b0a42446a5fa3b8a955b
 		// Default value
 		assertNull(test.getHpcServerLoginUserName());
 		// Set specific value and check whether it is set correctly
