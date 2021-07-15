@@ -30,9 +30,8 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 /**
  * This class uses the jooq library to interact with the relational database.
- * T is the class type for the time values
+ * <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  * @author Kok Foong Lee
- *
  */
 
 public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
@@ -45,7 +44,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private String rdbPassword = null;
 	// time unit (in IRI)
 	private String timeUnit = null;
-	
+	// time series column field (for RDB)
 	private final Field<T> timeColumn;
 	// constants
 	private static final SQLDialect dialect = SQLDialect.POSTGRES;
@@ -107,8 +106,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		/* old:
 		int numTS = TimeSeriesSparql.countTS(kbClient);
-		String tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+1);
-		
+		String tsIRI = TimeSeriesSparql.ns_kb + "ts" + (numTS+1);		
 		int i = 2;
 		// ensure generated IRI is unique in the endpoint
 		while (TimeSeriesSparql.checkTimeSeriesExists(kbClient, tsIRI)) {
@@ -525,10 +523,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		return columnName;
 	}
 	
+	/**
+	 * Establish connection to RDB
+	 * @return
+	 */
 	private Connection connect() {
 		Connection conn = null;
 		try {
+			// Load required driver
 			Class.forName("org.postgresql.Driver");
+			// Connect to DB
         	conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
         	System.out.println("Connected to " + this.rdbURL);
 			return conn;
@@ -537,8 +541,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     }
 	
+	/**
+	 * Close existing connection to RDB
+	 * @param conn
+	 */
 	private void closeConnection(Connection conn) {
-		// close connection to RDB
 		try {
 			conn.close();
 		} catch (SQLException e) {

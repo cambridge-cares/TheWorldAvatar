@@ -6,7 +6,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.jupiter.api.Disabled;
+import org.junit.Ignore;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.postgresql.util.PSQLException;
@@ -22,24 +22,26 @@ import java.time.Instant;
 import java.util.ArrayList;
 
 public class TimeSeriesRDBClientTest {
-
+	
+	// Create mocks
     private DSLContext context = Mockito.mock(DSLContext.class, Mockito.RETURNS_DEEP_STUBS);
     private CreateTableColumnStep create = Mockito.mock(CreateTableColumnStep.class);
     private Connection connection = Mockito.mock(Connection.class);
 
     @Test
-    public void testConstructor() throws NoSuchFieldException, IllegalAccessException {
+    public void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'timeColumn' of the client to check its value
         Field timeColumnField = client.getClass().getDeclaredField("timeColumn");
         timeColumnField.setAccessible(true);
         org.jooq.Field<String> timeColumn = (org.jooq.Field<String>) timeColumnField.get(client);
+        // Test for correct field name and class
         Assert.assertEquals("time", timeColumn.getName());
         Assert.assertEquals(Instant.class, timeColumn.getType());
     }
 
     @Test
-    public void testPrivateDatabaseRelatedFields() throws NoSuchFieldException, IllegalAccessException {
+    public void testPrivateDatabaseRelatedFields() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'dialect' of the client to check its value
         Field dialectField = client.getClass().getDeclaredField("dialect");
@@ -78,7 +80,8 @@ public class TimeSeriesRDBClientTest {
     }
 
     @Test
-    public void testSetKBClient() throws NoSuchFieldException, IllegalAccessException {
+    @Ignore("To be moved to KB client class")
+    public void testSetKBClient() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'kbClient' of the client to check its value
         Field kbClientField = client.getClass().getDeclaredField("kbClient");
@@ -91,7 +94,7 @@ public class TimeSeriesRDBClientTest {
     }
 
     @Test
-    public void testSetTimeUnit() throws NoSuchFieldException, IllegalAccessException {
+    public void testSetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'timeUnit' of the client to check its value
         Field timeUnitField = client.getClass().getDeclaredField("timeUnit");
@@ -99,11 +102,12 @@ public class TimeSeriesRDBClientTest {
 
         Assert.assertNull(timeUnitField.get(client));
         client.setTimeUnit("s");
+        Assert.assertNotNull(timeUnitField.get(client));
         Assert.assertEquals("s", timeUnitField.get(client));
     }
-
+    
     @Test
-    public void testSetRdbURL() throws NoSuchFieldException, IllegalAccessException {
+    public void testSetRdbURL() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbURL' of the client to check its value
         Field rdbURLField = client.getClass().getDeclaredField("rdbURL");
@@ -111,11 +115,12 @@ public class TimeSeriesRDBClientTest {
 
         Assert.assertNull(rdbURLField.get(client));
         client.setRdbURL("http://localhost:5342");
+        Assert.assertNotNull(rdbURLField.get(client));
         Assert.assertEquals("http://localhost:5342", rdbURLField.get(client));
     }
 
     @Test
-    public void testSetRdbUser() throws NoSuchFieldException, IllegalAccessException {
+    public void testSetRdbUser() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbUser' of the client to check its value
         Field rdbUserField = client.getClass().getDeclaredField("rdbUser");
@@ -123,11 +128,12 @@ public class TimeSeriesRDBClientTest {
 
         Assert.assertNull(rdbUserField.get(client));
         client.setRdbUser("postgres");
+        Assert.assertNotNull(rdbUserField.get(client));
         Assert.assertEquals("postgres", rdbUserField.get(client));
     }
 
     @Test
-    public void testSetRdbPassword() throws NoSuchFieldException, IllegalAccessException {
+    public void testSetRdbPassword() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbPassword' of the client to check its value
         Field rdbPasswordField = client.getClass().getDeclaredField("rdbPassword");
@@ -135,6 +141,7 @@ public class TimeSeriesRDBClientTest {
 
         Assert.assertNull(rdbPasswordField.get(client));
         client.setRdbPassword("password");
+        Assert.assertNotNull(rdbPasswordField.get(client));
         Assert.assertEquals("password", rdbPasswordField.get(client));
     }
 
@@ -146,7 +153,7 @@ public class TimeSeriesRDBClientTest {
         // (whenever DriverManager is used in the try block we can mock the behaviour)
         try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class)) {
             mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
-                    .thenThrow(PSQLException.class);
+                      .thenThrow(PSQLException.class);
             client.init(new ArrayList<>(), new ArrayList<>());
             // Exception is not thrown
             Assert.fail();
@@ -158,7 +165,7 @@ public class TimeSeriesRDBClientTest {
 
 
     @Test
-    @Disabled("Works until the knowledge graph is queried in the init.")
+    @Ignore("Works until the knowledge graph is queried in the init.")
     public void testInit() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         client.setRdbURL("http://localhost:5342");
@@ -166,14 +173,15 @@ public class TimeSeriesRDBClientTest {
         // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
         try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
             mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
-                    .thenReturn(connection);
+                      .thenReturn(connection);
             mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
-                    .thenReturn(context);
+                   .thenReturn(context);
             client.init(new ArrayList<>(), new ArrayList<>());
-            // Mocks the behaviour of the the context when used to create a table
+            // Mocks the behaviour of the context when used to create a table
             Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any())
-                    .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
-                    .thenReturn(1);
+                   .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
+                   .thenReturn(1);
+            // Verify that method (with given argument) was invoked exactly once
             Mockito.verify(context, Mockito.times(1)).createDatabaseIfNotExists("dbTable");
         }
     }

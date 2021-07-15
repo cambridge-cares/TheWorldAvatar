@@ -119,11 +119,6 @@ public class TimeSeriesClientTest {
 		// test constructor
 		Class<?> timeClass = Instant.class;
 		TimeSeriesRDBClient<Instant> tsClient = new TimeSeriesRDBClient<>(Instant.class);
-		Field timeColumnField = tsClient.getClass().getDeclaredField("timeColumn");
-		timeColumnField.setAccessible(true);
-		// this only compares the query string - "time", the class is not checked here
-		Assert.assertNotNull(timeColumnField.get(tsClient));
-		Assert.assertEquals(timeColumnField.get(tsClient), DSL.field(DSL.name("time"),timeClass));
 		
 		// check that kbClient is set correctly
 		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
@@ -138,36 +133,5 @@ public class TimeSeriesClientTest {
 		tsClient.setKBClient(kbClient2);
 		Assert.assertEquals(kbClientField.get(tsClient), kbClient2);
 		
-		// rdb password
-		Field rdbPasswordField = tsClient.getClass().getDeclaredField("rdbPassword");
-		rdbPasswordField.setAccessible(true);
-		Assert.assertNull(rdbPasswordField.get(tsClient));
-		tsClient.setRdbPassword(password);
-		Assert.assertNotNull(rdbPasswordField.get(tsClient));
-		Assert.assertEquals(rdbPasswordField.get(tsClient), password);
-		
-		// rdb user
-		Field rdbUserField = tsClient.getClass().getDeclaredField("rdbUser");
-		rdbUserField.setAccessible(true);
-		Assert.assertNull(rdbUserField.get(tsClient));
-		tsClient.setRdbUser(user);
-		Assert.assertNotNull(rdbUserField.get(tsClient));
-		Assert.assertEquals(rdbUserField.get(tsClient), user);
-		
-		// rdb url
-		Field rdbUrlField = tsClient.getClass().getDeclaredField("rdbURL");
-		rdbUrlField.setAccessible(true);
-		Assert.assertNull(rdbUrlField.get(tsClient));
-		tsClient.setRdbURL(dbURL);
-		Assert.assertNotNull(rdbUrlField.get(tsClient));
-		Assert.assertEquals(rdbUrlField.get(tsClient),dbURL);
-		
-		// time unit
-		Field timeUnitField = tsClient.getClass().getDeclaredField("timeUnit");
-		timeUnitField.setAccessible(true);
-		Assert.assertNull(timeUnitField.get(tsClient));
-		tsClient.setTimeUnit("http://s");
-		Assert.assertNotNull(timeUnitField.get(tsClient));
-		Assert.assertEquals(timeUnitField.get(tsClient),"http://s");
 	}
 }
