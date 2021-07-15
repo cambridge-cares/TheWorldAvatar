@@ -18,11 +18,13 @@ LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Gas Grid Agent"
 
-# Install Java
-RUN apt update && apt install -y openjdk-11-jdk-headless
-
 # Install utilities
-RUN apt update && apt-get install -y rsyslog cron procps nano dos2unix
+RUN apt update && apt-get install -y rsyslog cron procps nano dos2unix wget software-properties-common
+
+# Install Java 8
+RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
+RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
+RUN apt update && apt install -y adoptopenjdk-8-hotspot
 
 # Install web server (to host geojson files for download)
 RUN apt update && apt install -y apache2
