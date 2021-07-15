@@ -183,7 +183,6 @@ def get_data_type(data_type):
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
-    iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
     return iri
