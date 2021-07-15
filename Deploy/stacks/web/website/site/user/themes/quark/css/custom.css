@@ -45,6 +45,8 @@ p {
 /* Container for nav menu */
 .container.grid-lg {
     max-width: 1280px;
+	padding-right: 75px;
+	padding-left: 75px;
 }
 
 /* Height when scrolled */

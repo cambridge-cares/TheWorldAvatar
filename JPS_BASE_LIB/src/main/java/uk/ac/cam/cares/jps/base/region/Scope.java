@@ -10,6 +10,10 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
+/**
+ * please note that this class will be removed at some point
+ */
+
 /** 
  * Scope is the simulation domain for dispersion modelling
  * It contains the coordinates of the lower left and upper right corners along with the source CRS

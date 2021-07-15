@@ -8,6 +8,10 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 /**
+ * Please note that this class will be removed at some point
+ */
+
+/**
  * The purpose of this class is to store region specific parameters for dispersion modelling in one place.
  * In the future, these may be queried from the triplestore. 
  * There are currently 4 sets of scope, 2 for both Sg and HK.

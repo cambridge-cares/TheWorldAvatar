@@ -66,7 +66,7 @@ public class PolygonVocabulary extends BigdataCoreVocabulary_v20160317
      *
      */
     private String[] uris = 
-        {"http://theworldavatar.com/ontology/datatype/POLYGON-2-14"};
+        {"http://www.theworldavatar.com/ontology/datatype/POLYGON-2-14"};
 
     /**
      * Default constructor.
