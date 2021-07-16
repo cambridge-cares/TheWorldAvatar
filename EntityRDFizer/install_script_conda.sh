@@ -50,7 +50,6 @@ function usage {
 }
 
 function prompt_for_input {
-    echo $DO_NOT_PROMPT
     if [[ $DO_NOT_PROMPT == 'n' ]]
     then
 		read -n 1 -s -r -p "Press any key to continue"

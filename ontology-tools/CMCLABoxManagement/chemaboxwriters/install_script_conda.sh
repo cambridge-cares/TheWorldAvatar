@@ -51,7 +51,6 @@ function usage {
 }
 
 function prompt_for_input {
-    echo $DO_NOT_PROMPT
     if [[ $DO_NOT_PROMPT == 'n' ]]
     then
 		read -n 1 -s -r -p "Press any key to continue"
@@ -126,7 +125,7 @@ function install_local_dependencies {
 	$SPATH/../../../thermo/chemutils/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
     echo ""
     echo ""
-	$SPATH/../../../EntityRDFizer/install_script_conda.sh -i -n $VENV_NAME $DEV_INSTALL
+	$SPATH/../../../EntityRDFizer/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
 
     if [ $? -eq 0 ]; then
     	echo ""
