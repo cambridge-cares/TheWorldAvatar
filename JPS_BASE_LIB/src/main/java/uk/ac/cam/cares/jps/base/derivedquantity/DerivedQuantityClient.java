@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 /**
  * this class acts as an interface to create and deal with derived quantities
  * certain functions could be called directly from DerivedQuantitySparql, e.g. createDerivedQuantity
- * but I wanted to use this class to list the functions that users should use
+ * this class lists the functions that are intended for users to use
  * @author Kok Foong Lee
  *
  */
@@ -52,7 +52,8 @@ public class DerivedQuantityClient {
     }
     
     /**
-     * add a timestamp to your input
+     * adds a timestamp to your input following the w3c standard for unix timestamp https://www.w3.org/TR/owl-time/
+     * <entity> <hasTime> <time>, <time> <numericPosition> 123
      * @param entity
      */
     public void addTimeInstance(String entity) {
