@@ -35,11 +35,11 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
  */
 
 public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
-	/* mh807: move
+	// mh807: move
 	// User defined inputs
 	// kbClient with the endpoint (triplestore/owl file) specified
 	private KnowledgeBaseClientInterface kbClient = null; 
-	*/
+
 	// URL and credentials for the relational database
 	private String rdbURL = null; 
 	private String rdbUser = null;
@@ -65,11 +65,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
     }
     
-    /* mh807: move
+    // mh807: move
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
-	*/
+	
 	public void setTimeUnit(String timeUnit) {
 		this.timeUnit = timeUnit;
 	}
@@ -85,57 +85,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		this.rdbPassword = password;
 	}
 	
-	/**
-	 * mh807: remove
-	 * Initialise Time Series in RDF and RDB
-	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
-	 */
-	// Niklas: Should be split into initializing the global table and initializing the table for the specific time series
-	// and corresponding entries in the global table.
-	public void init(List<String> dataIRI, List<Class<?>> dataClass) {
-		// initialise connection
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect); 
-		
-		// check if database (look up table) exists and create it
-		createDatabaseTable(create);
-		
-		// check if data already exists
-		// mh807: throwing an error prevents tests if dbTable already exists
-		for (String s : dataIRI) {
-			if(checkDataHasTimeSeries(create, s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance");
-			}
-		}
-		
-		//Generate IRI for time series
-		UUID uuid = UUID.randomUUID();
-		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid.toString();
-		
-		/* mh807: move
-		// instantiate in KG
-		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
-		*/
-		
-		// generate unique table name for this time series, cannot use data IRI as table names directly
-		String tsTableName = generateUniqueTableName(tsIRI);
-		
-		// assign column name for each value, name for time column is fixed
-		Map<String,String> dataColumnNames = new HashMap<String,String>();
-		int i = 1;
-		for (String s : dataIRI) {
-			dataColumnNames.put(s, "column"+i);
-			i++;
-		}
-		
-		populateCentralTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
-		
-		// create table for storing time series data
-		createEmptyTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
-		
-		closeConnection(conn);
-	}
-	
+
 	/**
 	 * Initialise central database lookup table
 	 */
@@ -179,10 +129,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		String tsTableName = uuid;
 		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;
 				
-		/* mh807: move
+		// mh807: move
 		// instantiate in KG
 		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
-		*/
 		
 		/* mh807: old implementation of unique table new
 		// generate unique table name for this time series, cannot use data IRI as table names directly
@@ -545,9 +494,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 		
 		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
-		/* mh807: move
+		// mh807: move
 		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
-		*/
     
     	//delete time series table
     	String tsTableName = getTableName(dsl, tsIRI);
@@ -563,7 +511,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * deletes everything related to time series
 	 */
 	public void deleteAll() {
-		/* mh807: move
+		// mh807: move
 		List<String> tsIRI = TimeSeriesSparql.getAllTimeSeries(kbClient);
 		
 		if (!tsIRI.isEmpty()) {
@@ -585,7 +533,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// delete lookup table
 			dsl.dropTable(dbTable).execute();
 		}
-		*/
 	}
 	
 	/**

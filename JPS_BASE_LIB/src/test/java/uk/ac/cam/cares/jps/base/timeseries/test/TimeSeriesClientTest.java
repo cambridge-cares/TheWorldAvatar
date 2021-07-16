@@ -45,7 +45,7 @@ public class TimeSeriesClientTest {
     	tsClient.setRdbURL(dbURL);
     	tsClient.setRdbUser(user);
     	tsClient.setRdbPassword(password);
-    	//tsClient.setKBClient(kbClient);
+    	tsClient.setKBClient(kbClient);
     	
     	// next step is to initialise the time series instance in RDF and RDB
     	// in this example I have three instances that share the same timestamp, so they are initialised together
@@ -58,7 +58,6 @@ public class TimeSeriesClientTest {
     	
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
-    	//tsClient.init(dataIRI, dataClass);
     	tsClient.initCentralTable();
     	tsClient.initTimeSeriesTable(dataIRI, dataClass);
     	

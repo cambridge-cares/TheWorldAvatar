@@ -154,7 +154,7 @@ public class TimeSeriesRDBClientTest {
         try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class)) {
             mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
                       .thenThrow(PSQLException.class);
-            client.init(new ArrayList<>(), new ArrayList<>());
+            client.initCentralTable();
             // Exception is not thrown
             Assert.fail();
         }
