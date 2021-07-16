@@ -73,7 +73,7 @@
             <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
             <artifactId>custom_node_modules</artifactId>
             <type>zip</type>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
         <!-- HDT data -->
         <dependency>
