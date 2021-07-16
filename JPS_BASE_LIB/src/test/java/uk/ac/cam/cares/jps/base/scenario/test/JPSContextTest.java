@@ -11,7 +11,7 @@ public class JPSContextTest{
 
 	// Test get(JSONObject jo, String key) and put(JSONObject jo, String key, String value)
 	@Test
-	public void getTest(){
+	public void testPutandGet(){
 		JSONObject jo = new JSONObject();
 		String key = "testkey";
 		String value = "testvalue";
@@ -22,23 +22,21 @@ public class JPSContextTest{
 		assertEquals("testvalue", JPSContext.get(jo, key));
 	}
 	
-	// Test getJpsContext()
+	// Test createJpsContext(), putJPSContext(JSONObject jpsContext), removeJPSContext() and getJpsContext()
 	@Test
-	public void getJpsContextTest() {
+	public void testCreatePutGetandRemoveJpsContext() {
+		assertTrue(JPSContext.createJpsContext().length()==0);
+		JSONObject testobj = new JSONObject();
+		JPSContext.putJPSContext(testobj);
 		assertTrue(JPSContext.getJpsContext().length()==0);
+		JPSContext.removeJPSContext();
+		assertNull(JPSContext.getJpsContext());
 		
 	}
-	
-	// Test createJpsContext()
-	@Test
-	public void createJpsContextTest() {
-		assertTrue(JPSContext.createJpsContext().length()==0);
-	}
-	
 		
 	// Test putScenarioUrl(JSONObject jo, String value) and getScenarioUrl(JSONObject jo)
 	@Test
-	public void getScenarioUrlTest() {
+	public void testPutandGetScenarioUrl() {
 		JSONObject jo = new JSONObject();
 		String value = "testvalue";
 		assertNull(JPSContext.getScenarioUrl(jo));
@@ -48,7 +46,7 @@ public class JPSContextTest{
 	
 	// Test putUsecaseUrl((JSONObject jo, String value) and getUsecaseUrl(JSONObject jo)
 	@Test
-	public void getUsecaseUrlTest() {
+	public void testPutandGetUsecaseUrl() {
 		JSONObject jo = new JSONObject();
 		String value = "testvalue";
 		assertNull(JPSContext.getUsecaseUrl(jo));
@@ -58,7 +56,7 @@ public class JPSContextTest{
 	
 	// Test putSimulationTime(JSONObject jo, String value) and getSimulationTime(JSONObject jo)
 	@Test
-	public void getSimulationTimeTest() {
+	public void testPutandGetSimulationTime() {
 		JSONObject jo = new JSONObject();
 		String value = "testvalue";
 		assertNull(JPSContext.getSimulationTime(jo));
@@ -69,7 +67,7 @@ public class JPSContextTest{
 
 	// Test put(String key, String value); get(String key) and remove(String key)
 	@Test
-	public void getTest2() {
+	public void testPutGetandRemove() {
 		String key = "testkey";
 		String value = "testvalue";
 		assertNull(JPSContext.get(key));
@@ -81,7 +79,7 @@ public class JPSContextTest{
 
 	// Test putScenarioUrl(String value); getScenarioUrl() and removeScenarioUrl()
 	@Test
-	public void getScenarioUrlTest2() {
+	public void testPutGetandRemoveScenarioUrl() {
 		String value = "testvalue";
 		assertNull(JPSContext.getScenarioUrl());
 		JPSContext.putScenarioUrl(value);
@@ -92,7 +90,7 @@ public class JPSContextTest{
 	
 	// Test putUsecaseUrl(String value); getUsecaseUrl() and removeUsecaseUrl()
 	@Test
-	public void getUsecaseUrlTest2() {
+	public void testPutGetandRemoveUsecaseUrl() {
 		String value = "testvalue";
 		assertNull(JPSContext.getUsecaseUrl());
 		JPSContext.putUsecaseUrl(value);
@@ -104,7 +102,7 @@ public class JPSContextTest{
 	
 	// Test putSimulationTime(String value); getSimulationTime() and removeSimulationTime()
 	@Test
-	public void getSimulationTimeTest2() {
+	public void testPutGetandRemoveSimulationTime() {
 		String value = "testvalue";
 		assertNull(JPSContext.getSimulationTime());
 		JPSContext.putSimulationTime(value);
