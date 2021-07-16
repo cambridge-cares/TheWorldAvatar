@@ -29,6 +29,7 @@ import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
  * SPARQL queries/updates for instances related to derived quantities
+ * These functions are called by the DerivedQuantityClient class
  * @author Kok Foong Lee
  *
  */
@@ -521,7 +522,7 @@ public class DerivedQuantitySparql{
 		}
 		catch (JSONException e) {
 			throw new JPSRuntimeException("No timestamp for <" + instance + ">. This is probably an input and you should consider "
-					+ "adding a timestamp using addTimeInstance", e);
+					+ "adding a timestamp using DerivedQuantitySparql.addTimeInstance or create a derived instance using this instance", e);
 		}
 	}
 	

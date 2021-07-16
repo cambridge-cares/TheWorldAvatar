@@ -10,6 +10,13 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
+/**
+ * this class acts as an interface to create and deal with derived quantities
+ * certain functions could be called directly from DerivedQuantitySparql, e.g. createDerivedQuantity
+ * but I wanted to use this class to list the functions that users should use
+ * @author Kok Foong Lee
+ *
+ */
 public class DerivedQuantityClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs
 	public static final String AGENT_INPUT_KEY = "input";
@@ -22,7 +29,8 @@ public class DerivedQuantityClient {
     }
     
     /**
-     * Links the given derived quantity to its inputs and the agent used to derived it
+     * This creates a new derived instance and adds the following statements
+     * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <agentIRI> <hasHttpUrl> <agentURL>, <derived> <isDerivedFrom> <inputsIRI>
      * Use this for instances that get replaced by agents
      * @param derivedQuantityIRI
      * @param inputsIRI
@@ -44,6 +52,21 @@ public class DerivedQuantityClient {
     }
     
     /**
+     * add a timestamp to your input
+     * @param entity
+     */
+    public void addTimeInstance(String entity) {
+    	DerivedQuantitySparql.addTimeInstance(kbClient, entity);
+    }
+    
+    /**
+     * you may want to use this to update an input's timestamp, the DerivedQuantityClient does not deal with inputs directly
+     */
+    public void updateTimestamp(String entity) {
+    	DerivedQuantitySparql.updateTimeStamp(kbClient, entity);
+    }
+    
+    /**
 	 * makes sure the given instance is up-to-date by comparing its timestamp to all of its dependents
 	 * the input, derivedIRI, should have an rdf:type DerivedQuantity or DerivedQuantityWithTimeSeries
 	 * @param kbClient
@@ -56,7 +79,31 @@ public class DerivedQuantityClient {
 	}
 	
 	/**
-	 * throws an exception if there is a circular dependency
+	 * This checks for any circular dependency and ensures that all the linked inputs have a suitable timestamp attached
+	 * This does not check for everything, e.g. instances having appropriate rdf:types, and the agent design
+	 * @param derived
+	 * @return
+	 */
+	public boolean validateDerived(String derived) {
+		boolean valid = true;
+		// keep track of quantities to avoid circular dependencies
+		List<String> derivedList = new ArrayList<>();
+        
+		try {
+			validateDerived(derived, derivedList);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+			valid = false;
+		}
+		return valid;
+	}
+	
+	/**
+	 * All private functions below
+	 */
+	
+	/**
+	 * called by the public function updateInstance
 	 * @param instance
 	 * @param derivedList
 	 */
@@ -64,10 +111,11 @@ public class DerivedQuantityClient {
 		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
 		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
 		
-		for (String s : inputsAndDerived) {
-			if (!derivedList.contains(s)) {
+		for (String inputOrDerived : inputsAndDerived) {
+			if (!derivedList.contains(inputOrDerived)) {
+				// it's ok to add duplicate instances into the list, happens when the code is going through its inputs, but does nothing
 				derivedList.add(instance);
-				updateInstance(s, derivedList);
+				updateInstance(inputOrDerived, derivedList);
 			} else {
 				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 			}
@@ -140,6 +188,34 @@ public class DerivedQuantityClient {
 				}
 				// if there are no errors, assume update is successful
 				DerivedQuantitySparql.updateTimeStamp(kbClient, instance);
+			}
+		}
+	}
+	
+	/**
+	 * called by the public function validateDerived
+	 * @param instance
+	 * @param derivedList
+	 */
+	private void validateDerived(String instance, List<String> derivedList) {
+		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
+		for (String inputOrDerived : inputsAndDerived) {
+			if (!derivedList.contains(inputOrDerived)) {
+				// it's ok to add duplicate instances into the list, happens when the code is going through its inputs, but does nothing
+				derivedList.add(instance);
+				validateDerived(inputOrDerived, derivedList);
+			} else {
+				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
+			}
+		}
+		
+		// check that for each derived quantity, there is a timestamp to compare to
+		String[] inputs = DerivedQuantitySparql.getInputs(this.kbClient, instance);
+		if (inputs.length > 0) {
+			// getTimestamp will throw an exception if there is no timestamp
+			DerivedQuantitySparql.getTimestamp(kbClient, instance);
+			for (String input : inputs) {
+				DerivedQuantitySparql.getTimestamp(kbClient, input);
 			}
 		}
 	}
