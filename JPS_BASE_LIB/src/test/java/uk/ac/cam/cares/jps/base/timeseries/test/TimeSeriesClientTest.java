@@ -68,7 +68,7 @@ public class TimeSeriesClientTest {
     	List<Integer> data3 = new ArrayList<>();
     	
     	for (int i = 0; i < 10; i++) {
-    		timeList.add(Instant.now().plusSeconds(i));
+   			timeList.add(Instant.now().plusSeconds(i));
     		data1.add(Double.valueOf(i));
     		data2.add(String.valueOf(i));
     		data3.add(Integer.valueOf(i));
@@ -79,7 +79,7 @@ public class TimeSeriesClientTest {
     	TimeSeries<Instant> tsToAdd = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	
     	// supply the TimeSeries object as an argument to the Time series client
-    	tsClient.addTimeSeries(tsToAdd);
+    	tsClient.addTimeSeriesData(tsToAdd);
     	
     	// you can query the entire TimeSeries table by providing the data IRIs
     	TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI);

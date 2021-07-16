@@ -156,69 +156,80 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 	}
 	
-	/**
-	 * appends data to the already existing table
+    /**
+     * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
-	 */
-    public void addTimeSeries(TimeSeries<T> ts) {
+	 * @param ts
+     */
+	public void addTimeSeriesData(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
-    	// initialise connection
+    	// Initialise connection
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	// check if time series is initialised
+    	// Check if all required time series are initialised
 		for (String s : dataIRI) {
+			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+			
+			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
 			}
 		}
     	
-		// first ensure that each provided column is located in the same table by checking its time series IRI
+		// Ensure that each provided column is located in the same table by checking its time series IRI
     	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
     			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
     			}
     		}
     	}
     	
     	String tsTableName = getTableName(dsl, tsIRI);
-    	// assign column name for each value, name for time column is fixed
+    	// Assign column name for each dataIRI; name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
 		for (String s : dataIRI) {
 			dataColumnNames.put(s, getColumnName(dsl, s));
 		}
 		
+		// Append time series data
 		populateTimeSeriesTable(dsl, tsTableName, ts, dataColumnNames);
+		
 		closeConnection(conn);
 	}
 	
     /** 
-     * returns the entire time series
+     * Retrieve entire time series from RDB
+     * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
+     * time series are in ascending order with respect to time (from oldest to newest)
      * @param dataIRI
      */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
-		// initialise connection and query from RDB
+		// Initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
-    	// check if time series is initialised
+    	// Check if all required time series are initialised
 		for (String s : dataIRI) {
+			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+			
+			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
 			}
 		}
     	
-    	// make sure they are in the same table
+		// Ensure that each provided column is located in the same table by checking its time series IRI
     	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
     			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
     			}
     		}
     	}
@@ -226,25 +237,29 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	// create map between data IRI and the corresponding column field in the table
+    	// Create map between data IRI and the corresponding column field in the table
     	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
 		for (String data : dataIRI) {
 			String columnName = getColumnName(dsl, data);
 			Field<Object> field = DSL.field(DSL.name(columnName));
 			dataColumnFields.put(data, field);
 		}
-    	
+    	// Retrieve list of column fields (incl. fixed time column)
     	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
     	    columnList.add(dataColumnFields.get(data));
     	}
     	
-    	// perform query
-    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();
+    	// Perform query (including potential time duplicates)
+    	Result<? extends Record> queryResult = dsl.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();    	
+    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
+    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
+    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).orderBy(timeColumn.asc()).fetch();
+    	
     	closeConnection(conn);
     	
-    	// collect results and return a TimeSeries object
+    	// Collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
     	List<List<?>> dataValues = new ArrayList<>();
     	for (String data : dataIRI) {
@@ -256,26 +271,31 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	return ts;
     }
     
-	/**
-	 * returns time series within the given time bounds
+    /** 
+     * Retrieve time series within the given time bounds from RDB
+     * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
+     * time series are in ascending order with respect to time (from oldest to newest)
 	 * @param dataIRI
 	 * @param lowerBound
 	 * @param upperBound
 	 * @return
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
-		// initialise connection and query from RDB
+		// Initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
-		
-		// check if time series is initialised
+
+    	// Check if all required time series are initialised
 		for (String s : dataIRI) {
+			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+			
+			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance");
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
 			}
 		}
     	
-    	// make sure they are in the same table
+		// Ensure that each provided column is located in the same table by checking its time series IRI
     	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	if (dataIRI.size() > 1) {
     		for (int i = 1; i < dataIRI.size(); i++) {
@@ -289,26 +309,31 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	// create map between data IRI and the corresponding column field in the table
+    	// Create map between data IRI and the corresponding column field in the table
     	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
 		for (String data : dataIRI) {
 			String columnName = getColumnName(dsl, data);
 			Field<Object> field = DSL.field(DSL.name(columnName));
 			dataColumnFields.put(data, field);
 		}
-    	
+		// Retrieve list of column fields (incl. fixed time column)
     	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
     	    columnList.add(dataColumnFields.get(data));
     	}
     	
-    	// perform query
+    	// Perform query (including potential time duplicates)
     	Result<? extends Record> queryResult = dsl.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
-    			.orderBy(timeColumn.asc()).fetch();
+    			 .orderBy(timeColumn.asc()).fetch();
+    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
+    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
+    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
+    	//		 .orderBy(timeColumn.asc()).fetch();
+    	
     	closeConnection(conn);
     	
-    	// collect results and return a TimeSeries object
+    	// Collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
     	List<List<?>> dataValues = new ArrayList<>();
     	for (String data : dataIRI) {
