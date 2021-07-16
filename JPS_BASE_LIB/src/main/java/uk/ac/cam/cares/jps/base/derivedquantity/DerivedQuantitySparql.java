@@ -16,7 +16,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -344,20 +343,22 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
-	public static List<String> getInputsAndDerived(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
+	public static List<String> getInputsAndDerived(KnowledgeBaseClientInterface kbClient, String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
 		
-		Variable input = SparqlBuilder.var(inputQueryKey);
-		Variable derived = SparqlBuilder.var(derivedQueryKey);
-		
-		GraphPattern inputPattern = iri(derivedQuantity).has(isDerivedFrom,input);
-		// some inputs may be a part of a derived instance
-		GraphPattern derivedPattern = input.has(belongsTo, derived).optional();
-		
 		SelectQuery query = Queries.SELECT();
 		
-		query.prefix(p_derived).where(inputPattern,derivedPattern).select(input,derived);
+		Variable input = SparqlBuilder.var(inputQueryKey);
+		Variable derivedOfInput = SparqlBuilder.var(derivedQueryKey); // derived instance for the input of entity
+		
+		// direct inputs to derive this
+		GraphPattern inputPattern = GraphPatterns.and(iri(derived).has(isDerivedFrom,input));
+		// some inputs may be a part of a derived instance
+	    // this is also added to the list to ensure that there are no circular dependencies via a different entity within the same derived instance
+		GraphPattern derivedPattern = input.has(belongsTo, derivedOfInput).optional();
+		
+		query.prefix(p_derived).where(inputPattern,derivedPattern).select(input,derivedOfInput);
 		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 		
 		List<String> inputsAndDerived = new ArrayList<>();
@@ -375,6 +376,119 @@ public class DerivedQuantitySparql{
 		return inputsAndDerived;
 	}
 	
+	/**
+	 * returns the derived quantity instance, <instance> <derived:belongsTo> ?x
+	 * @param kbClient
+	 * @param instance
+	 * @return
+	 */
+	public static String getDerivedIRI(KnowledgeBaseClientInterface kbClient, String instance) {
+		SelectQuery query = Queries.SELECT();
+		String queryKey = "derived";
+		Variable derived = SparqlBuilder.var(queryKey);
+		GraphPattern queryPattern = iri(instance).has(belongsTo, derived);
+		query.prefix(p_derived).select(derived).where(queryPattern);
+		
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() != 1) {
+			throw new JPSRuntimeException(instance + " linked with " + String.valueOf(queryResult.length()) + " derived instances");
+		}
+		
+		return queryResult.getJSONObject(0).getString(queryKey);
+	}
+	
+	/**
+	 * returns entities belonging to this derived instance, ?x <derived:belongsTo> <derivedIRI>
+	 * @param kbClient
+	 * @param derivedIRI
+	 * @return
+	 */
+	public static String[] getDerivedEntities(KnowledgeBaseClientInterface kbClient, String derivedIRI) {
+		SelectQuery query = Queries.SELECT();
+		String queryKey = "entity";
+		Variable entity = SparqlBuilder.var(queryKey);
+		GraphPattern queryPattern = entity.has(belongsTo, iri(derivedIRI));
+		query.prefix(p_derived).select(entity).where(queryPattern);
+		
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		
+		String[] entities = new String[queryResult.length()];
+		for (int i = 0; i < queryResult.length(); i++) {
+			entities[i] = queryResult.getJSONObject(i).getString(queryKey);
+		}
+		
+		return entities;
+	}
+	
+	/**
+	 * returns the derived instance, where the given entity is an input to it
+	 * <derived> <derived:isDerivedFrom> <entity>
+	 * @param kbClient
+	 * @param entities
+	 */
+	public static List<List<String>> getIsDerivedFromEntities(KnowledgeBaseClientInterface kbClient, String... entities) {
+		SelectQuery query = Queries.SELECT();
+		String derivedkey = "derived";
+		String typeKey = "type";
+		Variable derived = SparqlBuilder.var(derivedkey);
+		Variable entityType = SparqlBuilder.var(typeKey);
+		
+		GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entities[0])), iri(entities[0]).isA(entityType));
+		for (int i = 1; i < entities.length; i++) {
+			queryPattern.and(derived.has(isDerivedFrom,iri(entities[i])), iri(entities[i]).isA(entityType));
+		}
+		
+		query.select(derived, entityType).where(queryPattern).prefix(p_derived);
+		
+		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		
+		List<List<String>> derivedAndEntityType = new ArrayList<>();
+		List<String> derivediri = new ArrayList<>();
+		List<String> typeiri = new ArrayList<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			derivediri.add(queryResult.getJSONObject(i).getString(derivedkey));
+			typeiri.add(queryResult.getJSONObject(i).getString(typeKey));
+		}
+		
+		derivedAndEntityType.add(derivediri);
+		derivedAndEntityType.add(typeiri);
+		
+		return derivedAndEntityType;
+	}
+	
+	/**
+	 * remove all triples connected to the given entities
+	 * {<entity> ?x ?y} and {?x ?y <entity>}
+	 * @param kbClient
+	 * @param entities
+	 */
+	public static void deleteInstances(KnowledgeBaseClientInterface kbClient, String... entities) {
+		SubSelect sub = GraphPatterns.select();
+		
+		Variable subject = sub.var();
+		Variable pred1 = sub.var();
+		Variable pred2 = sub.var();
+		Variable object = sub.var();
+		
+		TriplePattern[] delete_tp = new TriplePattern[entities.length * 2];
+		int i = 0;
+		for (String entity : entities) {
+			// case 1: entity is the object
+			delete_tp[i] = subject.has(pred1, iri(entity)); i++;
+			
+			// case 2: entity is the subject
+			delete_tp[i] = iri(entity).has(pred2, object); i++;
+		}
+		sub.select(subject,pred1,pred2,object).where(delete_tp);
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp).where(sub);
+		
+		kbClient.executeUpdate(modify.getQueryString());
+	}
+	
 	public static long getTimestamp(KnowledgeBaseClientInterface kbClient, String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -383,7 +497,7 @@ public class DerivedQuantitySparql{
 		Iri instanceIRI = iri(instance);
 		
 		// here we try to match two triple patterns
-		// type 1: this may be a derived instance or an input with a time stamp directly attached to it
+		// type 1: this is an input with a time stamp directly attached to it
 		// type 2: this is an input that is part of a derived quantity
 		// instances with timestamps directly attached
 		Iri[] predicates = {hasTime,numericPosition};
@@ -440,14 +554,86 @@ public class DerivedQuantitySparql{
 		kbClient.executeUpdate();
 	}
 	
-	public static String getInstanceClass(KnowledgeBaseClientInterface kbClient, String instance) {
+	/** 
+	 * returns rdf:type of the given instance, ignoring owl:NamedIndividual and owl:Thing
+	 * when an instance is part of an input to another derived instance, the type is used to reconnect the appropriate instance
+	 * @param kbClient
+	 * @param instance
+	 * @return
+	 */
+	public static String[] getInstanceClass(KnowledgeBaseClientInterface kbClient, String... instances) {
 		String queryKey = "class";
+		
+		String[] classOfInstances = new String[instances.length]; 
+		
+		// rdf:type to ignore, this may be expanded
+		List<Iri> classesToIgnore = new ArrayList<>();
+		classesToIgnore.add(iri(OWL.THING));
+		classesToIgnore.add(iri(OWL.NAMEDINDIVIDUAL));
+		
+		for (int i = 0; i < instances.length; i++) {
+			SelectQuery query = Queries.SELECT();
+			Variable type = SparqlBuilder.var(queryKey);
+			
+			// ignore certain rdf:type
+			Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
+			for (int j = 0; j < classesToIgnore.size(); j++) {
+				filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
+			}
+			GraphPattern queryPattern = iri(instances[i]).isA(type).filter(Expressions.and(filters));
+			
+			query.select(type).where(queryPattern);
+			kbClient.setQuery(query.getQueryString());
+			
+			JSONArray queryResult = kbClient.executeQuery();
+			// not having an rdf:type may be fine, but having more than 1 is an issue
+			if (queryResult.length() > 1) {
+				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instances[i]);
+			} else if (queryResult.length() == 1) {
+				classOfInstances[i] = queryResult.getJSONObject(0).getString(queryKey);
+			} else {
+				classOfInstances[i] = "";
+			}
+		}
+		return classOfInstances;
+	}
+	
+	/**
+	 * this is used to reconnect a newly created instance to an existing derived instance
+	 * @param kbClient
+	 * @param input
+	 * @param derived
+	 */
+	public static void reconnectInputToDerived(KnowledgeBaseClientInterface kbClient, String input, String derived) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		TriplePattern insert_tp = iri(derived).has(isDerivedFrom, iri(input));
+		
+		modify.prefix(p_derived).insert(insert_tp);
+		
+		kbClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * returns true if it is a derived quantity with time series
+	 * @param kbClient
+	 * @param derived_iri
+	 */
+	public static boolean isDerivedWithTimeSeries(KnowledgeBaseClientInterface kbClient, String derived_iri) {
 		SelectQuery query = Queries.SELECT();
-		Variable type = SparqlBuilder.var(queryKey);
-		GraphPattern queryPattern = iri(instance).isA(type);
-		query.select(type).where(queryPattern);
-		kbClient.setQuery(query.getQueryString());
-		return kbClient.executeQuery().getJSONObject(0).getString(queryKey);
+		Variable type = query.var();
+		TriplePattern tp = iri(derived_iri).isA(type);
+		Expression<?> constraint = Expressions.equals(type, DerivedQuantityWithTimeSeries);
+		
+		// this query will return one result if the constraint matches
+		GraphPattern queryPattern = tp.filter(constraint);
+		
+		query.prefix(p_derived).select(type).where(queryPattern);
+		if (kbClient.executeQuery(query.getQueryString()).length() == 1) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	private static GraphPattern getQueryGraphPattern(SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastNode) {
