@@ -8,6 +8,7 @@ services:
     image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
     container_name: "gas-grid-agent"
     restart: unless-stopped
+    mem_limit: 1g
     ports:
       - 4005:80
     labels:
