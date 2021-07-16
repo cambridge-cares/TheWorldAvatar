@@ -1,4 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,Ontology,ABoxOntoSpecies,http://www.w3.org/2002/07/owl#imports,,
+http://www.theworldavatar.com/kb/ontospecies,Ontology,ABoxOntoSpecies,base,,
 Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,Instance,Species,,,
 http://purl.org/dc/elements/1.1/identifier,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,String
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,Species_00b7e248-ae24-35bf-b7a0-b470b923ddf6,,CO2,String
