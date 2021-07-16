@@ -49,8 +49,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	// Time series column field (for RDB)
 	private final Field<T> timeColumn;
 	// Constants
-	private static final SQLDialect dialect = SQLDialect.POSTGRES;
-    
+	private static final SQLDialect dialect = SQLDialect.POSTGRES;    
     // Central database table
     private static final String dbTableName = "dbTable";
     private static final Field<String> dataIRIcolumn = DSL.field(DSL.name("dataIRI"), String.class);
@@ -87,6 +86,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
+	 * mh807: remove
 	 * Initialise Time Series in RDF and RDB
 	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 */
@@ -136,7 +136,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		closeConnection(conn);
 	}
 	
-	/*
+	/**
 	 * Initialise central database lookup table
 	 */
 	public void initCentralTable() {
@@ -149,6 +149,62 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			  .column(tsTableNameColumn).column(columnNameColumn).execute();
 		
 		closeConnection(conn);
+	}
+	
+	/**
+	 * Initialise RDB table for particular time series and add respective entries to central lookup table
+	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * @param dataIRI
+	 * @param dataClass
+	 */
+	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass) {
+		// Initialise connection
+		Connection conn = connect();
+		DSLContext create = DSL.using(conn, dialect); 
+		
+		// Check if central database lookup table exists
+		if (create.meta().getTables(dbTableName).size() == 0) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first");
+		}
+		
+		// Check if any data has already been initialised
+		for (String s : dataIRI) {
+			if(checkDataHasTimeSeries(create, s)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
+			}
+		}
+		
+		// Generate UUID as unique RDB table name and tsIRI suffix
+		String uuid = UUID.randomUUID().toString();
+		String tsTableName = uuid;
+		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;
+				
+		/* mh807: move
+		// instantiate in KG
+		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
+		*/
+		
+		/* mh807: old implementation of unique table new
+		// generate unique table name for this time series, cannot use data IRI as table names directly
+		String tsTableName = generateUniqueTableName(tsIRI);
+		*/
+		
+		// Assign column name for each dataIRI; name for time column is fixed
+		Map<String,String> dataColumnNames = new HashMap<String,String>();
+		int i = 1;
+		for (String s : dataIRI) {
+			dataColumnNames.put(s, "column"+i);
+			i++;
+		}
+		
+		// Add corresponding entries in central lookup table
+		populateCentralTable(create, tsTableName, dataIRI, dataColumnNames, tsIRI);
+		
+		// Initialise RDB table for storing time series data
+		createEmptyTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
+		
+		closeConnection(conn);
+		
 	}
 	
 	/**
@@ -316,7 +372,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * queries the average value of a column, stored data should be in numerics
+	 * Retrieve average value of a column; stored data should be in numerics
 	 * @param dataIRI
 	 * @return
 	 */
@@ -333,7 +389,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	// create map between data IRI and the corresponding column field in the table
+    	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
@@ -343,6 +399,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	return queryResult.get(0).doubleValue();
 	}
 	
+	/**
+	 * Retrieve maximum value of a column; stored data should be in numerics
+	 * @param dataIRI
+	 * @return
+	 */
 	public double getMaxValue(String dataIRI) {
 		// initialise connection and query from RDB
     	Connection conn = connect();
@@ -356,7 +417,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	// create map between data IRI and the corresponding column field in the table
+    	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
@@ -366,6 +427,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	return queryResult.get(0).doubleValue();
 	}
 	
+	/**
+	 * Retrieve minimum value of a column; stored data should be in numerics
+	 * @param dataIRI
+	 * @return
+	 */
 	public double getMinValue(String dataIRI) {
 		// initialise connection and query from RDB
     	Connection conn = connect();
@@ -379,7 +445,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
-    	// create map between data IRI and the corresponding column field in the table
+    	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dsl, dataIRI);
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
@@ -389,6 +455,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	return queryResult.get(0).doubleValue();
 	}
 	
+	/**
+	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * @param dataIRI
+	 * @return
+	 */
 	public T getMaxTime(String dataIRI) {
 		// initialise connection and query from RDB
     	Connection conn = connect();
@@ -410,6 +481,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	return maxTime;
 	}
 	
+	/**
+	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * @param dataIRI
+	 * @return
+	 */
 	public T getMinTime(String dataIRI) {
 		// initialise connection and query from RDB
     	Connection conn = connect();
@@ -513,35 +589,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * returns the table name containing the time series given the data IRI, if it exists
-	 * @param dataIRI
-	 */
-	private String getTableName(DSLContext dsl, String tsIRI) {
-		// table
-		Table<?> table = DSL.table(DSL.name(dbTableName));
-		
-		List<String> queryResult = dsl.select(tsTableNameColumn).from(table).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
-		String tableName = queryResult.get(0);
-		
-		return tableName;
-	}
-	
-	/**
-	 * get column name in the time series table for the given data IRI
-	 * @param dsl
-	 * @param dataIRI
-	 */
-	private String getColumnName(DSLContext dsl, String dataIRI) {
-		// table
-		Table<?> table = DSL.table(DSL.name(dbTableName));
-		
-		List<String> queryResult = dsl.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(columnNameColumn);
-		String columnName = queryResult.get(0);
-		
-		return columnName;
-	}
-	
-	/**
 	 * Establish connection to RDB
 	 * @return
 	 */
@@ -600,6 +647,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		insertValueStep.execute();
 	}
 	
+	// mh807: potentially remove, as UUID.randomUUID() seems easier
 	/**
 	 * Generate unique (RDB) table name based on time series IRI
 	 * @param tsIRI
@@ -696,7 +744,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Retrieve tsIRI, which corresponds to provided dataIRI, from central database lookup table
+	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
 	 * @param dsl
 	 * @param dataIRI
 	 * @return
@@ -705,6 +753,38 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		List<String> queryresult = dsl.select(tsIRIcolumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(tsIRIcolumn);
-	    return queryresult.get(0);
+		String tsIRI = queryresult.get(0);
+		
+	    return tsIRI;
+	}
+		
+	/**
+	 * Retrieve column name for provided dataIRI from central database lookup table (if it exists)
+	 * @param dsl
+	 * @param dataIRI
+	 * @return
+	 */
+	private String getColumnName(DSLContext dsl, String dataIRI) {
+		// Look for the entry dataIRI in dbTable
+		Table<?> table = DSL.table(DSL.name(dbTableName));		
+		List<String> queryResult = dsl.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(columnNameColumn);
+		String columnName = queryResult.get(0);
+		
+		return columnName;
+	}
+	
+	/**
+	 * Retrieve table name for provided timeseriesIRI from central database lookup table (if it exists)
+	 * @param dsl
+	 * @param tsIRI
+	 * @return
+	 */
+	private String getTableName(DSLContext dsl, String tsIRI) {
+		// Look for the entry tsIRI in dbTable
+		Table<?> table = DSL.table(DSL.name(dbTableName));		
+		List<String> queryResult = dsl.select(tsTableNameColumn).from(table).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
+		String tableName = queryResult.get(0);
+		
+		return tableName;
 	}
 }

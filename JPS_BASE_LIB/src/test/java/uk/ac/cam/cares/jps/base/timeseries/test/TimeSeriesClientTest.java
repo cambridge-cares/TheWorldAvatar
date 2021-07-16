@@ -58,8 +58,9 @@ public class TimeSeriesClientTest {
     	
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
-    	tsClient.init(dataIRI, dataClass);
-    	//tsClient.initCentralTable();
+    	//tsClient.init(dataIRI, dataClass);
+    	tsClient.initCentralTable();
+    	tsClient.initTimeSeriesTable(dataIRI, dataClass);
     	
     	// to add data, you need to create a TimeSeries object
     	List<Instant> timeList = new ArrayList<>();
