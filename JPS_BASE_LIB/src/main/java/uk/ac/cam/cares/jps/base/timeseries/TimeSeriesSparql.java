@@ -23,12 +23,15 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 
 /**
- * This class contains a collection of methods to interact with kb
+ * This class contains a collection of methods to interact with kb.
  * @author Kok Foong Lee
  *
  */
 
 public class TimeSeriesSparql {
+	// kbClient with the endpoint (triplestore/owl file) specified
+	private KnowledgeBaseClientInterface kbClient = null; 
+	
 	// Namespaces for ontology and kb
 	public static final String ns_ontology = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
 	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
@@ -45,6 +48,10 @@ public class TimeSeriesSparql {
     private static final Iri hasTimeSeries = prefix_ontology.iri("hasTimeSeries");
     private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
+    
+	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
+        this.kbClient = kbClient;
+	}
     
     public static boolean checkTimeSeriesExists(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, TimeSeriesString);
@@ -131,6 +138,22 @@ public class TimeSeriesSparql {
 		
 		kbClient.setQuery(modify.getQueryString());
 		kbClient.executeUpdate();
+	}
+	
+	/**
+	 * Remove all time series from kb
+	 * @param kbClient
+	 */
+	public static void removeAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
+		// Get all time series in kb
+		List<String> tsIRI = getAllTimeSeries(kbClient);
+		
+		// Remove all time series
+		if (!tsIRI.isEmpty()) {
+			for (String ts : tsIRI) {
+				removeTimeSeries(kbClient, ts);
+			}
+		}
 	}
 	
     /**

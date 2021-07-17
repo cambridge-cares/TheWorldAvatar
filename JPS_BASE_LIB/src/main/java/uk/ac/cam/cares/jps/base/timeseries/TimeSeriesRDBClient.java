@@ -25,7 +25,6 @@ import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 /**
@@ -35,11 +34,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
  */
 
 public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
-	// mh807: move
-	// User defined inputs
-	// kbClient with the endpoint (triplestore/owl file) specified
-	private KnowledgeBaseClientInterface kbClient = null; 
-
+	
 	// URL and credentials for the relational database
 	private String rdbURL = null; 
 	private String rdbUser = null;
@@ -65,11 +60,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
     }
     
-    // mh807: move
-	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
-        this.kbClient = kbClient;
-	}
-	
 	public void setTimeUnit(String timeUnit) {
 		this.timeUnit = timeUnit;
 	}
@@ -129,11 +119,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		String tsTableName = uuid;
 		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;
 				
-		// mh807: move
-		// instantiate in KG
-		TimeSeriesSparql.initTS(this.kbClient, tsIRI, dataIRI, this.rdbURL, this.timeUnit);
-		
-		/* mh807: old implementation of unique table new
+
+		/* mh807: old implementation of unique table name
 		// generate unique table name for this time series, cannot use data IRI as table names directly
 		String tsTableName = generateUniqueTableName(tsIRI);
 		*/
@@ -574,8 +561,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		// Get time series RDB table
 		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
-		// mh807: move
-		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
 		String tsTableName = getTableName(dsl, tsIRI);
     
     	// Delete time series RDB table
@@ -592,9 +577,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Delete all time series RDB tables and central lookup table
 	 */
 	public void deleteAll() {
-		// mh807: move
-		//List<String> tsIRI = TimeSeriesSparql.getAllTimeSeries(kbClient);
-		
 		// Initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
@@ -614,16 +596,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Delete central lookup table
 			dsl.dropTable(dbTable).execute();
 			closeConnection(conn);		
-			
-			/* old
-			if (!tsIRI.isEmpty()) {
-		    	// mh807: move
-				// remove triples in KG and the time series table
-				for (String ts : tsIRI) {
-					TimeSeriesSparql.removeTimeSeries(kbClient, ts);
-				}
-			*/
-		}
+			}
 	}
 	
 	/**
@@ -656,12 +629,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 	}
 	
-	// mh807: to be removed
-	private void createDatabaseTable(DSLContext create) {
-		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
-		.column(tsTableNameColumn).column(columnNameColumn).execute();
-	}
-	
 	/**
 	 * Add new entries to central RDB lookup table
 	 * @param dsl
@@ -685,7 +652,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		insertValueStep.execute();
 	}
 	
-	// mh807: potentially remove, as UUID.randomUUID() is not our new "standard"
+	// mh807: potentially remove, as UUID.randomUUID() is now our new "standard"
 	/**
 	 * Generate unique (RDB) table name based on time series IRI
 	 * @param tsIRI

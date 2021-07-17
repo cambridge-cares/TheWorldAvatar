@@ -45,7 +45,7 @@ public class TimeSeriesClientTest {
     	tsClient.setRdbURL(dbURL);
     	tsClient.setRdbUser(user);
     	tsClient.setRdbPassword(password);
-    	tsClient.setKBClient(kbClient);
+    	//tsClient.setKBClient(kbClient);
     	
     	// next step is to initialise the time series instance in RDF and RDB
     	// in this example I have three instances that share the same timestamp, so they are initialised together
