@@ -109,7 +109,8 @@ public class TimeSeriesClientTest {
     	tsClient.deleteRows(dataIRI.get(0), timeList.get(2), timeList.get(4));
     	
     	// or delete all time series related data, this will remove the data in the same table, even if it's not included
-    	tsClient.deleteTimeSeries(dataIRI.get(0));
+    	tsClient.deleteTimeSeries(dataIRI.get(1));
+    	// include test for single column time series
     	
     	//the following will delete everything
     	tsClient.deleteAll();

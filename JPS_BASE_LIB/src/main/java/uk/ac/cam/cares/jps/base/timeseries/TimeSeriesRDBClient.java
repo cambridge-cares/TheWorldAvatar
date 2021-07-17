@@ -284,6 +284,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
+    	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
+    	if (!lowerBound.getClass().equals(timeColumn.getType()) | !upperBound.getClass().equals(timeColumn.getType())) {
+    		throw new JPSRuntimeException("TimeSeriesRDBClient: Lower or upper bound are not of same class as time series entries");
+    	}
 
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
@@ -482,31 +488,36 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * note that this will delete the entire row linked to this data (in addition to the given dataIRI)
+	 * Delete RDB time series table rows between lower and upper Bound
+	 * <p>Note that this will delete the entire rows linked to this data (in addition to the given dataIRI)
 	 * @param dataIRI
 	 * @param lowerBound
 	 * @param upperBound
 	 */
 	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
-		// initialise connection and query from RDB
+		// Initialise connection and query from RDB
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
+    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+    	
+    	// Check if time series is initialised
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
 		}
 		
-		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
-    	
+		// Retrieve RDB table for dataIRI
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);    	
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
-
+    	
+    	// Delete rows between bound (including bounds!)
     	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
     	closeConnection(conn);
 	}
 	
 	/**
-	 * note that this will delete all time series information related to this data IRI, including other data in the same table
+	 * Delete individual time series (i.e. data for one dataIRI only)
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeries(String dataIRI) {
@@ -514,49 +525,104 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	Connection conn = connect();
     	DSLContext dsl = DSL.using(conn, dialect); 
     	
+    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+    	
+    	// Check if time series is initialised
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
 		}
 		
+		// Get time series RDB table		
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
+		String columnName = getColumnName(dsl, dataIRI);
+		String tsTableName = getTableName(dsl, tsIRI);
+		
+		// Get meta information for RDB table (column fields, etc.)
+		Table<?> tsTable = dsl.meta().getTables(tsTableName).get(0);
+		
+		if (tsTable.fields().length > 2) {	
+			// Delete only column for dataIRI from RDB table if further columns are present
+			
+			// Drop column from time series RDB table
+	    	dsl.alterTable(tsTableName).drop(columnName).execute();
+	    	
+	    	// Delete entry in central lookup table
+	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
+	    	dsl.delete(dbTable).where(dataIRIcolumn.equal(dataIRI)).execute();
+	    	closeConnection(conn);			
+		} else {
+			// Delete entire RDB table for single column time series (data column + time column)
+			deleteTimeSeriesTable(dataIRI);
+		}
+	}
+	
+	/**
+	 * Delete all time series information related to a dataIRI (i.e. entire RDB table)
+	 * @param dataIRI
+	 */
+	public void deleteTimeSeriesTable(String dataIRI) {
+		// Initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
+    	
+    	// Check if time series is initialised
+		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		}
+		
+		// Get time series RDB table
 		String tsIRI = getTimeSeriesIRI(dsl, dataIRI);
 		// mh807: move
 		TimeSeriesSparql.removeTimeSeries(kbClient, tsIRI);
+		String tsTableName = getTableName(dsl, tsIRI);
     
-    	//delete time series table
-    	String tsTableName = getTableName(dsl, tsIRI);
+    	// Delete time series RDB table
     	dsl.dropTable(DSL.table(DSL.name(tsTableName))).execute();
     	
-    	//delete entry in the main table
+    	// Delete entries in central lookup table
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
     	dsl.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
+    	
     	closeConnection(conn);
 	}
 	
 	/**
-	 * deletes everything related to time series
+	 * Delete all time series RDB tables and central lookup table
 	 */
 	public void deleteAll() {
 		// mh807: move
-		List<String> tsIRI = TimeSeriesSparql.getAllTimeSeries(kbClient);
+		//List<String> tsIRI = TimeSeriesSparql.getAllTimeSeries(kbClient);
 		
-		if (!tsIRI.isEmpty()) {
-			Connection conn = connect();
-	    	DSLContext dsl = DSL.using(conn, dialect); 
-	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
-			// remove triples in KG and the time series table
-			for (String ts : tsIRI) {
-				TimeSeriesSparql.removeTimeSeries(kbClient, ts);
+		// Initialise connection and query from RDB
+    	Connection conn = connect();
+    	DSLContext dsl = DSL.using(conn, dialect); 
+    	
+    	// Retrieve all time series table names from central lookup table
+    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
+		List<String> queryResult = dsl.selectDistinct(tsTableNameColumn).from(dbTable).fetch(tsTableNameColumn);
+		
+		if (!queryResult.isEmpty()) {
+			for (String table : queryResult) {
 				
-		    	//delete time series table
-		    	String tsTableName = getTableName(dsl, ts);
-		    	dsl.dropTable(DSL.table(DSL.name(tsTableName))).execute();
-		    	
-		    	//delete entry in the main table
-		    	dsl.delete(dbTable).where(tsIRIcolumn.equal(ts)).execute();
+				// Delete time series RDB table
+		    	dsl.dropTable(DSL.table(DSL.name(table))).execute();
+
 			}
 			
-			// delete lookup table
+			// Delete central lookup table
 			dsl.dropTable(dbTable).execute();
+			closeConnection(conn);		
+			
+			/* old
+			if (!tsIRI.isEmpty()) {
+		    	// mh807: move
+				// remove triples in KG and the time series table
+				for (String ts : tsIRI) {
+					TimeSeriesSparql.removeTimeSeries(kbClient, ts);
+				}
+			*/
 		}
 	}
 	
@@ -619,7 +685,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		insertValueStep.execute();
 	}
 	
-	// mh807: potentially remove, as UUID.randomUUID() seems easier
+	// mh807: potentially remove, as UUID.randomUUID() is not our new "standard"
 	/**
 	 * Generate unique (RDB) table name based on time series IRI
 	 * @param tsIRI
