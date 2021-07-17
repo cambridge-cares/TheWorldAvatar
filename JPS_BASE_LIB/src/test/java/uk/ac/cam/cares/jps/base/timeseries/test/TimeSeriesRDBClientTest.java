@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
-import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
 import org.jooq.impl.DSL;
@@ -11,21 +10,22 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.postgresql.util.PSQLException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.time.Instant;
-import java.util.ArrayList;
+
+/**
+ * This class provides unit tests for the TimeSeriesRDBClient class
+ * <p>Selected functionality is mocked using Mockito
+ */
 
 public class TimeSeriesRDBClientTest {
 	
 	// Create mocks
     private DSLContext context = Mockito.mock(DSLContext.class, Mockito.RETURNS_DEEP_STUBS);
-    private CreateTableColumnStep create = Mockito.mock(CreateTableColumnStep.class);
     private Connection connection = Mockito.mock(Connection.class);
 
     @Test
@@ -78,20 +78,6 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals("columnName", columnNameColumn.getName());
         Assert.assertEquals(String.class, columnNameColumn.getType());
     }
-
-//    @Test
-//    @Ignore("To be moved to KB client class")
-//    public void testSetKBClient() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-//        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-//        // Retrieve the value of the private field 'kbClient' of the client to check its value
-//        Field kbClientField = client.getClass().getDeclaredField("kbClient");
-//        kbClientField.setAccessible(true);
-//
-//        Assert.assertNull(kbClientField.get(client));
-//        KnowledgeBaseClientInterface kbClient = new RemoteKnowledgeBaseClient();
-//        client.setKBClient(kbClient);
-//        Assert.assertSame(kbClient, kbClientField.get(client));
-//    }
 
     @Test
     public void testSetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -163,27 +149,36 @@ public class TimeSeriesRDBClientTest {
         }
     }
 
-
-//    @Test
-//    @Ignore("Works until the knowledge graph is queried in the init.")
-//    public void testInit() {
-//        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-//        client.setRdbURL("http://localhost:5342");
-//        // To be able to mock the connection to the database we use Mockito
-//        // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
-//        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
-//            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
-//                      .thenReturn(connection);
-//            mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
-//                   .thenReturn(context);
-//            client.init(new ArrayList<>(), new ArrayList<>());
-//            // Mocks the behaviour of the context when used to create a table
-//            Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any())
-//                   .column(Mockito.any()).column(Mockito.any()).column(Mockito.any()).execute())
-//                   .thenReturn(1);
-//            // Verify that method (with given argument) was invoked exactly once
-//            Mockito.verify(context, Mockito.times(1)).createDatabaseIfNotExists("dbTable");
-//        }
-//    }
+    @Test
+    public void testInit() {
+    	
+    	// Specify Exception message to be thrown when mocked function is called
+    	String text = "initCentralTable successfully called";
+    	
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        client.setRdbURL("http://localhost:5342");
+        // To be able to mock the connection to the database we use Mockito
+        // (whenever DriverManager or DSL is used in the try block we can mock the behaviour)
+        try (MockedStatic<DriverManager> mockDriver = Mockito.mockStatic(DriverManager.class); MockedStatic<DSL> mockDSL = Mockito.mockStatic(DSL.class)) {
+            mockDriver.when(() -> DriverManager.getConnection("http://localhost:5342", null, null))
+                      .thenReturn(connection);
+            mockDSL.when(() -> DSL.using(connection, SQLDialect.POSTGRES))
+                   .thenReturn(context);
+            // Mocks the behaviour of the context when used to create the central RDB lookup table
+            Mockito.when(context.createTableIfNotExists("dbTable").column(Mockito.any()).column(Mockito.any())
+            	   .column(Mockito.any()).column(Mockito.any()).execute())
+            	   .thenThrow(new JPSRuntimeException(text));
+            
+            client.initCentralTable();
+            // mh807: Verification that method (with given argument) was invoked exactly once always gives following error:
+            // "Wanted but not invoked" although "Mockito.mockingDetails(context).printInvocations()" shows interactions -->
+            // mocking is likely to have issues with chained commands alá table.column().column().column().execute
+            //System.out.println(Mockito.mockingDetails(context).printInvocations());
+            //Mockito.verify(context, Mockito.times(2)).createDatabaseIfNotExists("dbTable");
+        } 
+        catch (JPSRuntimeException e) {
+        	Assert.assertEquals(text, e.getMessage());
+        }
+    }
 
 }

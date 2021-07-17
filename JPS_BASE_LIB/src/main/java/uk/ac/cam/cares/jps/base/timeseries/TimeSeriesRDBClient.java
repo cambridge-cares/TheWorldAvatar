@@ -610,9 +610,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			Class.forName("org.postgresql.Driver");
 			// Connect to DB
         	conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
-        	System.out.println("Connected to " + this.rdbURL);
+        	System.out.println("Connected to: " + this.rdbURL);
 			return conn;
 		} catch (Exception e) {
+			System.out.println("Connection failed to: " + this.rdbURL);
 			throw new JPSRuntimeException(e);
 		}
     }
