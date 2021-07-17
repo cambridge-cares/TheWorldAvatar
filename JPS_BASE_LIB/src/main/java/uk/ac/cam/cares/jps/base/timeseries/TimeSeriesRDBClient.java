@@ -294,7 +294,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     		for (int i = 1; i < dataIRI.size(); i++) {
     			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesSparql: Provided data is not within the same table");
+    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
     			}
     		}
     	}

@@ -14,6 +14,8 @@ import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
+//mh807:
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
 public class TimeSeriesClientTest {
@@ -46,6 +48,9 @@ public class TimeSeriesClientTest {
     	tsClient.setRdbUser(user);
     	tsClient.setRdbPassword(password);
     	//tsClient.setKBClient(kbClient);
+    	// mh807:
+    	TimeSeriesSparql SparqlClient = new TimeSeriesSparql(kbClient);
+    	
     	
     	// next step is to initialise the time series instance in RDF and RDB
     	// in this example I have three instances that share the same timestamp, so they are initialised together
@@ -60,6 +65,9 @@ public class TimeSeriesClientTest {
     	// at the same time, the tables will be created in RDB according to the class specified
     	tsClient.initCentralTable();
     	tsClient.initTimeSeriesTable(dataIRI, dataClass);
+    	
+    	//mh807:
+    	SparqlClient.initTS("tsIRI", dataIRI, endpoint, "timeunit");
     	
     	// to add data, you need to create a TimeSeries object
     	List<Instant> timeList = new ArrayList<>();

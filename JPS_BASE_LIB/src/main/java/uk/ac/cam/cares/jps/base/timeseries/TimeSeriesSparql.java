@@ -49,11 +49,24 @@ public class TimeSeriesSparql {
     private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
     
+    /**
+     * Standard constructor
+     * @param kbClient
+     */
+    public TimeSeriesSparql(KnowledgeBaseClientInterface kbClient) {
+    	this.kbClient = kbClient;
+    }
+    
 	public void setKBClient(KnowledgeBaseClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
     
-    public static boolean checkTimeSeriesExists(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI) {
+	/**
+	 * Check whether a particular time series (i.e. tsIRI) exists
+	 * @param timeSeriesIRI
+	 * @return
+	 */
+    public boolean checkTimeSeriesExists(String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, TimeSeriesString);
     	kbClient.setQuery(query);
     	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
@@ -62,13 +75,12 @@ public class TimeSeriesSparql {
     
     /**
      * Instantiate the time series instance (time unit is optional)
-     * @param kbClient
      * @param timeSeriesIRI
      * @param dataIRI
      * @param dbURL
      * @param timeUnit
      */    
-    public static void initTS(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+    public void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
         Iri tsIRI = iri(timeSeriesIRI);
     	
     	ModifyQuery modify = Queries.MODIFY();
@@ -95,11 +107,11 @@ public class TimeSeriesSparql {
     }
     
     /**
-     * Count number of time series IRIs in kb (previously used to generate a new unique time series IRI)
-     * @param kbClient
+     * Count number of time series IRIs in kb
+     * <p>Previously used to generate a new unique time series IRI
      * @return
      */
-	public static int countTS(KnowledgeBaseClientInterface kbClient) {
+	public int countTS() {
 		SelectQuery query = Queries.SELECT();
     	String queryKey = "numtimeseries";
     	Variable ts = query.var();
@@ -117,51 +129,53 @@ public class TimeSeriesSparql {
 	
     /**
      * Remove time series and all associated connections from kb
-     * @param kbClient
      * @param tsIRI
      */
-	public static void removeTimeSeries(KnowledgeBaseClientInterface kbClient, String tsIRI) {
-		// sub query to search for all triples with tsIRI as the subject/object
-		SubSelect sub = GraphPatterns.select();
-		Variable predicate1 = SparqlBuilder.var("a");
-		Variable predicate2 = SparqlBuilder.var("b");
-		Variable subject = SparqlBuilder.var("c");
-		Variable object = SparqlBuilder.var("d");
+	public void removeTimeSeries(String tsIRI) {
 		
-		TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
-		TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));		
-		sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
-		
-		// insert subquery into main sparql update
-		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1, delete_tp2).where(sub);
-		
-		kbClient.setQuery(modify.getQueryString());
-		kbClient.executeUpdate();
+		// mh807: Necessary to check whether tsIRI (still) exists in kb?
+		if (checkTimeSeriesExists(tsIRI)) {
+			
+			// sub query to search for all triples with tsIRI as the subject/object
+			SubSelect sub = GraphPatterns.select();
+			Variable predicate1 = SparqlBuilder.var("a");
+			Variable predicate2 = SparqlBuilder.var("b");
+			Variable subject = SparqlBuilder.var("c");
+			Variable object = SparqlBuilder.var("d");
+			
+			TriplePattern delete_tp1 = iri(tsIRI).has(predicate1, object);
+			TriplePattern delete_tp2 = subject.has(predicate2, iri(tsIRI));		
+			sub.select(predicate1, predicate2, subject, object).where(delete_tp1, delete_tp2);
+			
+			// insert subquery into main sparql update
+			ModifyQuery modify = Queries.MODIFY();
+			modify.delete(delete_tp1, delete_tp2).where(sub);
+			
+			kbClient.setQuery(modify.getQueryString());
+			kbClient.executeUpdate();
+		}
 	}
 	
 	/**
 	 * Remove all time series from kb
-	 * @param kbClient
 	 */
-	public static void removeAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
+	public void removeAllTimeSeries() {
 		// Get all time series in kb
-		List<String> tsIRI = getAllTimeSeries(kbClient);
+		List<String> tsIRI = getAllTimeSeries();
 		
 		// Remove all time series
 		if (!tsIRI.isEmpty()) {
 			for (String ts : tsIRI) {
-				removeTimeSeries(kbClient, ts);
+				removeTimeSeries(ts);
 			}
 		}
 	}
 	
     /**
      * Extract all time series IRIs from kb
-     * @param kbClient
      * @return
      */
-	public static List<String> getAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
+	public List<String> getAllTimeSeries() {
 		String queryString = "ts";
 		SelectQuery query = Queries.SELECT();
 		
