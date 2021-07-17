@@ -60,21 +60,33 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
     }
     
+    /**
+     * Get and set methods for private attributes
+     */
 	public void setTimeUnit(String timeUnit) {
 		this.timeUnit = timeUnit;
+	}
+	public String getTimeUnit() {
+		return timeUnit;
 	}
 	
 	// Relational database properties (e.g. PostgreSQL)
 	public void setRdbURL(String rdbURL) {
 		this.rdbURL = rdbURL;
 	}
+	public String getRdbURL() {
+		return rdbURL;
+	}
 	public void setRdbUser(String user) {
 		this.rdbUser = user;
+	}
+	public String getRdbUser() {
+		return rdbUser;
 	}
 	public void setRdbPassword(String password) {
 		this.rdbPassword = password;
 	}
-	
+
 
 	/**
 	 * Initialise central database lookup table

@@ -97,6 +97,15 @@ public class TimeSeriesRDBClientTest {
     }
     
     @Test
+    public void testGetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        Assert.assertNull(client.getTimeUnit());
+        client.setTimeUnit("s");
+        Assert.assertNotNull(client.getTimeUnit());
+        Assert.assertEquals("s", client.getTimeUnit());
+    }
+    
+    @Test
     public void testSetRdbURL() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         // Retrieve the value of the private field 'rdbURL' of the client to check its value
@@ -107,6 +116,15 @@ public class TimeSeriesRDBClientTest {
         client.setRdbURL("http://localhost:5342");
         Assert.assertNotNull(rdbURLField.get(client));
         Assert.assertEquals("http://localhost:5342", rdbURLField.get(client));
+    }
+    
+    @Test
+    public void testGetRdbURL() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        Assert.assertNull(client.getRdbURL());
+        client.setRdbURL("http://localhost:5342");
+        Assert.assertNotNull(client.getRdbURL());
+        Assert.assertEquals("http://localhost:5342", client.getRdbURL());
     }
 
     @Test
@@ -121,6 +139,15 @@ public class TimeSeriesRDBClientTest {
         Assert.assertNotNull(rdbUserField.get(client));
         Assert.assertEquals("postgres", rdbUserField.get(client));
     }
+    
+    @Test
+    public void testGetRdbUser() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+        Assert.assertNull(client.getRdbUser());
+        client.setRdbUser("postgres");
+        Assert.assertNotNull(client.getRdbUser());
+        Assert.assertEquals("postgres", client.getRdbUser());
+    }
 
     @Test
     public void testSetRdbPassword() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -134,7 +161,7 @@ public class TimeSeriesRDBClientTest {
         Assert.assertNotNull(rdbPasswordField.get(client));
         Assert.assertEquals("password", rdbPasswordField.get(client));
     }
-
+    
     @Test
     public void testInitConnectionException() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
