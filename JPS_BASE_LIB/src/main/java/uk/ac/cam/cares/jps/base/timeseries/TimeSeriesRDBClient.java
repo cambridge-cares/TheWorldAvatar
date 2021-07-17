@@ -93,11 +93,26 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Initialise RDB table for particular time series and add respective entries to central lookup table
-	 * For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
+	 * <p>In case no uuid is provided (to be used as tsIRI suffix and table name), one will be generated
 	 * @param dataIRI
 	 * @param dataClass
+	 * @param uuid
 	 */
-	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass) {
+	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String uuid) {
+		
+		// Generate UUID as unique RDB table name and tsIRI suffix
+		if (uuid == null) {
+			uuid = UUID.randomUUID().toString();
+		}		
+		String tsTableName = uuid;
+		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;				
+
+		/* mh807: old implementation of unique table name
+		// generate unique table name for this time series, cannot use data IRI as table names directly
+		String tsTableName = generateUniqueTableName(tsIRI);
+		*/
+		
 		// Initialise connection
 		Connection conn = connect();
 		DSLContext create = DSL.using(conn, dialect); 
@@ -113,17 +128,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
 			}
 		}
-		
-		// Generate UUID as unique RDB table name and tsIRI suffix
-		String uuid = UUID.randomUUID().toString();
-		String tsTableName = uuid;
-		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;
-				
-
-		/* mh807: old implementation of unique table name
-		// generate unique table name for this time series, cannot use data IRI as table names directly
-		String tsTableName = generateUniqueTableName(tsIRI);
-		*/
 		
 		// Assign column name for each dataIRI; name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();

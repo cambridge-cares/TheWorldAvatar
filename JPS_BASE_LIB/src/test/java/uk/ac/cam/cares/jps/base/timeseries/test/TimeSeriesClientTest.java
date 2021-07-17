@@ -64,7 +64,7 @@ public class TimeSeriesClientTest {
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
     	tsClient.initCentralTable();
-    	tsClient.initTimeSeriesTable(dataIRI, dataClass);
+    	tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
     	
     	//mh807:
     	SparqlClient.initTS("tsIRI", dataIRI, endpoint, "timeunit");
