@@ -87,6 +87,18 @@ public class TimeSeriesSparql {
     	return timeSeriesExists;
     }
     
+	/**
+	 * Check whether time series IRI has time unit
+	 * @param tsIRI
+	 * @return
+	 */
+    public boolean checkTimeUnitExists(String tsIRI) {
+    	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
+    	kbClient.setQuery(query);
+    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    	return timeSeriesExists;
+    }
+    
     /**
      * Instantiate the time series instance (time unit is optional)
      * @param timeSeriesIRI
@@ -246,8 +258,7 @@ public class TimeSeriesSparql {
 			
 			SelectQuery query = Queries.SELECT();
 			Variable tsIRI = SparqlBuilder.var(queryString);
-			//TriplePattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
-			GraphPattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
+			TriplePattern queryPattern = iri(dataIRI).has(hasTimeSeries, tsIRI);
 			
 			query.select(tsIRI).where(queryPattern).prefix(prefix_ontology);
 		
@@ -257,6 +268,60 @@ public class TimeSeriesSparql {
 		
 		return result;
 		
+	}
+	
+	/**
+	 * Get database URL associated with time series IRI
+	 * <p>Returns null if time series does not exist
+	 * @param tsIRI
+	 * @return
+	 */
+	public String getDbUrl(String tsIRI) {
+		
+		String result = null;
+		
+		if (checkTimeSeriesExists(tsIRI)) {		
+
+			String queryString = "dbURL";
+			
+			SelectQuery query = Queries.SELECT();
+			Variable dbURL = SparqlBuilder.var(queryString);
+			TriplePattern queryPattern = iri(tsIRI).has(hasRDB, dbURL);
+			
+			query.select(dbURL).where(queryPattern).prefix(prefix_ontology);
+		
+			kbClient.setQuery(query.getQueryString());
+			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);					
+		}
+		
+		return result;		
+	}
+	
+	/**
+	 * Get time unit associated with time series IRI
+	 * <p>Returns null if time series does not exist or does not have associated time unit
+	 * @param tsIRI
+	 * @return
+	 */
+	public String getTimeUnit(String tsIRI) {
+		
+		String result = null;
+		
+		if (checkTimeSeriesExists(tsIRI) && checkTimeUnitExists(tsIRI)) {		
+
+			String queryString = "timeUnit";
+			
+			SelectQuery query = Queries.SELECT();
+			Variable timeUnit = SparqlBuilder.var(queryString);
+			TriplePattern queryPattern = iri(tsIRI).has(hasTimeUnit, timeUnit);
+			
+			query.select(timeUnit).where(queryPattern).prefix(prefix_ontology);
+			
+			kbClient.setQuery(query.getQueryString());
+			result = kbClient.executeQuery().getJSONObject(0).getString(queryString);
+		}
+
+		return result;		
 	}
 	
 	/**

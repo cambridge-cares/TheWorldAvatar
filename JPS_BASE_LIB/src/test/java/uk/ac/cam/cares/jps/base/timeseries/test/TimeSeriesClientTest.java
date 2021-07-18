@@ -141,25 +141,4 @@ public class TimeSeriesClientTest {
     	tsClient.deleteAll();
 	}
 	
-	@Test
-	@Ignore
-	public void testConstructorAndSetters() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-		// test constructor
-		Class<?> timeClass = Instant.class;
-		TimeSeriesRDBClient<Instant> tsClient = new TimeSeriesRDBClient<>(Instant.class);
-		
-		// check that kbClient is set correctly
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
-		Field kbClientField = tsClient.getClass().getDeclaredField("kbClient");
-		kbClientField.setAccessible(true);
-		Assert.assertNull(kbClientField.get(tsClient));
-//		tsClient.setKBClient(kbClient);
-//		Assert.assertNotNull(kbClientField.get(tsClient));
-//		Assert.assertEquals(kbClientField.get(tsClient), kbClient);
-//		
-//		FileBasedKnowledgeBaseClient kbClient2 = new FileBasedKnowledgeBaseClient();
-//		tsClient.setKBClient(kbClient2);
-//		Assert.assertEquals(kbClientField.get(tsClient), kbClient2);
-		
-	}
 }
