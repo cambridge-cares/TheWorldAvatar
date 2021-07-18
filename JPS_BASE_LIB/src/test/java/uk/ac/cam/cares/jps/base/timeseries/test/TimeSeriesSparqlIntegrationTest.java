@@ -12,6 +12,7 @@ import org.junit.After;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
+@Ignore("Requires Triple store end point set up")
 public class TimeSeriesSparqlIntegrationTest {
 	
 	// Set path to local Triple Store instance - when working with Blazegraph:
