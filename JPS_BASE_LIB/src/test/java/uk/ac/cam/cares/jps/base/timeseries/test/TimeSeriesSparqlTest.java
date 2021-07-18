@@ -1,31 +1,13 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
-import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
-
 import java.lang.reflect.Field;
-import java.sql.DriverManager;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
-import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
-import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
-import org.json.JSONArray;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -33,9 +15,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
