@@ -290,7 +290,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	
     	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
     	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
-    	if (!lowerBound.getClass().equals(timeColumn.getType()) | !upperBound.getClass().equals(timeColumn.getType())) {
+    	if (!lowerBound.getClass().equals(timeColumn.getType()) || !upperBound.getClass().equals(timeColumn.getType())) {
     		throw new JPSRuntimeException("TimeSeriesRDBClient: Lower or upper bound are not of same class as time series entries");
     	}
 

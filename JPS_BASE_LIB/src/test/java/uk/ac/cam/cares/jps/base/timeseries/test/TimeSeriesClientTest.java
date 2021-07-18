@@ -63,11 +63,28 @@ public class TimeSeriesClientTest {
     	
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
-    	tsClient.initCentralTable();
-    	tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
+    	//tsClient.initCentralTable();
+    	//tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
     	
     	//mh807:
-    	SparqlClient.initTS("tsIRI", dataIRI, endpoint, "timeunit");
+    	SparqlClient.initTS("http://tsIRI", null, dataIRI, "postgres", "timeunit");
+    	List<String> data = SparqlClient.getAssociatedData("http://tsIRI1");
+    	String a1 = SparqlClient.getTimeSeries("http://data1");
+    	String a2 = SparqlClient.getTimeSeries("http://data4");
+//    	SparqlClient.countTS();
+//    	String ts = SparqlClient.getTimeSeries("http://data1");
+//    	List<String> data =SparqlClient.getAssociatedData(ts);
+//    	SparqlClient.checkTimeSeriesExists("http://tsIRI");
+    	SparqlClient.removeTimeSeriesAssociation("http://data1");
+//    	SparqlClient.checkTimeSeriesExists("http://tsIRI");
+    	SparqlClient.removeTimeSeriesAssociation("http://data1");
+//    	SparqlClient.removeTimeSeriesAssociation("http://data3");
+    	SparqlClient.initTS(null, "1", dataIRI, "postgres", "timeunit");
+    	SparqlClient.removeAllTimeSeries();
+    	
+    	//SparqlClient.removeTimeSeries("tsIRI");
+    	//parqlClient.removeAllTimeSeries();
+    	
     	
     	// to add data, you need to create a TimeSeries object
     	List<Instant> timeList = new ArrayList<>();
@@ -87,7 +104,7 @@ public class TimeSeriesClientTest {
     	TimeSeries<Instant> tsToAdd = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	
     	// supply the TimeSeries object as an argument to the Time series client
-    	tsClient.addTimeSeriesData(tsToAdd);
+    	//tsClient.addTimeSeriesData(tsToAdd);
     	
     	// you can query the entire TimeSeries table by providing the data IRIs
     	TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI);
