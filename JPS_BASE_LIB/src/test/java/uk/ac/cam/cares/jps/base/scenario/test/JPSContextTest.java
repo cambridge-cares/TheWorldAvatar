@@ -15,8 +15,10 @@ public class JPSContextTest{
 		JSONObject jo = new JSONObject();
 		String key = "testkey";
 		String value = "testvalue";
+		
 		// Default
 		assertNull(JPSContext.get(jo, key));
+		
 		// Custom values
 		JPSContext.put(jo, key, value);
 		assertEquals("testvalue", JPSContext.get(jo, key));
@@ -25,10 +27,16 @@ public class JPSContextTest{
 	// Test createJpsContext(), putJPSContext(JSONObject jpsContext), removeJPSContext() and getJpsContext()
 	@Test
 	public void testCreatePutGetandRemoveJpsContext() {
-		assertTrue(JPSContext.createJpsContext().length()==0);
-		JSONObject testobj = new JSONObject();
+		//Create new JSON object
+		JSONObject testobj = JPSContext.createJpsContext();
+		assertTrue(testobj.length()==0);
+		
+		//Put test content in object
+		testobj.put("testkey", "testvalue");
 		JPSContext.putJPSContext(testobj);
-		assertTrue(JPSContext.getJpsContext().length()==0);
+		assertEquals("{\"testkey\":\"testvalue\"}", JPSContext.getJpsContext().toString());
+		
+		//Remove content 
 		JPSContext.removeJPSContext();
 		assertNull(JPSContext.getJpsContext());
 		
