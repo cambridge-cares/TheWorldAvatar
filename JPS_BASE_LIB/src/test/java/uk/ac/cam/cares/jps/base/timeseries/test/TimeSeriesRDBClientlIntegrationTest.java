@@ -70,6 +70,15 @@ public class TimeSeriesRDBClientlIntegrationTest {
 		client.setRdbPassword(password);
 	}
 
+	// Clear all tables after each test to ensure clean slate
+	@After
+	public void clearDatabase() {
+		List<Table<?>> tables = context.meta().getTables();
+		for (Table table: tables) {
+			context.dropTable(table).cascade().execute();
+		}
+	}
+
 	@Before
 	public void setup() {
 		// Initialise 1 time series with 3 associated data series
