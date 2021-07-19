@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -106,24 +105,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	/**
 	 * Initialise RDB table for particular time series and add respective entries to central lookup table
 	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
-	 * <p>In case no uuid is provided (to be used as tsIRI suffix and table name), one will be generated
+	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
 	 * @param dataIRI
 	 * @param dataClass
-	 * @param uuid
+	 * @param tsIRI
 	 */
-	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String uuid) {
+	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		
-		// Generate UUID as unique RDB table name and tsIRI suffix
-		if (uuid == null) {
-			uuid = UUID.randomUUID().toString();
-		}		
-		String tsTableName = uuid;
-		String tsIRI = TimeSeriesSparql.ns_kb + "TimeSeries_" + uuid;				
-
-		/* mh807: old implementation of unique table name
-		// generate unique table name for this time series, cannot use data IRI as table names directly
-		String tsTableName = generateUniqueTableName(tsIRI);
-		*/
+		// Generate UUID as unique RDB table name
+		String tsTableName = UUID.randomUUID().toString();
 		
 		// Initialise connection
 		Connection conn = connect();
@@ -667,28 +657,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 		
 		insertValueStep.execute();
-	}
-	
-	// mh807: potentially remove, as UUID.randomUUID() is now our new "standard"
-	/**
-	 * Generate unique (RDB) table name based on time series IRI
-	 * @param tsIRI
-	 * @return  
-	 */
-	private static String generateUniqueTableName(String tsIRI) {
-		String source = tsIRI;
-
-		byte[] bytes = null;
-		try {
-			bytes = source.getBytes("UTF-8");
-		}
-		catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-
-		UUID uuid = java.util.UUID.nameUUIDFromBytes(bytes);
-		
-		return uuid.toString();
 	}
 	
 	/**
