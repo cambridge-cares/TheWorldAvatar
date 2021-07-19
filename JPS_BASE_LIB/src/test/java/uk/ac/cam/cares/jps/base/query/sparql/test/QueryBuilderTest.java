@@ -4,9 +4,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class QueryBuilderTest {
