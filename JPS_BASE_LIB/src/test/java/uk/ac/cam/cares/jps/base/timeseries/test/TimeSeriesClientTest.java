@@ -29,7 +29,7 @@ public class TimeSeriesClientTest {
 	 * example code on how to use the TimeSeriesClient
 	 */
 	@Test
-	@Ignore("Test requires available Blazegraph endpoint.")
+	@Ignore("Test requires available Blazegraph endpoint and Postgres database.")
 	public void testExample() {
 		// set up a kb client that points to the location of your instance
 		// this can be the a RemoteKnowledgeBaseClient or the FileBasedKnowledgeBaseClient
