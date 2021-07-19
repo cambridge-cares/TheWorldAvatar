@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- Dummy project details - these aren't actually used anywhere -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.ac.cam.cares.jps.agent</groupId>
+    <name>JPS Chatbot dependencies</name>
+    <artifactId>jps-chatbot-dependencies</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps.agent.ldf-server</groupId>
+            <artifactId>trained_models</artifactId>
+            <type>zip</type>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.5.1</version>
+                <configuration>
+                    <outputDirectory>./dependencies/</outputDirectory>
+                    <includeArtifactIds>trained_models</includeArtifactIds>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

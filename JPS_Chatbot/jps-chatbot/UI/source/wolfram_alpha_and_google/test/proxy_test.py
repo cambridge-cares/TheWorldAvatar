@@ -2,8 +2,10 @@ import re
 import time
 
 from selenium import webdriver
+from selenium.common.exceptions import UnexpectedAlertPresentException
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.proxy import Proxy, ProxyType
+from selenium.webdriver.support.expected_conditions import alert_is_present
 
 from bs4 import BeautifulSoup
 
@@ -35,13 +37,19 @@ class Proxy:
         # prox = Proxy()
         # prox.proxy_type = ProxyType.MANUAL
         # prox.http_proxy = ip
-        print('sending request')
+
+        print('Sending request...')
+        
         self.driver.get("http://www.whatsmyip.org/")
-        html_source = self.driver.find_element_by_tag_name('html').find_element_by_id('ip').get_attribute('innerHTML')
-        print('got response')
-        print(html_source)
+        
+        html_source="None"
+        try:
+            html_source = self.driver.find_element_by_tag_name('html').find_element_by_id('ip').get_attribute('innerHTML')
+        except UnexpectedAlertPresentException as ex:
+                print("***Request caused an alert [%s]***" % ex.__dict__["msg"])
+        print(' Response: ' + html_source)
         end_time = time.time()
-        print('it took ', end_time - start_time)
+        print('Time elapsed: %f s' % (end_time - start_time))
 
 
 

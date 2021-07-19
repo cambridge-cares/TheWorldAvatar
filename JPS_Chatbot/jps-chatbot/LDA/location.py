@@ -12,7 +12,5 @@ def get_parent_path(path):
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-root_dir = get_parent_path(this_dir)
-top_dir = get_parent_path(get_parent_path(root_dir))
-LDA_DIR = os.path.join(root_dir, 'LDA')
+LDA_DIR = get_parent_path(this_dir)
 print('LDA_DIR', LDA_DIR)
