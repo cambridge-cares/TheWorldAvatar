@@ -37,30 +37,9 @@ public class QueryBuilderTest {
                 "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> \r\n" +
                 "SELECT ?x \r\nWHERE {\r\n?o a owl:test .\r\n?o rdf:worldavatar/rdfs:jps ?x .\r\n}";
 
-        List<String> prefixes = new ArrayList<String>();
-        prefixes.add("owl");
-        prefixes.add("rdf");
-        prefixes.add("rdfs");
-
-        List<StringBuffer> wherestatements = new ArrayList<StringBuffer>();
-        wherestatements.add(new StringBuffer("?o a owl:test"));
-        wherestatements.add(new StringBuffer("?o rdf:worldavatar/rdfs:jps ?x"));
-
-        Class<QueryBuilder> qbClazz = QueryBuilder.class;
-        Field select = qbClazz.getDeclaredField("select");
-        select.setAccessible(true);
-        select.set(qbuilder, new StringBuffer("SELECT ?x "));
-        select.setAccessible(false);
-
-        Field testWherestatements = qbClazz.getDeclaredField("wherestatements");
-        testWherestatements.setAccessible(true);
-        testWherestatements.set(qbuilder, wherestatements);
-        testWherestatements.setAccessible(false);
-
-        Field testPrefixes = qbClazz.getDeclaredField("prefixes");
-        testPrefixes.setAccessible(true);
-        testPrefixes.set(qbuilder, prefixes);
-        testPrefixes.setAccessible(false);
+        qbuilder.select("?x");
+        qbuilder.a("?o", "owl", "test");
+        qbuilder.prop("?o", "?x", "rdf", "worldavatar", "rdfs", "jps");
 
         Assert.assertEquals(b, qbuilder.build().toString());
     }
