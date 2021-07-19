@@ -43,7 +43,6 @@ services:
     image: docker.cmclinnovations.com/jps-chatbot:0e837d
     build:
       context: "../../../JPS_Chatbot"
-      dockerfile: "./docker/Dockerfile"
     container_name: "jps-chatbot"
     restart: unless-stopped
     ports:
@@ -61,7 +60,6 @@ services:
     image: docker.cmclinnovations.com/jps-ldf:0e837d
     build:
       context: "../../../JPS_LDF"
-      dockerfile: "./docker/Dockerfile"
     container_name: "jps-ldf"
     restart: unless-stopped
     ports:
