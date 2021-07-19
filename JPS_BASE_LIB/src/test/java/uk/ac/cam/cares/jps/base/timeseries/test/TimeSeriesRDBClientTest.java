@@ -84,68 +84,26 @@ public class TimeSeriesRDBClientTest {
     }
 
     @Test
-    public void testSetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        // Retrieve the value of the private field 'timeUnit' of the client to check its value
-        Field timeUnitField = client.getClass().getDeclaredField("timeUnit");
-        timeUnitField.setAccessible(true);
-
-        Assert.assertNull(timeUnitField.get(client));
-        client.setTimeUnit("s");
-        Assert.assertNotNull(timeUnitField.get(client));
-        Assert.assertEquals("s", timeUnitField.get(client));
-    }
-    
-    @Test
-    public void testGetTimeUnit() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void testSetAndGetTimeUnit() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         Assert.assertNull(client.getTimeUnit());
         client.setTimeUnit("s");
-        Assert.assertNotNull(client.getTimeUnit());
         Assert.assertEquals("s", client.getTimeUnit());
     }
     
     @Test
-    public void testSetRdbURL() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        // Retrieve the value of the private field 'rdbURL' of the client to check its value
-        Field rdbURLField = client.getClass().getDeclaredField("rdbURL");
-        rdbURLField.setAccessible(true);
-
-        Assert.assertNull(rdbURLField.get(client));
-        client.setRdbURL("http://localhost:5342");
-        Assert.assertNotNull(rdbURLField.get(client));
-        Assert.assertEquals("http://localhost:5342", rdbURLField.get(client));
-    }
-    
-    @Test
-    public void testGetRdbURL() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void testSetAndGetRdbURL() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         Assert.assertNull(client.getRdbURL());
         client.setRdbURL("http://localhost:5342");
-        Assert.assertNotNull(client.getRdbURL());
         Assert.assertEquals("http://localhost:5342", client.getRdbURL());
     }
 
     @Test
-    public void testSetRdbUser() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        // Retrieve the value of the private field 'rdbUser' of the client to check its value
-        Field rdbUserField = client.getClass().getDeclaredField("rdbUser");
-        rdbUserField.setAccessible(true);
-
-        Assert.assertNull(rdbUserField.get(client));
-        client.setRdbUser("postgres");
-        Assert.assertNotNull(rdbUserField.get(client));
-        Assert.assertEquals("postgres", rdbUserField.get(client));
-    }
-    
-    @Test
-    public void testGetRdbUser() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void testSetAndGetRdbUser() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         Assert.assertNull(client.getRdbUser());
         client.setRdbUser("postgres");
-        Assert.assertNotNull(client.getRdbUser());
         Assert.assertEquals("postgres", client.getRdbUser());
     }
 
@@ -163,6 +121,7 @@ public class TimeSeriesRDBClientTest {
     }
     
     @Test
+    @Ignore
     public void testInitConnectionException() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         client.setRdbURL("http://localhost:5342");
@@ -181,6 +140,7 @@ public class TimeSeriesRDBClientTest {
     }
 
     @Test
+    @Ignore
     public void testInit() {    	
     	// Specify Exception message to be thrown when mocked function is called
     	String text = "initCentralTable successfully called";
@@ -212,6 +172,7 @@ public class TimeSeriesRDBClientTest {
     }
     
     @Test
+    @Ignore
     public void initTimeSeriesTable() {
     	// Specify Exception messages to be thrown when mocked functions are called
     	String text1 = "UUID not generated";
