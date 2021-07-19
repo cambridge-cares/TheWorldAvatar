@@ -1,103 +1,157 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.Table;
 import org.jooq.impl.DSL;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.Ignore;
-import org.junit.Before;
-import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.*;
 
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Work in progress")
+import static org.jooq.impl.DSL.selectFrom;
+
+@Ignore("Requires Docker to run the tests. When on Windows WSL2 as backend is required to ensure proper execution.")
 public class TimeSeriesRDBClientlIntegrationTest {
 	
 	// Define RDB database setup (analogous to a triple-store endpoint)
-	// Database named "timeseries" needs to be created beforehand
-	// For more info (especially regarding URL setting) see https://jdbc.postgresql.org/documentation/80/connect.html
-	private static String dbURL = "jdbc:postgresql:timeseries"; 
-	private static String user = "postgres";
-	private static String password = "postgres";
-	
+	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
+	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
+	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+	private static final String user = "postgres";
+	private static final String password = "postgres";
+
+	private static Connection conn;
+	private static DSLContext context;
+
+	// RDB client
+	private TimeSeriesRDBClient<Instant> client;
+
 	// Time series attributes
-	private static List<Instant> timeList;
-	private static String tsIRI = "http://tsIRI1";
-	private static String timeUnit = "http://s";
-	private static List<String> dataIRI;
-	private static List<Class<?>> dataClass;
-	
-	
-	public static TimeSeriesRDBClient<Instant> initialiseRDBClient() {
+	private List<String> dataIRI;
+	private List<Class<?>> dataClass;
+
+	// Connect to the database before any test (will spin up the Docker container for the database)
+	@BeforeClass
+	public static void connect() throws SQLException, ClassNotFoundException {
+		// Load required driver
+		Class.forName("org.postgresql.Driver");
+		// Connect to DB
+		conn = DriverManager.getConnection(dbURL, user, password);
+		context = DSL.using(conn, SQLDialect.POSTGRES);
+	}
+
+	// Disconnect from the database after all tests are run
+	@AfterClass
+	public static void disconnect() throws SQLException {
+		conn.close();
+	}
+
+	@Before
+	public void initialiseRDBClient() {
     	// Set up TimeSeriesRDBClient to interact with RDB (PostgreSQL)
     	// One must specify the class of the time values, these tests uses the Instant class
     	// One can use classes such as LocalDateTime, Timestamp, Integer, Double, etc.
     	// Once you initialise it with a certain class, you should stick to it
     	// If the class is not supported, the Jooq API should throw an exception
-    	TimeSeriesRDBClient<Instant> rdbClient = new TimeSeriesRDBClient<>(Instant.class);
-    	rdbClient.setRdbURL(dbURL);
-    	rdbClient.setRdbUser(user);
-    	rdbClient.setRdbPassword(password);
-			
-		return rdbClient;
+    	client = new TimeSeriesRDBClient<>(Instant.class);
+    	client.setRdbURL(dbURL);
+		client.setRdbUser(user);
+		client.setRdbPassword(password);
 	}
-	
-	public static TimeSeries<Instant> initialiseTimeSeries(int length) {		
-    	
-		// Initialise 1 time series with 3 associated data series			
+
+	@Before
+	public void setup() {
+		// Initialise 1 time series with 3 associated data series
 		dataIRI = new ArrayList<>();
-    	dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); 
-    	// Specify type of data for each column (most data will be in doubles, but one can specify different data types)
-    	dataClass = new ArrayList<>();
-    	dataClass.add(Double.class); dataClass.add(String.class); dataClass.add(Integer.class);
-    	timeList = new ArrayList<>();
-    	List<Double> data1 = new ArrayList<>();
-    	List<String> data2 = new ArrayList<>();
-    	List<Integer> data3 = new ArrayList<>();
-    	
-    	// Add time steps and data
-    	for (int i = 0; i < length; i++) {
-   			timeList.add(Instant.now().plusSeconds(i));
-    		data1.add(Double.valueOf(i));
-    		data2.add(String.valueOf(i));
-    		data3.add(Integer.valueOf(i));
-    	}
-    	
-    	List<List<?>> dataToAdd = new ArrayList<>();
-    	dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
-    	// To add data to the RDB, one needs to create a TimeSeries object
-    	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
-    	TimeSeries<Instant> tsToAdd = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	
-    	return tsToAdd;
+		dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3");
+		// Specify type of data for each column (most data will be in doubles, but one can specify different data types)
+		dataClass = new ArrayList<>();
+		dataClass.add(Double.class); dataClass.add(String.class); dataClass.add(Integer.class);
 	}
-	
-	@BeforeClass
-	@After
-	public void clearRDB() {
-		TimeSeriesRDBClient<Instant> rdbClient = initialiseRDBClient();
-		// Clear entire relational database
-		rdbClient.deleteAll();
-	}
-	
+
 	@Test
 	public void testInitCentralTable() {
-		TimeSeriesRDBClient<Instant> rdbClient = initialiseRDBClient();
 		// Initialise central lookup table
-		rdbClient.initCentralTable();
-		// mh807: How / what to assert best?
+		client.initCentralTable();
+		// Check that only one table was created
+		Assert.assertEquals(1, context.meta().getTables().size());
+		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
+		Assert.assertEquals(4, context.meta().getTables().get(0).fields().length);
+	}
 
+	@Test
+	public void testInitCentralTableWhenAlreadyExists() {
+		// Initialise central lookup table
+		client.initCentralTable();
+		// nk591: should we populate the table to make sure nothing gets deleted?
+		// Run method again (should not do anything)
+		client.initCentralTable();
+		// Check that only one table was created
+		Assert.assertEquals(1, context.meta().getTables().size());
+		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
+		Assert.assertEquals(4, context.meta().getTables().get(0).fields().length);
+	}
+
+	@Test
+	public void testInitTimeSeriesTableNoCentralTable() {
+		Exception exception = Assert.assertThrows(JPSRuntimeException.class, () -> {
+			client.initTimeSeriesTable(dataIRI, dataClass, null);
+		});
+		String expectedExceptionMessage = "TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first";
+		Assert.assertEquals(expectedExceptionMessage, exception.getMessage());
+	}
+
+	@Test
+	public void testInitTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
+		client.initCentralTable();
+		client.initTimeSeriesTable(dataIRI, dataClass, null);
+		// Check that timeseries table was created in addition to central table
+		Assert.assertEquals(2, context.meta().getTables().size());
+
+		// Retrieve the value of the private field 'dbTableName' of the client to check its value
+		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+		tableNameField.setAccessible(true);
+		String tableName = (String) tableNameField.get(client);
+		Table<?> table = context.meta().getTables(tableName).get(0);
+		// Retrieve the value of the private field 'dataIRIcolumn' of the client
+		Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+		dataIRIcolumnField.setAccessible(true);
+		org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
+		// Retrieve the value of the private field 'tsIRIcolumn' of the client
+		Field tsIRIcolumnField = client.getClass().getDeclaredField("tsIRIcolumn");
+		tsIRIcolumnField.setAccessible(true);
+		org.jooq.Field<String> tsIRIcolumn = (org.jooq.Field<String>) tsIRIcolumnField.get(client);
+		// Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
+		Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+		tsTableNameColumnField.setAccessible(true);
+		org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
+
+		// Check that there is a row for each data IRI in the central table
+		for (String iri: dataIRI) {
+			Assert.assertTrue(context.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(iri))));
+		}
+		// Check that all data IRIs are connected to same timeseries IRI and table name
+		List<String> queryResult = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI.get(0))).fetch(tsTableNameColumn);
+		String tsTableName = queryResult.get(0);
+		queryResult = context.select(tsIRIcolumn).from(table).where(dataIRIcolumn.eq(dataIRI.get(0))).fetch(tsIRIcolumn);
+		String tsIRI = queryResult.get(0);
+		for (String iri: dataIRI) {
+			String curTableName = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(iri)).fetch(tsTableNameColumn).get(0);
+			String curTsIRI = context.select(tsIRIcolumn).from(table).where(dataIRIcolumn.eq(iri)).fetch(tsIRIcolumn).get(0);
+			Assert.assertEquals(tsTableName, curTableName);
+			Assert.assertEquals(tsIRI, curTsIRI);
+		}
 	}
 	
 }
