@@ -4,7 +4,9 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 
 import java.io.File;
@@ -14,6 +16,9 @@ import java.util.concurrent.TimeUnit;
 
 
 public class BaseOntologyModelManagerTest {
+
+    @Rule
+    public TemporaryFolder folder= new TemporaryFolder();
 
     @Test
     public void testSave() throws InterruptedException{
