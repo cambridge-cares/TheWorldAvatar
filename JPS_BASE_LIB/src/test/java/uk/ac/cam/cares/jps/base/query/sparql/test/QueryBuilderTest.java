@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.base.query.sparql.test;
 
-import com.sun.tools.javadoc.Messager;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
@@ -10,7 +8,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 
 public class QueryBuilderTest {
     private QueryBuilder qbuilder = new QueryBuilder();
