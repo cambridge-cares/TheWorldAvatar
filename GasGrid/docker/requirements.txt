@@ -12,7 +12,6 @@
 #
 
 bs4 
-uuid
 numpy
 pandas
 py4jps
@@ -21,3 +20,4 @@ SPARQLWrapper
 tabulate
 tqdm
 wget
+	
