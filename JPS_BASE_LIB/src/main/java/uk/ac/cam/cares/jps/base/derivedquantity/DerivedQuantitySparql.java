@@ -79,7 +79,12 @@ public class DerivedQuantitySparql{
 		modify.insert(derived_iri.isA(DerivedQuantity));
 		
 		for (String entity : entities) {
-			modify.insert(iri(entity).has(belongsTo, derived_iri));
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(kbClient, entity)) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			} else {
+				throw new JPSRuntimeException(entity + " is already part of another derived quantity");
+			}
 		}
 		
 		// link to agent
@@ -138,7 +143,12 @@ public class DerivedQuantitySparql{
 		
 		modify.insert(derived_iri.isA(DerivedQuantityWithTimeSeries));
 		
-		modify.insert(iri(entity).has(belongsTo, derived_iri));
+		if (!hasBelongsTo(kbClient,entity)) {
+			modify.insert(iri(entity).has(belongsTo, derived_iri));
+		} else {
+			throw new JPSRuntimeException(entity + " is already part of another derived quantity");
+		}
+		
 		
 		// link to agent
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
@@ -168,6 +178,28 @@ public class DerivedQuantitySparql{
 	    kbClient.executeUpdate();
 	    
 	    return derivedQuantity;
+	}
+	
+	/**
+	 * check that the entity is part of another derived quantity, this is not allowed
+	 * query triple - <entity> <belongsTo> ?x
+	 * @param storeClient
+	 * @param entity
+	 * @return
+	 */
+	private static boolean hasBelongsTo(StoreClientInterface storeClient, String entity) {
+		SelectQuery query = Queries.SELECT();
+		
+		TriplePattern queryPattern = iri(entity).has(belongsTo, query.var());
+		query.prefix(p_derived).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.getJSONObject(0).isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	public static boolean hasTimeInstance(StoreClientInterface kbClient, String entity) {
@@ -205,11 +237,11 @@ public class DerivedQuantitySparql{
     	query.where(queryPattern);
     
     	JSONArray queryresult = storeClient.executeQuery(query.getQueryString());
-    	
-    	if (queryresult.length() > 0) {
-    		return true;
-    	} else {
+
+    	if (queryresult.getJSONObject(0).isEmpty()) {
     		return false;
+    	} else {
+    		return true;
     	}
     }
 	
