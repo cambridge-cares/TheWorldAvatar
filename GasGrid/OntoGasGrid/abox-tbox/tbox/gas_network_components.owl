@@ -95,6 +95,13 @@
     </owl:ObjectProperty>
     
 
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasConsumed">
+        <rdfs:domain rdf:resource="http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Electricity"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents the relation between A statistical region and an amount of consumed electricity</rdfs:comment>
+    </owl:ObjectProperty>
+
+
 
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasUsed -->
 
@@ -308,6 +315,10 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
     </owl:Class>
     
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#Electricity">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An amount of electricity</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl</rdfs:isDefinedBy>
+    </owl:Class>
 
 
     <!-- http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#LiquefiedNaturalGasImport -->
