@@ -19,8 +19,8 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class DerivedQuantityClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs
-	public static final String AGENT_INPUT_KEY = "input";
-	public static final String AGENT_OUTPUT_KEY = "output";
+	public static final String AGENT_INPUT_KEY = "derived_agent_input";
+	public static final String AGENT_OUTPUT_KEY = "derived_agent_output";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
     
