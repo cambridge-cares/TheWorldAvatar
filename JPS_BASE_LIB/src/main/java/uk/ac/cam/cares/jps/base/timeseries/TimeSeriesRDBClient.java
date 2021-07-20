@@ -125,7 +125,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first");
 		}
 		
-		// Check if any data has already been initialised
+		// Check if any data has already been initialised (i.e. is associated with different tsIRI)
 		for (String s : dataIRI) {
 			if(checkDataHasTimeSeries(create, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
@@ -163,11 +163,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
-			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
-			
-			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)"); 
 			}
 		}
     	
@@ -207,9 +204,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
-			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
-			
-			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
 			}
@@ -236,7 +230,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			Field<Object> field = DSL.field(DSL.name(columnName));
 			dataColumnFields.put(data, field);
 		}
-    	// Retrieve list of column fields (incl. fixed time column)
+    	// Retrieve list of column fields (including fixed time column)
     	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
@@ -284,9 +278,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
-			// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
-			
-			// Check if time series is initialised
 			if(!checkDataHasTimeSeries(dsl, s)) {
 				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
 			}
@@ -313,7 +304,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			Field<Object> field = DSL.field(DSL.name(columnName));
 			dataColumnFields.put(data, field);
 		}
-		// Retrieve list of column fields (incl. fixed time column)
+		// Retrieve list of column fields (including fixed time column)
     	List<Field<?>> columnList = new ArrayList<>();
     	columnList.add(timeColumn);
     	for (String data : dataIRI) {
@@ -484,8 +475,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Initialise connection and set jOOQ DSL context
 		DSLContext dsl = connect();
     	
-    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
-    	
     	// Check if time series is initialised
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
@@ -508,8 +497,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	public void deleteTimeSeries(String dataIRI) {
 		// Initialise connection and set jOOQ DSL context
 		DSLContext dsl = connect();
-    	
-    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
     	
     	// Check if time series is initialised
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
@@ -547,8 +534,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	public void deleteTimeSeriesTable(String dataIRI) {
 		// Initialise connection and set jOOQ DSL context
 		DSLContext dsl = connect();
-    	
-    	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
     	
     	// Check if time series is initialised
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
@@ -711,7 +696,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Check whether dataIRI has a tsIRI associated with it (i.e. respective tsIRI entry not null)
+	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in central lookup table)
 	 * @param dsl
 	 * @param dataIRI
 	 * @return
@@ -721,6 +706,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		return dsl.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));
 	}
+	
+	/**
+	 * Check whether dataIRI has a tsIRI associated with it (i.e. respective tsIRI entry not null)
+	 * @param dsl
+	 * @param dataIRI
+	 * @return
+	 */
 	
 	/**
 	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
