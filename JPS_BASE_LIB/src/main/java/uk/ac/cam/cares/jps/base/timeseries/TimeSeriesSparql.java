@@ -20,7 +20,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * This class contains a collection of methods to interact with kb
@@ -44,7 +44,7 @@ public class TimeSeriesSparql {
     private static final Iri hasRDB = p_timeseries.iri("hasRDB");
     private static final Iri hasTimeUnit = p_timeseries.iri("hasTimeUnit");
     
-    public static boolean checkTimeSeriesExists(KnowledgeBaseClientInterface kbClient,String timeSeriesIRI) {
+    public static boolean checkTimeSeriesExists(StoreClientInterface kbClient,String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}",timeSeriesIRI,TimeSeriesString);
     	kbClient.setQuery(query);
     	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
@@ -59,7 +59,7 @@ public class TimeSeriesSparql {
      * @param namedGraph
      */
     
-    public static void initTS(KnowledgeBaseClientInterface kbClient, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+    public static void initTS(StoreClientInterface kbClient, String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
         Iri tsIRI = iri(timeSeriesIRI);
     	
     	ModifyQuery modify = Queries.MODIFY();
@@ -90,7 +90,7 @@ public class TimeSeriesSparql {
      * @param kbClient
      * @return
      */
-	public static int countTS(KnowledgeBaseClientInterface kbClient) {
+	public static int countTS(StoreClientInterface kbClient) {
 		SelectQuery query = Queries.SELECT();
     	String queryKey = "numtimeseries";
     	Variable ts = query.var();
@@ -106,7 +106,7 @@ public class TimeSeriesSparql {
     	return queryresult;
 	}
 	
-	public static void removeTimeSeries(KnowledgeBaseClientInterface kbClient, String tsIRI) {
+	public static void removeTimeSeries(StoreClientInterface kbClient, String tsIRI) {
 		// sub query to search for all triples with tsIRI as the subject/object
 		SubSelect sub = GraphPatterns.select();
 		Variable predicate1 = SparqlBuilder.var("a");
@@ -126,7 +126,7 @@ public class TimeSeriesSparql {
 		kbClient.executeUpdate();
 	}
 	
-	public static List<String> getAllTimeSeries(KnowledgeBaseClientInterface kbClient) {
+	public static List<String> getAllTimeSeries(StoreClientInterface kbClient) {
 		String queryString = "ts";
 		SelectQuery query = Queries.SELECT();
 		

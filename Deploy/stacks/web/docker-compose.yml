@@ -98,33 +98,18 @@ services:
         dockerfile: "./docker/Dockerfile"
     container_name: "uk-gas-grid"
     restart: unless-stopped
+    ports:
+      - 4001:80
     labels:
       description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
     
-    
-  # UN Sustainable Goals
-  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
-  un-goals:
-    image: docker.cmclinnovations.com/un-goals:0ce476
-    build:
-      context: "./sustainable_goals"
-      dockerfile: "./docker/Dockerfile"
-    container_name: "un-goals"
-    restart: unless-stopped
-    labels:
-      description: "HTTPD hosted mapbox visualisation of UN Sustainable Goals based on static geoJSON files."
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      hash: "${HASH}"
-
-    
+   
   # Land Use Crop Map
-  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   land-use:
-    image: docker.cmclinnovations.com/land-use:0ce476
+    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"

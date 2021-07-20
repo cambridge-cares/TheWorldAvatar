@@ -45,6 +45,7 @@ RUN dos2unix /usr/local/start-up.sh
 # Copy in the cron-jobs file
 COPY docker/cron-jobs /usr/local/cron-jobs
 RUN chmod 755 /usr/local/cron-jobs
+RUN dos2unix /usr/local/cron-jobs
 
 # Copy in the files
 RUN mkdir -p /var/www/html
@@ -65,7 +66,7 @@ RUN chmod -R 775 /var/www/
 EXPOSE 80
 
 # Run cron daemon and boot script at start
-CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh && exec crond -f" ]
+CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh" ]
 
 
 ##### PRODUCTION STAGE #####

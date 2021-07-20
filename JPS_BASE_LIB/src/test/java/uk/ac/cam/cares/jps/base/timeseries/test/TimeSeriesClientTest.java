@@ -8,8 +8,8 @@ import java.util.List;
 import org.jooq.impl.DSL;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.query.FileBasedKnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
@@ -120,7 +120,7 @@ public class TimeSeriesClientTest extends TestCase{
 		assertEquals(timeColumnField.get(tsClient), DSL.field(DSL.name("time"),timeClass));
 		
 		// check that kbClient is set correctly
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient kbClient = new RemoteStoreClient();
 		Field kbClientField = tsClient.getClass().getDeclaredField("kbClient");
 		kbClientField.setAccessible(true);
 		assertNull(kbClientField.get(tsClient));
@@ -128,7 +128,7 @@ public class TimeSeriesClientTest extends TestCase{
 		assertNotNull(kbClientField.get(tsClient));
 		assertEquals(kbClientField.get(tsClient), kbClient);
 		
-		FileBasedKnowledgeBaseClient kbClient2 = new FileBasedKnowledgeBaseClient();
+		RemoteStoreClient kbClient2 = new RemoteStoreClient();
 		tsClient.setKBClient(kbClient2);
 		assertEquals(kbClientField.get(tsClient), kbClient2);
 		
