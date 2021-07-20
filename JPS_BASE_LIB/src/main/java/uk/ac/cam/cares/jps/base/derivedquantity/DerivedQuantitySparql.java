@@ -5,6 +5,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -68,12 +69,9 @@ public class DerivedQuantitySparql{
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
-		int numDerived = countDerived(kbClient);
-		
-		String derivedQuantity = derivednamespace + "derived" + numDerived;
-		while (checkDerivedExists(kbClient, derivedQuantity)) {
-			numDerived += 1;
-			derivedQuantity = derivednamespace + "derived" + numDerived;
+		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		while (checkInstanceExists(kbClient, derivedQuantity)) {
+			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
 		}
 		
 		Iri derived_iri = iri(derivedQuantity);
@@ -91,12 +89,10 @@ public class DerivedQuantitySparql{
 		
 		// add time stamp instance for the derived quantity
 		long timestamp = 0;
-		int numTime = DerivedQuantitySparql.countTimeInstance(kbClient);
-		String derivedQuantityTime = derivednamespace + "time" + numTime;
+		String derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		
-		while (checkTimeExists(kbClient, derivedQuantityTime)) {
-			numTime += 1;
-			derivedQuantityTime = derivednamespace + "time" + numTime;
+		while (checkInstanceExists(kbClient, derivedQuantityTime)) {
+			derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		}
 
 		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
@@ -133,12 +129,9 @@ public class DerivedQuantitySparql{
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
-		int numDerived = countDerived(kbClient);
-		
-		String derivedQuantity = derivednamespace + "derived" + numDerived;
-		while (checkDerivedExists(kbClient, derivedQuantity)) {
-			numDerived += 1;
-			derivedQuantity = derivednamespace + "derived" + numDerived;
+		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		while (checkInstanceExists(kbClient, derivedQuantity)) {
+			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
 		}
 		
 		Iri derived_iri = iri(derivedQuantity);
@@ -154,12 +147,10 @@ public class DerivedQuantitySparql{
 		
 		// add time stamp instance for the derived quantity
 		long timestamp = 0;
-		int numTime = DerivedQuantitySparql.countTimeInstance(kbClient);
-		String derivedQuantityTime = derivednamespace + "time" + numTime;
+		String derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		
-		while (checkTimeExists(kbClient, derivedQuantityTime)) {
-			numTime += 1;
-			derivedQuantityTime = derivednamespace + "time" + numTime;
+		while (checkInstanceExists(kbClient, derivedQuantityTime)) {
+			derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		}
 
 		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
@@ -177,27 +168,6 @@ public class DerivedQuantitySparql{
 	    kbClient.executeUpdate();
 	    
 	    return derivedQuantity;
-	}
-	
-	/**
-	 * counts the number of derived quantity instances
-	 * @param kbClient
-	 */
-	private static int countDerived(StoreClientInterface kbClient) {
-		SelectQuery query = Queries.SELECT();
-		String queryKey = "numDerived";
-		Variable numDerived = SparqlBuilder.var(queryKey);
-		Variable derived = query.var();
-		
-		GraphPattern queryPattern = GraphPatterns.and(derived.isA(DerivedQuantity).optional(),
-				derived.isA(DerivedQuantityWithTimeSeries).optional());
-		
-		Assignment count = Expressions.count(derived).as(numDerived);
-		
-		query.prefix(p_derived).select(count).where(queryPattern);
-		
-		kbClient.setQuery(query.getQueryString());
-		return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
 	}
 	
 	public static boolean hasTimeInstance(StoreClientInterface kbClient, String entity) {
@@ -220,18 +190,28 @@ public class DerivedQuantitySparql{
 	}
 	
 	/**
-	 * checks if an instance already exists to avoid IRI clash
-	 * @param kbClient
-	 * @param derived
+	 * returns true of given instance exists
+	 * @param storeClient
+	 * @param instance
+	 * @return
 	 */
-	private static boolean checkDerivedExists(StoreClientInterface kbClient, String derived) {
-		// includes DerivedQuantity and DerivedQuantityWithTimeSeries 
-		// the derived instance is always created with a rdf:type statement
-		String query = String.format("ask {<%s> a ?x}",derived);
-		kbClient.setQuery(query);
-		boolean derivedExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-		return derivedExists;
-	}
+	private static boolean checkInstanceExists(StoreClientInterface storeClient, String instance) {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	// includes both cases where the instance is a subject and object
+    	GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(query.var(),query.var()).optional(),
+    			query.var().has(query.var(),iri(instance)).optional());
+    	
+    	query.where(queryPattern);
+    
+    	JSONArray queryresult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryresult.length() > 0) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+    }
 	
 	/**
 	 * add a time stamp instance to your input if it does not exist
@@ -243,12 +223,10 @@ public class DerivedQuantitySparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		// add time stamp instance for the derived quantity
-		int numTime = countTimeInstance(kbClient);
-		String inputTime = derivednamespace + "time" + numTime;
+		String inputTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		
-		while (checkTimeExists(kbClient, inputTime)) {
-			numTime += 1;
-			inputTime = derivednamespace + "time" + numTime;
+		while (checkInstanceExists(kbClient, inputTime)) {
+			inputTime = derivednamespace + "time" + UUID.randomUUID().toString();
 		}
 
 		long timestamp = Instant.now().getEpochSecond();
@@ -258,33 +236,6 @@ public class DerivedQuantitySparql{
 	    
 	    kbClient.setQuery(modify.prefix(p_time).getQueryString());
 	    kbClient.executeUpdate();
-	}
-	
-	/**
-	 * ensure there are no time duplicates, maybe the time instance was already initialise before,, e.g. an input is also a derived quantity
-	 * @param kbClient
-	 * @param time_iri_string
-	 * @return
-	 */
-	private static boolean checkTimeExists(StoreClientInterface kbClient, String time_iri) {
-		// ask query is not supported by SparqlBuilder, hence hardcode
-		String query = String.format("ask {<%s> a <http://www.w3.org/2006/time#TimePosition>}",time_iri);
-		kbClient.setQuery(query);
-		boolean timeExist = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-		return timeExist;
-	}
-
-	public static int countTimeInstance(StoreClientInterface kbClient) {
-		SelectQuery query = Queries.SELECT();
-    	String queryKey = "numtime";
-    	Variable time = query.var();
-    	Variable numtime = SparqlBuilder.var(queryKey);
-    	GraphPattern querypattern = time.isA(TimePosition);
-    	Assignment count = Expressions.count(time).as(numtime);
-    	
-    	query.prefix(p_time).select(count).where(querypattern);
-    	kbClient.setQuery(query.getQueryString());
-    	return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
 	}
 	
 	/**
