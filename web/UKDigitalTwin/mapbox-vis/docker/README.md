@@ -16,9 +16,11 @@ Once the requirements have been addressed, the Image can be build using the foll
 
 Be aware that the VERSION tag should match the current version of the visualisation (which is listed within the 'version' file). The image also contains 'development' and 'production' stages, refer to the Dockerfile for more details on the difference between these.
 
+Note that during development, you can also create a "bind mount", mounting a directory on your host OS into the Docker container, so that you don't need to rebuild it each time you change a file. This can be done using the -v argument (-v "$(pwd)":/var/www/html).
+
 + To build the image:
-  + `docker build --rm --no-cache --target development -t docker.cmclinnovations.com/power-system-vis:VERSION-dev -f docker/Dockerfile .`
+  + `docker build --rm --no-cache --target development -t docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-dev -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 3001:80 --restart always --name "power-system-vis" -it docker.cmclinnovations.com/power-system-vis:VERSION-dev`
+  + `docker run -d -p 3001:80 --restart always --name "power-system-vis" -it docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-dev`
 + To push the image to the CMCL registry (after logging in):
-  + `docker image push docker.cmclinnovations.com/power-system-vis:VERSION-dev`
+  + `docker image push docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-dev`
