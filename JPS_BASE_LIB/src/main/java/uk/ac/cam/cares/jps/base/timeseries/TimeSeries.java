@@ -61,11 +61,27 @@ public class TimeSeries<T> {
      * @return
      */
     public List<Double> getValuesAsDouble(String dataIRI) {
-    	return values.get(dataIRI).stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
-    }
+    	List<?> v = getValues(dataIRI);
+    	if (v == null) {
+    		return null;
+    	} else if (v.get(0) instanceof Number) {
+    		return v.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());    		
+    	} else {
+    		throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
+    	}   	
+    }    
+    
     public List<Integer> getValuesAsInteger(String dataIRI) {
-    	return values.get(dataIRI).stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());
+    	List<?> v = getValues(dataIRI);
+    	if (v == null) {
+    		return null;
+    	} else if (v.get(0) instanceof Number) {
+    		return v.stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());    		
+    	} else {
+    		throw new JPSRuntimeException("TimeSeries: Values for provided dataIRI are not castable to \"Number\"");
+    	}  
     }
+    
     public List<String> getValuesAsString(String dataIRI) {
     	return values.get(dataIRI).stream().map(value -> ((Object) value).toString()).collect(Collectors.toList());
     }
