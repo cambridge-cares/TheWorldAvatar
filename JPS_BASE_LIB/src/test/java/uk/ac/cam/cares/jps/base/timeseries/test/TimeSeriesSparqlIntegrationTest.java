@@ -28,7 +28,7 @@ public class TimeSeriesSparqlIntegrationTest {
 	private static String dbURL = "jdbc:postgresql:timeseries"; 
 	private static String timeUnit = "http://s";
 	
-	public static TimeSeriesSparql initialiseSparqlClient() {
+	private static TimeSeriesSparql initialiseSparqlClient() {
 		// Set up a kb client that points to the location of your instance
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
 		RemoteStoreClient kbClient = new RemoteStoreClient();

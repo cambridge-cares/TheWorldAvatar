@@ -40,6 +40,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private String rdbPassword = null;
 	// Time unit (in IRI)
 	private String timeUnit = null;
+	// RDB connection properties and jooq configuration 
+	private Connection conn;
+	private DSLContext context;
 	// Time series column field (for RDB)
 	private final Field<T> timeColumn;
 	// Constants
@@ -91,15 +94,14 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Initialise central database lookup table
 	 */
 	public void initCentralTable() {
-		// Initialise connection
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext create = connect();
 		
 		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
 		create.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
 			  .column(tsTableNameColumn).column(columnNameColumn).execute();
 		
-		closeConnection(conn);
+		disconnect();
 	}
 	
 	/**
@@ -115,9 +117,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();
 		
-		// Initialise connection
-		Connection conn = connect();
-		DSLContext create = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext create = connect();
 		
 		// Check if central database lookup table exists
 		if (create.meta().getTables(dbTableName).size() == 0) {
@@ -145,7 +146,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Initialise RDB table for storing time series data
 		createEmptyTimeSeriesTable(create, tsTableName, dataColumnNames, dataIRI, dataClass);
 		
-		closeConnection(conn);
+		disconnect();
 		
 	}
 	
@@ -157,9 +158,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	public void addTimeSeriesData(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRI();
     	
-    	// Initialise connection
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
@@ -192,7 +192,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Append time series data
 		populateTimeSeriesTable(dsl, tsTableName, ts, dataColumnNames);
 		
-		closeConnection(conn);
+		disconnect();
 	}
 	
     /** 
@@ -202,9 +202,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
      * @param dataIRI
      */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
-		// Initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// Check if all required time series are initialised
 		for (String s : dataIRI) {
@@ -250,7 +249,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
     	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).orderBy(timeColumn.asc()).fetch();
     	
-    	closeConnection(conn);
+    	disconnect();
     	
     	// Collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -274,9 +273,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
-		// Initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
     	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
@@ -330,7 +328,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
     	//		 .orderBy(timeColumn.asc()).fetch();
     	
-    	closeConnection(conn);
+    	disconnect();
     	
     	// Collect results and return a TimeSeries object
     	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -350,9 +348,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getAverage(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -367,7 +364,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
     	List<BigDecimal> queryResult = dsl.select(avg(columnField)).from(table).fetch(avg(columnField));
-    	closeConnection(conn);
+    	disconnect();
     	
     	return queryResult.get(0).doubleValue();
 	}
@@ -378,9 +375,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getMaxValue(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
 		
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -395,7 +391,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
     	List<Double> queryResult = dsl.select(max(columnField)).from(table).fetch(max(columnField));
-    	closeConnection(conn);
+    	disconnect();
     	
     	return queryResult.get(0).doubleValue();
 	}
@@ -406,9 +402,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getMinValue(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -423,7 +418,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
     	
     	List<Double> queryResult = dsl.select(min(columnField)).from(table).fetch(min(columnField));
-    	closeConnection(conn);
+    	disconnect();
     	
     	return queryResult.get(0).doubleValue();
 	}
@@ -434,9 +429,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public T getMaxTime(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -447,7 +441,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	List<T> queryResult = dsl.select(max(timeColumn)).from(table).fetch(max(timeColumn));
-    	closeConnection(conn);
+    	disconnect();
     	
     	T maxTime = queryResult.get(0);
     	
@@ -460,9 +454,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public T getMinTime(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
 		if(!checkDataHasTimeSeries(dsl, dataIRI)) {
 			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
@@ -473,7 +466,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
     	List<T> queryResult = dsl.select(min(timeColumn)).from(table).fetch(min(timeColumn));
-    	closeConnection(conn);
+    	disconnect();
     	
     	T minTime = queryResult.get(0);
     	
@@ -488,9 +481,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param upperBound
 	 */
 	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
-		// Initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
     	
@@ -506,7 +498,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	
     	// Delete rows between bound (including bounds!)
     	dsl.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
-    	closeConnection(conn);
+    	disconnect();
 	}
 	
 	/**
@@ -514,9 +506,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeries(String dataIRI) {
-		// initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
     	
@@ -542,7 +533,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	// Delete entry in central lookup table
 	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
 	    	dsl.delete(dbTable).where(dataIRIcolumn.equal(dataIRI)).execute();
-	    	closeConnection(conn);			
+	    	disconnect();			
 		} else {
 			// Delete entire RDB table for single column time series (data column + time column)
 			deleteTimeSeriesTable(dataIRI);
@@ -554,9 +545,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeriesTable(String dataIRI) {
-		// Initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and set jOOQ DSL context
+		DSLContext dsl = connect();
     	
     	// mh807: Necessary to check whether dataIRI actually exists in central lookup table?
     	
@@ -576,16 +566,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
     	dsl.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	
-    	closeConnection(conn);
+    	disconnect();
 	}
 	
 	/**
 	 * Delete all time series RDB tables and central lookup table
 	 */
 	public void deleteAll() {
-		// Initialise connection and query from RDB
-    	Connection conn = connect();
-    	DSLContext dsl = DSL.using(conn, dialect); 
+		// Initialise connection and context to RDB
+    	DSLContext dsl = connect(); 
     	
     	// Retrieve all time series table names from central lookup table
     	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
@@ -601,23 +590,23 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			
 			// Delete central lookup table
 			dsl.dropTable(dbTable).execute();
-			closeConnection(conn);		
+			disconnect();		
 			}
 	}
 	
 	/**
-	 * Establish connection to RDB
+	 * Establish connection to RDB and set DSL context
 	 * @return
 	 */
-	private Connection connect() {
-		Connection conn = null;
+	private DSLContext connect() {
 		try {
 			// Load required driver
 			Class.forName("org.postgresql.Driver");
-			// Connect to DB
+			// Connect to DB (using static connection and context properties)
         	conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
         	System.out.println("Connected to: " + this.rdbURL);
-			return conn;
+        	context = DSL.using(conn, dialect); 
+			return context;
 		} catch (Exception e) {
 			System.out.println("Connection failed to: " + this.rdbURL);
 			throw new JPSRuntimeException(e);
@@ -628,7 +617,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Close existing connection to RDB
 	 * @param conn
 	 */
-	private void closeConnection(Connection conn) {
+	private void disconnect() {
 		try {
 			conn.close();
 		} catch (SQLException e) {

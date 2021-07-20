@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
-
 import org.jooq.SQLDialect;
 import org.junit.Assert;
 import org.junit.Test;

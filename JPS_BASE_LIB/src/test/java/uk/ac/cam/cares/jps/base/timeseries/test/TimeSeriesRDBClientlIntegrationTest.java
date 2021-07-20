@@ -25,7 +25,9 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+	//private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+	// mh807: use local development for easier debugging
+	private static final String dbURL = "jdbc:postgresql:timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
 
@@ -39,8 +41,9 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	private List<String> dataIRI;
 	private List<Class<?>> dataClass;
 
-	// Connect to the database before any test (will spin up the Docker container for the database)
+
 	@BeforeClass
+	// Connect to the database before any test (will spin up the Docker container for the database)
 	public static void connect() throws SQLException, ClassNotFoundException {
 		// Load required driver
 		Class.forName("org.postgresql.Driver");
