@@ -157,7 +157,7 @@ case $key in
 	-n) VENV_NAME=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
     -s) DO_NOT_PROMPT='y'; shift;;
-	-e) DEP_FILE='dev-dependencies.yml'; DEV_INSTALL='-e' shift;;
+	-e) DEP_FILE='dev-dependencies.yml'; DEV_INSTALL='-e'; shift;;
      *)
 	# otherwise print the usage
     usage
