@@ -8,7 +8,7 @@ optTypesRegex = re.compile('(^-x|^-a|^-([^-ax])|^--)')
 
 def obConvert(inputMol, inputMolFormat, outputMolFormat, options=None):
     if fileExists(inputMol): inputMol= readFile(inputMol)
-    obConversion = openbabel.OBConversion()    
+    obConversion = openbabel.OBConversion()
     obConversion.SetInAndOutFormats(inputMolFormat, outputMolFormat)
 
     if options is not None:
