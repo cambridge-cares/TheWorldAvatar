@@ -56,16 +56,9 @@ public class TimeSeriesSparqlTest {
     public void testNamespaces() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
     	RemoteStoreClient kbClient = new RemoteStoreClient();
     	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
-    	// Retrieve the value of the private field 'ns_ontology' of the client
-        Field ns_onto = client.getClass().getDeclaredField("ns_ontology");
-        ns_onto.setAccessible(true);
-        String onto = (String) ns_onto.get(client);
-        Assert.assertEquals("http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#", onto);
-    	// Retrieve the value of the private field 'ns_kb' of the client
-        Field ns_kb = client.getClass().getDeclaredField("ns_kb");
-        ns_kb.setAccessible(true);
-        String kb = (String) ns_kb.get(client);
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontotimeseries/", kb);        
+    	// Test the value of the public namespaces for the ontology and the knowledge base
+        Assert.assertEquals("http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#", TimeSeriesSparql.ns_ontology);
+        Assert.assertEquals("http://www.theworldavatar.com/kb/ontotimeseries/", TimeSeriesSparql.ns_kb);        
     }
     
     @Test
