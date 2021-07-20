@@ -50,6 +50,11 @@ public class TimeSeriesRDBClientlIntegrationTest {
 		// Connect to DB
 		conn = DriverManager.getConnection(dbURL, user, password);
 		context = DSL.using(conn, SQLDialect.POSTGRES);
+		// Clear database
+		List<Table<?>> tables = context.meta().getTables();
+		for (Table table: tables) {
+			context.dropTable(table).cascade().execute();
+		}
 	}
 
 	// Disconnect from the database after all tests are run

@@ -168,17 +168,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table by checking its time series IRI
-    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
-    	if (dataIRI.size() > 1) {
-    		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
-    			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
-    			}
-    		}
-    	}
+		// Ensure that each provided column is located in the same table
+		if (!checkDataIsInSameTable(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
+		}
     	
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	String tsTableName = getTableName(dsl, tsIRI);
     	// Assign column name for each dataIRI; name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
@@ -209,17 +204,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table by checking its time series IRI
-    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
-    	if (dataIRI.size() > 1) {
-    		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
-    			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
-    			}
-    		}
-    	}
+		// Ensure that each provided column is located in the same table
+		if (!checkDataIsInSameTable(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
+		}
     	
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -283,17 +273,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table by checking its time series IRI
-    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
-    	if (dataIRI.size() > 1) {
-    		for (int i = 1; i < dataIRI.size(); i++) {
-    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
-    			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same table");
-    			}
-    		}
-    	}
+		// Ensure that each provided column is located in the same table
+		if (!checkDataIsInSameTable(dsl, dataIRI)) {
+			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
+		}
     	
+		String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
     	String tsTableName = getTableName(dsl, tsIRI);
     	Table<?> table = DSL.table(DSL.name(tsTableName));
     	
@@ -708,11 +693,25 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Check whether dataIRI has a tsIRI associated with it (i.e. respective tsIRI entry not null)
+	 * Ensure that all dataIRIs are associated with same RDB table by (i.e. have same time series IRI)
 	 * @param dsl
 	 * @param dataIRI
 	 * @return
 	 */
+	private boolean checkDataIsInSameTable(DSLContext dsl, List<String> dataIRI) {
+		// Get time series IRI of first dataIRI
+    	String tsIRI = getTimeSeriesIRI(dsl, dataIRI.get(0));
+    	// Check that all further dataIRI share this time series IRI
+    	if (dataIRI.size() > 1) {
+    		for (int i = 1; i < dataIRI.size(); i++) {
+    			String tsIRItmp = getTimeSeriesIRI(dsl, dataIRI.get(i));
+    			if (!tsIRItmp.contentEquals(tsIRI)) {
+    				return false;
+    			}
+    		}
+    	}
+    	return true;
+	}
 	
 	/**
 	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
