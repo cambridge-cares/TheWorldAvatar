@@ -8,7 +8,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * this class acts as an interface to create and deal with derived quantities
@@ -22,9 +22,9 @@ public class DerivedQuantityClient {
 	public static final String AGENT_INPUT_KEY = "input";
 	public static final String AGENT_OUTPUT_KEY = "output";
 	// defines the endpoint DerivedQuantityClient should act on
-    KnowledgeBaseClientInterface kbClient;
+	StoreClientInterface kbClient;
     
-    public DerivedQuantityClient(KnowledgeBaseClientInterface kbClient) {
+    public DerivedQuantityClient(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
     }
     

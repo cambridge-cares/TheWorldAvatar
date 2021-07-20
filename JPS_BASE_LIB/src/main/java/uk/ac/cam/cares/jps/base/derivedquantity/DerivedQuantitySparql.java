@@ -25,7 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * SPARQL queries/updates for instances related to derived quantities
@@ -63,7 +63,7 @@ public class DerivedQuantitySparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	public static String createDerivedQuantity(KnowledgeBaseClientInterface kbClient, 
+	public static String createDerivedQuantity(StoreClientInterface kbClient, 
 			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
@@ -128,7 +128,7 @@ public class DerivedQuantitySparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	public static String createDerivedQuantityWithTimeSeries(KnowledgeBaseClientInterface kbClient, 
+	public static String createDerivedQuantityWithTimeSeries(StoreClientInterface kbClient, 
 			String entity, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
@@ -183,7 +183,7 @@ public class DerivedQuantitySparql{
 	 * counts the number of derived quantity instances
 	 * @param kbClient
 	 */
-	private static int countDerived(KnowledgeBaseClientInterface kbClient) {
+	private static int countDerived(StoreClientInterface kbClient) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "numDerived";
 		Variable numDerived = SparqlBuilder.var(queryKey);
@@ -200,7 +200,7 @@ public class DerivedQuantitySparql{
 		return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
 	}
 	
-	public static boolean hasTimeInstance(KnowledgeBaseClientInterface kbClient, String entity) {
+	public static boolean hasTimeInstance(StoreClientInterface kbClient, String entity) {
 		SelectQuery query = Queries.SELECT();
 		Variable time = query.var();
 		Variable timeval = query.var();
@@ -224,7 +224,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param derived
 	 */
-	private static boolean checkDerivedExists(KnowledgeBaseClientInterface kbClient, String derived) {
+	private static boolean checkDerivedExists(StoreClientInterface kbClient, String derived) {
 		// includes DerivedQuantity and DerivedQuantityWithTimeSeries 
 		// the derived instance is always created with a rdf:type statement
 		String query = String.format("ask {<%s> a ?x}",derived);
@@ -239,7 +239,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param input
 	 */
-	public static void addTimeInstance(KnowledgeBaseClientInterface kbClient, String input) {
+	public static void addTimeInstance(StoreClientInterface kbClient, String input) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		// add time stamp instance for the derived quantity
@@ -266,7 +266,7 @@ public class DerivedQuantitySparql{
 	 * @param time_iri_string
 	 * @return
 	 */
-	private static boolean checkTimeExists(KnowledgeBaseClientInterface kbClient, String time_iri) {
+	private static boolean checkTimeExists(StoreClientInterface kbClient, String time_iri) {
 		// ask query is not supported by SparqlBuilder, hence hardcode
 		String query = String.format("ask {<%s> a <http://www.w3.org/2006/time#TimePosition>}",time_iri);
 		kbClient.setQuery(query);
@@ -274,7 +274,7 @@ public class DerivedQuantitySparql{
 		return timeExist;
 	}
 
-	public static int countTimeInstance(KnowledgeBaseClientInterface kbClient) {
+	public static int countTimeInstance(StoreClientInterface kbClient) {
 		SelectQuery query = Queries.SELECT();
     	String queryKey = "numtime";
     	Variable time = query.var();
@@ -293,7 +293,7 @@ public class DerivedQuantitySparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
-	public static String getAgentUrl(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
+	public static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
 		SelectQuery query = Queries.SELECT();
 		
 		String queryKey = "url";
@@ -320,7 +320,7 @@ public class DerivedQuantitySparql{
 	 * @return
 	 */
 	
-	public static String[] getInputs(KnowledgeBaseClientInterface kbClient, String derivedQuantity) {
+	public static String[] getInputs(StoreClientInterface kbClient, String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = iri(derivedQuantity).has(isDerivedFrom,input);
@@ -344,7 +344,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
-	public static List<String> getInputsAndDerived(KnowledgeBaseClientInterface kbClient, String derived) {
+	public static List<String> getInputsAndDerived(StoreClientInterface kbClient, String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
 		
@@ -383,7 +383,7 @@ public class DerivedQuantitySparql{
 	 * @param instance
 	 * @return
 	 */
-	public static String getDerivedIRI(KnowledgeBaseClientInterface kbClient, String instance) {
+	public static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "derived";
 		Variable derived = SparqlBuilder.var(queryKey);
@@ -405,7 +405,7 @@ public class DerivedQuantitySparql{
 	 * @param derivedIRI
 	 * @return
 	 */
-	public static String[] getDerivedEntities(KnowledgeBaseClientInterface kbClient, String derivedIRI) {
+	public static String[] getDerivedEntities(StoreClientInterface kbClient, String derivedIRI) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "entity";
 		Variable entity = SparqlBuilder.var(queryKey);
@@ -428,7 +428,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	public static List<List<String>> getIsDerivedFromEntities(KnowledgeBaseClientInterface kbClient, String... entities) {
+	public static List<List<String>> getIsDerivedFromEntities(StoreClientInterface kbClient, String... entities) {
 		SelectQuery query = Queries.SELECT();
 		String derivedkey = "derived";
 		String typeKey = "type";
@@ -465,7 +465,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	public static void deleteInstances(KnowledgeBaseClientInterface kbClient, String... entities) {
+	public static void deleteInstances(StoreClientInterface kbClient, String... entities) {
 		SubSelect sub = GraphPatterns.select();
 		
 		Variable subject = sub.var();
@@ -490,7 +490,7 @@ public class DerivedQuantitySparql{
 		kbClient.executeUpdate(modify.getQueryString());
 	}
 	
-	public static long getTimestamp(KnowledgeBaseClientInterface kbClient, String instance) {
+	public static long getTimestamp(StoreClientInterface kbClient, String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
 		Variable time = SparqlBuilder.var(queryKey);
@@ -531,7 +531,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	public static void updateTimeStamp(KnowledgeBaseClientInterface kbClient, String instance) {
+	public static void updateTimeStamp(StoreClientInterface kbClient, String instance) {
 		long timestamp = Instant.now().getEpochSecond();
 		
 		// obtain time IRI through sub query
@@ -562,7 +562,7 @@ public class DerivedQuantitySparql{
 	 * @param instance
 	 * @return
 	 */
-	public static String[] getInstanceClass(KnowledgeBaseClientInterface kbClient, String... instances) {
+	public static String[] getInstanceClass(StoreClientInterface kbClient, String... instances) {
 		String queryKey = "class";
 		
 		String[] classOfInstances = new String[instances.length]; 
@@ -605,7 +605,7 @@ public class DerivedQuantitySparql{
 	 * @param input
 	 * @param derived
 	 */
-	public static void reconnectInputToDerived(KnowledgeBaseClientInterface kbClient, String input, String derived) {
+	public static void reconnectInputToDerived(StoreClientInterface kbClient, String input, String derived) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		TriplePattern insert_tp = iri(derived).has(isDerivedFrom, iri(input));
@@ -620,7 +620,7 @@ public class DerivedQuantitySparql{
 	 * @param kbClient
 	 * @param derived_iri
 	 */
-	public static boolean isDerivedWithTimeSeries(KnowledgeBaseClientInterface kbClient, String derived_iri) {
+	public static boolean isDerivedWithTimeSeries(StoreClientInterface kbClient, String derived_iri) {
 		SelectQuery query = Queries.SELECT();
 		Variable type = query.var();
 		TriplePattern tp = iri(derived_iri).isA(type);
