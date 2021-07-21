@@ -36,8 +36,8 @@ public class DerivedQuantityClient {
      * @param inputsIRI
      * @param agentIRI
      */
-    public void createDerivedQuantity(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	DerivedQuantitySparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    public String createDerivedQuantity(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	return DerivedQuantitySparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     }
     
     /**
@@ -47,8 +47,8 @@ public class DerivedQuantityClient {
      * @param agentURL
      * @param inputsIRI
      */
-    public void createDerivedQuantityWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	DerivedQuantitySparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    public String createDerivedQuantityWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	return DerivedQuantitySparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
     }
     
     /**

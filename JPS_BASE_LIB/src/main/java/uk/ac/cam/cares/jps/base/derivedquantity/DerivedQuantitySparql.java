@@ -199,25 +199,6 @@ public class DerivedQuantitySparql{
 		}
 	}
 	
-	public static boolean hasTimeInstance(StoreClientInterface kbClient, String entity) {
-		SelectQuery query = Queries.SELECT();
-		Variable time = query.var();
-		Variable timeval = query.var();
-		Variable derived = query.var();
-		
-		// either this is an input with a timestamp directly connected to it, or it belongs to a derived instance with a timestamp
-		GraphPattern queryPattern = GraphPatterns.and(iri(entity).has(hasTime,time), time.has(numericPosition,timeval)).optional();
-		GraphPattern queryPattern2 = GraphPatterns.and(iri(entity).has(belongsTo, derived)).optional();
-		
-		query.prefix(p_time,p_derived).select(time,timeval,derived).where(queryPattern,queryPattern2);
-		
-		if (kbClient.executeQuery(query.getQueryString()).length() > 0) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
 	/**
 	 * returns true of given instance exists
 	 * @param storeClient
@@ -228,6 +209,7 @@ public class DerivedQuantitySparql{
     	SelectQuery query = Queries.SELECT();
     	
     	// includes both cases where the instance is a subject and object
+    	// {<instance> ?x0 ?x1} {?x2 ?x3 <instance>}
     	GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(query.var(),query.var()).optional(),
     			query.var().has(query.var(),iri(instance)).optional());
     	
