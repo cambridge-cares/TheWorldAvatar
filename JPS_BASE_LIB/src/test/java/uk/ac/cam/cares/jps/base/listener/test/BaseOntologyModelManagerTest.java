@@ -90,7 +90,7 @@ public class BaseOntologyModelManagerTest {
         File testFolder= folder.newFolder("testFolder/test");
         File testFile= folder.newFile("testFolder/test.owl");
         String testFilePath2 = createdFolder.getPath() + "/test";
-
+        String testFilePath1 = createdFolder.getPath() + "/testFolder1/test";
 
         try{
             BaseOntologyModelManager.prepareDirectory(testFilePath2);
@@ -100,6 +100,16 @@ public class BaseOntologyModelManagerTest {
         }catch (Exception e){
             Assert.assertTrue(e.getMessage().contains("No such directory: "));
         }
+
+        try{
+            File testFile1 = folder.newFolder("testFolder1/test");
+            BaseOntologyModelManager.prepareDirectory(testFilePath1);
+            Assert.assertTrue(testFile1.exists());
+        }catch (Exception e){
+            Assert.assertTrue(e.getMessage().contains("No such directory: "));
+        }
+
+
 
     }
 
