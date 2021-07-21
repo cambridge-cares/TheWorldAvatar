@@ -24,7 +24,9 @@ HadUKGrid/HadUK Files/
 OntoGasGrid/abox-tbox/ons_abox/
 HadUKGrid/pickle_files/
 OtherTools/Mapping and Location Tools/mapbox_CMCL/geoJSON_assets/
+OtherTools/Mapping and Location Tools/mapbox_current/colorbars.py 
+OtherTools/Mapping and Location Tools/mapbox_current/LSOA.geojson 
 FuelPoverty/data/
 FuelPoverty/output_images/
-
+OntoGasGrid/statistical_elec_population/LSOA_domestic_elec_2010_19.xlsx
 
