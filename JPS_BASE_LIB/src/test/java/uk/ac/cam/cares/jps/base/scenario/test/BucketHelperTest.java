@@ -4,7 +4,6 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -179,12 +178,9 @@ public class BucketHelperTest{
 	    test_dataseturl = null;
 	    String scenario_workingdir = ScenarioHelper.getScenarioWorkingDir();
 	    assertEquals(scenario_workingdir + "/base", BucketHelper.getLocalPath(test_url, test_dataseturl));
-	    
-	    test_url = "http://localhost:8080/data/jps/scenario/base";
-	    assertEquals(ResourcePathConverter.convertToLocalPath(test_url), BucketHelper.getLocalPath(test_url, test_dataseturl));
 
 	    test_url = "http://localhost:8080/jps/testscenario";
 	    String scenarioBucket = ScenarioHelper.getScenarioBucket("base");
-	    assertEquals(scenarioBucket + "/localhost_8080/testscenario", BucketHelper.getLocalPath(test_url, test_dataseturl));		
+	    assertEquals(scenarioBucket + "/localhost_8080/testscenario", BucketHelper.getLocalPath(test_url, test_dataseturl));
 	}
 }
