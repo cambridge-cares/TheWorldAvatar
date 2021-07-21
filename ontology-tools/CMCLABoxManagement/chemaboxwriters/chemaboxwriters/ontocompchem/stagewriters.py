@@ -29,7 +29,12 @@ unit_pref = 'http://data.nasa.gov/qudt/owl/' #NASA's unit ontology.
 
 endpoint = 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql' #Location of ontology to query from
 
+#def oc_csv_writer(spamwriter, outDir, outBaseName)
+#    with open(csv_name, 'w', newline='') as fd:
+#        spamwriter.seek(0)
+#        copyfileobj(spamwriter, fd, -1)
 
+# work with file or a list of json objects
 def write_abox_csv(oc_jsonFileOrData,outDir='',csv_name="",calc_id=""):
     basedir = os.path.dirname(oc_jsonFileOrData)
     data, name = read_json(oc_jsonFileOrData)
@@ -66,7 +71,7 @@ def write_abox_csv(oc_jsonFileOrData,outDir='',csv_name="",calc_id=""):
     write_atom_info(spamwriter,calc_id,data)
     write_metadata(spamwriter,calc_id,data)
 
-    return csv_name
+    return spamwriter
 
 def read_json(json_file):
     #This function uses native Python handling of JSON.
@@ -500,9 +505,3 @@ def write_metadata(spamwriter,calc_id,data):
     ,'','',''])
     spamwriter.writerow([comp_pref + 'SourcePackage_' + calc_id + '_EnvironmentModule'
                         ,'Instance',data_pref + 'OutputSource_' + calc_id + '.png' ,gain_pref + 'hasOutputFile','',''])
-
-
-#def oc_csv_writer(outDir, outBaseName)
-#    with open(csv_name, 'w', newline='') as fd:
-#        spamwriter.seek(0)
-#        copyfileobj(spamwriter, fd, -1)

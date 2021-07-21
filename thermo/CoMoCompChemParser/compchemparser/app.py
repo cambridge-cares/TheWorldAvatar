@@ -7,7 +7,7 @@ def runParser(logFileOrDir, logExt='.log', suppressOutput=False):
     all_parsed_data = []
     files = getFilesWithExtensions(logFileOrDir,logExt.split(','))
     for file_ in files:
-        parsed_data= parseLog(file_,suppressOutput)
+        parsed_data= parseLog(file_)
         all_parsed_data+=parsed_data
 
         if not suppressOutput:

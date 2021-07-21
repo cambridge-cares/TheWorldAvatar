@@ -1,4 +1,3 @@
-from chemutils.ioutils.ioutils import writeFile
 from chemaboxwriters.common import Handler
 from chemaboxwriters.ontocompchem.stageenums import aboxStages
 from compchemparser.app import parseLog
@@ -20,4 +19,4 @@ OC_JSON_TO_OC_CSV = Handler(handlerFunc=lambda x: x,
                              inStage=aboxStages.OC_JSON,
                              outStage=aboxStages.OC_CSV,
                              fileWriter=json_to_file,
-                             fileExt='.oc_json')
+                             fileExt='.oc_csv')
