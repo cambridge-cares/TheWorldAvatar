@@ -17,6 +17,8 @@ import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +28,23 @@ public class BaseOntologyModelManagerTest {
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
+
+    @Test
+    public void testGetConcept() throws Exception{
+        Model testModel = ModelFactory.createDefaultModel();
+        ConcurrentHashMap<String, Resource> testMap = new ConcurrentHashMap<>();
+        Resource r1 = testModel.createResource("http://somewhere/test1");
+        Resource r2 = testModel.createResource("http://somewhere/test2");
+        testMap.put("test1", r1);
+        testMap.put("test2", r2);
+
+        Field testConcept = BaseOntologyModelManager.class.getDeclaredField("conceptMap");
+        testConcept.setAccessible(true);
+        testConcept.set(null, testMap);
+
+        Assert.assertEquals("http://somewhere/test2", BaseOntologyModelManager.getConcept("test2").toString());
+
+    }
 
     @Test
     public void testSave(){
@@ -95,14 +114,6 @@ public class BaseOntologyModelManagerTest {
             Resource person = testM.createResource(personURI[i]);
             person.addProperty(VCARD.FN, testData[i]);
         }
-//        FileWriter fwriter = null;
-//        try {
-//            File testFile= folder.newFile("test.owl");
-//            fwriter = new FileWriter(testFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        testM.write(fwriter);
 
         String sparql = "SELECT ?z WHERE{<http://somewhere/test> ?y ?z}";
         ResultSet testrs = BaseOntologyModelManager.query(sparql, testM);
