@@ -25,23 +25,24 @@ public class PowerFlowModelVariable {
 			"RatioCoefficient", "Angle", "BranchStatus", "AngleMin", "AngleMax");
 	List<String> GeneratorModelVariables = Arrays.asList("BusNumber", "Pg", "Qg", "QMax", "QMin", "Vg", "mBase", "Status",
 			"PMax", "PMin", "Pc1", "Pc2", "QC1Min", "QC1Max", "QC2Min", "QC2Max", "Rampagc", "Ramp10", "Ramp30", "Rampq", "APF"); 
-	List<String> GenCostFuncVariables = Arrays.asList("CostModel", "StartCost", "StopCost", "genCostn", "genCostcn-2");
-
+	List<String> GenCostFuncVariables = Arrays.asList("CostModel", "StartCost", "StopCost", "genCostn");
+	
+	String[] GenCostFuncPara = {"genCostcn-1", "genCostcn-2"};
 	String[] GenCostFuncParameterLabels = {"Parameter_a", "Parameter_b", "Parameter_c", "Parameter_d", "Parameter_e", "Parameter_f"};
 
 	HashMap<String, List<String>> PowerFlowModelVariablesMap = new HashMap<String, List<String>>();
 	
-	int costFuncOrder;
+	boolean piecewiseOrPolynomial; // True: piecewise;  False: Polynomial;
+	int pointsOfPiecewiseOrcostFuncOrder;
 	
-	public PowerFlowModelVariable(int... cfoder) {
+	public PowerFlowModelVariable(boolean piecewiseOrPolynomial, int pointsOfPiecewiseOrcostFuncOrder) {
 		
 		PowerFlowModelVariablesMap.put(busModelKey, BusModelVariables);
 		PowerFlowModelVariablesMap.put(branchModelKey, BranchModelVariables);
 		PowerFlowModelVariablesMap.put(genModelKey, GeneratorModelVariables);
 		PowerFlowModelVariablesMap.put(genCostFuncKey, GenCostFuncVariables);
 		
-		if(cfoder.length == 1) {
-		costFuncOrder = cfoder[0];
-		}
+		this.piecewiseOrPolynomial = piecewiseOrPolynomial;
+		this.pointsOfPiecewiseOrcostFuncOrder = pointsOfPiecewiseOrcostFuncOrder;		
 	}	
 }
