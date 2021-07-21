@@ -174,7 +174,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	String tsTableName = getTableName(tsIRI);
+    	String tsTableName = getTimeseriesTableName(tsIRI);
     	// Assign column name for each dataIRI; name for time column is fixed
 		Map<String,String> dataColumnNames = new HashMap<String,String>();
 		for (String s : dataIRI) {
@@ -210,8 +210,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// Create map between data IRI and the corresponding column field in the table
     	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
@@ -279,8 +278,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// Create map between data IRI and the corresponding column field in the table
     	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
@@ -332,8 +330,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
     	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dataIRI);
@@ -359,8 +356,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
     	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dataIRI);
@@ -386,8 +382,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 		
     	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// create map between dataIRI and the corresponding column field in the table
 		String columnName = getColumnName(dataIRI);
@@ -413,8 +408,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
     	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	List<T> queryResult = context.select(max(timeColumn)).from(table).fetch(max(timeColumn));
     	disconnect();
@@ -438,8 +432,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
     	
     	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	List<T> queryResult = context.select(min(timeColumn)).from(table).fetch(min(timeColumn));
     	disconnect();
@@ -466,9 +459,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		}
 		
 		// Retrieve RDB table for dataIRI
-		String tsIRI = getTimeSeriesIRI(dataIRI);    	
-    	String tsTableName = getTableName(tsIRI);
-    	Table<?> table = DSL.table(DSL.name(tsTableName));
+		String tsIRI = getTimeSeriesIRI(dataIRI);
+    	Table<?> table = getTimeseriesTable(tsIRI);
     	
     	// Delete rows between bound (including bounds!)
     	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
@@ -491,7 +483,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Get time series RDB table		
 		String tsIRI = getTimeSeriesIRI(dataIRI);
 		String columnName = getColumnName(dataIRI);
-		String tsTableName = getTableName(tsIRI);
+		String tsTableName = getTimeseriesTableName(tsIRI);
 		
 		// Get meta information for RDB table (column fields, etc.)
 		Table<?> tsTable = context.meta().getTables(tsTableName).get(0);
@@ -527,7 +519,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		// Get time series RDB table
 		String tsIRI = getTimeSeriesIRI(dataIRI);
-		String tsTableName = getTableName(tsIRI);
+		String tsTableName = getTimeseriesTableName(tsIRI);
     
     	// Delete time series RDB table
 		context.dropTable(DSL.table(DSL.name(tsTableName))).execute();
@@ -584,7 +576,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Close existing connection to RDB
-	 * @param conn
 	 */
 	private void disconnect() {
 		try {
@@ -618,7 +609,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Create an empty RDB table with the given data types for the respective columns
-	 * @param dsl
 	 * @param tablename
 	 * @param dataColumnNames
 	 * @param dataIRI
@@ -735,18 +725,29 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 		return columnName;
 	}
-	
+
 	/**
-	 * Retrieve table name for provided timeseriesIRI from central database lookup table (if it exists)
-	 * @param tsIRI
-	 * @return
+	 * Retrieve table name for provided timeseries IRI from central database lookup table (if it exists)
+	 * @param tsIRI: IRI of the timeseries
+	 * @return String
 	 */
-	private String getTableName(String tsIRI) {
+	private String getTimeseriesTableName(String tsIRI) {
 		// Look for the entry tsIRI in dbTable
-		Table<?> table = DSL.table(DSL.name(dbTableName));		
-		List<String> queryResult = context.select(tsTableNameColumn).from(table).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
-		String tableName = queryResult.get(0);
-		
-		return tableName;
+		Table<?> globalTable = DSL.table(DSL.name(dbTableName));
+		List<String> queryResult = context.select(tsTableNameColumn).from(globalTable).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
+
+		return queryResult.get(0);
+	}
+
+	/**
+	 * Retrieve table for provided timeseries IRI from central database lookup table (if it exists)
+	 * @param tsIRI: IRI of the timeseries
+	 * @return Table
+	 */
+	private Table<?> getTimeseriesTable(String tsIRI) {
+		// Look for the entry tsIRI in dbTable
+		String tableName = getTimeseriesTableName(tsIRI);
+
+		return DSL.table(DSL.name(tableName));
 	}
 }
