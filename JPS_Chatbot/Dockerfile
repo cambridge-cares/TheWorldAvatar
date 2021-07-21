@@ -54,8 +54,11 @@ RUN python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 # Add all source code; might be able to copy less here
 ADD jps-chatbot .
 
-# ENTRYPOINT  ["gunicorn", "--bind", "0.0.0.0:5000", "UI:app"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+# Add top-level dir to the pythonpath so that gunicorn can find the modules.
+# Should be replaced by writing a proper setup.py and installing the chatbot as a package.
+ENV PYTHONPATH="/app"
+
+ENTRYPOINT  ["gunicorn", "--bind", "0.0.0.0:5000", "UI:app"]
 
 # #==================================================F================================================
 # # Set the locale to UK 
