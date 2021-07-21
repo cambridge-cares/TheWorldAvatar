@@ -502,7 +502,7 @@ def write_metadata(spamwriter,calc_id,data):
                         ,'Instance',data_pref + 'OutputSource_' + calc_id + '.png' ,gain_pref + 'hasOutputFile','',''])
 
 
-def oc_csv_writer(outDir, outBaseName)
-    with open(csv_name, 'w', newline='') as fd:
-        spamwriter.seek(0)
-        copyfileobj(spamwriter, fd, -1)
+#def oc_csv_writer(outDir, outBaseName)
+#    with open(csv_name, 'w', newline='') as fd:
+#        spamwriter.seek(0)
+#        copyfileobj(spamwriter, fd, -1)
