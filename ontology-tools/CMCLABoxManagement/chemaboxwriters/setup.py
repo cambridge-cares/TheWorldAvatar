@@ -9,6 +9,6 @@ setup(
     python_requires='>=3.7',
     packages=find_packages(exclude=('tests')),
     long_description=open('README.md').read(),
-    install_requires= ["docopt"],
+    install_requires= ["docopt", "py4jps"],
     include_package_data=True
 )
