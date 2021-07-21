@@ -123,7 +123,8 @@ public class TimeSeriesRDBClientlIntegrationTest {
 		Exception exception = Assert.assertThrows(JPSRuntimeException.class, () -> {
 			client.initTimeSeriesTable(dataIRI, dataClass, null);
 		});
-		String expectedExceptionMessage = "TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first";
+		String expectedExceptionMessage = "uk.ac.cam.cares.jps.base.exception.JPSRuntimeException: "+
+										  "TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first";
 		Assert.assertEquals(expectedExceptionMessage, exception.getMessage());
 	}
 

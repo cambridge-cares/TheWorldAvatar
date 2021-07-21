@@ -94,14 +94,19 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Initialise central database lookup table
 	 */
 	public void initCentralTable() {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-		
-		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
-		context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
-			  .column(tsTableNameColumn).column(columnNameColumn).execute();
-		
-		disconnect();
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+			
+			// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
+			context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
+				  .column(tsTableNameColumn).column(columnNameColumn).execute();
+			
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
+		}
 	}
 	
 	/**
@@ -117,36 +122,41 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();
 		
-		// Initialise connection and set jOOQ DSL context
-		connect();
-		
-		// Check if central database lookup table exists
-		if (context.meta().getTables(dbTableName).size() == 0) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first");
-		}
-		
-		// Check if any data has already been initialised (i.e. is associated with different tsIRI)
-		for (String s : dataIRI) {
-			if(checkDataHasTimeSeries(s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+			
+			// Check if central database lookup table exists
+			if (context.meta().getTables(dbTableName).size() == 0) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first");
 			}
+			
+			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
+			for (String s : dataIRI) {
+				if(checkDataHasTimeSeries(s)) {
+					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
+				}
+			}
+			
+			// Assign column name for each dataIRI; name for time column is fixed
+			Map<String,String> dataColumnNames = new HashMap<String,String>();
+			int i = 1;
+			for (String s : dataIRI) {
+				dataColumnNames.put(s, "column"+i);
+				i++;
+			}
+			
+			// Add corresponding entries in central lookup table
+			populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI);
+			
+			// Initialise RDB table for storing time series data
+			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
+			
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-		
-		// Assign column name for each dataIRI; name for time column is fixed
-		Map<String,String> dataColumnNames = new HashMap<String,String>();
-		int i = 1;
-		for (String s : dataIRI) {
-			dataColumnNames.put(s, "column"+i);
-			i++;
-		}
-		
-		// Add corresponding entries in central lookup table
-		populateCentralTable(tsTableName, dataIRI, dataColumnNames, tsIRI);
-		
-		// Initialise RDB table for storing time series data
-		createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
-		
-		disconnect();
 		
 	}
 	
@@ -158,31 +168,36 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	public void addTimeSeriesData(TimeSeries<T> ts) {
     	List<String> dataIRI = ts.getDataIRIs();
     	
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-    	// Check if all required time series are initialised
-		for (String s : dataIRI) {
-			if(!checkDataHasTimeSeries(s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)"); 
+    	try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+	    	// Check if all required time series are initialised
+			for (String s : dataIRI) {
+				if(!checkDataHasTimeSeries(s)) {
+					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)"); 
+				}
 			}
+	    	
+			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+			checkDataIsInSameTable(dataIRI);
+	    	
+			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
+	    	String tsTableName = getTimeseriesTableName(tsIRI);
+	    	// Assign column name for each dataIRI; name for time column is fixed
+			Map<String,String> dataColumnNames = new HashMap<String,String>();
+			for (String s : dataIRI) {
+				dataColumnNames.put(s, getColumnName(s));
+			}
+			
+			// Append time series data
+			populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
+			
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-		checkDataIsInSameTable(dataIRI);
-    	
-		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	String tsTableName = getTimeseriesTableName(tsIRI);
-    	// Assign column name for each dataIRI; name for time column is fixed
-		Map<String,String> dataColumnNames = new HashMap<String,String>();
-		for (String s : dataIRI) {
-			dataColumnNames.put(s, getColumnName(s));
-		}
-		
-		// Append time series data
-		populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
-		
-		disconnect();
 	}
 	
     /** 
@@ -192,54 +207,59 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
      * @param dataIRI
      */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-    	// Check if all required time series are initialised
-		for (String s : dataIRI) {
-			if(!checkDataHasTimeSeries(s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+	    	// Check if all required time series are initialised
+			for (String s : dataIRI) {
+				if(!checkDataHasTimeSeries(s)) {
+					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+				}
 			}
+	    	
+			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+			checkDataIsInSameTable(dataIRI);
+	    	
+			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// Create map between data IRI and the corresponding column field in the table
+	    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
+			for (String data : dataIRI) {
+				String columnName = getColumnName(data);
+				Field<Object> field = DSL.field(DSL.name(columnName));
+				dataColumnFields.put(data, field);
+			}
+	    	// Retrieve list of column fields (including fixed time column)
+	    	List<Field<?>> columnList = new ArrayList<>();
+	    	columnList.add(timeColumn);
+	    	for (String data : dataIRI) {
+	    	    columnList.add(dataColumnFields.get(data));
+	    	}
+	    	
+	    	// Perform query (including potential time duplicates)
+	    	Result<? extends Record> queryResult = context.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();    	
+	    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
+	    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
+	    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).orderBy(timeColumn.asc()).fetch();
+	    	
+   	    	// Collect results and return a TimeSeries object
+	    	List<T> timeValues = queryResult.getValues(timeColumn);
+	    	List<List<?>> dataValues = new ArrayList<>();
+	    	for (String data : dataIRI) {
+	    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
+	    		dataValues.add(column);
+	    	} 
+	    	TimeSeries<T> ts = new TimeSeries<T>(timeValues, dataIRI, dataValues);
+	    	
+	    	return ts;
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-		checkDataIsInSameTable(dataIRI);
-    	
-		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// Create map between data IRI and the corresponding column field in the table
-    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
-		for (String data : dataIRI) {
-			String columnName = getColumnName(data);
-			Field<Object> field = DSL.field(DSL.name(columnName));
-			dataColumnFields.put(data, field);
-		}
-    	// Retrieve list of column fields (including fixed time column)
-    	List<Field<?>> columnList = new ArrayList<>();
-    	columnList.add(timeColumn);
-    	for (String data : dataIRI) {
-    	    columnList.add(dataColumnFields.get(data));
-    	}
-    	
-    	// Perform query (including potential time duplicates)
-    	Result<? extends Record> queryResult = context.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();    	
-    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
-    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
-    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).orderBy(timeColumn.asc()).fetch();
-    	
-    	disconnect();
-    	
-    	// Collect results and return a TimeSeries object
-    	List<T> timeValues = queryResult.getValues(timeColumn);
-    	List<List<?>> dataValues = new ArrayList<>();
-    	for (String data : dataIRI) {
-    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
-    		dataValues.add(column);
-    	} 
-    	TimeSeries<T> ts = new TimeSeries<T>(timeValues, dataIRI, dataValues);
-    	
-    	return ts;
     }
     
     /** 
@@ -252,62 +272,67 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-    	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
-    	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
-    	if (!lowerBound.getClass().equals(timeColumn.getType()) || !upperBound.getClass().equals(timeColumn.getType())) {
-    		throw new JPSRuntimeException("TimeSeriesRDBClient: Lower or upper bound are not of same class as time series entries");
-    	}
-
-    	// Check if all required time series are initialised
-		for (String s : dataIRI) {
-			if(!checkDataHasTimeSeries(s)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+	    	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
+	    	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
+	    	if (!lowerBound.getClass().equals(timeColumn.getType()) || !upperBound.getClass().equals(timeColumn.getType())) {
+	    		throw new JPSRuntimeException("TimeSeriesRDBClient: Lower or upper bound are not of same class as time series entries");
+	    	}
+	
+	    	// Check if all required time series are initialised
+			for (String s : dataIRI) {
+				if(!checkDataHasTimeSeries(s)) {
+					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+				}
 			}
+	    	
+			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+			checkDataIsInSameTable(dataIRI);
+	    	
+			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// Create map between data IRI and the corresponding column field in the table
+	    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
+			for (String data : dataIRI) {
+				String columnName = getColumnName(data);
+				Field<Object> field = DSL.field(DSL.name(columnName));
+				dataColumnFields.put(data, field);
+			}
+			// Retrieve list of column fields (including fixed time column)
+	    	List<Field<?>> columnList = new ArrayList<>();
+	    	columnList.add(timeColumn);
+	    	for (String data : dataIRI) {
+	    	    columnList.add(dataColumnFields.get(data));
+	    	}
+	    	
+	    	// Perform query (including potential time duplicates)
+	    	Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
+	    			 .orderBy(timeColumn.asc()).fetch();
+	    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
+	    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
+	    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
+	    	//		 .orderBy(timeColumn.asc()).fetch();
+	    	
+	    	// Collect results and return a TimeSeries object
+	    	List<T> timeValues = queryResult.getValues(timeColumn);
+	    	List<List<?>> dataValues = new ArrayList<>();
+	    	for (String data : dataIRI) {
+	    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
+	    		dataValues.add(column);
+	    	} 
+	    	TimeSeries<T> ts = new TimeSeries<>(timeValues, dataIRI, dataValues);
+	    	
+	    	return ts;
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-		checkDataIsInSameTable(dataIRI);
-    	
-		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// Create map between data IRI and the corresponding column field in the table
-    	Map<String, Field<Object>> dataColumnFields = new HashMap<String,Field<Object>>();
-		for (String data : dataIRI) {
-			String columnName = getColumnName(data);
-			Field<Object> field = DSL.field(DSL.name(columnName));
-			dataColumnFields.put(data, field);
-		}
-		// Retrieve list of column fields (including fixed time column)
-    	List<Field<?>> columnList = new ArrayList<>();
-    	columnList.add(timeColumn);
-    	for (String data : dataIRI) {
-    	    columnList.add(dataColumnFields.get(data));
-    	}
-    	
-    	// Perform query (including potential time duplicates)
-    	Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
-    			 .orderBy(timeColumn.asc()).fetch();
-    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
-    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
-    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
-    	//		 .orderBy(timeColumn.asc()).fetch();
-    	
-    	disconnect();
-    	
-    	// Collect results and return a TimeSeries object
-    	List<T> timeValues = queryResult.getValues(timeColumn);
-    	List<List<?>> dataValues = new ArrayList<>();
-    	for (String data : dataIRI) {
-    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
-    		dataValues.add(column);
-    	} 
-    	TimeSeries<T> ts = new TimeSeries<>(timeValues, dataIRI, dataValues);
-    	
-    	return ts;
 	}
 	
 	/**
@@ -316,24 +341,30 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getAverage(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+	    	
+	    	String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// create map between dataIRI and the corresponding column field in the table
+			String columnName = getColumnName(dataIRI);
+			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+	    	
+	    	List<BigDecimal> queryResult = context.select(avg(columnField)).from(table).fetch(avg(columnField));
+	    	
+	    	return queryResult.get(0).doubleValue();
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-    	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// create map between dataIRI and the corresponding column field in the table
-		String columnName = getColumnName(dataIRI);
-		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-    	
-    	List<BigDecimal> queryResult = context.select(avg(columnField)).from(table).fetch(avg(columnField));
-    	disconnect();
-    	
-    	return queryResult.get(0).doubleValue();
 	}
 	
 	/**
@@ -342,24 +373,30 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getMaxValue(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-		
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+			
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+	    	
+	    	String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// create map between dataIRI and the corresponding column field in the table
+			String columnName = getColumnName(dataIRI);
+			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+	    	
+	    	List<Double> queryResult = context.select(max(columnField)).from(table).fetch(max(columnField));
+	    	
+	    	return queryResult.get(0).doubleValue();
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-    	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// create map between dataIRI and the corresponding column field in the table
-		String columnName = getColumnName(dataIRI);
-		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-    	
-    	List<Double> queryResult = context.select(max(columnField)).from(table).fetch(max(columnField));
-    	disconnect();
-    	
-    	return queryResult.get(0).doubleValue();
 	}
 	
 	/**
@@ -368,24 +405,30 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public double getMinValue(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+			
+	    	String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// create map between dataIRI and the corresponding column field in the table
+			String columnName = getColumnName(dataIRI);
+			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+	    	
+	    	List<Double> queryResult = context.select(min(columnField)).from(table).fetch(min(columnField));
+	    	
+	    	return queryResult.get(0).doubleValue();
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-		
-    	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// create map between dataIRI and the corresponding column field in the table
-		String columnName = getColumnName(dataIRI);
-		Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-    	
-    	List<Double> queryResult = context.select(min(columnField)).from(table).fetch(min(columnField));
-    	disconnect();
-    	
-    	return queryResult.get(0).doubleValue();
 	}
 	
 	/**
@@ -394,22 +437,28 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public T getMaxTime(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+	    	
+	    	String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	List<T> queryResult = context.select(max(timeColumn)).from(table).fetch(max(timeColumn));
+	    	
+	    	T maxTime = queryResult.get(0);
+	    	
+	    	return maxTime;
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-    	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	List<T> queryResult = context.select(max(timeColumn)).from(table).fetch(max(timeColumn));
-    	disconnect();
-    	
-    	T maxTime = queryResult.get(0);
-    	
-    	return maxTime;
 	}
 	
 	/**
@@ -418,22 +467,28 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return
 	 */
 	public T getMinTime(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+	    	
+	    	String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	List<T> queryResult = context.select(min(timeColumn)).from(table).fetch(min(timeColumn));
+	    	
+	    	T minTime = queryResult.get(0);
+	    	
+	    	return minTime;
+	    	
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-    	
-    	String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	List<T> queryResult = context.select(min(timeColumn)).from(table).fetch(min(timeColumn));
-    	disconnect();
-    	
-    	T minTime = queryResult.get(0);
-    	
-    	return minTime;
 	}
 	
 	/**
@@ -444,21 +499,27 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param upperBound
 	 */
 	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-    	// Check if time series is initialised
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+	    	// Check if time series is initialised
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
+			}
+			
+			// Retrieve RDB table for dataIRI
+			String tsIRI = getTimeSeriesIRI(dataIRI);
+	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	
+	    	// Delete rows between bound (including bounds!)
+	    	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
+
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-		
-		// Retrieve RDB table for dataIRI
-		String tsIRI = getTimeSeriesIRI(dataIRI);
-    	Table<?> table = getTimeseriesTable(tsIRI);
-    	
-    	// Delete rows between bound (including bounds!)
-    	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
-    	disconnect();
 	}
 	
 	/**
@@ -466,35 +527,42 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeries(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-    	
-    	// Check if time series is initialised
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-		}
-		
-		// Get time series RDB table		
-		String tsIRI = getTimeSeriesIRI(dataIRI);
-		String columnName = getColumnName(dataIRI);
-		String tsTableName = getTimeseriesTableName(tsIRI);
-		
-		// Get meta information for RDB table (column fields, etc.)
-		Table<?> tsTable = context.meta().getTables(tsTableName).get(0);
-		
-		if (tsTable.fields().length > 2) {	
-			// Delete only column for dataIRI from RDB table if further columns are present
-			
-			// Drop column from time series RDB table
-			context.alterTable(tsTableName).drop(columnName).execute();
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
 	    	
-	    	// Delete entry in central lookup table
-	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
-	    	context.delete(dbTable).where(dataIRIcolumn.equal(dataIRI)).execute();
-	    	disconnect();			
-		} else {
-			// Delete entire RDB table for single column time series (data column + time column)
-			deleteTimeSeriesTable(dataIRI);
+	    	// Check if time series is initialised
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+			
+			// Get time series RDB table		
+			String tsIRI = getTimeSeriesIRI(dataIRI);
+			String columnName = getColumnName(dataIRI);
+			String tsTableName = getTimeseriesTableName(tsIRI);
+			
+			// Get meta information for RDB table (column fields, etc.)
+			Table<?> tsTable = context.meta().getTables(tsTableName).get(0);
+			
+			if (tsTable.fields().length > 2) {	
+				// Delete only column for dataIRI from RDB table if further columns are present
+				
+				// Drop column from time series RDB table
+				context.alterTable(tsTableName).drop(columnName).execute();
+		    	
+		    	// Delete entry in central lookup table
+		    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
+		    	context.delete(dbTable).where(dataIRIcolumn.equal(dataIRI)).execute();
+			
+			} else {
+				// Delete entire RDB table for single column time series (data column + time column)
+				deleteTimeSeriesTable(dataIRI);
+			}
+			
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
 	}
 	
@@ -503,51 +571,62 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI
 	 */
 	public void deleteTimeSeriesTable(String dataIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+	    	
+	    	// Check if time series is initialised
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+			
+			// Get time series RDB table
+			String tsIRI = getTimeSeriesIRI(dataIRI);
+			String tsTableName = getTimeseriesTableName(tsIRI);
+	    
+	    	// Delete time series RDB table
+			context.dropTable(DSL.table(DSL.name(tsTableName))).execute();
+	    	
+	    	// Delete entries in central lookup table
+	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
+	    	context.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	
-    	// Check if time series is initialised
-		if(!checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
 		}
-		
-		// Get time series RDB table
-		String tsIRI = getTimeSeriesIRI(dataIRI);
-		String tsTableName = getTimeseriesTableName(tsIRI);
-    
-    	// Delete time series RDB table
-		context.dropTable(DSL.table(DSL.name(tsTableName))).execute();
-    	
-    	// Delete entries in central lookup table
-    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
-    	context.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
-    	
-    	disconnect();
 	}
 	
 	/**
 	 * Delete all time series RDB tables and central lookup table
 	 */
 	public void deleteAll() {
-		// Initialise connection and context to RDB
-    	connect(); 
-    	
-    	// Retrieve all time series table names from central lookup table
-    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
-		List<String> queryResult = context.selectDistinct(tsTableNameColumn).from(dbTable).fetch(tsTableNameColumn);
-		
-		if (!queryResult.isEmpty()) {
-			for (String table : queryResult) {
-				
-				// Delete time series RDB table
-				context.dropTable(DSL.table(DSL.name(table))).execute();
-
-			}
+		try {
+			// Initialise connection and context to RDB
+	    	connect(); 
+	    	
+	    	// Retrieve all time series table names from central lookup table
+	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
+			List<String> queryResult = context.selectDistinct(tsTableNameColumn).from(dbTable).fetch(tsTableNameColumn);
 			
-			// Delete central lookup table
-			context.dropTable(dbTable).execute();
-			disconnect();		
-			}
+			if (!queryResult.isEmpty()) {
+				for (String table : queryResult) {
+					
+					// Delete time series RDB table
+					context.dropTable(DSL.table(DSL.name(table))).execute();
+	
+				}
+				
+				// Delete central lookup table
+				context.dropTable(dbTable).execute();	
+				}
+			
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {			
+			disconnect();
+		}
 	}
 	
 	/**
