@@ -1,12 +1,9 @@
-import compchemparser.helpers.utils as utils
-import compchemparser.helpers.ccutils as ccutils
 import compchemparser.helpers.elements_data as eld
 import cclib
 import os
 import re
 from itertools import islice
 import json
-import math
 
 # keys/values uploaded to the kg
 #-------------------------------------------------
@@ -211,9 +208,9 @@ class CcGaussianParser():
             data_list = [data]
             if 'ScanFlag' in data:
                 flat_scanpoints = [item for sublist in data['Scan Points'] for item in sublist]
-                no_points = len(flat_scanpoints) 
-                
-                if no_points > 1 : 
+                no_points = len(flat_scanpoints)
+
+                if no_points > 1 :
                     data_list = []
                     for k in range(no_points):
                         temp_data = data.copy()
@@ -239,7 +236,7 @@ class CcGaussianParser():
         for log in split_logs:
             parseddata = self.parse_log(log)
             parseddata = data_splitter(parseddata)
-            for listdata in parseddata:                                    
+            for listdata in parseddata:
                 json_data = json.dumps(listdata)
                 uploaddata.append(json_data)
             #dict_data = json.loads(json_data)
