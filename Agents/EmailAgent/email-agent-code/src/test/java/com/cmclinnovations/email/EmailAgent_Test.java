@@ -34,11 +34,11 @@ public class EmailAgent_Test {
     public static void setup() {
         // Read the JSON file mocking a HTTP request
         try {
-            String goodContent = Files.readString(Paths.get("test-data/sample-request-good.json"));
+            String goodContent = Files.readString(Paths.get("../test-data/sample-request-good.json"));
             SAMPLE_REQUEST_GOOD = new JSONObject(goodContent);
             Assertions.assertNotNull(SAMPLE_REQUEST_GOOD, "Could not read/parse sample JSON request!");
 
-            String badContent = Files.readString(Paths.get("test-data/sample-request-bad.json"));
+            String badContent = Files.readString(Paths.get("../test-data/sample-request-bad.json"));
             SAMPLE_REQUEST_BAD = new JSONObject(badContent);
             Assertions.assertNotNull(SAMPLE_REQUEST_BAD, "Could not read/parse sample JSON request!");
 
@@ -49,7 +49,7 @@ public class EmailAgent_Test {
         // Read the properties file (developer expected to provide it at the following location, 
         // it should NOT be committed).
         try {
-            EmailAgentConfiguration.readProperties("test-data/email-agent.properties");
+            EmailAgentConfiguration.readProperties("../test-data/email-agent.properties");
         } catch (IOException ioException) {
             Assertions.fail("Could not read properties file!", ioException);
         }

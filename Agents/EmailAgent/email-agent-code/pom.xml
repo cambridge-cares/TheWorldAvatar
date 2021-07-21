@@ -10,13 +10,25 @@
     
     <!-- Project properties -->
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         
         <org.slf4j-version>1.6.6</org.slf4j-version>
-        <jps.base.version>1.3.0</jps.base.version>
+        <jps.base.version>1.4.0</jps.base.version>
     </properties>
+    
+    <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>worldavatar-github</id>
+            <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+        </snapshotRepository>
+        <repository>
+            <id>worldavatar-github</id>
+            <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+        </repository>
+    </distributionManagement>
     
     <!-- Build settings -->
     <build>
@@ -72,7 +84,7 @@
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>WEB-INF\web.xml</webXml>
                     <warName>${project.artifactId}-${project.version}</warName>
-                    <outputDirectory>${env.CATALINA_HOME}/webapps</outputDirectory>
+                    <outputDirectory>output</outputDirectory>
                 </configuration>
             </plugin>
          
@@ -114,7 +126,7 @@
         <!-- JPS Base Library -->
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>jps-base</artifactId>
+            <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
         </dependency>
         
