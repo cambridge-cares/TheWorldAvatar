@@ -10,12 +10,16 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,11 +27,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
+@RunWith(MockitoJUnitRunner.class)
 public class BaseOntologyModelManagerTest {
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
+
+    @Mock
+    BaseOntologyModelManager mockBOM;
 
     @Test
     public void testGetConcept() throws Exception{
@@ -68,6 +78,7 @@ public class BaseOntologyModelManagerTest {
 
     @Test
     public void testSaveToOwl() {
+        BaseOntologyModelManager testBOM = mock(BaseOntologyModelManager.class);
         String ABSDIR_ROOT_TEST =  KeyValueMap.getProperty("/jpstest.properties", IKeys.ABSDIR_ROOT);
         String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
 
@@ -92,23 +103,20 @@ public class BaseOntologyModelManagerTest {
         String testFilePath2 = createdFolder.getPath() + "/test";
         String testFilePath1 = createdFolder.getPath() + "/testFolder1/test";
 
+        BaseOntologyModelManager.prepareDirectory(testFilePath2);
+        Assert.assertTrue(createdFolder.isDirectory());
+        Assert.assertFalse(testFile.exists());
+        Assert.assertFalse(testFolder.exists());
+
+        File testFile1 = folder.newFolder("testFolder1/test");
+        BaseOntologyModelManager.prepareDirectory(testFilePath1);
+        Assert.assertTrue(testFile1.exists());
+
         try{
-            BaseOntologyModelManager.prepareDirectory(testFilePath2);
-            Assert.assertTrue(createdFolder.isDirectory());
-            Assert.assertFalse(testFile.exists());
-            Assert.assertFalse(testFolder.exists());
+            BaseOntologyModelManager.prepareDirectory("/test/test1");
         }catch (Exception e){
             Assert.assertTrue(e.getMessage().contains("No such directory: "));
         }
-
-        try{
-            File testFile1 = folder.newFolder("testFolder1/test");
-            BaseOntologyModelManager.prepareDirectory(testFilePath1);
-            Assert.assertTrue(testFile1.exists());
-        }catch (Exception e){
-            Assert.assertTrue(e.getMessage().contains("No such directory: "));
-        }
-
 
 
     }
