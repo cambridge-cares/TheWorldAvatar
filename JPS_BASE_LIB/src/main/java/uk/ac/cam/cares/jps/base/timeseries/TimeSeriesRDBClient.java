@@ -156,7 +156,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param ts
      */
 	public void addTimeSeriesData(TimeSeries<T> ts) {
-    	List<String> dataIRI = ts.getDataIRI();
+    	List<String> dataIRI = ts.getDataIRIs();
     	
 		// Initialise connection and set jOOQ DSL context
 		connect();
@@ -168,10 +168,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table
-		if (!checkDataIsInSameTable(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
-		}
+		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+		checkDataIsInSameTable(dataIRI);
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
     	String tsTableName = getTimeseriesTableName(tsIRI);
@@ -204,10 +202,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table
-		if (!checkDataIsInSameTable(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
-		}
+		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+		checkDataIsInSameTable(dataIRI);
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
     	Table<?> table = getTimeseriesTable(tsIRI);
@@ -272,10 +268,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 		}
     	
-		// Ensure that each provided column is located in the same table
-		if (!checkDataIsInSameTable(dataIRI)) {
-			throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
-		}
+		// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
+		checkDataIsInSameTable(dataIRI);
     	
 		String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
     	Table<?> table = getTimeseriesTable(tsIRI);
@@ -641,7 +635,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataColumnNames
 	 */
 	private void populateTimeSeriesTable(String tablename, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
-		List<String> dataIRIs = ts.getDataIRI();
+		List<String> dataIRIs = ts.getDataIRIs();
 
     	Table<?> table = DSL.table(DSL.name(tablename));
     	
@@ -659,7 +653,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
         	// newValues is the row elements
 			Object[] newValues = new Object[dataIRIs.size()+1];
 			newValues[0] = ts.getTimes().get(i); 
-			for (int j = 0; j < ts.getDataIRI().size(); j++) {
+			for (int j = 0; j < ts.getDataIRIs().size(); j++) {
 				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
 			}
 			insertValueStep = insertValueStep.values(newValues);
@@ -679,11 +673,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Ensure that all dataIRIs are associated with same RDB table by (i.e. have same time series IRI)
+	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same time series IRI)
+	 * <p>Throws JPSRuntime Exception if not
 	 * @param dataIRI
-	 * @return
 	 */
-	private boolean checkDataIsInSameTable(List<String> dataIRI) {
+	private void checkDataIsInSameTable(List<String> dataIRI) {
 		// Get time series IRI of first dataIRI
     	String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
     	// Check that all further dataIRI share this time series IRI
@@ -691,11 +685,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     		for (int i = 1; i < dataIRI.size(); i++) {
     			String tsIRItmp = getTimeSeriesIRI(dataIRI.get(i));
     			if (!tsIRItmp.contentEquals(tsIRI)) {
-    				return false;
+    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
     			}
     		}
     	}
-    	return true;
 	}
 	
 	/**

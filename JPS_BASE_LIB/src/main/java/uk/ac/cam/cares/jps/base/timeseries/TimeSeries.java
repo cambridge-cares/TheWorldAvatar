@@ -99,7 +99,7 @@ public class TimeSeries<T> {
      * Method to get dataIRIs of timeseries
      * @return
      */    
-    public List<String> getDataIRI() {
+    public List<String> getDataIRIs() {
         Collection<String> keys = values.keySet();
         List<String> dataIRI = new ArrayList<String>();
         
