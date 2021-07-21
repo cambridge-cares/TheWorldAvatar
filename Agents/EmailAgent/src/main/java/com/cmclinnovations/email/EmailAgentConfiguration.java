@@ -81,7 +81,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IllegalStateException if properties has not been read
      */
-    public static String getProperty(String key) {
+    static String getProperty(String key) {
         if (properties == null) {
             throw new IllegalStateException("Properties file has not been loaded!");
         }
@@ -100,7 +100,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IllegalStateException if properties has not been read
      */
-    public static String[] getPropertyAsArray(String key, String delimiter) {
+    static String[] getPropertyAsArray(String key, String delimiter) {
         if (properties == null) {
             throw new IllegalStateException("Properties file has not been loaded!");
         }
@@ -116,7 +116,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IOException if properties file cannot be read.
      */
-    public static void readProperties() throws IOException {
+    static void readProperties() throws IOException {
         properties = new Properties();
 
         try ( FileInputStream file = new FileInputStream(PROPERTIES_FILE)) {
@@ -131,7 +131,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IOException if properties file cannot be read.
      */
-    public static void readProperties(String propertiesFile) throws IOException {
+    static void readProperties(String propertiesFile) throws IOException {
         properties = new Properties();
 
         try ( FileInputStream file = new FileInputStream(propertiesFile)) {

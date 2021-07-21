@@ -54,7 +54,7 @@ public class EmailHandler {
      *
      * @return JSONObject containing the result (to be sent as response)
      */
-    public static JSONObject submitEmail(String subject, String body) {
+    static JSONObject submitEmail(String subject, String body) {
 
         // Load smtp properites
         Properties mailProps = new Properties();

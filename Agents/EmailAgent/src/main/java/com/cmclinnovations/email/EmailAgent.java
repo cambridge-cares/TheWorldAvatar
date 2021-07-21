@@ -3,6 +3,7 @@ package com.cmclinnovations.email;
 import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_WHITE_IPS;
 import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_WHITE_ONLY;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -67,7 +68,19 @@ public class EmailAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        LOGGER.info("Request received at: " + new Date().toString());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        String datetime = dateFormat.format(new Date());
+        LOGGER.info("Request received at: " + datetime);
+
+        // Check if this is an email request or a ping to determine availability
+        if (!requestParams.isNull("ping")) {
+            LOGGER.info("Determined as availability request, responding with: " + validState);
+
+            JSONObject response = new JSONObject();
+            response.put("status", (validState) ? "200" : "500");
+            response.put("description", (validState) ? "Available" : "Unavailable");
+            return response;
+        }
 
         // Check validity
         boolean validInput = validateInput(requestParams);
@@ -101,14 +114,12 @@ public class EmailAgent extends JPSAgent {
         }
 
         // Check that there's a subject
-        Object subject = requestParams.get("subject");
-        if (subject == null) {
+        if (requestParams.isNull("subject")) {
             throw new BadRequestException("Request does not have required 'subject' field.");
         }
 
         // Check that there's a body
-        Object body = requestParams.get("body");
-        if (body == null) {
+        if (requestParams.isNull("body")) {
             throw new BadRequestException("Request does not have required 'body' field.");
         }
 
@@ -122,7 +133,7 @@ public class EmailAgent extends JPSAgent {
      *
      * @return validity status
      */
-    public boolean validateRequest(HttpServletRequest request) {
+    private boolean validateRequest(HttpServletRequest request) {
         if (!validState) {
             LOGGER.error("EmailAgent is in invalid state, cannot validate request.");
             return false;
