@@ -53,60 +53,54 @@ public class TimeSeriesSparqlTest {
     }
     
     @Test
-    public void testNamespaces() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-    	RemoteStoreClient kbClient = new RemoteStoreClient();
-    	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
-    	// Test the value of the public namespaces for the ontology and the knowledge base
+    public void testNamespaces() {
+        // Test the value of the public namespaces for the ontology and the knowledge base
         Assert.assertEquals("http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#", TimeSeriesSparql.ns_ontology);
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontotimeseries/", TimeSeriesSparql.ns_kb);        
     }
     
     @Test
     public void testPrefixes() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-    	RemoteStoreClient kbClient = new RemoteStoreClient();
-    	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
-    	// Retrieve the value of the private field 'prefix_ontology' of the client
-        Field p_onto = client.getClass().getDeclaredField("prefix_ontology");
+    	// Retrieve the value of the private static field 'prefix_ontology' of the client
+        Field p_onto = TimeSeriesSparql.class.getDeclaredField("prefix_ontology");
         p_onto.setAccessible(true);
-        Prefix onto = (Prefix) p_onto.get(client);
+        Prefix onto = (Prefix) p_onto.get(null);
         Assert.assertEquals("PREFIX ts: <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#>", 
         					onto.getQueryString());
-    	// Retrieve the value of the private field 'prefix_kb' of the client
-        Field p_kb = client.getClass().getDeclaredField("prefix_kb");
+    	// Retrieve the value of the private static field 'prefix_kb' of the client
+        Field p_kb = TimeSeriesSparql.class.getDeclaredField("prefix_kb");
         p_kb.setAccessible(true);
-        Prefix kb = (Prefix) p_kb.get(client);
+        Prefix kb = (Prefix) p_kb.get(null);
         Assert.assertEquals("PREFIX kb: <http://www.theworldavatar.com/kb/ontotimeseries/>", 
         					kb.getQueryString());      
     }
     
     @Test
     public void testIRIs() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-    	RemoteStoreClient kbClient = new RemoteStoreClient();
-    	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
-    	// Retrieve the value of the private field 'TimeSeries' of the client
-        Field timeseries = client.getClass().getDeclaredField("TimeSeries");
+    	// Retrieve the value of the private static field 'TimeSeries' of the client
+        Field timeseries = TimeSeriesSparql.class.getDeclaredField("TimeSeries");
         timeseries.setAccessible(true);
-        Iri ts = (Iri) timeseries.get(client);
+        Iri ts = (Iri) timeseries.get(null);
         Assert.assertEquals("ts:TimeSeries", ts.getQueryString());
-    	// Retrieve the value of the private field 'hasTimeSeries' of the client
-        Field hasTimeSeries = client.getClass().getDeclaredField("hasTimeSeries");
+    	// Retrieve the value of the private static field 'hasTimeSeries' of the client
+        Field hasTimeSeries = TimeSeriesSparql.class.getDeclaredField("hasTimeSeries");
         hasTimeSeries.setAccessible(true);
-        Iri has_ts = (Iri) hasTimeSeries.get(client);
+        Iri has_ts = (Iri) hasTimeSeries.get(null);
         Assert.assertEquals("ts:hasTimeSeries", has_ts.getQueryString());
-    	// Retrieve the value of the private field 'hasRDB' of the client
-        Field hasRDB = client.getClass().getDeclaredField("hasRDB");
+    	// Retrieve the value of the private static field 'hasRDB' of the client
+        Field hasRDB = TimeSeriesSparql.class.getDeclaredField("hasRDB");
         hasRDB.setAccessible(true);
-        Iri rdb = (Iri) hasRDB.get(client);
+        Iri rdb = (Iri) hasRDB.get(null);
         Assert.assertEquals("ts:hasRDB", rdb.getQueryString());
-    	// Retrieve the value of the private field 'TimeSeries' of the client
-        Field hasTimeUnit = client.getClass().getDeclaredField("hasTimeUnit");
+    	// Retrieve the value of the private static field 'TimeSeries' of the client
+        Field hasTimeUnit = TimeSeriesSparql.class.getDeclaredField("hasTimeUnit");
         hasTimeUnit.setAccessible(true);
-        Iri unit = (Iri) hasTimeUnit.get(client);
+        Iri unit = (Iri) hasTimeUnit.get(null);
         Assert.assertEquals("ts:hasTimeUnit", unit.getQueryString());
     }
     
     @Test
-    public void testInitTSExceptions() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void testInitTSExceptions() {
     	RemoteStoreClient kbClient = new RemoteStoreClient();
     	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
     	// Test exception for incorrect tsIRI format
@@ -129,7 +123,7 @@ public class TimeSeriesSparqlTest {
     }
     
     @Test
-    public void testInitTS() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void testInitTS() {
     	// Initialise test data
     	String tsIRI = "http://tsIRI1";
     	List<String> dataIRI = new ArrayList<>();
