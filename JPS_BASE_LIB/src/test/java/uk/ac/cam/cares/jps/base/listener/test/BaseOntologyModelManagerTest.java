@@ -68,11 +68,16 @@ public class BaseOntologyModelManagerTest {
     @Test
     public void testPrepareDirectory() throws IOException {
         File createdFolder= folder.newFolder("testFolder");
+        File testFolder= folder.newFolder("testFolder/test");
+        File testFile= folder.newFile("testFolder/test.owl");
         String testFilePath2 = createdFolder.getPath() + "/test";
+
+
         try{
             BaseOntologyModelManager.prepareDirectory(testFilePath2);
             Assert.assertTrue(createdFolder.isDirectory());
-            Assert.assertTrue(createdFolder.list().length<1);
+            Assert.assertFalse(testFile.exists());
+            Assert.assertFalse(testFolder.exists());
         }catch (Exception e){
             Assert.assertTrue(e.getMessage().contains("No such directory: "));
         }
@@ -90,14 +95,14 @@ public class BaseOntologyModelManagerTest {
             Resource person = testM.createResource(personURI[i]);
             person.addProperty(VCARD.FN, testData[i]);
         }
-        FileWriter fwriter = null;
-        try {
-            File testFile= folder.newFile("test.owl");
-            fwriter = new FileWriter(testFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        testM.write(fwriter);
+//        FileWriter fwriter = null;
+//        try {
+//            File testFile= folder.newFile("test.owl");
+//            fwriter = new FileWriter(testFile);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        testM.write(fwriter);
 
         String sparql = "SELECT ?z WHERE{<http://somewhere/test> ?y ?z}";
         ResultSet testrs = BaseOntologyModelManager.query(sparql, testM);
