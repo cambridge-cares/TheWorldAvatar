@@ -1,5 +1,5 @@
 import os
-import pathlib
+import glob
 
 def readFile(path):
     with open (os.path.abspath(path), "r") as myfile:
@@ -28,11 +28,12 @@ def removeBlankTrailingLines(fileContentStr):
 def getFilesWithExtensions(fileOrDir, fileExtList):
     files = []
     if fileExists(fileOrDir):
-        fileExt = os.path.splitext(fileOrDir)[1]
-        if fileExt in fileExtList: files = [fileOrDir]
+        #fileExt = os.path.splitext(fileOrDir)[1]
+        #if fileExt in fileExtList: files = [fileOrDir]
+        files = [fileOrDir]
     elif dirExists(fileOrDir):
         for fileExt in fileExtList:
-            files.extend([p.resolve() for p in list(pathlib.Path(fileOrDir).glob('*'+fileExt))])
+            files+=glob.glob(os.path.join(fileOrDir,'*'+fileExt))
     else:
         raise FileNotFoundError('Error: File or directory: "'+fileOrDir+'" does not exists.')
     return files
