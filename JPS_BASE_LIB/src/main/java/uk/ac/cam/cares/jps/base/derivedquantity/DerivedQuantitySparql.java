@@ -106,9 +106,6 @@ public class DerivedQuantitySparql{
 	    
 	    // link to each input
 	    for (String input : inputs) {
-	    	if (!hasTimeInstance(kbClient, input)) {
-	    		throw new JPSRuntimeException("DerivedQuantitySparql: " + input + " does not have a time stamp");
-	    	}
 	    	modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
 	    }
 	    
