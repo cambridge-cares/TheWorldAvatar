@@ -32,9 +32,7 @@ def qc_log_to_json(parsedJobsList, outDir, outFileBaseName, extension='.json'):
         outFileName = getRefName(outFileBaseName,jobIndex=jobIndex,numJobs=len(parsedJobsList), extension=extension)
         outFilePath = os.path.join(outDir, outFileName)
 
-        dictData = json.loads(jobDataJson)
-        with open(outFilePath, 'w') as outfile:
-            json.dump(dictData, outfile, indent = 4)
+        jsonStringToFile(jobDataJson, outFilePath)
 
 def getFilesWithExtensions(fileOrDir, fileExtList):
     files = []
@@ -48,7 +46,28 @@ def getFilesWithExtensions(fileOrDir, fileExtList):
     return files
 
 def fileExists(path):
-    return os.path.isfile(os.path.abspath(path))
+    answ = False
+    if len(os.path.abspath(path)) < 255:
+        answ = os.path.isfile(os.path.abspath(path))
+    return answ
 
 def dirExists(path):
     return os.path.isdir(os.path.abspath(path))
+
+def writeDictToJson(filePath, dictData):
+    with open(filePath, 'w') as jsonFile:
+        json.dump(dictData, jsonFile, indent = 4)
+
+def readJsonToDict(filePath):
+    jsonDictData = {}
+    try:
+        with open(filePath) as jsonFile:
+            jsonDictData = json.load(jsonFile)
+    except FileNotFoundError:
+        raise FileNotFoundError('Error: file '+filePath+' does not exists.')
+    return jsonDictData
+
+
+def jsonStringToFile(outFilePath, jsonString):
+    dictData = json.loads(jsonString)
+    writeDictToJson(outFilePath, dictData)
