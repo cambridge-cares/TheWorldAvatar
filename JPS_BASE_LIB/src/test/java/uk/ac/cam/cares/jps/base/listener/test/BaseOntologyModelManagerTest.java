@@ -70,14 +70,28 @@ public class BaseOntologyModelManagerTest {
 
 
     @Test
-    public void testSaveToOwl() throws IOException, Exception {
+    public void testSaveToOwl() throws Exception {
+        File testFolder= folder.newFolder("/test");
 
-        String ABSDIR_ROOT_TEST =  KeyValueMap.getProperty("/jpstest.properties", IKeys.ABSDIR_ROOT);
+        String ABSDIR_ROOT_TEST = testFolder.getPath();
         String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-        File file1= new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
-        File testFolder= folder.newFolder("testIRI/test");
+        String IRI_KB = "http://www.test.com/kb/";
+
+
+        File file1 = new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
+        File file2 =
+
+//        File testFolder= folder.newFolder("testIRI/test");
 
         OntModel testM = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        String[] testURI ={"http://somewhere/test1"};
+        String[] testData = {"test1"};
+
+        for (int i=0;i<testURI.length;i++){
+            Resource testR = testM.createResource(testURI[i]);
+            testR.addProperty(VCARD.FN, testData[i]);
+        }
+
         String testIRI = testFolder.getPath() + "/testIRI#test";
         String testMmsi = "testMmsi";
 
@@ -90,14 +104,6 @@ public class BaseOntologyModelManagerTest {
         mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(true);
         BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
         Assert.assertTrue(file1.exists());
-
-        MockedStatic<BaseOntologyModelManager> mockB = Mockito.mockStatic(BaseOntologyModelManager.class);
-        mockB.when(() -> BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi)).thenThrow(new IOException("Saving OWL failed: test"));
-        try{
-            BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
-        }catch (Exception e){
-            Assert.assertTrue(e.getMessage().contains("Saving OWL failed: "));
-        }
 
 
    }
@@ -118,14 +124,6 @@ public class BaseOntologyModelManagerTest {
         File testFile1 = folder.newFolder("testFolder1/test");
         BaseOntologyModelManager.prepareDirectory(testFilePath1);
         Assert.assertTrue(testFile1.exists());
-
-        try{
-            BaseOntologyModelManager.prepareDirectory("invalid_disk:/no_directory/test/test1.txt");
-            Assert.fail();
-        } catch (IOException e){
-            Assert.assertTrue(e.getMessage().contains("No such directory: "));
-        }
-
 
     }
 
