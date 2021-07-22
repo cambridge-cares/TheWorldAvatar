@@ -137,7 +137,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
 				}
 			}
-			
+
+			// Ensure that there is a class for each data IRI
+			if (dataIRI.size() != dataClass.size()) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: Length of dataClass is different from number of data IRIs.");
+			}
+
 			// Assign column name for each dataIRI; name for time column is fixed
 			Map<String,String> dataColumnNames = new HashMap<>();
 			int i = 1;
@@ -276,12 +281,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		try {
 			// Initialise connection and set jOOQ DSL context
 			connect();
-	    	
-	    	// mh807: Necessary to check whether bounds and timeColumn are of same class? (per method definition should be of same class)
-	    	// Check whether lowerBound and upperBound are of correct type to be used in ".between"
-	    	if (!lowerBound.getClass().equals(timeColumn.getType()) || !upperBound.getClass().equals(timeColumn.getType())) {
-	    		throw new JPSRuntimeException("TimeSeriesRDBClient: Lower or upper bound are not of same class as time series entries");
-	    	}
 
 			// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 			for (String s : dataIRI) {
@@ -318,6 +317,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
 	    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
 	    	//		 .orderBy(timeColumn.asc()).fetch();
+			// nk591: see comment in getTimeSeries
 	    	
 	    	// Collect results and return a TimeSeries object
 	    	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -674,9 +674,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(DSL.table(DSL.name(dbTableName)),
 				dataIRIcolumn, tsIRIcolumn, tsTableNameColumn, columnNameColumn);
 		
-		// mh807: Necessary to check whether dataIRI is already present in central table?
-		//		  Necessary to check whether dataIRI and dataColumnNames have same length?
-		
 		// Populate columns row by row
 		for (String s : dataIRI) {
 			insertValueStep = insertValueStep.values(s, tsIRI, tsTable, dataColumnNames.get(s));
@@ -693,9 +690,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataClass: list with the corresponding Java class (typical String, double or int) for each data IRI
 	 */
 	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
-											List<Class<?>> dataClass) {   	
-		// mh807: Necessary to check whether dataColumnNames, dataIRI, and dataClass have same length?
-		//		  How to ensure that dataIRI and dataClass have same order?
+											List<Class<?>> dataClass) {
 		
 		// Create table
 		CreateTableColumnStep createStep = context.createTableIfNotExists(tsTable);
@@ -728,7 +723,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	// Retrieve list of corresponding column names for dataIRIs
     	columnList.add(timeColumn);
     	for (String data : dataIRIs) {
-    		// mh807: Necessary to check whether dataIRI from ts Object is present in table and to throw Exception if not?  
     		columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
     	}
     	
