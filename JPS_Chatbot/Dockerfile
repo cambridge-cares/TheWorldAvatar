@@ -39,7 +39,9 @@ RUN pip install -r requirements.txt
 
 RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends firefox
+    && apt-get install -y --no-install-recommends firefox \
+    && apt-get install -y libmysqlclient-dev \
+    && apt-get install -y mysql-server
 
 # Copy in dependencies from first stage
 COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikidata_Query
