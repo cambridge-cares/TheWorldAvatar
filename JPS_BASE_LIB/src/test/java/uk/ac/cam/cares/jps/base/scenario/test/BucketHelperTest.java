@@ -9,6 +9,18 @@ import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.URI;
+import java.util.UUID;
+
+import org.junit.Assert;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
+import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 
 public class BucketHelperTest{
 	
@@ -43,6 +55,13 @@ public class BucketHelperTest{
 		int idx = Test_getIriPrefix.indexOf("/kb");
 		String substringToTest = Test_getIriPrefix.substring(0,idx+"/kb".length());
 		assertEquals("http://localhost:8080/jps/kb", substringToTest);
+		
+//		UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-556642440000");
+//		String test = "http://localhost:8080/jps/kb/123e4567-e89b-12d3-a456-556642440000";
+//		try (MockedStatic<java.util.UUID> mock = Mockito.mockStatic(java.util.UUID.class)) {
+//			mock.when(java.util.UUID::randomUUID).thenReturn(uuid);
+//			Assert.assertEquals(test, BucketHelper.getIriPrefix());
+//		}
 	}
 	
 	
@@ -179,8 +198,33 @@ public class BucketHelperTest{
 	    String scenario_workingdir = ScenarioHelper.getScenarioWorkingDir();
 	    assertEquals(scenario_workingdir + "/base", BucketHelper.getLocalPath(test_url, test_dataseturl));
 
+	    
+	    
 	    test_url = "http://localhost:8080/jps/testscenario";
 	    String scenarioBucket = ScenarioHelper.getScenarioBucket("base");
 	    assertEquals(scenarioBucket + "/localhost_8080/testscenario", BucketHelper.getLocalPath(test_url, test_dataseturl));
+	}
+	
+	
+	// Test for private method mapHost(URI uri)
+	@Test
+	public void TestmapHost() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+		BucketHelper bh = new BucketHelper();
+		assertNotNull(bh.getClass().getDeclaredMethod("mapHost", URI.class));
+        Method mapHost = bh.getClass().getDeclaredMethod("mapHost", URI.class);
+        mapHost.setAccessible(true);
+        
+        // Test return of method if port exists
+        String str =  "http://localhost:8080/jps/scenario/testscenario";
+        URI uri = URI.create(str);       
+        String test_mapped = (String) mapHost.invoke(null, uri);
+        assertEquals("localhost_8080", test_mapped);
+        
+        // Test return if port does not exist
+        str =  "http://www.google.com";
+        uri = URI.create(str);       
+        test_mapped = (String) mapHost.invoke(null, uri);
+        assertEquals("www_google_com", test_mapped);
+
 	}
 }
