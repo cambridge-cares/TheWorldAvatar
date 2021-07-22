@@ -4,9 +4,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,17 +12,16 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.UUID;
-
-import org.junit.Assert;
+import java.util.regex.Pattern;
+import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
-import uk.ac.cam.cares.jps.base.slurm.job.Utils;
+
 
 public class BucketHelperTest{
 	
-	// Test getScenarioUrl 
+	// Test getScenarioUrl() 
 	@Test
 	public void TestgetScenarioUrl(){
 		
@@ -38,7 +35,7 @@ public class BucketHelperTest{
 	}
 	
 	
-	// Test getScenarioName
+	// Test getScenarioName()
 	@Test
 	public void TestgetScenarioName() {
 		String TestscenarioUrl = "http://localhost:8080/jps/scenario/testscenario";
@@ -46,51 +43,78 @@ public class BucketHelperTest{
 	}
 	
 	
-	// Test getIriPrefix
+	// Test getIriPrefix()
 	@Test
 	public void TestgetIriPrefix() {
 		String Test_getIriPrefix = BucketHelper.getIriPrefix();
 		
 		// Break output into substring, exclude random UUID
 		int idx = Test_getIriPrefix.indexOf("/kb");
-		String substringToTest = Test_getIriPrefix.substring(0,idx+"/kb".length());
-		assertEquals("http://localhost:8080/jps/kb", substringToTest);
+		String substringToTest = Test_getIriPrefix.substring(0,idx+"/kb/".length());
+		assertEquals("http://localhost:8080/jps/kb/", substringToTest);
 		
-//		UUID uuid = UUID.fromString("123e4567-e89b-12d3-a456-556642440000");
-//		String test = "http://localhost:8080/jps/kb/123e4567-e89b-12d3-a456-556642440000";
-//		try (MockedStatic<java.util.UUID> mock = Mockito.mockStatic(java.util.UUID.class)) {
-//			mock.when(java.util.UUID::randomUUID).thenReturn(uuid);
-//			Assert.assertEquals(test, BucketHelper.getIriPrefix());
-//		}
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = Test_getIriPrefix.substring(idx+"/kb/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+		
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
+
 	}
 	
 	
-	// Test getUsecaseUrl
+	// Test getUsecaseUrl()
 	@Test
 	public void TestgetUsecaseUrl() {
-		String TestscenarioUrl = "http://localhost:8080/jps/scenario/testscenario";
 		
-		// Test getUsecaseUrl()
-		String Test1_usecaseUrl = BucketHelper.getUsecaseUrl();
-		int idx = Test1_usecaseUrl.indexOf("/kb/");
-		String substringToTest = Test1_usecaseUrl.substring(0,idx+"/kb/".length());
+		// Break output into substring, exclude random UUID
+		String Test_usecaseUrl = BucketHelper.getUsecaseUrl();
+		int idx = Test_usecaseUrl.indexOf("/kb/");
+		String substringToTest = Test_usecaseUrl.substring(0,idx+"/kb/".length());
 		assertEquals("http://localhost:8080/jps/scenario/base/kb/", substringToTest);
 		
-		// Test getUsecaseUrl(String scenarioUrl)
-		String Test2_usecaseUrl = BucketHelper.getUsecaseUrl(TestscenarioUrl);
-		idx = Test2_usecaseUrl.indexOf("/kb/");
-		substringToTest = Test2_usecaseUrl.substring(0,idx+"/kb/".length());
-		assertEquals("http://localhost:8080/jps/scenario/testscenario/kb/", substringToTest);
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = Test_usecaseUrl.substring(idx+"/kb/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
+		
 	}
 	
+	
+	// Test getUsecaseUrl(String scenarioUrl)
+	@Test
+	public void getUsecaseUrl_stringInput() {
+		String TestscenarioUrl = "http://localhost:8080/jps/scenario/testscenario";
+
+		// Break output into substring, exclude random UUID
+		String Test_usecaseUrl = BucketHelper.getUsecaseUrl(TestscenarioUrl);
+		int idx = Test_usecaseUrl.indexOf("/kb/");
+		String substringToTest = Test_usecaseUrl.substring(0,idx+"/kb/".length());
+		assertEquals("http://localhost:8080/jps/scenario/testscenario/kb/", substringToTest);
+		
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = Test_usecaseUrl.substring(idx+"/kb/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
+	}
+
 	
 	// Test getUsecaseUrlForData
 	@Test
 	public void TestgetUsecaseUrlForData() {
 		String Test_usecaseUrlforData = BucketHelper.getUsecaseUrlForData();
+		
+		// Break output into substring, exclude random UUID
 		int idx = Test_usecaseUrlforData.indexOf("/data/");
 		String substringToTest = Test_usecaseUrlforData.substring(0,idx+"/data/".length());
 		assertEquals("http://localhost:8080/jps/scenario/base/data/", substringToTest);
+		
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = Test_usecaseUrlforData.substring(idx+"/data/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
 	}
 	
 	
@@ -106,7 +130,7 @@ public class BucketHelperTest{
 		});
 		// Test if exception message is as expected
 		String expectedMessage = "can't create a scenario kb url for the base scenario";
-	    String actualMessage = exception.getMessage();
+		String actualMessage = exception.getMessage();
 	    assertTrue(actualMessage.contains(expectedMessage));
 	    
 	    // Test output of method getKbScenarioUrl()
@@ -117,9 +141,11 @@ public class BucketHelperTest{
 	// Test isScenarioUrl
 	@Test
 	public void TestisScenarioUrl() {
+		
 		// case True
 		String testurl = "http://localhost:8080/jps/scenario/testscenario";
 		assertTrue(BucketHelper.isScenarioUrl(testurl));
+		
 		// case False
 		testurl = "test";
 		assertFalse(BucketHelper.isScenarioUrl(testurl));
@@ -145,9 +171,18 @@ public class BucketHelperTest{
 	public void TestgetLocalDataPath() {
 		String test_localDataPath = BucketHelper.getLocalDataPath();
 		String scenario_workingdir = ScenarioHelper.getScenarioWorkingDir();
+		
+		// Break output into substring, exclude random UUID
 		int idx = test_localDataPath.indexOf("/data/");
 		String substringToTest = test_localDataPath.substring(0,idx+"/data/".length());
 		assertEquals(scenario_workingdir + "/base/localhost_8080/data/", substringToTest);
+		
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = test_localDataPath.substring(idx+"/data/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
+		
 	}
 	
 	
@@ -156,9 +191,17 @@ public class BucketHelperTest{
 	public void TestgetLocalDataPathWithoutThreadContext() {
 		String test_LocalDataPathWithoutThreadContext = BucketHelper.getLocalDataPathWithoutThreadContext();
 		String scenario_workingdir = ScenarioHelper.getScenarioWorkingDir();
+		
+		// Break output into substring, exclude random UUID
 		int idx = test_LocalDataPathWithoutThreadContext.indexOf("/data/");
 		String substringToTest = test_LocalDataPathWithoutThreadContext.substring(0,idx+"/data/".length());
 		assertEquals(scenario_workingdir + "/base/localhost_8080/data/", substringToTest);
+		
+		// Test if UUID is present in the final output
+		String testIfUUIDpresent = test_LocalDataPathWithoutThreadContext.substring(idx+"/data/".length());
+		final Pattern UUID_REGEX_PATTERN = Pattern.compile("^[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?$");
+
+		assertTrue(UUID_REGEX_PATTERN.matcher(testIfUUIDpresent).matches());
 	}
 	
 	
@@ -176,8 +219,8 @@ public class BucketHelperTest{
 	public void TestgetLocalPath() {
 		
 		// Exception not thrown case
-	    String test_url = "http://localhost:8080/jps/scenario/base";
-	    String test_dataseturl = "http://localhost:8080/jps/dataset/testdata";
+		String test_url = "http://localhost:8080/jps/scenario/base";
+		String test_dataseturl = "http://localhost:8080/jps/dataset/testdata";
 	    String workingdir = ScenarioHelper.getJpsWorkingDir();
 	    assertEquals(workingdir + "/JPS_SCENARIO/dataset/testdata/localhost_8080/jps/scenario/base", BucketHelper.getLocalPath(test_url, test_dataseturl));
 		
@@ -197,10 +240,13 @@ public class BucketHelperTest{
 	    test_dataseturl = null;
 	    String scenario_workingdir = ScenarioHelper.getScenarioWorkingDir();
 	    assertEquals(scenario_workingdir + "/base", BucketHelper.getLocalPath(test_url, test_dataseturl));
+	    
+	    test_url = "http://localhost:8080/data/jps/scenario/base";
+        MockedStatic<KeyValueManager> mock = Mockito.mockStatic(KeyValueManager.class);
+        assertEquals(ResourcePathConverter.convertToLocalPath(test_url), BucketHelper.getLocalPath(test_url, test_dataseturl));
+        mock.close();
 
-	    
-	    
-	    test_url = "http://localhost:8080/jps/testscenario";
+        test_url = "http://localhost:8080/jps/testscenario";
 	    String scenarioBucket = ScenarioHelper.getScenarioBucket("base");
 	    assertEquals(scenarioBucket + "/localhost_8080/testscenario", BucketHelper.getLocalPath(test_url, test_dataseturl));
 	}
