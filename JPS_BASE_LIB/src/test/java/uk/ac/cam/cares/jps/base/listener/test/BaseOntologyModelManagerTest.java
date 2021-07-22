@@ -12,8 +12,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.*;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 
 import java.io.File;
