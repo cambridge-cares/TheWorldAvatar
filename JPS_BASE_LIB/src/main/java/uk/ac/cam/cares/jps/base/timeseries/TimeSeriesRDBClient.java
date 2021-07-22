@@ -749,6 +749,12 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		return DSL.table(DSL.name(tableName));
 	}
 
+	/**
+	 * Retrieve aggregate value of a column; stored data should be in numerics
+	 * @param dataIRI: data IRI provided as string
+	 * @param aggregateFunction: enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)   
+	 * @return
+	 */
 	private double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
 		try {
 			// Initialise connection and set jOOQ DSL context
@@ -760,8 +766,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
-			String tsIRI = getTimeSeriesIRI(dataIRI);
-			Table<?> table = getTimeseriesTable(tsIRI);
+			Table<?> table = getTimeseriesTable(dataIRI);
 
 			// Create map between the data IRI and the corresponding column field in the table
 			String columnName = getColumnName(dataIRI);

@@ -25,9 +25,9 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
-	// mh807: use local development for easier debugging
-	//private static final String dbURL = "jdbc:postgresql:timeseries";
+	//private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+	// Use local development environment URL for easier debugging
+	private static final String dbURL = "jdbc:postgresql:timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
 
