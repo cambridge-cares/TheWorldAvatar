@@ -10,11 +10,8 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.*;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
@@ -27,17 +24,12 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
 public class BaseOntologyModelManagerTest {
 
     @Rule
     public TemporaryFolder folder= new TemporaryFolder();
-
-    @Mock
-    BaseOntologyModelManager mockBOM;
 
     @Test
     public void testGetConcept() throws Exception{
@@ -76,23 +68,38 @@ public class BaseOntologyModelManagerTest {
         }
     }
 
+
     @Test
-    public void testSaveToOwl() {
-        BaseOntologyModelManager testBOM = mock(BaseOntologyModelManager.class);
+    public void testSaveToOwl() throws IOException, Exception {
+
         String ABSDIR_ROOT_TEST =  KeyValueMap.getProperty("/jpstest.properties", IKeys.ABSDIR_ROOT);
         String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
+        File file1= new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
+        File testFolder= folder.newFolder("testIRI/test");
 
         OntModel testM = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        String testIRI = "testIRI";
+        String testIRI = testFolder.getPath() + "/testIRI#test";
         String testMmsi = "testMmsi";
-        File file= new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
 
+        MockedStatic<AgentLocator> mockA = Mockito.mockStatic(AgentLocator.class);
+
+        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(false);
+        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
+        Assert.assertTrue(testFolder.exists());
+
+        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(true);
+        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
+        Assert.assertTrue(file1.exists());
+
+        MockedStatic<BaseOntologyModelManager> mockB = Mockito.mockStatic(BaseOntologyModelManager.class);
+        mockB.when(() -> BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi)).thenThrow(new IOException("Saving OWL failed: test"));
         try{
             BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
-            Assert.assertTrue(file.exists());
         }catch (Exception e){
             Assert.assertTrue(e.getMessage().contains("Saving OWL failed: "));
         }
+
+
    }
 
     @Test
