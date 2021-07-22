@@ -214,75 +214,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
     /** 
-     * Retrieve entire time series from RDB
+     * Retrieve time series within bounds from RDB (time bounds are inclusive and optional)
      * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
-     * time series are in ascending order with respect to time (from oldest to newest)
-     * @param dataIRI: list of data IRIs provided as string
-     */
-	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
-		try {
-			// Initialise connection and set jOOQ DSL context
-			connect();
-
-			// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
-			for (String s : dataIRI) {
-				if(!checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
-				}
-			}
-	    	
-			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-			checkDataIsInSameTable(dataIRI);
-
-			// Retrieve table corresponding to the time series connected to the data IRIs
-	    	Table<?> table = getTimeseriesTable(dataIRI.get(0));
-	    	
-	    	// Create map between data IRI and the corresponding column field in the table
-	    	Map<String, Field<Object>> dataColumnFields = new HashMap<>();
-			for (String data : dataIRI) {
-				String columnName = getColumnName(data);
-				Field<Object> field = DSL.field(DSL.name(columnName));
-				dataColumnFields.put(data, field);
-			}
-	    	// Retrieve list of column fields (including fixed time column)
-	    	List<Field<?>> columnList = new ArrayList<>();
-	    	columnList.add(timeColumn);
-	    	for (String data : dataIRI) {
-	    	    columnList.add(dataColumnFields.get(data));
-	    	}
-	    	
-	    	// Perform query (including potential time duplicates)
-	    	Result<? extends Record> queryResult = context.select(columnList).from(table).orderBy(timeColumn.asc()).fetch();    	
-	    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
-	    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
-	    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).orderBy(timeColumn.asc()).fetch();
-			// nk591: I think this should be handled in the class that merges RDB and Sparql Client so that different
-			// "merging" strategies can be implemented, e.g. taking average over all rows with same timestamp
-	    	
-   	    	// Collect results and return a TimeSeries object
-	    	List<T> timeValues = queryResult.getValues(timeColumn);
-	    	List<List<?>> dataValues = new ArrayList<>();
-	    	for (String data : dataIRI) {
-	    		List<?> column = queryResult.getValues(dataColumnFields.get(data));
-	    		dataValues.add(column);
-	    	}
-	    	
-	    	return new TimeSeries<>(timeValues, dataIRI, dataValues);
-	    	
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
-		} finally {			
-			disconnect();
-		}
-    }
-    
-    /** 
-     * Retrieve time series within the given time bounds from RDB
-     * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
-     * time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
 	 * @param dataIRI: list of data IRIs provided as string
-	 * @param lowerBound: start timestamp from which to retrieve data
-	 * @param upperBound: end timestamp until which to retrieve data
+	 * @param lowerBound: start timestamp from which to retrieve data (null if not applicable)
+	 * @param upperBound: end timestamp until which to retrieve data (null if not applicable)
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
 		try {
@@ -309,21 +247,25 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				Field<Object> field = DSL.field(DSL.name(columnName));
 				dataColumnFields.put(data, field);
 			}
+			
 			// Retrieve list of column fields (including fixed time column)
 	    	List<Field<?>> columnList = new ArrayList<>();
 	    	columnList.add(timeColumn);
 	    	for (String data : dataIRI) {
 	    	    columnList.add(dataColumnFields.get(data));
 	    	}
+	    
+			// Potentially update bounds (if no bounds were provided)
+			if (lowerBound == null) {
+				lowerBound = context.select(min(timeColumn)).from(table).fetch(min(timeColumn)).get(0);
+			} 
+			if (upperBound == null) {
+				upperBound = context.select(max(timeColumn)).from(table).fetch(max(timeColumn)).get(0);
+			}
 	    	
 	    	// Perform query (including potential time duplicates)
 	    	Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
-	    			 .orderBy(timeColumn.asc()).fetch();
-	    	// mh807: Should a distinct query be preferred to account for potentially duplicate time steps? e.g.
-	    	// Perform query excluding time duplicates (returns first row match for potentially duplicate time entries)
-	    	//Result<? extends Record> queryResult = dsl.select(columnList).distinctOn(timeColumn).from(table).where(timeColumn.between(lowerBound, upperBound))
-	    	//		 .orderBy(timeColumn.asc()).fetch();
-			// nk591: see comment in getTimeSeries
+	    			 									  .orderBy(timeColumn.asc()).fetch();
 	    	
 	    	// Collect results and return a TimeSeries object
 	    	List<T> timeValues = queryResult.getValues(timeColumn);
@@ -340,6 +282,14 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		} finally {			
 			disconnect();
 		}
+	}
+	
+	/** 
+     * Retrieve entire time series from RDB
+	 * @param dataIRI: list of data IRIs provided as string
+	 */
+	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
+		return getTimeSeriesWithinBounds(dataIRI, null, null);
 	}
 	
 	/**

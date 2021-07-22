@@ -87,7 +87,10 @@ public class TimeSeriesClientTest {
     	// you can query the entire TimeSeries table by providing the data IRIs
     	TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI);
     	// or you can specify the time range you want
-    	TimeSeries<Instant> ts2 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2),timeList.get(4));
+    	TimeSeries<Instant> ts2 = tsClient.getTimeSeriesWithinBounds(dataIRI, null, null);
+    	TimeSeries<Instant> ts3 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2),timeList.get(4));
+    	TimeSeries<Instant> ts4 = tsClient.getTimeSeriesWithinBounds(dataIRI, null, timeList.get(4));
+    	TimeSeries<Instant> ts5 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2), null);
     	
     	// the time column
     	List<Instant> timeColumn = ts1.getTimes();
