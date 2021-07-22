@@ -1,5 +1,5 @@
 from docopt import docopt, DocoptExit
-from chemaboxwriters.ontocompchem.writeabox import write_ocompchem_abox
+from chemaboxwriters.ontocompchem import write_ocompchem_abox
 
 doc = """aboxwriter
 Usage:
@@ -19,13 +19,13 @@ Options:
                              - quantum calculation log         [default: qc_log]
                              - quantum calculation json        [qc_json]
                              - ontocompchem meta json          [oc_json]
-                             - ontocompchem meta csv           [oc_csv]
+                             - ontocompchem meta csv           [csv]
 --os-inp-file-type=<type>   Types of the allowed input files
                             to the ospecies abox writer:
                              - quantum calculation log         [default: qc_log]
                              - quantum calculation json        [qc_json]
                              - ontospecies meta json           [os_json]
-                             - ontospecies meta csv            [os_csv]
+                             - ontospecies meta csv            [csv]
 --ops-inp-file-type=<type>  Types of the allowed input files
                             to the opesscan abox writer:
                              - ontocompchem meta json, this    [default: oc_json]
@@ -34,9 +34,9 @@ Options:
                                with --os-iri, --os-atoms-iris,
                                and --oc-atoms-ids arguments
                              - ontopesscan meta json           [ops_json]
-                             - ontopesscan meta csv            [ops_csv]
+                             - ontopesscan meta csv            [csv]
 --qc-log-ext=<ext>          Extensions of the quantum
-                            calculation log files               [default: .log, .json, .g09]
+                            calculation log files               [default: .log, .g09]
 --out-dir=<dir>             Output directory to write the abox
                             files to                            [default: ./]
 --os-iri=<iri>              OntoSpecies iri associated with the

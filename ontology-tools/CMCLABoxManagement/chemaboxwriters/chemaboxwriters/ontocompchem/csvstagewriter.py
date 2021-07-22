@@ -11,9 +11,9 @@ import os
 import csv
 from io import StringIO
 from openbabel import openbabel
-from SPARQLWrapper import SPARQLWrapper as sparql
-from SPARQLWrapper import JSON as jsonsparql
-from shutil import copyfileobj
+#from SPARQLWrapper import SPARQLWrapper as sparql
+#from SPARQLWrapper import JSON as jsonsparql
+from chemutils.obabelutils import obConvert
 
 comp_pref = 'http://www.theworldavatar.com/kb/ontocompchem/' #Prefix for instance in OntoCompChem
 data_pref = 'http://www.theworldavatar.com/data/ontocompchem/' #Prefix for data entries in OntoCompChem
@@ -29,31 +29,21 @@ unit_pref = 'http://data.nasa.gov/qudt/owl/' #NASA's unit ontology.
 
 endpoint = 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql' #Location of ontology to query from
 
-#def oc_csv_writer(spamwriter, outDir, outBaseName)
-#    with open(csv_name, 'w', newline='') as fd:
-#        spamwriter.seek(0)
-#        copyfileobj(spamwriter, fd, -1)
-
-# work with file or a list of json objects
-def write_abox_csv(oc_jsonFileOrData,outDir='',csv_name="",calc_id=""):
-    basedir = os.path.dirname(oc_jsonFileOrData)
-    data, name = read_json(oc_jsonFileOrData)
-    inchi = obConvert('xyz','inchi',create_xyz(data))
-    spec_IRI = get_species_iri(inchi)
+def compchem_abox_from_csv_string(data, calc_id=""):
+    data = json.loads(data)
+    inchi = obConvert(create_xyz(data), 'xyz','inchi')
+    #spec_IRI = get_species_iri(inchi)
     #print(spec_IRI)
+    spec_IRI='testIRI'
 
     if not calc_id:
         calc_id = str(uuid.uuid4()) #Get a randomly generated identifier for creation of the ABox.
 
-    #if not csv_name:
-    #    csv_name = os.path.join(basedir,'ABox_' + name + '.csv')
+    csvfile = StringIO(newline='')
 
-    csvfile = StringIO()
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    #with open(csv_name, 'w', newline='') as csvfile:
-    #spamwriter = csv.writer(csvfile, delimiter=',',
-    #                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
     spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
 
     write_initial(spamwriter,calc_id,spec_IRI)
@@ -71,7 +61,9 @@ def write_abox_csv(oc_jsonFileOrData,outDir='',csv_name="",calc_id=""):
     write_atom_info(spamwriter,calc_id,data)
     write_metadata(spamwriter,calc_id,data)
 
-    return spamwriter
+    csvcontent = csvfile.getvalue()
+    csvfile.close()
+    return csvcontent
 
 def read_json(json_file):
     #This function uses native Python handling of JSON.
@@ -91,47 +83,47 @@ def create_xyz(data):
         xyz_coords = f"{xyz_coords}{a} {g[0]} {g[1]} {g[2]}\n"
     return xyz_coords
 
-def obConvert(inputFormat, outputFormat, inputMol):
-    #Use openbabel to convert between different molecular formats.
-    obConversion = openbabel.OBConversion()
-    obConversion.SetInAndOutFormats(inputFormat, outputFormat)
+#def obConvert(inputFormat, outputFormat, inputMol):
+#    #Use openbabel to convert between different molecular formats.
+#    obConversion = openbabel.OBConversion()
+#    obConversion.SetInAndOutFormats(inputFormat, outputFormat)
+#
+#    mol = openbabel.OBMol()
+#    obConversion.ReadString(mol, inputMol)
+#    mol = obConversion.WriteString(mol).strip()
+#    return mol
 
-    mol = openbabel.OBMol()
-    obConversion.ReadString(mol, inputMol)
-    mol = obConversion.WriteString(mol).strip()
-    return mol
+#def query_endpoint(endpoint, query):
+#    #SPARQL query function.
+#    s = sparql(endpoint)
+#    s.setQuery(query)
+#    s.setReturnFormat(jsonsparql)
+#    results = s.query().convert()
+#    return results
 
-def query_endpoint(endpoint, query):
-    #SPARQL query function.
-    s = sparql(endpoint)
-    s.setQuery(query)
-    s.setReturnFormat(jsonsparql)
-    results = s.query().convert()
-    return results
+#def spec_inchi_query(inchi_string):
+#    query = """
+#    PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+#    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#    SELECT ?speciesIRI ?Inchi
+#    WHERE
+#    {
+#    ?speciesIRI rdf:type OntoSpecies:Species .
+#    ?speciesIRI OntoSpecies:inChI ?Inchi .
+#    FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
+#    }
+#    """
+#    #print(query)
+#    return query
 
-def spec_inchi_query(inchi_string):
-    query = """
-    PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT ?speciesIRI ?Inchi
-    WHERE
-    {
-    ?speciesIRI rdf:type OntoSpecies:Species .
-    ?speciesIRI OntoSpecies:inChI ?Inchi .
-    FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
-    }
-    """
-    #print(query)
-    return query
-
-def get_species_iri(inchi):
-    #Query OntoSpecies to find Species IRI that corresponds to a given InChI.
-    results  = query_endpoint(endpoint, spec_inchi_query(inchi))
-    if results['results']['bindings']:
-        target = results['results']['bindings'][0]['speciesIRI']['value']
-    else:
-        target = None
-    return target
+#def get_species_iri(inchi):
+#    #Query OntoSpecies to find Species IRI that corresponds to a given InChI.
+#    results  = query_endpoint(endpoint, spec_inchi_query(inchi))
+#    if results['results']['bindings']:
+#        target = results['results']['bindings'][0]['speciesIRI']['value']
+#    else:
+#        target = None
+#    return target
 
 def dict_to_list(d):
     dictlist = []
@@ -468,7 +460,7 @@ def write_atom_info(spamwriter,calc_id,data):
                                     gain_pref + 'hasAtomCoordinate' + coords[i],'',''])
             spamwriter.writerow([gain_pref + 'hasValue','Data Property',
                                     comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k] + str(count) + '_' + coord_string[i] + 'Coordinate'
-                                    ,'',data["Geometry"][k][i]])
+                                    ,'',data["Geometry"][k][i],''])
         #Write atom masses.
         spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k]  + str(count) + '_Mass'
                         ,'Instance',gain_pref + 'FloatValue','','',''])
