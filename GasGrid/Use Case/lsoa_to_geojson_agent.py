@@ -339,20 +339,21 @@ def region_fuel_pov_query(limit):
     os.system('clear')
     
     query='''
-    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
-    PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
-    PREFIX clim:     <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#>
-    PREFIX comp:     <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
-    PREFIX om:       <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX gg:       <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#>
 
-    SELECT ?s ?con 
+            PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX ofp:    <http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#>
+        PREFIX ofpt:   <http://www.theworldavatar.com/kb/ontofuelpoverty/abox/>
+        PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
+        PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+
+    SELECT ?s (xsd:float(?a)/xsd:float(?b) AS ?result)
     WHERE
     {       
     ?s rdf:type ons_t:Statistical-Geography;
-     gg:hasElecMeters ?met.
-     ?met gg:hasConsumingElecMeters ?con.
+        ofp:hasHouseholds ?houses.
+     ?houses ofp:fuelpoorhouseholds ?a.
+     ?houses ofp:numberofhouseholds ?b.
     }
     '''
     DEF_NAMESPACE = 'ontogasgrid'
@@ -363,7 +364,7 @@ def region_fuel_pov_query(limit):
     sparql.setMethod(POST) # POST query, not GET
     sparql.setQuery(query)
     sparql.setReturnFormat(JSON)
-    print('Starting LSOA Gas Usage Query...')
+    print('Starting LSOA fuel poverty Query...')
     start = time.time()
     ret = sparql.query().convert()
     end = time.time()
@@ -400,6 +401,7 @@ gas_filename = 'pickle_files/gas_array'
 meters_filename = 'pickle_files/meters_array'
 elec_filename = 'pickle_files/elec_array'
 elec_meters_filename = 'pickle_files/elec_meters_array'
+fuel_poor_filename = 'pickle_files/fuel_poor'
 if testing == True: 
     infile = open(filename,'rb')
     all_results = pickle.load(infile)
@@ -415,6 +417,9 @@ if testing == True:
     infile.close()
     infile = open(elec_meters_filename,'rb')
     elec_meters_results = pickle.load(infile)
+    infile.close()
+    infile = open(fuel_poor_filename,'rb')
+    fuel_poor_results = pickle.load(infile)
     infile.close()
 else:
     all_results = region_temp_query(limit=False)
@@ -440,6 +445,11 @@ else:
     elec_meters_results = region_elec_meters_query(limit=False)
     outfile = open(elec_meters_filename,'wb')
     pickle.dump(elec_meters_results,outfile)
+    outfile.close()
+
+    fuel_poor_results = region_fuel_pov_query(limit=False)
+    outfile = open(fuel_poor_filename,'wb')
+    pickle.dump(fuel_poor_results,outfile)
     outfile.close()
 
 # Function to query and plot temperature values for a given LSOA
@@ -540,6 +550,9 @@ elec_tensor = np.zeros(len(unique_LSOA))
 # preallocate consuming and non-consuming meters tensor (LSOA,METER)
 elec_meters_tensor = np.zeros(len(unique_LSOA))
 
+fuel_poor_tensor = np.zeros(len(unique_LSOA))
+
+
 
 # Note: Using dictionaries to go from IRIs to arrays is wicked quick and better than doing nested loops
 
@@ -635,6 +648,18 @@ for j in tqdm(range(len(elec_meters_results[:,0]))):
         elec_meters_tensor[elec_lsoa_ind] = int(elec_meters_results[j,1])
     except KeyError:
         print('No electricity meter data for ',elec_meters_results[j,0].split('/')[-1])
+    
+
+# PARSING FUEL POVERTY INTO TENSOR
+# --------------------------------#
+# iterating over meters results query
+for j in tqdm(range(len(fuel_poor_results[:,0]))):
+    # try to identify LSOA key
+    try:
+        fuel_poor_lsoa_ind = lsoa_dict[fuel_poor_results[j,0]]
+        fuel_poor_tensor[fuel_poor_lsoa_ind] = fuel_poor_results[j,1]
+    except KeyError:
+        print('No fuel poverty data for ',fuel_poor_results[j,0].split('/')[-1])
     
     
 
@@ -816,6 +841,7 @@ elec_values = np.zeros(len(hp_in_tensor[:,1]))
 remaining_elec_values = np.zeros(len(hp_in_tensor[:,1]))
 remaining_gas_values = np.zeros(len(hp_in_tensor[:,1]))
 temp_values = np.zeros(len(hp_in_tensor[:,1]))
+poverty_values = np.zeros(len(hp_in_tensor[:,1]))
 delta_elec_values = np.zeros(len(hp_in_tensor[:,1]))
 shapes_of_interest = np.zeros(len(hp_in_tensor[:,1]),dtype='object')
 cop_values = np.zeros(len(hp_in_tensor[:,1]),dtype='object')
@@ -840,6 +866,8 @@ for i in range(len(gas_values)):
     remaining_gas_values[i] = resulting_gas_tensor[i,month]
     # assigning remaining elec values
     remaining_elec_values[i] = resulting_elec_tensor[i,month]
+    # assigning remaining fuel poverty values
+    poverty_values[i] = fuel_poor_tensor[i]
 
 
 
@@ -853,33 +881,69 @@ df['gas'] = list(np.around(gas_values,decimals=3))
 df['elec'] = list(np.around(elec_values,decimals=3))
 df['temp'] = list(np.around(temp_values,decimals=3))
 df['cop'] = list(cop_values)
+df['fuel_poor_percen'] = list(np.around(poverty_values,decimals=3))
 df['remaining_gas'] = list(np.around(remaining_gas_values,decimals=3))
 df['remaining_elec'] = list(np.around(remaining_elec_values,decimals=3))
 # specifying geodata frame
 my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
 
-# Parsing information into a geoJSON file
-# Each LSOA is represented with associated
-# properties are key values that we should plot
-print('Parsing shapes as geoJSON...')
-df['geojson'] =  df['geom_str'].apply(lambda x: json.dumps(wkt.loads(x)))
-polygons = list(df['geojson'])
-start = """{"type": "FeatureCollection","features": ["""
-for i in tqdm(range(len(polygons))):
-    property_dict = {}
-    polygons[i] = json.loads(polygons[i])
-    polygons[i] = {"geometry":polygons[i]}
-    polygons[i]["properties"] = {"temp":temp_values[i],"start_gas":gas_values[i],"cop":cop_values[i],"delta_elec":delta_elec_values[i],"gas_rem":remaining_gas_values[i],"elec":elec_values[i],"remaining_elec":remaining_elec_values[i]}
-    if i != len(polygons)-1:
-        start += str(polygons[i])+','
-    else:
-        start += str(polygons[i])
-end = ''']}'''
-start += end 
-start = str(start).replace("'", '"')
-start = start.replace(' ','')
-start = start.replace('/n','')
-geojson_written = open('geojson_output/'+month_str+'_'+temp_var_type.split('/')[-1]+'_LSOA.geojson','w')
-geojson_written.write(start)
-geojson_written.close() 
-print('Succesfully created geoJSON file')
+
+
+plt.rc('text', usetex=True)
+plt.rc('font', family='sans-serif')
+import os
+print(os.environ['PATH'])
+
+vars = ['temp','gas','elec','cop','fuel_poor_percen']
+var_names = ['Mean Air Temperature','Gas Consumption','Electricity Consumption','Coefficient of Performance','Fuel Poverty']
+units = ['°C','kWh','kWh','-','%']
+def plot_variables(vars,var_names,units):
+    fig,axs = plt.subplots(1,len(vars),figsize=(5*len(vars),5))
+    plt.subplots_adjust(wspace=0.31,left=0.074,right=0.93)
+    for i in range(len(vars)):
+        divider = make_axes_locatable(axs[i])
+        cax1 = divider.append_axes("right", size="5%", pad=0.05)
+        tl = my_geo_df.plot(column=vars[i],cmap='coolwarm',antialiased=False,ax=axs[i],legend=True,cax=cax1,legend_kwds={'label':units[i]})
+        axs[i].set_title(var_names[i])
+        axs[i].set_xlabel('Longitude')
+        axs[i].set_ylabel('Latitude')
+        axins2 = zoomed_inset_axes(axs[i], zoom=6, loc=1)
+        plt.setp(axins2.get_xticklabels(), visible=False)
+        plt.setp(axins2.get_yticklabels(), visible=False)
+        axins2.set_xlim(-2.5,-2)
+        axins2.set_ylim(53.4,53.9)
+        my_geo_df.plot(column=vars[i],cmap='coolwarm',antialiased=False,ax=axins2)
+        mark_inset(axs[i],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
+    plt.show()
+
+plot_variables(vars,var_names,units)
+
+geojson_creation = False 
+if geojson_creation == True:
+    # Parsing information into a geoJSON file
+    # Each LSOA is represented with associated
+    # properties are key values that we should plot
+    print('Parsing shapes as geoJSON...')
+    df['geojson'] =  df['geom_str'].apply(lambda x: json.dumps(wkt.loads(x)))
+    polygons = list(df['geojson'])
+    start = """{"type": "FeatureCollection","features": ["""
+    for i in tqdm(range(len(polygons))):
+        property_dict = {}
+        polygons[i] = json.loads(polygons[i])
+        polygons[i] = {"geometry":polygons[i]}
+        polygons[i]["properties"] = {"temp":temp_values[i],"start_gas":gas_values[i],"cop":cop_values[i],"delta_elec":delta_elec_values[i],"gas_rem":remaining_gas_values[i],"elec":elec_values[i],"remaining_elec":remaining_elec_values[i]}
+        if i != len(polygons)-1:
+            start += str(polygons[i])+','
+        else:
+            start += str(polygons[i])
+    end = ''']}'''
+    start += end 
+    start = str(start).replace("'", '"')
+    start = start.replace(' ','')
+    start = start.replace('/n','')
+    # geojson_written = open('mapbox_current/'+month_str+'_'+temp_var_type.split('/')[-1]+'_LSOA.geojson','w')
+    geojson_written = open('mapbox_current/LSOA.geojson','w')
+    geojson_written.write(start)
+    geojson_written.close() 
+    print('Succesfully created geoJSON file')
+

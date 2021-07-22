@@ -3,6 +3,7 @@ HadUKGrid/OutputImages/
 HadUKGrid/information/
 HadUKGrid/geojson_output/
 HadUKGrid/haduk_files
+HadUKGrid/haduk_files
 /.vscode
 .vscode/
 OntoGasGrid/query_tools/geoJSON_output/
@@ -29,4 +30,6 @@ OtherTools/Mapping and Location Tools/mapbox_current/LSOA.geojson
 FuelPoverty/data/
 FuelPoverty/output_images/
 OntoGasGrid/statistical_elec_population/LSOA_domestic_elec_2010_19.xlsx
+Use Case/pickle_files
+Use Case/mapbox_current/LSOA.geojson
 

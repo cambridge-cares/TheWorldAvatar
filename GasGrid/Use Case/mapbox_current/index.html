@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lan="eng">
+
+<head>
+    <style>
+        #map {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 100%;
+        }
+
+        #tiltShift {
+            display: none;
+            /* this gets turned on by the javascript */
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 2;
+            pointer-events: none;
+            /* Ensure the mouse pointer can't interact with this layer */
+        }
+    </style>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+</head>
+
+<body>
+    <div id="map">
+    </div>
+    <div id="tiltShift"></div>
+
+
+    <script>
+
+
+        var tiltShiftMaxBlur = 7; // The maximum blur, in pixels, when the tilt-shift effect is fully on. 3 pixels is subtle and nice
+
+        var tiltShiftBlur = document.getElementById("tiltShift");
+        var mapDiv = document.getElementById("map");
+
+        // These easing functions are useful to ensure the amount of blur is 
+        // not applied in a linear fashion when zooming in and out. 
+        function easeInCubic(x) {
+            return x * x * x;
+        }
+
+        function easeOutCubic(x) {
+            return 1 - Math.pow(1 - x, 3);
+        }
+        function easeInExpo(x) {
+            return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+        }
+        function easeOutExpo(x) {
+            return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+        }
+
+        function degreesToRadians(degrees) {
+            var pi = Math.PI;
+            return degrees * (pi / 180);
+        }
+
+        function addPhotoEffects() {
+            // Get the map state and preapare some useful normalized values of zoom and pitch
+            // ==============================================================================
+            var pitch = map.getPitch();
+            var pitchNormalized = pitch / 85;
+
+            var bearing = map.getBearing() + 180;
+            var zoom = map.getZoom() - 4; // minus 4 from zoom so that it starts at zero
+            var cameraHeightNormalized = Math.min(map.getFreeCameraOptions().position.z * 1000, 1)
+
+            cameraHeightNormalized = Math.round(cameraHeightNormalized * 1000) / 1000; //round to 2 digits
+            //console.log(cameraHeightNormalized);
+            //round the fractionSoomedOut to 2 decimal places
+            fractionZoomedOut = 1 - (zoom / 18); // normalize the zoom so it is now constrained bewteen 0 and 1
+            fractionZoomedOut = Math.round(fractionZoomedOut * 100) / 100;  //round the fractionZoomedOut to 2 decimal places
+
+
+            var fractionPitched = (pitch / 80); // normalise pitch so that its now a value between 0 and 1 (zero being when you're looking down from above)
+            var fractionPitchedBackwards = Math.max(1 - (pitch / 80), 0);  // normalise pitch so that its now a value between 1 and 0 (zero being when you're looking to the horizon)
+
+            var tiltShiftBackdropFilter = 'blur(' + ((tiltShiftMaxBlur * easeInCubic(fractionPitched)) * fractionZoomedOut) + 'px)';
+            var tiltShiftGradientBlackPoint = (75 + (25 * easeOutCubic(fractionPitchedBackwards)));
+
+            tiltShiftBlur.style.backdropFilter = tiltShiftBackdropFilter;
+            tiltShiftBlur.style.webkitBackdropFilter = tiltShiftBackdropFilter;
+
+            // this needs to be styled in two different ways to support the most browsers
+            tiltShiftBlur.style.webkitMaskImage = '-webkit-gradient(linear, left bottom, left top, from(black), color-stop(5%, black), color-stop(45%, rgba(0, 0, 0, 0)), color-stop(55%, rgba(0, 0, 0, 0)), color-stop(' + tiltShiftGradientBlackPoint + '%, black), to(black))';
+            tiltShiftBlur.style.maskImage = 'linear-gradient(0deg, black 0%, black 5%, rgba(0, 0, 0, 0) 45%, rgba(0, 0, 0, 0) 55%, black ' + tiltShiftGradientBlackPoint + '%)';
+            lastFractionZoomedOut = fractionZoomedOut;
+            lastcameraHeightNormalized = cameraHeightNormalized;
+
+            //svgTurbulence.setAttribute("seed", Math.random() * 100);
+
+            window.requestAnimationFrame(addPhotoEffects);
+        }
+        mapboxgl.accessToken = 'pk.eyJ1IjoidG9tc2F2YWdlIiwiYSI6ImNram01MDFvczI5aHUyeG83N21obzBrcWsifQ.T_j8LAT55g3kuwCQFlNPuA';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/light-v9',
+            zoom: 4.9,
+            center: [-3, 54.25],
+
+        });
+        map.on('load', function () {
+            // addPhotoEffects();
+            // // apply a style to the DIVs that contain the blur effects
+            // tiltShiftBlur.style.display = "block";
+            // map.setFog({
+            //     'range': [0.5, 10],
+            //     'color': 'white',
+            //     'horizon-blend': 0.1
+            // });
+
+
+
+            map.addSource('output', {
+                'type': 'geojson',
+                'data': 'LSOA.geojson'
+            });
+
+            // map.addLayer({
+            //     'id': 'room-extrusion',
+            //     'type': 'fill-extrusion',
+            //     'source': 'output',
+            //     'paint': {
+            //         // 'fill-extrusion-color': [
+            //         //     'interpolate',
+            //         //     ['linear'],
+            //         //     ['get', 'gas'],
+            //         //     25000,
+            //         //     'yellow',
+            //         //     2000000,
+            //         //     'red'
+            //         // ],
+            //         'fill-extrusion-color': [
+            //             'interpolate',
+            //             ['linear'],
+            //             ['get', 'temp'],
+            //             5,
+            //             'white',
+            //             7.5,
+            //             'LightBlue',
+            //             10,
+            //             'DarkMagenta'
+            //         ],
+
+            //         // Get `fill-extrusion-height` from the source `height` property.
+            //         // 'fill-extrusion-height': ["*", 0.001, ["get", "gas"]],
+            //         'fill-extrusion-height': [
+            //             'interpolate',
+            //             ['linear'],
+            //             ['get', 'temp'],
+            //             5,
+            //             0,
+            //             10,
+            //             1000
+            //         ],
+
+            //         // Get `fill-extrusion-base` from the source `base_height` property.
+            //         'fill-extrusion-base': 0,
+
+            //         // Make extrusions slightly opaque to see through indoor walls.
+            //         'fill-extrusion-opacity': 0.65
+            //     }
+            // });
+
+            output_var = 'temp'
+            if (output_var == 'temp'){
+                min = 0 
+                mid = 1
+                max = 3
+            }
+
+            map.addLayer({
+                'id': 'outline',
+                'type': 'fill',
+                'source': 'output',
+                'layout': {},
+                'paint': {
+                    'fill-color': [
+                        'interpolate',
+                        ['linear'],
+                        ['get', output_var],
+                        min,
+                        'lightblue',
+                        mid,
+                        'white',
+                        max,
+                        'darkorange'
+                    ],
+                }
+            });
+        });
+
+
+    </script>
+</body>
+
+</html>
