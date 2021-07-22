@@ -60,7 +60,7 @@ public class TimeSeriesClientTest {
     	
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
-    	tsClient.initCentralTable();
+    	//tsClient.initCentralTable();
     	//tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
     	tsClient.initTimeSeriesTable(dataIRI, dataClass, "http://ts1");
    	

@@ -119,16 +119,6 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	}
 
 	@Test
-	public void testInitTimeSeriesTableNoCentralTable() {
-		Exception exception = Assert.assertThrows(JPSRuntimeException.class, () -> {
-			client.initTimeSeriesTable(dataIRI, dataClass, null);
-		});
-		String expectedExceptionMessage = "uk.ac.cam.cares.jps.base.exception.JPSRuntimeException: "+
-										  "TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first";
-		Assert.assertEquals(expectedExceptionMessage, exception.getMessage());
-	}
-
-	@Test
 	public void testInitTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
 		client.initCentralTable();
 		client.initTimeSeriesTable(dataIRI, dataClass, null);

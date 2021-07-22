@@ -54,7 +54,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
     private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
 
-	enum AggregateFunction {
+	private enum AggregateFunction {
 		AVERAGE,
 		MAX,
 		MIN
@@ -134,7 +134,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			
 			// Check if central database lookup table exists
 			if (context.meta().getTables(dbTableName).size() == 0) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table needs to be initialised first");
+				initCentralTable();
+				// Reconnect, as initCentralTable closes connection
+				connect();
 			}
 			
 			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
@@ -591,6 +593,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Add new entries to central RDB lookup table
+	 * <p>Requires existing RDB connection
 	 * @param tsTable: name of the timeseries table provided as string
 	 * @param dataIRI: list of data IRIs provided as string
 	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data IRIs
@@ -610,6 +613,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Create an empty RDB table with the given data types for the respective columns
+	 * <p>Requires existing RDB connection
 	 * @param tsTable: name of the timeseries table provided as string
 	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data IRIs
 	 * @param dataIRI: list of data IRIs provided as string
@@ -635,6 +639,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Append time series data from ts Object to (existing) RDB table
+	 * <p>Requires existing RDB connection
 	 * @param tsTable: name of the timeseries table provided as string
 	 * @param ts: time series to write into the table
 	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data in the ts
@@ -668,6 +673,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in central lookup table)
+	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if the data IRI is attached to a time series, false otherwise
 	 */
@@ -680,6 +686,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	/**
 	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same time series IRI)
 	 * <p>Throws JPSRuntime Exception if not
+	 * <p>Requires existing RDB connection;
 	 * @param dataIRI: list of data IRIs provided as string
 	 */
 	private void checkDataIsInSameTable(List<String> dataIRI) {
@@ -698,6 +705,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
+	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return The attached time series IRI as string
 	 */
@@ -711,6 +719,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 	/**
 	 * Retrieve column name for provided dataIRI from central database lookup table (if it exists)
+	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return The corresponding column name in the table related to the data IRI
 	 */
@@ -724,6 +733,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 	/**
 	 * Retrieve table name for provided timeseries IRI from central database lookup table (if it exists)
+	 * <p>Requires existing RDB connection
 	 * @param tsIRI: IRI of the timeseries
 	 * @return Corresponding table name as string
 	 */
@@ -737,6 +747,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 	/**
 	 * Retrieve table for provided timeseries IRI from central database lookup table (if it exists)
+	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return Table object corresponding to the time series
 	 */
