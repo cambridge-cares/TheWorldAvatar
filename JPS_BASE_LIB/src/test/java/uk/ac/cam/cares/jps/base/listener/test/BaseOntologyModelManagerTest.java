@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,37 +51,33 @@ public class BaseOntologyModelManagerTest {
     }
 
     @Test
-    public void testSave(){
-        OntModel testM = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        String testIRI = "testIRI";
-        String testMmsi = "testMmsi";
-
-        try{
-            ExecutorService threadPool = Executors.newFixedThreadPool(5);
-            for (int i = 0; i < 5; i++) {
-                threadPool.execute(() -> {
-                    BaseOntologyModelManager.save(testM, testIRI, testMmsi);
-                });
-            }
-            threadPool.shutdown();
-            TimeUnit.SECONDS.sleep(5);
-        }catch (Exception e){
-            Assert.assertTrue(e.getMessage().contains("Saving OWL failed: "));
-        }
-    }
-
-
-    @Test
     public void testSaveToOwl() throws Exception {
-        File testFolder= folder.newFolder("test");
 
-        String ABSDIR_ROOT_TEST = testFolder.getPath() + "/test/";
-        String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-        String ABSDIR_KB = Matcher.quoteReplacement(testFolder.getPath() + "/kb/");
-        String IRI_KB = "testIRI";
+        // Create a test model that should be written to a file
+        OntModel testModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        // The model contains a single triple
+        String testURI ="http://somewhere/test1";
+        String testData = "test1";
+        Resource testR = testModel.createResource(testURI);
+        testR.addProperty(VCARD.FN, testData);
 
-        Field modifiersField = Field.class.getDeclaredField( "modifiers" );
-        modifiersField.setAccessible( true );
+        // Create temporary folder for writing the owl file
+        File testFolder = folder.newFolder("test");
+        // Defining the paths for where to write the owl files
+        String filePath1 = Paths.get(testFolder.getAbsolutePath() , "test.owl").toString();
+        String filePath2 = Paths.get(testFolder.getAbsolutePath(), "Chimney-1.owl").toString();
+
+
+        // Set the fields of the BaseOntologyModelManager to use the paths to the test files
+        // Related to file1
+        String ABSDIR_KB = testFolder.getAbsolutePath();
+        String IRI_KB = "http://localhost/kb/";
+        // Related to file2
+        String ABSDIR_KB_TEST = testFolder.getAbsolutePath();
+
+
+        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        modifiersField.setAccessible(true);
 
         Field test_ABSDIR_KB = BaseOntologyModelManager.class.getDeclaredField("ABSDIR_KB");
         test_ABSDIR_KB.setAccessible(true);
@@ -96,51 +94,37 @@ public class BaseOntologyModelManagerTest {
         modifiersField.setInt( test_IRI_KB, test_IRI_KB.getModifiers() & ~Modifier.FINAL );
         test_IRI_KB.set(null, IRI_KB);
 
-        File file1 = new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
-        File file2 = new File(testFolder.getPath() + "/testIRI/test.owl");
+        String mmsi = "mmsi";
 
-//        File testFolder= folder.newFolder("testIRI/test");
-
-        OntModel testM = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        String[] testURI ={"http://somewhere/test1"};
-        String[] testData = {"test1"};
-
-        for (int i=0;i<testURI.length;i++){
-            Resource testR = testM.createResource(testURI[i]);
-            testR.addProperty(VCARD.FN, testData[i]);
+        try (MockedStatic<AgentLocator> mockAgentLocator = Mockito.mockStatic(AgentLocator.class)) {
+            mockAgentLocator.when(AgentLocator::isJPSRunningForTest).thenReturn(false);
+            String testIRI = filePath1 + "#test";
+            BaseOntologyModelManager.saveToOwl(testModel, testIRI, mmsi);
+            File file1 = new File(filePath1);
+            Assert.assertTrue(file1.exists());
+            // Read the saved ontology back in and assert that the property is in there
+            OntModel readModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+            readModel.read(filePath1);
+            Assert.assertTrue(readModel.isInBaseModel(testR));
+            Assert.assertEquals(testData, readModel.getProperty(testR, VCARD.FN).getString());
         }
 
-        String testIRI = testFolder.getPath() + "/testIRI/test.owl#test";
-        String testMmsi = "testMmsi";
+        try (MockedStatic<AgentLocator> mockAgentLocator = Mockito.mockStatic(AgentLocator.class);
+             MockedStatic<Paths> mockPath = Mockito.mockStatic(Paths.class, RETURNS_DEEP_STUBS)) {
+            mockAgentLocator.when(AgentLocator::isJPSRunningForTest).thenReturn(true);
+            mockPath.when(() -> Paths.get(ABSDIR_KB_TEST, "ships", mmsi,"Chimney-1.owl").toString())
+                    .thenReturn(filePath2);
 
-        MockedStatic<AgentLocator> mockA = Mockito.mockStatic(AgentLocator.class);
-
-        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(true);
-        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
-        Assert.assertTrue(file1.exists());
-        OntModel readModel1 = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        readModel1.read(file1.getPath());
-        String sparql = "SELECT ?z WHERE{<http://somewhere/test1> ?y ?z}";
-        ResultSet testrs = BaseOntologyModelManager.query(sparql, readModel1);
-        String testRes = "";
-        while (testrs.hasNext()) {
-            QuerySolution qs = testrs.nextSolution();
-            testRes = testRes + qs.get("z").toString() + "\n";
+            String testIRI = filePath2 + "#test";
+            BaseOntologyModelManager.saveToOwl(testModel, testIRI, mmsi);
+            File file2 = new File(filePath2);
+            Assert.assertTrue(file2.exists());
+            // Read the saved ontology back in and assert that the property is in there
+            OntModel readModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+            readModel.read(file2.getAbsolutePath());
+            Assert.assertTrue(readModel.isInBaseModel(testR));
+            Assert.assertEquals(testData, readModel.getProperty(testR, VCARD.FN).getString());
         }
-        Assert.assertEquals("test1\n", testRes);
-
-        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(false);
-        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
-        Assert.assertTrue(file2.exists());
-        OntModel readModel2 = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        readModel2.read(file2.getPath());
-        testrs = BaseOntologyModelManager.query(sparql, readModel2);
-        testRes = "";
-        while (testrs.hasNext()) {
-            QuerySolution qs = testrs.nextSolution();
-            testRes = testRes + qs.get("z").toString() + "\n";
-        }
-        Assert.assertEquals("test1\n", testRes);
    }
 
     @Test
