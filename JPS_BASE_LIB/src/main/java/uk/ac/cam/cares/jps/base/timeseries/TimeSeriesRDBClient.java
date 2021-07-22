@@ -53,7 +53,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     private static final Field<String> tsIRIcolumn = DSL.field(DSL.name("timeseriesIRI"), String.class);
     private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
     private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
-    
+
+	enum AggregateFunction {
+		AVERAGE,
+		MAX,
+		MIN
+	}
+
     /**
      * Standard constructor
      * @param timeClass: class of the timestamps of the time series
@@ -227,8 +233,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			checkDataIsInSameTable(dataIRI);
 
 			// Retrieve table corresponding to the time series connected to the data IRIs
-			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	Table<?> table = getTimeseriesTable(dataIRI.get(0));
 	    	
 	    	// Create map between data IRI and the corresponding column field in the table
 	    	Map<String, Field<Object>> dataColumnFields = new HashMap<>();
@@ -293,8 +298,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			checkDataIsInSameTable(dataIRI);
 
 			// Retrieve table corresponding to the time series connected to the data IRIs
-			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	Table<?> table = getTimeseriesTable(dataIRI.get(0));
 	    	
 	    	// Create map between data IRI and the corresponding column field in the table
 	    	Map<String, Field<Object>> dataColumnFields = new HashMap<>();
@@ -342,32 +346,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return The average of the corresponding data as double
 	 */
 	public double getAverage(String dataIRI) {
-		try {
-			// Initialise connection and set jOOQ DSL context
-			connect();
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-			}
-
-			// Retrieve table corresponding to the time series connected to the data IRI
-	    	String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
-	    	
-	    	// Create map between the data IRI and the corresponding column field in the table
-			String columnName = getColumnName(dataIRI);
-			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-	    	
-	    	List<BigDecimal> queryResult = context.select(avg(columnField)).from(table).fetch(avg(columnField));
-	    	
-	    	return queryResult.get(0).doubleValue();
-	    	
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
-		} finally {			
-			disconnect();
-		}
+		return getAggregate(dataIRI, AggregateFunction.AVERAGE);
 	}
 	
 	/**
@@ -376,32 +355,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return The maximum of the corresponding data as double
 	 */
 	public double getMaxValue(String dataIRI) {
-		try {
-			// Initialise connection and set jOOQ DSL context
-			connect();
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-			}
-
-			// Retrieve table corresponding to the time series connected to the data IRI
-	    	String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
-
-			// Create map between the data IRI and the corresponding column field in the table
-			String columnName = getColumnName(dataIRI);
-			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-	    	
-	    	List<Double> queryResult = context.select(max(columnField)).from(table).fetch(max(columnField));
-	    	
-	    	return queryResult.get(0);
-	    	
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
-		} finally {			
-			disconnect();
-		}
+		return getAggregate(dataIRI, AggregateFunction.MAX);
 	}
 	
 	/**
@@ -410,32 +364,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @return The minimum of the corresponding data as double
 	 */
 	public double getMinValue(String dataIRI) {
-		try {
-			// Initialise connection and set jOOQ DSL context
-			connect();
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
-			}
-
-			// Retrieve table corresponding to the time series connected to the data IRI
-	    	String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
-
-			// Create map between the data IRI and the corresponding column field in the table
-			String columnName = getColumnName(dataIRI);
-			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
-	    	
-	    	List<Double> queryResult = context.select(min(columnField)).from(table).fetch(min(columnField));
-	    	
-	    	return queryResult.get(0);
-	    	
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
-		} finally {			
-			disconnect();
-		}
+		return getAggregate(dataIRI, AggregateFunction.MIN);
 	}
 	
 	/**
@@ -454,8 +383,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
-	    	String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
 	    	List<T> queryResult = context.select(max(timeColumn)).from(table).fetch(max(timeColumn));
 	    	
@@ -484,8 +412,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
-	    	String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
 	    	List<T> queryResult = context.select(min(timeColumn)).from(table).fetch(min(timeColumn));
 	    	
@@ -516,8 +443,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 			
 			// Retrieve RDB table for dataIRI
-			String tsIRI = getTimeSeriesIRI(dataIRI);
-	    	Table<?> table = getTimeseriesTable(tsIRI);
+	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
 	    	// Delete rows between bounds (including bounds!)
 	    	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
@@ -811,13 +737,52 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 	/**
 	 * Retrieve table for provided timeseries IRI from central database lookup table (if it exists)
-	 * @param tsIRI: IRI of the timeseries
+	 * @param dataIRI: data IRI provided as string
 	 * @return Table object corresponding to the time series
 	 */
-	private Table<?> getTimeseriesTable(String tsIRI) {
-		// Look for the entry tsIRI in dbTable
+	private Table<?> getTimeseriesTable(String dataIRI) {
+		// Retrieve the time series IRI attached ot the data IRI
+		String tsIRI = getTimeSeriesIRI(dataIRI);
+		// Retrieve the table name
 		String tableName = getTimeseriesTableName(tsIRI);
 
 		return DSL.table(DSL.name(tableName));
 	}
+
+	private double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
+		try {
+			// Initialise connection and set jOOQ DSL context
+			connect();
+
+			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
+			if(!checkDataHasTimeSeries(dataIRI)) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+			}
+
+			// Retrieve table corresponding to the time series connected to the data IRI
+			String tsIRI = getTimeSeriesIRI(dataIRI);
+			Table<?> table = getTimeseriesTable(tsIRI);
+
+			// Create map between the data IRI and the corresponding column field in the table
+			String columnName = getColumnName(dataIRI);
+			Field<Double> columnField = DSL.field(DSL.name(columnName), Double.class);
+
+			switch (aggregateFunction) {
+				case AVERAGE:
+					return context.select(avg(columnField)).from(table).fetch(avg(columnField)).get(0).doubleValue();
+				case MAX:
+					return context.select(max(columnField)).from(table).fetch(max(columnField)).get(0);
+				case MIN:
+					return context.select(min(columnField)).from(table).fetch(min(columnField)).get(0);
+				default:
+					throw new JPSRuntimeException("Aggregate function "+aggregateFunction.name()+" not valid!");
+			}
+
+		} catch (Exception e) {
+			throw new JPSRuntimeException(e);
+		} finally {
+			disconnect();
+		}
+	}
+
 }
