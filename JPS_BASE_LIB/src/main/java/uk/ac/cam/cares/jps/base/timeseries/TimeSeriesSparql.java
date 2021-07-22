@@ -5,6 +5,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Assignment;
@@ -111,13 +112,15 @@ public class TimeSeriesSparql {
      * @param timeUnit: the time unit of the time series (optional)
      */    
     public void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
-    	//Construct time series IRI
+    	// Construct time series IRI
     	Iri tsIRI;
-		// Check whether timeseriesIRI starts with "http://" to avoid default prefix of "file://" by iri() function
-		if (timeSeriesIRI.startsWith("http://")) {
+		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
+    	// If only local name is provided, iri() function would add filepath as default prefix
+    	// Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
+		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
 			tsIRI = iri(timeSeriesIRI);
 		} else {
-			throw new JPSRuntimeException("TimeSeriesSparql: Time series IRI needs to start with http://");
+			throw new JPSRuntimeException("TimeSeriesSparql: Time series IRI does not have valid IRI format");
 		}
     	
     	ModifyQuery modify = Queries.MODIFY();

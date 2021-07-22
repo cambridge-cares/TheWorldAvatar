@@ -104,11 +104,14 @@ public class TimeSeriesSparqlTest {
     	RemoteStoreClient kbClient = new RemoteStoreClient();
     	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
     	// Test exception for incorrect tsIRI format
-    	try {
-    		client.initTS("tsIRI", null, null, null);
-    	} catch (JPSRuntimeException e) {
-        	Assert.assertEquals("TimeSeriesSparql: Time series IRI needs to start with http://", 
-        						e.getMessage());
+    	String[] iris = {"tsIRI", ":tsIRI", "/:tsIRI", "ns:#", "ns:/", "ns: "};
+    	for (String iri : iris) {
+        	try {
+        		client.initTS(iri, null, null, null);
+        	} catch (JPSRuntimeException e) {
+            	Assert.assertEquals("TimeSeriesSparql: Time series IRI does not have valid IRI format", 
+            						e.getMessage());
+        	}    		
     	}
     	// Test that no exception is thrown for correct tsIRI
     	try (MockedStatic<Queries> query = Mockito.mockStatic(Queries.class)) {

@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.timeseries.test;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.net.URI;
 
 import org.junit.Test;
 import org.junit.Before;
@@ -15,7 +14,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class TimeSeriesTest {
 	
 	TimeSeries<Instant> ts;
-	List<URI> dataIRI = new ArrayList<>();
+	List<String> dataIRI = new ArrayList<>();
 	List<Instant> timeList = new ArrayList<>();
 	List<Double> data1 = new ArrayList<>();
 	List<String> data2 = new ArrayList<>();
@@ -24,9 +23,7 @@ public class TimeSeriesTest {
 	
 	@Before
 	public void initialiseData() {
-		dataIRI.add(URI.create("http://data1"));
-		dataIRI.add(URI.create("http://data2")); 
-		dataIRI.add(URI.create("http://data3"));
+		dataIRI.add("http://data1"); dataIRI.add("http://data2"); dataIRI.add("http://data3"); 
 		for (int i = 0; i < 10; i++) {
 			timeList.add(Instant.now().plusSeconds(i));
 			data1.add(Double.valueOf(i));
@@ -75,7 +72,7 @@ public class TimeSeriesTest {
     public void testGetDataIRI() {
 		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	for (URI iri : ts.getDataIRIs()) {
+    	for (String iri : ts.getDataIRIs()) {
     		Assert.assertTrue(dataIRI.contains(iri));
     	}
     }
@@ -88,7 +85,7 @@ public class TimeSeriesTest {
     	Assert.assertEquals(ts.getValues(dataIRI.get(1)),data2);
     	Assert.assertEquals(ts.getValues(dataIRI.get(2)),data3);
     	// Check whether null is returned for non-existing dataIRI keys
-    	Assert.assertNull(ts.getValues(URI.create("data0")));
+    	Assert.assertNull(ts.getValues("data0"));
     }
     
     /**
@@ -102,7 +99,7 @@ public class TimeSeriesTest {
 		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
     	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(2)).get(0).getClass(), Double.class);
     	// Test for non-existing and non-castable data series
-    	Assert.assertNull(ts.getValuesAsDouble(URI.create("data0")));
+    	Assert.assertNull(ts.getValuesAsDouble("data0"));
     	try {
     		List<Double> v = ts.getValuesAsDouble(dataIRI.get(1));
     	} catch (Exception e) {
@@ -119,7 +116,7 @@ public class TimeSeriesTest {
     public void testGetValuesAsString() {
 		// Constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	for (URI data : dataIRI) {
+    	for (String data : dataIRI) {
     		Assert.assertEquals(ts.getValuesAsString(data).get(0).getClass(), String.class);
     	}
     }
@@ -135,7 +132,7 @@ public class TimeSeriesTest {
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(0)).get(0).getClass(), Integer.class);
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(2)).get(0).getClass(), Integer.class);
     	// Test for non-existing and non-castable data series
-    	Assert.assertNull(ts.getValuesAsInteger(URI.create("data0")));
+    	Assert.assertNull(ts.getValuesAsInteger("data0"));
     	try {
     		List<Integer> v = ts.getValuesAsInteger(dataIRI.get(1));
     	} catch (Exception e) {

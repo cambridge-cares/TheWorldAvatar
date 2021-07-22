@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.net.URI;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -18,15 +17,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class TimeSeries<T> {
 
     private final List<T> times;
-    private final Map<URI, List<?>> values;
+    private final Map<String, List<?>> values;
 
     /**
      * Standard constructor
      * @param times: list of timestamps
-     * @param dataIRI: list of data IRIs provided as URIs
+     * @param dataIRI: list of data IRIs provided as string
      * @param values: list of list of values containing the data for each data IRI
      */
-	public TimeSeries(List<T> times, List<URI> dataIRI, List<List<?>> values) {
+	public TimeSeries(List<T> times, List<String> dataIRI, List<List<?>> values) {
         this.times = times;
         this.values = new HashMap<>();
         
@@ -57,9 +56,9 @@ public class TimeSeries<T> {
 	
     /**
      * Various methods to get values in a specific class
-     * @param dataIRI: data IRI provided as URI
+     * @param dataIRI: data IRI provided as string
      */
-    public List<Double> getValuesAsDouble(URI dataIRI) {
+    public List<Double> getValuesAsDouble(String dataIRI) {
     	List<?> v = getValues(dataIRI);
     	if (v == null) {
     		return null;
@@ -70,7 +69,7 @@ public class TimeSeries<T> {
     	}   	
     }    
     
-    public List<Integer> getValuesAsInteger(URI dataIRI) {
+    public List<Integer> getValuesAsInteger(String dataIRI) {
     	List<?> v = getValues(dataIRI);
     	if (v == null) {
     		return null;
@@ -81,24 +80,24 @@ public class TimeSeries<T> {
     	}  
     }
     
-    public List<String> getValuesAsString(URI dataIRI) {
+    public List<String> getValuesAsString(String dataIRI) {
     	return values.get(dataIRI).stream().map(Object::toString).collect(Collectors.toList());
     }
     
     /**
      * Method to get values column in whatever form returned from the jooq API (not recommended!)
-     * @param dataIRI: data IRI provided as URI
+     * @param dataIRI: data IRI provided as string
      */
-    public List<?> getValues(URI dataIRI) {
+    public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);
     }
     
     /**
      * Method to get dataIRIs of timeseries
-     * @return List of URIs representing the data IRIs
+     * @return List of strings representing the data IRIs
      */    
-    public List<URI> getDataIRIs() {
-        Collection<URI> keys = values.keySet();
+    public List<String> getDataIRIs() {
+        Collection<String> keys = values.keySet();
         return new ArrayList<>(keys);
     }
 }
