@@ -120,8 +120,9 @@ public class BaseOntologyModelManagerTest {
         Assert.assertTrue(testFile1.exists());
 
         try{
-            BaseOntologyModelManager.prepareDirectory("/test/test1");
-        }catch (Exception e){
+            BaseOntologyModelManager.prepareDirectory("invalid_disk:/no_directory/test/test1.txt");
+            Assert.fail();
+        } catch (IOException e){
             Assert.assertTrue(e.getMessage().contains("No such directory: "));
         }
 
