@@ -99,7 +99,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	/**
 	 * Initialise central database lookup table
 	 */
-	public void initCentralTable() {
+	private void initCentralTable() {
 		try {
 			// Initialise connection and set jOOQ DSL context
 			connect();
@@ -132,7 +132,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Initialise connection and set jOOQ DSL context
 			connect();
 			
-			// Check if central database lookup table exists
+			// Check if central database lookup table exists and create if not
 			if (context.meta().getTables(dbTableName).size() == 0) {
 				initCentralTable();
 				// Reconnect, as initCentralTable closes connection

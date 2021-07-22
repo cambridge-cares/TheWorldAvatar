@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -96,9 +98,11 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	}
 
 	@Test
-	public void testInitCentralTable() {
+	public void testInitCentralTable() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// Initialise central lookup table
-		client.initCentralTable();
+		Method initCentral = client.getClass().getDeclaredMethod("initCentralTable");
+		initCentral.setAccessible(true);
+		initCentral.invoke(client);
 		// Check that only one table was created
 		Assert.assertEquals(1, context.meta().getTables().size());
 		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
@@ -106,12 +110,14 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	}
 
 	@Test
-	public void testInitCentralTableWhenAlreadyExists() {
+	@Ignore("Should not happen, as initCentralTable is now private - to be removed later")
+	public void testInitCentralTableWhenAlreadyExists() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// Initialise central lookup table
-		client.initCentralTable();
-		// nk591: should we populate the table to make sure nothing gets deleted?
+		Method initCentral = client.getClass().getDeclaredMethod("initCentralTable");
+		initCentral.setAccessible(true);
+		initCentral.invoke(client);
 		// Run method again (should not do anything)
-		client.initCentralTable();
+		initCentral.invoke(client);
 		// Check that only one table was created
 		Assert.assertEquals(1, context.meta().getTables().size());
 		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
@@ -120,7 +126,6 @@ public class TimeSeriesRDBClientlIntegrationTest {
 
 	@Test
 	public void testInitTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
-		client.initCentralTable();
 		client.initTimeSeriesTable(dataIRI, dataClass, null);
 		// Check that timeseries table was created in addition to central table
 		Assert.assertEquals(2, context.meta().getTables().size());
