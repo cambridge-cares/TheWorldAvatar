@@ -127,7 +127,6 @@ public class TimeSeriesSparql {
     	// define type
     	modify.insert(tsIRI.isA(TimeSeries));
     	// relational database URL
-    	// mh807: definition of dbURL as Rdf.literalOf(dbURL) needed?
     	modify.insert(tsIRI.has(hasRDB, literalOf(dbURL)));
     	
     	// link each data to time series
@@ -138,7 +137,6 @@ public class TimeSeriesSparql {
 
     	// optional: define time unit
     	if (timeUnit != null) {
-    		// mh807: definition of timeUnit as literal or iri?
     		modify.insert(tsIRI.has(hasTimeUnit, literalOf(timeUnit)));
     		//modify.insert(tsIRI.has(hasTimeUnit, iri(timeUnit)));
     	}
@@ -199,8 +197,7 @@ public class TimeSeriesSparql {
      * @param tsIRI: timeseries IRI provided as string
      */
 	public void removeTimeSeries(String tsIRI) {
-		
-		// mh807: Necessary to check whether tsIRI (still) exists in kb?
+
 		if (checkTimeSeriesExists(tsIRI)) {
 			
 			// sub query to search for all triples with tsIRI as the subject/object
