@@ -12,7 +12,7 @@ class UKDigitalTwinTBox:
     dbp = "https://dbpedia.org/property/"
     dbo = "https://dbpedia.org/ontology/"
     
-    """DBPedia class"""
+    """DBPedia resource"""
     UK = dbr + "United_Kingdom"
     
     """OntoCAPE"""

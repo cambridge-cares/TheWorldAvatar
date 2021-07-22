@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder;
 
-import java.awt.List;
 import java.util.*;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -16,32 +15,78 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
  */
 public class SPARQLQueryBuilder {
 	
-	// private static final String mathematical_model = "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#";
-	// private static final String PowerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#";
-	private static final String[] Select_BusInfo_UKDT = {"?BusNumbervalue", "?typevalue", "?activepowervalue", "?reactivepowervalue", "?Gsvalue",
-			"?Bsvalue", "?areavalue", "?VoltMagvalue", "?VoltAnglevalue", "?BaseKVvalue", "?Zonevalue", "?VMaxvalue", "?VMinvalue"};
-	private static final String[] Prefix_BusInfo_UKDT = {"OCPMATH", "OPSMODE", "OCPSYST"};
-	private static final String[] a_BusInfo_UKDT = {"?Model_EBus", Prefix_BusInfo_UKDT[0], "Submodel"};
+	public ClauseBuilder queryClause;
+	public ArrayList<List<String>> prefixList = new ArrayList<List<String>>();
+	public List<String> selectClause = new ArrayList<String>();
+	public ArrayList<List<String>> whereClause = new ArrayList<List<String>>();
 	
-	
-	 static String mathematical_model = PrefixToUrlMap.getPrefixUrl("OCPMATH");
-	 
-	 public static void main(String[] args) {
-		 System.out.print(mathematical_model);	 
-	 }
-	 
-	private static final String [][] pre = { { "j5", "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#" },
-			{ "j3", "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#" },
-			{ "j2", "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#" } };
-	
-	public static String[][] prefixBuilder(ArrayList<String> prefixKey){
-		String[][] prefixContainer = null;
-		Iterator<String> preIter = prefixKey.iterator();
-		while(preIter.hasNext()) {
-			
-		}
-		return prefixContainer;
+	public String entityName;
+	public String entityTypePrefix;
+	public String entityType;
+
+	public SPARQLQueryBuilder(ClauseBuilder queryClause, String entityName, String entityTypePrefix, String entityType) {
+		this.queryClause = queryClause;	
+		if(entityName.contains("?")) {
+			this.entityName = entityName;
+		} else {
+			this.entityName = "?" + entityName;}
+		this.entityTypePrefix = entityTypePrefix;
+		this.entityType = entityType;
 	}
+	
+	public ArrayList<List<String>> prefixBuilder(){
+		
+		List<String> prefixContainer = this.queryClause.PrefixAbbrList;
+		for(String pre: prefixContainer) {
+			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
+			List<String> prefixPair = Arrays.asList(pre, prefixiri);
+			this.prefixList.add(prefixPair);
+		}		
+		if(!prefixContainer.contains(this.entityTypePrefix)) {
+		String entityTypePrefixiri = PrefixToUrlMap.getPrefixUrl(entityTypePrefix);
+		List<String> entityTypePrefixPair = new ArrayList<String>();
+		if(entityTypePrefixiri!= null) {
+		entityTypePrefixPair = Arrays.asList(entityTypePrefix, entityTypePrefixiri);
+		}
+		this.prefixList.add(entityTypePrefixPair);
+		}
+		return this.prefixList;
+	}
+	
+	public List<String> selectClauseBuilder(){
+		
+		List<String> selectClauseContainer = this.queryClause.VariablesList;		
+		this.selectClause.add(this.entityName);		
+		for(String var: selectClauseContainer) {
+			String selectName = "?ValueOf" + var;
+			this.selectClause.add(selectName);
+		}
+		return this.selectClause;
+	}
+	
+	public ArrayList<List<String>> whereClauseBuilder(){
+		
+		ArrayList<List<String>> whereClauseContainer = this.queryClause.PathArray;
+		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityTypePrefix + ":" + this.entityType);
+		this.whereClause.add(entityTypeTriple);
+		
+		for(int i = 0; i <= whereClauseContainer.size(); i++) {
+			//TODO: how to find varType?
+			
+			List<String> hasModelVariableTriple = Arrays.asList(this.entityName, "a", this.entityTypePrefix + ":" + this.entityType);
+			if(whereClauseContainer.get(i).contains("rdfs:label")) {
+				
+			}
+		}
+		
+		
+		for(String var: selectClauseContainer) {
+			String selectName = "?ValueOf" + var;
+			this.whereClause.add(selectName);
+		}
+		return this.whereClause;
+	}
+	
 	
 	public static String queryString(String[][] Prefix, String[] Select, String[][] Where) {
 		SelectBuilder sb = new SelectBuilder();
@@ -62,5 +107,18 @@ public class SPARQLQueryBuilder {
 		String queryString = sb.build().toString();
 		return queryString;
 	}
+	
+	 public static void main(String[] args) {
+		 PowerFlowModelVariable pv = new PowerFlowModelVariable(false, 2);
+		 ClauseBuilder cb = new ClauseBuilder("GenCostFuncVariables", pv);
+		 SPARQLQueryBuilder sqb= new SPARQLQueryBuilder(cb, "Model_EBus", "OCPMATH", "Submodel");
+		 ArrayList<List<String>> pl = sqb.prefixBuilder();
+		 for(int i = 0; i < pl.size(); i++) { 
+			   List<String> res = pl.get(i);
+			   System.out.println(res); 
+			   }
+	 }
 
 }
+
+
