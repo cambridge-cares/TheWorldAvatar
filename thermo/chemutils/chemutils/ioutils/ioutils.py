@@ -1,13 +1,13 @@
 import os
 import glob
 
-def readFile(path):
-    with open (os.path.abspath(path), "r") as myfile:
+def readFile(path, *args, **kwargs):
+    with open (os.path.abspath(path),'r', *args, **kwargs) as myfile:
         data=myfile.read()
     return data
 
-def writeFile(path,data):
-    with open (os.path.abspath(path), "w") as myfile:
+def writeFile(path,data, *args, **kwargs):
+    with open (os.path.abspath(path), 'w', *args, **kwargs) as myfile:
         myfile.write(data)
 
 def fileExists(path):
@@ -28,8 +28,6 @@ def removeBlankTrailingLines(fileContentStr):
 def getFilesWithExtensions(fileOrDir, fileExtList):
     files = []
     if fileExists(fileOrDir):
-        #fileExt = os.path.splitext(fileOrDir)[1]
-        #if fileExt in fileExtList: files = [fileOrDir]
         files = [fileOrDir]
     elif dirExists(fileOrDir):
         for fileExt in fileExtList:
