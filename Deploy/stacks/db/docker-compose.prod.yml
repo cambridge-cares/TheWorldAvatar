@@ -8,6 +8,16 @@ services:
     ports:
       - "6889:8080"
 
+  # Blazegraph geo
+  blazegraph_geo:
+    ports:
+      - "6989:8080"
+
+  # Postgres
+  postgres:
+    ports:
+      - "5432:5432"
+
   # RDF4J
   rdf4j:
     ports:

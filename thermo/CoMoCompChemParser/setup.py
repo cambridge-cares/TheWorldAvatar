@@ -1,11 +1,4 @@
 from setuptools import setup, find_packages
-import os.path
-
-thelibFolder = os.path.dirname(os.path.realpath(__file__))
-requirementPath = os.path.join(thelibFolder,'requirements.txt')
-if os.path.isfile(requirementPath):
-    with open(requirementPath) as f:
-        requirements= f.read().splitlines()
 
 setup(
     # This is the name of your project. The first time you publish this
@@ -30,7 +23,6 @@ setup(
     # Specify which Python versions you support pip install' will check this
     # and refuse to install the project if the version does not match.
     python_requires='>=3.5, <4',
-    install_requires=requirements,
     include_package_data=True,
     # If there are data files included in your packages that need to be
     # installed, specify them here.

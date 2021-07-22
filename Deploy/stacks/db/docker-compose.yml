@@ -23,6 +23,40 @@ services:
     volumes:
       - blazegraph_data:/data
 
+    # Blazegraph geo
+  blazegraph_geo:
+    build:
+      context: blazegraph_geo
+    container_name: "blazegraph_geo-${MODE}"
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    labels:
+      authors: "msff2@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
+      hash: "${HASH}"
+    restart: unless-stopped
+    volumes:
+      - blazegraph_geo_data:/data
+
+  # Postgres
+  postgres:
+    container_name: "postgres-${MODE}"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    image: docker.cmclinnovations.com/postgres:13.3-alpine
+    labels:
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "Postgres/PostgreSQL with SCRAM-SHA-256 authentication."
+      hash: "${HASH}"
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
   # RDF4J
   rdf4j:
     build:
@@ -47,10 +81,12 @@ services:
       - rdf4j_logs:/usr/local/tomcat/logs 
 
 
-# Secrets to supply Blazegraph, RDF4J passwords for BASIC authentication
+# Secrets to supply Blazegraph, Postgres, RDF4J passwords
 secrets:
   blazegraph_password:
-    file: blazegraph/secrets/blazegraph_password
+    file: blazegraph/secrets/blazegraph_password  
+  postgres_password:
+    file: postgres/secrets/postgres_password
   rdf4j_admin_password:
     file: rdf4j/secrets/rdf4j_admin_password
   rdf4j_user_password:
@@ -60,6 +96,10 @@ secrets:
 volumes:
   blazegraph_data:
     name: "blazegraph_data"
+  blazegraph_geo_data:
+    name: "blazegraph_geo_data"
+  postgres_data:
+    name: "postgres_data"
   rdf4j_data:
     name: "rdf4j_data"
   rdf4j_logs:

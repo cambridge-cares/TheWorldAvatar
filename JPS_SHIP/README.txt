@@ -1,3 +1,5 @@
+Please note that this project is no longer in use and in development, it may be removed soon
+
 A Python Virtual Environment will now be created in the ROOT folder of your Tomcat directory during 'mvn clean install' for the JPS_SHIP project.  
 
 Prerequisite for non-Windows user:

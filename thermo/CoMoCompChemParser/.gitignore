@@ -3,7 +3,9 @@ build/
 dist/
 *~*
 .vscode/
-venv/
+.idea/
+assets/
+.pytest_cache/
 .mypy_cache/
 coverage.xml
 .coverage
@@ -13,4 +15,3 @@ coverage.xml
 ## User defined
 *.egg-info
 *.mp4
-gaussian-parser/

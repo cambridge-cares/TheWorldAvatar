@@ -1,0 +1,18 @@
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - conda-forge::openbabel
+  - conda-forge::cclib
+  - conda-forge::pytest
+  - conda-forge::pytest-html
+  - conda-forge::python=3.7
+  - conda-forge::pip
+  - conda-forge::docopt
+  - conda-forge::isodate
+  - conda-forge::numpy
+  - conda-forge::packaging
+  - conda-forge::periodictable
+  - conda-forge::pyparsing
+  - conda-forge::rdflib
+  - conda-forge::six

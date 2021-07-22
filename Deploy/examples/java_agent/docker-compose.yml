@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  java_agent_eg:
+    container_name: java_agent_eg
+    image: java_agent_eg:1.0.0
+    build:
+      context: ./
+    ports:
+      - "8081:8080"
+
+    volumes:
+      - external_maven_repo:/root/.m2
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"      

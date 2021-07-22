@@ -31,6 +31,16 @@ var botURL = "/marie/request/";
 var resultsRow = document.getElementById("results-row");
 resultsRow.style.display = "none";
 
+// Currently asking a question?
+var asking = 0;
+
+// Add ENTER detection on search field
+document.getElementById("input-field").addEventListener("keyup", function(event) {
+	if(event.keyCode === 13) {
+		askQuestion();
+	}
+});
+
 // Add auto-complete for species names in the search box
 $('#input-field').autocomplete({
 	source: species,
@@ -64,12 +74,16 @@ function linkSampleQuestions() {
 
 
 /*
- Pipe the input text into the 'input-field' element.
+ Pipe the input text into the 'input-field' element and fire it off.
  */
 function pipeQuestion(question) {
+	// Pipe question to text field
 	document.getElementById('input-field').value = question;
 	$('#input-field').css("color", "inherit");
 	window.scrollTo(0, 0);
+	
+	// Fire query automatically (requested by MK)
+	askQuestion();
 }
 
 
@@ -108,6 +122,11 @@ function resetResults() {
  Send the current question to the chatbot.
  */
 function askQuestion() {
+	if(asking > 0) {
+		// No concurrent questions
+		return;
+	}
+	
 	resetResults();
 	let spinner = imageDir + "spinner.svg";
 	
@@ -128,12 +147,14 @@ function askQuestion() {
 		return;
 	}
 
+	
 	// Build the URL for the question
 	question = question.replace('	', ' ');
 	question = question.replace(/[/+]/g, 'add_sign');
 
 	var promises = [];
-
+	
+	asking = 3;
 	// Make the request for the world avatar
 	makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
 
@@ -142,7 +163,7 @@ function askQuestion() {
 
 	// Make the request for wolfram
 	makeRequest(question, "wolfram", "html", processWolframResults, promises);
-
+	
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
 		// Revert button to search icon
@@ -174,12 +195,14 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		timeout: (1000 * 60),
 		success: function (data) {
 			successFunction(data);
+			asking--;
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr.status);
 			console.log(thrownError);
 
 			successFunction(null);
+			asking--;
 		}
 	}));
 }
