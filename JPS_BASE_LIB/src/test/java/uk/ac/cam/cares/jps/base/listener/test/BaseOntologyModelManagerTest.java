@@ -19,10 +19,12 @@ import uk.ac.cam.cares.jps.base.listener.BaseOntologyModelManager;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
 
 import static org.mockito.Mockito.*;
 
@@ -71,15 +73,33 @@ public class BaseOntologyModelManagerTest {
 
     @Test
     public void testSaveToOwl() throws Exception {
-        File testFolder= folder.newFolder("/test");
+        File testFolder= folder.newFolder("test");
 
-        String ABSDIR_ROOT_TEST = testFolder.getPath();
+        String ABSDIR_ROOT_TEST = testFolder.getPath() + "/test/";
         String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-        String IRI_KB = "http://www.test.com/kb/";
+        String ABSDIR_KB = Matcher.quoteReplacement(testFolder.getPath() + "/kb/");
+        String IRI_KB = "testIRI";
 
+        Field modifiersField = Field.class.getDeclaredField( "modifiers" );
+        modifiersField.setAccessible( true );
+
+        Field test_ABSDIR_KB = BaseOntologyModelManager.class.getDeclaredField("ABSDIR_KB");
+        test_ABSDIR_KB.setAccessible(true);
+        modifiersField.setInt( test_ABSDIR_KB, test_ABSDIR_KB.getModifiers() & ~Modifier.FINAL );
+        test_ABSDIR_KB.set(null, ABSDIR_KB);
+
+        Field test_ABSDIR_KB_TEST = BaseOntologyModelManager.class.getDeclaredField("ABSDIR_KB_TEST");
+        test_ABSDIR_KB_TEST.setAccessible(true);
+        modifiersField.setInt( test_ABSDIR_KB_TEST, test_ABSDIR_KB_TEST.getModifiers() & ~Modifier.FINAL );
+        test_ABSDIR_KB_TEST.set(null, ABSDIR_KB_TEST);
+
+        Field test_IRI_KB = BaseOntologyModelManager.class.getDeclaredField("IRI_KB");
+        test_IRI_KB.setAccessible(true);
+        modifiersField.setInt( test_IRI_KB, test_IRI_KB.getModifiers() & ~Modifier.FINAL );
+        test_IRI_KB.set(null, IRI_KB);
 
         File file1 = new File(ABSDIR_KB_TEST + "/ships/testMmsi/Chimney-1.owl");
-        File file2 =
+        File file2 = new File(testFolder.getPath() + "/testIRI/test.owl");
 
 //        File testFolder= folder.newFolder("testIRI/test");
 
@@ -92,20 +112,37 @@ public class BaseOntologyModelManagerTest {
             testR.addProperty(VCARD.FN, testData[i]);
         }
 
-        String testIRI = testFolder.getPath() + "/testIRI#test";
+        String testIRI = testFolder.getPath() + "/testIRI/test.owl#test";
         String testMmsi = "testMmsi";
 
         MockedStatic<AgentLocator> mockA = Mockito.mockStatic(AgentLocator.class);
 
-        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(false);
-        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
-        Assert.assertTrue(testFolder.exists());
-
         mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(true);
         BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
         Assert.assertTrue(file1.exists());
+        OntModel readModel1 = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        readModel1.read(file1.getPath());
+        String sparql = "SELECT ?z WHERE{<http://somewhere/test1> ?y ?z}";
+        ResultSet testrs = BaseOntologyModelManager.query(sparql, readModel1);
+        String testRes = "";
+        while (testrs.hasNext()) {
+            QuerySolution qs = testrs.nextSolution();
+            testRes = testRes + qs.get("z").toString() + "\n";
+        }
+        Assert.assertEquals("test1\n", testRes);
 
-
+        mockA.when(AgentLocator::isJPSRunningForTest).thenReturn(false);
+        BaseOntologyModelManager.saveToOwl(testM, testIRI, testMmsi);
+        Assert.assertTrue(file2.exists());
+        OntModel readModel2 = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        readModel2.read(file2.getPath());
+        testrs = BaseOntologyModelManager.query(sparql, readModel2);
+        testRes = "";
+        while (testrs.hasNext()) {
+            QuerySolution qs = testrs.nextSolution();
+            testRes = testRes + qs.get("z").toString() + "\n";
+        }
+        Assert.assertEquals("test1\n", testRes);
    }
 
     @Test
