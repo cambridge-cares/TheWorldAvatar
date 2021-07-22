@@ -52,6 +52,7 @@ gevent==1.5.0
 graphviz==0.14.1
 greenlet==0.4.16
 grpcio==1.30.0
+gunicorn==20.0.4 
 h11==0.8.1
 h2==3.2.0
 h5py==2.10.0
@@ -130,6 +131,7 @@ pytz==2019.3
 pywin32==228;sys_platform == 'win32'
 PyYAML==5.3.1
 questionary==1.5.2
+rapidfuzz==1.4.1
 rasa==1.10.8
 rasa-sdk==1.10.2
 rdflib==5.0.0
@@ -192,5 +194,6 @@ wolframalpha==4.0.0
 wordcloud==1.7.0
 wrapt==1.12.1
 xmltodict==0.12.0
+yagmail==0.14.256
 yarl==1.5.0
 zipp==3.1.0
