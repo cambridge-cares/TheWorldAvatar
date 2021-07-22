@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -61,10 +62,12 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
 	private String tranModel = "mix-average";
-	private List<Double> v = new ArrayList<>();  
 	private List<Double> averageInputVars = new ArrayList<>();
 	private List<Double> averageOutputVars = new ArrayList<>();
 	
+	private List<List<Double>> outputListAveMaxMin_InputVars = new ArrayList<List<Double>>();
+	private List<List<Double>> outputListAveMaxMin_OutputVars = new ArrayList<List<Double>>();
+		
 	public String getTranModel() {
 		return tranModel;
 	}
@@ -92,8 +95,8 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// -------------------------------------------Read from csv-----------------------------------------------------
 
 		String csvPathFolder = "C:\\Users\\ddeme\\Desktop\\AM_OT_csv_files\\WorldAvatar_DataDrivenAgent_csv_file";
-		String csvFileNameInput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_INPUTS.csv";
-		String csvFileNameOutput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_OUTPUTS.csv";
+		String csvFileNameInput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_INPUTS_v1.csv";
+		String csvFileNameOutput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_OUTPUTS_v1.csv";
 
 		String csvPathFileInput = csvPathFolder + "\\" + csvFileNameInput; 
 		String csvPathFileOutput = csvPathFolder + "\\" + csvFileNameOutput; 
@@ -115,10 +118,12 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// ----------------   Create the files in the 'Initial' directory ------------------------------------------------
 		
 		// Create 'MODS_SIM_INITFILE__AIVarInitReadFile.csv' file
-		averageInputVars = createAIVarInitReadFile(csvArrayInput, folderInitialPath);
+		outputListAveMaxMin_InputVars = createAIVarInitReadFile(csvArrayInput, folderInitialPath);
+		averageInputVars = outputListAveMaxMin_InputVars.get(0);
 		// Create 'MODS_SIM_INITFILE__cases.csv' file
-		averageOutputVars = createCasesFile(csvArrayOutput, folderInitialPath);
-	    
+		outputListAveMaxMin_OutputVars = createCasesFile(csvArrayOutput, folderInitialPath);
+		averageOutputVars = outputListAveMaxMin_InputVars.get(0);
+
 		
 		modelFiles.add("MODS_SIM_INITFILE__cases.csv");
 		modelFiles.add("MODS_SIM_INITFILE__AIVarInitReadFile.csv");
@@ -145,7 +150,7 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		
 		// set the values of the initial file (average values for each variable)
 		modsSurrogate.setInputVarsAve(averageInputVars);
-		modsSurrogate.setOutputVarsAve(averageInputVars);
+		modsSurrogate.setOutputVarsAve(averageOutputVars);
 
 		
 		
@@ -494,6 +499,26 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 	    return sum / values_doubleList.size();
 	}
 	
+	private List<Double> calculateMaxMin(List<String[]> csv_array, int n) {
+		
+		List<String> column = new ArrayList<String>();
+
+		for(int i = 1; i < csv_array.size(); i++ ) {
+		    column.add(csv_array.get(i)[n]);		    
+		}
+		
+		List<Double> values_doubleList = new ArrayList<Double>();
+		
+		for(String s : column) values_doubleList.add(Double.parseDouble(s));
+		
+		Double maxVal = Collections.max(values_doubleList);
+		Double minVal = Collections.min(values_doubleList);
+
+		List<Double> listMaxMin = Arrays.asList(maxVal, minVal);
+		
+	    return listMaxMin;
+	}
+	
 	private LinkedHashMap<String, String> createDataAlgorithFiles(List<String[]> csvArray, String pathDataAlgorithm) throws IOException {
 		int numVars = csvArray.get(0).length;
 		int numCases = csvArray.size();
@@ -518,10 +543,12 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 	}
 	
 	
-	private List<Double> createAIVarInitReadFile(List<String[]> csvArray, String pathInitial) throws IOException {
+	private List<List<Double>> createAIVarInitReadFile(List<String[]> csvArray, String pathInitial) throws IOException {
 
 		List<Double> average_list = new ArrayList<>();  
-
+		List<Double> max_list = new ArrayList<>(); 
+		List<Double> min_list = new ArrayList<>(); 
+		
 		int numVars = csvArray.get(0).length;
 		
 		File initialFile_AIVarInitReadFile = new File(pathInitial + "\\" + "MODS_SIM_INITFILE__AIVarInitReadFile.csv");
@@ -542,16 +569,29 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			Object aveVar = calculateAverage(csvArray, i);
 		    aiVarInitWriter.write("," + aveVar);
 		    average_list.add((Double) aveVar);
+		    
+		    List<Double> listMaxMin = calculateMaxMin(csvArray, i);
+			max_list.add(listMaxMin.get(0));
+			min_list.add(listMaxMin.get(1));
+
 	    }
 	    aiVarInitWriter.close();
 	    
-	    return average_list;
+	    List<List<Double>> outputListAveMAxMin = new ArrayList<List<Double>>();
+	    
+	    outputListAveMAxMin.add(average_list);
+	    outputListAveMAxMin.add(max_list);
+	    outputListAveMAxMin.add(min_list);
+
+	    return outputListAveMAxMin;
 	}
 	
-	private List<Double> createCasesFile(List<String[]> csvArray, String pathInitial) throws IOException {
+	private List<List<Double>> createCasesFile(List<String[]> csvArray, String pathInitial) throws IOException {
 		
 		List<Double> average_list = new ArrayList<>();  
-
+		List<Double> max_list = new ArrayList<>(); 
+		List<Double> min_list = new ArrayList<>(); 
+		
 		int numVars = csvArray.get(0).length;
 		
 		File initialFile_cases = new File(pathInitial + "\\" + "MODS_SIM_INITFILE__cases.csv");
@@ -572,10 +612,20 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			Object aveVar = calculateAverage(csvArray, i);
 		    aiVarInitWriter.write("," + aveVar);
 		    average_list.add((Double) aveVar);
+		    
+		    List<Double> listMaxMin = calculateMaxMin(csvArray, i);
+			max_list.add(listMaxMin.get(0));
+			min_list.add(listMaxMin.get(1));
 	    }
 	    aiVarInitWriter.close();
 	    
-	    return average_list;
+	    List<List<Double>> outputListAveMAxMin = new ArrayList<List<Double>>();
+	    
+	    outputListAveMAxMin.add(average_list);
+	    outputListAveMAxMin.add(max_list);
+	    outputListAveMAxMin.add(min_list);
+
+	    return outputListAveMAxMin;
 	}
 
 	private void createModsInputsFile(List<String[]> csvArray, String pathWorkingDir) throws IOException {
@@ -697,16 +747,19 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			
-			double averageVariableInitial= averageInputVars.get(Integer.parseInt(activeParameters.get(i)) - 1);
-			
+			double maxVariableInitial= outputListAveMaxMin_InputVars.get(1).get(Integer.parseInt(activeParameters.get(i)) - 1);
+			double minVariableInitial= outputListAveMaxMin_InputVars.get(2).get(Integer.parseInt(activeParameters.get(i)) - 1);
+
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("column", i);
 			initialRead.put("row", "0");
 			initialRead.put("file_name", "MODS_SIM_INITFILE__AIVarInitReadFile.csv");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_abs", String.valueOf(averageVariableInitial * 0.9));
-			initialRead.put("ub_abs", String.valueOf(averageVariableInitial * 1.1));
+			initialRead.put("lb_abs", String.valueOf(minVariableInitial));
+			initialRead.put("ub_abs", String.valueOf(maxVariableInitial));
+			//initialRead.put("lb_abs", String.valueOf(averageVariableInitial * 0.9));
+			//initialRead.put("ub_abs", String.valueOf(averageVariableInitial * 1.1));
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
 			param.setFileHash(fileHash);
@@ -725,7 +778,8 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			
-			double averageVariableInitial= averageOutputVars.get(outputResponses.indexOf(i));
+			double maxVariableInitial= (outputListAveMaxMin_OutputVars.get(1)).get(outputResponses.indexOf(i));
+			double minVariableInitial= (outputListAveMaxMin_OutputVars.get(2)).get(outputResponses.indexOf(i));
 			
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
@@ -735,8 +789,8 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			initialRead.put("read_function", "Get_DSV_double");
 			initialRead.put("lb_factor", "1");
 			initialRead.put("ub_factor", "1");
-			initialRead.put("lb_abs", String.valueOf(averageVariableInitial * 0.9));
-			initialRead.put("ub_abs", String.valueOf(averageVariableInitial * 1.1));
+			initialRead.put("lb_added", String.valueOf(minVariableInitial));
+			initialRead.put("ub_added", String.valueOf(maxVariableInitial));
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
 			param.setFileHash(fileHash);
