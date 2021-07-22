@@ -26,16 +26,6 @@ RUN tar -xvzf geckodriver*.gz
 FROM python:3.7-slim-buster as app
 
 WORKDIR /app
-#WORKDIR /usr/local/jps-chatbot
-
-COPY jps-chatbot/requirements.txt .
-
-# Setup venv and install requirements
-# (Prepending the venv location to 'PATH' is simpler and more robust than activating the venv)
-ENV VENV_PATH=/app/venv
-RUN python -m venv $VENV_PATH
-ENV PATH="$VENV_PATH/bin:$PATH"
-RUN pip install -r requirements.txt
 
 RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list \
     && apt-get update \
@@ -48,14 +38,24 @@ COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikida
 COPY --from=dependency_fetcher /root/dependencies/model_jps ./UI/source/JPS_Query
 COPY --from=dependency_fetcher /root/geckodriver /usr/local/bin
 
+# Setup venv
+# (Prepending the venv location to 'PATH' is simpler and more robust than activating the venv)
+ENV VENV_PATH=/app/venv
+RUN python -m venv $VENV_PATH
+ENV PATH="$VENV_PATH/bin:$PATH"
+
+# Install requirements
+COPY jps-chatbot/requirements.txt .
+RUN pip install -r requirements.txt
+
 # Download NLTK data
 RUN python -c "import nltk; nltk.download('stopwords'); nltk.download('punkt')"
 
 # Add all source code; might be able to copy less here
 ADD jps-chatbot .
 
-ENTRYPOINT  ["gunicorn", "--bind", "0.0.0.0:5000", "UI:app"]
-#ENTRYPOINT ["tail", "-f", "/dev/null"]
+# ENTRYPOINT  ["gunicorn", "--bind", "0.0.0.0:5000", "UI:app"]
+ENTRYPOINT ["tail", "-f", "/dev/null"]
 
 # #==================================================F================================================
 # # Set the locale to UK 
