@@ -23,18 +23,43 @@ from rdflib.namespace import DC, DCTERMS, DOAP, FOAF, SKOS, OWL, RDF, RDFS, VOID
 import os
 import pickle
 
+namespace = 'http://localhost:9999/blazegraph/namespace/ontogasgrid/sparql'
 
-# QUERYING TEMPERATURES 
-def region_temp_query(limit):
-    '''
-    Querying the KG for all regions gas-usages in 2019 
-    '''
+def standard_query(query,namespace,limit):
     if limit == False:
         limit = str(10000000000)
     limit = str(limit)
     # clearing terminal
     os.system('clear')
-    
+    LOCAL_KG_SPARQL = namespace
+    # Querying using SPARQLWrapper for now
+    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+    sparql.setMethod(POST) # POST query, not GET
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    print('Starting Query...')
+    start = time.time()
+    ret = sparql.query().convert()
+    end = time.time()
+    print('Finished in a time of ',np.round(end-start,3),' seconds')
+    # parsing JSON into an array 
+    values = ret['results']['bindings']
+    head = ret['head']['vars']
+    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
+    res_array[0,:] = head
+    i = 1
+    print('Parsing result of length '+str(len(res_array)))
+    for row in tqdm(values):
+        j = 0 
+        for val in row.values():
+            res_array[i,j] = val['value']
+            j += 1 
+        i += 1 
+    usage_vals = res_array[1:,:]
+    return usage_vals
+
+# QUERYING TEMPERATURES 
+def region_temp_query(limit):
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
@@ -56,35 +81,7 @@ def region_temp_query(limit):
     ?oval om:hasNumericalValue ?t.
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA Temperature Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limit=False)
     return usage_vals
 
 # QUERYING GAS CONSUMPTION
@@ -92,12 +89,6 @@ def region_usage_query(limit):
     '''
     Querying the KG for all regions gas-usages in 2019 
     '''
-    if limit == False:
-        limit = str(10000000000)
-    limit = str(limit)
-    # clearing terminal
-    os.system('clear')
-    
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
@@ -116,35 +107,7 @@ def region_usage_query(limit):
     ?enval om:hasNumericalValue ?usage.
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA Gas Usage Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limit=False)
     return usage_vals
 
 # QUERY ELECTRICY CONSUMPTION 
@@ -152,12 +115,6 @@ def region_elec_usage_query(limit):
     '''
     Querying the KG for all regions elec-usages in 2019 
     '''
-    if limit == False:
-        limit = str(10000000000)
-    limit = str(limit)
-    # clearing terminal
-    os.system('clear')
-    
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
@@ -176,35 +133,7 @@ def region_elec_usage_query(limit):
     ?enval om:hasNumericalValue ?usage.
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA Electricity Usage Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limi=False)
     return usage_vals
 
 # QUERYING GAS METERS
@@ -212,12 +141,6 @@ def region_meters_query(limit):
     '''
     Querying the KG for all regions gas meters in 2019 
     '''
-    if limit == False:
-        limit = str(10000000000)
-    limit = str(limit)
-    # clearing terminal
-    os.system('clear')
-    
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
@@ -236,35 +159,7 @@ def region_meters_query(limit):
      ?met gg:hasNonConsumingGasMeters ?non
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA Gas Usage Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limit=False)
     return usage_vals
 
 # QUERYING ELECTRICTY METERS
@@ -272,12 +167,6 @@ def region_elec_meters_query(limit):
     '''
     Querying the KG for all regions electricity meters in 2019 
     '''
-    if limit == False:
-        limit = str(10000000000)
-    limit = str(limit)
-    # clearing terminal
-    os.system('clear')
-    
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
@@ -295,35 +184,7 @@ def region_elec_meters_query(limit):
      ?met gg:hasConsumingElecMeters ?con.
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA Gas Usage Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limit=False)
     return usage_vals
 
 # QUERYING FUEL POVERTY (GET % AS AN OUTPUT HERE)
@@ -332,12 +193,6 @@ def region_fuel_pov_query(limit):
     Querying the KG for all regions fuel poverty in 2019 
     households and fuel poor households
     '''
-    if limit == False:
-        limit = str(10000000000)
-    limit = str(limit)
-    # clearing terminal
-    os.system('clear')
-    
     query='''
 
             PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -356,35 +211,7 @@ def region_fuel_pov_query(limit):
      ?houses ofp:numberofhouseholds ?b.
     }
     '''
-    DEF_NAMESPACE = 'ontogasgrid'
-    LOCAL_KG = "http://localhost:9999/blazegraph"
-    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-    # Querying using SPARQLWrapper for now
-    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-    sparql.setMethod(POST) # POST query, not GET
-    sparql.setQuery(query)
-    sparql.setReturnFormat(JSON)
-    print('Starting LSOA fuel poverty Query...')
-    start = time.time()
-    ret = sparql.query().convert()
-    end = time.time()
-    print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-    # parsing JSON into an array 
-    values = ret['results']['bindings']
-    head = ret['head']['vars']
-    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-    res_array[0,:] = head
-    i = 1
-    print('Parsing result of length '+str(len(res_array)))
-    for row in tqdm(values):
-        j = 0 
-        for val in row.values():
-            res_array[i,j] = val['value']
-            j += 1 
-        i += 1 
-
-    usage_vals = res_array[1:,:]
+    usage_vals = standard_query(query,namespace,limit=False)
     return usage_vals
 
 
@@ -395,6 +222,18 @@ def region_fuel_pov_query(limit):
 # --------------------------------#
 
 testing = True # True for pickle, False for query
+def call_pickle(pathname):
+    infile = open(pathname,'rb')
+    results = pickle.load(infile)
+    infile.close()
+    return results
+
+def save_pickle(query,pathname):
+    results = query(limit=False)
+    outfile = open(pathname,'wb')
+    pickle.dump(results,outfile)
+    outfile.close()
+    return results
 
 filename = 'pickle_files/temp_array'
 gas_filename = 'pickle_files/gas_array'
@@ -403,56 +242,22 @@ elec_filename = 'pickle_files/elec_array'
 elec_meters_filename = 'pickle_files/elec_meters_array'
 fuel_poor_filename = 'pickle_files/fuel_poor'
 if testing == True: 
-    infile = open(filename,'rb')
-    all_results = pickle.load(infile)
-    infile.close()
-    infile = open(gas_filename,'rb')
-    gas_results = pickle.load(infile)
-    infile.close()
-    infile = open(meters_filename,'rb')
-    meters_results = pickle.load(infile)
-    infile.close()
-    infile = open(elec_filename,'rb')
-    elec_results = pickle.load(infile)
-    infile.close()
-    infile = open(elec_meters_filename,'rb')
-    elec_meters_results = pickle.load(infile)
-    infile.close()
-    infile = open(fuel_poor_filename,'rb')
-    fuel_poor_results = pickle.load(infile)
-    infile.close()
+    all_results = call_pickle(filename)
+    gas_results = call_pickle(gas_filename)
+    meters_results = call_pickle(meters_filename)
+    elec_results = call_pickle(elec_filename)
+    elec_meters_results = call_pickle(elec_meters_filename)
+    fuel_poor_results = call_pickle(fuel_poor_filename)
 else:
-    all_results = region_temp_query(limit=False)
-    outfile = open(filename,'wb')
-    pickle.dump(all_results,outfile)
-    outfile.close()
+    all_results = save_pickle(region_temp_query,filename)
+    gas_results = save_pickle(region_usage_query,gas_filename)
+    meters_results = save_pickle(region_meters_query,filename)
+    elec_results = save_pickle(region_elec_usage_query,elec_filename)
+    elec_meters_results = save_pickle(region_elec_meters_query,elec_meters_filename)
+    fuel_poor_results = save_pickle(region_fuel_pov_query,fuel_poor_filename)
 
-    gas_results = region_usage_query(limit=False)
-    outfile = open(gas_filename,'wb')
-    pickle.dump(gas_results,outfile)
-    outfile.close()
 
-    meters_results = region_meters_query(limit=False)
-    outfile = open(meters_filename,'wb')
-    pickle.dump(meters_results,outfile)
-    outfile.close()
-
-    elec_results = region_elec_usage_query(limit=False)
-    outfile = open(elec_filename,'wb')
-    pickle.dump(elec_results,outfile)
-    outfile.close()
-
-    elec_meters_results = region_elec_meters_query(limit=False)
-    outfile = open(elec_meters_filename,'wb')
-    pickle.dump(elec_meters_results,outfile)
-    outfile.close()
-
-    fuel_poor_results = region_fuel_pov_query(limit=False)
-    outfile = open(fuel_poor_filename,'wb')
-    pickle.dump(fuel_poor_results,outfile)
-    outfile.close()
-
-# Function to query and plot temperature values for a given LSOA
+# function to query and plot temperature values for a given LSOA
 def plot_LSOA_temps(LSOA):
     query='''
     PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -533,7 +338,6 @@ def plot_LSOA_temps(LSOA):
     plt.legend()
     plt.show()
     return 
-
 #plot_LSOA_temps('S01011468')
 
 
@@ -722,10 +526,10 @@ for i in range(len(elec_tensor)):
         monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
 
 # define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
+temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'
 # define amount of heat pump uptake 
 uptake = 0.5 
-month = 0
+month = 6
 month_str = months[month]
 
 # getting mean min or max tensor
@@ -736,7 +540,7 @@ cop_tensor = np.array(list(map(COP, temp_tensor)))
 hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
 # calculating leftover gas 
 resulting_gas_tensor = monthly_gas_tensor  * uptake
-
+# calculating resulting electricity 
 resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
 
@@ -800,15 +604,9 @@ def query_poly(limit):
 # importing pickle file if testing but querying from KG if not 
 shapes_filename = 'pickle_files/shapes_array'
 if testing == True:
-    infile = open(shapes_filename,'rb')
-    LSOA_shapes = pickle.load(infile)
-    infile.close()
+    LSOA_shapes = call_pickle(shapes_filename)
 else:
-    LSOA_shapes = query_poly(limit=False)
-    #-----------------# 
-    outfile = open(shapes_filename,'wb')
-    pickle.dump(LSOA_shapes,outfile)
-    outfile.close()
+    LSOA_shapes = save_pickle(query_poly,shapes_filename)
 
 # check if WKT is valid and 
 # uploading polygons to Shapely to reduce precision to 5 DP (1m)
@@ -836,15 +634,15 @@ LSOA_shapes = dict(LSOA_shapes)
 # sure the values are in the right place
 
 # preallocating memory 
-gas_values = np.zeros(len(hp_in_tensor[:,1]))
-elec_values = np.zeros(len(hp_in_tensor[:,1]))
-remaining_elec_values = np.zeros(len(hp_in_tensor[:,1]))
-remaining_gas_values = np.zeros(len(hp_in_tensor[:,1]))
-temp_values = np.zeros(len(hp_in_tensor[:,1]))
-poverty_values = np.zeros(len(hp_in_tensor[:,1]))
-delta_elec_values = np.zeros(len(hp_in_tensor[:,1]))
-shapes_of_interest = np.zeros(len(hp_in_tensor[:,1]),dtype='object')
-cop_values = np.zeros(len(hp_in_tensor[:,1]),dtype='object')
+gas_values            = np.zeros(len(hp_in_tensor[:,1]))
+elec_values           = np.zeros_like(gas_values)
+remaining_elec_values = np.zeros_like(gas_values)
+remaining_gas_values  = np.zeros_like(gas_values)
+temp_values           = np.zeros_like(gas_values)
+poverty_values        = np.zeros_like(gas_values)
+delta_elec_values     = np.zeros_like(gas_values)
+shapes_of_interest    = np.zeros_like(gas_values,dtype='object')
+cop_values            = np.zeros_like(gas_values,dtype='object')
 
 
 # going over all the gas values
@@ -877,49 +675,62 @@ df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
 df['geom_str'] = list([str(x) for x in shapes_of_interest])
 # properties 
 df['delta_elec'] = list(delta_elec_values)
-df['gas'] = list(np.around(gas_values,decimals=3))
-df['elec'] = list(np.around(elec_values,decimals=3))
-df['temp'] = list(np.around(temp_values,decimals=3))
-df['cop'] = list(cop_values)
-df['fuel_poor_percen'] = list(np.around(poverty_values,decimals=3))
-df['remaining_gas'] = list(np.around(remaining_gas_values,decimals=3))
-df['remaining_elec'] = list(np.around(remaining_elec_values,decimals=3))
+df['gas']    = list(np.around(gas_values,decimals=3))
+df['elec']   = list(np.around(elec_values,decimals=3))
+df['temp']   = list(np.around(temp_values,decimals=3))
+df['cop']    = list(cop_values)
+df['fuel_poor_percen'] = list(np.around(100*poverty_values,decimals=3))
+df['remaining_gas']    = list(np.around(remaining_gas_values,decimals=3))
+df['remaining_elec']   = list(np.around(remaining_elec_values,decimals=3))
 # specifying geodata frame
 my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
-
-
-
+my_geo_df = my_geo_df.set_crs("EPSG:4326")
+print('Converting to Mercator projection (better than WGS84 for UK)')
+my_geo_df = my_geo_df.to_crs("EPSG:3395")
+print('Change of projection completed!')
 plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif')
 import os
-print(os.environ['PATH'])
 
-vars = ['temp','gas','elec','cop','fuel_poor_percen']
-var_names = ['Mean Air Temperature','Gas Consumption','Electricity Consumption','Coefficient of Performance','Fuel Poverty']
-units = ['°C','kWh','kWh','-','%']
-def plot_variables(vars,var_names,units):
-    fig,axs = plt.subplots(1,len(vars),figsize=(5*len(vars),5))
-    plt.subplots_adjust(wspace=0.31,left=0.074,right=0.93)
+vars      = ['temp','gas','elec','cop','fuel_poor_percen']
+var_names = ['Mean Air Temperature (°C)','Gas Consumption (kWh)','Electricity Consumption(kWh)','Coefficient of Performance (-)','''Fuel Poverty (%)''']
+def plot_variables(vars,var_names):
+    print('Beginning plot...')
+    color_theme = 'coolwarm'
+    fig,axs = plt.subplots(1,len(vars),figsize=(3*len(vars),5))
+    plt.subplots_adjust(wspace=0,left=0.0,right=1)
     for i in range(len(vars)):
         divider = make_axes_locatable(axs[i])
-        cax1 = divider.append_axes("right", size="5%", pad=0.05)
-        tl = my_geo_df.plot(column=vars[i],cmap='coolwarm',antialiased=False,ax=axs[i],legend=True,cax=cax1,legend_kwds={'label':units[i]})
+        cax1    = divider.append_axes("right", size="5%", pad=0.05)
+        tl      = my_geo_df.plot(column=vars[i],cmap=color_theme,\
+            antialiased=False,\
+            ax=axs[i],\
+            legend=True,\
+            cax=cax1)
+        axs[i].set_xticks([])
+        axs[i].set_yticks([])
         axs[i].set_title(var_names[i])
-        axs[i].set_xlabel('Longitude')
-        axs[i].set_ylabel('Latitude')
-        axins2 = zoomed_inset_axes(axs[i], zoom=6, loc=1)
+        # axs[i].set_xlabel('Longitude')
+        # axs[i].set_ylabel('Latitude')
+        axins2 = zoomed_inset_axes(axs[i], zoom=4, loc=1)
         plt.setp(axins2.get_xticklabels(), visible=False)
         plt.setp(axins2.get_yticklabels(), visible=False)
-        axins2.set_xlim(-2.5,-2)
-        axins2.set_ylim(53.4,53.9)
-        my_geo_df.plot(column=vars[i],cmap='coolwarm',antialiased=False,ax=axins2)
+        axins2.set_xticks([])
+        axins2.set_yticks([])
+        axins2.set_ylim(7.025E6,7.175E6)
+        axins2.set_xlim(-300000,-180000)
+        my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
         mark_inset(axs[i],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
     plt.show()
+    return 
 
-plot_variables(vars,var_names,units)
+plot_variables(vars,var_names)
 
 geojson_creation = False 
 if geojson_creation == True:
+    # making sure we're in WGS84
+    print('Projecting to WGS84')
+    my_geo_df = my_geo_df.to_crs("EPSG:4326")
     # Parsing information into a geoJSON file
     # Each LSOA is represented with associated
     # properties are key values that we should plot
