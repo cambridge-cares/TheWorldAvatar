@@ -16,7 +16,7 @@ def obConvert(inputMol, inputMolFormat, outputMolFormat, options=None):
 
     mol = openbabel.OBMol()
     obConversion.ReadString(mol, inputMol)
-    mol = obConversion.WriteString(mol).rstrip("\n")
+    mol = obConversion.WriteString(mol).rstrip()
     return mol
 
 def obConvertWrapper(inputMol, inputMolFormat, outputMolFormat, convOptions=None, outFile=None, silent=False):
