@@ -120,6 +120,9 @@ def xyzToAtomsPositions(xyzFileOrStr):
     if molFragsDetect is not None:
         print('Warning: Provided xyz file contains two molecular fragments:',chemFormula)
 
+    # check for duplicates!
+    #atomsPositionsList = list(atomsPositions.values())
+
     return atomsPositions
 
 def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
