@@ -51,7 +51,10 @@ public class TimeSeriesSparql {
     private static final Iri hasTimeSeries = prefix_ontology.iri("hasTimeSeries");
     private static final Iri hasRDB = prefix_ontology.iri("hasRDB");
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
-    
+
+    // Fields for class specific exceptions
+	private final String exceptionPrefix = this.getClass().toString() + ": ";
+
     /**
      * Standard constructor
      * @param kbClient: The knowledge base client used to query and update the knowledge base containing timeseries information
@@ -76,20 +79,18 @@ public class TimeSeriesSparql {
     public boolean checkTimeSeriesExists(String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "TimeSeries"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
 	/**
-	 * Check whether a particular data IRI exists
+	 * Check whether a particular data IRI is attached to a time series
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if an instance with the IRI exists, false otherwise
 	 */
     public boolean checkDataExists(String dataIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
 	/**
@@ -97,11 +98,10 @@ public class TimeSeriesSparql {
 	 * @param tsIRI: timeseries IRI provided as string
 	 * @return True if an the timeseries instance has a defined time unit, false otherwise
 	 */
-    public boolean checkTimeUnitExists(String tsIRI) {
+    private boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
     /**
@@ -120,9 +120,21 @@ public class TimeSeriesSparql {
 		if (Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(timeSeriesIRI).matches()) {
 			tsIRI = iri(timeSeriesIRI);
 		} else {
-			throw new JPSRuntimeException("TimeSeriesSparql: Time series IRI does not have valid IRI format");
+			throw new JPSRuntimeException(exceptionPrefix + "Time series IRI does not have valid IRI format");
 		}
-    	
+
+		// Check that the time series IRI is not yet in the Knowledge Graph
+		if (checkTimeSeriesExists(timeSeriesIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " IRI already in the Knowledge Graph");
+		}
+		// Check that the data IRIs are not attached to a different time series IRI already
+		for (String iri: dataIRI) {
+			String ts = getTimeSeries(iri);
+			if(!(ts == null)) {
+				throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + iri + " is already attached to time series " + ts);
+			}
+		}
+
     	ModifyQuery modify = Queries.MODIFY();
 
     	// set prefix declarations
@@ -165,9 +177,7 @@ public class TimeSeriesSparql {
     	query.select(count).where(querypattern);
     	kbClient.setQuery(query.getQueryString());
     	
-    	int queryresult = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
-    	
-    	return queryresult;
+    	return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
 	}
 	
     /**
