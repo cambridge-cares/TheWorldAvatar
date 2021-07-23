@@ -79,20 +79,18 @@ public class TimeSeriesSparql {
     public boolean checkTimeSeriesExists(String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "TimeSeries"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
 	/**
-	 * Check whether a particular data IRI exists
+	 * Check whether a particular data IRI is attached to a time series
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if an instance with the IRI exists, false otherwise
 	 */
     public boolean checkDataExists(String dataIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
 	/**
@@ -103,8 +101,7 @@ public class TimeSeriesSparql {
     private boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
     	kbClient.setQuery(query);
-    	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
-    	return timeSeriesExists;
+    	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
     /**
@@ -180,9 +177,7 @@ public class TimeSeriesSparql {
     	query.select(count).where(querypattern);
     	kbClient.setQuery(query.getQueryString());
     	
-    	int queryresult = kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
-    	
-    	return queryresult;
+    	return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
 	}
 	
     /**
