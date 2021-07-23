@@ -3,8 +3,11 @@ package uk.ac.cam.cares.derivedagent.example;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
+import java.util.Random;
 import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +22,7 @@ import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
@@ -55,6 +59,7 @@ public class InitialisingAgent extends JPSAgent{
     	String input = sparqlClient.createInputData();
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
+    	createTimeSeries(input, storeClient);
     	LOGGER.info("created input " + input);
     	
     	String mintime = sparqlClient.createMinTime(0);
@@ -129,6 +134,13 @@ public class InitialisingAgent extends JPSAgent{
     	tsClient.initTimeSeriesTable(Arrays.asList(input_iri), Arrays.asList(Integer.class), tsIRI);
     	
     	// create a new time series object with random numbers
+    	Random rand = new Random();
+    	List<Integer> time_column = Arrays.asList(rand.nextInt(),rand.nextInt());
+    	List<List<?>> values = new ArrayList<>();
+    	List<Integer> value_column = Arrays.asList(rand.nextInt(),rand.nextInt());
+    	values.add(value_column);
+    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(input_iri), values);
     	
+    	tsClient.addTimeSeriesData(ts);
     }
 }
