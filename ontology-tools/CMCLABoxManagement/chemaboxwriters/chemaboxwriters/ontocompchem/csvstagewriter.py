@@ -5,15 +5,12 @@ Created on Fri Jul 16 12:22:29 2021
 @author: angir
 """
 
-import uuid
 import json
-import os
 import csv
 from io import StringIO
-from openbabel import openbabel
-#from SPARQLWrapper import SPARQLWrapper as sparql
-#from SPARQLWrapper import JSON as jsonsparql
-from chemutils.obabelutils import obConvert
+import re
+
+formula_clean_re = re.compile('(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)')
 
 comp_pref = 'http://www.theworldavatar.com/kb/ontocompchem/' #Prefix for instance in OntoCompChem
 data_pref = 'http://www.theworldavatar.com/data/ontocompchem/' #Prefix for data entries in OntoCompChem
@@ -29,15 +26,10 @@ unit_pref = 'http://data.nasa.gov/qudt/owl/' #NASA's unit ontology.
 
 endpoint = 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql' #Location of ontology to query from
 
-def compchem_abox_from_csv_string(data, calc_id=""):
+def compchem_csv_abox_from_string(data):
     data = json.loads(data)
-    inchi = obConvert(create_xyz(data), 'xyz','inchi')
-    #spec_IRI = get_species_iri(inchi)
-    #print(spec_IRI)
-    spec_IRI='testIRI'
-
-    if not calc_id:
-        calc_id = str(uuid.uuid4()) #Get a randomly generated identifier for creation of the ABox.
+    spec_IRI=data['spec_IRI']
+    calc_id = data['job_IRI']
 
     csvfile = StringIO(newline='')
 
@@ -65,66 +57,6 @@ def compchem_abox_from_csv_string(data, calc_id=""):
     csvfile.close()
     return csvcontent
 
-def read_json(json_file):
-    #This function uses native Python handling of JSON.
-    with open(json_file) as f:
-        data = json.load(f)
-    base=os.path.basename(json_file)
-    name = os.path.splitext(base)[0]
-    return data, name
-
-def create_xyz(data):
-    #Take the atom and geometry information in the JSON and write the XYZ string.
-    at_types = data["Atom types"]
-    geom = data["Geometry"]
-    num_ats = len(at_types)
-    xyz_coords = f"{num_ats}\n\n"
-    for a,g in zip(at_types,geom):
-        xyz_coords = f"{xyz_coords}{a} {g[0]} {g[1]} {g[2]}\n"
-    return xyz_coords
-
-#def obConvert(inputFormat, outputFormat, inputMol):
-#    #Use openbabel to convert between different molecular formats.
-#    obConversion = openbabel.OBConversion()
-#    obConversion.SetInAndOutFormats(inputFormat, outputFormat)
-#
-#    mol = openbabel.OBMol()
-#    obConversion.ReadString(mol, inputMol)
-#    mol = obConversion.WriteString(mol).strip()
-#    return mol
-
-#def query_endpoint(endpoint, query):
-#    #SPARQL query function.
-#    s = sparql(endpoint)
-#    s.setQuery(query)
-#    s.setReturnFormat(jsonsparql)
-#    results = s.query().convert()
-#    return results
-
-#def spec_inchi_query(inchi_string):
-#    query = """
-#    PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-#    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#    SELECT ?speciesIRI ?Inchi
-#    WHERE
-#    {
-#    ?speciesIRI rdf:type OntoSpecies:Species .
-#    ?speciesIRI OntoSpecies:inChI ?Inchi .
-#    FILTER REGEX(str(?Inchi), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(""" + '"' + inchi_string + '"' + """, "InChI=1S", "InChI=1"), "/t.+", ""), "/b.+", ""), "\\\\(", "\\\\\\\\("), "\\\\)", "\\\\\\\\)"), "i")
-#    }
-#    """
-#    #print(query)
-#    return query
-
-#def get_species_iri(inchi):
-#    #Query OntoSpecies to find Species IRI that corresponds to a given InChI.
-#    results  = query_endpoint(endpoint, spec_inchi_query(inchi))
-#    if results['results']['bindings']:
-#        target = results['results']['bindings'][0]['speciesIRI']['value']
-#    else:
-#        target = None
-#    return target
-
 def dict_to_list(d):
     dictlist = []
     for key, value in d.items():
@@ -134,12 +66,14 @@ def dict_to_list(d):
 
 def formula_clean(formula):
     #A function to clean up formulae (as by default, they are written with '1's, which are removed here i.e C1O2 -> CO2)
-    clean_form = formula
-    for k in range(len(formula)-1):
-        if k!=0 and formula[k] == '1' and formula[k+1].isalpha() and formula[k-1].isalpha():
-            clean_form = formula[:k] + formula[k+1:]
-    if formula[-1] == '1' and formula[-2].isalpha():
-            clean_form = clean_form[:-1]
+    # [a-zA-Z]+?(1)([a-zA-Z]+?|$) ??
+    clean_form = formula_clean_re.sub('',formula)
+    #clean_form = formula
+    #for k in range(len(formula)-1):
+    #    if k!=0 and formula[k] == '1' and formula[k+1].isalpha() and formula[k-1].isalpha():
+    #        clean_form = formula[:k] + formula[k+1:]
+    #if formula[-1] == '1' and formula[-2].isalpha():
+    #        clean_form = clean_form[:-1]
     return clean_form
 
 def write_initial(spamwriter,calc_id,spec_IRI):

@@ -71,3 +71,13 @@ def readJsonToDict(filePath):
 def jsonStringToFile(outFilePath, jsonString):
     dictData = json.loads(jsonString)
     writeDictToJson(outFilePath, dictData)
+
+def get_xyz_from_parsed_json(parsedJsonData):
+    #Take the atom and geometry information in the JSON and write the XYZ string.
+    at_types = parsedJsonData["Atom types"]
+    geom = parsedJsonData["Geometry"]
+    num_ats = len(at_types)
+    xyz_coords = f"{num_ats}\n\n"
+    for a,g in zip(at_types,geom):
+        xyz_coords = f"{xyz_coords}{a} {g[0]} {g[1]} {g[2]}\n"
+    return xyz_coords

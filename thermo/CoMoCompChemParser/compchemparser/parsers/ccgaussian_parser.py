@@ -161,7 +161,7 @@ class CcGaussianParser():
                     if jobs_nr > 1:
                         # check if the found job was successful
                         job_success = get_job_success(buffer)
-                        print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
+                        #print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
                         if job_success:
                             # set temp file name and dump read content to it
                             log_names.append(logFile + '_#' + str(jobs_nr-1))
