@@ -58,6 +58,9 @@ public class EmailAgent_Test {
     /**
      * Using the good sample request file and the properties file (to be provided by the developer),
      * this attempts to send an email using the EmailHandler class.
+     * 
+     * Note that this test will generate and email and send it if the properties file has been
+     * correctly configured to point towards an SMTP server.
      */
     @Test
     public void sendGoodTestEmail() {

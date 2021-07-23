@@ -23,14 +23,14 @@ public class EmailSender_Test {
      * towards a running instance of the EmailAgent service.
      */
     @Test
-    //@Ignore("Will not pass unless EmailAgent is running and environment variables have been set.")
+    @Ignore("Will not pass unless EmailAgent is running and environment variables have been set.")
     public void sendEmail() {
         EmailSender sender = new EmailSender();
 
         try {
             // Email contents
             String subject = "Automated email from jps-base-lib unit tests.";
-            String body = "Is the user has configured their local environment correctly, then this email"
+            String body = "If the user has configured their local environment correctly, then this email "
                     + "should be forwarded onto the EmailAgent instance for submission.";
 
             // Attempt to send an email
@@ -46,7 +46,7 @@ public class EmailSender_Test {
     /**
      * Tests that an email can be submitted to the EmailSender and is written to a local log file.
      */
-    //@Test
+    @Test
     public void writeToFile() {
         // Initialise new EmailSender
         EmailSender sender = new EmailSender();
