@@ -3,25 +3,31 @@ package uk.ac.cam.cares.jps.agent.email;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_IPS;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_ONLY;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.PatternLayout;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 /**
- * TODO - Document
+ * This EmailAgent uses the JPS Asynchronous Watcher framework and listens for incoming HTTP
+ * requests. Once a valid HTTP request has been received (and the originating source is approved),
+ * then the contents are forward onto an SMTP server (of the developer's choosing) to be dispatched
+ * as an email.
+ *
+ * A class (EmailSender) has been provided within the JPS Base Library to facilitate this. If the
+ * EmailAgent cannot be reached (or the request is not approved), then the contents are written to a
+ * local log file instead.
  *
  * @author Michael Hillman
  */
@@ -57,13 +63,7 @@ public class EmailAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        System.out.println("processRequestParameters(1)");
-        System.out.println(requestParams.toString());
-
-        JSONObject response = new JSONObject();
-        response.put("status", "500");
-        response.put("description", "Has the wrong method been called?");
-        return response;
+        return new JSONObject();
     }
 
     /**
@@ -214,32 +214,78 @@ public class EmailAgent extends JPSAgent {
             if (sourceIP == null) {
                 sourceIP = request.getRemoteAddr();
             }
-            
+
             // For testing, good to know even in production
             System.out.println("INFO: Request IP(s) reported as: " + sourceIP);
-             
+
             // Source may be multiple IPs if client was using a proxy
             if (sourceIP.contains(",")) {
                 String[] sourceIPs = sourceIP.split(",");
 
-                // How many of those IPs are in the whitelist?
-                int matches = 0;
                 for (String ip : sourceIPs) {
-                    if (allowedList.contains(ip.trim())) matches++;
+                    // Allow local requests.
+                    if (isLocalIP(ip.trim())) return true;
+
+                    // Allow if it matches at least one whitelisted ip
+                    if (allowedList.contains(ip.trim())) return true;
                 }
-
-                // If none are, return invalid
-                if (matches == 0) return false;
-
             } else {
-                if (!allowedList.contains(sourceIP.trim())) return false;
+                if (isLocalIP(sourceIP.trim())) return true;
+                if (allowedList.contains(sourceIP.trim())) return true;
             }
             
-            System.out.println("INFO: Matching IP found, approving request.");
+            return false;
         }
 
         return true;
     }
 
+    /**
+     * Returns true if the input IP should be considered a local IP.
+     *
+     * @param ipString IP Address
+     */
+    private boolean isLocalIP(String ipString) {
+        if (ipString.contains("localhost")) return true;
+        if (ipString.contains("loopback")) return true;
+        if (ipString.contains("127.0.0.1")) return true;
+        if (ipString.contains("0:0:0:0:0:0:0:1")) return true;
+
+        try {
+            boolean ipv6 = ipString.contains(":");
+            String[] parts = (ipv6) ? ipString.split(":") : ipString.split(Pattern.quote("."));
+
+            if (ipv6) {
+                // The following are considered private IPs
+                // Taken from: https://stackoverflow.com/questions/35374207/how-to-determine-if-ipv6-address-is-private
+                if (parts[0].startsWith("fc")) return true;
+                if (parts[0].startsWith("fd")) return true;
+
+                if (parts[0].equals("fe80")) return true;
+                if (parts[0].equals("fec0")) return true;
+                if (parts[0].equals("100")) return true;
+
+            } else {
+                // The following are considered private IPs
+
+                // 10.0.0.0 – 10.255.255.255 
+                if (parts[0].equals("10")) return true;
+
+                // 172.16.0.0 – 172.31.255.255
+                if (parts[0].equals("172")) {
+                    int second = Integer.parseInt(parts[1]);
+                    if (second >= 16 && second <= 31) return true;
+                }
+
+                // 192.168.0.0 – 192.168.255.255
+                if (parts[0].equals("192") && parts[0].equals("168")) return true;
+            }
+            return false;
+
+        } catch (Exception exception) {
+            System.out.println("WARN: Could not determine if '" + ipString + "' is a local address, assuming not.");
+            return false;
+        }
+    }
 }
 // End of class.

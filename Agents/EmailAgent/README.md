@@ -1,9 +1,15 @@
 # Email Agent
 
 ## Purpose
-This EmailAgent uses the JPS Asynchronous Watcher framework and listens for incoming HTTP requests. Once a valid HTTP request has been recieved (and the originating source is approved), then the contents are forward onto an SMTP server (of the developer's choosing) to be dispatched as an email. A class (EmailSender) has been provided within the JPS Base Library to facilitate this. If the EmailAgent cannot be reached (or the request is not approved), then the contents are written to a local log file instead.
+This EmailAgent uses the JPS Asynchronous Watcher framework and listens for incoming HTTP requests. Once a valid HTTP request has been received (and the originating source is approved), then the contents are forward onto an SMTP server (of the developer's choosing) to be dispatched as an email. A class (EmailSender) has been provided within the JPS Base Library to facilitate this. If the EmailAgent cannot be reached (or the request is not approved), then the contents are written to a local log file instead.
  
 Once running in a central location, this agent will allow all other developers of JPS services to send automated emails containing error reports, availablity statuses, or analytics, without each service needing to include it's own copy of the SMTP server's credentials.
+
+## Calling the Email Agent
+To make use of the Email Agent, there are two provided methods:
+
+* Use the 'sendEmail(subject, body)' method within the JPS Base Library (this is the recommended method).
+* Submit a request via a URL, this will depend on where the agent is hosted, but should contain a JSON object with 'subject' and 'body' fields encoded into a URL (e.g. 'localhost:8080/email_agent/email?query=ENCODED_JSON_STRING')
 
 ### Acceptable Use
 Please note that it is not the intention for this EmailAgent to be used to send regular debugging information, or replace the use of local logging. It is envisioned that when a JPS service encounters a fatal error (for example, no longer being able to access a KG endpoint, or external service for data acquisition), a single email should be send to alert developers that something is wrong. Developers can then investigate the offending service to view log information and stack traces.
@@ -42,8 +48,10 @@ Once the requirements have been addressed, the Image can be build using the foll
 Be aware that the VERSION tag should match the current version of the software (which is listed within the `pom.xml` file). For more information on versioning, refer to the Wiki.
 
 + To build the image:
-  + `docker build --rm --no-cache -t email-agent:1.0.0-SNAPSHOT -f docker/Dockerfile .`
+  + `docker build --rm --no-cache -t docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 8099:8080 --restart always --name "email-agent" -it email-agent:1.0.0-SNAPSHOT`
+  + `docker run -d -p 8099:8080 --restart always --name "email-agent" -it docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT`
 
-  Alternatively, the provided `docker-compose.yml` file can be used to spin up a stack containing only the EmailAgent. This can be done using the `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate` command (adding `--build` if the Image needs to be rebuilt before starting the stack).
+Alternatively, the provided `docker-compose.yml` file can be used to spin up a stack containing only the EmailAgent. This can be done using the `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate` command (adding `--build` if the Image needs to be rebuilt before starting the stack).
+
+For experienced Docker developers, a bash script  has been provided(`quick-build.sh`) that allows all stages of the build to be cached and used to speed up future builds.

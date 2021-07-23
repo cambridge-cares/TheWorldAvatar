@@ -10,7 +10,7 @@
 #########################
 
 # First stage builds the WAR file
-FROM maven:3.6-openjdk-11-slim
+FROM maven:3.6-openjdk-11-slim as build
 
 # Copy all files into root's home directory
 ADD . /root
@@ -27,7 +27,7 @@ RUN mvn package
 
 
 # Second stage grabs the WAR and runs Tomcat
-FROM tomcat:9.0
+FROM tomcat:9.0 as final
 WORKDIR /app
 
 # Copy in the properties file
@@ -38,7 +38,7 @@ ENV EMAIL_AGENT_PROPERTIES="/root/email-agent.properties"
 
 # Copy the built WAR file
 # Note here that if the WAR version changes, you'll need to update this line
-COPY --from=0 /root/email-agent-code/output/EmailAgent-1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=build /root/email-agent-code/output/email_agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Expose port 8080
 EXPOSE 8080

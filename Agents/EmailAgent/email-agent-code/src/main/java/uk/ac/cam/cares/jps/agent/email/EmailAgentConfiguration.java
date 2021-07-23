@@ -128,7 +128,7 @@ public class EmailAgentConfiguration {
             boolean whitelistOn = Boolean.parseBoolean(getProperty(KEY_WHITE_ONLY));
             
             if(whitelistOn) {
-                System.out.println("INFO: Whitelist enabled, only approving requests from following IPs...");
+                System.out.println("INFO: Whitelist enabled, only approving requests from local machine and following IPs...");
                 String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
                 
                 for(String allowedIP : allowedIPs) {
