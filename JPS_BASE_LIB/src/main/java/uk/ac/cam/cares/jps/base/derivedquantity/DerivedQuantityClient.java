@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -19,10 +21,12 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class DerivedQuantityClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs
-	public static final String AGENT_INPUT_KEY = "derived_agent_input";
-	public static final String AGENT_OUTPUT_KEY = "derived_agent_output";
+	public static final String AGENT_INPUT_KEY = "agent_input";
+	public static final String AGENT_OUTPUT_KEY = "agent_output";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(DerivedQuantityClient.class);
     
     public DerivedQuantityClient(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
@@ -93,7 +97,7 @@ public class DerivedQuantityClient {
 		try {
 			validateDerived(derived, derivedList);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.error(e.getMessage());
 			valid = false;
 		}
 		return valid;
@@ -118,6 +122,7 @@ public class DerivedQuantityClient {
 				derivedList.add(instance);
 				updateInstance(inputOrDerived, derivedList);
 			} else {
+				LOGGER.error("DerivedQuantityClient: Circular dependency detected");
 				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 			}
 		}
@@ -174,12 +179,14 @@ public class DerivedQuantityClient {
 							for (int j = 0; j < classOfNewEntities.length; i++) {
 								if (classOfNewEntities[j].contentEquals(oldTypeList.get(i))) {
 									if (matchingIndex != null) {
+										LOGGER.error("Duplicate type found within output, the DerivedQuantityClient does not support this");
 										throw new JPSRuntimeException("Duplicate type found within output, the DerivedQuantityClient does not support this");
 									}
 									matchingIndex = j;
 								}
 							}
 							if (matchingIndex == null) {
+								LOGGER.error("Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i));
 								throw new JPSRuntimeException("Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i));
 							}
 						    // reconnect
@@ -206,6 +213,7 @@ public class DerivedQuantityClient {
 				derivedList.add(instance);
 				validateDerived(inputOrDerived, derivedList);
 			} else {
+				LOGGER.error("DerivedQuantityClient: Circular dependency detected");
 				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 			}
 		}
