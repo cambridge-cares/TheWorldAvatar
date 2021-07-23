@@ -7,10 +7,22 @@ Created on Thu Mar  4 16:10:02 2021
 
 import json
 import csv
-from collections import Counter
+
 from io import StringIO
 from chemaboxwriters.ontocompchem.csvstagewriter import formula_clean
-from compchemparser.parsers.ccgaussian_parser import FORMAL_CHARGE
+from compchemparser.parsers.ccgaussian_parser import ATOM_TYPES, FORMAL_CHARGE, \
+                                                     EMP_FORMULA
+from chemaboxwriters.ontospecies.osjsonstagewriter import MOLWT, \
+                                                          INCHI, \
+                                                          SMILES, \
+                                                          GEOM_STRING, \
+                                                          BOND_STRING, \
+                                                          ATOMS_CAN_POSITIONS, \
+                                                          PUBCHEM_ALT_LABEL, \
+                                                          PUBCHEM_CAS, \
+                                                          ATOM_LIST, \
+                                                          ATOM_COUNTS, \
+                                                          ENTRY_UUID
 
 onto_spec = 'http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
 gain_pref = 'http://purl.org/gc/'
@@ -20,7 +32,7 @@ unit_pref = 'http://data.nasa.gov/qudt/owl/'
 
 def species_csv_abox_from_string(data):
     data = json.loads(data)
-    gen_id = data['job_IRI']
+    gen_id = data[ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
@@ -29,7 +41,7 @@ def species_csv_abox_from_string(data):
 
     out_id = 'Species_' + gen_id
 
-    label = formula_clean(data['Empirical formula']) #We will take the label as the molecular formula, but without any extraneous 1s.
+    label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
@@ -46,71 +58,54 @@ def species_csv_abox_from_string(data):
     csvfile.close()
     return csvcontent
 
-def geom_info(data):
-    atoms = data['Atom types']
-    coords = data['Geometry']
-    geom_out = []
-    for k in range(len(atoms)):
-        geom_out.append(atoms[k] + ' ' + str(coords[k][0]) + ' ' + str(coords[k][1]) + ' ' + str(coords[k][2]))
-    geom_string = ' '.join(geom_out)
-    return geom_string
-
-def atom_constructor(atom_list):
-    pruned_atoms = list(dict.fromkeys(atom_list))
-    c = Counter(atom_list)
-    atom_counts = [c[x] for x in pruned_atoms]
-    return pruned_atoms, atom_counts
-
 def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow([out_id, 'Instance','Species','','',''])
     spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id,'String'])
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
 
 def write_identifier_geom(spamwriter,out_id,data):
-    geom_string = geom_info(data)
-
-    if data['alt_label'] is not None:
-            spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data['alt_label'],'String'])
-    if data['casid'] is not None:
-        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data['casid'],'String'])
-    spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data['smiles'],'String'])
-    spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data['inchi'],'String'])
-    spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data['bond_string'],'String'])
-    spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',geom_string,'String'])
+    if data[PUBCHEM_ALT_LABEL] is not None:
+        spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
+    if data[PUBCHEM_CAS] is not None:
+        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[PUBCHEM_CAS],'String'])
+    spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
+    spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
+    spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
+    spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
 
 def write_atom_info(spamwriter,gen_id,out_id,data):
     count = 1
-    cur_at = data["Atom types"][0]
+    cur_at = data[ATOM_TYPES][0]
     prev_at = []
 
     coords = ['X','Y','Z'] #The three cartesian corrdinates.
-    for k in range(len(data["Atom types"])):
-        if data["Atom types"][k] != cur_at: #If we encounter a new atom, we are going to reset the counter
+    for k in range(len(data[ATOM_TYPES])):
+        if data[ATOM_TYPES][k] != cur_at: #If we encounter a new atom, we are going to reset the counter
             if prev_at:
-                if data["Atom types"][k] not in prev_at:
+                if data[ATOM_TYPES][k] not in prev_at:
                     count = 1 #If we have never seen this atom, we are going set the counter to 1.
                 else:
-                    count = prev_at.count(data["Atom types"][k]) #Otherwise, we see how many times this atom has occured previously and set the counter to that.
+                    count = prev_at.count(data[ATOM_TYPES][k]) #Otherwise, we see how many times this atom has occured previously and set the counter to that.
         #Now the atoms are written here
-        spamwriter.writerow(['Atom_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
-        spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count),gain_pref + 'hasAtom',
+        spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
+        spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),gain_pref + 'hasAtom',
                                 '',''])
-        spamwriter.writerow([onto_spec + '#hasCanonicalPosition','Data Property','Atom_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count),
-                                '',data['atoms_can_pos'][str(k)],'Integer'])
-        spamwriter.writerow(['Atom_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count), 'Instance',
-                                table_pref + '#' + data["Atom types"][k],gain_pref + 'isElement','',''])
+        spamwriter.writerow([onto_spec + '#hasCanonicalPosition','Data Property','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
+                                '',data[ATOMS_CAN_POSITIONS][str(k)],'Integer'])
+        spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
+                                table_pref + '#' + data[ATOM_TYPES][k],gain_pref + 'isElement','',''])
         for i in range(3): #Write the atom coordinates.
-            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count),
+            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
                                     'Instance',gain_pref + 'FloatValue','','',''])
-            spamwriter.writerow(['Atom_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count), 'Instance',
-                                'AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count)
+            spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
+                                'AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
                                 ,gain_pref + 'hasAtomCoordinate' + coords[i],'',''])
-            spamwriter.writerow([gain_pref + 'hasValue','Instance','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count)
+            spamwriter.writerow([gain_pref + 'hasValue','Instance','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
                                     ,'',data["Geometry"][k][i],'String'])
-            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data["Atom types"][k] + '_' + str(count),
+            spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
                                     'Instance',unit_pref + 'unit#Angstrom',gain_pref + 'hasUnit','',''])
-        prev_at.append(data["Atom types"][k]) #update previous atoms
-        cur_at = data["Atom types"][k] #update current atom
+        prev_at.append(data[ATOM_TYPES][k]) #update previous atoms
+        cur_at = data[ATOM_TYPES][k] #update current atom
         count += 1
 
 def write_charge_info(spamwriter,gen_id,out_id,data):
@@ -123,7 +118,8 @@ def write_charge_info(spamwriter,gen_id,out_id,data):
     spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
 
 def write_atoms(spamwriter,gen_id,out_id,data):
-    atom_list, atom_counts = atom_constructor(data['Atom types'])
+    atom_list = data[ATOM_LIST]
+    atom_counts = data[ATOM_COUNTS]
     for i in range(len(atom_list)):
         spamwriter.writerow(['Element_' + atom_list[i],'Instance',kin_pref + '#Element','','',''])
         spamwriter.writerow(['MolecularFormula_' + gen_id,'Instance','Element_' + atom_list[i],kin_pref + '#hasElement','',''])
@@ -134,7 +130,7 @@ def write_atoms(spamwriter,gen_id,out_id,data):
     spamwriter.writerow([out_id,'Instance',onto_spec + '#Species','','',''])
 
 def write_molwts(spamwriter,gen_id,out_id,data):
-    molwt = data['molwt']
+    molwt = data[MOLWT]
     spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
     spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
