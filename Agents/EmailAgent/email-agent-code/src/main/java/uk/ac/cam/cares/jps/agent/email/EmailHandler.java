@@ -1,13 +1,13 @@
-package com.cmclinnovations.email;
+package uk.ac.cam.cares.jps.agent.email;
 
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_FROM_ADDRESS;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_AUTH;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_HOST;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_PASS;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_PORT;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SSL_ENABLE;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SUBJECT_PREFIX;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_FROM_ADDRESS;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_AUTH;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_HOST;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PASS;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PORT;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SSL_ENABLE;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SUBJECT_PREFIX;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
 import java.util.Properties;
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -97,6 +97,8 @@ public class EmailHandler {
             // Body
             String fullBody = BODY_PREFIX + body + BODY_SUFFIX;
             email.setContent(fullBody, "text/html");
+            
+            LOGGER.info("Email content created.");
 
         } catch (MessagingException | IllegalStateException exception) {
             LOGGER.error("Could not create email message.", exception);
@@ -120,8 +122,10 @@ public class EmailHandler {
      */
     private static JSONObject sendEmail(Message email) {
         try {
+            LOGGER.info("Submitting email to SMTP server...");
             Transport.send(email);
-
+            LOGGER.info("Submission sent.");
+            
             JSONObject response = new JSONObject();
             response.put("status", "200");
             response.put("description", "Email sent successfully.");

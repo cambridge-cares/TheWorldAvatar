@@ -1,6 +1,8 @@
-package com.cmclinnovations.email;
+package uk.ac.cam.cares.jps.agent.email;
 
-import com.cmclinnovations.email.mock.MockHttpServletRequest;
+import uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.email.EmailAgent;
+import uk.ac.cam.cares.jps.agent.email.mock.MockHttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,13 +11,20 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Tests the functionality of the EmailAgent class.
  *
  * @author Michael Hillman
  */
-public class EmailAgent_Test {
+public class EmailAgent_Test extends TestBase {
+
+    /**
+     * Error logging.
+     */
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailAgent_Test.class);
 
     /**
      * Sample request data (should be valid).
@@ -61,6 +70,8 @@ public class EmailAgent_Test {
      */
     @Test
     public void sendGoodTestEmail() {
+        LOGGER.info("Running sendGoodTestEmail()...");
+
         // New agent
         EmailAgent agent = new EmailAgent();
 
@@ -80,6 +91,8 @@ public class EmailAgent_Test {
      */
     @Test
     public void sendBadTestEmail() {
+        LOGGER.info("Running sendBadTestEmail()...");
+
         // New agent
         EmailAgent agent = new EmailAgent();
 
@@ -97,6 +110,8 @@ public class EmailAgent_Test {
      */
     @Test
     public void testPing() {
+        LOGGER.info("Running testPing()...");
+
         // New agent
         EmailAgent agent = new EmailAgent();
 

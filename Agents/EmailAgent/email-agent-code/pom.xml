@@ -2,11 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.cmclinnovations</groupId>
-    <artifactId>EmailAgent</artifactId>
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>email_agent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>EmailAgent</name>
     
     <!-- Project properties -->
     <properties>
@@ -15,7 +14,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         
         <org.slf4j-version>1.6.6</org.slf4j-version>
-        <jps.base.version>1.4.0</jps.base.version>
+        <jps.base.version>1.4.0-SNAPSHOT</jps.base.version>
     </properties>
     
     <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
@@ -34,15 +33,27 @@
     <build>
         <finalName>EmailAgent</finalName>
          
+        <resources>
+            <resource>  
+                <directory>${basedir}/logging</directory>
+            </resource>
+        </resources>
+    
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.7.0</version>
                 <configuration>
                     <source>11</source>
                     <target>11</target>
                 </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
             </plugin>
             
             <plugin>
@@ -52,34 +63,10 @@
                 <version>2.22.0</version>
             </plugin>
             
-            <!-- Copies the example.properties into the expected runtime location
-            so that it can be used for testing -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>compile</phase>
-                        <configuration>
-                            <target>
-                                <copy 
-                                    file="src/test/resources/com/cmclinnovations/email/example.properties" 
-                                    tofile="${project.basedir}/email-agent.properties"/>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-      
-            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.2.2</version>
                 <configuration>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>WEB-INF\web.xml</webXml>
@@ -99,16 +86,8 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>4.0.1</version>
-            <scope>compile</scope>
+            <scope>provided</scope>
         </dependency>
-        
-        <!-- Java Mail handling
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>javax.mail-api</artifactId>
-            <version>1.6.2</version>
-        </dependency>
-        -->
         
         <dependency>
             <groupId>com.sun.mail</groupId>
@@ -136,19 +115,15 @@
             <artifactId>slf4j-api</artifactId>
             <version>${org.slf4j-version}</version>
         </dependency>
-        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${org.slf4j-version}</version>
-            <scope>runtime</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>${org.slf4j-version}</version>
-            <scope>runtime</scope>
         </dependency>
         
         <!-- Testing -->
@@ -158,11 +133,18 @@
             <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
-        
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.7.2</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Used to mock environment variables in testing -->
+        <dependency>
+            <groupId>com.github.stefanbirkner</groupId>
+            <artifactId>system-lambda</artifactId>
+            <version>1.2.0</version>
             <scope>test</scope>
         </dependency>
         

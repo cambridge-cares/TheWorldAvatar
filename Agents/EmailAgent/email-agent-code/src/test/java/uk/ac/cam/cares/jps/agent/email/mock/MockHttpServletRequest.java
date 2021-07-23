@@ -1,4 +1,4 @@
-package com.cmclinnovations.email.mock;
+package uk.ac.cam.cares.jps.agent.email.mock;
 
 import java.io.BufferedReader;
 import java.io.IOException;

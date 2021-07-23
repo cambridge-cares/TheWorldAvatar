@@ -1,10 +1,11 @@
-package com.cmclinnovations.email;
+package uk.ac.cam.cares.jps.agent.email;
 
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_HOST;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_PASS;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_SMTP_PORT;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
-import static com.cmclinnovations.email.EmailAgentConfiguration.KEY_WHITE_IPS;
+import com.github.stefanbirkner.systemlambda.SystemLambda;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_HOST;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PASS;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PORT;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_IPS;
 import java.io.IOException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -18,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Michael Hillman
  */
 @TestMethodOrder(OrderAnnotation.class)
-public class EmailAgentConfiguration_Test {
+public class EmailAgentConfiguration_Test extends TestBase {
 
     /**
      * Attempts to read the example properties file.
@@ -27,8 +28,10 @@ public class EmailAgentConfiguration_Test {
     @Order(1)
     public void readSampleProperties() {
         try {
-            EmailAgentConfiguration.readProperties();
-        } catch (IOException exception) {
+            SystemLambda.withEnvironmentVariable("EMAIL_AGENT_PROPERTIES", "../test-data/example-properties.txt").execute(() -> {
+                EmailAgentConfiguration.readProperties();
+            });
+        } catch (Exception exception) {
             Assertions.fail("Could not read example.properties file.");
         }
     }

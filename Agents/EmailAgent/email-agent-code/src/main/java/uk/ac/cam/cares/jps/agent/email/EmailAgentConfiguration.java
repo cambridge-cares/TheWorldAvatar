@@ -1,8 +1,10 @@
-package com.cmclinnovations.email;
+package uk.ac.cam.cares.jps.agent.email;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class handles reading the configuration file for the EmailAgent and provides methods to
@@ -13,9 +15,14 @@ import java.util.Properties;
 public class EmailAgentConfiguration {
 
     /**
-     * Location of default properties file
+     * Error logging.
      */
-    private static final String PROPERTIES_FILE = "./email-agent.properties";
+    private static final Logger LOGGER = LoggerFactory.getLogger(EmailAgentConfiguration.class);
+
+    /**
+     * Name of the environment variable pointing to the location of the properties file.
+     */
+    private static final String PROPERTIES_ENV = "EMAIL_AGENT_PROPERTIES";
 
     /**
      * Key for SMTP host setting.
@@ -119,7 +126,10 @@ public class EmailAgentConfiguration {
     static void readProperties() throws IOException {
         properties = new Properties();
 
-        try ( FileInputStream file = new FileInputStream(PROPERTIES_FILE)) {
+        String propertyFileLocation = System.getenv(PROPERTIES_ENV);
+        LOGGER.info("Attempting to read properties file at: " + propertyFileLocation);
+        
+        try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
         }
     }

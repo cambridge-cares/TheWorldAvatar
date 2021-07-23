@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
-import org.apache.commons.lang3.ArrayUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -50,43 +49,15 @@ public class EmailSender {
     private String emailAgentURL;
 
     /**
-     * Has the instance been initialised;
-     */
-    private boolean initialised = false;
-
-    /**
-     * Denotes if this machine is running on CMCL's KG servers.
-     */
-    private boolean isAtCMCL = false;
-
-    /**
      * Denotes if the remote EmailAgent is reachable and available.
      */
     private boolean isAgentReachable = false;
-
-    /**
-     * If in testing mode, all functionality will be followed up until the HTTP request is sent.
-     * This can be set to 'true' using reflection within any unit tests.
-     */
-    private boolean testingMode = false;
 
     /**
      * Create a new EmailSender instance.
      */
     public EmailSender() {
         this.metadata = new Properties();
-    }
-
-    /**
-     * Initialise the EmailSender instance. Must be called before any requests to send emails are
-     * made.
-     */
-    public void initialise() {
-        // NOTE: this is a separate method (rather than in the constructor), so that any unit tests
-        // can edit the testingMode variable before these checks are commensed.
-        
-        // Are we on the CMCL system?
-        this.isAtCMCL = isAtCMCL();
 
         // Can we reach the remote EmailAgent?
         determineAgentLocation();
@@ -94,8 +65,6 @@ public class EmailSender {
 
         // Generate meta-data to add to email
         gatherMetaData();
-        
-        initialised = true;
     }
 
     /**
@@ -113,10 +82,6 @@ public class EmailSender {
      * @throws Exception if not initialised, email cannot be sent or written to local file.
      */
     public Optional<Path> sendEmail(String subject, String body) throws Exception {
-        if (!initialised) {
-            throw new IllegalStateException("EmailSender instance needs to be initialised first, call initialise().");
-        }
-
         // Append the meta-data to the email body
         StringBuilder strBuilder = new StringBuilder(body);
         strBuilder.append("<br><br>");
@@ -129,7 +94,7 @@ public class EmailSender {
         }
 
         // Determine whether to send email or write to file
-        if (!testingMode && (!isAtCMCL || !isAgentReachable)) {
+        if (!isAgentReachable) {
             // Write to file.
             LOGGER.info("Not running at CMCL/EmailAgent is unavailable, will write email to file instead.");
             return Optional.of(writeToFile(subject, strBuilder.toString()));
@@ -156,19 +121,8 @@ public class EmailSender {
         request.put("body", body);
 
         try {
-            String result = null;
-
-            if (testingMode) {
-                // Do NOT make the HTTP request, mock a successful result
-                JSONObject mockResult = new JSONObject();
-                mockResult.put("status", "200");
-                mockResult.put("description", "This is a mock (successful) result.");
-                result = mockResult.toString();
-
-            } else {
-                // Make the HTTP request
-                result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, request.toString());
-            }
+            // Make the HTTP request
+            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, request.toString());
 
             if (result.contains("200") && result.contains("success")) {
                 // Success
@@ -220,67 +174,18 @@ public class EmailSender {
      * @return remote EmailAgent is reachable.
      */
     private boolean isReachable() {
-        if (!isAtCMCL) return false;
-
         try {
-            String result = null;
-
-            if (testingMode) {
-                // If we're in testing mode, generate a mock response
-                JSONObject mockResult = new JSONObject();
-                mockResult.put("status", "200");
-                mockResult.put("description", "This is a mock (Available) result.");
-                result = mockResult.toString();
-
-            } else {
-                // Make the HTTP request
-                result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, "{ \"ping\": \"true\" }");
-            }
+            // Make the HTTP request
+            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, "{ \"ping\": \"true\" }");
 
             // Check result contents
-            if (result.contains("200") && result.contains("Available")) {
+            if (result.contains("200")) {
                 return true;
             }
         } catch (Exception exception) {
             LOGGER.warn("Could not contact remote EmailAgent instance.", exception);
         }
         return false;
-    }
-
-    /**
-     * Returns true if the current public IP matches the IP of the development or production servers
-     * at CMCL.
-     *
-     * Note: this is a condition to send requests to the EmailAgent so that the agent isn't clogged
-     * up with emails from developers testing their Agents locally (i.e. we only want notifications
-     * from services running centrally at CMCL).
-     *
-     * @return true if this machine is running at CMCL
-     */
-    private boolean isAtCMCL() {
-        try {
-            // Get this machine's public IP
-            String publicIP = getPublicIP();
-
-            // Get the public IP of CMCL's production server
-            InetAddress[] productionIPs = InetAddress.getAllByName("https://kg.cmclinnovations.com");
-
-            // Get the public IP of CMCL's development server
-            InetAddress[] developmentIPs = InetAddress.getAllByName("http://kg.cmclinnovations.com:81");
-
-            // Check if any of the IPs match this machine's IP
-            for (InetAddress address : ArrayUtils.addAll(productionIPs, developmentIPs)) {
-                if (publicIP.equals(address.getHostAddress())) {
-                    return true;
-                }
-            }
-
-            return false;
-
-        } catch (Exception exception) {
-            LOGGER.warn("Could not determine public IP address, cannot determine if running at CMCL!");
-            return false;
-        }
     }
 
     /**

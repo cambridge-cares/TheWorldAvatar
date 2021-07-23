@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app 
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
-	metadata-complete="false" 
-	version="3.1">
+		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+		metadata-complete="false" 
+		version="3.1">
 
-    <display-name>email-agent</display-name>
-    <description>Simple servlet to accept incoming requests and (where valid) forward contents to SMTP server to generate an email notification.</description>
+	<display-name>email_agent</display-name>
+	<description>Simple servlet to accept incoming requests and (where valid) forward contents to SMTP server to generate an email notification.</description>
 
-    <servlet>
-        <servlet-name>EmailAgent</servlet-name>
-        <servlet-class>com.cmclinnovations.email.EmailAgent</servlet-class>
-    </servlet>
+	<servlet>
+		<servlet-name>EmailAgentServlet</servlet-name>
+		<servlet-class>uk.ac.cam.cares.jps.agent.email.EmailAgent</servlet-class>
+	</servlet>
 
-    <servlet-mapping>
-        <servlet-name>EmailAgent</servlet-name>
-        <url-pattern>/email</url-pattern>
-    </servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>EmailAgentServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
 </web-app>
