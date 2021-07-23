@@ -236,12 +236,14 @@ public class EmailAgent extends JPSAgent {
             
             return false;
         }
-
         return true;
     }
 
     /**
      * Returns true if the input IP should be considered a local IP.
+     * 
+     * Note: this may need looking into the future, I'm not sure it's 100% reliable. The
+     * InetAddress.isAnyLocalAddress() method did not seem reliable either.
      *
      * @param ipString IP Address
      */
@@ -255,8 +257,8 @@ public class EmailAgent extends JPSAgent {
             boolean ipv6 = ipString.contains(":");
             String[] parts = (ipv6) ? ipString.split(":") : ipString.split(Pattern.quote("."));
 
+            // The following are considered private IPs
             if (ipv6) {
-                // The following are considered private IPs
                 // Taken from: https://stackoverflow.com/questions/35374207/how-to-determine-if-ipv6-address-is-private
                 if (parts[0].startsWith("fc")) return true;
                 if (parts[0].startsWith("fd")) return true;
@@ -266,8 +268,6 @@ public class EmailAgent extends JPSAgent {
                 if (parts[0].equals("100")) return true;
 
             } else {
-                // The following are considered private IPs
-
                 // 10.0.0.0 – 10.255.255.255 
                 if (parts[0].equals("10")) return true;
 
