@@ -80,4 +80,5 @@ def get_xyz_from_parsed_json(parsedJsonData):
     xyz_coords = f"{num_ats}\n\n"
     for a,g in zip(at_types,geom):
         xyz_coords = f"{xyz_coords}{a} {g[0]} {g[1]} {g[2]}\n"
+    xyz_coords = xyz_coords.rstrip()
     return xyz_coords
