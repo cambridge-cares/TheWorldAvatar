@@ -24,7 +24,7 @@ def start():
     try:
         args = docopt(doc)
     except DocoptExit:
-        raise DocoptExit('Error: chemutils called with wrong arguments.')
+        raise DocoptExit('Error: ocompchem called with wrong arguments.')
 
     write_ocompchem_abox(fileOrDir=args['<fileOrDir>'], inpFileType=args['--inp-file-type'], \
                                     outDir=args['--out-dir'], qcLogExt=args['--qc-log-ext'])

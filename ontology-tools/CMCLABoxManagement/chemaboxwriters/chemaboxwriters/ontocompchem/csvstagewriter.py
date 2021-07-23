@@ -68,12 +68,6 @@ def formula_clean(formula):
     #A function to clean up formulae (as by default, they are written with '1's, which are removed here i.e C1O2 -> CO2)
     # [a-zA-Z]+?(1)([a-zA-Z]+?|$) ??
     clean_form = formula_clean_re.sub('',formula)
-    #clean_form = formula
-    #for k in range(len(formula)-1):
-    #    if k!=0 and formula[k] == '1' and formula[k+1].isalpha() and formula[k-1].isalpha():
-    #        clean_form = formula[:k] + formula[k+1:]
-    #if formula[-1] == '1' and formula[-2].isalpha():
-    #        clean_form = clean_form[:-1]
     return clean_form
 
 def write_initial(spamwriter,calc_id,spec_IRI):
@@ -378,18 +372,18 @@ def write_atom_info(spamwriter,calc_id,data):
     coords = ['X','Y','Z'] #The three cartesian corrdinates.
     #Coordinates.
     for k in range(len(data["Atom types"])):
-        spamwriter.writerow([comp_pref + 'Atom_' + '_' + data["Atom types"][k] + str(count)
+        spamwriter.writerow([comp_pref + 'Atom_'+ calc_id + '_' + data["Atom types"][k] + str(count)
                         ,'Instance',gain_pref + 'Atom','','',''])
         spamwriter.writerow([comp_pref + 'Molecule_' + calc_id
-                ,'Instance',comp_pref + 'Atom_' + '_' + data["Atom types"][k] + str(count)
+                ,'Instance',comp_pref + 'Atom_'+ calc_id + '_' + data["Atom types"][k] + str(count)
                 ,gain_pref + 'hasAtom','',''])
-        spamwriter.writerow([comp_pref + 'Atom_' + '_' + data["Atom types"][k] + str(count)
+        spamwriter.writerow([comp_pref + 'Atom_' + calc_id + '_' + data["Atom types"][k] + str(count)
                     ,'Instance',table_pref + '#' + data["Atom types"][k],gain_pref + 'isElement','',''])
         for i in range(3):
             spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k] + str(count) + '_' + coord_string[i] + 'Coordinate'
                                     , 'Instance',gain_pref + 'FloatValue',
                                     '','',''])
-            spamwriter.writerow([comp_pref + 'Atom_' + '_' + data["Atom types"][k] + str(count)
+            spamwriter.writerow([comp_pref + 'Atom_' + calc_id + '_' + data["Atom types"][k] + str(count)
                         ,'Instance',comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k] + str(count) + '_' + coord_string[i] + 'Coordinate',
                                     gain_pref + 'hasAtomCoordinate' + coords[i],'',''])
             spamwriter.writerow([gain_pref + 'hasValue','Data Property',
@@ -398,7 +392,7 @@ def write_atom_info(spamwriter,calc_id,data):
         #Write atom masses.
         spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k]  + str(count) + '_Mass'
                         ,'Instance',gain_pref + 'FloatValue','','',''])
-        spamwriter.writerow([comp_pref + 'Atom_' + '_' + data["Atom types"][k] + str(count)
+        spamwriter.writerow([comp_pref + 'Atom_' + calc_id + '_' + data["Atom types"][k] + str(count)
                         ,'Instance',comp_pref + 'FloatValue_' + calc_id + '_' + data["Atom types"][k]  + str(count) + '_Mass'
                         ,gain_pref + 'hasMass','',''])
         spamwriter.writerow([gain_pref + 'hasValue','Data Property',
