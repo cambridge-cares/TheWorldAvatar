@@ -5,11 +5,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.github.owlcs.ontapi.jena.impl.OntDisjointImpl;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
@@ -327,6 +330,13 @@ public class TimeSeriesSparqlTest {
 
         Assert.assertTrue(sparqlClient.checkDataExists("http://data1"));
         Assert.assertFalse(sparqlClient.checkDataExists("http://data5"));
+
+        // Retrieve test knowledge base
+        OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
+        // Add a data IRI with a property that is not attached to a time series
+        testKnowledgeBase.add(testKnowledgeBase.createResource(dataIRI2.get(0)), RDFS.comment, "Data IRI without timeseries");
+        Assert.assertFalse(sparqlClient.checkDataExists(dataIRI2.get(0)));
+
     }
 
     @Test
@@ -350,6 +360,12 @@ public class TimeSeriesSparqlTest {
         for(String iri: dataIRI1) {
             Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(iri));
         }
+
+        // Retrieve test knowledge base
+        OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
+        // Add a data IRI with a property
+        testKnowledgeBase.add(testKnowledgeBase.createResource(dataIRI2.get(0)), RDFS.comment, "Data IRI without timeseries");
+        Assert.assertNull(sparqlClient.getTimeSeries(dataIRI2.get(0)));
     }
 
     @Test
