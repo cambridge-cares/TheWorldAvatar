@@ -14,24 +14,24 @@ The `docker` folder contains the required files to build a Docker image for the 
 
 Please note the caveats below before attempting to build the service using Docker:
 
-* The service installed within the Docker image will be based on the current commit of this repository, please ensure you're on the right one.
+* The service installed within the Docker image will be based on the current commit of this repository, please ensure this is the right one.
 * The `docker build` command should be run from the `EmailAgent` directory (not this one); this is so that a copy of the `email-agent-code` directory can be copied into the image.
 * The port shown below has been set so that it doesn't collide with any other services running on the CMCL systems, feel free to change it temporarily for local testing/development.
 
 ### Configuring Maven
-The Java code that this image is setup to build needs access to TheWorldAvatar maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/. To allow access to this repository, developers will need to provide their credentials in single-word text files located at the following locations:
+The Java code that this image is setup to build needs access to [TheWorldAvatar maven repository ](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/). To allow access to this repository, developers will need to provide their credentials in single-word text files located at the following locations:
 ```
 ./credentials/
     repo_username.txt
     repo_password.txt
 ```
 
-The `repo_username.txt` file should contain your Github username, and the `repo_password.txt` file your Github [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
+The `repo_username.txt` file should contain your Github username, and the `repo_password.txt` file your Github [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that permits [publishing and installing packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages). these files must not be committed to the repository.
 
 ### Setting Properties
-This agent relies on the existance of a properties file that contains settings and credentials used to contact the SMTP server. Each developer is expected to create a new properties file with their settings and credentials before attempting to build the image; this can be based on the example file within the `test-data` folder. Note, it is important that the properties file with your credentials is not committed to any Git repository.
+This agent relies on the existance of a properties file that contains settings and credentials used to contact the SMTP server. Each developer is expected to create a new properties file with their settings and credentials before attempting to build the image; this can be based on the example file within the `email-agent-code/data` folder. Note, it is important that the properties file with these credentials is not committed to any Git repository.
 
-For the agent code to find the properties file, an environment variable named `EMAIL_AGENT_PROPERTIES` will be created to with the location of the file. For the existing Docker configuration to pick up the developer's properties file, copy it into the Image, and generate the appropriate environment variable, place the properties file at the following location:
+For the agent code to find the properties file, an environment variable named `EMAIL_AGENT_PROPERTIES` will be created with the location of the file. For the existing Docker configuration to pick up the developer's properties file, copy it into the Image, and generate the appropriate environment variable, place the properties file at the following location:
 ```
 ./email-agent-code/data/email-agent.properties
 ```
@@ -46,4 +46,4 @@ Be aware that the VERSION tag should match the current version of the software (
 + To generate a container (i.e. run the image):
   + `docker run -d -p 8099:8080 --restart always --name "email-agent" -it email-agent:1.0.0-SNAPSHOT`
 
-  Alternatively, the provided `docker-compose.yml` file can be used to spin up a stack containing only the EmailAgent. This can be done using the `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate` command (adding `--build` if you wish to rebuild the Image before starting the stack).
+  Alternatively, the provided `docker-compose.yml` file can be used to spin up a stack containing only the EmailAgent. This can be done using the `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate` command (adding `--build` if the Image needs to be rebuilt before starting the stack).
