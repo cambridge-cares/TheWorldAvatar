@@ -100,7 +100,7 @@ public class TimeSeriesSparql {
 	 * @param tsIRI: timeseries IRI provided as string
 	 * @return True if an the timeseries instance has a defined time unit, false otherwise
 	 */
-    public boolean checkTimeUnitExists(String tsIRI) {
+    private boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
     	kbClient.setQuery(query);
     	boolean timeSeriesExists = kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");

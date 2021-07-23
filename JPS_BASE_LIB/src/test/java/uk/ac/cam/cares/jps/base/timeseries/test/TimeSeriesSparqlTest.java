@@ -330,19 +330,6 @@ public class TimeSeriesSparqlTest {
     }
 
     @Test
-    public void testCheckTimeUnitExists() {
-        Assert.assertFalse(sparqlClient.checkTimeUnitExists(tsIRI1));
-
-        // Initialise time series in kb without time unit
-        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null);
-        Assert.assertFalse(sparqlClient.checkTimeUnitExists(tsIRI1));
-        // Initialise different time series in kb with time unit
-        sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit);
-        Assert.assertFalse(sparqlClient.checkTimeUnitExists(tsIRI1));
-        Assert.assertTrue(sparqlClient.checkTimeUnitExists(tsIRI2));
-    }
-
-    @Test
     public void testCountTS() {
         Assert.assertEquals(0, sparqlClient.countTS());
 
