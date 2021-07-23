@@ -47,7 +47,9 @@ class JPSQueryConstructor:
             with open(CONFIG_PATH) as f:
                 self.config = json.loads(f.read())
         else:
-            self.config = {'ldf_host': 'jps-ldf:3000/marie/ldf', 'ldf_port': -1}
+            # By default, assume the LDF server is accessible via the network name "jps-ldf",
+            # which should be the case when its running alongside the chatbot in the same docker stack
+            self.config = {'ldf_host': 'http://jps-ldf', 'ldf_port': 3000}
 
 
         print('JPSQueryConstructor 51')
