@@ -1,5 +1,5 @@
 from docopt import docopt, DocoptExit
-#from chemaboxwriters.ontospecies import write_ospecies_abox
+from chemaboxwriters.ontospecies import write_ospecies_abox
 
 doc = """aboxwriter
 Usage:
@@ -24,8 +24,9 @@ def start():
     try:
         args = docopt(doc)
     except DocoptExit:
-        raise DocoptExit('Error: chemutils called with wrong arguments.')
+        raise DocoptExit('Error: ospecies called with wrong arguments.')
 
-    pass
+    write_ospecies_abox(fileOrDir=args['<fileOrDir>'], inpFileType=args['--inp-file-type'], \
+                         outDir=args['--out-dir'], qcLogExt=args['--qc-log-ext'])
 if __name__ == '__main__':
     start()

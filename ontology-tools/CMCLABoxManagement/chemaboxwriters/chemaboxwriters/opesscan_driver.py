@@ -32,7 +32,7 @@ def start():
     try:
         args = docopt(doc)
     except DocoptExit:
-        raise DocoptExit('Error: chemutils called with wrong arguments.')
+        raise DocoptExit('Error: opesscan called with wrong arguments.')
 
     pass
 
