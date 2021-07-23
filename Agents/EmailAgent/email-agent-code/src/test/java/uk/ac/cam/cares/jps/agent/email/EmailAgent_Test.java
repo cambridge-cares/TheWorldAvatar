@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.agent.email;
 
-import uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration;
-import uk.ac.cam.cares.jps.agent.email.EmailAgent;
 import uk.ac.cam.cares.jps.agent.email.mock.MockHttpServletRequest;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -11,20 +9,13 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Tests the functionality of the EmailAgent class.
  *
  * @author Michael Hillman
  */
-public class EmailAgent_Test extends TestBase {
-
-    /**
-     * Error logging.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailAgent_Test.class);
+public class EmailAgent_Test {
 
     /**
      * Sample request data (should be valid).
@@ -43,11 +34,11 @@ public class EmailAgent_Test extends TestBase {
     public static void setup() {
         // Read the JSON file mocking a HTTP request
         try {
-            String goodContent = Files.readString(Paths.get("../test-data/sample-request-good.json"));
+            String goodContent = Files.readString(Paths.get("./data/sample-request-good.json"));
             SAMPLE_REQUEST_GOOD = new JSONObject(goodContent);
             Assertions.assertNotNull(SAMPLE_REQUEST_GOOD, "Could not read/parse sample JSON request!");
 
-            String badContent = Files.readString(Paths.get("../test-data/sample-request-bad.json"));
+            String badContent = Files.readString(Paths.get("./data/sample-request-bad.json"));
             SAMPLE_REQUEST_BAD = new JSONObject(badContent);
             Assertions.assertNotNull(SAMPLE_REQUEST_BAD, "Could not read/parse sample JSON request!");
 
@@ -58,7 +49,7 @@ public class EmailAgent_Test extends TestBase {
         // Read the properties file (developer expected to provide it at the following location, 
         // it should NOT be committed).
         try {
-            EmailAgentConfiguration.readProperties("../test-data/email-agent.properties");
+            EmailAgentConfiguration.readProperties("./data/email-agent.properties");
         } catch (IOException ioException) {
             Assertions.fail("Could not read properties file!", ioException);
         }
@@ -70,7 +61,7 @@ public class EmailAgent_Test extends TestBase {
      */
     @Test
     public void sendGoodTestEmail() {
-        LOGGER.info("Running sendGoodTestEmail()...");
+        System.out.println("INFO: Running sendGoodTestEmail()...");
 
         // New agent
         EmailAgent agent = new EmailAgent();
@@ -91,7 +82,7 @@ public class EmailAgent_Test extends TestBase {
      */
     @Test
     public void sendBadTestEmail() {
-        LOGGER.info("Running sendBadTestEmail()...");
+        System.out.println("INFO: Running sendBadTestEmail()...");
 
         // New agent
         EmailAgent agent = new EmailAgent();
@@ -110,7 +101,7 @@ public class EmailAgent_Test extends TestBase {
      */
     @Test
     public void testPing() {
-        LOGGER.info("Running testPing()...");
+        System.out.println("INFO: Running testPing()...");
 
         // New agent
         EmailAgent agent = new EmailAgent();

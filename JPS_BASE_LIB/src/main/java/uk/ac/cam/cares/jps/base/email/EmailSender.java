@@ -29,11 +29,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 public class EmailSender {
 
     /**
-     * For error output.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailSender.class);
-
-    /**
      * Fallback URL for the remote email agent.
      */
     private static final String DEFAULT_AGENT_URL = "http://kg.cmclinnovations.com/agents/email-agent";
@@ -96,15 +91,18 @@ public class EmailSender {
         // Determine whether to send email or write to file
         if (!isAgentReachable) {
             // Write to file.
-            LOGGER.info("Not running at CMCL/EmailAgent is unavailable, will write email to file instead.");
+            System.out.println("INFO: Not running at CMCL/EmailAgent is unavailable, will write email to file instead.");
             return Optional.of(writeToFile(subject, strBuilder.toString()));
 
         } else {
             // Send HTTP request
-            makeRequest(subject, strBuilder.toString());
+            try {
+                makeRequest(subject, strBuilder.toString());
+                return Optional.empty();
+            } catch (Exception exception) {
+                return Optional.of(writeToFile(subject, strBuilder.toString()));
+            }
         }
-
-        return Optional.empty();
     }
 
     /**
@@ -126,18 +124,18 @@ public class EmailSender {
 
             if (result.contains("200") && result.contains("success")) {
                 // Success
-                LOGGER.info("EmailAgent reports successful request, will send email.");
+                System.out.println("INFO: EmailAgent reports successful request, will send email.");
 
             } else {
                 // Failure
                 JSONObject resultJSON = new JSONObject(result);
 
-                LOGGER.error("EmailAgent reports issues, cannot send email!");
-                LOGGER.error("  Status: " + resultJSON.get("status"));
-                LOGGER.error("  Description: " + resultJSON.get("description"));
+                System.out.println("ERROR: EmailAgent reports issues, cannot send email!");
+                System.out.println("ERROR:   Status: " + resultJSON.get("status"));
+                System.out.println("ERROR:   Description: " + resultJSON.get("description"));
             }
         } catch (Exception exception) {
-            LOGGER.warn("Could not contact remote EmailAgent instance.", exception);
+            System.out.println("WARN: Could not contact remote EmailAgent instance, will write to file instead.");
         }
     }
 
@@ -163,7 +161,7 @@ public class EmailSender {
             writer.append(body);
         }
 
-        LOGGER.info("Email content written to file at: " + logFile.toAbsolutePath().toString());
+        System.out.println("INFO: Email content written to file at: " + logFile.toAbsolutePath().toString());
         return logFile;
     }
 
@@ -183,7 +181,7 @@ public class EmailSender {
                 return true;
             }
         } catch (Exception exception) {
-            LOGGER.warn("Could not contact remote EmailAgent instance.", exception);
+            System.out.println("WARN: Could not contact remote EmailAgent instance, will log to file instead.");
         }
         return false;
     }
@@ -200,10 +198,10 @@ public class EmailSender {
 
         if (variable == null || variable.isBlank()) {
             emailAgentURL = DEFAULT_AGENT_URL;
-            LOGGER.warn("Could not find EMAIL_AGENT_URL variable, using fallback URL: " + emailAgentURL);
+            System.out.println("WARN: Could not find EMAIL_AGENT_URL variable, using fallback URL: " + emailAgentURL);
         } else {
             emailAgentURL = variable;
-            LOGGER.info("Found EMAIL_AGENT_URL variable, remote location is: " + emailAgentURL);
+            System.out.println("INFO: Found EMAIL_AGENT_URL variable, remote location is: " + emailAgentURL);
         }
     }
 
@@ -216,7 +214,7 @@ public class EmailSender {
         try {
             hostname = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException exception) {
-            LOGGER.warn("Could not determine host name.");
+            System.out.println("WARN: Could not determine host name.");
         } finally {
             metadata.put("Hostname", hostname);
         }
@@ -226,7 +224,7 @@ public class EmailSender {
         try {
             localIP = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException exception) {
-            LOGGER.warn("Could not determine local IP address.");
+            System.out.println("WARN: Could not determine local IP address.");
         } finally {
             metadata.put("Local IP Address", localIP);
         }
@@ -236,7 +234,7 @@ public class EmailSender {
         try {
             publicIP = getPublicIP();
         } catch (Exception exception) {
-            LOGGER.warn("Could not determine public IP address.");
+            System.out.println("WARN: Could not determine public IP address.");
         } finally {
             metadata.put("Public IP Address", publicIP);
         }

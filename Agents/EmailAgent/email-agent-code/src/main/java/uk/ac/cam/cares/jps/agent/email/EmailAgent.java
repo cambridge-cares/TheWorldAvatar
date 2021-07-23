@@ -17,8 +17,6 @@ import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.PatternLayout;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
@@ -28,33 +26,14 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  * @author Michael Hillman
  */
 @Controller
-@WebServlet(urlPatterns = {"/email", "/test"})
+@WebServlet(urlPatterns = {"/email"})
 public class EmailAgent extends JPSAgent {
-
-    /**
-     * Error logging.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailAgent.class);
 
     /**
      * Is the EmailAgent in a valid state.
      */
     private boolean validState = true;
 
-    static {
-        org.apache.log4j.Logger root = org.apache.log4j.Logger.getRootLogger();
-        root.setLevel(Level.DEBUG);
-        root.addAppender(new ConsoleAppender(
-                new PatternLayout("%d{HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n")
-        ));
-
-        System.out.println("LOG4J has been initialised.");
-    }
-
-    public EmailAgent() {
-        System.out.println("An EmailAgent instance has been initialised?");
-    }
-    
     /**
      * Perform required setup.
      *
@@ -68,7 +47,8 @@ public class EmailAgent extends JPSAgent {
         try {
             EmailAgentConfiguration.readProperties();
         } catch (IOException ioException) {
-            LOGGER.error("Could not read properties!", ioException);
+            System.out.println("ERROR: Could not read properties!");
+            ioException.printStackTrace(System.out);
             validState = false;
 
             throw new UnavailableException("EmailAgent is not in valid state, could not read properties.");
@@ -77,7 +57,9 @@ public class EmailAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-        System.out.println("WRONG METHOD");
+        System.out.println("processRequestParameters(1)");
+        System.out.println(requestParams.toString());
+
         JSONObject response = new JSONObject();
         response.put("status", "500");
         response.put("description", "Has the wrong method been called?");
@@ -94,18 +76,12 @@ public class EmailAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-
-        String path = request.getServletPath();
-        if (path.contains("test")) {
-            JSONObject response = new JSONObject();
-            response.put("status", "200");
-            response.put("description", "This was a test?");
-            return response;
-        }
+        System.out.println("processRequestParameters(2)");
+        System.out.println(requestParams.toString());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("Request received at: " + datetime);
+        System.out.println("INFO: Request received at: " + datetime);
 
         // Check if this is an email request or a ping to determine availability
         if (!requestParams.isNull("ping")) {
@@ -120,7 +96,7 @@ public class EmailAgent extends JPSAgent {
             return processEmailRequest(requestParams, request);
         } else {
             // Should already haev triggered a BadRequestException, but just in case
-            LOGGER.warn("Bad request detected, throwing BadRequestException.");
+            System.out.println("WARN: Bad request detected, throwing BadRequestException.");
             throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
         }
     }
@@ -133,7 +109,7 @@ public class EmailAgent extends JPSAgent {
      * @return result JSON
      */
     private JSONObject processPingRequest(HttpServletRequest request) {
-        LOGGER.info("Determined as availability request, checking...");
+        System.out.println("INFO: Determined as availability request, checking...");
 
         // Is it from a valid source
         boolean validSource = validateRequest(request);
@@ -146,16 +122,16 @@ public class EmailAgent extends JPSAgent {
             // Server is in invalid state
             status = 500;
             description = "Internal server error, cannot process requests.";
-            LOGGER.warn("Servlet not in valid state, returning status 500.");
+            System.out.println("WARN: Servlet not in valid state, returning status 500.");
 
         } else if (!validSource) {
             // Non-permitted source of request.
             status = 403;
             description = "Unauthorised source (not on white-list), cannot process requests.";
-            LOGGER.warn("Unauthorised request source, returning status 403.");
+            System.out.println("WARN: Unauthorised request source, returning status 403.");
 
         } else {
-            LOGGER.info("Approved request, returning status 200.");
+            System.out.println("INFO: Approved request, returning status 200.");
         }
 
         // Send response
@@ -174,7 +150,7 @@ public class EmailAgent extends JPSAgent {
      * @return result JSON
      */
     private JSONObject processEmailRequest(JSONObject requestParams, HttpServletRequest request) {
-        LOGGER.info("Determined as email request, submitting...");
+        System.out.println("INFO: Determined as email request, submitting...");
 
         // Attempt to send email
         return EmailHandler.submitEmail(
@@ -194,7 +170,7 @@ public class EmailAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!validState) {
-            LOGGER.error("EmailAgent is in invalid state, cannot validate inputs.");
+            System.out.println("ERROR: EmailAgent is in invalid state, cannot validate inputs.");
             return false;
         }
 
@@ -220,7 +196,7 @@ public class EmailAgent extends JPSAgent {
      */
     private boolean validateRequest(HttpServletRequest request) {
         if (!validState) {
-            LOGGER.error("EmailAgent is in invalid state, cannot validate request.");
+            System.out.println("ERROR: EmailAgent is in invalid state, cannot validate request.");
             return false;
         }
 
@@ -238,13 +214,10 @@ public class EmailAgent extends JPSAgent {
             if (sourceIP == null) {
                 sourceIP = request.getRemoteAddr();
             }
-
-            // Allow local calls
-            if (sourceIP.contains("localhost")) return true;
-            if (sourceIP.contains("127.0.0.1")) return true;
-
-            LOGGER.info("Request IP(s) reported as: " + sourceIP);
-
+            
+            // For testing, good to know even in production
+            System.out.println("INFO: Request IP(s) reported as: " + sourceIP);
+             
             // Source may be multiple IPs if client was using a proxy
             if (sourceIP.contains(",")) {
                 String[] sourceIPs = sourceIP.split(",");
@@ -261,6 +234,8 @@ public class EmailAgent extends JPSAgent {
             } else {
                 if (!allowedList.contains(sourceIP.trim())) return false;
             }
+            
+            System.out.println("INFO: Matching IP found, approving request.");
         }
 
         return true;

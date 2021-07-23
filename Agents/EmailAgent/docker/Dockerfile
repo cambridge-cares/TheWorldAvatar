@@ -30,9 +30,18 @@ RUN mvn package
 FROM tomcat:9.0
 WORKDIR /app
 
+# Copy in the properties file
+COPY ./email-agent-code/data/email-agent.properties /root/email-agent.properties
+
+# Set the required environment variable
+ENV EMAIL_AGENT_PROPERTIES="/root/email-agent.properties"
+
 # Copy the built WAR file
 # Note here that if the WAR version changes, you'll need to update this line
 COPY --from=0 /root/email-agent-code/output/EmailAgent-1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+
+# Expose port 8080
+EXPOSE 8080
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

@@ -19,19 +19,19 @@ public class EmailSender_Test {
      * Tests that an email can be submitted to the EmailSender and is passed on to the remote
      * EmailAgent instance.
      *
-     * Note: this tests all functionality right up until the HTTP request is made at which point a
-     * mock request result is generated, this is to ensure that tests can be run without having to
-     * spin up a remote EmailAgent instance.
+     * Note: This test requires that you have set the EMAIL_AGENT_URL environment variable to point
+     * towards a running instance of the EmailAgent service.
      */
     @Test
-    @Ignore("Will not pass unless EmailAgent is running and environment variables have been set.")
+    //@Ignore("Will not pass unless EmailAgent is running and environment variables have been set.")
     public void sendEmail() {
         EmailSender sender = new EmailSender();
 
         try {
             // Email contents
-            String subject = "Test email from the EmailSender_Test.writeToFile() method.";
-            String body = "This test email should fail and get written to a local log file.";
+            String subject = "Automated email from jps-base-lib unit tests.";
+            String body = "Is the user has configured their local environment correctly, then this email"
+                    + "should be forwarded onto the EmailAgent instance for submission.";
 
             // Attempt to send an email
             Optional<Path> logFile = sender.sendEmail(subject, body);
@@ -46,7 +46,7 @@ public class EmailSender_Test {
     /**
      * Tests that an email can be submitted to the EmailSender and is written to a local log file.
      */
-    @Test
+    //@Test
     public void writeToFile() {
         // Initialise new EmailSender
         EmailSender sender = new EmailSender();

@@ -3,8 +3,6 @@ package uk.ac.cam.cares.jps.agent.email;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This class handles reading the configuration file for the EmailAgent and provides methods to
@@ -13,11 +11,6 @@ import org.slf4j.LoggerFactory;
  * @author Michael Hillman
  */
 public class EmailAgentConfiguration {
-
-    /**
-     * Error logging.
-     */
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailAgentConfiguration.class);
 
     /**
      * Name of the environment variable pointing to the location of the properties file.
@@ -127,10 +120,23 @@ public class EmailAgentConfiguration {
         properties = new Properties();
 
         String propertyFileLocation = System.getenv(PROPERTIES_ENV);
-        LOGGER.info("Attempting to read properties file at: " + propertyFileLocation);
+        System.out.println("Attempting to read properties file at: " + propertyFileLocation);
         
         try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
+            
+            boolean whitelistOn = Boolean.parseBoolean(getProperty(KEY_WHITE_ONLY));
+            
+            if(whitelistOn) {
+                System.out.println("INFO: Whitelist enabled, only approving requests from following IPs...");
+                String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
+                
+                for(String allowedIP : allowedIPs) {
+                    System.out.println("   " + allowedIP);
+                }
+            } else {
+                System.out.println("WARN: Whitelist disabled, accepting all requests.");
+            }
         }
     }
 

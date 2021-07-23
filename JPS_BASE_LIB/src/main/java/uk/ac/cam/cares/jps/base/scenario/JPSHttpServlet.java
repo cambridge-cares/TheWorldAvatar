@@ -172,9 +172,9 @@ public abstract class JPSHttpServlet extends HttpServlet {
         requestParams.put(JPSConstants.PATH, request.getPathInfo());
         System.out.println("DO GET RESPONSE BODY: 2 ");
         JSONObject responseParams;
-        responseParams = processRequestParameters(requestParams);
+        responseParams = processRequestParameters(requestParams, request);
         if (responseParams.isEmpty()) {
-            responseParams = processRequestParameters(requestParams, request);
+            responseParams = processRequestParameters(requestParams);
         }
         return responseParams.toString();
     }
@@ -188,9 +188,9 @@ public abstract class JPSHttpServlet extends HttpServlet {
     protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
         JSONObject responseParams;
         requestParams.put(JPSConstants.PATH, request.getPathInfo());
-        responseParams = processRequestParameters(requestParams);
+        responseParams = processRequestParameters(requestParams, request);
         if (responseParams.isEmpty()) {
-            responseParams = processRequestParameters(requestParams, request);
+            responseParams = processRequestParameters(requestParams);
         }
         return responseParams.toString();
     }

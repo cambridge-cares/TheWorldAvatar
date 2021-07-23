@@ -31,7 +31,7 @@
     
     <!-- Build settings -->
     <build>
-        <finalName>EmailAgent</finalName>
+        <finalName>email_agent</finalName>
          
         <resources>
             <resource>  
@@ -70,7 +70,7 @@
                 <configuration>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>WEB-INF\web.xml</webXml>
-                    <warName>${project.artifactId}-${project.version}</warName>
+                    <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>output</outputDirectory>
                 </configuration>
             </plugin>
@@ -107,23 +107,6 @@
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
             <version>${jps.base.version}</version>
-        </dependency>
-        
-        <!-- Logging -->
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${org.slf4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${org.slf4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>${org.slf4j-version}</version>
         </dependency>
         
         <!-- Testing -->
