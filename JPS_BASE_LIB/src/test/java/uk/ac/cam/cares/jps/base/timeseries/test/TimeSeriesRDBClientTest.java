@@ -3,6 +3,9 @@ package uk.ac.cam.cares.jps.base.timeseries.test;
 import org.jooq.SQLDialect;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
+import java.io.*;
+
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
@@ -101,5 +104,87 @@ public class TimeSeriesRDBClientTest {
         client.setRdbPassword("password");
         Assert.assertNotNull(rdbPasswordField.get(client));
         Assert.assertEquals("password", rdbPasswordField.get(client));
+    }
+    
+    @Test
+    @Ignore("Overrides potentially existing timeseries.properties file in \"src/main/resources/\"")
+    public void testLoadRdbConfig () {
+    	TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+    	// Delete potentially existing properties file
+    	new File("src/main/resources/timeseries.properties").delete();
+    	// JPSRuntime error messages
+    	String m1 = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+    				"with RDB \"user=<username>\" and \"password=<password>\" is required";
+    	String m2 = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+					"is missing \"user=<username>\" ";
+    	String m3 = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+			    	"is missing \"password=<password>\" ";
+    	// Test for non-existing properties file
+    	boolean thrown = false;
+    	try {
+    		client.loadRdbConfigs();
+    	} catch (Exception e) {
+    		Assert.assertEquals(m1, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for missing user name
+    	try {
+    		// Create empty properties file and populate with password only
+    		File file = new File("src/main/resources/timeseries.properties");
+    		FileWriter writer = new FileWriter(file);
+    	    writer.write("password=test_password");
+    	    writer.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} 
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs();
+    	} catch (Exception e) {
+    		Assert.assertEquals(m2, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for missing password
+    	try {
+    		// Create empty properties file and populate with password only
+    		File file = new File("src/main/resources/timeseries.properties");
+    		FileWriter writer = new FileWriter(file);
+    	    writer.write("user=test_user");
+    	    writer.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} 
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs();
+    	} catch (Exception e) {
+    		Assert.assertEquals(m3, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for proper username and password
+    	try {
+    		// Create empty properties file and populate with password only
+    		File file = new File("src/main/resources/timeseries.properties");
+    		FileWriter writer = new FileWriter(file);
+    	    writer.write("user=test_user\n");
+    	    writer.write("password=test_password");
+    	    writer.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} 
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs();
+    	} catch (Exception e) {
+    		thrown = true;
+    	}
+    	Assert.assertFalse(thrown);
+    	Assert.assertEquals("test_user", client.getRdbUser());
     }
 }

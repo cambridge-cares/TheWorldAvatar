@@ -9,6 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Properties;
+import java.io.File;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
@@ -94,7 +99,62 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	public void setRdbPassword(String password) {
 		this.rdbPassword = password;
 	}
+	
+	/**
+	 * Load RDB username and password from properties file in "src/main/resources/timeseries.properties"
+	 */
+	public void loadRdbConfigs() {
+		try {
+			File file = new File("src/main/resources/timeseries.properties");
+			
+			if (!file.exists()) {
+				throw new JPSRuntimeException("1");
+			}
+				
+			InputStream input = new FileInputStream(file);
+			
+			// Load properties file from class path
+            Properties prop = new Properties();
+            prop.load(input);
+            
+            // Get the property values and assign
+            if (prop.containsKey("user")) {
+            	this.rdbUser = prop.getProperty("user");
+            } else {
+            	throw new JPSRuntimeException("2");
+            }
+            if (prop.containsKey("password")) {
+            	this.rdbPassword = prop.getProperty("password");
+            } else {
+            	throw new JPSRuntimeException("3");
+            }
 
+		} catch (Exception e) {
+			if (e instanceof JPSRuntimeException) {
+				String m = "";
+				switch (e.getMessage()) {
+					case "1":
+						m = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+							"with RDB \"user=<username>\" and \"password=<password>\" is required";
+						break;
+					case "2":
+						m = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+							"is missing \"user=<username>\" ";
+						break;
+					case "3":
+						m = "TimeSeriesRDBClient: Properties file \"JPS_BASE_LIB/src/main/resources/timeseries.properties\" "	+
+						    "is missing \"password=<password>\" ";
+						break;
+					default:
+						throw new JPSRuntimeException(e.getMessage());							
+				}
+				System.out.println(m);
+				throw new JPSRuntimeException(m);
+			} else {
+				e.printStackTrace();
+			}			
+		}
+	}
 
 	/**
 	 * Initialise central database lookup table
