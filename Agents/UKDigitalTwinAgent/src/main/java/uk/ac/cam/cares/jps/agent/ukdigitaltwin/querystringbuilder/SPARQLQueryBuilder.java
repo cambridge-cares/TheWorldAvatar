@@ -16,79 +16,50 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 public class SPARQLQueryBuilder {
 	
 	public ClauseBuilder queryClause;
-	public ArrayList<List<String>> prefixList = new ArrayList<List<String>>();
-	public List<String> selectClause = new ArrayList<String>();
-	public ArrayList<List<String>> whereClause = new ArrayList<List<String>>();
 	
-	public String entityName;
-	public String entityTypePrefix;
-	public String entityType;
-
-	public SPARQLQueryBuilder(ClauseBuilder queryClause, String entityName, String entityTypePrefix, String entityType) {
+	public SPARQLQueryBuilder(ClauseBuilder queryClause) {
 		this.queryClause = queryClause;	
-		if(entityName.contains("?")) {
-			this.entityName = entityName;
-		} else {
-			this.entityName = "?" + entityName;}
-		this.entityTypePrefix = entityTypePrefix;
-		this.entityType = entityType;
 	}
 	
-	public ArrayList<List<String>> prefixBuilder(){
-		
-		List<String> prefixContainer = this.queryClause.PrefixAbbrList;
-		for(String pre: prefixContainer) {
-			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
-			List<String> prefixPair = Arrays.asList(pre, prefixiri);
-			this.prefixList.add(prefixPair);
-		}		
-		if(!prefixContainer.contains(this.entityTypePrefix)) {
-		String entityTypePrefixiri = PrefixToUrlMap.getPrefixUrl(entityTypePrefix);
-		List<String> entityTypePrefixPair = new ArrayList<String>();
-		if(entityTypePrefixiri!= null) {
-		entityTypePrefixPair = Arrays.asList(entityTypePrefix, entityTypePrefixiri);
+	/**
+	 * This method is used to generate the most common used query string with prefixList, selectClause, and whereClause
+	 * No arguments are passed as it takes the instance of ClauseBuilder
+	 */
+	public String queryStringBuilder() {
+		SelectBuilder sb = new SelectBuilder();
+		for (List<String> i : this.queryClause.prefixList) {
+			sb.addPrefix(i.get(0), i.get(1));
 		}
-		this.prefixList.add(entityTypePrefixPair);
+
+		for (List<String> i : this.queryClause.whereClause) {
+			sb.addWhere(i.get(0), i.get(1), i.get(2));
 		}
-		return this.prefixList;
-	}
-	
-	public List<String> selectClauseBuilder(){
 		
-		List<String> selectClauseContainer = this.queryClause.VariablesList;		
-		this.selectClause.add(this.entityName);		
-		for(String var: selectClauseContainer) {
-			String selectName = "?ValueOf" + var;
-			this.selectClause.add(selectName);
-		}
-		return this.selectClause;
-	}
-	
-	public ArrayList<List<String>> whereClauseBuilder(){
-		
-		ArrayList<List<String>> whereClauseContainer = this.queryClause.PathArray;
-		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityTypePrefix + ":" + this.entityType);
-		this.whereClause.add(entityTypeTriple);
-		
-		for(int i = 0; i <= whereClauseContainer.size(); i++) {
-			//TODO: how to find varType?
-			
-			List<String> hasModelVariableTriple = Arrays.asList(this.entityName, "a", this.entityTypePrefix + ":" + this.entityType);
-			if(whereClauseContainer.get(i).contains("rdfs:label")) {
-				
+		for (String i : this.queryClause.selectClause) {
+			sb.addVar(i);
 			}
+		
+		sb.setDistinct(this.queryClause.distinctFlag);
+		sb.setReduced(this.queryClause.reducedFlag);
+		
+		if(this.queryClause.limit > 0) {
+			sb.setLimit(this.queryClause.limit);
 		}
 		
-		
-		for(String var: selectClauseContainer) {
-			String selectName = "?ValueOf" + var;
-			this.whereClause.add(selectName);
-		}
-		return this.whereClause;
+		String queryString = sb.build().toString();
+		return queryString;
 	}
 	
-	
-	public static String queryString(String[][] Prefix, String[] Select, String[][] Where) {
+	/**
+	 * Overload static method do not rely on the ClauseBuilder
+	 */
+	public static String queryStringBuilder(String[][] Prefix, String[] Select, String[][] Where, boolean distinctFlag, boolean reducedFlag, int limit) {
+		
+		if((distinctFlag && reducedFlag) || (!distinctFlag && !reducedFlag)) {
+			System.out.print("The queryFlag and updateFlag cannot be both true or false.");
+		    System.exit(0);
+		    }			
+				
 		SelectBuilder sb = new SelectBuilder();
 		for (String[] i : Prefix) {
 			sb.addPrefix(i[0], i[1]);
@@ -100,23 +71,31 @@ public class SPARQLQueryBuilder {
 
 		if (Select != null) {
 			for (String i : Select) {
-				sb.addVar(i);
-			}
+				sb.addVar(i);}
+		}
+		
+		sb.setDistinct(distinctFlag);
+		sb.setReduced(reducedFlag);
+		
+		if(limit > 0) {
+			sb.setLimit(limit);
 		}
 
 		String queryString = sb.build().toString();
-		return queryString;
+		return queryString;		
 	}
 	
 	 public static void main(String[] args) {
-		 PowerFlowModelVariable pv = new PowerFlowModelVariable(false, 2);
-		 ClauseBuilder cb = new ClauseBuilder("GenCostFuncVariables", pv);
-		 SPARQLQueryBuilder sqb= new SPARQLQueryBuilder(cb, "Model_EBus", "OCPMATH", "Submodel");
-		 ArrayList<List<String>> pl = sqb.prefixBuilder();
-		 for(int i = 0; i < pl.size(); i++) { 
-			   List<String> res = pl.get(i);
-			   System.out.println(res); 
-			   }
+		 
+		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
+		 ClauseBuilder pb = new ClauseBuilder(true, false);
+		 List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
+		 pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, vl, pfmv.variableTypePrefix,
+				  pfmv.varNameIdentifier, pfmv.queryModelVariableSentence, pfmv.labelMap);
+		 SPARQLQueryBuilder sqb = new SPARQLQueryBuilder(pb);
+		 String querystring = sqb.queryStringBuilder();
+		 System.out.println(querystring); 
+
 	 }
 
 }

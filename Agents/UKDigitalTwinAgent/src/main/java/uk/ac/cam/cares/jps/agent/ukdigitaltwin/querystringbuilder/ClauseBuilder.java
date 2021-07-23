@@ -2,89 +2,166 @@ package uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import uk.ac.cam.cares.jps.agent.ukdigitaltwin.tools.Printer;
+
+import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 /**
- * PathBuilder developed for constructing the predicates (properties paths) used in building the SPARQL 
- * query string of the UK digital Twin 
+ * ClauseBuilder developed for constructing the query string clause blocks in building, which can be used in both query and update request.
  * 
  * @author Wanni Xie (wx243@cam.ac.uk)
  * 
  */
 public class ClauseBuilder implements Prefixes{
-	
-	public ArrayList<List<String>> PathArray = new ArrayList<List<String>>(); // used to construct the query string body
-	public List<String> VariablesList = new ArrayList<String>(); // used in constructing the select clause
-	public List<String> PrefixAbbrList = new ArrayList<String>(); // prefix abbreviation list
-	
+
 	public String entityName;
-	public String entityTypePrefix;
 	public String entityType;
 	
-	public  ClauseBuilder(String varKey, PowerFlowModelVariable pfmv, String entityName, String entityTypePrefix, String entityType){		
-			
-		if(entityName.contains("?")) {
-			this.entityName = entityName;
-		} else {
-			this.entityName = "?" + entityName;}
-		this.entityTypePrefix = entityTypePrefix;
-		this.entityType = entityType;
-		
-		// check model variable key
-		if(!pfmv.PowerFlowModelVariablesMap.containsKey(varKey)) {			
-			System.out.print("The variable key is not contained in the PF model variable keys");
-			PathArray = null;
-			VariablesList = null;
-			PrefixAbbrList = null;
-		} else {
-		PrefixAbbrList = Arrays.asList(OCPMATH, RDF, OPSMODE, RDFS, OCPSYST, OCPSYST);
-		// case 1: build the query path for generator CostFunc
-		if(varKey == pfmv.genCostFuncKey) {
-			String paraClassName;
-			if(pfmv.piecewiseOrPolynomial == true) { // the cost objective function is piecewise
-				paraClassName = pfmv.GenCostFuncPara[0];} //The parameter class is genCostcn-1	
-			else {
-				paraClassName = pfmv.GenCostFuncPara[1]; //The parameter class is genCostcn-2	
-				}
-			List<String> varList = new ArrayList<String>(); 
-			for(String varType: pfmv.PowerFlowModelVariablesMap.get(varKey)) {
-				varList.add(varType);	
-				List<String> path = Arrays.asList("OCPMATH:hasModelVariable", "rdf:type", "OPSMODE:" + varType, "OCPSYST:hasValue", "OCPSYST:numericalValue");
-			    PathArray.add(path);
-			}
-
-			for(int i = 0; i<= pfmv.pointsOfPiecewiseOrcostFuncOrder; i++) {
-					String paraLabel = pfmv.GenCostFuncParameterLabels[i];
-					varList.add(paraLabel);	
-					List<String> path = Arrays.asList("OCPMATH:hasModelVariable", "rdf:type", "OPSMODE:" + paraClassName,
-							"rdfs:label", "\"" + paraLabel + "\"","OCPSYST:hasValue", "OCPSYST:numericalValue");
-					PathArray.add(path);					
-				}
-			VariablesList = varList;												
-		} 
-		
-		//Case 2: build the query path for busModel, branchModel, and genModel
-		if (varKey != pfmv.genCostFuncKey) {
-			List<String> varList = pfmv.PowerFlowModelVariablesMap.get(varKey);
-			for(String varType: varList) {
-			    List<String> path = Arrays.asList(OCPMATH, "hasModelVariable", RDF, "type", OPSMODE, varType, OCPSYST, "hasValue", OCPSYST, "numericalValue");
-			    PathArray.add(path);}	
-			VariablesList = varList;	
-		}
-		}
+	public ArrayList<List<String>> prefixList = new ArrayList<List<String>>();
+	public List<String> selectClause = new ArrayList<String>();
+	public ArrayList<List<String>> whereClause = new ArrayList<List<String>>();
+	public ArrayList<List<String>> insertClause = new ArrayList<List<String>>();
+	public ArrayList<List<String>> deleteClause = new ArrayList<List<String>>();
+	public ArrayList<List<String>> optionalClause = new ArrayList<List<String>>();
+	public boolean queryFlag;
+	public boolean updateFlag;
+	public boolean distinctFlag = true;
+	public boolean reducedFlag = false;
+	public int limit = -1;
+	
+	public  ClauseBuilder(boolean queryFlag, boolean updateFlag) {
+		if((queryFlag && updateFlag) || (!queryFlag && !updateFlag)) {
+			System.out.print("The queryFlag and updateFlag cannot be both true or false.");
+		    System.exit(0);
+		}else {
+			this.queryFlag = queryFlag;
+			this.updateFlag = updateFlag;
+		}		
 	}
+	
+	/**
+	 * queryClauseBuilder is designed for creating the QUERY clauses
+	 * 
+	 * @entityName : the entity name of the query.
+	 * @entityType : the entity type.
+	 * @PrefixAbbrList : a list contains the abbreviations of Prefix. The abbreviation pattern follows the PrefixToUrlMap.
+	 * @VariablesList : a list contains the query variables used to construct the selectClause.
+	 * @variableTypePrefix : the abbreviated Prefix of variables.
+	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
+	 * @querySentence : a sentence pattern collection used to construct the query body (e.g. whereClause).
+	 * @labelMap : if label is needed in constructing the query body, a label map need to be specified. The key is the variable whose going to be labeled. 
+	 *             The value is the list of label. If no labels are need, it is set to null.
+	 *  
+	 * All the arguments should be passed from an attribute value of an instance of the KG which will be queried/updated.
+	 */
+	//TODO: overload ClauseBuilder with querySentence, insertSentence, deleteSentence....; overload the method for no arguments
+	public void queryClauseBuilder(String entityName, String entityType, List<String> PrefixAbbrList, 
+			List<String> VariablesList, String variableTypePrefix, String varNameIdentifier, List<String> querySentence, HashMap<String, List<String>>labelMap ){		
+		
+		// check query mode: 		
+		if(!this.queryFlag){
+			System.out.print("The method is for query only.");
+		    System.exit(0);}
+		
+		//check query sentence
+		int sentenceLen = querySentence.size();
+		if (sentenceLen % 2 != 0) {
+			System.out.print("The lenght of querySentence is " + sentenceLen + " .");
+			System.out.print("The lenght of querySentence should be even integer and it should be formated in p-o pairs.");
+		    System.exit(0);}
+		
+		//set up prefixList	
+		for(String pre: PrefixAbbrList) {
+			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
+			List<String> prefixPair = Arrays.asList(pre, prefixiri);
+			this.prefixList.add(prefixPair);
+		}		
+		
+		// initialise selectClause and whereClause with the query entity
+		if(!entityName.contains("?")) {
+			this.entityName = "?" + entityName;}
+		this.entityType = entityType;
+		this.selectClause.add(this.entityName);	
+		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityType);
+		this.whereClause.add(entityTypeTriple);
+		
+		//case 1: set the selectClause and whereClause without labels
+		if(labelMap == null) {
+		for(String var : VariablesList) {//set the selectClause
+			String selectName = querySentence.get(querySentence.size() - 1) + var;
+			this.selectClause.add(selectName);
+		}				
+		for(String var : VariablesList) {// set up whereClause
+			for(int i = -1; i < querySentence.size() - 2; i+=2) {
+				if(i == -1) {
+					List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + var);
+					this.whereClause.add(spo);
+				} else {
+					List<String> spo = Arrays.asList(querySentence.get(i)+var, querySentence.get(i+1), querySentence.get(i+2) + var);
+					this.whereClause.add(spo);					
+				}				
+			}
+			List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", variableTypePrefix + ":" + var);
+			this.whereClause.add(varTypeTriple);	
+		  }
+		}		
+		
+		//case 2: set up selectClause and whereClause with labels
+		if(labelMap != null) {
+			for(String var : VariablesList) {//set the selectClause
+				String selectName = querySentence.get(querySentence.size() - 1) + var;
+				this.selectClause.add(selectName);}		
+			for(String var : VariablesList) {// set up whereClause
+				for(int i = -1; i < querySentence.size() - 2; i+=2) {
+					if(i == -1) {
+						List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + var);
+						this.whereClause.add(spo);
+					} else {
+						List<String> spo = Arrays.asList(querySentence.get(i)+var, querySentence.get(i+1), querySentence.get(i+2) + var);
+						this.whereClause.add(spo);					
+					}				
+				}
+				List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", variableTypePrefix + ":" + var);
+				this.whereClause.add(varTypeTriple);	
+			  }					
+			for(String key: labelMap.keySet()) {// key is the variable name needed to be labeled
+				for(String label:labelMap.get(key)) {
+					for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
+						if(i == -1) {
+							List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
+							this.whereClause.add(spo);
+						} else {
+							List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
+							this.whereClause.add(spo);					
+						}	
+				    }
+					List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
+					List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  variableTypePrefix + ":" + key);
+					this.whereClause.add(labelTriple);
+					this.whereClause.add(varTypeTriple);
+					String selectName = querySentence.get(querySentence.size() - 1) + label;
+					this.selectClause.add(selectName);
+			     }				
+			}			
+		}
+		}
 	
 	 public static void main(String[] args) {
 		  
-		  PowerFlowModelVariable pfmv = new PowerFlowModelVariable(false, 2);	
-		  ClauseBuilder pb = new ClauseBuilder("GenCostFuncVariables", pfmv);
-		  ArrayList<List<String>> pa = pb.PathArray;
-		  List<String> var = pb.VariablesList;
-		  for(int i = 0; i < pa.size(); i++) { 
-			   List<String> res = pa.get(i);
-			   System.out.println(res); 
-			   }
-		  System.out.println(var); 
+		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
+		  ClauseBuilder pb = new ClauseBuilder(true, false);
+		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
+		  pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, vl, pfmv.variableTypePrefix,
+				  pfmv.varNameIdentifier, pfmv.queryModelVariableSentence, pfmv.labelMap);
+		  ArrayList<List<String>> wc  = pb.whereClause;
+		  Printer.printArrayList(wc);
+		  ArrayList<List<String>> pl  = pb.prefixList;
+		  Printer.printArrayList(pl);
+		  System.out.println(pb.selectClause); 
 	 }
+	 
+	 
 }
