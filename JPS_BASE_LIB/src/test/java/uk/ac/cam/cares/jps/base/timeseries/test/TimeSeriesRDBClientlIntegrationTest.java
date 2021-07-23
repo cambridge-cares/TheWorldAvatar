@@ -98,37 +98,15 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	}
 
 	@Test
-	public void testInitCentralTable() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		// Initialise central lookup table
-		Method initCentral = client.getClass().getDeclaredMethod("initCentralTable");
-		initCentral.setAccessible(true);
-		initCentral.invoke(client);
-		// Check that only one table was created
-		Assert.assertEquals(1, context.meta().getTables().size());
-		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
-		Assert.assertEquals(4, context.meta().getTables().get(0).fields().length);
-	}
-
-	@Test
-	@Ignore("Should not happen, as initCentralTable is now private - to be removed later")
-	public void testInitCentralTableWhenAlreadyExists() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		// Initialise central lookup table
-		Method initCentral = client.getClass().getDeclaredMethod("initCentralTable");
-		initCentral.setAccessible(true);
-		initCentral.invoke(client);
-		// Run method again (should not do anything)
-		initCentral.invoke(client);
-		// Check that only one table was created
-		Assert.assertEquals(1, context.meta().getTables().size());
-		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
-		Assert.assertEquals(4, context.meta().getTables().get(0).fields().length);
-	}
-
-	@Test
 	public void testInitTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
 		client.initTimeSeriesTable(dataIRI, dataClass, null);
 		// Check that timeseries table was created in addition to central table
 		Assert.assertEquals(2, context.meta().getTables().size());
+		
+//		// Check that only one table was created
+//		Assert.assertEquals(1, context.meta().getTables("dbTable").size());
+//		// Check that the table has four columns (timeseries IRI, timseries table, data IRI, column name)
+//		Assert.assertEquals(4, context.meta().getTables("dbTable").fields().length);
 
 		// Retrieve the value of the private field 'dbTableName' of the client to check its value
 		Field tableNameField = client.getClass().getDeclaredField("dbTableName");

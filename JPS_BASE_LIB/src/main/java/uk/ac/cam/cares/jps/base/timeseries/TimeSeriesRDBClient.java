@@ -163,25 +163,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 
 	/**
-	 * Initialise central database lookup table
-	 */
-	private void initCentralTable() {
-		try {
-			// Initialise connection and set jOOQ DSL context
-			connect();
-			
-			// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
-			context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
-				  .column(tsTableNameColumn).column(columnNameColumn).execute();
-			
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
-		} finally {			
-			disconnect();
-		}
-	}
-	
-	/**
 	 * Initialise RDB table for particular time series and add respective entries to central lookup table
 	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
@@ -201,8 +182,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Check if central database lookup table exists and create if not
 			if (context.meta().getTables(dbTableName).size() == 0) {
 				initCentralTable();
-				// Reconnect, as initCentralTable closes connection
-				connect();
 			}
 			
 			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
@@ -605,6 +584,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Initialise central database lookup table
+	 * <p>Requires existing RDB connection
+	 */
+	private void initCentralTable() {
+		// Initialise central lookup table: only creates empty table if it does not exist, otherwise it is left unchanged
+		context.createTableIfNotExists(dbTableName).column(dataIRIcolumn).column(tsIRIcolumn)
+			   .column(tsTableNameColumn).column(columnNameColumn).execute();
 	}
 	
 	/**
