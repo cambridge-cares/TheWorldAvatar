@@ -73,6 +73,13 @@ public class ExampleSparqlClient {
     	return result;
     }
     
+    public boolean isInputData(String instance) {
+    	String query = String.format("ask {<%s> a <%s>}", instance, (namespace + "InputData"));
+    	storeClient.setQuery(query);
+    	boolean result = storeClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    	return result;
+    }
+    
     public String createInputData() {
     	String inputIRI = namespace + UUID.randomUUID().toString();
     	
