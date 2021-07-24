@@ -33,9 +33,7 @@ public class InputAgent extends JPSAgent {
 		if (validateInput(requestParams)) {
 		    String input_iri = requestParams.getString(DerivedQuantityClient.AGENT_INPUT_KEY);
 		    
-		    if (ExampleConfig.props == null) {
-	    		ExampleConfig.initProperties();
-	    	}
+		    ExampleConfig.initProperties();
 		    
 		    TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
 	    	tsClient.setRdbURL(ExampleConfig.dburl);

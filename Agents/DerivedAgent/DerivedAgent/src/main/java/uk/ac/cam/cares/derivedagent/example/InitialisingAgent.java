@@ -1,12 +1,8 @@
 package uk.ac.cam.cares.derivedagent.example;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 import java.util.Random;
 import java.util.UUID;
 
@@ -15,11 +11,9 @@ import javax.servlet.annotation.WebServlet;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -48,9 +42,7 @@ public class InitialisingAgent extends JPSAgent{
     
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-    	if (ExampleConfig.props == null) {
-    		ExampleConfig.initProperties();
-    	}
+		ExampleConfig.initProperties();
     	RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
     	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
     	DerivedQuantityClient devClient = new DerivedQuantityClient(storeClient);

@@ -24,22 +24,24 @@ public class ExampleConfig{
 	private static final Logger LOGGER = LoggerFactory.getLogger(ExampleConfig.class);
 	
 	public static void initProperties() {
-		try {
-    		String credentials_file = Paths.get("main","resources","credentials.properties").toString();
-    		InputStream inputstream = new ClassPathResource(credentials_file).getInputStream();
-
-    		ExampleConfig.props = new Properties();
-    		ExampleConfig.props.load(inputstream);
-    		
-    		ExampleConfig.dburl = ExampleConfig.props.getProperty("db.url");
-    		ExampleConfig.dbuser = ExampleConfig.props.getProperty("db.user");
-    		ExampleConfig.dbpassword = ExampleConfig.props.getProperty("db.password");
-    		ExampleConfig.kgurl = ExampleConfig.props.getProperty("kg.url");
-    		ExampleConfig.kguser = ExampleConfig.props.getProperty("kg.user");
-    		ExampleConfig.kgpassword = ExampleConfig.props.getProperty("kg.password");
-		} catch (IOException e1) {
-			LOGGER.error(e1.getMessage());
-			throw new JPSRuntimeException(e1);
+		if (props == null) {
+			try {
+	    		String credentials_file = Paths.get("main","resources","credentials.properties").toString();
+	    		InputStream inputstream = new ClassPathResource(credentials_file).getInputStream();
+	
+	    		ExampleConfig.props = new Properties();
+	    		ExampleConfig.props.load(inputstream);
+	    		
+	    		ExampleConfig.dburl = ExampleConfig.props.getProperty("db.url");
+	    		ExampleConfig.dbuser = ExampleConfig.props.getProperty("db.user");
+	    		ExampleConfig.dbpassword = ExampleConfig.props.getProperty("db.password");
+	    		ExampleConfig.kgurl = ExampleConfig.props.getProperty("kg.url");
+	    		ExampleConfig.kguser = ExampleConfig.props.getProperty("kg.user");
+	    		ExampleConfig.kgpassword = ExampleConfig.props.getProperty("kg.password");
+			} catch (IOException e1) {
+				LOGGER.error(e1.getMessage());
+				throw new JPSRuntimeException(e1);
+			}
 		}
 	}
 }
