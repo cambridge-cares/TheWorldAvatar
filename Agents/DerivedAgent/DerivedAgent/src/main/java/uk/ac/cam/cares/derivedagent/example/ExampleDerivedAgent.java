@@ -15,11 +15,15 @@ package uk.ac.cam.cares.derivedagent.example;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -53,37 +57,106 @@ public class ExampleDerivedAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         String path = request.getServletPath();
+        JSONObject response = new JSONObject();
+        ExampleConfig.initProperties();
+        RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
+    	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
 
-        if (validateInput(requestParams,path)) {
+        if (validateInput(requestParams,path,sparqlClient)) {
+        	JSONArray inputs = requestParams.getJSONArray(DerivedQuantityClient.AGENT_INPUT_KEY);
+        	
+        	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
+        	
+        	String inputdata_iri;
+        	String createdInstance;
+        	
 	        switch (path) {
 	        	case URL_MINTIME:
 	        		LOGGER.info("Querying min time");
-	        	
+	        		inputdata_iri = inputs.getString(0);
+        			Integer mintime = tsClient.getMinTime(inputdata_iri);
+        			createdInstance = sparqlClient.createMinTime(mintime);
+        			LOGGER.info("created a new min time instance " + createdInstance);
+        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
+	        		break;
+	        	    
 	        	case URL_MAXTIME:
 	        		LOGGER.info("Querying max time");
+	        		inputdata_iri = inputs.getString(0);
+        			Integer maxtime = tsClient.getMinTime(inputdata_iri);
+        			createdInstance = sparqlClient.createMaxTime(maxtime);
+        			LOGGER.info("created a new max time instance " + createdInstance);
+        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
 	        		
+	        		break;
 	        	case URL_DURATION:
 	        		LOGGER.info("Processing duration");
+	        		Integer mintime_input = null; Integer maxtime_input = null;
+
+	        		// validate input should already ensure that one of them is a max time and the other is a min time
+	        		if (sparqlClient.isMaxTime(inputs.getString(0))) {
+	        			maxtime_input = sparqlClient.getValue(inputs.getString(0));
+	        			mintime_input = sparqlClient.getValue(inputs.getString(1));
+	        		} else if (sparqlClient.isMinTime(inputs.getString(0))) {
+	        			mintime_input = sparqlClient.getValue(inputs.getString(0));
+	        			maxtime_input = sparqlClient.getValue(inputs.getString(1));
+	        		}
+	        		
+	        		// calculate a new value and create a new instance
+	        		int timeduration = maxtime_input - mintime_input;
+	        		createdInstance = sparqlClient.createTimeDuration(timeduration);
+	        		LOGGER.info("created a new time duration instance " + createdInstance);
+	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
+	        		break;
 	        }
+        } else {
+        	LOGGER.error("Invalid input for " + path);
         }
         
-        return new JSONObject();
+        return response;
     }
 
-    public boolean validateInput(JSONObject requestParams,String path) throws BadRequestException {
+    public boolean validateInput(JSONObject requestParams, String path, ExampleSparqlClient sparqlClient) throws BadRequestException {
         boolean valid = false;
-        
+        JSONArray inputs = requestParams.getJSONArray(DerivedQuantityClient.AGENT_INPUT_KEY);
         switch (path) {
 	    	case URL_MINTIME:
-	    		LOGGER.info("Checking min time");
+	    		LOGGER.info("Checking input for min time");
+	    		
+	    		if (inputs.length() == 1) {
+	    			if (sparqlClient.isInputData(inputs.getString(0))) {
+	    				valid = true;
+	    			}
+	    		}
+	    		
 	    		break;
 	    	
 	    	case URL_MAXTIME:
-	    		LOGGER.info("Checking max time");
+	    		LOGGER.info("Checking input for max time");
+	    		
+	    		if (inputs.length() == 1) {
+	    			if (sparqlClient.isInputData(inputs.getString(0))) {
+	    				valid = true;
+	    			}
+	    		}
 	    		break;
 	    		
 	    	case URL_DURATION:
 	    		LOGGER.info("Checking duration");
+	    		
+	    		// if the first input is max time, the second one must be min time, and vice versa
+	    		if (inputs.length() == 2) {
+	    			if (sparqlClient.isMaxTime(inputs.getString(0))) {
+	    				if (sparqlClient.isMinTime(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			} else if (sparqlClient.isMinTime(inputs.getString(0))) {
+	    				if (sparqlClient.isMaxTime(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			}
+	    		}
+	    		
 	    		break;
 	    }
         
