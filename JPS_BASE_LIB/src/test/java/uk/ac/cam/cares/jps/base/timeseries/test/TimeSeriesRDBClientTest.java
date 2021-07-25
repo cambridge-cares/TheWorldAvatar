@@ -117,9 +117,9 @@ public class TimeSeriesRDBClientTest {
     	new File(filepath).delete();
     	// JPSRuntime error messages
     	String m1 = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
-    	String m2 = "TimeSeriesRDBClient: Properties file is missing \"url=<rdb_url>\" ";
-    	String m3 = "TimeSeriesRDBClient: Properties file is missing \"user=<rdb_username>\" ";
-    	String m4 = "TimeSeriesRDBClient: Properties file is missing \"password=<rdb_password>\" ";
+    	String m2 = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
+    	String m3 = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
+    	String m4 = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
     	// Test for non-existing properties file
     	boolean thrown = false;
     	try {
@@ -130,7 +130,7 @@ public class TimeSeriesRDBClientTest {
     	}
     	Assert.assertTrue(thrown);
     	// Test for missing Rdb URL
-    	writePropertyFile(filepath, Arrays.asList("user=test_user", "password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
     	thrown = false;
     	try {
@@ -141,7 +141,7 @@ public class TimeSeriesRDBClientTest {
     	}
     	Assert.assertTrue(thrown);
     	// Test for missing user name
-    	writePropertyFile(filepath, Arrays.asList("url=test_url", "password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.password=test_password"));
 	    // Try loading RDB configs
     	thrown = false;
     	try {
@@ -152,7 +152,7 @@ public class TimeSeriesRDBClientTest {
     	}
     	Assert.assertTrue(thrown);
     	// Test for missing password
-    	writePropertyFile(filepath, Arrays.asList("url=test_url", "user=test_user"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user"));
 	    // Try loading RDB configs
     	thrown = false;
     	try {
@@ -163,7 +163,7 @@ public class TimeSeriesRDBClientTest {
     	}
     	Assert.assertTrue(thrown);
     	// Test for proper URL, username and password
-    	writePropertyFile(filepath, Arrays.asList("url=test_url", "user=test_user", "password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
     	thrown = false;
     	try {

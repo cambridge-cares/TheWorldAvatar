@@ -119,18 +119,18 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
             prop.load(input);
             
             // Get the property values and assign
-            if (prop.containsKey("url")) {
-            	setRdbURL(prop.getProperty("url"));
+            if (prop.containsKey("db.url")) {
+            	setRdbURL(prop.getProperty("db.url"));
             } else {
             	throw new JPSRuntimeException("2");
             }
-            if (prop.containsKey("user")) {
-            	setRdbUser(prop.getProperty("user"));
+            if (prop.containsKey("db.user")) {
+            	setRdbUser(prop.getProperty("db.user"));
             } else {
             	throw new JPSRuntimeException("3");
             }
-            if (prop.containsKey("password")) {
-            	setRdbPassword(prop.getProperty("password"));
+            if (prop.containsKey("db.password")) {
+            	setRdbPassword(prop.getProperty("db.password"));
             } else {
             	throw new JPSRuntimeException("4");
             }
@@ -143,13 +143,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 						m = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
 						break;
 					case "2":
-						m = "TimeSeriesRDBClient: Properties file is missing \"url=<rdb_url>\" ";
+						m = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
 						break;
 					case "3":
-						m = "TimeSeriesRDBClient: Properties file is missing \"user=<rdb_username>\" ";
+						m = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
 						break;
 					case "4":
-						m = "TimeSeriesRDBClient: Properties file is missing \"password=<rdb_password>\" ";
+						m = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
 						break;
 					default:
 						throw new JPSRuntimeException(e.getMessage());							
