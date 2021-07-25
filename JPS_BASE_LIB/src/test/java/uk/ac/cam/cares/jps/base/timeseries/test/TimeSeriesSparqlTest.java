@@ -35,7 +35,7 @@ public class TimeSeriesSparqlTest {
     private final String tsIRI2 = "http://tsIRI2";
     private final List<String> dataIRI2 = Collections.singletonList("http://data4");
     private final String dbURL = "jdbc:postgresql:timeseries";
-    private final String timeUnit = "s";
+    private final String timeUnit = "http://s";
 
 	// Class that is used as the knowledge base client in the tests.
     // It will use a jena model to execute queries on.
