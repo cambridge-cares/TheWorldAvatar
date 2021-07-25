@@ -193,7 +193,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Ensure that there is a class for each data IRI
 			if (dataIRI.size() != dataClass.size()) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: Length of dataClass is different from number of data IRIs.");
+				throw new JPSRuntimeException("TimeSeriesRDBClient: Length of dataClass is different from number of data IRIs");
 			}
 
 			// Assign column name for each dataIRI; name for time column is fixed
@@ -211,7 +211,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
 			
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -229,6 +229,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     	try {
 			// Initialise connection and set jOOQ DSL context
 			connect();
+			
+			// Check if central database lookup table exists
+			if (context.meta().getTables(dbTableName).size() == 0) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet");
+			}
 	    	
 	    	// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 			for (String s : dataIRI) {
@@ -252,7 +257,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
 			
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -271,6 +276,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		try {
 			// Initialise connection and set jOOQ DSL context
 			connect();
+			
+			// Check if central database lookup table exists
+			if (context.meta().getTables(dbTableName).size() == 0) {
+				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet");
+			}
 
 			// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 			for (String s : dataIRI) {
@@ -323,7 +333,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	return new TimeSeries<>(timeValues, dataIRI, dataValues);
 	    	
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
