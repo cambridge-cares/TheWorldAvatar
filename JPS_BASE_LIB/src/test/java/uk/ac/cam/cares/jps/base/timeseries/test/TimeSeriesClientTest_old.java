@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
-public class TimeSeriesClientTest {
+public class TimeSeriesClientTest_old {
 	// timeseries is the name of your database, analogous to a triple-store endpoint
 	// you need to create this beforehand, for more info see https://jdbc.postgresql.org/documentation/80/connect.html
 	String dbURL = "jdbc:postgresql:timeseries"; 

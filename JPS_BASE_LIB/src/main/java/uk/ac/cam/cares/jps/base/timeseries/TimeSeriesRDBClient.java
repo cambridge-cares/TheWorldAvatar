@@ -81,7 +81,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	public String getTimeUnit() {
 		return timeUnit;
-	}
+	}	
 	
 	// Relational database properties (e.g. PostgreSQL)
 	public void setRdbURL(String rdbURL) {
@@ -154,7 +154,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 					default:
 						throw new JPSRuntimeException(e.getMessage());							
 				}
-				System.out.println(m);
 				throw new JPSRuntimeException(m);
 			} else {
 				e.printStackTrace();
