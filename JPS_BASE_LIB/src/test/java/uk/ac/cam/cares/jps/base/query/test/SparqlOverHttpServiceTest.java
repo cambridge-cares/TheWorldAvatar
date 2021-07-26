@@ -15,11 +15,15 @@ import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 
 public class SparqlOverHttpServiceTest {
@@ -44,7 +48,7 @@ public class SparqlOverHttpServiceTest {
     public void testExecutePost() throws Exception{
 //        HttpResponse expected = Mockito.mock(HttpResponse.class);
         HttpResponse expected;
-        HttpClient httpClient = Mockito.mock(HttpClient.class);
+//        HttpClient httpClient = Mockito.mock(HttpClient.class);
         HttpPost request = new HttpPost(updateUrl);
         request.setEntity(new StringEntity(formInsertQuery()));
 
@@ -74,8 +78,13 @@ public class SparqlOverHttpServiceTest {
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
         expected = HttpClientBuilder.create().build().execute(request);
         expected.setStatusCode(200);
-        Mockito.when(httpClient.execute(request)).thenReturn(expected);
-        Assert.assertTrue(testS.executePost(formInsertQuery()).contains(expected.getEntity().toString()));
+
+        try (MockedStatic<HttpClientBuilder> httpClient = Mockito.mockStatic(HttpClientBuilder.class)) {
+            httpClient.when(() -> HttpClientBuilder.create().build().execute(request)).thenReturn(expected);
+            Assert.assertTrue(testS.executePost(formInsertQuery()).contains(expected.getEntity().toString()));
+
+        }
+
 
         testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.RDF4J, queryUrl, updateUrl);
         Assert.assertTrue(testS.executePost(formInsertQuery()).contains(expected.getEntity().toString()));
