@@ -56,7 +56,11 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
         data_out[FORMAL_CHARGE] = data[FORMAL_CHARGE]
 
     data_out[GEOM_STRING] = geom_info(data)
-    data_out[BOND_STRING] = obGetMolBonds(xyz)
+    bonds_info = obGetMolBonds(xyz)
+    bonds_info_line = [str(bond['beginAtom']['atomId'])+' '
+                      +str(bond['endAtom']['atomId'])+' '
+                      +str(bond['order']) for bond in bonds_info]
+    data_out[BOND_STRING] = ' '.join(bonds_info_line)
     # add atoms positions!
     data_out[ATOMS_CAN_POSITIONS] = xyzToAtomsPositions(xyz)
 
