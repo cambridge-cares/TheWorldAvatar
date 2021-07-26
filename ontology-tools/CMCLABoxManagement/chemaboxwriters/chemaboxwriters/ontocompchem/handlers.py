@@ -9,11 +9,11 @@ QC_JSON_TO_OC_JSON = StageHandler(handlerFunc=compchem_ocjson_abox_from_string,
                              inStage=aboxStages.QC_JSON,
                              outStage=aboxStages.OC_JSON,
                              fileWriter=jsonStringToFile,
-                             fileExt='.oc_json')
+                             fileExt='.oc.json')
 
 OC_JSON_TO_CSV = StageHandler(handlerFunc=compchem_csv_abox_from_string,
                             inStage=aboxStages.OC_JSON,
                             outStage=aboxStages.CSV,
                             fileWriter= writeFile,
                             fileWriterKwargs={'newline':''},
-                            fileExt='.csv')
+                            fileExt='.oc.csv')

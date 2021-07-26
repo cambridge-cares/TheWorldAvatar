@@ -11,11 +11,11 @@ QC_LOG_TO_QC_JSON = StageHandler(handlerFunc=parseLog,
                        outStage=aboxStages.QC_JSON,
                        disableFileToStrConv=True,
                        fileWriter=jsonStringToFile,
-                       fileExt='.qc_json')
+                       fileExt='.qc.json')
 
 CSV_TO_OWL = StageHandler(handlerFunc=convert_csv_string_into_rdf,
                     inStage=aboxStages.CSV,
                     outStage=aboxStages.OWL,
                     fileWriter= writeFile,
                     fileWriterKwargs={'newline':''},
-                    fileExt='.owl')
+                    fileExt='.oc.owl')
