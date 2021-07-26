@@ -21,13 +21,13 @@ public class TimeSeries<T> {
 
     /**
      * Standard constructor
-     * @param times
-     * @param dataIRI
-     * @param values
+     * @param times: list of timestamps
+     * @param dataIRI: list of data IRIs provided as string
+     * @param values: list of list of values containing the data for each data IRI
      */
 	public TimeSeries(List<T> times, List<String> dataIRI, List<List<?>> values) {
         this.times = times;
-        this.values = new HashMap<String, List<?>>();
+        this.values = new HashMap<>();
         
         // Check validity of provided input parameters
         if (dataIRI.size() == 0) {
@@ -48,8 +48,7 @@ public class TimeSeries<T> {
     }
     
 	/**
-	 *  Method to get time steps of timeseries
-	 * @return
+	 *  Method to get timestamps of timeseries
 	 */
 	public List<T> getTimes() {
     	return times;
@@ -57,8 +56,7 @@ public class TimeSeries<T> {
 	
     /**
      * Various methods to get values in a specific class
-     * @param dataIRI
-     * @return
+     * @param dataIRI: data IRI provided as string
      */
     public List<Double> getValuesAsDouble(String dataIRI) {
     	List<?> v = getValues(dataIRI);
@@ -83,13 +81,12 @@ public class TimeSeries<T> {
     }
     
     public List<String> getValuesAsString(String dataIRI) {
-    	return values.get(dataIRI).stream().map(value -> ((Object) value).toString()).collect(Collectors.toList());
+    	return values.get(dataIRI).stream().map(Object::toString).collect(Collectors.toList());
     }
     
     /**
      * Method to get values column in whatever form returned from the jooq API (not recommended!)
-     * @param dataIRI
-     * @return
+     * @param dataIRI: data IRI provided as string
      */
     public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);
@@ -97,16 +94,10 @@ public class TimeSeries<T> {
     
     /**
      * Method to get dataIRIs of timeseries
-     * @return
+     * @return List of strings representing the data IRIs
      */    
-    public List<String> getDataIRI() {
+    public List<String> getDataIRIs() {
         Collection<String> keys = values.keySet();
-        List<String> dataIRI = new ArrayList<String>();
-        
-        for (String s : keys) {
-        	dataIRI.add(s);
-        }
-        
-        return dataIRI;
+        return new ArrayList<>(keys);
     }
 }

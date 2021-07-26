@@ -1,13 +1,17 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
-
 import org.jooq.SQLDialect;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.Ignore;
+import java.io.*;
+
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
 import java.time.Instant;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class provides unit tests for the TimeSeriesRDBClient class
@@ -102,5 +106,88 @@ public class TimeSeriesRDBClientTest {
         client.setRdbPassword("password");
         Assert.assertNotNull(rdbPasswordField.get(client));
         Assert.assertEquals("password", rdbPasswordField.get(client));
+    }
+    
+    @Test
+    @Ignore("Overrides potentially existing timeseries.properties file in \"src/main/resources/\"")
+    public void testLoadRdbConfig () {
+    	TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
+    	String filepath = "src/test/resources/timeseries.properties";
+    	// Delete potentially existing properties file
+    	new File(filepath).delete();
+    	// JPSRuntime error messages
+    	String m1 = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
+    	String m2 = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
+    	String m3 = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
+    	String m4 = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
+    	// Test for non-existing properties file
+    	boolean thrown = false;
+    	try {
+    		client.loadRdbConfigs(filepath);
+    	} catch (Exception e) {
+    		Assert.assertEquals(m1, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for missing Rdb URL
+    	writePropertyFile(filepath, Arrays.asList("db.user=test_user", "db.password=test_password"));
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs(filepath);
+    	} catch (Exception e) {
+    		Assert.assertEquals(m2, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for missing user name
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.password=test_password"));
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs(filepath);
+    	} catch (Exception e) {
+    		Assert.assertEquals(m3, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for missing password
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user"));
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs(filepath);
+    	} catch (Exception e) {
+    		Assert.assertEquals(m4, e.getMessage());
+    		thrown = true;
+    	}
+    	Assert.assertTrue(thrown);
+    	// Test for proper URL, username and password
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user", "db.password=test_password"));
+	    // Try loading RDB configs
+    	thrown = false;
+    	try {
+    		client.loadRdbConfigs(filepath);
+    	} catch (Exception e) {
+    		thrown = true;
+    	}
+    	Assert.assertFalse(thrown);
+    	Assert.assertEquals("test_url", client.getRdbURL());
+    	Assert.assertEquals("test_user", client.getRdbUser());
+    }
+    
+    private void writePropertyFile(String filepath, List<String> properties) {
+    	try {
+    		// Create empty properties file
+    		File file = new File(filepath);
+    		FileWriter writer = new FileWriter(file);
+    		// Populate file
+    		for (String s : properties) {
+    			writer.write(s + "\n");
+    		}
+    	    writer.close();
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	} 
     }
 }
