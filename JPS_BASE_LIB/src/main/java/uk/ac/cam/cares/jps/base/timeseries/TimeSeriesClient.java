@@ -42,6 +42,26 @@ public class TimeSeriesClient<T> {
     	rdbClient.loadRdbConfigs(filepath);
     	rdfClient.loadSparqlConfigs(filepath);   
     }
+    
+    /**
+	 * Setter for knowledge base client (in Sparql client)
+	 * @param kbClient: Knowledge base client used to query and update the knowledge base containing timeseries information with already specified endpoint (triplestore/owl file)
+	*/
+    public void setKBClient(StoreClientInterface kbClient) {    	
+    	this.rdfClient.setKBClient(kbClient);
+    }
+    
+    /**
+	 * Setter for URL and credentials for the relational database (in RDB Client)
+	 * @param rdbURL: URL to relational database (e.g. postgreSQL)
+	 * @param user: username to access relational database
+	 * @param password: password to access relational database 
+	*/
+    public void setRDBClient(String rdbURL, String user, String password) {    	
+    	this.rdbClient.setRdbURL(rdbURL);
+    	this.rdbClient.setRdbUser(user);
+    	this.rdbClient.setRdbPassword(password);
+    }
 
 
 }
