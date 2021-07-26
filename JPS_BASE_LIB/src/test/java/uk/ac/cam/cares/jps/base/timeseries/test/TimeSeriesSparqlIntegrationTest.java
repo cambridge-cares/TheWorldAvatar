@@ -37,8 +37,6 @@ public class TimeSeriesSparqlIntegrationTest {
 		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
 		// Default namespace in blazegraph is "kb", but in production a specific one should be created
 		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
-		// When using local development environment URL (instead of testcontainers, e.g. for easier debugging, etc.):
-		//String endpoint = "http://localhost:9999/blazegraph/namespace/kb/sparql";
 		kbClient.setUpdateEndpoint(endpoint);
 		kbClient.setQueryEndpoint(endpoint);
 		// Initialise TimeSeriesSparql client with kb client

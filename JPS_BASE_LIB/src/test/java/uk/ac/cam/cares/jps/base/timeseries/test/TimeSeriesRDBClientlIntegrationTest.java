@@ -1,18 +1,13 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.OptionalDouble;
-import java.util.Collection;
 
 import org.junit.*;
 import org.jooq.DSLContext;
