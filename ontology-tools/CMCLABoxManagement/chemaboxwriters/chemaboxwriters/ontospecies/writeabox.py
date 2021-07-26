@@ -11,7 +11,7 @@ def write_ospecies_abox(fileOrDir, inpFileType, outDir, qcLogExt):
     try:
         inStage = aboxStages[inpFileType.upper()]
     except KeyError as e:
-        raise KeyError('Error: Wrong --os-inp-file-type="' + inpFileType+'"') from e
+        raise KeyError('Error: Wrong --inp-file-type="' + inpFileType+'"') from e
 
     if inStage == aboxStages.QC_LOG:
         fileExt = qcLogExt.split(',')
