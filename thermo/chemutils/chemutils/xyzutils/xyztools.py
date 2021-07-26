@@ -120,9 +120,12 @@ def xyzToAtomsPositions(xyzFileOrStr):
     if molFragsDetect is not None:
         print('Warning: Provided xyz file contains two molecular fragments:',chemFormula)
 
-    # check for duplicates!
-    #atomsPositionsList = list(atomsPositions.values())
-
+    # check for duplicate and None values at the end
+    hasDuplicates = len(atomsPositions.values()) > len(set(atomsPositions.values()))
+    hasNones = None in atomsPositions.values()
+    if hasDuplicates or hasNones:
+        print('Error: atom canoncial positions algorithm has failed.')
+        atomsPositions= {}
     return atomsPositions
 
 def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
