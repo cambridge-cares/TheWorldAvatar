@@ -11,6 +11,7 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 from datetime import datetime
 from geomet import wkt
 import shapely.wkt
+import seaborn as sb 
 import json
 import imageio
 import rdflib
@@ -526,10 +527,10 @@ for i in range(len(elec_tensor)):
         monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
 
 # define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax'
+temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
 # define amount of heat pump uptake 
 uptake = 0.5 
-month = 6
+month = 1
 month_str = months[month]
 
 # getting mean min or max tensor
@@ -670,6 +671,8 @@ for i in range(len(gas_values)):
 
 
 ## CODE FOR PLOTTING *IN* PYTHON
+
+
 df = pd.DataFrame(unique_LSOA)
 df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
 df['geom_str'] = list([str(x) for x in shapes_of_interest])
@@ -682,7 +685,12 @@ df['cop']    = list(cop_values)
 df['fuel_poor_percen'] = list(np.around(100*poverty_values,decimals=3))
 df['remaining_gas']    = list(np.around(remaining_gas_values,decimals=3))
 df['remaining_elec']   = list(np.around(remaining_elec_values,decimals=3))
+scaled_delta_elec = (delta_elec_values-np.mean(delta_elec_values))/(np.std(delta_elec_values))
+scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
+inequality = scaled_delta_elec - scaled_fuel_pov
+df['inequality']   = list(np.around(inequality,decimals=3))
 # specifying geodata frame
+
 my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
 my_geo_df = my_geo_df.set_crs("EPSG:4326")
 print('Converting to Mercator projection (better than WGS84 for UK)')
@@ -691,40 +699,86 @@ print('Change of projection completed!')
 plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif')
 import os
+from matplotlib.colors import ListedColormap
+from matplotlib import cm
 
-vars      = ['temp','gas','elec','cop','fuel_poor_percen']
-var_names = ['Mean Air Temperature (°C)','Gas Consumption (kWh)','Electricity Consumption(kWh)','Coefficient of Performance (-)','''Fuel Poverty (%)''']
-def plot_variables(vars,var_names):
+top = cm.get_cmap('coolwarm', 128)
+
+newcolors = np.vstack((top(np.linspace(0, 1, 128)),
+                       np.flip(top(np.linspace(0, 1, 128)),axis=0)))
+
+newcmp = ListedColormap(newcolors, name='ineq')
+
+vars      = ['temp','gas','elec','cop','fuel_poor_percen','delta_elec','inequality']
+var_names = ['Mean Air Temperature (°C)','Gas Consumption (kWh)','Electricity Consumption(kWh)','Coefficient of Performance (-)','''Fuel Poverty ($\%$)''','''$\Delta$ Electricity (kWh)''','Inequality Index (-)']
+def plot_variables(vars,var_names,separate,inset):
     print('Beginning plot...')
     color_theme = 'coolwarm'
-    fig,axs = plt.subplots(1,len(vars),figsize=(3*len(vars),5))
-    plt.subplots_adjust(wspace=0,left=0.0,right=1)
-    for i in range(len(vars)):
-        divider = make_axes_locatable(axs[i])
-        cax1    = divider.append_axes("right", size="5%", pad=0.05)
-        tl      = my_geo_df.plot(column=vars[i],cmap=color_theme,\
-            antialiased=False,\
-            ax=axs[i],\
-            legend=True,\
-            cax=cax1)
-        axs[i].set_xticks([])
-        axs[i].set_yticks([])
-        axs[i].set_title(var_names[i])
-        # axs[i].set_xlabel('Longitude')
-        # axs[i].set_ylabel('Latitude')
-        axins2 = zoomed_inset_axes(axs[i], zoom=4, loc=1)
-        plt.setp(axins2.get_xticklabels(), visible=False)
-        plt.setp(axins2.get_yticklabels(), visible=False)
-        axins2.set_xticks([])
-        axins2.set_yticks([])
-        axins2.set_ylim(7.025E6,7.175E6)
-        axins2.set_xlim(-300000,-180000)
-        my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
-        mark_inset(axs[i],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
-    plt.show()
-    return 
+    if separate == False:
+        fig,axs = plt.subplots(1,len(vars),figsize=(3*len(vars),5))
+        plt.subplots_adjust(wspace=0,left=0.0,right=1)
+        for i in range(len(vars)):
+            divider = make_axes_locatable(axs[i])
+            cax1    = divider.append_axes("right", size="5%", pad=0.05)
+            tl      = my_geo_df.plot(column=vars[i],cmap=color_theme,\
+                antialiased=False,\
+                ax=axs[i],\
+                legend=True,\
+                cax=cax1)
+            axs[i].set_xticks([])
+            axs[i].set_yticks([])
+            axs[i].set_title(var_names[i])
+            # axs[i].set_xlabel('Longitude')
+            # axs[i].set_ylabel('Latitude')
+            if inset == True:
+                axins2 = zoomed_inset_axes(axs[i], zoom=4, loc=1)
+                plt.setp(axins2.get_xticklabels(), visible=False)
+                plt.setp(axins2.get_yticklabels(), visible=False)
+                axins2.set_xticks([])
+                axins2.set_yticks([])
+                axins2.set_ylim(7.025E6,7.175E6)
+                axins2.set_xlim(-300000,-180000)
+                my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
+                mark_inset(axs[i],axins2,loc1=2,loc2=4,fc='none',ec='0.5')
+        plt.savefig('geospatial_together.png')
+    else:
+        
+        for i in range(len(vars)):
+            if i == len(vars)-1:
+                color_theme = newcmp
+            fig = plt.figure(figsize=(3,5))
+            plt.subplots_adjust(left=0,bottom=0.064,right=0.906,top=0.9)
+            plt.tight_layout()
+            axs = plt.axes()
+            divider = make_axes_locatable(axs)
+            cax1    = divider.append_axes("right", size="5%", pad=0.05)
+            tl      = my_geo_df.plot(column=vars[i],cmap=color_theme,\
+                antialiased=False,\
+                ax = axs,\
+                legend=True,\
+                cax=cax1)
+            axs.set_xticks([])
+            axs.set_yticks([])
+            axs.set_title(var_names[i])
+            # axs[i].set_xlabel('Longitude')
+            # axs[i].set_ylabel('Latitude')
+            if inset == True:
+                axins2 = zoomed_inset_axes(axs, zoom=4, loc=1)
+                plt.setp(axins2.get_xticklabels(), visible=False)
+                plt.setp(axins2.get_yticklabels(), visible=False)
+                axins2.set_xticks([])
+                axins2.set_yticks([])
+                axins2.set_ylim(7.025E6,7.175E6)
+                axins2.set_xlim(-300000,-180000)
+                my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
+                mark_inset(axs,axins2,loc1=2,loc2=4,fc='none',ec='0.5')
+            plt.savefig('figure_output/geospatial_separate'+str(i)+'.png') 
 
-plot_variables(vars,var_names)
+    return 
+    
+separate = True 
+inset = False
+plot_variables(vars,var_names,separate,inset)
 
 geojson_creation = False 
 if geojson_creation == True:
