@@ -644,7 +644,10 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		for (String i : outputResponses_map.keySet()) {
 			output_subtype = output_subtype.concat(" subtype_"+i);
 		}
+		String active_and_output_subtype = new String();
+		active_and_output_subtype = active_subtype + output_subtype;
 		
+		 
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 		
 		LinkedHashMap<String, String> algoInitial = new LinkedHashMap<String, String>();
@@ -656,7 +659,7 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, String> algoDataAlgorithm = new LinkedHashMap<String, String>();
 
 		algoDataAlgorithm.put("algorithm_type", "Read_previous");
-		algoDataAlgorithm.put("param_subtypes", active_subtype.substring(1));
+		algoDataAlgorithm.put("param_subtypes", active_and_output_subtype.substring(1));
 		algoDataAlgorithm.put("objective_function", "SumOfSquares");
 		algoDataAlgorithm.put("output_by_case", "false");
 		algoDataAlgorithm.put("output_values", "false");
@@ -770,10 +773,12 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// output response
 		for (String i : outputResponses) {
 			Parameter param = new Parameter();
-			param.setType("active_input");
+			param.setType("active_output");
 			param.setName(i);
 			param.setSubtype("subtype_"+i);
 			param.setPreserveWhiteSpace("true");
+			param.setCaseDetailSep(";");
+			param.setNParamsPerCase("1");
 			param.setScaling("linear");
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
@@ -787,10 +792,10 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 			initialRead.put("row", "0");
 			initialRead.put("file_name", "MODS_SIM_INITFILE__cases.csv");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_factor", "1");
-			initialRead.put("ub_factor", "1");
-			initialRead.put("lb_added", String.valueOf(minVariableInitial));
-			initialRead.put("ub_added", String.valueOf(maxVariableInitial));
+			initialRead.put("lb_factor", "1.0");
+			initialRead.put("ub_factor", "1.0");
+			initialRead.put("lb_addend", String.valueOf(minVariableInitial));
+			initialRead.put("ub_addend", String.valueOf(maxVariableInitial));
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
 			param.setFileHash(fileHash);
