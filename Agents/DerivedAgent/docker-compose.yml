@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  derivedagent:
+    container_name: derivedagent
+    image: derivedagent:1.0.0
+    build:
+      context: ./
+    ports:  
+      - "8001:8000"
+      - "8081:8080" 
+
+  blazegraph:
+    container_name: "blazegraph"
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    restart: unless-stopped
+    # Add a secret to set the password for BASIC authentication
+    secrets: # username is bg_user
+      - blazegraph_password
+    ports:
+      - "8889:8080"
+    volumes:
+      - blazegraph_data:/data
+
+  postgres:
+    container_name: "postgres"
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    image: docker.cmclinnovations.com/postgres:13.3-alpine
+    restart: unless-stopped
+    secrets: # username is postgres
+      - postgres_password
+    ports:
+      - "7432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+secrets:
+  blazegraph_password:
+    file: credentials/blazegraph_password
+  postgres_password:
+    file: credentials/postgres_password
+
+volumes:
+  blazegraph_data:
+    name: "blazegraph_data"
+  postgres_data:
+    name: "postgres_data"
+  
