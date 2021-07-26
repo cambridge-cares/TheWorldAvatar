@@ -6,23 +6,36 @@ import java.util.List;
 
 import org.junit.*;
 
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Requires triple store endpoint set up and running")
+@Ignore("Requires triple store endpoint set up and running (using testcontainers)")
+@Testcontainers
 public class TimeSeriesSparqlIntegrationTest {
 
 	private static TimeSeriesSparql sparqlClient;
 
+	// Will create a container that is shared between tests.
+	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+	@Container
+	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+			.withExposedPorts(9999);
+
 	@BeforeClass
 	public static void initialiseSparqlClient() {
+		// Start the container manually
+		blazegraph.start();
 		// Set up a kb client that points to the location of the triple store
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
 		RemoteStoreClient kbClient = new RemoteStoreClient();
-		// Set path to local Triple Store instance - when working with Blazegraph:
-		// Port needs to be adjusted depending on local environment settings
-		// Namespace "timeseries" needs to be created beforehand
-		String endpoint = "http://localhost:9999/blazegraph/namespace/timeseries/sparql";
+		// Set endpoint to the triple store. The host and port are read from the container
+		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
+		// Default namespace in blazegraph is "kb", but in production a specific one should be created
+		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
 		kbClient.setUpdateEndpoint(endpoint);
 		kbClient.setQueryEndpoint(endpoint);
 		// Initialise TimeSeriesSparql client with kb client
