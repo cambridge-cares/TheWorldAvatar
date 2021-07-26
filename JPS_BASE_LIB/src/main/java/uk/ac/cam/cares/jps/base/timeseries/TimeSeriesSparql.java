@@ -3,8 +3,12 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -69,6 +73,58 @@ public class TimeSeriesSparql {
 	*/
 	public void setKBClient(StoreClientInterface kbClient) {
         this.kbClient = kbClient;
+	}
+	
+	/**
+	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
+	 * @param filepath: path to timeseries properties file
+	 */
+	public void loadSparqlConfigs(String filepath) {
+		try {
+			File file = new File(filepath);
+			
+			if (!file.exists()) {
+				throw new JPSRuntimeException("1");
+			}
+				
+			InputStream input = new FileInputStream(file);
+			
+			// Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+            
+            // Get the property values and assign
+            if (prop.containsKey("sparql.query.endpoint")) {
+            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+            } else {
+            	throw new JPSRuntimeException("2");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+            } else {
+            	throw new JPSRuntimeException("3");
+            }
+		} catch (Exception e) {
+			if (e instanceof JPSRuntimeException) {
+				String m = "";
+				switch (e.getMessage()) {
+					case "1":
+						m = "TimeSeriesSparql: No properties file found at specified filepath: " + filepath;
+						break;
+					case "2":
+						m = "TimeSeriesSparql: Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ";
+						break;
+					case "3":
+						m = "TimeSeriesSparql: Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ";
+						break;
+					default:
+						throw new JPSRuntimeException(e.getMessage());							
+				}
+				throw new JPSRuntimeException(m);
+			} else {
+				e.printStackTrace();
+			}			
+		}
 	}
     
 	/**

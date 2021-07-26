@@ -12,7 +12,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * It uses the TimeSeriesRDBClient class to interact with the relational database and the
  * TimeSeriesSparql class to interact with the Triple Store.
  * 
- * @author Markus Hofmeister & Niklas Kasenburg
+ * @author Markus Hofmeister, Niklas Kasenburg
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  */
 
@@ -24,19 +24,23 @@ public class TimeSeriesClient<T> {
     /**
      * Standard constructor
      * @param kbClient: Knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
-     * @param timeClass: Class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
+     * @param timeClass: Class type for the time values (to initialise RDB table)
+     * @param timeUnitIRI: IRI of time unit (to be instantiated in KB) - optional
      */
-    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass) {
+    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String timeUnitIRI) {
     	this.rdfClient = new TimeSeriesSparql(kbClient);
-    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);    	
+    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
+    	// mh807: Not sure if we actually need the timeUnit in the RDB client - potentially to be removed
+    	this.rdbClient.setTimeUnit(timeUnitIRI);
     }
     
     /**
-     * 
-     * @param propertiesfile
+     * Load properties for both RDB and RDF/SPARQL client
+     * @param filepath: (Relative) file path to properties file with respective information
      */
-    public void loadConfigs(String propertiesfile) {
-    	
+    public void loadConfigs(String filepath) {    	
+    	rdbClient.loadRdbConfigs(filepath);
+    	rdfClient.loadSparqlConfigs(filepath);   
     }
 
 
