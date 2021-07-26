@@ -21,6 +21,7 @@ public class TimeSeriesSparqlIntegrationTest {
 
 	// Will create a container that is shared between tests.
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
 	@Container
 	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 			.withExposedPorts(9999);
@@ -36,6 +37,8 @@ public class TimeSeriesSparqlIntegrationTest {
 		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
 		// Default namespace in blazegraph is "kb", but in production a specific one should be created
 		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
+		// When using local development environment URL (instead of testcontainers, e.g. for easier debugging, etc.):
+		//String endpoint = "http://localhost:9999/blazegraph/namespace/kb/sparql";
 		kbClient.setUpdateEndpoint(endpoint);
 		kbClient.setQueryEndpoint(endpoint);
 		// Initialise TimeSeriesSparql client with kb client

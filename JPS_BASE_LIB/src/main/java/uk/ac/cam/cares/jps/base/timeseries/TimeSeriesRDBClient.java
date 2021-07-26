@@ -397,7 +397,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	return queryResult.get(0);
 	    	
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -426,7 +426,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	return queryResult.get(0);
 	    	
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -456,7 +456,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
 
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -499,7 +499,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 			
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -531,7 +531,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	context.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException(e.getMessage());
 		} finally {			
 			disconnect();
 		}
@@ -545,21 +545,22 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Initialise connection and context to RDB
 	    	connect(); 
 	    	
-	    	// Retrieve all time series table names from central lookup table
-	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
-			List<String> queryResult = context.selectDistinct(tsTableNameColumn).from(dbTable).fetch(tsTableNameColumn);
-			
-			if (!queryResult.isEmpty()) {
-				for (String table : queryResult) {
-					
-					// Delete time series RDB table
-					context.dropTable(DSL.table(DSL.name(table))).execute();
-	
-				}
+			// Check if central database lookup table exists
+			if (context.meta().getTables(dbTableName).size() > 0) {
+	    	
+		    	// Retrieve all time series table names from central lookup table
+		    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
+				List<String> queryResult = context.selectDistinct(tsTableNameColumn).from(dbTable).fetch(tsTableNameColumn);
 				
-				// Delete central lookup table
-				context.dropTable(dbTable).execute();	
+				if (!queryResult.isEmpty()) {
+					for (String table : queryResult) {						
+						// Delete time series RDB table
+						context.dropTable(DSL.table(DSL.name(table))).execute();		
+					}					
+					// Delete central lookup table
+					context.dropTable(dbTable).execute();	
 				}
+			}
 			
 		} catch (Exception e) {
 			throw new JPSRuntimeException(e);

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalDouble;
 import java.util.Collection;
 
 import org.junit.*;
@@ -33,9 +34,7 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-	//private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
-	// Use local development environment URL for easier debugging
-	private static final String dbURL = "jdbc:postgresql:timeseries";
+	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
 	
@@ -55,6 +54,7 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	private static List<Integer> data3_1, data3_2; 
 	private static TimeSeries<Instant> ts1, ts2, ts3;	
 	private static List<List<?>> dataToAdd_1, dataToAdd_2, dataToAdd_3;
+	
 	@BeforeClass
 	// Connect to the database before any test (will spin up the Docker container for the database)
 	public static void connect() throws SQLException, ClassNotFoundException {
@@ -468,6 +468,294 @@ public class TimeSeriesRDBClientlIntegrationTest {
 							ts.getTimes());
 		Assert.assertEquals(ts2.getValues(iris.get(0)).subList(0, ts2.getTimes().size()),
 							ts.getValues(iris.get(0)));		
+	}
+	
+	@Test
+	public void testGetAggregates() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series table
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		
+		// Check for only one time series (with numerics data content)
+		String iri = dataIRI_1.get(0);
+		
+		// Test average
+		OptionalDouble ave = data1_1.stream().mapToDouble(a -> a).average();
+		Double ave_exp = ave.isPresent() ? ave.getAsDouble() : Double.POSITIVE_INFINITY; 
+		Double ave_act = client.getAverage(iri);		
+		Assert.assertEquals(ave_exp, ave_act, 1e-6);
+		
+		// Test minimum
+		OptionalDouble min = data1_1.stream().mapToDouble(a -> a).min();
+		Double min_exp = min.isPresent() ? min.getAsDouble() : Double.POSITIVE_INFINITY; 
+		Double min_act = client.getMinValue(iri);		
+		Assert.assertEquals(min_exp, min_act, 1e-6);
+	
+		// Test maximum
+		OptionalDouble max = data1_1.stream().mapToDouble(a -> a).max();
+		Double max_exp = max.isPresent() ? max.getAsDouble() : Double.NEGATIVE_INFINITY; 
+		Double max_act = client.getMaxValue(iri);		
+		Assert.assertEquals(max_exp, max_act, 1e-6);
+		
+		// Test Exception for non numerics data
+		iri = dataIRI_1.get(1);
+		try {
+			client.getAverage(iri);
+		} catch (Exception e) {
+			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
+		}
+	}
+	
+	@Test
+	public void testGetMinMaxTimes() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series table
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		
+		// Check for only one time series (with numerics data content)
+		String iri = dataIRI_1.get(0);
+		Instant min;
+		Instant max;
+		
+		// Test minimum time
+		min = client.getMinTime(iri);
+		Assert.assertEquals(timeList_1.get(0), min);
+		for (String i : dataIRI_1) {
+			Assert.assertEquals(min, client.getMinTime(i));
+		}
+		
+		// Test maximum time
+		max = client.getMaxTime(iri);
+		Assert.assertEquals(timeList_1.get(timeList_1.size()-1), max);
+		for (String i : dataIRI_1) {
+			Assert.assertEquals(max, client.getMaxTime(i));
+		}
+		
+		// Test Exception for non numerics data
+		iri = dataIRI_3.get(0);
+		try {
+			client.getMinTime(iri);
+		} catch (Exception e) {
+			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+								e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testDeleteRows() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series table
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		
+		// Check for time series with only one data IRI
+		List<String> iris = dataIRI_1.subList(0, 1);
+		String iri = iris.get(0);
+		TimeSeries<Instant> ts = client.getTimeSeries(iris);
+		Instant lb;
+		Instant ub;
+		
+		// Test for correct manipulation of time series length
+		Assert.assertEquals(timeList_1.size(), ts.getTimes().size());
+		// Delete latest time entry
+		lb = ts.getTimes().get(ts.getTimes().size()-1);
+		ub = ts.getTimes().get(ts.getTimes().size()-1);			
+		client.deleteRows(iri, lb, ub);
+		ts = client.getTimeSeries(iris);
+		Assert.assertEquals(timeList_1.size()-1, ts.getTimes().size());
+		Assert.assertEquals(timeList_1.subList(0, timeList_1.size()-1), ts.getTimes());
+		Assert.assertEquals(ts1.getValues(iri).subList(0, timeList_1.size()-1), ts.getValues(iri));
+		
+		// Test for upper bound outside current time range
+		lb = ts.getTimes().get(0);
+		ub = timeList_2.get(timeList_2.size()-1);
+		client.deleteRows(iri, lb, ub);
+		ts = client.getTimeSeries(iris);
+		Assert.assertEquals(0, ts.getTimes().size());
+		
+		// Test for upper bound outside current time range
+		// Add new time series data
+		client.addTimeSeriesData(ts2);
+		ub = timeList_2.get(timeList_2.size()-2);
+		client.deleteRows(iri, lb, ub);
+		ts = client.getTimeSeries(iris);
+		Assert.assertEquals(1, ts.getTimes().size());
+	}
+	
+	@Test
+	public void testDeleteTimeSeries() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series table
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);	
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		// Retrieve the value of the private field 'dbTableName' of the client to check its value
+		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+		tableNameField.setAccessible(true);
+		String tableName = (String) tableNameField.get(client);
+		Table<?> table = context.meta().getTables(tableName).get(0);
+		// Retrieve the value of the private field 'dataIRIcolumn' of the client
+		Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+		dataIRIcolumnField.setAccessible(true);
+		org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
+		// Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
+		Field tsTableNameColumnField = client.getClass().getDeclaredField("tsTableNameColumn");
+		tsTableNameColumnField.setAccessible(true);
+		org.jooq.Field<String> tsTableNameColumn = (org.jooq.Field<String>) tsTableNameColumnField.get(client);
+		// Retrieve the value of the private field 'tsTableNameColumn' of the client to check its value
+		Field columnNameColumnField = client.getClass().getDeclaredField("columnNameColumn");
+		columnNameColumnField.setAccessible(true);
+		org.jooq.Field<String> columnNameColumn = (org.jooq.Field<String>) columnNameColumnField.get(client);
+		
+		// Check that timeseries table was correctly created (additionally to central lookup table)
+		Assert.assertEquals(2, context.meta().getTables().size());
+		List<String> iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		Assert.assertEquals(dataIRI_1.size(), iris_in_central_table.size());
+		for (String i : dataIRI_1) {
+			Assert.assertTrue(iris_in_central_table.contains(i));
+			String tstable = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(i)).fetch(tsTableNameColumn).get(0);
+			String tscolumn = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(i)).fetch(columnNameColumn).get(0);
+			// Get all column names in tstable
+			org.jooq.Field<?>[] columns = context.meta().getTables(tstable).get(0).fields();
+			List<String> iris_in_ts_table = new ArrayList<>();
+			for (int j=0; j < columns.length; j++) {
+				iris_in_ts_table.add(columns[j].getName());
+			}
+			Assert.assertTrue(iris_in_ts_table.contains(tscolumn));
+		}		
+		
+		// Delete first dataIRI column (1st out of 3): Verify correct deletion in central lookup and time series table
+		List<String> iris = new ArrayList<>(dataIRI_1);
+		String iri = iris.remove(0);
+		String deleted_column = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(iri)).fetch(columnNameColumn).get(0);
+		client.deleteTimeSeries(iri);
+		iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		// Test that still both tables exist
+		Assert.assertEquals(2, context.meta().getTables().size());
+		// Test correct manipulations of central lookup table and time series table
+		Assert.assertEquals(iris.size(), iris_in_central_table.size());
+		for (String i : iris) {
+			Assert.assertTrue(iris_in_central_table.contains(i));
+			String tstable = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(i)).fetch(tsTableNameColumn).get(0);
+			String tscolumn = context.select(columnNameColumn).from(table).where(dataIRIcolumn.eq(i)).fetch(columnNameColumn).get(0);
+			// Get all column names in tstable
+			org.jooq.Field<?>[] columns = context.meta().getTables(tstable).get(0).fields();
+			List<String> iris_in_ts_table = new ArrayList<>();
+			for (int j=0; j < columns.length; j++) {
+				iris_in_ts_table.add(columns[j].getName());
+			}
+			Assert.assertTrue(iris_in_ts_table.contains(tscolumn));
+			if (i == iris.get(0)) {
+				Assert.assertFalse(iris_in_ts_table.contains(deleted_column));
+			}
+		}
+		Assert.assertFalse(iris_in_central_table.contains(iri));
+		
+		// Delete second dataIRI column (2nd out of 3): Verify deletion of correct amount of columns only
+		iri = iris.remove(0);
+		String tstable = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(iri)).fetch(tsTableNameColumn).get(0);
+		Assert.assertEquals(3, context.meta().getTables(tstable).get(0).fields().length);		
+		client.deleteTimeSeries(iri);
+		// Test that still both tables exist
+		Assert.assertEquals(2, context.meta().getTables().size());
+		// Test that only one dataIRI columns (next to time column) remains
+		Assert.assertEquals(2, context.meta().getTables(tstable).get(0).fields().length);
+		
+		// Check Exception for non-instantiated dataIRI
+		try {
+			iri = "non-existing-iri";
+			client.deleteTimeSeries(iri);
+		} catch (Exception e) {
+			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+								e.getMessage());
+		}
+
+		// Delete last dataIRI column: Verify that entire table gets deleted
+		iri = iris.remove(0);
+		client.deleteTimeSeries(iri);
+		// Test that only timeseries table remains
+		Assert.assertEquals(1, context.meta().getTables().size());
+		// Test that time series table is empty
+		iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		Assert.assertEquals(0, iris_in_central_table.size());
+		
+	}
+	
+	@Test
+	public void testDeleteTimeSeriesTable() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series tables
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+		client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts3);
+		// Retrieve the value of the private field 'dbTableName' of the client to check its value
+		Field tableNameField = client.getClass().getDeclaredField("dbTableName");
+		tableNameField.setAccessible(true);
+		String tableName = (String) tableNameField.get(client);
+		Table<?> table = context.meta().getTables(tableName).get(0);		
+		// Retrieve the value of the private field 'dataIRIcolumn' of the client
+		Field dataIRIcolumnField = client.getClass().getDeclaredField("dataIRIcolumn");
+		dataIRIcolumnField.setAccessible(true);
+		org.jooq.Field<String> dataIRIcolumn = (org.jooq.Field<String>) dataIRIcolumnField.get(client);
+		
+		// Check that timeseries tables were correctly created (additionally to central lookup table)
+		Assert.assertEquals(3, context.meta().getTables().size());
+		List<String> iris = new ArrayList<>(dataIRI_1);
+		iris.addAll(dataIRI_3);
+		List<String> iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		Assert.assertEquals(4, iris_in_central_table.size());
+		for (String i : iris) {
+			Assert.assertTrue(iris_in_central_table.contains(i));
+		}
+		
+		// Delete first time series table
+		client.deleteTimeSeriesTable(dataIRI_3.get(0));
+		Assert.assertEquals(2, context.meta().getTables().size());
+		iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		Assert.assertEquals(3, iris_in_central_table.size());
+		for (String i : dataIRI_1) {
+			Assert.assertTrue(iris_in_central_table.contains(i));
+		}
+		Assert.assertFalse(iris_in_central_table.contains(dataIRI_3.get(0)));
+		
+		// Check Exception for non-instantiated dataIRI
+		String iri = "non-existing-iri";
+		try {
+			client.deleteTimeSeries(iri);
+		} catch (Exception e) {
+			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+								e.getMessage());
+		}
+		
+		// Delete second time series table
+		client.deleteTimeSeriesTable(dataIRI_1.get(0));
+		Assert.assertEquals(1, context.meta().getTables().size());
+		iris_in_central_table = context.select(dataIRIcolumn).from(table).fetch(dataIRIcolumn);
+		Assert.assertEquals(0, iris_in_central_table.size());		
+	}
+	
+	@Test
+	public void testDeleteAll() throws NoSuchFieldException, IllegalAccessException {
+		// Initialise time series tables
+		client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
+		client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);
+		// Add time series data
+		client.addTimeSeriesData(ts1);
+		client.addTimeSeriesData(ts3);
+		
+		// Delete all tables and verify deleting
+		Assert.assertEquals(3, context.meta().getTables().size());
+		client.deleteAll();
+		Assert.assertEquals(0, context.meta().getTables().size());
+		
+		// Verify error-free execution if no tables are available
+		client.deleteAll();
+		Assert.assertEquals(0, context.meta().getTables().size());
 	}
 }
 
