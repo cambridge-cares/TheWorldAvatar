@@ -4,6 +4,39 @@
         "C": 4,
         "H": 10
     },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "C",
+        "H",
+        "H",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        12.0107,
+        1.00783,
+        1.00783,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
     "Method": "RB3LYP",
     "Basis set": "6-31G(d)",
     "Spin multiplicity": 1,
@@ -81,6 +114,8 @@
             -0.188339
         ]
     ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
     "Rotational constants": [
         12.493887,
         6.0708563,

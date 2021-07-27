@@ -85,8 +85,9 @@ def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllR
             jobDataFileName = getRefName(testLog,jobIndex=jobIndex,numJobs=len(parsedJobsList),extension='.json')
             jobDataFilePath = os.path.join(testPath, jobDataFileName)
             refDataFilePath=jobDataFilePath+'_ref'
-            #if os.path.isfile(dataFilePath): os.remove(dataFilePath)
-            #writeDictToJson(dataFilePath, jobDataDict)
+
+            #if os.path.isfile(jobDataFilePath): os.remove(jobDataFilePath)
+            #writeDictToJson(jobDataFilePath, jobDataDict)
 
             if regenerateResults or regenerateAllResults:
                 # dump just parsed data as the ref data
