@@ -18,7 +18,6 @@ import java.util.List;
 
 /**
  * This class provides unit tests for the TimeSeriesRDBClient class
- * <p>Selected functionality is mocked using Mockito
  */
 
 public class TimeSeriesRDBClientTest {
@@ -78,14 +77,6 @@ public class TimeSeriesRDBClientTest {
         Assert.assertEquals(String.class, columnNameColumn.getType());
     }
 
-    @Test
-    public void testSetAndGetTimeUnit() {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        Assert.assertNull(client.getTimeUnit());
-        client.setTimeUnit("s");
-        Assert.assertEquals("s", client.getTimeUnit());
-    }
-    
     @Test
     public void testSetAndGetRdbURL() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);

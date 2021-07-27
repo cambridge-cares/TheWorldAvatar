@@ -44,8 +44,6 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private String rdbURL = null; 
 	private String rdbUser = null;
 	private String rdbPassword = null;
-	// Time unit (in IRI)
-	private String timeUnit = null;
 	// RDB connection properties and jooq configuration 
 	private Connection conn;
 	private DSLContext context;
@@ -75,16 +73,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     }
     
     /**
-     * Get and set methods for private attributes
+     * Get and set methods for private relational database properties (e.g. PostgreSQL)
      */
-	public void setTimeUnit(String timeUnit) {
-		this.timeUnit = timeUnit;
-	}
-	public String getTimeUnit() {
-		return timeUnit;
-	}	
-	
-	// Relational database properties (e.g. PostgreSQL)
 	public void setRdbURL(String rdbURL) {
 		this.rdbURL = rdbURL;
 	}

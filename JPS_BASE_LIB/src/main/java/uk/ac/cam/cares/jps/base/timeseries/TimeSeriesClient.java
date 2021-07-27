@@ -35,8 +35,6 @@ public class TimeSeriesClient<T> {
     public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String timeUnitIRI) {
     	this.rdfClient = new TimeSeriesSparql(kbClient);
     	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-    	// mh807: Not sure if we actually need the timeUnit in the RDB client - potentially to be removed
-    	this.rdbClient.setTimeUnit(timeUnitIRI);
     }
     
     /**
