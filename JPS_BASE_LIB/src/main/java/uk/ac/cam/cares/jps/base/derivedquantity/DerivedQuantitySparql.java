@@ -4,6 +4,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +54,10 @@ public class DerivedQuantitySparql{
 	private static Iri belongsTo = p_derived.iri("belongsTo");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
+	
+	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
+	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
+	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING),iri(OWL.NAMEDINDIVIDUAL));
 	
 	/**
 	 * creates a new instance of derived quantity, grouping the given entities under this instance
@@ -396,12 +401,18 @@ public class DerivedQuantitySparql{
 		Variable derived = SparqlBuilder.var(derivedkey);
 		Variable entityType = SparqlBuilder.var(typeKey);
 		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			filters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
+		}
+		
 		GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entities[0])), iri(entities[0]).isA(entityType));
 		for (int i = 1; i < entities.length; i++) {
 			queryPattern.and(derived.has(isDerivedFrom,iri(entities[i])), iri(entities[i]).isA(entityType));
 		}
 		
-		query.select(derived, entityType).where(queryPattern).prefix(p_derived);
+		query.select(derived, entityType).where(queryPattern.filter(Expressions.and(filters))).prefix(p_derived);
 		
 		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 		
@@ -435,15 +446,21 @@ public class DerivedQuantitySparql{
 		Variable object = sub.var();
 		
 		TriplePattern[] delete_tp = new TriplePattern[entities.length * 2];
+		GraphPattern[] queryPattern = new GraphPattern[entities.length * 2];
 		int i = 0;
 		for (String entity : entities) {
 			// case 1: entity is the object
-			delete_tp[i] = subject.has(pred1, iri(entity)); i++;
-			
+			delete_tp[i] = subject.has(pred1, iri(entity)); 
+			queryPattern[i] = delete_tp[i].optional();
+			i++;
+
 			// case 2: entity is the subject
-			delete_tp[i] = iri(entity).has(pred2, object); i++;
+			delete_tp[i] = iri(entity).has(pred2, object); 
+			queryPattern[i] = delete_tp[i].optional();
+			i++;
 		}
-		sub.select(subject,pred1,pred2,object).where(delete_tp);
+		
+		sub.select(subject,pred1,pred2,object).where(queryPattern);
 		
 		ModifyQuery modify = Queries.MODIFY();
 		modify.delete(delete_tp).where(sub);
@@ -527,11 +544,7 @@ public class DerivedQuantitySparql{
 		String queryKey = "class";
 		
 		String[] classOfInstances = new String[instances.length]; 
-		
-		// rdf:type to ignore, this may be expanded
-		List<Iri> classesToIgnore = new ArrayList<>();
-		classesToIgnore.add(iri(OWL.THING));
-		classesToIgnore.add(iri(OWL.NAMEDINDIVIDUAL));
+
 		
 		for (int i = 0; i < instances.length; i++) {
 			SelectQuery query = Queries.SELECT();
@@ -596,6 +609,22 @@ public class DerivedQuantitySparql{
 		} else {
 			return false;
 		}
+	}
+	
+	/**
+	 * add <newEntity> <belongsTo> <instance> triples
+	 * @param storeClient
+	 * @param instance
+	 * @param newEntities
+	 */
+	public static void addNewEntitiesToDerived(StoreClientInterface storeClient, String instance, String[] newEntities) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		for (String newEntity : newEntities) {
+			modify.insert(iri(newEntity).has(belongsTo, iri(instance)));
+		}
+		
+		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
 	private static GraphPattern getQueryGraphPattern(SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastNode) {
