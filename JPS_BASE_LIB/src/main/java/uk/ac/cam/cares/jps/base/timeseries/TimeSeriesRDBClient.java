@@ -12,6 +12,7 @@ import java.util.Properties;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
@@ -22,6 +23,7 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
@@ -29,7 +31,6 @@ import static org.jooq.impl.DSL.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
-import java.sql.SQLException;
 
 /**
  * This class uses the jooq library to interact with the relational database.
@@ -94,7 +95,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
-	public void loadRdbConfigs(String filepath) {
+	public void loadRdbConfigs(String filepath) throws IOException {
 		try {
 			File file = new File(filepath);
 			
@@ -148,7 +149,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				}
 				throw new JPSRuntimeException(m);
 			} else {
-				e.printStackTrace();
+				throw e;
 			}			
 		}
 	}
@@ -201,8 +202,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Initialise RDB table for storing time series data
 			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
 			
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e.getMessage());
+		} catch (DataAccessException e) {
+			// Catch all exceptions incurred by jooq (i.e. by SQL interactions with database)
+			throw new JPSRuntimeException("Error while executing SQL command", e);
 		} finally {			
 			disconnect();
 		}
@@ -519,8 +521,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
 	    	context.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	
-		} catch (Exception e) {
-			throw new JPSRuntimeException(e.getMessage());
+		} catch (DataAccessException e) {
+			// Catch all exceptions incurred by jooq (i.e. by SQL interactions with database)
+			throw new JPSRuntimeException("Error while executing SQL command", e);
 		} finally {			
 			disconnect();
 		}
@@ -567,11 +570,11 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			Class.forName("org.postgresql.Driver");
 			// Connect to DB (using static connection and context properties)
         	this.conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
-        	System.out.println("Connected to: " + this.rdbURL);
         	this.context = DSL.using(this.conn, dialect); 
+        	System.out.println("Connected to: " + this.rdbURL);        	
 		} catch (Exception e) {
-			System.out.println("Connection failed to: " + this.rdbURL);
-			throw new JPSRuntimeException(e);
+			System.out.println("Connection to: " + this.rdbURL + "failed");
+			throw new JPSRuntimeException("Establishing database connection failed");
 		}
     }
 	
@@ -582,7 +585,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		try {
 			conn.close();
 		} catch (Exception e) {
-			throw new JPSRuntimeException(e);
+			throw new JPSRuntimeException("Closing database connection failed");
 		}
 	}
 	
@@ -682,7 +685,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
 	 */
-	private boolean checkDataHasTimeSeries(String dataIRI) {
+	public boolean checkDataHasTimeSeries(String dataIRI) {
 		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		return context.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));

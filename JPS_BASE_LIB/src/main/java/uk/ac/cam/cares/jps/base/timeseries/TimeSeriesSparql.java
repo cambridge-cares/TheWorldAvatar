@@ -5,6 +5,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class TimeSeriesSparql {
 	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
-	public void loadSparqlConfigs(String filepath) {
+	public void loadSparqlConfigs(String filepath) throws IOException {
 		try {
 			File file = new File(filepath);
 			
@@ -122,7 +123,7 @@ public class TimeSeriesSparql {
 				}
 				throw new JPSRuntimeException(m);
 			} else {
-				e.printStackTrace();
+				throw e;
 			}			
 		}
 	}

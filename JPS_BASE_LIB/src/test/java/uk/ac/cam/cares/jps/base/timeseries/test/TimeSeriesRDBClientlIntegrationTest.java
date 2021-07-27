@@ -23,7 +23,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 
-//@Ignore("Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
+@Ignore("Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 public class TimeSeriesRDBClientlIntegrationTest {
 	
 	// Define RDB database setup (analogous to a triple-store endpoint)

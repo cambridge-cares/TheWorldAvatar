@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,12 +33,12 @@ public class TimeSeriesClient<T> {
      * @param timeClass: Class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
      * @param filepath: Absolute path to file with RDB configs (URL, username, password) 
      */
-    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) {
+    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
     	// Initialise Sparql client with pre-defined kbClient
     	this.rdfClient = new TimeSeriesSparql(kbClient);
     	// Initialise RDB client according to properties file
     	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
-    	loadRdbConfigs(filepath);
+   		loadRdbConfigs(filepath);
     }
     
     /**
@@ -45,7 +46,7 @@ public class TimeSeriesClient<T> {
      * @param timeClass: Class type for the time values (to initialise RDB table)
      * @param filepath: Absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints) 
      */
-    public TimeSeriesClient(Class<T> timeClass, String filepath) {
+    public TimeSeriesClient(Class<T> timeClass, String filepath) throws IOException {
     	// Initialise Sparql client according to properties file
     	RemoteStoreClient kbClient = new RemoteStoreClient();
     	this.rdfClient = new TimeSeriesSparql(kbClient);
@@ -59,7 +60,7 @@ public class TimeSeriesClient<T> {
      * Load properties for RDB client
      * @param filepath: Absolute path to properties file with respective information
      */
-    public void loadRdbConfigs(String filepath) {    	
+    public void loadRdbConfigs(String filepath) throws IOException {    	
     	rdbClient.loadRdbConfigs(filepath);
     }
     
@@ -67,7 +68,7 @@ public class TimeSeriesClient<T> {
      * Load properties for RDF/SPARQL client
      * @param filepath: Absolute path to properties file with respective information
      */
-    public void loadSparqlConfigs(String filepath) {    	
+    public void loadSparqlConfigs(String filepath) throws IOException {    	
     	rdfClient.loadSparqlConfigs(filepath);   
     }
     
@@ -99,83 +100,53 @@ public class TimeSeriesClient<T> {
      */
     public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
     	
+    	// Initialise return value
+    	String iri = null;
+    	
     	// Create random time series IRI in the format: <ClassName>_<UUID>
     	String tsIRI = rdfClient.ns_kb + "Timeseries_" + UUID.randomUUID().toString();
     	
-    	// Initialise boolean flag to re-run knowledge base instantiation in case tsIRI is already taken
-    	boolean not_created = true;    	    	
-    	while (not_created) {
-	    	// Try to initialise time series in knowledge base
-	    	try {
-	    		rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
-	    		// Adjust flag if successfully created
-	    		not_created = false;
-	    	} catch(Exception e_create) {
-    			// Throw exceptions for not passed checks in TimeSeriesSparql.initTS
-    			// Do not throw exception for already existing tsIRI to allow for 2nd instantiation loop
-	    		if (e_create instanceof JPSRuntimeException &&
-	    			 (e_create.getMessage().contains("Time series IRI does not have valid IRI format") ||
-	        		  e_create.getMessage().contains("The data IRI " + tsIRI + " is already attached to time series"))) {
-	    			throw new JPSRuntimeException(exceptionPrefix + "Nothing has been instantiated due to the following error: \n" +
-	        									  e_create.getMessage());
-	    		} else {
-	    			// For all exceptions during instantiation, try to delete whatever has been created
-	    			try {
-	    				rdfClient.removeTimeSeries(tsIRI);
-	    			} catch (Exception e_delete) {
-	    				throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the KB.\n" +
-	    											  "Intended changes in the KB could NOT be successfully reverted.");
-	    			}
-	    			throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the KB.\n" +
-	    										  "Intended changes in the KB have been successfully reverted.");
-	    		}
-	    	}
-    	}
+    	// Step1: Initialise time series in knowledge base
+    	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
+    	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+   		rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
     	
-    	// Try to initialise time series in relational database
+    	// Step2: Try to initialise time series in relational database
     	try {
     		rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
-    	} catch (Exception e_create) {
-    		// Throw exceptions for not passed checks in TimeSeriesRDBCLient.initTimeSeriesTable
-    		if (e_create instanceof JPSRuntimeException &&
-    			 (e_create.getMessage().contains("already has a time series instance (i.e. tsIRI)") ||
-        		  e_create.getMessage().contains("Length of dataClass is different from number of data IRIs"))) {
-    			// Try to delete previously initialised time series in knowledge base
-    			try {
-    				rdfClient.removeTimeSeries(tsIRI);
-    			} catch (Exception e_delete) {
-    				throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-    											  "Nothing has been instantiated in the RDB, but respective changes could NOT be successfully reverted in the KB.");
+    	} catch (JPSRuntimeException e_create) {
+    		// For exceptions thrown after interaction with relational database started,
+    		// try to revert whatever might have been instantiated in relational database
+    		if (e_create.getMessage().contains("Error while executing SQL command") ||
+        		e_create.getMessage().contains("Closing database connection failed")) {
+       			try {
+        			// mh807: I assume it's sufficient to try only for 1 dataIRI, but I am not sure
+       				// whether it's possible that SQL query is only partially executed and, e. g.
+       				// only 2 out of 3 dataIRIs are instantiated in central table
+    				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
+    			} catch(Exception e_delete) {
     			}
-    			throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-						  					  "Nothing has been instantiated in the RDB and respective changes have been successfully reverted in the KB.");
-    			} else {
-    				// For all exceptions during instantiation, try to delete whatever has been created
-    				try {
-    					rdbClient.deleteTimeSeriesTable(dataIRIs.get(0)); 
-    				} catch (Exception e_delete) {
-    	    			// Try to delete previously initialised time series in knowledge base
-    	    			try {
-    	    				rdfClient.removeTimeSeries(tsIRI);
-    	    			} catch (Exception e_delete_rdf) {
-    	    				throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-    	    											  "Intended changes could NOT be successfully reverted in both RDB and KB.");
-    	    			}
-    	    			throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-			  					  					  "Intended changes have been successfully reverted in KB, but NOT in RDB.");
-    				}
-        			// Try to delete previously initialised time series in knowledge base
-        			try {
-        				rdfClient.removeTimeSeries(tsIRI);
-        			} catch (Exception e_delete_rdf) {
-        				throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-        											  "Intended changes have been successfully reverted in RDB, but NOT in KB.");
-        			}
-        			throw new JPSRuntimeException(exceptionPrefix + "An error occurred during instantiating the time series in the RDB.\n" +
-		  					  					  "Intended changes have been successfully reverted in both RDB and KB.");
-    				   				
-    			}    		
+       			// Check whether any artifacts have remained in relational database
+       			// Central table entries are created before and deleted after corresponding time
+       			// series table, hence it should be sufficient to "only" check central lookup table 
+       			for (String datairi : dataIRIs) {
+       				if (rdbClient.checkDataHasTimeSeries(datairi)) {
+       					// RDB deletion was unsuccessful
+       				}
+       			}
+       			// RDB deletion was successful	
+       			
+    			}
+    		// Try to revert previous knowledge base instantiation
+    		try {
+    			rdfClient.removeTimeSeries(tsIRI);
+    		} catch (Exception e_delete) {
+    			// RDF deletion was unsuccessful
+    		}
+    		// RDF deletion was unsuccessful
+		
     	}
+    	// switch cases
     	
     }
 
