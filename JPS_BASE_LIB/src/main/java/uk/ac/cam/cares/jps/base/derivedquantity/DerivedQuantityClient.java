@@ -164,7 +164,11 @@ public class DerivedQuantityClient {
 					
 					// delete old instances
 					DerivedQuantitySparql.deleteInstances(kbClient, entities);
-					if (derivedAndType.get(0).size() > 1) {
+					
+					// link new entities to derived instance, adding ?x <belongsTo> <instance>
+					DerivedQuantitySparql.addNewEntitiesToDerived(kbClient, instance, newEntities);
+					
+					if (derivedAndType.get(0).size() > 0) {
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
 						String[] classOfNewEntities = DerivedQuantitySparql.getInstanceClass(kbClient, newEntities);
 						
@@ -176,7 +180,7 @@ public class DerivedQuantityClient {
 						for (int i = 0; i < oldDerivedList.size(); i++) {
 							// index in the new array with the matching type
 							Integer matchingIndex = null;
-							for (int j = 0; j < classOfNewEntities.length; i++) {
+							for (int j = 0; j < classOfNewEntities.length; j++) {
 								if (classOfNewEntities[j].contentEquals(oldTypeList.get(i))) {
 									if (matchingIndex != null) {
 										LOGGER.error("Duplicate type found within output, the DerivedQuantityClient does not support this");
