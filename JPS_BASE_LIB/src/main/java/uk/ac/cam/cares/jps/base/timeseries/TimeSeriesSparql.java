@@ -77,7 +77,7 @@ public class TimeSeriesSparql {
 	
 	/**
 	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
-	 * @param filepath: path to timeseries properties file
+	 * @param filepath: Absolute path to timeseries properties file
 	 */
 	public void loadSparqlConfigs(String filepath) {
 		try {

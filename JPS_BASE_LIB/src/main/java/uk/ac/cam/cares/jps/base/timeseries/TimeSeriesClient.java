@@ -6,7 +6,7 @@ import java.util.UUID;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -27,22 +27,47 @@ public class TimeSeriesClient<T> {
 	private final String exceptionPrefix = this.getClass().toString() + ": ";
 	
     /**
-     * Standard constructor
+     * Constructor for pre-defined kbClient and only RDB client to be created according to properties file
      * @param kbClient: Knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
-     * @param timeClass: Class type for the time values (to initialise RDB table)
-     * @param timeUnitIRI: IRI of time unit (to be instantiated in KB) - optional
+     * @param timeClass: Class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
+     * @param filepath: Absolute path to file with RDB configs (URL, username, password) 
      */
-    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String timeUnitIRI) {
+    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) {
+    	// Initialise Sparql client with pre-defined kbClient
     	this.rdfClient = new TimeSeriesSparql(kbClient);
+    	// Initialise RDB client according to properties file
     	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
+    	loadRdbConfigs(filepath);
     }
     
     /**
-     * Load properties for both RDB and RDF/SPARQL client
-     * @param filepath: (Relative) file path to properties file with respective information
+     * Constructor for both RDB and Sparql clients to be created according to properties file
+     * @param timeClass: Class type for the time values (to initialise RDB table)
+     * @param filepath: Absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints) 
      */
-    public void loadConfigs(String filepath) {    	
+    public TimeSeriesClient(Class<T> timeClass, String filepath) {
+    	// Initialise Sparql client according to properties file
+    	RemoteStoreClient kbClient = new RemoteStoreClient();
+    	this.rdfClient = new TimeSeriesSparql(kbClient);
+    	loadSparqlConfigs(filepath);
+    	// Initialise RDB client according to properties file
+    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
+    	loadRdbConfigs(filepath);
+    }
+    
+    /**
+     * Load properties for RDB client
+     * @param filepath: Absolute path to properties file with respective information
+     */
+    public void loadRdbConfigs(String filepath) {    	
     	rdbClient.loadRdbConfigs(filepath);
+    }
+    
+    /**
+     * Load properties for RDF/SPARQL client
+     * @param filepath: Absolute path to properties file with respective information
+     */
+    public void loadSparqlConfigs(String filepath) {    	
     	rdfClient.loadSparqlConfigs(filepath);   
     }
     

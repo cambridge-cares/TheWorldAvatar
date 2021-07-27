@@ -93,7 +93,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
-	 * @param filepath: path to timeseries properties file
+	 * @param filepath: Absolute path to timeseries properties file
 	 */
 	public void loadRdbConfigs(String filepath) {
 		try {
