@@ -12,22 +12,27 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 public class KeyValueMap {
 
 	private static KeyValueMap instance = null;
-	public static Map<String, String> map = new ConcurrentHashMap<String, String>();
+	public static Map<String, String> map;
 	private static String propertiesFile = "/jps.properties";
 	private static String testPropertiesFile = "/jpstest.properties";
 	private static String FILE_DOES_NOT_EXIST = "Properties file does not exist.";
 	private static String KEY_DOES_NOT_EXIST = "No such key in properties file.";
 	private static String NO_NULL_KEY_VALUE = "Null keys and values are not allowed.";
 
-	public static synchronized KeyValueMap getInstance() {
+	public static KeyValueMap getInstance() {
 		if (instance == null) {
-			instance = new KeyValueMap();
+			synchronized (KeyValueMap.class){
+				if (instance == null) {
+					instance = new KeyValueMap();
+					instance.init(instance.runningForTest(propertiesFile));
+				}
+			}
 		}
 		return instance;
 	}
 
 	private KeyValueMap() {
-		init(runningForTest(propertiesFile));
+		map = new ConcurrentHashMap<String, String>();
 	}
 
 	/**
