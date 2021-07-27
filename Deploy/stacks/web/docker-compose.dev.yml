@@ -28,8 +28,8 @@ services:
   land-use:
     build:
       target: development
-      
-      
+
+
 # Development network
 networks:
   default:

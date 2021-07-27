@@ -60,8 +60,7 @@ services:
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
-    
-    
+
   # Kinetics Agent.
   # Note: This Image mounts a volume so that it can access the SRM Driver and
   #       Intel MPI files stored within the 'srm-driver' Image.
@@ -77,7 +76,6 @@ services:
     volumes:
       - driver:/usr/local/srm-driver
 
-    
   # Slurm compute node.
   # Note: This Image exists as a generic job queue/executor for any other
   #       services submitting Slurm jobs (such as the KineticsAgent).
@@ -98,6 +96,7 @@ services:
       - mpi:/usr/local/intel-mpi
     env_file:
       - Slurm/slurm-variables.env
+
 
 # Volumes
 volumes:

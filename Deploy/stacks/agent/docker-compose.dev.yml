@@ -20,13 +20,12 @@ services:
     build: "./KineticsAgent"
     ports:
       - 8081:8080
-    
-    
+
   # Slurm compute node
   slurm:
     build: "./Slurm"
 
-   
+
 # Networks
 networks:
   default:
