@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,9 +12,7 @@ import java.util.Properties;
 import java.io.File;
 import java.io.InputStream;
 import java.io.FileInputStream;
-import java.io.IOException;
 
-import com.sun.jna.platform.unix.X11;
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -31,6 +28,8 @@ import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
+
+import java.sql.SQLException;
 
 /**
  * This class uses the jooq library to interact with the relational database.
@@ -237,8 +236,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
 			checkDataIsInSameTable(dataIRI);
 	    	
-			String tsIRI = getTimeSeriesIRI(dataIRI.get(0));
-	    	String tsTableName = getTimeseriesTableName(tsIRI);
+	    	String tsTableName = getTimeseriesTableName(dataIRI.get(0));
 	    	// Assign column name for each dataIRI; name for time column is fixed
 			Map<String,String> dataColumnNames = new HashMap<>();
 			for (String s : dataIRI) {
@@ -469,9 +467,8 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			}
 			
 			// Get time series RDB table		
-			String tsIRI = getTimeSeriesIRI(dataIRI);
 			String columnName = getColumnName(dataIRI);
-			String tsTableName = getTimeseriesTableName(tsIRI);
+			String tsTableName = getTimeseriesTableName(dataIRI);
 			
 			// Get meta information for RDB table (column fields, etc.)
 			Table<?> tsTable = context.meta().getTables(tsTableName).get(0);
@@ -513,7 +510,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Retrieve RDB table for dataIRI
 			String tsIRI = getTimeSeriesIRI(dataIRI);
-			String tsTableName = getTimeseriesTableName(tsIRI);
+			String tsTableName = getTimeseriesTableName(dataIRI);
 	    
 	    	// Delete time series RDB table
 			context.dropTable(DSL.table(DSL.name(tsTableName))).execute();
@@ -584,7 +581,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	private void disconnect() {
 		try {
 			conn.close();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			throw new JPSRuntimeException(e);
 		}
 	}
@@ -683,7 +680,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in central lookup table)
 	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
-	 * @return True if the data IRI is attached to a time series, false otherwise
+	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
 	 */
 	private boolean checkDataHasTimeSeries(String dataIRI) {
 		// Look for the entry dataIRI in dbTable
@@ -693,7 +690,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same time series IRI)
-	 * <p>Throws JPSRuntime Exception if not
+	 * <br>Throws JPSRuntime Exception if not all dataIRIs are attached to same table
 	 * <p>Requires existing RDB connection;
 	 * @param dataIRI: list of data IRIs provided as string
 	 */
@@ -713,6 +710,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
+	 * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return The attached time series IRI as string
@@ -727,9 +725,10 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 		
 	/**
 	 * Retrieve column name for provided dataIRI from central database lookup table (if it exists)
+	 * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
-	 * @return The corresponding column name in the table related to the data IRI
+	 * @return Corresponding column name in the RDB table related to the data IRI
 	 */
 	private String getColumnName(String dataIRI) {
 		// Look for the entry dataIRI in dbTable
@@ -740,30 +739,30 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	}
 
 	/**
-	 * Retrieve table name for provided timeseries IRI from central database lookup table (if it exists)
+	 * Retrieve table name for provided dataIRI from central database lookup table (if it exists)
+	 * <br>Throws IndexOutOfBoundsException if tsIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
-	 * @param tsIRI: IRI of the timeseries
+	 * @param dataIRI: data IRI provided as string
 	 * @return Corresponding table name as string
 	 */
-	private String getTimeseriesTableName(String tsIRI) {
-		// Look for the entry tsIRI in dbTable
-		Table<?> globalTable = DSL.table(DSL.name(dbTableName));
-		List<String> queryResult = context.select(tsTableNameColumn).from(globalTable).where(tsIRIcolumn.eq(tsIRI)).fetch(tsTableNameColumn);
+	private String getTimeseriesTableName(String dataIRI) {
+		// Look for the entry dataIRI in dbTable
+		Table<?> table = DSL.table(DSL.name(dbTableName));
+		List<String> queryResult = context.select(tsTableNameColumn).from(table).where(dataIRIcolumn.eq(dataIRI)).fetch(tsTableNameColumn);
 
 		return queryResult.get(0);
 	}
 
 	/**
-	 * Retrieve table for provided timeseries IRI from central database lookup table (if it exists)
+	 * Retrieve time series table for provided dataIRI in database
+*    * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
 	 * @param dataIRI: data IRI provided as string
 	 * @return Table object corresponding to the time series
 	 */
 	private Table<?> getTimeseriesTable(String dataIRI) {
-		// Retrieve the time series IRI attached ot the data IRI
-		String tsIRI = getTimeSeriesIRI(dataIRI);
-		// Retrieve the table name
-		String tableName = getTimeseriesTableName(tsIRI);
+		// Retrieve the table name attached to the data IRI
+		String tableName = getTimeseriesTableName(dataIRI);
 
 		return DSL.table(DSL.name(tableName));
 	}
