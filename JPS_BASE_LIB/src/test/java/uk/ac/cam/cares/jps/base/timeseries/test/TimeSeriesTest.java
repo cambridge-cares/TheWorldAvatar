@@ -72,7 +72,7 @@ public class TimeSeriesTest {
     public void testGetDataIRI() {
 		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	for (String iri : ts.getDataIRI()) {
+    	for (String iri : ts.getDataIRIs()) {
     		Assert.assertTrue(dataIRI.contains(iri));
     	}
     }

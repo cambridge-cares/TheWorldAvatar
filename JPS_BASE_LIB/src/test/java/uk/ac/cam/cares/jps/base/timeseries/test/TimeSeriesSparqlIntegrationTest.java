@@ -1,147 +1,100 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.Ignore;
-import org.junit.Before;
-import org.junit.After;
+import org.junit.*;
 
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Requires Triple store end point set up and running")
+@Ignore("Requires triple store endpoint set up and running (using testcontainers)")
+@Testcontainers
 public class TimeSeriesSparqlIntegrationTest {
-	
-	// Set path to local Triple Store instance - when working with Blazegraph:
-	// Port needs to be adjusted depending on local environment settings
-	// Namespace "timeseries" needs to be created beforehand
-	private static String endpoint = "http://localhost:9999/blazegraph/namespace/timeseries/sparql";
-	
-	// Initialise 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
-	private static String tsIRI1 = "http://tsIRI1";
-	private static List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
-	private static String tsIRI2 = "http://tsIRI2";
-	private static List<String> dataIRI2 = Arrays.asList("http://data4");
-	private static String dbURL = "jdbc:postgresql:timeseries"; 
-	private static String timeUnit = "http://s";
-	
-	public static TimeSeriesSparql initialiseSparqlClient() {
-		// Set up a kb client that points to the location of your instance
+
+	private static TimeSeriesSparql sparqlClient;
+
+	// Will create a container that is shared between tests.
+	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
+	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
+	@Container
+	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+			.withExposedPorts(9999);
+
+	@BeforeClass
+	public static void initialiseSparqlClient() {
+		// Start the container manually
+		blazegraph.start();
+		// Set up a kb client that points to the location of the triple store
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
 		RemoteStoreClient kbClient = new RemoteStoreClient();
+		// Set endpoint to the triple store. The host and port are read from the container
+		String endpoint = "http://" + blazegraph.getHost() + ":" + blazegraph.getFirstMappedPort();
+		// Default namespace in blazegraph is "kb", but in production a specific one should be created
+		endpoint = endpoint + "/blazegraph/namespace/kb/sparql";
 		kbClient.setUpdateEndpoint(endpoint);
 		kbClient.setQueryEndpoint(endpoint);
 		// Initialise TimeSeriesSparql client with kb client
-		TimeSeriesSparql SparqlClient = new TimeSeriesSparql(kbClient);
-			
-		return SparqlClient;
+		sparqlClient = new TimeSeriesSparql(kbClient);
 	}
 	
-	@After
-	public void clearKb() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
+	@AfterClass
+	public static void clearKb() {
 		// Clear entire knowledge base
-		SparqlClient.removeAllTimeSeries();
+		sparqlClient.removeAllTimeSeries();
 	}
 	
 	@Test
-	public void testInitTS() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
+	public void runIntegrationTest() {
+
+		// IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
+		String tsIRI1 = "http://tsIRI1";
+		List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
+		String tsIRI2 = "http://tsIRI2";
+		List<String> dataIRI2 = Collections.singletonList("http://data4");
+		String dbURL = "jdbc:postgresql:timeseries";
+		String timeUnit = "s";
+
 		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
+		sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
+
 		// Test number of initialised time series in kb
-		Assert.assertEquals(1,  SparqlClient.countTS());
-		// Test for time series IRI
-		Assert.assertEquals("http://tsIRI1",  SparqlClient.getTimeSeries("http://data1"));
-		Assert.assertEquals("http://tsIRI1",  SparqlClient.getAllTimeSeries().get(0));
-		// Test for correct dataIRIs
-		List<String> data = SparqlClient.getAssociatedData("http://tsIRI1");
-		for (String s : data) {
-			Assert.assertTrue(dataIRI1.contains(s));
+		Assert.assertEquals(1,  sparqlClient.countTS());
+		// Test whether all data IRI have the time series attached
+		for (String iri: dataIRI1) {
+			Assert.assertEquals(tsIRI1,  sparqlClient.getTimeSeries(iri));
 		}
-		// Test for RDB URL
-		Assert.assertEquals("jdbc:postgresql:timeseries",  SparqlClient.getDbUrl("http://tsIRI1"));
-		Assert.assertNull(SparqlClient.getDbUrl("http://tsIRI3"));
-		// Test for time unit
-		Assert.assertEquals("http://s",  SparqlClient.getTimeUnit("http://tsIRI1"));
-		Assert.assertNull(SparqlClient.getTimeUnit("http://tsIRI3"));
+		// Retrieve all data IRIs for the time series
+		List<String> dataIRIs = sparqlClient.getAssociatedData(tsIRI1);
+		for (String iri : dataIRI1) {
+			Assert.assertTrue(dataIRIs.contains(iri));
+		}
+
+		// Retrieve time series properties
+		Assert.assertEquals(dbURL,  sparqlClient.getDbUrl(tsIRI1));
+		Assert.assertEquals(timeUnit,  sparqlClient.getTimeUnit(tsIRI1));
+
+		// Initialise another time series without time unit
+		sparqlClient.initTS(tsIRI2, dataIRI2, dbURL, null);
+		Assert.assertNull(sparqlClient.getTimeUnit(tsIRI2));
+
+		// Remove the attachment of one data IRI to a time series
+		sparqlClient.removeTimeSeriesAssociation(dataIRI1.get(0));
+		// Try to retrieve data IRI association
+		Assert.assertNull(sparqlClient.getTimeSeries(dataIRI1.get(0)));
+
+		// Remove entire time series
+		sparqlClient.removeTimeSeries(sparqlClient.getTimeSeries(dataIRI1.get(1)));
+		// Retrieve all time series remaining
+		List<String> timeSeries = sparqlClient.getAllTimeSeries();
+		Assert.assertEquals(1, timeSeries.size());
+		Assert.assertTrue(timeSeries.contains(tsIRI2));
+
 	}
-	
-	@Test
-	public void testCheckTimeSeriesExists() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-		Assert.assertTrue(SparqlClient.checkTimeSeriesExists(tsIRI1));
-		Assert.assertFalse(SparqlClient.checkTimeSeriesExists(tsIRI2));
-	}
-	
-	@Test
-	public void testCheckDataExists() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-		Assert.assertTrue(SparqlClient.checkDataExists("http://data1"));
-		Assert.assertFalse(SparqlClient.checkDataExists("http://data5"));
-	}
-	
-	@Test
-	public void testcheckTimeUnitExists() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, null);
-		Assert.assertFalse(SparqlClient.checkTimeUnitExists(tsIRI1));
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-		Assert.assertTrue(SparqlClient.checkTimeUnitExists(tsIRI1));
-	}
-	
-	@Test
-	public void testRemoveTimeSeries() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-		Assert.assertEquals(1, SparqlClient.countTS());
-		SparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit);
-		Assert.assertEquals(2, SparqlClient.countTS());
-		SparqlClient.removeTimeSeries(tsIRI2);
-		Assert.assertEquals(1, SparqlClient.countTS());
-		// Test whether deletion of non-instantiated tsIRIs is handled
-		SparqlClient.removeTimeSeries(tsIRI2);
-		Assert.assertEquals(1, SparqlClient.countTS());
-		
-		SparqlClient.removeTimeSeries(tsIRI1);
-		Assert.assertEquals(0, SparqlClient.countTS());
-	}
-	
-	@Test
-	public void testRemoveAllTimeseries() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
-		SparqlClient.initTS(tsIRI2, dataIRI2, dbURL, timeUnit);
-		Assert.assertEquals(2, SparqlClient.countTS());
-		SparqlClient.removeAllTimeSeries();
-		Assert.assertEquals(0, SparqlClient.countTS());
-	}
-	
-	@Test
-	public void testRemoveTimeSeriesAssociation() {
-		TimeSeriesSparql SparqlClient = initialiseSparqlClient();
-		// Initialise time series in kb
-		SparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);		
-		Assert.assertEquals(3, SparqlClient.getAssociatedData(tsIRI1).size());
-		SparqlClient.removeTimeSeriesAssociation("http://data1");		
-		Assert.assertEquals(2, SparqlClient.getAssociatedData(tsIRI1).size());
-		SparqlClient.removeTimeSeriesAssociation("http://data2");		
-		Assert.assertEquals(1, SparqlClient.getAssociatedData(tsIRI1).size());
-		SparqlClient.removeTimeSeriesAssociation("http://data3");		
-		Assert.assertEquals(0, SparqlClient.getAssociatedData(tsIRI1).size());
-		Assert.assertEquals(0, SparqlClient.countTS());
-	}
-	
-	
 }
 
