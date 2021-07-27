@@ -50,6 +50,9 @@ public class InitialisingAgent extends JPSAgent{
     	System.out.println("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();
     	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
+    	tsClient.setRdbURL(ExampleConfig.dburl);
+    	tsClient.setRdbUser(ExampleConfig.dbuser);
+    	tsClient.setRdbPassword(ExampleConfig.dbpassword);
     	tsClient.deleteAll();
     	
     	// record the IRIs of the created instances to link them later
