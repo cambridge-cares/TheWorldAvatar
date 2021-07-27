@@ -32,7 +32,7 @@ def qc_log_to_json(parsedJobsList, outDir, outFileBaseName, extension='.json'):
         outFileName = getRefName(outFileBaseName,jobIndex=jobIndex,numJobs=len(parsedJobsList), extension=extension)
         outFilePath = os.path.join(outDir, outFileName)
 
-        jsonStringToFile(jobDataJson, outFilePath)
+        jsonStringToFile(outFilePath, jobDataJson)
 
 def getFilesWithExtensions(fileOrDir, fileExtList):
     files = []
