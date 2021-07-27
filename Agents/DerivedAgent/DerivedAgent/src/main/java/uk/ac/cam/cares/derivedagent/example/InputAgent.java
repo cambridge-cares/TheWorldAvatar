@@ -31,7 +31,7 @@ public class InputAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		if (validateInput(requestParams)) {
-		    String input_iri = requestParams.getString(DerivedQuantityClient.AGENT_INPUT_KEY);
+		    String input_iri = InstancesDatabase.Input;
 		    
 		    ExampleConfig.initProperties();
 		    
@@ -58,15 +58,8 @@ public class InputAgent extends JPSAgent {
 		return requestParams;
 	}
 	
+	@Override
 	public boolean validateInput(JSONObject requestParams) {
-		String input_iri = requestParams.getString(DerivedQuantityClient.AGENT_INPUT_KEY);
-		RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
-		ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
-		
-		if (sparqlClient.isInputData(input_iri)) {
-			return true;
-		} else {
-			return false;
-		}
+		return true;
 	}
 }

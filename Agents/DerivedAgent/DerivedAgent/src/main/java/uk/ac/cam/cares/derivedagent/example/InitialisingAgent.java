@@ -58,25 +58,32 @@ public class InitialisingAgent extends JPSAgent{
     	devClient.addTimeInstance(input);
     	createTimeSeries(input, storeClient);
     	LOGGER.info("created input " + input);
+    	InstancesDatabase.Input = input;
     	
     	String mintime = sparqlClient.createMinTime(0);
     	LOGGER.info("created min time " + mintime);
+    	InstancesDatabase.MinTime = mintime;
     	
     	String maxtime = sparqlClient.createMaxTime(0);
     	LOGGER.info("created max time " + maxtime);
+    	InstancesDatabase.MaxTime = maxtime;
     	
     	String timeduration = sparqlClient.createTimeDuration(0);
     	LOGGER.info("created time duration " + timeduration);
+    	InstancesDatabase.TimeDuration = timeduration;
 
     	// create three derived quantities
     	String derived_mintime = devClient.createDerivedQuantity(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for min time " + derived_mintime);
+    	InstancesDatabase.DerivedQuantityMinTime = derived_mintime;
     	
     	String derived_maxtime = devClient.createDerivedQuantity(Arrays.asList(maxtime), maxtime_agent_iri, maxtime_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for max time " + derived_maxtime);
+    	InstancesDatabase.DerivedQuantityMaxTime = derived_maxtime;
     	
     	String derived_timeduration = devClient.createDerivedQuantity(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime,maxtime));
     	LOGGER.info("created derived quantity for time duration " + derived_timeduration);
+    	InstancesDatabase.DerivedQuantityTimeDuration = derived_timeduration;
     	
     	// check all connections between the derived quantities
     	// as time duration is derived from min time and max time, they get checked too
@@ -114,7 +121,7 @@ public class InitialisingAgent extends JPSAgent{
     	
     	// create a new time series object with random numbers
     	Random rand = new Random();
-    	List<Integer> time_column = Arrays.asList(1);
+    	List<Integer> time_column = Arrays.asList(rand.nextInt());
     	List<List<?>> values = new ArrayList<>();
     	List<Integer> value_column = Arrays.asList(rand.nextInt());
     	values.add(value_column);
