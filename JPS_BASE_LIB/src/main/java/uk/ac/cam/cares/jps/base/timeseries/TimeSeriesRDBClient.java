@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import com.sun.jna.platform.unix.X11;
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -117,7 +118,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Load properties file from specified path
             Properties prop = new Properties();
             prop.load(input);
-            
+            // Close the input stream
+            input.close();
+
             // Get the property values and assign
             if (prop.containsKey("db.url")) {
             	setRdbURL(prop.getProperty("db.url"));
