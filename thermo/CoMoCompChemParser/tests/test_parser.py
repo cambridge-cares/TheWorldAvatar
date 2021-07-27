@@ -1,6 +1,7 @@
 import json
 import os
 from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
+from compchemparser.app import runParser
 from compchemparser.helpers.utils import getRefName, readJsonToDict, writeDictToJson
 import pytest
 
@@ -46,14 +47,13 @@ parser = CcGaussianParser()
 ('failed_jobs','co2_linked_g09.log', 1, False),
 #scans
 #  singlelog, relaxed
-('scans\\singlelogscans\\relaxed','ethane_scan_short.log', 3, False),
+('scans\\singlelogscans\\relaxed','ethane_scan_short.g09', 3, False),
 ('scans\\singlelogscans\\relaxed','ethane_scan_cas.log', 3, False),
 ('scans\\singlelogscans\\relaxed','ethane_scan_mp2.log', 3, False),
-('scans\\singlelogscans\\relaxed','ethane_scan_short.log', 3, False),
 ('scans\\singlelogscans\\relaxed','nbut.log', 7, False),
 #  singlelog, rigid
 ('scans\\singlelogscans\\rigid','ethane_angle_rigid.log', 4, False),
-('scans\\singlelogscans\\rigid','ethane_scan_rigid.log', 4, False),
+('scans\\singlelogscans\\rigid','ethane_scan_rigid.g09', 4, False),
 ('scans\\singlelogscans\\rigid','nbut_rigid.log', 7, False),
 #  multilog, relaxed
 ('scans\\multilogscans\\relaxed','ethane_1.log', 1, False),
@@ -103,3 +103,23 @@ def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllR
         print('========================================================')
         print()
         print()
+
+
+@pytest.mark.parametrize("logFileOrDir, logExt, outputSize",
+[
+('scans\\singlelogscans\\rigid', '.g09', 4),
+('scans\\singlelogscans\\relaxed', '.log, .g09', 17),
+('scans\\multilogscans\\relaxed', '.log', 3),
+('scans\\multilogscans\\rigid', '.log', 3)
+]
+)
+def test_parser_app(logFileOrDir, logExt, outputSize):
+    print('========================================================')
+    print('TEST FILE/DIR: ', logFileOrDir)
+    print()
+    print()
+
+    testPath = os.path.join(THIS_DIR, 'gaussian', logFileOrDir)
+    output= runParser(testPath, logExt, suppressOutput=True)
+
+    assert outputSize == len(output)

@@ -14,7 +14,7 @@ def runParser(logFileOrDir, logExt='.log', suppressOutput=False):
             outDir=os.path.dirname(file_)
             baseName=os.path.basename(file_)
             qc_log_to_json(outDir=outDir, outFileBaseName=baseName, parsedJobsList=parsed_data)
-    return parsed_data
+    return all_parsed_data
 
 def parseLog(logFile):
     # use cclib package "get_ccattr" utility to determine the log file type
