@@ -40,6 +40,20 @@ public class ExampleSparqlClient {
     }
     
     /**
+     * clears kg before initialising anything
+     */
+    public void clearKG() {
+    	Variable x = SparqlBuilder.var("x");
+    	Variable y = SparqlBuilder.var("y");
+    	Variable z = SparqlBuilder.var("z");
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.delete(x.has(y,z)).where(x.has(y,z));
+    	
+    	storeClient.executeUpdate(modify.getQueryString());
+    }
+    
+    /**
      * in this example the instances are simple, directly linked to a literal
      * <instance> <hasValue> ?x
      * @param instance
