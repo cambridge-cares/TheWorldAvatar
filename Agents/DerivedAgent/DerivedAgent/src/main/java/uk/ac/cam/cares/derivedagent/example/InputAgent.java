@@ -59,6 +59,14 @@ public class InputAgent extends JPSAgent {
 	}
 	
 	public boolean validateInput(JSONObject requestParams) {
-		return true;
+		String input_iri = requestParams.getString(DerivedQuantityClient.AGENT_INPUT_KEY);
+		RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
+		ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
+		
+		if (sparqlClient.isInputData(input_iri)) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
