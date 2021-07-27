@@ -1,5 +1,17 @@
 version: "3.8"
 
+services:
+
+  # Chatbot
+  jps-chatbot:
+    ports:
+      - 5000:5000
+
+  # LDF server
+  jps-ldf:
+    ports:
+      - 3000:3000
+
 networks:
   default:
     name: prod-agent
