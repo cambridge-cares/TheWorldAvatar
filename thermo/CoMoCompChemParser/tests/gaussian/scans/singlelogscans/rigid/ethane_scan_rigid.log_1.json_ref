@@ -1,0 +1,78 @@
+{
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Method": "RB3LYP",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            -0.76537
+        ],
+        [
+            0.0,
+            0.0,
+            0.76537
+        ],
+        [
+            1.018496,
+            0.0,
+            1.163512
+        ],
+        [
+            -0.509246,
+            -0.882045,
+            1.163512
+        ],
+        [
+            -0.509249,
+            0.882044,
+            1.163511
+        ],
+        [
+            0.509249,
+            -0.882044,
+            -1.163511
+        ],
+        [
+            0.509246,
+            0.882045,
+            -1.163512
+        ],
+        [
+            -1.018496,
+            0.0,
+            -1.163512
+        ]
+    ],
+    "Rotational constants": [
+        80.5678452,
+        15.0058132,
+        15.0058085
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -2172.2954809816692,
+    "HOMO energy": -0.34049,
+    "HOMO-1 energy": -0.34049,
+    "HOMO-2 energy": -0.36278,
+    "LUMO energy": 0.1053,
+    "LUMO+1 energy": 0.15668,
+    "LUMO+2 energy": 0.16472,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Thu Mar 25 19:05:15 2021",
+    "ScanFlag": "Rigid",
+    "ScanType": "Bond",
+    "ScanAtoms": [
+        "2",
+        "1"
+    ],
+    "Scan Points": 1.5307
+}
