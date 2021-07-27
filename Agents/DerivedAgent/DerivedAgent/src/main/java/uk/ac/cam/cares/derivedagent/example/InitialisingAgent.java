@@ -124,9 +124,9 @@ public class InitialisingAgent extends JPSAgent{
     	
     	// create a new time series object with random numbers
     	Random rand = new Random();
-    	List<Integer> time_column = Arrays.asList(rand.nextInt());
+    	List<Integer> time_column = Arrays.asList(rand.nextInt(),rand.nextInt());
     	List<List<?>> values = new ArrayList<>();
-    	List<Integer> value_column = Arrays.asList(rand.nextInt());
+    	List<Integer> value_column = Arrays.asList(rand.nextInt(),rand.nextInt());
     	values.add(value_column);
     	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(input_iri), values);
     	

@@ -66,6 +66,9 @@ public class ExampleDerivedAgent extends JPSAgent {
         	JSONArray inputs = requestParams.getJSONArray(DerivedQuantityClient.AGENT_INPUT_KEY);
         	
         	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
+        	tsClient.setRdbURL(ExampleConfig.dburl); 
+        	tsClient.setRdbUser(ExampleConfig.dbuser);
+        	tsClient.setRdbPassword(ExampleConfig.dbpassword);
         	
         	String inputdata_iri;
         	String createdInstance;
@@ -83,7 +86,7 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        	case URL_MAXTIME:
 	        		LOGGER.info("Querying max time");
 	        		inputdata_iri = inputs.getString(0);
-        			Integer maxtime = tsClient.getMinTime(inputdata_iri);
+        			Integer maxtime = tsClient.getMaxTime(inputdata_iri);
         			createdInstance = sparqlClient.createMaxTime(maxtime);
         			LOGGER.info("created a new max time instance " + createdInstance);
         			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
