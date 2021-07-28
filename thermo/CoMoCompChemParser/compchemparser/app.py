@@ -1,34 +1,28 @@
-from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
-from compchemparser.aboxwriters import write_abox
 import os
-import errno
-import glob
+from compchemparser.helpers.ccutils import CCPACKAGES, get_ccpackage
+from compchemparser.helpers.utils import qc_log_to_json, getFilesWithExtensions, dienicely
+from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
 
-def runParser(args):
+def runParser(logFileOrDir, logExt='.log', suppressOutput=False):
+    all_parsed_data = []
+    files = getFilesWithExtensions(logFileOrDir,logExt.split(','))
+    for file_ in files:
+        parsed_data= parseLog(file_)
+        all_parsed_data+=parsed_data
 
-    if os.path.isfile(args['<logFileOrDir>']):
-        parseLog(args['<logFileOrDir>'],args['-n'])
-
-    elif os.path.isdir(args['<logFileOrDir>']):
-        os.chdir(args['<logFileOrDir>'])
-
-        for logFile in glob.glob(args["--logExt"]):
-            parseLog(logFile,args['-n'])
-    else:
-        raise FileNotFoundError(
-            errno.ENOENT, os.strerror(errno.ENOENT), args['<logFileOrDir>'])
-
-def parseLog(logFile,suppressOutput):
-    CompChemObj = OntoCompChemData(write_abox)
-    CompChemObj.getData(logFile)
-
-    if CompChemObj:
         if not suppressOutput:
-            CompChemObj.outputjson()
-            CompChemObj.output_abox_csv()
+            outDir=os.path.dirname(file_)
+            baseName=os.path.basename(file_)
+            qc_log_to_json(outDir=outDir, outFileBaseName=baseName, parsedJobsList=parsed_data)
+    return all_parsed_data
+
+def parseLog(logFile):
+    # use cclib package "get_ccattr" utility to determine the log file type
+    ccpackage= get_ccpackage(logFile)
+    # at the moment only Gaussian log files are supported
+    if ccpackage in CCPACKAGES:
+        # set the parser
+        parser = CcGaussianParser()
     else:
-        print('No data to output/upload, check if log file is not empty or quantum job terminated correctly.')
-
-
-def runScan(args):
-    print("scan command under construction")
+        dienicely("ERROR: Provided log fie is either incorrect or comes from an unsupported quantum chemistry package.")
+    return parser.parse(logFile)
