@@ -23,7 +23,6 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
-import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
@@ -768,7 +767,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
 	 */
-	public boolean checkDataHasTimeSeries(String dataIRI) {
+	private boolean checkDataHasTimeSeries(String dataIRI) {
 		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		return context.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));

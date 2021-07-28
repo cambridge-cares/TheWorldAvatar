@@ -97,57 +97,63 @@ public class TimeSeriesClient<T> {
      * @param dataIRIs: List of (full) dataIRIs as Strings
      * @param dataClass: List of data classes for each dataIRI
      * @param timeUnit: time unit as (full) IRI
+     * @return Returns "Success" if initialisation was successful in both the triple store and the relational database
+     * 		   <br>Returns "No changes: &lt;error description&gt;" in case there was an error; however, prior state could be maintained/recovered
+     * 		   <br>Returns "Potentially inconsistent state: &lt;time series IRI&gt;" in case there was an error and NOT all changes could be reverted  
+     * 		   <br>(i.e. there is an inconsistent state between triple store and database and subsequent cleanup for tsIRI is required)
      */
-    public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
+    public String initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
     	
-    	// Initialise return value
-    	String iri = null;
-    	
+    	// Initialise boolean flags to indicate success/failure of potentially necessary deletion (in case any errors occur)
+    	boolean rdb_deletion = true;
+    	boolean rdf_deletion = true;
+ 	
     	// Create random time series IRI in the format: <ClassName>_<UUID>
     	String tsIRI = rdfClient.ns_kb + "Timeseries_" + UUID.randomUUID().toString();
     	
     	// Step1: Initialise time series in knowledge base
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
-   		rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
+   		try {
+   			rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
+   		} catch (Exception e_RdfCreate) {
+   			e_RdfCreate.printStackTrace();
+   			return "No change: " + e_RdfCreate.getMessage();   			
+   		}
     	
     	// Step2: Try to initialise time series in relational database
     	try {
     		rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
-    	} catch (JPSRuntimeException e_create) {
-    		// For exceptions thrown after interaction with relational database started,
-    		// try to revert whatever might have been instantiated in relational database
-    		if (e_create.getMessage().contains("Error while executing SQL command") ||
-        		e_create.getMessage().contains("Closing database connection failed")) {
+    	} catch (JPSRuntimeException e_RdbCreate) {
+    		// For RDB exceptions thrown after interaction with relational database started, try to revert 
+    		// whatever might have been instantiated in relational database
+    		if (e_RdbCreate.getMessage().contains("Error while executing SQL command")) {
        			try {
-        			// mh807: I assume it's sufficient to try only for 1 dataIRI, but I am not sure
-       				// whether it's possible that SQL query is only partially executed and, e. g.
-       				// only 2 out of 3 dataIRIs are instantiated in central table
+        			// Try to delete potentially created time series table and corresponding entries in central lookup table
     				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
-    			} catch(Exception e_delete) {
+    			} catch(Exception e_RdbDelete) { 
+    				// RDB deletion potentially unsuccessful
+   					rdb_deletion = false;
     			}
-       			// Check whether any artifacts have remained in relational database
-       			// Central table entries are created before and deleted after corresponding time
-       			// series table, hence it should be sufficient to "only" check central lookup table 
-       			for (String datairi : dataIRIs) {
-       				if (rdbClient.checkDataHasTimeSeries(datairi)) {
-       					// RDB deletion was unsuccessful
-       				}
-       			}
-       			// RDB deletion was successful	
-       			
-    			}
-    		// Try to revert previous knowledge base instantiation
+    		}
+    		
+    		// For ALL RDB exceptions, try to revert previous knowledge base instantiation
     		try {
     			rdfClient.removeTimeSeries(tsIRI);
-    		} catch (Exception e_delete) {
-    			// RDF deletion was unsuccessful
+    		} catch (Exception e_RdfDelete) {
+    			// RDF deletion potentially unsuccessful
+    			rdf_deletion = false;
     		}
-    		// RDF deletion was unsuccessful
-		
-    	}
-    	// switch cases
-    	
+    		
+    		// Return messages depending on exceptions occurred
+    		if (rdb_deletion && rdf_deletion) {
+    			return "No change: " + e_RdbCreate.getCause().getMessage();
+    		} else {
+    			return "Potentially inconsistent state: " + tsIRI;
+    		}    		
+    	}    	
+    	// Return success in case no exceptions occurred
+    	return "Success";
     }
 
 
