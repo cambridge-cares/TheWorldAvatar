@@ -419,9 +419,12 @@ public class DerivedQuantitySparql{
 			query.select(derived, entityType).where(queryPattern).prefix(p_derived);
 			JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 			
-			for (int j = 0; j < queryResult.length(); j++) {
-				derivediri.add(queryResult.getJSONObject(j).getString(derivedkey));
-				typeiri.add(queryResult.getJSONObject(j).getString(typeKey));
+			// do not attempt to get value if this instance is not an input to any other derived quantities
+			if(!queryResult.getJSONObject(0).isEmpty()) {
+				for (int j = 0; j < queryResult.length(); j++) {
+					derivediri.add(queryResult.getJSONObject(j).getString(derivedkey));
+					typeiri.add(queryResult.getJSONObject(j).getString(typeKey));
+				}
 			}
 		}
 		
