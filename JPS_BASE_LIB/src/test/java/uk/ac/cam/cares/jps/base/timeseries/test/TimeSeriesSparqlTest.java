@@ -1,17 +1,16 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.github.owlcs.ontapi.jena.impl.OntDisjointImpl;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateRequest;
-import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.RDFS;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
@@ -298,7 +297,7 @@ public class TimeSeriesSparqlTest {
                 sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit));
         String errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains(tsIRI1));
-        Assert.assertTrue(errorMessage.contains("IRI already in the Knowledge Graph"));
+        Assert.assertTrue(errorMessage.contains("already in the Knowledge Graph"));
         Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.toString()));
         // Trying to init different time series but same data IRI should result in an exception
         exception = Assert.assertThrows(JPSRuntimeException.class, () ->
@@ -424,6 +423,40 @@ public class TimeSeriesSparqlTest {
         }
     }
 
+    @Test
+    public void testInsertTimeSeriesAssociation() {
+
+	    String dataIRIThatGetsAdded = "http://data4";
+
+        // Initialise time series in kb
+        sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
+        // Retrieve the updated knowledge base from the mock client
+        OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
+        
+        // Check correct association of dataIRI with time series
+        Assert.assertEquals(3, sparqlClient.getAssociatedData(tsIRI1).size());
+        sparqlClient.insertTimeSeriesAssociation(dataIRIThatGetsAdded, tsIRI1);
+        Assert.assertEquals(4, sparqlClient.getAssociatedData(tsIRI1).size());
+        Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(dataIRIThatGetsAdded));
+        
+        // Check exception for already existing time series association (with any time series)
+        try {
+        	sparqlClient.insertTimeSeriesAssociation(dataIRIThatGetsAdded, tsIRI1);
+        	Assert.fail();
+        } catch (Exception e) {
+        	Assert.assertTrue(e.getMessage().contains("is already attached to time series"));
+        }
+        
+        // Check exception for non-existing time series IRI
+        try {
+        	sparqlClient.insertTimeSeriesAssociation("http://data5", "http://tsIRI3");
+        	Assert.fail();
+        } catch (Exception e) {
+        	Assert.assertTrue(e.getMessage().contains("does not exists in the Knowledge Graph"));
+        	Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(dataIRIThatGetsAdded));
+        }
+    }
+    
     @Test
     public void testRemoveTimeSeriesAssociation() {
 

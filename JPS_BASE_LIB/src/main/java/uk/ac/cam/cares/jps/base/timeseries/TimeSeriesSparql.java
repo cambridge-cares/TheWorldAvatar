@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
@@ -182,7 +183,7 @@ public class TimeSeriesSparql {
 
 		// Check that the time series IRI is not yet in the Knowledge Graph
 		if (checkTimeSeriesExists(timeSeriesIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " IRI already in the Knowledge Graph");
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 		}
 		// Check that the data IRIs are not attached to a different time series IRI already
 		for (String iri: dataIRI) {
@@ -235,6 +236,31 @@ public class TimeSeriesSparql {
     	kbClient.setQuery(query.getQueryString());
     	
     	return kbClient.executeQuery().getJSONObject(0).getInt(queryKey);
+	}
+	
+    /**
+     * Attach data IRI to existing time series IRI in kb (i.e. insert "hasTimeSeries" relationship)
+     * @param dataIRI: data IRI provided as string
+     * @param tsIRI: time series IRI provided as string
+     */
+	public void insertTimeSeriesAssociation(String dataIRI, String tsIRI) {
+		
+		// Check that the data IRI is not attached to a different time series IRI already
+		String ts = getTimeSeries(dataIRI);
+		if(ts != null) {
+			throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + dataIRI + " is already attached to time series " + ts);
+		}
+		
+		// Check whether time series IRI exists
+		if (!checkTimeSeriesExists(tsIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRI + " does not exists in the Knowledge Graph");
+		}
+		
+		// Add triple with "hasTimeSeries" relationship between dataIRI and tsIRI
+		InsertDataQuery insert = Queries.INSERT_DATA(iri(dataIRI).has(hasTimeSeries, iri(tsIRI)));
+		insert.prefix(prefix_ontology);
+		kbClient.executeUpdate(insert.getQueryString());
+			
 	}
 	
     /**
