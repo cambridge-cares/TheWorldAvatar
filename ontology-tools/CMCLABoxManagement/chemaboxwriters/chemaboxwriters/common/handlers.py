@@ -17,5 +17,4 @@ CSV_TO_OWL = StageHandler(handlerFunc=convert_csv_string_into_rdf,
                     inStage=aboxStages.CSV,
                     outStage=aboxStages.OWL,
                     fileWriter= writeFile,
-                    fileWriterKwargs={'newline':''},
-                    fileExt='.oc.owl')
+                    fileWriterKwargs={'newline':''})
