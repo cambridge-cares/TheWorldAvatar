@@ -395,7 +395,6 @@ public class DerivedQuantitySparql{
 	 * @param entities
 	 */
 	public static List<List<String>> getIsDerivedFromEntities(StoreClientInterface kbClient, String... entities) {
-		SelectQuery query = Queries.SELECT();
 		String derivedkey = "derived";
 		String typeKey = "type";
 		Variable derived = SparqlBuilder.var(derivedkey);
@@ -407,22 +406,23 @@ public class DerivedQuantitySparql{
 			filters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
 		}
 		
-		GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entities[0])), iri(entities[0]).isA(entityType));
-		for (int i = 1; i < entities.length; i++) {
-			queryPattern.and(derived.has(isDerivedFrom,iri(entities[i])), iri(entities[i]).isA(entityType));
-		}
-		
-		query.select(derived, entityType).where(queryPattern.filter(Expressions.and(filters))).prefix(p_derived);
-		
-		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
-		
 		List<List<String>> derivedAndEntityType = new ArrayList<>();
 		List<String> derivediri = new ArrayList<>();
 		List<String> typeiri = new ArrayList<>();
 		
-		for (int i = 0; i < queryResult.length(); i++) {
-			derivediri.add(queryResult.getJSONObject(i).getString(derivedkey));
-			typeiri.add(queryResult.getJSONObject(i).getString(typeKey));
+		for (int i = 0; i < entities.length; i++) {
+			SelectQuery query = Queries.SELECT();
+			
+			GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entities[i])), iri(entities[i]).isA(entityType))
+					.filter(Expressions.and(filters)).optional();
+			
+			query.select(derived, entityType).where(queryPattern).prefix(p_derived);
+			JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+			
+			for (int j = 0; j < queryResult.length(); j++) {
+				derivediri.add(queryResult.getJSONObject(j).getString(derivedkey));
+				typeiri.add(queryResult.getJSONObject(j).getString(typeKey));
+			}
 		}
 		
 		derivedAndEntityType.add(derivediri);
