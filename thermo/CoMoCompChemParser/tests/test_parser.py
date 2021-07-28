@@ -10,11 +10,22 @@ parser = CcGaussianParser()
 
 @pytest.mark.parametrize("testType, testLog, outputSize, regenerateResults",
 [
+#gn
 ('g1','co2_g1_g09.log', 1, False),
 ('g2','co2_g2_g09.log', 1, False),
 ('g2','co2_g2mp2_g09.log', 1, False),
+('g3','co2_g3_g09.log', 1, False),
+('g3','co2_g3b3_g09.log', 1, False),
+('g3','co2_g3mp2_g09.log', 1, False),
+('g3','co2_g3mp2b3_g09.log', 1, False),
+('g4','co2_g4_g09.log', 1, False),
+('g4','co2_g4mp2_g09.log', 1, False),
+#cbs
+('cbs-qb3','co2_cbs-qb3_g09.log', 1, False),
 ('cbs-4m','co2_cbs4m_g09.log', 1, False),
 ('cbs-apno','co2_cbsapno_g09.log', 1, False),
+#modred
+('modred','ethane_mod.log', 1, False),
 #linked
 ('linked','co2_linked_g09.log', 2, False),
 #cas
@@ -32,6 +43,10 @@ parser = CcGaussianParser()
 ('ci','co2_cis.log', 1, False),
 #mpn
 ('mpn','oh_sp_mp4_g03.log', 1, False),
+#td
+('td','co2_td.log', 1, False),
+#hf
+('hf','co2_calcall_g09.log', 1, False),
 #extra
 ('extra','Cl.g09', 1, False),
 ('extra','Ti.g09', 1, False),
@@ -82,7 +97,7 @@ def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllR
             #For easy comparison and readability
             jobDataDict = json.loads(jobDataJson)
 
-            jobDataFileName = getRefName(testLog,jobIndex=jobIndex,numJobs=len(parsedJobsList),extension='.json')
+            jobDataFileName = getRefName(testLog,jobIndex=jobIndex,numJobs=len(parsedJobsList),extension='.qc.json')
             jobDataFilePath = os.path.join(testPath, jobDataFileName)
             refDataFilePath=jobDataFilePath+'_ref'
 
