@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -29,10 +30,10 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver
 	// (see: https://www.testcontainers.org/modules/databases/jdbc/). Note: requires Docker to be installed!
-	//private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
+	private static final String dbURL = "jdbc:tc:postgresql:13.3:///timeseries";
 	// For easier local debugging, use the following dbURL instead of the testcontainer dbURL
 	// NOTE: Requires local postgreSQL database "timeseries" to be set up beforehand
-	private static final String dbURL = "jdbc:postgresql:timeseries";
+	//private static final String dbURL = "jdbc:postgresql:timeseries";
 	private static final String user = "postgres";
 	private static final String password = "postgres";
 	
@@ -65,7 +66,7 @@ public class TimeSeriesRDBClientlIntegrationTest {
 		context = DSL.using(conn, SQLDialect.POSTGRES);
 		// Clear database
 		List<Table<?>> tables = context.meta().getTables();
-		for (Table table: tables) {
+		for (Table<?> table: tables) {
 			context.dropTable(table).cascade().execute();
 		}
 	}
@@ -164,7 +165,7 @@ public class TimeSeriesRDBClientlIntegrationTest {
 	// Clear all tables after each test to ensure clean slate
 	public void clearDatabase() {
 		List<Table<?>> tables = context.meta().getTables();
-		for (Table table: tables) {
+		for (Table<?> table: tables) {
 			context.dropTable(table).cascade().execute();
 		}
 	}
