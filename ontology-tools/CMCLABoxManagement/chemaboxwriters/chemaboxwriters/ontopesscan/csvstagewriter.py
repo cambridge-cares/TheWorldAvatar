@@ -9,25 +9,27 @@ import json
 import csv
 from io import StringIO
 import re
-import chemaboxwriters.common.commonvars as commonv
-from  chemaboxwriters.ontocompchem.prefixes import comp_pref, \
-                                                   data_pref, \
-                                                   onto_pref, \
-                                                   onto_spec, \
-                                                   has_spec, \
-                                                   gain_pref, \
-                                                   table_pref, \
-                                                   unit_pref
 
 formula_clean_re = re.compile('(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)')
 
+comp_pref = 'http://www.theworldavatar.com/kb/ontocompchem/' #Prefix for instance in OntoCompChem
+data_pref = 'http://www.theworldavatar.com/data/ontocompchem/' #Prefix for data entries in OntoCompChem
+onto_pref = 'http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl' #Ontology URL
 end_suf = '.owl' #We are writing owl files
+
+onto_spec = 'http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species'
+has_spec = 'http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies'
+
+gain_pref = 'http://purl.org/gc/' #The prefix to Gainesville Core, as we borrow quite a bit from it.
+table_pref = 'http://www.daml.org/2003/01/periodictable/PeriodicTable.owl' #The periodic table ontology that we use for atoms.
+unit_pref = 'http://data.nasa.gov/qudt/owl/' #NASA's unit ontology.
+
+endpoint = 'http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql' #Location of ontology to query from
 
 def compchem_csv_abox_from_string(data):
     data = json.loads(data)
-    spec_IRI=data[commonv.SPECIES_IRI]
-    calc_id = data[commonv.ENTRY_UUID]
-    entryIRI = data[commonv.ENTRY_IRI]
+    spec_IRI=data['SpecIRI']
+    calc_id = data['JobIRI']
 
     csvfile = StringIO(newline='')
 
@@ -36,18 +38,18 @@ def compchem_csv_abox_from_string(data):
 
     spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
 
-    write_initial(spamwriter,entryIRI,calc_id,spec_IRI)
+    write_initial(spamwriter,calc_id,spec_IRI)
     write_mols(spamwriter,calc_id, data)
     write_level_of_theory(spamwriter,calc_id,data)
     write_name(spamwriter,calc_id,data)
-    write_frequencies(spamwriter,entryIRI,calc_id,data)
-    write_rotations(spamwriter,entryIRI,calc_id,data)
-    write_geom_type(spamwriter,entryIRI,calc_id,data)
-    write_zpe(spamwriter,entryIRI,calc_id,data)
-    write_scf(spamwriter,entryIRI,calc_id,data)
-    write_occ(spamwriter,entryIRI,calc_id,data)
-    write_virt(spamwriter,entryIRI,calc_id,data)
-    write_geom_opt(spamwriter,entryIRI,calc_id,data)
+    write_frequencies(spamwriter,calc_id,data)
+    write_rotations(spamwriter,calc_id,data)
+    write_geom_type(spamwriter,calc_id,data)
+    write_zpe(spamwriter,calc_id,data)
+    write_scf(spamwriter,calc_id,data)
+    write_occ(spamwriter,calc_id,data)
+    write_virt(spamwriter,calc_id,data)
+    write_geom_opt(spamwriter,calc_id,data)
     write_atom_info(spamwriter,calc_id,data)
     write_metadata(spamwriter,calc_id,data)
 
@@ -68,20 +70,20 @@ def formula_clean(formula):
     clean_form = formula_clean_re.sub('',formula)
     return clean_form
 
-def write_initial(spamwriter,jobIRI, calc_id,spec_IRI):
+def write_initial(spamwriter,calc_id,spec_IRI):
     #This is all the initialization part of the ABox
-    spamwriter.writerow([jobIRI, 'Instance',onto_pref + '#G09','','',''])
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id, 'Instance',onto_pref + '#G09','','',''])
     if spec_IRI: #If you have the ontospecies IRI, it puts it here. Otherwise, it leaves it out.
         spamwriter.writerow([spec_IRI, 'Instance', onto_spec,'','',''])
-        spamwriter.writerow([jobIRI,'Instance',spec_IRI,has_spec,'',''])
+        spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',spec_IRI,has_spec,'',''])
     spamwriter.writerow([comp_pref + 'InitializationModule_' + calc_id
                          ,'Instance', onto_pref + '#InitializationModule','','','']) #Sets up initialization.
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                          comp_pref + 'InitializationModule_' + calc_id ,
                          onto_pref + '#hasInitialization','',''])
     spamwriter.writerow([comp_pref + 'SourcePackage_' + calc_id + '_EnvironmentModule'
                      ,'Instance', gain_pref + 'SourcePackage','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                     comp_pref + 'SourcePackage_' + calc_id + '_EnvironmentModule',
                      onto_pref + '#hasEnvironment','',''])
     spamwriter.writerow([comp_pref + 'MoleculeProperty_' + calc_id
@@ -139,12 +141,12 @@ def write_name(spamwriter,calc_id,data):
                      ,comp_pref + 'MoleculeProperty_' + calc_id
                      , '',formula_clean(data['Empirical formula']),''])
 
-def write_frequencies(spamwriter,jobIRI, calc_id,data):
+def write_frequencies(spamwriter,calc_id,data):
     #This section writes the vibrations to the ABox (if they exist).
     if 'Frequencies' in data:
         spamwriter.writerow([comp_pref + 'VibrationalAnalysis_' + calc_id
                          ,'Instance',gain_pref + 'VibrationalAnalysis','','',''])
-        spamwriter.writerow([jobIRI,'Instance',
+        spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                             comp_pref + 'VibrationalAnalysis_' + calc_id,
                              gain_pref +'isCalculationOn','',''])
         spamwriter.writerow([comp_pref + 'Frequency_' + calc_id
@@ -162,11 +164,11 @@ def write_frequencies(spamwriter,jobIRI, calc_id,data):
         spamwriter.writerow([comp_pref + 'Frequency_' + calc_id ,
                              'Instance',gain_pref + 'cm-1',gain_pref + 'hasUnit','',''])
 
-def write_rotations(spamwriter,jobIRI, calc_id,data):
+def write_rotations(spamwriter,calc_id,data):
         #This section writes the rotational constants information - rotational symmetry, rotational constants, and their values/units.
         spamwriter.writerow([comp_pref + 'RotationalSymmetry_'+ calc_id
                      ,'Instance',onto_pref + '#RotationalSymmetry','','',''])
-        spamwriter.writerow([jobIRI,'Instance',
+        spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                              comp_pref + 'RotationalSymmetry_'+ calc_id ,
                              gain_pref +'isCalculationOn','',''])
         if "Rotational symmetry number" in data:
@@ -176,7 +178,7 @@ def write_rotations(spamwriter,jobIRI, calc_id,data):
         spamwriter.writerow([comp_pref + 'RotationalConstants_'+ calc_id
                      ,'Instance',onto_pref + '#RotationalConstants','','',''])
 
-        spamwriter.writerow([jobIRI,'Instance',
+        spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                             comp_pref + 'RotationalConstants_'+ calc_id ,
                              gain_pref +'isCalculationOn','',''])
         spamwriter.writerow([onto_pref + '#hasRotationalConstants','Data Property',
@@ -188,23 +190,23 @@ def write_rotations(spamwriter,jobIRI, calc_id,data):
         spamwriter.writerow([comp_pref + 'RotationalConstants_'+ calc_id ,
                              'Instance',unit_pref + 'unit#GigaHertz',gain_pref + 'hasUnit','',''])
 
-def write_geom_type(spamwriter,jobIRI,calc_id,data):
+def write_geom_type(spamwriter,calc_id,data):
     #This section writes the geometry type information.
     spamwriter.writerow([comp_pref + 'GeometryType_' + calc_id
                     ,'Instance',onto_pref + '#GeometryType','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                             comp_pref + 'GeometryType_' + calc_id,
                             gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([onto_pref + '#hasGeometryType','Data Property',
                             comp_pref + 'GeometryType_' + calc_id,
                             '',data["Geometry type"],''])
 
-def write_zpe(spamwriter,jobIRI,calc_id,data):
+def write_zpe(spamwriter,calc_id,data):
     #This section writes the zero-point energy information (if it exists). Note that this requires a frequency calculation to be computed.
-    if "Electronic and ZPE energy" in data and 'Electronic energy' in data:
+    if "Electronic and ZPE energy" in data:
         spamwriter.writerow([comp_pref + 'ZeroPointEnergy_' + calc_id
                  ,'Instance',onto_pref + '#ZeroPointEnergy','','',''])
-        spamwriter.writerow([jobIRI,'Instance',
+        spamwriter.writerow([comp_pref + 'G09_' +  calc_id,'Instance',
                      comp_pref + 'ZeroPointEnergy_' + calc_id,
                      gain_pref +'isCalculationOn','',''])
         spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ZeroPointEnergy'
@@ -217,48 +219,31 @@ def write_zpe(spamwriter,jobIRI,calc_id,data):
                              '',data["Electronic and ZPE energy"] - data["Electronic energy"],''])
         spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ZeroPointEnergy','Instance',
                              unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
-    elif 'Electronic and ZPE energy' in data:
-        spamwriter.writerow([comp_pref + 'ElectronicAndZPEEnergy_' + calc_id
-                        ,'Instance',onto_pref + '#ElectronicAndZPEEnergy','','',''])
-        spamwriter.writerow([jobIRI,'Instance',
-                comp_pref + 'ElectronicAndZPEEnergy_' + calc_id,
-                    gain_pref +'isCalculationOn','',''])
-        spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ElectronicAndZPEEnergy'
-                        ,'Instance',gain_pref + 'FloatValue','','',''])
-        spamwriter.writerow([comp_pref + 'ElectronicAndZPEEnergy_' + calc_id
-                ,'Instance',comp_pref + 'FloatValue_' + calc_id + '_ElectronicAndZPEEnergy'
-            , gain_pref + 'hasElectronicEnergy','',''])
-        spamwriter.writerow([gain_pref + 'hasValue','Data Property',
-                            comp_pref + 'FloatValue_' + calc_id + '_ElectronicAndZPEEnergy',
-                            '', data["Electronic and ZPE energy"],''])
-        spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ElectronicAndZPEEnergy'
-                                ,'Instance',unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
 
-def write_scf(spamwriter,jobIRI,calc_id,data):
-    if 'Electronic energy' in data:
-        #This section writes the electronic (SCF) energy information.
-        spamwriter.writerow([comp_pref + 'ScfEnergy_' + calc_id
-                        ,'Instance',onto_pref + '#ScfEnergy','','',''])
-        spamwriter.writerow([jobIRI,'Instance',
-                comp_pref + 'ScfEnergy_' + calc_id,
-                    gain_pref +'isCalculationOn','',''])
-        spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
-                        ,'Instance',gain_pref + 'FloatValue','','',''])
-        spamwriter.writerow([comp_pref + 'ScfEnergy_' + calc_id
-                ,'Instance',comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
-            , gain_pref + 'hasElectronicEnergy','',''])
-        spamwriter.writerow([gain_pref + 'hasValue','Data Property',
-                            comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy',
-                            '', data["Electronic energy"],''])
-        spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
-                                ,'Instance',unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
+def write_scf(spamwriter,calc_id,data):
+    #This section writes the electronic (SCF) energy information.
+    spamwriter.writerow([comp_pref + 'ScfEnergy_' + calc_id
+                    ,'Instance',onto_pref + '#ScfEnergy','','',''])
+    spamwriter.writerow([comp_pref + 'G09_' +  calc_id,'Instance',
+            comp_pref + 'ScfEnergy_' + calc_id,
+                gain_pref +'isCalculationOn','',''])
+    spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
+                    ,'Instance',gain_pref + 'FloatValue','','',''])
+    spamwriter.writerow([comp_pref + 'ScfEnergy_' + calc_id
+            ,'Instance',comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
+        , gain_pref + 'hasElectronicEnergy','',''])
+    spamwriter.writerow([gain_pref + 'hasValue','Data Property',
+                        comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy',
+                        '', data["Electronic energy"],''])
+    spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_ScfEnergy'
+                            ,'Instance',unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
 
-def write_occ(spamwriter,jobIRI,calc_id,data):
+def write_occ(spamwriter,calc_id,data):
     #This section writes the information on the occupied orbitals: HOMO, HOMO-1, HOMO-2 energies.
     #HOMO
     spamwriter.writerow([comp_pref + 'HomoEnergy_' + calc_id
                      ,'Instance',onto_pref + '#HomoEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'HomoEnergy_' + calc_id,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_HomoEnergy'
@@ -274,7 +259,7 @@ def write_occ(spamwriter,jobIRI,calc_id,data):
     #HOMO-1
     spamwriter.writerow([comp_pref + 'HomoMinusOneEnergy_' + calc_id
                      ,'Instance',onto_pref + '#HomoMinusOneEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'HomoMinusOneEnergy_' + calc_id ,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id + '_HomoMinusOneEnergy'
@@ -290,7 +275,7 @@ def write_occ(spamwriter,jobIRI,calc_id,data):
     #HOMO-2
     spamwriter.writerow([comp_pref + 'HomoMinusTwoEnergy_' + calc_id
                      ,'Instance',onto_pref + '#HomoMinusTwoEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'HomoMinusTwoEnergy_' + calc_id ,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' +  calc_id + '_HomoMinusTwoEnergy'
@@ -304,12 +289,12 @@ def write_occ(spamwriter,jobIRI,calc_id,data):
     spamwriter.writerow([comp_pref + 'FloatValue_' +  calc_id + '_HomoMinusTwoEnergy'
                             ,'Instance',unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
 
-def write_virt(spamwriter,jobIRI,calc_id,data):
+def write_virt(spamwriter,calc_id,data):
     #This section writes the information on the unoccupied (virtual) orbitals: LUMO, LUMO+1, LUMO+2 energies.
     #LUMO
     spamwriter.writerow([comp_pref + 'LumoEnergy_' + calc_id
                      ,'Instance',onto_pref + '#LumoEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'LumoEnergy_' + calc_id ,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id  + '_LumoEnergy'
@@ -325,7 +310,7 @@ def write_virt(spamwriter,jobIRI,calc_id,data):
     #LUMO+1
     spamwriter.writerow([comp_pref + 'LumoPlusOneEnergy_' + calc_id
                      ,'Instance',onto_pref + '#LumoPlusOneEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'LumoPlusOneEnergy_' + calc_id ,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id  + '_LumoPlusOneEnergy'
@@ -341,7 +326,7 @@ def write_virt(spamwriter,jobIRI,calc_id,data):
     #LUMO+2
     spamwriter.writerow([comp_pref + 'LumoPlusTwoEnergy_' + calc_id
                      ,'Instance',onto_pref + '#LumoPlusTwoEnergy','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                  comp_pref + 'LumoPlusTwoEnergy_' + calc_id ,
                  gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id  + '_LumoPlusTwoEnergy'
@@ -355,11 +340,11 @@ def write_virt(spamwriter,jobIRI,calc_id,data):
     spamwriter.writerow([comp_pref + 'FloatValue_' + calc_id  + '_LumoPlusTwoEnergy'
                              ,'Instance',unit_pref + 'unit#Hartree',gain_pref + 'hasUnit','',''])
 
-def write_geom_opt(spamwriter,jobIRI,calc_id,data):
+def write_geom_opt(spamwriter,calc_id,data):
     #This section writes the geometry optimization, spin multiplicity and formal charge information.
     spamwriter.writerow([comp_pref + 'GeometryOptimization_' + calc_id
                     ,'Instance',gain_pref + 'GeometryOptimization','','',''])
-    spamwriter.writerow([jobIRI,'Instance',
+    spamwriter.writerow([comp_pref + 'G09_' + calc_id,'Instance',
                 comp_pref + 'GeometryOptimization_' + calc_id,
                 gain_pref +'isCalculationOn','',''])
     spamwriter.writerow([comp_pref + 'Molecule_' + calc_id

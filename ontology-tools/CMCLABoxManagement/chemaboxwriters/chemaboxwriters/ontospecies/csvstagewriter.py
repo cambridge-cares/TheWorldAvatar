@@ -10,7 +10,8 @@ import csv
 
 from io import StringIO
 from chemaboxwriters.ontocompchem.csvstagewriter import formula_clean
-from compchemparser.parsers.ccgaussian_parser import ATOM_TYPES, FORMAL_CHARGE, \
+from compchemparser.parsers.ccgaussian_parser import ATOM_TYPES, \
+                                                     FORMAL_CHARGE, \
                                                      EMP_FORMULA
 from chemaboxwriters.ontospecies.osjsonstagewriter import MOLWT, \
                                                           INCHI, \
@@ -19,27 +20,26 @@ from chemaboxwriters.ontospecies.osjsonstagewriter import MOLWT, \
                                                           BOND_STRING, \
                                                           ATOMS_CAN_POSITIONS, \
                                                           PUBCHEM_ALT_LABEL, \
-                                                          PUBCHEM_CAS, \
+                                                          CAS_NUMBER, \
                                                           ATOM_LIST, \
-                                                          ATOM_COUNTS, \
-                                                          ENTRY_UUID
-
-onto_spec = 'http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
-gain_pref = 'http://purl.org/gc/'
-kin_pref = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl'
-table_pref = 'http://www.daml.org/2003/01/periodictable/PeriodicTable.owl'
-unit_pref = 'http://data.nasa.gov/qudt/owl/'
+                                                          ATOM_COUNTS
+import chemaboxwriters.common.commonvars as commonv
+from chemaboxwriters.ontospecies.prefixes import onto_spec, \
+                                                 gain_pref, \
+                                                 kin_pref, \
+                                                 table_pref, \
+                                                 unit_pref
 
 def species_csv_abox_from_string(data):
     data = json.loads(data)
-    gen_id = data[ENTRY_UUID]
+    gen_id = data[commonv.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    out_id = 'Species_' + gen_id
+    out_id = data[commonv.ENTRY_IRI]
 
     label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 
@@ -66,8 +66,8 @@ def write_prelim(spamwriter,out_id,label):
 def write_identifier_geom(spamwriter,out_id,data):
     if data[PUBCHEM_ALT_LABEL] is not None:
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
-    if data[PUBCHEM_CAS] is not None:
-        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[PUBCHEM_CAS],'String'])
+    if data[CAS_NUMBER] is not None:
+        spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])

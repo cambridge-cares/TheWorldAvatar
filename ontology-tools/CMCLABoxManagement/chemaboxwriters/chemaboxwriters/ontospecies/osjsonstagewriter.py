@@ -13,21 +13,22 @@ import pubchempy as pcp
 from collections import Counter
 import json
 import re
+import chemaboxwriters.common.commonvars as commonv
+from chemaboxwriters.ontospecies.prefixes import species_entry_prefix
 
-charge_re = re.compile('\/p([+-]\d+)')
 cas_re = re.compile('\d{2,7}-\d\d-\d')
 
-MOLWT='Molecular weight'
+MOLWT='MolecularWeight'
 INCHI='InChi'
 SMILES='Smiles'
-GEOM_STRING='Geometry string'
-BOND_STRING='Bond string'
-ATOMS_CAN_POSITIONS='Atoms canonical positions'
-PUBCHEM_ALT_LABEL='Pubchem alternative label'
-PUBCHEM_CAS='Pubchem cas number'
-ATOM_LIST='Atoms list'
-ATOM_COUNTS='Atoms counts'
-ENTRY_UUID='Entry uuid'
+GEOM_STRING='GeometryString'
+BOND_STRING='BondString'
+ATOMS_CAN_POSITIONS='AtomsCanonicalPositions'
+PUBCHEM_ALT_LABEL='PubchemAlternativeLabel'
+CAS_NUMBER='CAS'
+PUBCHEM_CID='PubchemCID'
+ATOM_LIST='AtomsList'
+ATOM_COUNTS='AtomsCounts'
 
 def compchem_osjson_abox_from_string(data, calc_id=""):
     data = json.loads(data)
@@ -48,10 +49,8 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
         data_out[MOLWT] = sum(data[ATOM_MASSES])
 
     if FORMAL_CHARGE not in data.keys():
+        # use openbable to find the charge?
         data_out[FORMAL_CHARGE] = 0
-        formal_charge_re = charge_re.search(inchi)
-        if formal_charge_re:
-            data_out[FORMAL_CHARGE] = int(formal_charge_re.groups()[0])
     else:
         data_out[FORMAL_CHARGE] = data[FORMAL_CHARGE]
 
@@ -64,18 +63,21 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
     # add atoms positions!
     data_out[ATOMS_CAN_POSITIONS] = xyzToAtomsPositions(xyz)
 
-    data_out[PUBCHEM_ALT_LABEL] = None
-    data_out[PUBCHEM_CAS] = None
+    alt_labels = None
+    casid = None
+    cid = None
 
     pubchem_compound = pcp.get_compounds(data_out[INCHI], 'inchi')
     if pubchem_compound:
+        cid = pubchem_compound[0].cid
         if pubchem_compound[0].synonyms:
             alt_labels = pubchem_compound[0].synonyms[0]
             casid = get_substructure_cas(pubchem_compound[0].synonyms)
             if casid: casid= casid[0]
 
     data_out[PUBCHEM_ALT_LABEL] = alt_labels
-    data_out[PUBCHEM_CAS] = casid
+    data_out[CAS_NUMBER] = casid
+    data_out[PUBCHEM_CID] = cid
 
     atom_list, atom_counts = atom_constructor(data_out[ATOM_TYPES])
     data_out[ATOM_LIST] = atom_list
@@ -84,7 +86,8 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
     if not calc_id:
         calc_id = get_random_id()
 
-    data_out[ENTRY_UUID] = calc_id
+    data_out[commonv.ENTRY_UUID] = calc_id
+    data_out[commonv.ENTRY_IRI] = species_entry_prefix+calc_id
 
     return json.dumps(data_out)
 
