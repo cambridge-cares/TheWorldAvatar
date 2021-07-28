@@ -441,34 +441,32 @@ public class DerivedQuantitySparql{
 	 * @param entities
 	 */
 	public static void deleteInstances(StoreClientInterface kbClient, String... entities) {
-		SubSelect sub = GraphPatterns.select();
-		
-		Variable subject = sub.var();
-		Variable pred1 = sub.var();
-		Variable pred2 = sub.var();
-		Variable object = sub.var();
-		
-		TriplePattern[] delete_tp = new TriplePattern[entities.length * 2];
-		GraphPattern[] queryPattern = new GraphPattern[entities.length * 2];
-		int i = 0;
 		for (String entity : entities) {
+			SubSelect sub = GraphPatterns.select();
+			
+			Variable subject = sub.var();
+			Variable pred1 = sub.var();
+			Variable pred2 = sub.var();
+			Variable object = sub.var();
+			
+			TriplePattern[] delete_tp = new TriplePattern[2];
+			GraphPattern[] queryPattern = new GraphPattern[2];
+			
 			// case 1: entity is the object
-			delete_tp[i] = subject.has(pred1, iri(entity)); 
-			queryPattern[i] = delete_tp[i].optional();
-			i++;
+			delete_tp[0] = subject.has(pred1, iri(entity)); 
+			queryPattern[0] = delete_tp[0].optional();
 
 			// case 2: entity is the subject
-			delete_tp[i] = iri(entity).has(pred2, object); 
-			queryPattern[i] = delete_tp[i].optional();
-			i++;
+			delete_tp[1] = iri(entity).has(pred2, object); 
+			queryPattern[1] = delete_tp[1].optional();
+			
+			sub.select(subject,pred1,pred2,object).where(queryPattern);
+			
+			ModifyQuery modify = Queries.MODIFY();
+			modify.delete(delete_tp).where(sub);
+			
+			kbClient.executeUpdate(modify.getQueryString());
 		}
-		
-		sub.select(subject,pred1,pred2,object).where(queryPattern);
-		
-		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp).where(sub);
-		
-		kbClient.executeUpdate(modify.getQueryString());
 	}
 	
 	public static long getTimestamp(StoreClientInterface kbClient, String instance) {
