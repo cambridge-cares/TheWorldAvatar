@@ -15,4 +15,6 @@ public class InstancesDatabase {
     public static String DerivedQuantityMinTime;
     public static String DerivedQuantityMaxTime;
     public static String DerivedQuantityTimeDuration;
+    public static String DerivedQuantityMinTimeCalc;
+    public static String DerivedQuantityMaxTimeCalc;
 }

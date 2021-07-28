@@ -36,7 +36,8 @@ import javax.servlet.annotation.WebServlet;
  * 3) TimeDuration: inputs - MinTime & MaxTime, queries min time and max time, calculates the difference and write it to kg
  * @author Kok Foong Lee
  */
-@WebServlet(urlPatterns = {ExampleDerivedAgent.URL_MINTIME, ExampleDerivedAgent.URL_MAXTIME, ExampleDerivedAgent.URL_DURATION})
+@WebServlet(urlPatterns = {ExampleDerivedAgent.URL_MINTIME, ExampleDerivedAgent.URL_MAXTIME, ExampleDerivedAgent.URL_DURATION,
+		ExampleDerivedAgent.URL_MINTIMECALC, ExampleDerivedAgent.URL_MAXTIMECALC})
 public class ExampleDerivedAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 
@@ -47,6 +48,8 @@ public class ExampleDerivedAgent extends JPSAgent {
     public static final String URL_MINTIME = "/TimeSeriesAgent/MinTime";
     public static final String URL_MAXTIME = "/TimeSeriesAgent/MaxTime";
     public static final String URL_DURATION = "/TimeSeriesAgent/TimeDuration";
+    public static final String URL_MINTIMECALC = "/TimeSeriesAgent/MinTimeCalc";
+    public static final String URL_MAXTIMECALC = "/TimeSeriesAgent/MaxTimeCalc";
 
     // ================================ Methods ================================
     /**
@@ -113,6 +116,42 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        		LOGGER.info("created a new time duration instance " + createdInstances);
 	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
+	        		
+	        	case URL_MINTIMECALC:
+	        		LOGGER.info("Calculating min time from time duration and max time");
+	        		Integer timeduration_input = null; maxtime_input = null;
+	        		
+	        		if (sparqlClient.isMaxTime(inputs.getString(0))) {
+	        			maxtime_input = sparqlClient.getValue(inputs.getString(0));
+	        			timeduration_input = sparqlClient.getValue(inputs.getString(1));
+	        		} else if (sparqlClient.isTimeDuration(inputs.getString(0))) {
+	        			timeduration_input = sparqlClient.getValue(inputs.getString(0));
+	        			maxtime_input = sparqlClient.getValue(inputs.getString(1));
+	        		}
+	        		
+	        		int mintimecalc = maxtime_input - timeduration_input;
+	        		createdInstances = sparqlClient.createMinTimeCalc(mintimecalc);
+	        		LOGGER.info("calculated min time from max time and time duration " + createdInstances);
+	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+	        		break;
+	        		
+	        	case URL_MAXTIMECALC:
+	        		LOGGER.info("Calculating max time from time duration and min time");
+	        		timeduration_input = null; mintime_input = null;
+	        		
+	        		if (sparqlClient.isMinTime(inputs.getString(0))) {
+	        			mintime_input = sparqlClient.getValue(inputs.getString(0));
+	        			timeduration_input = sparqlClient.getValue(inputs.getString(1));
+	        		} else if (sparqlClient.isTimeDuration(inputs.getString(0))) {
+	        			timeduration_input = sparqlClient.getValue(inputs.getString(0));
+	        			mintime_input = sparqlClient.getValue(inputs.getString(1));
+	        		}
+	        		
+	        		int maxtimecalc = timeduration_input + mintime_input;
+	        		createdInstances = sparqlClient.createMaxTimeCalc(maxtimecalc);
+	        		LOGGER.info("calculated max time from min time and time duration " + createdInstances);
+	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+	        		break;
 	        }
         } else {
         	LOGGER.error("Invalid input for " + path);
@@ -157,6 +196,36 @@ public class ExampleDerivedAgent extends JPSAgent {
 	    				}
 	    			} else if (sparqlClient.isMinTime(inputs.getString(0))) {
 	    				if (sparqlClient.isMaxTime(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			}
+	    		}
+	    		
+	    		break;
+	    		
+	    	case URL_MINTIMECALC:
+	    		if (inputs.length() == 2) {
+	    			if (sparqlClient.isMaxTime(inputs.getString(0))) {
+	    				if (sparqlClient.isTimeDuration(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			} else if (sparqlClient.isTimeDuration(inputs.getString(0))) {
+	    				if (sparqlClient.isMaxTime(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			}
+	    		}
+	    		
+	    		break;
+	    		
+	    	case URL_MAXTIMECALC:
+	    		if (inputs.length() == 2) {
+	    			if (sparqlClient.isMinTime(inputs.getString(0))) {
+	    				if (sparqlClient.isTimeDuration(inputs.getString(1))) {
+	    					valid = true;
+	    				}
+	    			} else if (sparqlClient.isTimeDuration(inputs.getString(0))) {
+	    				if (sparqlClient.isMinTime(inputs.getString(1))) {
 	    					valid = true;
 	    				}
 	    			}

@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
@@ -28,7 +27,9 @@ public class ExampleSparqlClient {
 	
 	// rdf:type
 	private static Iri MaxTime = p_namespace.iri("MaxTime");
+	private static Iri MaxTimeCalc = p_namespace.iri("MaxTimeCalc");
 	private static Iri MinTime = p_namespace.iri("MinTime");
+	private static Iri MinTimeCalc = p_namespace.iri("MinTimeCalc");
 	private static Iri TimeDuration = p_namespace.iri("TimeDuration");
 	private static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
 	private static Iri ScalarValue = p_namespace.iri("ScalarValue");
@@ -92,6 +93,13 @@ public class ExampleSparqlClient {
     
     public boolean isInputData(String instance) {
     	String query = String.format("ask {<%s> a <%s>}", instance, (namespace + "InputData"));
+    	storeClient.setQuery(query);
+    	boolean result = storeClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    	return result;
+    }
+    
+    public boolean isTimeDuration(String instance) {
+    	String query = String.format("ask {<%s> a <%s>}", instance, (namespace + "TimeDuration"));
     	storeClient.setQuery(query);
     	boolean result = storeClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     	return result;
@@ -186,6 +194,46 @@ public class ExampleSparqlClient {
     	
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	String[] createdEntities = {timeduration_iri,timeduration_value_iri};
+    	
+    	return createdEntities;
+    }
+    
+    public String[] createMinTimeCalc(int mintimeDerived) {
+    	String min_time_iri = namespace + UUID.randomUUID().toString();
+    	String min_time_value_iri = namespace + UUID.randomUUID().toString();
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	while (checkInstanceExists(min_time_iri) || checkInstanceExists(min_time_value_iri)) {
+    		min_time_iri = namespace + UUID.randomUUID().toString();
+    		min_time_value_iri = namespace + UUID.randomUUID().toString();
+    	}
+    	
+    	modify.insert(iri(min_time_iri).isA(MinTimeCalc).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(min_time_value_iri)));
+    	modify.insert(iri(min_time_value_iri).has(numericalValue, mintimeDerived).andIsA(ScalarValue));
+    	
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	String[] createdEntities = {min_time_iri,min_time_value_iri};
+    	
+    	return createdEntities;
+    }
+    
+    public String[] createMaxTimeCalc(int maxtimeDerived) {
+    	String max_time_iri = namespace + UUID.randomUUID().toString();
+    	String max_time_value_iri = namespace + UUID.randomUUID().toString();
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	while (checkInstanceExists(max_time_iri) || checkInstanceExists(max_time_value_iri)) {
+    		max_time_iri = namespace + UUID.randomUUID().toString();
+    		max_time_value_iri = namespace + UUID.randomUUID().toString();
+    	}
+    	
+    	modify.insert(iri(max_time_iri).isA(MaxTimeCalc).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(max_time_value_iri)));
+    	modify.insert(iri(max_time_value_iri).has(numericalValue, maxtimeDerived).andIsA(ScalarValue));
+    	
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	String[] createdEntities = {max_time_iri,max_time_value_iri};
     	
     	return createdEntities;
     }
