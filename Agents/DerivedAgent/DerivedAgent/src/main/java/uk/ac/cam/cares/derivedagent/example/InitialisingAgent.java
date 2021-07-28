@@ -63,17 +63,17 @@ public class InitialisingAgent extends JPSAgent{
     	LOGGER.info("created input " + input);
     	InstancesDatabase.Input = input;
     	
-    	String mintime = sparqlClient.createMinTime(0);
-    	LOGGER.info("created min time " + mintime);
-    	InstancesDatabase.MinTime = mintime;
+    	String[] mintime = sparqlClient.createMinTime(0);
+    	LOGGER.info("created min time " + mintime[0]);
+    	InstancesDatabase.MinTime = mintime[0];
     	
-    	String maxtime = sparqlClient.createMaxTime(0);
-    	LOGGER.info("created max time " + maxtime);
-    	InstancesDatabase.MaxTime = maxtime;
+    	String[] maxtime = sparqlClient.createMaxTime(0);
+    	LOGGER.info("created max time " + maxtime[0]);
+    	InstancesDatabase.MaxTime = maxtime[0];
     	
-    	String timeduration = sparqlClient.createTimeDuration(0);
-    	LOGGER.info("created time duration " + timeduration);
-    	InstancesDatabase.TimeDuration = timeduration;
+    	String[] timeduration = sparqlClient.createTimeDuration(0);
+    	LOGGER.info("created time duration " + timeduration[0]);
+    	InstancesDatabase.TimeDuration = timeduration[0];
 
     	// create three derived quantities
     	String derived_mintime = devClient.createDerivedQuantity(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
@@ -84,7 +84,7 @@ public class InitialisingAgent extends JPSAgent{
     	LOGGER.info("created derived quantity for max time " + derived_maxtime);
     	InstancesDatabase.DerivedQuantityMaxTime = derived_maxtime;
     	
-    	String derived_timeduration = devClient.createDerivedQuantity(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime,maxtime));
+    	String derived_timeduration = devClient.createDerivedQuantity(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime[0],maxtime[0]));
     	LOGGER.info("created derived quantity for time duration " + derived_timeduration);
     	InstancesDatabase.DerivedQuantityTimeDuration = derived_timeduration;
     	

@@ -25,6 +25,8 @@ import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
+import java.util.Arrays;
+
 import javax.servlet.annotation.WebServlet;
 
 /**
@@ -71,25 +73,25 @@ public class ExampleDerivedAgent extends JPSAgent {
         	tsClient.setRdbPassword(ExampleConfig.dbpassword);
         	
         	String inputdata_iri;
-        	String createdInstance;
+        	String[] createdInstances;
         	
 	        switch (path) {
 	        	case URL_MINTIME:
 	        		LOGGER.info("Querying min time");
 	        		inputdata_iri = inputs.getString(0);
         			Integer mintime = tsClient.getMinTime(inputdata_iri);
-        			createdInstance = sparqlClient.createMinTime(mintime);
-        			LOGGER.info("created a new min time instance " + createdInstance);
-        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
+        			createdInstances = sparqlClient.createMinTime(mintime);
+        			LOGGER.info("created a new min time instance " + createdInstances);
+        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        	    
 	        	case URL_MAXTIME:
 	        		LOGGER.info("Querying max time");
 	        		inputdata_iri = inputs.getString(0);
         			Integer maxtime = tsClient.getMaxTime(inputdata_iri);
-        			createdInstance = sparqlClient.createMaxTime(maxtime);
-        			LOGGER.info("created a new max time instance " + createdInstance);
-        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
+        			createdInstances = sparqlClient.createMaxTime(maxtime);
+        			LOGGER.info("created a new max time instance " + createdInstances);
+        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		
 	        		break;
 	        	case URL_DURATION:
@@ -107,9 +109,9 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        		
 	        		// calculate a new value and create a new instance
 	        		int timeduration = maxtime_input - mintime_input;
-	        		createdInstance = sparqlClient.createTimeDuration(timeduration);
-	        		LOGGER.info("created a new time duration instance " + createdInstance);
-	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray().put(createdInstance));
+	        		createdInstances = sparqlClient.createTimeDuration(timeduration);
+	        		LOGGER.info("created a new time duration instance " + createdInstances);
+	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        }
         } else {

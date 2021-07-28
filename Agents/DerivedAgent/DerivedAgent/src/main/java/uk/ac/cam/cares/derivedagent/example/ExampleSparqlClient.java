@@ -31,9 +31,11 @@ public class ExampleSparqlClient {
 	private static Iri MinTime = p_namespace.iri("MinTime");
 	private static Iri TimeDuration = p_namespace.iri("TimeDuration");
 	private static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
+	private static Iri ScalarValue = p_namespace.iri("ScalarValue");
 	
 	// property
 	private static Iri hasValue = p_namespace.iri("hasValue");
+	private static Iri numericalValue = p_namespace.iri("numericalValue");
 	
     public ExampleSparqlClient(StoreClientInterface storeClient) {
     	this.storeClient = storeClient;
@@ -63,8 +65,9 @@ public class ExampleSparqlClient {
     	SelectQuery query = Queries.SELECT();
     	
     	String key = "value";
+    	Variable value_iri = query.var();
     	Variable value = SparqlBuilder.var(key);
-    	TriplePattern queryPattern = iri(instance).has(hasValue,value);
+    	GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasValue,value_iri), value_iri.has(numericalValue,value));
     	
     	query.prefix(p_namespace).select(value).where(queryPattern);
     	
@@ -115,21 +118,26 @@ public class ExampleSparqlClient {
      * @param maxtime
      * @return
      */
-    public String createMaxTime(int maxtime) {
+    public String[] createMaxTime(int maxtime) {
     	String max_time_iri = namespace + UUID.randomUUID().toString();
+    	String max_time_value_iri = namespace + UUID.randomUUID().toString();
     	
     	ModifyQuery modify = Queries.MODIFY();
     	
     	// instantiate max time
-    	while (checkInstanceExists(max_time_iri)) {
+    	while (checkInstanceExists(max_time_iri) || checkInstanceExists(max_time_value_iri)) {
     		max_time_iri = namespace + UUID.randomUUID().toString();
+    		max_time_value_iri = namespace + UUID.randomUUID().toString();
     	}
     	
-    	modify.insert(iri(max_time_iri).isA(MaxTime).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, maxtime));
+    	modify.insert(iri(max_time_iri).isA(MaxTime).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(max_time_value_iri)));
+    	modify.insert(iri(max_time_value_iri).has(numericalValue, maxtime).andIsA(ScalarValue));
     	
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	
-    	return max_time_iri;
+    	String[] createdEntities = {max_time_iri,max_time_value_iri};
+    	
+    	return createdEntities;
     }
     
     /**
@@ -137,19 +145,24 @@ public class ExampleSparqlClient {
      * @param mintime
      * @return
      */
-    public String createMinTime(int mintime) {
+    public String[] createMinTime(int mintime) {
     	String min_time_iri = namespace + UUID.randomUUID().toString();
+    	String min_time_value_iri = namespace + UUID.randomUUID().toString();
     	
     	ModifyQuery modify = Queries.MODIFY();
     	
-    	while (checkInstanceExists(min_time_iri)) {
+    	while (checkInstanceExists(min_time_iri) || checkInstanceExists(min_time_value_iri)) {
     		min_time_iri = namespace + UUID.randomUUID().toString();
+    		min_time_value_iri = namespace + UUID.randomUUID().toString();
     	}
-    	modify.insert(iri(min_time_iri).isA(MinTime).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, mintime));
+    	
+    	modify.insert(iri(min_time_iri).isA(MinTime).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(min_time_value_iri)));
+    	modify.insert(iri(min_time_value_iri).has(numericalValue, mintime).andIsA(ScalarValue));
     	
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	String[] createdEntities = {min_time_iri,min_time_value_iri};
     	
-    	return min_time_iri;
+    	return createdEntities;
     }
     
     /**
@@ -157,19 +170,24 @@ public class ExampleSparqlClient {
      * @param timeduration
      * @return
      */
-    public String createTimeDuration(int timeduration) {
+    public String[] createTimeDuration(int timeduration) {
     	String timeduration_iri = namespace + UUID.randomUUID().toString();
+    	String timeduration_value_iri = namespace + UUID.randomUUID().toString();
     	
     	ModifyQuery modify = Queries.MODIFY();
     	
-    	while (checkInstanceExists(timeduration_iri)) {
+    	while (checkInstanceExists(timeduration_iri) || checkInstanceExists(timeduration_value_iri)) {
     		timeduration_iri = namespace + UUID.randomUUID().toString();
+    		timeduration_value_iri = namespace + UUID.randomUUID().toString();
     	}
-    	modify.insert(iri(timeduration_iri).isA(TimeDuration).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, timeduration));
+    	
+    	modify.insert(iri(timeduration_iri).isA(TimeDuration).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(timeduration_value_iri)));
+    	modify.insert(iri(timeduration_value_iri).has(numericalValue, timeduration).andIsA(ScalarValue));
     	
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	String[] createdEntities = {timeduration_iri,timeduration_value_iri};
     	
-    	return timeduration_iri;
+    	return createdEntities;
     }
     
     /**
