@@ -26,7 +26,7 @@ def getRefName(logFile,jobIndex,numJobs,extension):
         refName = logFile + extension
     return refName
 
-def qc_log_to_json(parsedJobsList, outDir, outFileBaseName, extension='.json'):
+def qc_log_to_json(parsedJobsList, outDir, outFileBaseName, extension='.qc.json'):
 
     for jobIndex, jobDataJson in enumerate(parsedJobsList):
         outFileName = getRefName(outFileBaseName,jobIndex=jobIndex,numJobs=len(parsedJobsList), extension=extension)
