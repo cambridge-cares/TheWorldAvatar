@@ -1,17 +1,15 @@
 package uk.ac.cam.cares.jps.base.config.test;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Test;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class KeyValueMapTest {
+
 
 	@Test
 	public void testGetInstance() {
@@ -25,6 +23,7 @@ public class KeyValueMapTest {
 			Assert.assertEquals(kvm.getClass().getDeclaredFields().length, 7);
 			Assert.assertEquals(kvm.getClass().getDeclaredMethods().length, 7);
 		}
+
 	}
 
 	@Test
@@ -53,9 +52,13 @@ public class KeyValueMapTest {
 		KeyValueMap kvm = KeyValueMap.getInstance();
 		Assert.assertNotNull(kvm.getClass().getDeclaredMethod("put", String.class, String.class));
 		String key = "key";
+		String newKey = "newKey";
 		String val = "val";
 		String newVal = "newVal";
 
+		// Putting a value with a new key will return null instead of the old value
+		Assert.assertNull(kvm.put(newKey, newVal));
+		// Putting a value with a an existing key should return the old value
 		kvm.put(key, val);
 		Assert.assertEquals(kvm.get(key), val);
 		Assert.assertEquals(kvm.put(key, newVal), val);
@@ -107,9 +110,11 @@ public class KeyValueMapTest {
 
 	@Test
 	public void testRunningForTest() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-			IllegalArgumentException, InvocationTargetException, URISyntaxException, IOException {
+			IllegalArgumentException, InvocationTargetException {
+
 
 		KeyValueMap kvm = KeyValueMap.getInstance();
+		// Use reflections to make runningForTestMethod accessible
 		Assert.assertNotNull(kvm.getClass().getDeclaredMethod("runningForTest", String.class));
 		Method runningForTest = kvm.getClass().getDeclaredMethod("runningForTest", String.class);
 		runningForTest.setAccessible(true);
@@ -123,109 +128,93 @@ public class KeyValueMapTest {
 			Assert.assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
 		}
 
-//		// Should result in an exception as the properties file does not exist
-//		try {
-//			runningForTest.invoke(kvm, " ");
-//			Assert.fail();
-//		} catch (InvocationTargetException e) {
-//			Assert.assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
-//		}
+		// Should result in an exception as the properties file does not exist
+		try {
+			runningForTest.invoke(kvm, "this_is_not_a_valid_filename");
+			Assert.fail();
+		} catch (InvocationTargetException e) {
+			Assert.assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
+		}
 
 		Assert.assertEquals(runningForTest.invoke(kvm, "/jps.properties"), Boolean.valueOf(kvm.get("test")));
 
-//		runningForTest.invoke(kvm, "/jpstest.properties");
-//		Assert.assertEquals(runningForTest.invoke(kvm, "/jpstest.properties"), false);
-
-
+		// TODO: Requires refactoring of the KeyValueMap class as a reset of the map in KeyValueMap effects other tests.
+		// kvm.map.clear()
+		// runningForTest.invoke(kvm, "/jpstest.properties");
+		// Assert.assertEquals(runningForTest.invoke(kvm, "/jpstest.properties"), false);
 	}
-//
-//	public void testLoadProperties() throws NoSuchMethodException, SecurityException, IllegalAccessException,
-//			IllegalArgumentException, InvocationTargetException, IOException {
-//		KeyValueMap kvm = KeyValueMap.getInstance();
-//		assertNotNull(kvm.getClass().getDeclaredMethod("loadProperties", String.class));
-//		Method loadProperties = kvm.getClass().getDeclaredMethod("loadProperties", String.class);
-//		loadProperties.setAccessible(true);
-//		String fileName = null;
-//
-//		try {
-//			loadProperties.invoke(kvm, fileName);
-//		} catch (InvocationTargetException e) {
-//			assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
-//		}
-//
-//		try {
-//			fileName = " ";
-//			loadProperties.invoke(kvm, fileName);
-//		} catch (InvocationTargetException e) {
-//			assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
-//		}
-//
-//		try {
-//			fileName = "/jps.properties";
-//			loadProperties.invoke(kvm, fileName);
-//			assertTrue(kvm.get("dataset.scenario.url").contains("theworldavatar"));
-//		} finally {
-//			kvm.map.clear();
-//		}
-//
-//		try {
-//			fileName = "/jpstest.properties";
-//			loadProperties.invoke(kvm, fileName);
-//			assertTrue(kvm.get("dataset.scenario.url").contains("localhost"));
-//		} finally {
-//			kvm.map.clear();
-//		}
-//
-//	}
-//
-//	public void testGetProperty() throws NoSuchMethodException, SecurityException {
-//		KeyValueMap kvm = KeyValueMap.getInstance();
-//		assertNotNull(kvm.getClass().getDeclaredMethod("getProperty", String.class, String.class));
-//		String fileName = null;
-//		String key = null;
-//
-//		try {
-//			kvm.getProperty(fileName, key);
-//		} catch (Exception e) {
-//			assertEquals(e.getMessage(), "Properties file does not exist.");
-//		}
-//
-//		try {
-//			fileName = " ";
-//			key = "test";
-//			kvm.getProperty(fileName, key);
-//		} catch (JPSRuntimeException e) {
-//			assertEquals(e.getMessage(), "Properties file does not exist.");
-//		}
-//
-//		try {
-//			fileName = "/jps.properties";
-//			key = null;
-//			kvm.getProperty(fileName, key);
-//		} catch (JPSRuntimeException e) {
-//			assertEquals(e.getMessage(), "Null keys and values are not allowed.");
-//			kvm.map.clear();
-//		}
-//
-//		try {
-//			fileName = "/jpstest.properties";
-//			key = "test";
-//			kvm.getProperty(fileName, key);
-//			assertEquals(kvm.getProperty(fileName, key), "No such key in properties file.");
-//		} finally {
-//			kvm.map.clear();
-//		}
-//
-//		try {
-//			fileName = "/jps.properties";
-//			key = "test";
-//			kvm.getProperty(fileName, key);
-//			assertNotNull(kvm.getProperty(fileName, key));
-//			assertTrue(kvm.getProperty(fileName, key).length() > 0);
-//			assertTrue(kvm.getProperty(fileName, "absdir.root").contains("TOMCAT"));
-//		} finally {
-//			kvm.map.clear();
-//		}
-//	}
-	
+
+	@Test
+	public void testLoadProperties() throws NoSuchMethodException, SecurityException, IllegalAccessException,
+			IllegalArgumentException, InvocationTargetException {
+
+		KeyValueMap kvm = KeyValueMap.getInstance();
+		// Use reflections to make loadProperties accessible
+		Assert.assertNotNull(kvm.getClass().getDeclaredMethod("loadProperties", String.class));
+		Method loadProperties = kvm.getClass().getDeclaredMethod("loadProperties", String.class);
+		loadProperties.setAccessible(true);
+
+
+		String fileName = null;
+		// Should result in an exception as the properties file is null
+		try {
+			loadProperties.invoke(kvm, fileName);
+			Assert.fail();
+		} catch (InvocationTargetException e) {
+			Assert.assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
+		}
+		// Should result in an exception as the properties file does not exist
+		try {
+			fileName = "this_is_not_a_valid_filename";
+			loadProperties.invoke(kvm, fileName);
+			Assert.fail();
+		} catch (InvocationTargetException e) {
+			Assert.assertEquals(e.getTargetException().getMessage(), "Properties file does not exist.");
+		}
+
+		// TODO: Is dependent on the values in the properties files
+		fileName = "/jps.properties";
+		loadProperties.invoke(kvm, fileName);
+		Assert.assertTrue(kvm.get("dataset.scenario.url").contains("theworldavatar"));
+
+		fileName = "/jpstest.properties";
+		loadProperties.invoke(kvm, fileName);
+		Assert.assertTrue(kvm.get("dataset.scenario.url").contains("localhost"));
+	}
+
+	@Test
+	public void testGetProperty() throws NoSuchMethodException, SecurityException {
+		KeyValueMap kvm = KeyValueMap.getInstance();
+		Assert.assertNotNull(kvm.getClass().getDeclaredMethod("getProperty", String.class, String.class));
+
+		// Should result in an exception as the properties file does not exist
+		try {
+			KeyValueMap.getProperty(null, null);
+			Assert.fail();
+		} catch (JPSRuntimeException e) {
+			Assert.assertEquals(e.getMessage(), "Properties file does not exist.");
+		}
+		// Should result in an exception as the properties file does not exist
+		try {
+			KeyValueMap.getProperty("this_is_not_a_valid_filename", "test");
+			Assert.fail();
+		} catch (JPSRuntimeException e) {
+			Assert.assertEquals(e.getMessage(), "Properties file does not exist.");
+		}
+		// Accessing a null key should result in an exception
+		try {
+			KeyValueMap.getProperty("/jps.properties", null);
+			Assert.fail();
+		} catch (JPSRuntimeException e) {
+			Assert.assertEquals(e.getMessage(), "Null keys and values are not allowed.");
+		}
+		// Accessing a key that does not exist should result in an specific message
+		Assert.assertEquals(KeyValueMap.getProperty("/jpstest.properties", "test"), "No such key in properties file.");
+
+		String fileName = "/jps.properties";
+		String key = "test";
+		Assert.assertNotNull(KeyValueMap.getProperty(fileName, key));
+		Assert.assertEquals("true", KeyValueMap.getProperty(fileName, key));
+		Assert.assertTrue(KeyValueMap.getProperty(fileName, "absdir.root").contains("TOMCAT"));
+	}
 }
