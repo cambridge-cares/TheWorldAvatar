@@ -236,53 +236,15 @@ public class EmailAgent extends JPSAgent {
     /**
      * Returns true if the input IP should be considered a local IP.
      *
-     * Note: The InetAddress.isAnyLocalAddress() is not used here as it does not return true for
-     * common local address ("127.0.0.1", "196.168.X.X", "localhost").
-     *
      * @param ipString IP Address
      */
     private boolean isLocalIP(String ipString) {
-        // Check for loopback addresses
-        switch (ipString.toLowerCase()) {
-            case "localhost":
-            case "loopback":
-            case "127.0.0.1":
-            case "0:0:0:0:0:0:0:1":
-                return true;
-        }
-
         try {
-            // Is the string a valid IP address?
-            InetAddress.getByName(ipString);
+            InetAddress address = InetAddress.getByName(ipString);
 
-            // Check if the IP is v6 or v4
-            boolean ipv6 = ipString.contains(":");
-            String[] parts = (ipv6) ? ipString.split(":") : ipString.split(Pattern.quote("."));
-
-            // The following are considered private IPs
-            if (ipv6) {
-                // Taken from: https://stackoverflow.com/questions/35374207/how-to-determine-if-ipv6-address-is-private
-                if (parts[0].startsWith("fc")) return true;
-                if (parts[0].startsWith("fd")) return true;
-
-                if (parts[0].equals("fe80")) return true;
-                if (parts[0].equals("fec0")) return true;
-                if (parts[0].equals("100")) return true;
-
-            } else {
-                // 10.0.0.0 – 10.255.255.255 
-                if (parts[0].equals("10")) return true;
-
-                // 172.16.0.0 – 172.31.255.255
-                if (parts[0].equals("172")) {
-                    int second = Integer.parseInt(parts[1]);
-                    if (second >= 16 && second <= 31) return true;
-                }
-
-                // 192.168.0.0 – 192.168.255.255
-                if (parts[0].equals("192") && parts[1].equals("168")) return true;
-            }
-            return false;
+            return address.isLinkLocalAddress()
+                    || address.isLoopbackAddress()
+                    || address.isSiteLocalAddress();
 
         } catch (UnknownHostException exception) {
             System.out.println("ERROR: Value '" + ipString + "' is not a valid IP address.");

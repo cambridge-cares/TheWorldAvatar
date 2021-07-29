@@ -18,7 +18,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @author Michael Hillman
  */
 @TestMethodOrder(OrderAnnotation.class)
-public class EmailAgentConfiguration_Test {
+public class EmailAgentConfigurationTest {
 
     /**
      * Attempts to read the example properties file.

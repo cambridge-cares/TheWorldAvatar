@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  *
  * @author Michael Hillman
  */
-public class EmailAgent_Test {
+public class EmailAgentTest {
 
     /**
      * Sample request data (should be valid).
@@ -129,16 +129,16 @@ public class EmailAgent_Test {
     }
 
     /**
-     * Proves that the isAnyLocalAddress() method of the InetAddress interface is not sufficient
-     * enough to determine a reliable local IP address.
+     * Tests the ability of the InetAddress class to detect local IPs, this is esoteric so
+     * required a quick test.
      */
-    //@Test - Only needed as a proof during development.
+    @Test
     public void setInetAddress() {
         // Should be reported as local addresses
         String[] localIPs = new String[]{
             "localhost",
             "127.0.0.1",
-            "198.168.0.1",
+            "192.168.0.1",
             "172.16.0.0",
             "10.0.0.0",
             "0:0:0:0:0:0:0:1"
@@ -146,7 +146,11 @@ public class EmailAgent_Test {
 
         for (String localIP : localIPs) {
             try {
-                boolean isLocal = InetAddress.getByName(localIP).isAnyLocalAddress();
+                InetAddress address = InetAddress.getByName(localIP);
+                boolean isLocal = address.isLinkLocalAddress() ||
+                        address.isLoopbackAddress() ||
+                        address.isSiteLocalAddress();
+                        
                 Assertions.assertTrue(isLocal, "Expected IP address '" + localIP + "' to be reported as local!");
             } catch (UnknownHostException exception) {
                 Assertions.fail("Not a valid IP address!", exception);
