@@ -88,6 +88,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     print()
     print()
 
+
 @pytest.mark.parametrize("inp_file_or_dir, inp_file_type, handlerFuncKwargs, \
                           regenerateResult",
 [
@@ -111,7 +112,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR,inp_file_or_dir)
 
-    pipeline = write_ops_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
+    pipeline = write_ops_abox(inp_file_or_dir, inp_file_type, OPS_handlerFuncKwargs=handlerFuncKwargs)
 
     compare_results(pipeline,regenerateResult, regenerateAllResults)
 
