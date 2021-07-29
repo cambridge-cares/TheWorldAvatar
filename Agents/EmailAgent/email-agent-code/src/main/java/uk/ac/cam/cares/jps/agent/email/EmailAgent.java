@@ -54,7 +54,7 @@ public class EmailAgent extends JPSAgent {
             EmailAgentConfiguration.readProperties();
         } catch (IOException ioException) {
             validState = false;
-            
+
             // Cannot throw UnavailableException here unless we're using Java EE
             throw new IllegalStateException("EmailAgent is not in valid state, could not read properties.", ioException);
         }
@@ -199,13 +199,14 @@ public class EmailAgent extends JPSAgent {
             return false;
         }
 
-        // Determine if the white list is enabled
-        String whitelistProperty = EmailAgentConfiguration.getProperty(KEY_WHITE_ONLY);
-        boolean whitelistOn = Boolean.parseBoolean(whitelistProperty);
+        // Determine if the white list is enabled (default if not set should be false)
+        boolean whitelistOn = Boolean.parseBoolean(EmailAgentConfiguration.getProperty(KEY_WHITE_ONLY));
 
         if (whitelistOn) {
             // Get the allowed source IPs
             String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
+            if (allowedIPs == null) return true;
+
             Set<String> allowedList = new HashSet<>(Arrays.asList(allowedIPs));
 
             // Get the source IP
@@ -219,7 +220,6 @@ public class EmailAgent extends JPSAgent {
 
             // Source may be multiple IPs if client was using a proxy
             String[] sourceIPs = sourceIP.split(",");
-
             for (String ip : sourceIPs) {
                 // Allow local requests.
                 if (isLocalIP(ip.trim())) return true;
@@ -227,7 +227,7 @@ public class EmailAgent extends JPSAgent {
                 // Allow if it matches at least one whitelisted ip
                 if (allowedList.contains(ip.trim())) return true;
             }
-            
+
             return false;
         }
         return true;
@@ -235,15 +235,15 @@ public class EmailAgent extends JPSAgent {
 
     /**
      * Returns true if the input IP should be considered a local IP.
-     * 
-     * Note: The InetAddress.isAnyLocalAddress() is not used here as it does not return true
-     * for common local address ("127.0.0.1", "196.168.X.X", "localhost").
+     *
+     * Note: The InetAddress.isAnyLocalAddress() is not used here as it does not return true for
+     * common local address ("127.0.0.1", "196.168.X.X", "localhost").
      *
      * @param ipString IP Address
      */
     private boolean isLocalIP(String ipString) {
         // Check for loopback addresses
-        switch(ipString.toLowerCase()) {
+        switch (ipString.toLowerCase()) {
             case "localhost":
             case "loopback":
             case "127.0.0.1":
@@ -254,7 +254,7 @@ public class EmailAgent extends JPSAgent {
         try {
             // Is the string a valid IP address?
             InetAddress.getByName(ipString);
-            
+
             // Check if the IP is v6 or v4
             boolean ipv6 = ipString.contains(":");
             String[] parts = (ipv6) ? ipString.split(":") : ipString.split(Pattern.quote("."));
@@ -287,7 +287,7 @@ public class EmailAgent extends JPSAgent {
         } catch (UnknownHostException exception) {
             System.out.println("ERROR: Value '" + ipString + "' is not a valid IP address.");
             return false;
-        } 
+        }
     }
 }
 // End of class.
