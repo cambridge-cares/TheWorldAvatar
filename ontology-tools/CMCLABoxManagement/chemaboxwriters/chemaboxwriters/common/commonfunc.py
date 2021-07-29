@@ -1,5 +1,6 @@
 from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.base import NotSupportedStage
+from chemaboxwriters.common.commonvars import CC_LOG_EXT
 from chemutils.ioutils.ioutils import getFilesWithExtensions
 import textwrap
 
@@ -10,15 +11,19 @@ def get_inStage(inpFileType):
         raise NotSupportedStage
     return inStage
 
-def get_stage_files(fileOrDir,inStage,fileExtPrefix,qcLogExt):
-
+def get_file_ext(inStage,fileExtPrefix,qcLogExt=CC_LOG_EXT):
+    fileExt=[]
     if inStage == aboxStages.QC_LOG:
         fileExt = qcLogExt.split(',')
     elif inStage == aboxStages.CSV or inStage == aboxStages.OWL:
-        fileExt = '.'+fileExtPrefix+'.'+inStage.name.lower()
+        fileExt = ['.'+fileExtPrefix+'.'+inStage.name.lower()]
     else:
         fileExt = ['.'+inStage.name.lower().replace('_','.')]
+    return fileExt
 
+def get_stage_files(fileOrDir,inStage,fileExtPrefix,qcLogExt):
+
+    fileExt = get_file_ext(inStage,fileExtPrefix,qcLogExt)
     files = getFilesWithExtensions(fileOrDir,fileExt)
     if not files:
         raise FileNotFoundError(textwrap.dedent(f"""

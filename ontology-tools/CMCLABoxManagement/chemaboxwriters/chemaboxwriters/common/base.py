@@ -96,8 +96,8 @@ class Pipeline:
     """
     def __init__(self, supportedStages):
         self.handlers= {}
-        self.writtenFiles=[]
         self.supportedStages=supportedStages
+        self.writtenFiles = []
 
     def add_handler(self, handler, handlerName):
         self.handlers[handlerName]=handler

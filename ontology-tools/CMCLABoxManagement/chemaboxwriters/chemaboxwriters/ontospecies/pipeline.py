@@ -5,7 +5,8 @@ from chemaboxwriters.ontospecies.handlers import QC_JSON_TO_OS_JSON, \
                                                  OS_CSV_TO_OS_OWL
 from chemaboxwriters.common import QC_LOG_TO_QC_JSON
 
-OS_pipeline = Pipeline(supportedStages=[
+def assemble_os_pipeline():
+    OS_pipeline = Pipeline(supportedStages=[
                             aboxStages.QC_LOG,
                             aboxStages.QC_JSON,
                             aboxStages.OS_JSON,
@@ -14,3 +15,4 @@ OS_pipeline = Pipeline(supportedStages=[
                 .add_handler(handler=QC_JSON_TO_OS_JSON, handlerName='QC_JSON_TO_OS_JSON') \
                 .add_handler(handler=OS_JSON_TO_CSV, handlerName='OS_JSON_TO_CSV') \
                 .add_handler(handler=OS_CSV_TO_OS_OWL, handlerName='OS_CSV_TO_OS_OWL')
+    return OS_pipeline

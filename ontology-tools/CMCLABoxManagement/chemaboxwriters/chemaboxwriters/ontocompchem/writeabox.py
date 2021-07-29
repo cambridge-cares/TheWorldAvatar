@@ -1,14 +1,16 @@
 from chemaboxwriters.common.base import NotSupportedStage
 from chemutils.ioutils.ioutils import fileExists
-from chemaboxwriters.ontocompchem import OC_pipeline
+from chemaboxwriters.ontocompchem import assemble_oc_pipeline
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
+from chemaboxwriters.common.commonvars import CC_LOG_EXT
 import os
 import textwrap
 
-def write_abox(fileOrDir, inpFileType, pipeline=OC_pipeline,
-               qcLogExt=".log,.g03,.g09,.g16", outDir=None, outBaseName=None,
+def write_abox(fileOrDir, inpFileType, pipeline=None,
+               qcLogExt=CC_LOG_EXT, outDir=None, outBaseName=None,
                handlerFuncKwargs={}):
     try:
+        if pipeline is None: pipeline = assemble_oc_pipeline()
         inStage = get_inStage(inpFileType)
         files = get_stage_files(fileOrDir, inStage, fileExtPrefix='oc', qcLogExt=qcLogExt)
 
@@ -25,7 +27,6 @@ def write_abox(fileOrDir, inpFileType, pipeline=OC_pipeline,
                 if fileExists(file_): outBaseName=os.path.basename(file_)
                 else: outBaseName='file'
             outPath = os.path.join(outDir,outBaseName)
-
             pipeline.execute(file_, inStage, outPath)
 
     except NotSupportedStage:

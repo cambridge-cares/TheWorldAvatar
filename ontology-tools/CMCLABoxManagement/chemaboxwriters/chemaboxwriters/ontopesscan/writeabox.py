@@ -1,31 +1,37 @@
-from chemaboxwriters.ontocompchem.pipeline import OC_pipeline
 from chemaboxwriters.common.base import NotSupportedStage
 from chemaboxwriters.common.stageenums import aboxStages
-from chemutils.ioutils.ioutils import getFilesWithExtensions, fileExists
-from chemaboxwriters.ontopesscan import OPS_pipeline
+from chemutils.ioutils.ioutils import fileExists
+from chemaboxwriters.ontopesscan import assemble_ops_pipeline
+from chemaboxwriters.ontocompchem import assemble_oc_pipeline
 from chemaboxwriters.ontocompchem import write_abox as write_oc_abox
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
+from chemaboxwriters.common.commonvars import CC_LOG_EXT
 import textwrap
 import os
 
-def write_abox(fileOrDir, inpFileType, pipeline=OPS_pipeline,
-               qcLogExt=".log,.g03,.g09,.g16", outDir=None, outBaseName=None,
+def write_abox(fileOrDir, inpFileType, OPS_pipeline=None,
+               OC_pipeline=None,
+               qcLogExt=CC_LOG_EXT, outDir=None, outBaseName=None,
                OPS_handlerFuncKwargs={}, OC_handlerFuncKwargs={}):
 
     try:
+        if OPS_pipeline is None: OPS_pipeline = assemble_ops_pipeline()
+        if OC_pipeline is None: OC_pipeline = assemble_oc_pipeline()
         inStage = get_inStage(inpFileType)
-        if inStage not in OPS_pipeline.supportedStages:
+        if inStage not in OPS_pipeline.supportedStages or inStage==aboxStages.OC_JSON:
 
-            write_oc_abox(fileOrDir, inpFileType, qcLogExt=qcLogExt, outDir=outDir, outBaseName=outBaseName,
-                        handlerFuncKwargs=OC_handlerFuncKwargs)
+            OC_pipeline = write_oc_abox(fileOrDir, inpFileType, qcLogExt=qcLogExt, pipeline=OC_pipeline,
+                          outDir=outDir, outBaseName=outBaseName,
+                          handlerFuncKwargs=OC_handlerFuncKwargs)
             inpFileType = aboxStages.OC_JSON.name.lower()
+            if not os.path.isdir(fileOrDir): fileOrDir = os.path.dirname(fileOrDir)
 
         inStage = get_inStage(inpFileType)
         files = get_stage_files(fileOrDir, inStage, fileExtPrefix='ops', qcLogExt=qcLogExt)
 
         if OPS_handlerFuncKwargs:
             for handlerName, funcKwargs in OPS_handlerFuncKwargs.items():
-                pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
+                OPS_pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
 
         outDirNotSet = outDir is None
         outBaseNameNotSet = outBaseName is None
@@ -35,7 +41,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=OPS_pipeline,
                 if fileExists(files[0]): outBaseName=os.path.basename(files[0])
                 else: outBaseName='file'
                 outPath = os.path.join(outDir,outBaseName)
-                pipeline.execute(files, inStage, outPath)
+                OPS_pipeline.execute(files, inStage, outPath)
         else:
             for file_ in files:
                 if outDirNotSet: outDir=os.path.dirname(file_)
@@ -43,7 +49,9 @@ def write_abox(fileOrDir, inpFileType, pipeline=OPS_pipeline,
                     if fileExists(file_): outBaseName=os.path.basename(file_)
                     else: outBaseName='file'
                 outPath = os.path.join(outDir,outBaseName)
-                pipeline.execute(file_, inStage, outPath)
+                OPS_pipeline.execute(file_, inStage, outPath)
+
+        OPS_pipeline.writtenFiles+=OC_pipeline.writtenFiles
 
     except NotSupportedStage:
         supportedOCStagesNames = [stage.name.lower() for stage in OC_pipeline.supportedStages]
@@ -57,4 +65,4 @@ def write_abox(fileOrDir, inpFileType, pipeline=OPS_pipeline,
         print(textwrap.dedent(f"""
             Error: Provided directory or file path is either empty or does not
                    contain the required '{inpFileType}' files."""))
-    return pipeline
+    return OPS_pipeline
