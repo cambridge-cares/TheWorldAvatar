@@ -1,4 +1,4 @@
-onto_spec = 'http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
+onto_spec = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
 gain_pref = 'http://purl.org/gc/'
 kin_pref = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl'
 table_pref = 'http://www.daml.org/2003/01/periodictable/PeriodicTable.owl'
