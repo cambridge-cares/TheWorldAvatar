@@ -16,7 +16,7 @@ Please note that it is not the intention for this EmailAgent to be used to send 
 
 
 ## Building the Image
-The `docker` folder contains the required files to build a Docker image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an image; before making any changes to it, please consult the application's developer the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>, Owen Parry <oparry@cmclinnovations.com>).
+The `docker` folder contains the required files to build a Docker image for the EmailAgent service; the `Dockerfile` file contains the instructions to build an image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>, Owen Parry <oparry@cmclinnovations.com>).
 
 Please note the caveats below before attempting to build the service using Docker:
 
