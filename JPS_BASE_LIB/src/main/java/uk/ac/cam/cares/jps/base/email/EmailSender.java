@@ -84,7 +84,7 @@ public class EmailSender {
         strBuilder.append("<br>");
 
         for (Object key : metadata.keySet()) {
-            strBuilder.append("&#9;" + key.toString() + ": " + metadata.get(key).toString());
+            strBuilder.append("&#9;").append(key).append(": ").append(metadata.get(key));
             strBuilder.append("<br>");
         }
 
