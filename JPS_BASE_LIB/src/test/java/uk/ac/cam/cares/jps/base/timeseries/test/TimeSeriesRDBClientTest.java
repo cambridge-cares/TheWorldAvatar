@@ -24,7 +24,7 @@ public class TimeSeriesRDBClientTest {
 
     // Temporary folder to place a properties file
     @Rule
-    public TemporaryFolder folder= new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {

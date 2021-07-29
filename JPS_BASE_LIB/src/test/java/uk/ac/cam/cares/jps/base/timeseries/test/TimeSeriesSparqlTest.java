@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 
+import java.io.*;
+import java.nio.file.Paths;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.junit.*;
+import org.junit.rules.TemporaryFolder;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -24,6 +27,10 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
 public class TimeSeriesSparqlTest {
+	
+    @Rule
+    // Temporary folder to place a properties file (folder gets deleted after running all tests)
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private MockKnowledgeBaseClient mockClient;
     private TimeSeriesSparql sparqlClient;
@@ -558,6 +565,74 @@ public class TimeSeriesSparqlTest {
         Assert.assertNotNull(testKnowledgeBase.getIndividual(dataIRI1.get(0)));
         Assert.assertNull(testKnowledgeBase.getIndividual(dataIRI1.get(0))
                 .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries")));
+    }
+    
+    @Test
+    public void loadSparqlConfigs () throws IOException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    	// Initialise TimeSeriesClient
+    	RemoteStoreClient kbClient = new RemoteStoreClient();    
+    	TimeSeriesSparql client = new TimeSeriesSparql(kbClient);
+    	// Filepath to not yet created file in temporary test folder
+    	String filepath = Paths.get(folder.getRoot().toString(), "timeseries.properties").toString();
+    	// JPSRuntime error messages
+    	String m1 = "TimeSeriesSparql: No properties file found at specified filepath: " + filepath;
+    	String m2 = "TimeSeriesSparql: Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ";
+    	String m3 = "TimeSeriesSparql: Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ";
+    	
+    	// Test for non-existing properties file
+    	try {
+    		client.loadSparqlConfigs(filepath);
+    		Assert.fail();
+    	} catch (JPSRuntimeException e) {
+    		Assert.assertEquals(m1, e.getMessage());
+    	}
+    	
+    	// Test for missing query endpoint by creating a file only containing update endpoint
+    	writePropertyFile(filepath, Arrays.asList("sparql.update.endpoint=test_update"));
+	    // Try loading SPARQL configs
+    	try {
+    		client.loadSparqlConfigs(filepath);
+            Assert.fail();
+    	} catch (JPSRuntimeException e) {
+    		Assert.assertEquals(m2, e.getMessage());
+    	}
+
+    	// Test for missing update endpoint by creating a file only containing query endpoint
+        writePropertyFile(filepath, Arrays.asList("sparql.query.endpoint=test_query"));
+	    // Try loading SPARQL configs
+    	try {
+    		client.loadSparqlConfigs(filepath);
+            Assert.fail();
+    	} catch (JPSRuntimeException e) {
+    		Assert.assertEquals(m3, e.getMessage());
+    	}
+    	
+    	// Test for proper query and update endpoint
+        writePropertyFile(filepath, Arrays.asList("sparql.query.endpoint=test_query", "sparql.update.endpoint=test_update"));
+	    // Try loading SPARQL configs
+    	try {
+    		client.loadSparqlConfigs(filepath);
+    	} catch (Exception e) {
+    	    Assert.fail(e.getMessage());
+    	}
+    	// Retrieve the value of the private field 'kbClient' of the client
+        Field kbc = client.getClass().getDeclaredField("kbClient");
+        kbc.setAccessible(true);
+        RemoteStoreClient kbcl = (RemoteStoreClient) kbc.get(client);
+    	Assert.assertEquals("test_query", kbcl.getQueryEndpoint());
+    	Assert.assertEquals("test_update", kbcl.getUpdateEndpoint());
+
+    }
+    
+    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
+        // Overwrite potentially existing properties file
+    	FileWriter writer = new FileWriter(filepath, false);
+    	// Populate file
+    	for (String s : properties) {
+    		writer.write(s + "\n");
+    	}
+    	// Close the file and return the file
+    	writer.close();
     }
 
 }

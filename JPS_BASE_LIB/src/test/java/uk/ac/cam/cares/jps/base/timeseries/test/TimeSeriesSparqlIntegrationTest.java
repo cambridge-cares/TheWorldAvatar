@@ -43,7 +43,7 @@ public class TimeSeriesSparqlIntegrationTest {
 		sparqlClient = new TimeSeriesSparql(kbClient);
 	}
 	
-	@AfterClass
+	@After
 	public static void clearKb() {
 		// Clear entire knowledge base
 		sparqlClient.removeAllTimeSeries();
