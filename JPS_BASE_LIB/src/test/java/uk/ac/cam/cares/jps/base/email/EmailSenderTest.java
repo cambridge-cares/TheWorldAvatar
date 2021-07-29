@@ -37,7 +37,7 @@ public class EmailSenderTest {
             Optional<Path> logFile = sender.sendEmail(subject, body);
 
             // Should NOT return a log file
-            Assertions.assertTrue(logFile.isEmpty(), "Did not expect a log file to be returned!");
+            Assertions.assertTrue(!logFile.isPresent(), "Did not expect a log file to be returned!");
         } catch (Exception exception) {
             Assertions.fail("Could not mock environment variables for unit test!", exception);
         }
