@@ -47,13 +47,13 @@ public class JPSAgentTest extends TestCase {
         try {
             assertTrue(input.toString().equals(processRequestParameters.invoke(jpsa, input).toString()));
         } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[13].getClassName());
+            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
         }
 
         try {
             assertTrue(input.toString().equals(processRequestParametersWithRequest.invoke(jpsa, input, request).toString()));
         } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[13].getClassName());
+            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
         }
 
     }
