@@ -90,8 +90,8 @@ public class EmailHandler {
             email.setFrom(new InternetAddress(fromAddress));
 
             // Subject
-            String fullSubject = EmailAgentConfiguration.getProperty(KEY_SUBJECT_PREFIX);
-            fullSubject += " - " + subject;
+            String fullSubject = EmailAgentConfiguration.getProperty(KEY_SUBJECT_PREFIX)
+                + " - " + subject;
             email.setSubject(fullSubject);
 
             // Body
