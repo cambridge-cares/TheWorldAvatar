@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient.AggregateFunction;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -25,7 +24,7 @@ public class TimeSeriesClient<T> {
 	private final TimeSeriesRDBClient<T> rdbClient;
 	private final TimeSeriesSparql rdfClient;
 	// Exception prefix
-	private final String exceptionPrefix = this.getClass().toString() + ": ";
+	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
 	
     /**
      * Constructor for pre-defined kbClient and only RDB client to be created according to properties file

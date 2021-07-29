@@ -1,13 +1,16 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
+
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.*;
-
+import org.mockito.Mockito;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -16,15 +19,34 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)")
+import static org.mockito.Mockito.*;
+
+@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
-
+	
+	// TimeSeries client (with RDB and Sparql client)
 	private static TimeSeriesClient<Instant> tsClient;
+	
+	// Time series test data
+	private static List<String> dataIRI_1, dataIRI_3;
+	private static List<Class<?>> dataClass_1, dataClass_3;
+	private static List<Instant> timeList_1;
+	private static List<Instant> timeList_2;
+	private static List<Double> data1_1;
+	private static List<String> data2_1;
+	private static List<Integer> data3_1;
+	private static TimeSeries<Instant> ts1, ts2, ts3;	
+	private static List<List<?>> dataToAdd_1;
+	private static List<List<?>> dataToAdd_2;
+	private static String timeUnit;
 
 	// Will create two Docker containers for Blazegraph and postgreSQL
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
@@ -36,6 +58,77 @@ public class TimeSeriesClientIntegrationTest {
 	@Container
 	// Create Docker container with latest postgres image from Docker Hub
 	private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres");
+	
+	@BeforeClass
+	// Initialise 3 test time series data sets
+	public static void initialiseData() {
+		// Initialise time unit for all test data series
+		timeUnit = "http://s";
+		/* 
+		 * Initialise 1st time series with 3 associated data series
+		 */
+	    dataIRI_1 = new ArrayList<>();
+	    dataIRI_1.add("http://data1"); dataIRI_1.add("http://data2"); dataIRI_1.add("http://data3");
+		// Specify type of data for each column (most data will be in doubles, but one can specify different data types)
+		dataClass_1 = new ArrayList<>();
+		dataClass_1.add(Double.class); dataClass_1.add(String.class); dataClass_1.add(Integer.class);
+    	// Create data to add (as a TimeSeries object)
+    	timeList_1 = new ArrayList<>();
+    	data1_1 = new ArrayList<>();
+    	data2_1 = new ArrayList<>();
+    	data3_1 = new ArrayList<>();
+    	
+    	for (int i = 0; i < 10; i++) {
+   			timeList_1.add(Instant.now().plusSeconds(i));
+    		data1_1.add((double) i);
+    		data2_1.add(String.valueOf(i));
+    		data3_1.add(i);
+    	}
+    	dataToAdd_1 = new ArrayList<>();
+    	dataToAdd_1.add(data1_1); dataToAdd_1.add(data2_1); dataToAdd_1.add(data3_1);
+    	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+    	ts1 = new TimeSeries<>(timeList_1, dataIRI_1, dataToAdd_1);
+		/* 
+		 * Initialise 2nd time series with same associated data series
+		 */
+    	// Create data to add (as a TimeSeries object)
+    	timeList_2 = new ArrayList<>();
+		List<Double> data1_2 = new ArrayList<>();
+		List<String> data2_2 = new ArrayList<>();
+		List<Integer> data3_2 = new ArrayList<>();
+    	
+    	for (int i = 0; i < 10; i++) {
+    		// Add additional 10 s to ensure no overlap between time lists
+   			timeList_2.add(Instant.now().plusSeconds(10+i));
+    		data1_2.add((double) (10 + i));
+    		data2_2.add(String.valueOf(10+i));
+    		data3_2.add(10 + i);
+    	}
+    	dataToAdd_2  = new ArrayList<>();
+    	dataToAdd_2.add(data1_2); dataToAdd_2.add(data2_2); dataToAdd_2.add(data3_2);
+    	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+    	ts2 = new TimeSeries<>(timeList_2, dataIRI_1, dataToAdd_2);
+		/* 
+		 * Initialise 3rd time series with only one associated data series
+		 */
+	    dataIRI_3 = new ArrayList<>();
+		dataIRI_3.add("http://data4");
+		// Specify type of data for each column (most data will be in doubles, but one can specify different data types)
+		dataClass_3 = new ArrayList<>();
+		dataClass_3.add(Double.class);
+    	// Create data to add (as a TimeSeries object)
+		List<Instant> timeList_3 = new ArrayList<>();
+		List<Double> data1_3 = new ArrayList<>();
+
+    	for (int i = 0; i < 10; i++) {
+   			timeList_3.add(Instant.now().plusSeconds(i));
+    		data1_3.add((double) i);
+    	}
+		List<List<?>> dataToAdd_3 = new ArrayList<>();
+    	dataToAdd_3.add(data1_3);
+    	// Constructor for the TimeSeries object takes in the time column, dataIRIs, and the corresponding values in lists
+    	ts3 = new TimeSeries<>(timeList_3, dataIRI_3, dataToAdd_3);
+	}
 	
 	@Before
 	public void initialiseTimeSeriesClient() {
@@ -62,10 +155,97 @@ public class TimeSeriesClientIntegrationTest {
 	    }
 	    
 	    // Configure database access
-	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-		
+	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());		
 	}
 	
+	
+	@Test
+	@Ignore
+	public void testInitTimeSeriesWithoutExceptions() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		
+		// Retrieve the value of the private field 'rdfClient' of the time series client
+		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+		RDFClient.setAccessible(true);
+		TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+		// Retrieve the value of the private field 'rdbClient' of the time series client
+		Field RDBClient = tsClient.getClass().getDeclaredField("rdbClient");
+		RDBClient.setAccessible(true);
+		TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) RDBClient.get(tsClient);
+	
+		// Verify kb is initially empty
+		Assert.assertEquals(0, rdfClient.countTS());
+		
+		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
+		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+		
+		// Verify correct instantiation in both kb and database
+		Assert.assertEquals(1, rdfClient.countTS());
+		Assert.assertEquals(3, rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0))).size());
+		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(3, ts.getDataIRIs().size());
+		for (String iri : dataIRI_1) {
+			Assert.assertTrue(ts.getDataIRIs().contains(iri));
+		}		
+	}
+	
+	@Test
+	@Ignore
+	public void testInitTimeSeriesWithUnavailableKG() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	
+		// Interrupt triple store connection
+		blazegraph.stop();
+		
+		try {
+			// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
+		}		
+	}
+	
+	@Test
+	@Ignore
+	public void testInitTimeSeriesWithUnavailableRDB() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	
+		// Interrupt triple store connection
+		postgres.stop();
+		
+		try {
+			// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
+		}		
+	}
+	
+	@Test
+	@Ignore("Does not yet work")
+	public void testInitTimeSeriesWithUnavailableRDBAndKGRevertIssues() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	
+		// Retrieve the value of the private field 'rdbClient' of the time series client
+		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+		RDFClient.setAccessible(true);
+		TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+		
+		// mh807: I tried to mock the Sparql client to simulate a KG error after initialisation was successful,
+		// but this does not work yet
+		rdfClient = mock(TimeSeriesSparql.class);		
+		doCallRealMethod().when(rdfClient).initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+		doThrow(new JPSRuntimeException("")).when(rdfClient).removeTimeSeries(Mockito.any());
+
+		// Interrupt triple store connection
+		postgres.stop();
+		
+		try {
+			// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
+			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
+		}		
+	}
 	
 }
 

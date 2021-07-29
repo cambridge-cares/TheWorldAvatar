@@ -13,7 +13,8 @@ import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Requires triple store endpoint set up and running (using testcontainers)")
+@Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" + 
+		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesSparqlIntegrationTest {
 
