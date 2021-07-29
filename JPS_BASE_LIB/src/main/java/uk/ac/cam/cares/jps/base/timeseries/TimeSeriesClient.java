@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient.AggregateFunction;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -294,5 +295,108 @@ public class TimeSeriesClient<T> {
 		
     	return getTimeSeriesWithinBounds(dataIRIs, null, null);
     }
+	
+	/**
+	 * Retrieve average value of an entire time series
+	 * @param dataIRI: data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
+	public double getAverage(String dataIRI) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Retrieve wanted time series aggregate from database
+		return rdbClient.getAverage(dataIRI);
+	}
+	
+	/**
+	 * Retrieve maximum value of an entire time series
+	 * @param dataIRI: data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
+	public double getMaxValue(String dataIRI) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Retrieve wanted time series aggregate from database
+		return rdbClient.getMaxValue(dataIRI);
+	}
+	
+	/**
+	 * Retrieve minimum value of an entire time series
+	 * @param dataIRI: data IRI provided as string
+	 * @return The average of the corresponding data series as double
+	 */
+	public double getMinValue(String dataIRI) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Retrieve wanted time series aggregate from database
+		return rdbClient.getMinValue(dataIRI);
+	}
+	
+	/**
+	 * Retrieve latest (maximum) time entry for a given dataIRI
+	 * @param dataIRI: data IRI provided as string
+	 * @return The maximum (latest) timestamp of the corresponding data
+	 */
+	public T getMaxTime(String dataIRI) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Retrieve latest time entry from database
+		return rdbClient.getMaxTime(dataIRI);
+	}
+	
+	/**
+	 * Retrieve earliest (minimum) time entry for a given dataIRI
+	 * @param dataIRI: data IRI provided as string
+	 * @return The minimum (earliest) timestamp of the corresponding data
+	 */
+	public T getMinTime(String dataIRI) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Retrieve earliest time entry from database
+		return rdbClient.getMinTime(dataIRI);
+	}
+	
+	/**
+	 * Delete time series history for given dataIRI (and all dataIRIs associated with same time series) between two time stamps
+	 * @param dataIRI: data IRI provided as string
+	 * @param lowerBound: start timestamp from which to delete data (inclusive)
+	 * @param upperBound: end timestamp until which to delete data (inclusive)
+	 */
+	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataExists(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Delete RDB time series table rows between lower and upper Bound
+		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
+	}
 
 }
