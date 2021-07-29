@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import org.slf4j.LoggerFactory;
 
 import java.net.InetAddress;
 import java.net.URL;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 /**

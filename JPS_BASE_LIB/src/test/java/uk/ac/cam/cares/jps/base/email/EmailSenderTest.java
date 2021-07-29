@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Assertions;
  *
  * @author Michael Hillman
  */
-public class EmailSender_Test {
+public class EmailSenderTest {
 
     /**
      * Tests that an email can be submitted to the EmailSender and is passed on to the remote
