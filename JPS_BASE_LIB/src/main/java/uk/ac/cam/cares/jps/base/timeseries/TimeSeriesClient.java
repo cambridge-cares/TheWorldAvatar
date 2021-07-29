@@ -238,5 +238,26 @@ public class TimeSeriesClient<T> {
 					  "Potentially inconsistent state between KG and database", e_RdbDelete);
 		}
     }
+    
+    /**
+     * Append time series data to an already instantiated time series
+	 * @param ts: timeseries object to add
+     */
+    public void addTimeSeriesData(TimeSeries<T> ts) {
+		
+    	// Retrieve relevant dataIRIs
+    	List<String> dataIRIs = ts.getDataIRIs();
+    	
+    	// Check whether all dataIRIs are instantiated in the KG
+    	for (String iri : dataIRIs) {
+    		if (!rdfClient.checkDataExists(iri)) {
+    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
+    					  " is not attached to any time series instance in the KG");
+    		}    		
+    	}
+    	
+    	// Add time series data to respective database table
+    	rdbClient.addTimeSeriesData(ts);
+    }
 
 }
