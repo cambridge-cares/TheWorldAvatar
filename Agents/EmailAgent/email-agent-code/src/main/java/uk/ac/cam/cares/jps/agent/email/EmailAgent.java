@@ -217,19 +217,14 @@ public class EmailAgent extends JPSAgent {
             System.out.println("INFO: Request IP(s) reported as: " + sourceIP);
 
             // Source may be multiple IPs if client was using a proxy
-            if (sourceIP.contains(",")) {
-                String[] sourceIPs = sourceIP.split(",");
+            String[] sourceIPs = sourceIP.split(",");
 
-                for (String ip : sourceIPs) {
-                    // Allow local requests.
-                    if (isLocalIP(ip.trim())) return true;
+            for (String ip : sourceIPs) {
+                // Allow local requests.
+                if (isLocalIP(ip.trim())) return true;
 
-                    // Allow if it matches at least one whitelisted ip
-                    if (allowedList.contains(ip.trim())) return true;
-                }
-            } else {
-                if (isLocalIP(sourceIP.trim())) return true;
-                if (allowedList.contains(sourceIP.trim())) return true;
+                // Allow if it matches at least one whitelisted ip
+                if (allowedList.contains(ip.trim())) return true;
             }
             
             return false;
