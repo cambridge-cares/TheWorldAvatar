@@ -127,15 +127,18 @@ public class TimeSeriesClient<T> {
     	} catch (JPSRuntimeException e_RdbCreate) {
     		// For RDB exceptions thrown after interaction with relational database started, try to revert 
     		// whatever might have been instantiated in relational database
-    		if (e_RdbCreate.getMessage().contains("Error while executing SQL command")) {
-       			try {
-        			// Try to delete potentially created time series table and corresponding entries in central lookup table
-    				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
-    			} catch(Exception e_RdbDelete) { 
-    				// RDB deletion potentially unsuccessful
-   					rdb_deletion = false;
-    			}
-    		}
+			// nk591: I think it is unnecessary to check database problems that could occur between database queries
+			//        Furthermore, rdbClient.deleteTimeSeriesTable(dataIRIs.get(0)); will also result in an error if nothing
+			//        was created in which case the returned message is misleading.
+//    		if (e_RdbCreate.getMessage().contains("Error while executing SQL command")) {
+//       			try {
+//        			// Try to delete potentially created time series table and corresponding entries in central lookup table
+//    				rdbClient.deleteTimeSeriesTable(dataIRIs.get(0));
+//    			} catch(Exception e_RdbDelete) {
+//    				// RDB deletion potentially unsuccessful
+//   					rdb_deletion = false;
+//    			}
+//    		}
     		
     		// For ALL RDB exceptions, try to revert previous knowledge base instantiation
     		try {
@@ -196,13 +199,7 @@ public class TimeSeriesClient<T> {
 	    		rdbClient.deleteTimeSeries(dataIRI);
 	    	} catch (JPSRuntimeException e_RdbDelete) {
 	    		// For RDB exceptions thrown after interaction with relational database started, assume that final state might be inconsistent
-	    		// mh807: Should we try to restore potentially only partially deleted data - I personally think this is too much 
-	    		if (e_RdbDelete.getMessage().contains("Error while executing SQL command")) {
-	    			// RDB deletion potentially unsuccessful
-	    			rdb_deletion = false;
-	    		}
-	    		
-	    		// For ALL RDB exceptions, try to revert previous knowledge base deletion
+	    		// Try to revert previous knowledge base deletion
 	    		try {
 	    			rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
 	    		} catch (Exception e_RdfCreate) {
