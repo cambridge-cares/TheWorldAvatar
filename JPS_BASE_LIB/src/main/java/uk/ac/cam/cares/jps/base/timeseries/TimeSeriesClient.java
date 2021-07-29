@@ -117,13 +117,13 @@ public class TimeSeriesClient<T> {
     	try {
     		rdbClient.initTimeSeriesTable(dataIRIs, dataClass, tsIRI);
     	} catch (JPSRuntimeException e_RdbCreate) {
-    		// For exceptions thrown when creating initialising RDB elements relational database started,
+    		// For exceptions thrown when initialising RDB elements in relational database,
 			// try to revert previous knowledge base instantiation
     		try {
     			rdfClient.removeTimeSeries(tsIRI);
     		} catch (Exception e_RdfDelete) {
     			throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when initialising time series " + tsIRI +
-						" , as database related instantiation failed but KG triples could not be deleted.");
+						" , as database related instantiation failed but KG triples were created.");
     		}
     		throw new JPSRuntimeException(exceptionPrefix + "timeseries was not created!", e_RdbCreate);
     	}
@@ -137,19 +137,19 @@ public class TimeSeriesClient<T> {
      * 		   <br>Returns "Potentially inconsistent state: &lt;data IRI&gt;" in case there was an error and NOT all changes could be reverted  
      * 		   <br>(i.e. there is an inconsistent state between triple store and database and subsequent cleanup for dataIRI is required)
      */
-    public String deleteIndividualTimeSeries(String dataIRI) {
+    public void deleteIndividualTimeSeries(String dataIRI) {
     	
     	// Check whether dataIRI is associated with any time series
     	String tsIRI = rdfClient.getTimeSeries(dataIRI);
     	if (tsIRI == null) {
-    		return "No changes: Data IRI " + dataIRI + " is not associated with any time series";
+    		throw new JPSRuntimeException(exceptionPrefix + "dataIRI " + dataIRI + " not associated with any timeseries.");
     	}
-    	
+
     	// Check whether associated time series has further data associated with it and
     	if (rdfClient.getAssociatedData(tsIRI).size() == 1) {
     		// Delete entire time series
-    		return deleteTimeSeries(tsIRI);
-    	} else {			
+    		deleteTimeSeries(tsIRI);
+    	} else {
 
 	    	// Initialise boolean flags to indicate success/failure of database/triple store interactions
 	    	boolean rdb_deletion = true;
@@ -160,48 +160,33 @@ public class TimeSeriesClient<T> {
 	   		try {
 	   			rdfClient.removeTimeSeriesAssociation(dataIRI);
 	   		} catch (Exception e_RdfDelete) {
-	   			e_RdfDelete.printStackTrace();
-	   			return "No change: " + e_RdfDelete.getMessage();   			
+				throw new JPSRuntimeException(exceptionPrefix + "timeseries was not deleted!", e_RdfDelete);
 	   		}
 	    	
 	    	// Step3: Try to delete corresponding time series column and central table entry in relational database
 	    	try {
 	    		rdbClient.deleteTimeSeries(dataIRI);
 	    	} catch (JPSRuntimeException e_RdbDelete) {
-	    		// For RDB exceptions thrown after interaction with relational database started, assume that final state might be inconsistent
-	    		// Try to revert previous knowledge base deletion
+				// For exceptions thrown when deleting RDB elements in relational database,
+				// try to revert previous knowledge base deletion
 	    		try {
 	    			rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
 	    		} catch (Exception e_RdfCreate) {
-	    			// RDF re-creation potentially unsuccessful
-	    			rdf_recreation = false;
+					throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when deleting time series " + tsIRI +
+							" , as database related deletion failed but KG triples were deleted.");
 	    		}
-	    		
-	    		// Return messages depending on exceptions occurred
-	    		if (rdb_deletion && rdf_recreation) {
-	    			return "No change: " + e_RdbDelete.getCause().getMessage();
-	    		} else {
-	    			return "Potentially inconsistent state: " + dataIRI;
-	    		}    		
-	    	}    	
-	    	// Return success in case no exceptions occurred
-	    	return "Success";
+				throw new JPSRuntimeException(exceptionPrefix + "timeseries was not deleted!", e_RdbDelete);
+	    	}
     	}
     }
 
     /**
      * Delete time series and all associated dataIRI connections from triple store and relational database 
      * @param tsIRI: time series IRI as String
-     * @return Returns "Success" if deletion was successful in both the triple store and the relational database
-     * 		   <br>Returns "No changes: &lt;error description&gt;" in case there was an error; however, prior state could be maintained/recovered
-     * 		   <br>Returns "Potentially inconsistent state: &lt;time series IRI&gt;" in case there was an error and NOT all changes could be reverted  
-     * 		   <br>(i.e. there is an inconsistent state between triple store and database and subsequent cleanup for tsIRI is required)
      */
-    public String deleteTimeSeries(String tsIRI) {
+    public void deleteTimeSeries(String tsIRI) {
     	
     	// to be implemented
-    	
-    	return null;
     }
 
 }
