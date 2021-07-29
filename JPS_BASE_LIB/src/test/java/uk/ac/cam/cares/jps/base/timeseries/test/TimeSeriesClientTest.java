@@ -60,8 +60,9 @@ public class TimeSeriesClientTest {
     	
     	// calling init will link the provided IRIs to a time series instance in your knowledge graph that points to postgres
     	// at the same time, the tables will be created in RDB according to the class specified
-    	tsClient.initCentralTable();
-    	tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
+    	//tsClient.initCentralTable();
+    	//tsClient.initTimeSeriesTable(dataIRI, dataClass, null);
+    	tsClient.initTimeSeriesTable(dataIRI, dataClass, "http://ts1");
    	
     	// to add data, you need to create a TimeSeries object
     	List<Instant> timeList = new ArrayList<>();
@@ -86,7 +87,10 @@ public class TimeSeriesClientTest {
     	// you can query the entire TimeSeries table by providing the data IRIs
     	TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI);
     	// or you can specify the time range you want
-    	TimeSeries<Instant> ts2 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2),timeList.get(4));
+    	TimeSeries<Instant> ts2 = tsClient.getTimeSeriesWithinBounds(dataIRI, null, null);
+    	TimeSeries<Instant> ts3 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2),timeList.get(4));
+    	TimeSeries<Instant> ts4 = tsClient.getTimeSeriesWithinBounds(dataIRI, null, timeList.get(4));
+    	TimeSeries<Instant> ts5 = tsClient.getTimeSeriesWithinBounds(dataIRI,timeList.get(2), null);
     	
     	// the time column
     	List<Instant> timeColumn = ts1.getTimes();

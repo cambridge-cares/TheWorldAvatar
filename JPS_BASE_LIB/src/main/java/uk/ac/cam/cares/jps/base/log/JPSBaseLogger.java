@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.log;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,6 +21,6 @@ public class JPSBaseLogger {
 	}
 	
 	public static void error(Object sender, Exception exc) {
-		logger.error(sender.getClass().getSimpleName() + " " + exc.getMessage() + "\n" + exc.getStackTrace());
+		logger.error(sender.getClass().getSimpleName() + " " + exc.getMessage() + "\n" + ExceptionUtils.getStackTrace(exc));
 	}
 }

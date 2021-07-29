@@ -72,37 +72,49 @@ public class TimeSeriesTest {
     public void testGetDataIRI() {
 		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	for (String iri : ts.getDataIRI()) {
+    	for (String iri : ts.getDataIRIs()) {
     		Assert.assertTrue(dataIRI.contains(iri));
     	}
     }
     
 	@Test
     public void testGetValues() {
-		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
+		// Constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	Assert.assertEquals(ts.getValues(dataIRI.get(0)),data1);
     	Assert.assertEquals(ts.getValues(dataIRI.get(1)),data2);
     	Assert.assertEquals(ts.getValues(dataIRI.get(2)),data3);
+    	// Check whether null is returned for non-existing dataIRI keys
+    	Assert.assertNull(ts.getValues("data0"));
     }
     
     /**
-     * to use this, the original data must be an instance of "Number"
+     * To use this, the original data must be an instance of "Number"
      */
 	@Test
     public void testGetValuesAsDouble() {
-		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
+		// Constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
-    	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
+		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)), data1);
+		Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(0)).get(0).getClass(), Double.class);
     	Assert.assertEquals(ts.getValuesAsDouble(dataIRI.get(2)).get(0).getClass(), Double.class);
+    	// Test for non-existing and non-castable data series
+    	Assert.assertNull(ts.getValuesAsDouble("data0"));
+    	try {
+    		List<Double> v = ts.getValuesAsDouble(dataIRI.get(1));
+    	} catch (Exception e) {
+    		Assert.assertTrue(e instanceof JPSRuntimeException);
+    		Assert.assertEquals("TimeSeries: Values for provided dataIRI are not castable to \"Number\"",
+    					        e.getMessage());
+    	}
     }
     
     /** 
-     * if the original class has a toString() method, this should work
+     * If the original class has a toString() method, this should work
      */
 	@Test
     public void testGetValuesAsString() {
-		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
+		// Constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
     	for (String data : dataIRI) {
     		Assert.assertEquals(ts.getValuesAsString(data).get(0).getClass(), String.class);
@@ -110,13 +122,23 @@ public class TimeSeriesTest {
     }
     
     /**
-     * to use this, the original data must be an instance of "Number"
+     * To use this, the original data must be an instance of "Number"
      */
 	@Test
     public void testGetValuesAsInteger() {
-		// constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
+		// Constructor for TimeSeries object takes: time column, dataIRIs, and corresponding values in lists
 		ts = new TimeSeries<Instant>(timeList, dataIRI, dataToAdd);
+		Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(0)), data3);
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(0)).get(0).getClass(), Integer.class);
     	Assert.assertEquals(ts.getValuesAsInteger(dataIRI.get(2)).get(0).getClass(), Integer.class);
+    	// Test for non-existing and non-castable data series
+    	Assert.assertNull(ts.getValuesAsInteger("data0"));
+    	try {
+    		List<Integer> v = ts.getValuesAsInteger(dataIRI.get(1));
+    	} catch (Exception e) {
+    		Assert.assertTrue(e instanceof JPSRuntimeException);
+    		Assert.assertEquals("TimeSeries: Values for provided dataIRI are not castable to \"Number\"",
+    					        e.getMessage());
+    	}
     }
 }
