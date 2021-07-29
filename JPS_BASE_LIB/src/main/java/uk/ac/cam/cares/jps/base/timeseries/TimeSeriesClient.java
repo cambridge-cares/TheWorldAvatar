@@ -1,11 +1,10 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -109,7 +108,7 @@ public class TimeSeriesClient<T> {
    		try {
    			rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
 		}
-		catch (JPSRuntimeException e_RdfCreate) {
+		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "timeseries was not created!", e_RdfCreate);
 		}
     	
@@ -150,17 +149,12 @@ public class TimeSeriesClient<T> {
     		// Delete entire time series
     		deleteTimeSeries(tsIRI);
     	} else {
-
-	    	// Initialise boolean flags to indicate success/failure of database/triple store interactions
-	    	boolean rdb_deletion = true;
-	    	boolean rdf_recreation = true;
-	    	  	
 	    	// Step2: Delete time series association in knowledge base
 	    	// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 	   		try {
 	   			rdfClient.removeTimeSeriesAssociation(dataIRI);
 	   		} catch (Exception e_RdfDelete) {
-				throw new JPSRuntimeException(exceptionPrefix + "timeseries was not deleted!", e_RdfDelete);
+				throw new JPSRuntimeException(exceptionPrefix + "timeseries association for " + dataIRI + " was not deleted!", e_RdfDelete);
 	   		}
 	    	
 	    	// Step3: Try to delete corresponding time series column and central table entry in relational database
@@ -172,10 +166,10 @@ public class TimeSeriesClient<T> {
 	    		try {
 	    			rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
 	    		} catch (Exception e_RdfCreate) {
-					throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when deleting time series " + tsIRI +
+					throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when deleting time series association for " + dataIRI +
 							" , as database related deletion failed but KG triples were deleted.");
 	    		}
-				throw new JPSRuntimeException(exceptionPrefix + "timeseries was not deleted!", e_RdbDelete);
+				throw new JPSRuntimeException(exceptionPrefix + "timeseries association for " + dataIRI + " was not deleted!", e_RdbDelete);
 	    	}
     	}
     }
@@ -185,8 +179,38 @@ public class TimeSeriesClient<T> {
      * @param tsIRI: time series IRI as String
      */
     public void deleteTimeSeries(String tsIRI) {
-    	
-    	// to be implemented
+		// Check whether tsIRI exists
+		if (!rdfClient.checkTimeSeriesExists(tsIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + tsIRI + " does not exist.");
+		}
+
+		// Retrieve example dataIRI needed to delete RDB related information
+		List<String> dataIRI = rdfClient.getAssociatedData(tsIRI);
+
+		// Step1: Delete time series with all associations in knowledge base
+		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
+		try {
+			// Retrieve information about time series to be able to revert if RDB deletion fails
+			String timeUnit = rdfClient.getTimeUnit(tsIRI); // can be null
+			rdfClient.removeTimeSeries(tsIRI);
+		} catch (Exception e_RdfDelete) {
+			throw new JPSRuntimeException(exceptionPrefix + "timeseries " + tsIRI + " was not deleted!", e_RdfDelete);
+		}
+		// Step2: Try to delete corresponding entries in central table and the time series table in relational database
+		try {
+			rdbClient.deleteTimeSeriesTable(dataIRI.get(0));
+		} catch (JPSRuntimeException e_RdbDelete) {
+			// For exceptions thrown when deleting RDB elements in relational database,
+			// try to revert previous knowledge base deletion
+			try {
+				String dbURL = rdbClient.getRdbURL();
+				//TODO: how to recreate time series instance with same IRI?
+			} catch (Exception e_RdfCreate) {
+				throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when deleting time series " + tsIRI +
+						" , as database related deletion failed but KG triples were deleted.");
+			}
+			throw new JPSRuntimeException(exceptionPrefix + "timeseries " + tsIRI + " was not deleted!", e_RdbDelete);
+		}
     }
 
 }
