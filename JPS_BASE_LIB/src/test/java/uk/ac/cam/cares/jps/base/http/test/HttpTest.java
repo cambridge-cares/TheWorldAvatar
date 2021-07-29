@@ -406,7 +406,6 @@ public class HttpTest extends TestCase {
 			heerb = Http.put(key, body, contentType, accept, obj);
 			putOrPost.invoke(obj, http, heerb, testUrl, body, contentType, accept, new Object[] {obj});
 		} catch (Exception e) {
-            e.printStackTrace(System.out);
 			assertEquals(e.getMessage(), "String index out of range: -1");
 		}
 	

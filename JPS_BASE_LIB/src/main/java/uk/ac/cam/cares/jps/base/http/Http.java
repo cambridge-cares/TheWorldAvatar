@@ -69,14 +69,8 @@ public class Http {
 
     public static URI createURI(String url, String... keyOrValue) {
 
-        String scheme = null;
         int j = url.indexOf(':');
-        
-        // localhost URLs with not have a scheme
-        if(j > 0) {
-            scheme = url.substring(0, j);
-        }
-        
+        String scheme = url.substring(0, j);
         URIBuilder builder = new URIBuilder().setScheme(scheme);
 
         url = url.substring(j + 3);
