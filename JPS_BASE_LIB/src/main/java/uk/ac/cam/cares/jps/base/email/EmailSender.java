@@ -161,7 +161,7 @@ public class EmailSender {
             writer.append(body);
         }
 
-        System.out.println("INFO: Email content written to file at: " + logFile.toAbsolutePath().toString());
+        System.out.println("INFO: Email content written to file at: " + logFile.toAbsolutePath());
         return logFile;
     }
 
