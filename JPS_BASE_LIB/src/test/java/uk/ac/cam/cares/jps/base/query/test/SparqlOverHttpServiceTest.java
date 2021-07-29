@@ -6,9 +6,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicStatusLine;
-import org.apache.http.util.EntityUtils;
 import org.json.CDL;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -17,15 +15,12 @@ import org.junit.Test;
 import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 
 import java.lang.reflect.Field;
-import java.net.URI;
 
 
 public class SparqlOverHttpServiceTest {
@@ -33,6 +28,32 @@ public class SparqlOverHttpServiceTest {
     private String sparql = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
     private String queryUrl = "http://test.com/sparql/query";
     private String updateUrl = "http://test.com/sparql/update";
+
+    @Test
+    public void testInit() throws Exception{
+        Field testType = SparqlOverHttpService.class.getDeclaredField("type");
+        testType.setAccessible(true);
+        Field testQuery = SparqlOverHttpService.class.getDeclaredField("sparqlServiceURIForQuery");
+        testQuery.setAccessible(true);
+        Field testUpdate = SparqlOverHttpService.class.getDeclaredField("sparqlServiceURIForUpdate");
+        testUpdate.setAccessible(true);
+
+        testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.RDF4J, "http://test.com/sparql");
+        Assert.assertEquals(testQuery.get(testS), "http://test.com/sparql");
+        Assert.assertEquals(testUpdate.get(testS), "http://test.com/sparql/statements");
+        Assert.assertEquals(testType.get(testS).toString(), "RDF4J");
+
+        testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.FUSEKI, "http://test.com/sparql");
+        Assert.assertEquals(testQuery.get(testS), "http://test.com/sparql/query");
+        Assert.assertEquals(testUpdate.get(testS), "http://test.com/sparql/update");
+        Assert.assertEquals(testType.get(testS).toString(), "FUSEKI");
+
+        testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.BLAZEGRAPH, "http://test.com/sparql");
+        Assert.assertEquals(testQuery.get(testS), "http://test.com/sparql");
+        Assert.assertEquals(testUpdate.get(testS), "http://test.com/sparql/update");
+        Assert.assertEquals(testType.get(testS).toString(), "BLAZEGRAPH");
+
+    }
 
     @Test
     public void testToString() {
@@ -91,15 +112,32 @@ public class SparqlOverHttpServiceTest {
         }
 
         // Test with RDFStoreType RDF4J
-
+        testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.RDF4J, queryUrl, updateUrl);
+        // Set-up dummy post response
+        CloseableHttpResponse dummyResponse2 = Mockito.mock(CloseableHttpResponse.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(dummyResponse2.getEntity()).thenReturn(new StringEntity("test response"));
+        Mockito.when(dummyResponse2.getStatusLine().getStatusCode()).thenReturn(204, 500);
+        try (MockedStatic<HttpClientBuilder> httpClientB = Mockito.mockStatic(HttpClientBuilder.class, Mockito.RETURNS_DEEP_STUBS)) {
+            httpClientB.when(() -> HttpClientBuilder.create().build().execute(Mockito.any(HttpPost.class))).thenReturn(dummyResponse2);
+            Assert.assertEquals("test response", testS.executePost(formInsertQuery()));
+            // Run the method again, this time there should be an exception as the status code is 500
+            StatusLine dummyStatus2 = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 500, "error");
+            Mockito.when(dummyResponse2.getStatusLine()).thenReturn(dummyStatus2);
+            Mockito.when(dummyResponse2.getAllHeaders()).thenReturn(new Header[] {});
+            try {
+                testS.executePost(formInsertQuery());
+                Assert.fail();
+            }
+            catch (JPSRuntimeException e) {
+                Assert.assertEquals("HTTP response with error = " + dummyStatus2 + "\n" + "test response", e.getMessage());
+            }
+        }
     }
 
     @Test
     public void testExecuteGet() throws Exception{
-        HttpResponse expected;
-        URI uri = null;
-        HttpGet request = new HttpGet(uri);
 
+        // Test with RDFStoreType Blazegraph
         JSONArray jsonArray = new JSONArray();
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("count", "1");
@@ -109,23 +147,56 @@ public class SparqlOverHttpServiceTest {
                     // further stubbings ...
                    Mockito.when(mock.executeQuery()).thenReturn(jsonArray);
                 })) {
+            Field kbClientField = SparqlOverHttpService.class.getDeclaredField("kbClient");
+            kbClientField.setAccessible(true);
             testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.BLAZEGRAPH, queryUrl, updateUrl);
+            Assert.assertNull(kbClientField.get(testS));
             Assert.assertEquals(CDL.toString(jsonArray), testS.executeGet(sparql));
+            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setQueryEndpoint(queryUrl);
+            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setQuery(sparql);
         }
 
+        // Test with RDFStoreType RDF4J
         testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.RDF4J, queryUrl, updateUrl);
-        uri = AgentCaller.createURI(queryUrl, "query", queryUrl, "Accept", MediaType.TEXT_CSV.type);
-        request = new HttpGet(uri);
-        request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
-        expected = HttpClientBuilder.create().build().execute(request);
-        Assert.assertEquals(testS.executeGet(sparql),  EntityUtils.toString(expected.getEntity()));
+        // Set-up dummy post response
+        CloseableHttpResponse dummyResponse2 = Mockito.mock(CloseableHttpResponse.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(dummyResponse2.getEntity()).thenReturn(new StringEntity("test response"));
+        Mockito.when(dummyResponse2.getStatusLine().getStatusCode()).thenReturn(200,500);
+        try (MockedStatic<HttpClientBuilder> httpClientB = Mockito.mockStatic(HttpClientBuilder.class, Mockito.RETURNS_DEEP_STUBS)) {
+            httpClientB.when(() -> HttpClientBuilder.create().build().execute(Mockito.any(HttpGet.class))).thenReturn(dummyResponse2);
+            Assert.assertEquals("test response", testS.executeGet(sparql));
+            // Run the method again, this time there should be an exception as the status code is 500
+            StatusLine dummyStatus2 = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 500, "error");
+            Mockito.when(dummyResponse2.getStatusLine()).thenReturn(dummyStatus2);
+            Mockito.when(dummyResponse2.getAllHeaders()).thenReturn(new Header[] {});
+            try {
+                testS.executeGet(sparql);
+                Assert.fail();
+            }
+            catch (JPSRuntimeException e) {
+                Assert.assertEquals("HTTP response with error = " + dummyStatus2 + "\n" + "test response", e.getMessage());
+            }
+        }
 
+        // Test with RDFStoreType Fuseki
         testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.FUSEKI, queryUrl, updateUrl);
-        uri = AgentCaller.createURI(queryUrl, "query", queryUrl);
-        request = new HttpGet(uri);
-        request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
-        expected = HttpClientBuilder.create().build().execute(request);
-        Assert.assertEquals(testS.executeGet(sparql),  EntityUtils.toString(expected.getEntity()));
+        CloseableHttpResponse dummyResponse = Mockito.mock(CloseableHttpResponse.class, Mockito.RETURNS_DEEP_STUBS);
+        Mockito.when(dummyResponse.getEntity()).thenReturn(new StringEntity("test response"));
+        Mockito.when(dummyResponse.getStatusLine().getStatusCode()).thenReturn(200,500);
+        try (MockedStatic<HttpClientBuilder> httpClientB = Mockito.mockStatic(HttpClientBuilder.class, Mockito.RETURNS_DEEP_STUBS)) {
+            httpClientB.when(() -> HttpClientBuilder.create().build().execute(Mockito.any(HttpGet.class))).thenReturn(dummyResponse);
+            Assert.assertEquals("test response", testS.executeGet(sparql));
+            StatusLine dummyStatus = new BasicStatusLine(new ProtocolVersion("HTTP", 1, 1), 500, "error");
+            Mockito.when(dummyResponse.getStatusLine()).thenReturn(dummyStatus);
+            Mockito.when(dummyResponse.getAllHeaders()).thenReturn(new Header[] {});
+            try {
+                testS.executeGet(sparql);
+                Assert.fail();
+            }
+            catch (JPSRuntimeException e) {
+                Assert.assertEquals("HTTP response with error = " + dummyStatus + "\n" + "test response", e.getMessage());
+            }
+        }
 
     }
 
