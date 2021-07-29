@@ -1,0 +1,101 @@
+{
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RMP2-FC",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.81537,
+            0.0,
+            0.0
+        ],
+        [
+            -0.81537,
+            0.0,
+            0.0
+        ],
+        [
+            -1.189137,
+            0.195215,
+            -1.006809
+        ],
+        [
+            -1.189137,
+            0.774316,
+            0.672466
+        ],
+        [
+            -1.189138,
+            -0.969531,
+            0.334344
+        ],
+        [
+            1.189138,
+            0.969531,
+            -0.334344
+        ],
+        [
+            1.189137,
+            -0.774316,
+            -0.672466
+        ],
+        [
+            1.189137,
+            -0.195215,
+            1.006809
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        78.5529373,
+        16.7553379,
+        16.7553377
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -2163.031364941397,
+    "HOMO energy": -0.45183,
+    "HOMO-1 energy": -0.50737,
+    "HOMO-2 energy": -0.50737,
+    "LUMO energy": 0.24168,
+    "LUMO+1 energy": 0.28405,
+    "LUMO+2 energy": 0.32737,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Tue Mar 23 15:47:28 2021",
+    "ScanFlag": "Relaxed",
+    "ScanType": "Bond",
+    "ScanAtoms": [
+        "1",
+        "2"
+    ],
+    "Scan Points": 1.63074
+}
