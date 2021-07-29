@@ -248,7 +248,7 @@ public class TimeSeriesClient<T> {
     	// Retrieve relevant dataIRIs
     	List<String> dataIRIs = ts.getDataIRIs();
     	
-    	// Check whether all dataIRIs are instantiated in the KG
+    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
     	for (String iri : dataIRIs) {
     		if (!rdfClient.checkDataExists(iri)) {
     			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
@@ -258,6 +258,41 @@ public class TimeSeriesClient<T> {
     	
     	// Add time series data to respective database table
     	rdbClient.addTimeSeriesData(ts);
+    }
+    
+    /** 
+     * Retrieve time series data within given bounds (time bounds are inclusive and optional)
+     * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
+	 * @param dataIRIs: list of data IRIs provided as string
+	 * @param lowerBound: start timestamp from which to retrieve data (null if not applicable)
+	 * @param upperBound: end timestamp until which to retrieve data (null if not applicable)
+	 * @return Returns all data series from dataIRIs list as single time series object
+	 */
+	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
+		
+    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
+    	for (String iri : dataIRIs) {
+    		if (!rdfClient.checkDataExists(iri)) {
+    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
+    					  " is not attached to any time series instance in the KG");
+    		}    		
+    	}
+    	
+    	// Retrieve time series data from respective database table
+    	return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
+    }
+	
+    /** 
+     * Retrieve entire time series data history for given dataIRIs
+     * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
+     * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
+	 * @param dataIRIs: list of data IRIs provided as string
+	 * @return Returns all data series from dataIRIs list as single time series object
+	 */
+	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
+		
+    	return getTimeSeriesWithinBounds(dataIRIs, null, null);
     }
 
 }
