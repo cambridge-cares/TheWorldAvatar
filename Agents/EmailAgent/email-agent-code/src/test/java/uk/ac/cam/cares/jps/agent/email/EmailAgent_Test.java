@@ -2,8 +2,11 @@ package uk.ac.cam.cares.jps.agent.email;
 
 import uk.ac.cam.cares.jps.agent.email.mock.MockHttpServletRequest;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import javax.ws.rs.BadRequestException;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
@@ -58,7 +61,7 @@ public class EmailAgent_Test {
     /**
      * Using the good sample request file and the properties file (to be provided by the developer),
      * this attempts to send an email using the EmailHandler class.
-     * 
+     *
      * Note that this test will generate and email and send it if the properties file has been
      * correctly configured to point towards an SMTP server.
      */
@@ -75,8 +78,8 @@ public class EmailAgent_Test {
         boolean hasStatus = !result.isNull("status");
         Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
 
-        boolean success = result.get("status").toString().equals("200");
-        Assertions.assertTrue(success, "Expected JSON status to be '200'!");
+        String returnCode = result.get("status").toString();
+        Assertions.assertEquals("200", returnCode, "Expected JSON status to be '200'!");
     }
 
     /**
@@ -90,13 +93,12 @@ public class EmailAgent_Test {
         // New agent
         EmailAgent agent = new EmailAgent();
 
-        try {
+        // Check that a bad request throws the expected exception
+        Assertions.assertThrows(BadRequestException.class, () -> {
             // Pass in request and get result
             agent.processRequestParameters(SAMPLE_REQUEST_BAD, new MockHttpServletRequest());
             Assertions.fail("Bad request passed in, expected an Exception to be thrown!");
-        } catch (Exception exception) {
-            // This is the expected response
-        }
+        }, "Expected a BadRequestException to be thrown!");
     }
 
     /**
@@ -119,11 +121,37 @@ public class EmailAgent_Test {
         boolean hasStatus = !result.isNull("status");
         Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
 
-        boolean success = result.get("status").toString().equals("200");
-        Assertions.assertTrue(success, "Expected JSON status to be '200'!");
+        String returnCode = result.get("status").toString();
+        Assertions.assertEquals("200", returnCode, "Expected JSON status to be '200'!");
 
         boolean hasDescription = !result.isNull("description");
         Assertions.assertTrue(hasDescription, "Expected a 'description' field from JSON result!");
+    }
+
+    /**
+     * Proves that the isAnyLocalAddress() method of the InetAddress interface is not sufficient
+     * enough to determine a reliable local IP address.
+     */
+    //@Test - Only needed as a proof during development.
+    public void setInetAddress() {
+        // Should be reported as local addresses
+        String[] localIPs = new String[]{
+            "localhost",
+            "127.0.0.1",
+            "198.168.0.1",
+            "172.16.0.0",
+            "10.0.0.0",
+            "0:0:0:0:0:0:0:1"
+        };
+
+        for (String localIP : localIPs) {
+            try {
+                boolean isLocal = InetAddress.getByName(localIP).isAnyLocalAddress();
+                Assertions.assertTrue(isLocal, "Expected IP address '" + localIP + "' to be reported as local!");
+            } catch (UnknownHostException exception) {
+                Assertions.fail("Not a valid IP address!", exception);
+            }
+        }
     }
 
 }

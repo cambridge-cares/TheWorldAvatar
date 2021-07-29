@@ -121,21 +121,26 @@ public class EmailAgentConfiguration {
 
         String propertyFileLocation = System.getenv(PROPERTIES_ENV);
         System.out.println("Attempting to read properties file at: " + propertyFileLocation);
-        
-        try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
+
+        try (FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
+
+            // Log if the white list mode is enabled
+            String whiteListProperty = getProperty(KEY_WHITE_ONLY);
             
-            boolean whitelistOn = Boolean.parseBoolean(getProperty(KEY_WHITE_ONLY));
-            
-            if(whitelistOn) {
-                System.out.println("INFO: Whitelist enabled, only approving requests from local machine and following IPs...");
-                String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
-                
-                for(String allowedIP : allowedIPs) {
-                    System.out.println("   " + allowedIP);
+            if (whiteListProperty != null && !whiteListProperty.isBlank()) {
+                boolean whitelistOn = Boolean.parseBoolean(whiteListProperty);
+
+                if (whitelistOn) {
+                    System.out.println("INFO: Whitelist enabled, only approving requests from local machine and following IPs...");
+                    String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
+
+                    for (String allowedIP : allowedIPs) {
+                        System.out.println("   " + allowedIP);
+                    }
+                } else {
+                    System.out.println("WARN: Whitelist disabled, accepting all requests.");
                 }
-            } else {
-                System.out.println("WARN: Whitelist disabled, accepting all requests.");
             }
         }
     }

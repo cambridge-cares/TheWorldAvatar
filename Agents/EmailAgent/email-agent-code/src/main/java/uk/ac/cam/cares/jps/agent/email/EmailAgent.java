@@ -4,6 +4,7 @@ import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_ONLY;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -11,7 +12,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
-import javax.servlet.UnavailableException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -54,8 +54,9 @@ public class EmailAgent extends JPSAgent {
             EmailAgentConfiguration.readProperties();
         } catch (IOException ioException) {
             validState = false;
-
-            throw new UnavailableException("EmailAgent is not in valid state, could not read properties.", ioException);
+            
+            // Cannot throw UnavailableException here unless we're using Java EE
+            throw new IllegalStateException("EmailAgent is not in valid state, could not read properties.", ioException);
         }
     }
 
@@ -235,18 +236,26 @@ public class EmailAgent extends JPSAgent {
     /**
      * Returns true if the input IP should be considered a local IP.
      * 
-     * Note: this may need looking into the future, I'm not sure it's 100% reliable. The
-     * InetAddress.isAnyLocalAddress() method did not seem reliable either.
+     * Note: The InetAddress.isAnyLocalAddress() is not used here as it does not return true
+     * for common local address ("127.0.0.1", "196.168.X.X", "localhost").
      *
      * @param ipString IP Address
      */
     private boolean isLocalIP(String ipString) {
-        if (ipString.contains("localhost")) return true;
-        if (ipString.contains("loopback")) return true;
-        if (ipString.contains("127.0.0.1")) return true;
-        if (ipString.contains("0:0:0:0:0:0:0:1")) return true;
+        // Check for loopback addresses
+        switch(ipString.toLowerCase()) {
+            case "localhost":
+            case "loopback":
+            case "127.0.0.1":
+            case "0:0:0:0:0:0:0:1":
+                return true;
+        }
 
         try {
+            // Is the string a valid IP address?
+            InetAddress.getByName(ipString);
+            
+            // Check if the IP is v6 or v4
             boolean ipv6 = ipString.contains(":");
             String[] parts = (ipv6) ? ipString.split(":") : ipString.split(Pattern.quote("."));
 
@@ -275,10 +284,10 @@ public class EmailAgent extends JPSAgent {
             }
             return false;
 
-        } catch (Exception exception) {
-            System.out.println("WARN: Could not determine if '" + ipString + "' is a local address, assuming not.");
+        } catch (UnknownHostException exception) {
+            System.out.println("ERROR: Value '" + ipString + "' is not a valid IP address.");
             return false;
-        }
+        } 
     }
 }
 // End of class.
