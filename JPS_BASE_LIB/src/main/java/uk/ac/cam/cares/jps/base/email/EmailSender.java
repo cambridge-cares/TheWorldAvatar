@@ -155,7 +155,7 @@ public class EmailSender {
         Path logFile = Paths.get(fileName);
 
         try ( BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.toFile()))) {
-            writer.append("Subject: " + subject);
+            writer.append("Subject: ").append(subject);
             writer.append("\n");
             writer.append("Body:\n");
             writer.append(body);
