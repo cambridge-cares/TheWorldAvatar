@@ -271,7 +271,7 @@ public class EmailAgent extends JPSAgent {
                 }
 
                 // 192.168.0.0 – 192.168.255.255
-                if (parts[0].equals("192") && parts[0].equals("168")) return true;
+                if (parts[0].equals("192") && parts[1].equals("168")) return true;
             }
             return false;
 
