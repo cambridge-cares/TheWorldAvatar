@@ -194,7 +194,7 @@ public class EmailSender {
     private void determineAgentLocation() {
         String variable = System.getenv("EMAIL_AGENT_URL");
 
-        if (variable == null || variable.isBlank()) {
+        if (variable == null || variable.trim().isEmpty()) {
             emailAgentURL = DEFAULT_AGENT_URL;
             System.out.println("WARN: Could not find EMAIL_AGENT_URL variable, using fallback URL: " + emailAgentURL);
         } else {
