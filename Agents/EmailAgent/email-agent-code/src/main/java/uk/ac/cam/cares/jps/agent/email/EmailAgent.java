@@ -53,11 +53,9 @@ public class EmailAgent extends JPSAgent {
         try {
             EmailAgentConfiguration.readProperties();
         } catch (IOException ioException) {
-            System.out.println("ERROR: Could not read properties!");
-            ioException.printStackTrace(System.out);
             validState = false;
 
-            throw new UnavailableException("EmailAgent is not in valid state, could not read properties.");
+            throw new UnavailableException("EmailAgent is not in valid state, could not read properties.", ioException);
         }
     }
 
