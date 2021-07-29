@@ -186,12 +186,12 @@ public class TimeSeriesClient<T> {
 
 		// Retrieve example dataIRI needed to delete RDB related information
 		List<String> dataIRI = rdfClient.getAssociatedData(tsIRI);
-
+		String timeUnit = null;
 		// Step1: Delete time series with all associations in knowledge base
 		// In case any exception occurs, nothing will be deleted in kb (no partial execution of SPARQL update - only one query)
 		try {
 			// Retrieve information about time series to be able to revert if RDB deletion fails
-			String timeUnit = rdfClient.getTimeUnit(tsIRI); // can be null
+			timeUnit = rdfClient.getTimeUnit(tsIRI); // can be null
 			rdfClient.removeTimeSeries(tsIRI);
 		} catch (Exception e_RdfDelete) {
 			throw new JPSRuntimeException(exceptionPrefix + "timeseries " + tsIRI + " was not deleted!", e_RdfDelete);
@@ -203,8 +203,7 @@ public class TimeSeriesClient<T> {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
 			try {
-				String dbURL = rdbClient.getRdbURL();
-				//TODO: how to recreate time series instance with same IRI?
+				rdfClient.initTS(tsIRI, dataIRI, rdbClient.getRdbURL(), timeUnit);
 			} catch (Exception e_RdfCreate) {
 				throw new JPSRuntimeException(exceptionPrefix + "inconsistent state created when deleting time series " + tsIRI +
 						" , as database related deletion failed but KG triples were deleted.");
