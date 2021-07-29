@@ -5,18 +5,18 @@ from chemaboxwriters.ontopesscan import assemble_ops_pipeline
 from chemaboxwriters.ontocompchem import assemble_oc_pipeline
 from chemaboxwriters.ontocompchem import write_abox as write_oc_abox
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
-from chemaboxwriters.common.commonvars import CC_LOG_EXT
 import textwrap
 import os
 
 def write_abox(fileOrDir, inpFileType, OPS_pipeline=None,
                OC_pipeline=None,
-               qcLogExt=CC_LOG_EXT, outDir=None, outBaseName=None,
+               qcLogExt=None, outDir=None, outBaseName=None,
                OPS_handlerFuncKwargs={}, OC_handlerFuncKwargs={}):
 
     try:
         if OPS_pipeline is None: OPS_pipeline = assemble_ops_pipeline()
         if OC_pipeline is None: OC_pipeline = assemble_oc_pipeline()
+
         inStage = get_inStage(inpFileType)
         if inStage not in OPS_pipeline.supportedStages or inStage==aboxStages.OC_JSON:
 

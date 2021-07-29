@@ -2,12 +2,11 @@ from chemaboxwriters.common.base import NotSupportedStage
 from chemutils.ioutils.ioutils import fileExists
 from chemaboxwriters.ontospecies import assemble_os_pipeline
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
-from chemaboxwriters.common.commonvars import CC_LOG_EXT
 import textwrap
 import os
 
 def write_abox(fileOrDir, inpFileType, pipeline=None,
-               qcLogExt=CC_LOG_EXT, outDir=None, outBaseName=None,
+               qcLogExt=None, outDir=None, outBaseName=None,
                handlerFuncKwargs={}):
     try:
         if pipeline is None: pipeline = assemble_os_pipeline()

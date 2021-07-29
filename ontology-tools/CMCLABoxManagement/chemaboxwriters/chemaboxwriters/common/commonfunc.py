@@ -11,8 +11,9 @@ def get_inStage(inpFileType):
         raise NotSupportedStage
     return inStage
 
-def get_file_ext(inStage,fileExtPrefix,qcLogExt=CC_LOG_EXT):
+def get_file_ext(inStage,fileExtPrefix,qcLogExt=None):
     fileExt=[]
+    if qcLogExt is None: qcLogExt=CC_LOG_EXT
     if inStage == aboxStages.QC_LOG:
         fileExt = qcLogExt.split(',')
     elif inStage == aboxStages.CSV or inStage == aboxStages.OWL:
