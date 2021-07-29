@@ -144,7 +144,6 @@ public class SparqlOverHttpServiceTest {
         jsonArray.put(jsonObject);
         try (MockedConstruction<RemoteStoreClient> mocked = Mockito.mockConstruction(RemoteStoreClient.class,
                 (mock, context) -> {
-                    // further stubbings ...
                    Mockito.when(mock.executeQuery()).thenReturn(jsonArray);
                 })) {
             Field kbClientField = SparqlOverHttpService.class.getDeclaredField("kbClient");
