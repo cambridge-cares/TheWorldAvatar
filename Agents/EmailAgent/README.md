@@ -50,14 +50,11 @@ Once the requirements have been addressed, the Image can be built using the foll
 
 Be aware that the VERSION tag should match the current version of the software (which is listed within the `pom.xml` file). For more information on versioning, refer to the Wiki.
 
-+ To build the image:
-  + `docker build --rm --no-cache -t docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT -f docker/Dockerfile .`
-+ To generate a container (i.e. run the image):
-  + `docker run -d -p 8099:8080 --restart always --name "email-agent" -it docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT`
-
-Alternatively, the provided `docker-compose.yml` file can be used to spin up a stack containing only the EmailAgent. This can be done using the below command (adding `--build` if the Image needs to be rebuilt before starting the stack):
-```
-docker-compose -f ./docker/docker-compose.yml up -d --force-recreate
-``` 
++ To pull the Image:
+  + `docker-compose -f ./docker/docker-compose.yml pull`
++ To build the Image:
+  + `docker-compose -f ./docker/docker-compose.yml build --force-rm`
++ To generate a Container (i.e. run the Image):
+  + `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
 
 For experienced Docker developers, a bash script has been provided (`quick-build.sh`) that allows all stages of the build to be cached and used to speed up future builds.
