@@ -56,7 +56,7 @@ public class SPARQLQueryBuilder {
 	public static String queryStringBuilder(String[][] Prefix, String[] Select, String[][] Where, boolean distinctFlag, boolean reducedFlag, int limit) {
 		
 		if((distinctFlag && reducedFlag) || (!distinctFlag && !reducedFlag)) {
-			System.out.print("The queryFlag and updateFlag cannot be both true or false.");
+			System.out.print("The distinctFlag and reducedFlag cannot be both true or false.");
 		    System.exit(0);
 		    }			
 				
