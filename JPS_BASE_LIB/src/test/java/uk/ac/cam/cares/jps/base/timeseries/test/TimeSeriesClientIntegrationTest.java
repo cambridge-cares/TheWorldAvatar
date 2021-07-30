@@ -1,13 +1,14 @@
 package uk.ac.cam.cares.jps.base.timeseries.test;
 
 
-import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.junit.*;
 import org.mockito.Mockito;
@@ -53,11 +54,11 @@ public class TimeSeriesClientIntegrationTest {
 	@Container
 	// Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
 	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
-	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
-			.withExposedPorts(9999);
+	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+												 .withExposedPorts(9999);
 	@Container
-	// Create Docker container with latest postgres image from Docker Hub
-	private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres");
+	// Create Docker container with postgres 13.3 image from Docker Hub
+	private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
 	
 	@BeforeClass
 	// Initialise 3 test time series data sets
@@ -131,7 +132,9 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Before
+	// Create clean slate (new Docker containers) for each test
 	public void initialiseTimeSeriesClient() {
+		
 		// Start Blazegraph container
 		blazegraph.start();
 		// Start postgreSQL container
@@ -149,18 +152,17 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Initialise TimeSeriesClient client with pre-configured kb client
 	    try {
-	    	tsClient = new TimeSeriesClient(kbClient, Instant.class, "src/test/resources/timeseries.properties");
-	    } catch (IOException e) {
-	    	// Simply suppress exception for potential IO issues, as properties will be overwritten anyway
+	    	tsClient = new TimeSeriesClient<Instant>(kbClient, Instant.class, 
+	    						Paths.get(getClass().getResource("/timeseries.properties").toURI()).toString());
+	    } catch (Exception e) {
+	    	// Simply suppress exceptions for potential issues, as properties will be overwritten anyway
 	    }
 	    
 	    // Configure database access
-	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());		
+	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());	    
 	}
-	
-	
+		
 	@Test
-	@Ignore
 	public void testInitTimeSeriesWithoutExceptions() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		
 		// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -171,7 +173,7 @@ public class TimeSeriesClientIntegrationTest {
 		Field RDBClient = tsClient.getClass().getDeclaredField("rdbClient");
 		RDBClient.setAccessible(true);
 		TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) RDBClient.get(tsClient);
-	
+		
 		// Verify kb is initially empty
 		Assert.assertEquals(0, rdfClient.countTS());
 		
@@ -189,7 +191,6 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testInitTimeSeriesWithUnavailableKG() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 	
 		// Interrupt triple store connection
@@ -205,7 +206,6 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
 	public void testInitTimeSeriesWithUnavailableRDB() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 	
 		// Interrupt triple store connection
@@ -221,21 +221,22 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore("Does not yet work")
 	public void testInitTimeSeriesWithUnavailableRDBAndKGRevertIssues() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-	
-		// Retrieve the value of the private field 'rdbClient' of the time series client
+		
+		// mh807: use get method
+		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
-		TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+		TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
 		
-		// mh807: I tried to mock the Sparql client to simulate a KG error after initialisation was successful,
-		// but this does not work yet
-		rdfClient = mock(TimeSeriesSparql.class);		
-		doCallRealMethod().when(rdfClient).initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
-		doThrow(new JPSRuntimeException("")).when(rdfClient).removeTimeSeries(Mockito.any());
-
-		// Interrupt triple store connection
+		// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
+		// Spy's behave exactly like normal instances, except for particularly stubbed methods
+		TimeSeriesSparql rdfClient_spy = spy(rdfClient);
+		RDFClient.set(tsClient, rdfClient_spy);
+		// Throw error when removal of time series in KG is intended (after RDB interaction failed) to simulate connection error etc.
+		doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeries(Mockito.anyString());	
+		
+		// Interrupt database connection
 		postgres.stop();
 		
 		try {
@@ -243,7 +244,7 @@ public class TimeSeriesClientIntegrationTest {
 			tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 			Assert.fail();
 		} catch(Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Timeseries was not created!"));
+			Assert.assertTrue(e.getMessage().contains("Inconsistent state created when initialising time series"));
 		}		
 	}
 	
