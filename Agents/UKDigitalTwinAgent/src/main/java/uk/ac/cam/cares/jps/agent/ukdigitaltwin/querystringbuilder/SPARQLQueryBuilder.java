@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder;
 import java.util.*;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
+
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
@@ -46,9 +48,27 @@ public class SPARQLQueryBuilder {
 			sb.setLimit(this.queryClause.limit);
 		}
 		
+		if(this.queryClause.filterClause != null) {
+			for (String i : this.queryClause.filterClause) {
+				try {
+					sb.addFilter(i);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		if(this.queryClause.optionalClause != null) {
+			for (List<String> i : this.queryClause.optionalClause) {
+				sb.addOptional(i.get(0), i.get(1), i.get(2));
+			}
+		}
+		
 		String queryString = sb.build().toString();
 		return queryString;
 	}
+	
 	
 	/**
 	 * Overload static method do not rely on the ClauseBuilder
@@ -92,6 +112,8 @@ public class SPARQLQueryBuilder {
 		 List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
 		 pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, vl, pfmv.variableTypePrefix,
 				  pfmv.varNameIdentifier, pfmv.queryModelVariableSentence, pfmv.labelMap);
+		 //TODO: debug the adding filterClause function
+		 pb.filterClause =  Arrays.asList("?PrimaryFuel = power_plant:Biomass");
 		 SPARQLQueryBuilder sqb = new SPARQLQueryBuilder(pb);
 		 String querystring = sqb.queryStringBuilder();
 		 System.out.println(querystring); 

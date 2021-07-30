@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
@@ -56,7 +57,9 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 
 	HashMap<String, List<String>> PowerFlowModelVariablesMap = new HashMap<String, List<String>>();
 	HashMap<String, String> PowerFlowModelEntityMap = new HashMap<String, String>();
-	HashMap<String, List<String>> labelMap = new HashMap<String, List<String>>();
+	LinkedHashMap<String, List<String>> labelMap = new LinkedHashMap<String, List<String>>();
+	HashMap<String, String> labelVarCalssNameSpaceMap = new HashMap<String, String>();
+	HashMap<String, List<String>> labeledVariable_querySentence = new HashMap<String, List<String>>();
 	
 	public PowerFlowModelVariableForQuery(boolean piecewiseOrPolynomial, int pointsOfPiecewiseOrcostFuncOrder) {  // True: piecewise;  False: Polynomial;
 		
@@ -89,6 +92,8 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 		PowerFlowModelEntityMap.put(genCostFuncKey, genEntityName);
 		
 		labelMap.put(this.GenCostFuncParaName, this.GenCostFuncParaLabel);
+		labelVarCalssNameSpaceMap.put(this.GenCostFuncParaName, variableTypePrefix);
+		labeledVariable_querySentence.put(this.GenCostFuncParaName, queryModelVariableSentence);
 
 	}	
 }
