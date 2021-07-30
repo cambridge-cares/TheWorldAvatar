@@ -9,6 +9,7 @@ import org.mockito.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -30,11 +31,13 @@ public class TimeSeriesClientTest {
     private TimeSeriesClient<Instant> testClientWithMocks;
     // Time series test data
     private List<String> dataIRIs;
+    private List<String> dataIRI;
     private List<Class<?>> dataClasses;
     private String timeUnit = "http://s";
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS) private TimeSeriesSparql mockSparqlClient;
     @Mock private TimeSeriesRDBClient<Instant> mockRDBClient;
+    @Mock private TimeSeries<Instant> mockTimeSeries;
     private AutoCloseable closeMocks;
 
     @Before
@@ -49,6 +52,8 @@ public class TimeSeriesClientTest {
     public void setUpTestData() {
          // Initialise time series with 3 associated data series
         dataIRIs = Arrays.asList("http://data1", "http://data2", "http://data3");
+        // Initialise time series with only 1 associated data series
+        dataIRI = Arrays.asList("http://data1");
         // Specify type of data for each column (most data will be in doubles, but one can specify different data types)
         dataClasses = Arrays.asList(Double.class, String.class, Integer.class);
     }
@@ -393,6 +398,169 @@ public class TimeSeriesClientTest {
             Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
             Assert.assertEquals("RDB down", e.getCause().getMessage());
             Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+        }
+    }
+    
+    @Test
+    public void testAddTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+    	Mockito.when(mockTimeSeries.getDataIRIs()).thenReturn(dataIRI);
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.addTimeSeriesData(mockTimeSeries);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRI.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getTimeSeriesWithinBounds(dataIRI, null, null);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRI.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getTimeSeries(dataIRI);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRI.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getAverage(dataIRIs.get(0));
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getMaxValue(dataIRIs.get(0));
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getMinValue(dataIRIs.get(0));
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getMaxTime(dataIRIs.get(0));
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+        }
+    }
+    
+    @Test
+    public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.getMinTime(dataIRIs.get(0));
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+        }
+    }
+    
+    @Test
+    public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException {
+    	
+        // Set-up stubbing
+        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.deleteTimeSeriesHistory(dataIRIs.get(0), null, null);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
         }
     }
 
