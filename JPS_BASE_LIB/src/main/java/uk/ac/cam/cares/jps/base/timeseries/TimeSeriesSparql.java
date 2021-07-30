@@ -82,30 +82,35 @@ public class TimeSeriesSparql {
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
 	public void loadSparqlConfigs(String filepath) throws IOException {
+		
 		try {
 			File file = new File(filepath);
 			
 			if (!file.exists()) {
 				throw new JPSRuntimeException("1");
 			}
-				
-			InputStream input = new FileInputStream(file);
 			
-			// Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
+			// Load properties in try-with-resource block to ensure closing of InputStream
+			try (InputStream input = new FileInputStream(file)) {
+				
+				// Load properties file from specified path
+	            Properties prop = new Properties();
+	            prop.load(input);
             
-            // Get the property values and assign
-            if (prop.containsKey("sparql.query.endpoint")) {
-            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-            } else {
-            	throw new JPSRuntimeException("2");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-            } else {
-            	throw new JPSRuntimeException("3");
-            }
+	            // Get the property values and assign
+	            if (prop.containsKey("sparql.query.endpoint")) {
+	            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+	            } else {
+	            	throw new JPSRuntimeException("2");
+	            }
+	            if (prop.containsKey("sparql.update.endpoint")) {
+	            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+	            } else {
+	            	throw new JPSRuntimeException("3");
+	            }
+			} catch (Exception e) {
+				throw e;
+			}
 		} catch (Exception e) {
 			if (e instanceof JPSRuntimeException) {
 				String m = "";

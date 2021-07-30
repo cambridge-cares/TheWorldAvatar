@@ -28,9 +28,9 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 public class TimeSeriesSparqlTest {
 	
-    @Rule
-    // Temporary folder to place a properties file (folder gets deleted after running all tests)
-    public TemporaryFolder folder = new TemporaryFolder();
+    @ClassRule
+    // Temporary folder to place a properties file (same file for all potential tests)
+    public static TemporaryFolder folder = new TemporaryFolder();
 
     private MockKnowledgeBaseClient mockClient;
     private TimeSeriesSparql sparqlClient;
@@ -187,6 +187,33 @@ public class TimeSeriesSparqlTest {
     @After
     public void closeKnowledgeBase() {
 	    mockClient.closeKnowledgeBase();
+    }
+    
+    @AfterClass
+    public static void deleteTemporaryFolder() throws IOException {
+    	// Normally junit temporary folder would take care of this; however no exception is thrown if
+    	// deletion fails (as AfterClass method); therefore, it is safer to delete an verify
+    	
+		// delete property file to clear folder
+		File file = new File(Paths.get(folder.getRoot().toString(), "timeseries.properties").toString());
+		System.out.println(file.exists());
+		if (file.exists()) {
+			file.delete();
+		}
+		
+		// delete empty folder
+		File dir = new File(folder.getRoot().toString());
+		System.out.println(dir.exists());
+		if (dir.exists()) {
+			dir.delete();
+		}		
+		
+		if (folder.getRoot().exists()) {
+			System.out.println("Temporary folder deletion failed: " + folder.getRoot().toString());
+		} else {
+			System.out.println("Temporary folder successfully deleted");
+		}
+
     }
 
     @Test
