@@ -20,8 +20,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class TimeSeriesClient<T> {
 	// Associated RDB and RDF/SPARQL clients
-	private final TimeSeriesRDBClient<T> rdbClient;
-	private final TimeSeriesSparql rdfClient;
+	private TimeSeriesRDBClient<T> rdbClient;
+	private TimeSeriesSparql rdfClient;
 	// Exception prefix
 	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
 	
@@ -77,7 +77,15 @@ public class TimeSeriesClient<T> {
     public void setKBClient(StoreClientInterface kbClient) {    	
     	this.rdfClient.setKBClient(kbClient);
     }
-    
+
+	/**
+	 * Getter for the sparql client to be able to perform SPARQl queries related to timeseries independently.
+	 * @return The sparql client used by this general client to access the knowledge graph.
+	 */
+	public TimeSeriesSparql getRdfClient() {
+		return this.rdfClient;
+	}
+
     /**
 	 * Setter for URL and credentials for the relational database (in RDB Client)
 	 * @param rdbURL: URL to relational database (e.g. postgreSQL)
@@ -89,7 +97,15 @@ public class TimeSeriesClient<T> {
     	this.rdbClient.setRdbUser(user);
     	this.rdbClient.setRdbPassword(password);
     }
-    
+
+	/**
+	 * Getter for the RDB client to be able to perform database queries related to timeseries independently.
+	 * @return The RDB client used by this general client to access the relational database.
+	 */
+	public TimeSeriesRDBClient<T> getRdbClient() {
+		return this.rdbClient;
+	}
+
     /**
      * Initialise time series in triple store and relational database
      * @param dataIRIs: List of dataIRIs as Strings
