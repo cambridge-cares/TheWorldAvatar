@@ -139,7 +139,6 @@ public class InitialisingAgent extends JPSAgent{
     	String tsIRI = "http://" + UUID.randomUUID().toString();
     	tsSparql.initTS(tsIRI, Arrays.asList(input_iri), ExampleConfig.dburl, null);
     	
-    	tsClient.initCentralTable();
     	tsClient.initTimeSeriesTable(Arrays.asList(input_iri), Arrays.asList(Integer.class), tsIRI);
     	
     	// create a new time series object with random numbers
