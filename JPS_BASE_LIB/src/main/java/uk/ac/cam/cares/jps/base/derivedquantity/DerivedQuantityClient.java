@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.base.derivedquantity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -79,8 +81,14 @@ public class DerivedQuantityClient {
 	 */
 	public void updateInstance(String derivedIRI) {
 		// keep track of quantities to avoid circular dependencies
-		List<String> derivedList = new ArrayList<>(); 
-		updateInstance(derivedIRI, derivedList);
+		// String of the map is the derived/input IRI, Integer is the status
+		// assignment of the status follows the depth-first search principle
+		// a vertex is assigned status = 1 when first discovered
+		// then assigned status = 2 after it has no inputs
+		// there is a circular dependency when a derived quantity accesses an input with status=1, accessing an input
+		// with status =2 is fine
+		Map<String,Integer> vertexList = new HashMap<>();
+		updateInstance(derivedIRI, vertexList);
 	}
 	
 	/**
@@ -92,10 +100,10 @@ public class DerivedQuantityClient {
 	public boolean validateDerived(String derived) {
 		boolean valid = true;
 		// keep track of quantities to avoid circular dependencies
-		List<String> derivedList = new ArrayList<>();
+		Map<String,Integer> vertexList = new HashMap<>();
         
 		try {
-			validateDerived(derived, derivedList);
+			validateDerived(derived, vertexList);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			valid = false;
@@ -112,20 +120,29 @@ public class DerivedQuantityClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void updateInstance(String instance, List<String> derivedList) {
+	private void updateInstance(String instance, Map<String,Integer> vertexList) {
 		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
 		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
 		
-		for (String inputOrDerived : inputsAndDerived) {
-			if (!derivedList.contains(inputOrDerived)) {
-				// it's ok to add duplicate instances into the list, happens when the code is going through its inputs, but does nothing
-				derivedList.add(instance);
-				updateInstance(inputOrDerived, derivedList);
+		if (!vertexList.containsKey(instance)) {
+			vertexList.put(instance, 1);
+		}
+		
+		for (String input : inputsAndDerived) {
+			if (vertexList.containsKey(input)) {
+				if (vertexList.get(input) == 1) { 
+					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
+					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
+				} else {
+					updateInstance(input, vertexList);
+				}
 			} else {
-				LOGGER.error("DerivedQuantityClient: Circular dependency detected");
-				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
+				updateInstance(input, vertexList);
 			}
 		}
+		
+		// modify status to "finished"
+		vertexList.replace(instance, 1, 2);
 
 		// inputs required by the agent
 		String[] inputs = DerivedQuantitySparql.getInputs(this.kbClient, instance);
@@ -209,18 +226,27 @@ public class DerivedQuantityClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void validateDerived(String instance, List<String> derivedList) {
+	private void validateDerived(String instance, Map<String,Integer> vertexList) {
 		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
-		for (String inputOrDerived : inputsAndDerived) {
-			if (!derivedList.contains(inputOrDerived)) {
-				// it's ok to add duplicate instances into the list, happens when the code is going through its inputs, but does nothing
-				derivedList.add(instance);
-				validateDerived(inputOrDerived, derivedList);
+		if (!vertexList.containsKey(instance)) {
+			vertexList.put(instance, 1);
+		}
+		
+		for (String input : inputsAndDerived) {
+			if (vertexList.containsKey(input)) {
+				if (vertexList.get(input) == 1) { 
+					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
+					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
+				} else {
+					updateInstance(input, vertexList);
+				}
 			} else {
-				LOGGER.error("DerivedQuantityClient: Circular dependency detected");
-				throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
+				updateInstance(input, vertexList);
 			}
 		}
+		
+		// modify status to "finished"
+		vertexList.replace(instance, 1, 2);
 		
 		// check that for each derived quantity, there is a timestamp to compare to
 		String[] inputs = DerivedQuantitySparql.getInputs(this.kbClient, instance);

@@ -306,7 +306,9 @@ public class DerivedQuantitySparql{
 	}
 	
 	/**
-	 * in addition to the inputs, this includes the derived quantity instances that the input is part of
+	 * This is used at the stage to detect circular dependency
+	 * if the input is part of a derived quantity, this will add the derived instance
+	 * if the input is not a derived instance, it will add the input itself
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
@@ -331,12 +333,12 @@ public class DerivedQuantitySparql{
 		List<String> inputsAndDerived = new ArrayList<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
-			inputsAndDerived.add(queryResult.getJSONObject(i).getString(inputQueryKey));
-			
 			// some inputs may be a derived quantity
 			String derivedIRI = queryResult.getJSONObject(i).optString(derivedQueryKey);
 			if (derivedIRI.length() > 0) {
 				inputsAndDerived.add(derivedIRI);
+			} else {
+				inputsAndDerived.add(queryResult.getJSONObject(i).getString(inputQueryKey));
 			}
 		}
 		
