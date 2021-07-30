@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.mockito.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -131,6 +132,7 @@ public class TimeSeriesClientTest {
         Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).
                 initTS(Mockito.anyString(), Mockito.anyList(), Mockito.anyString(), Mockito.anyString());
         setRDFMock();
+        
         try {
             testClientWithMocks.initTimeSeries(dataIRIs, dataClasses, timeUnit);
             Assert.fail();
@@ -160,6 +162,7 @@ public class TimeSeriesClientTest {
         Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
         rdbClientField.setAccessible(true);
         rdbClientField.set(testClientWithMocks, mockRDBClient);
+        
         try {
             testClientWithMocks.initTimeSeries(dataIRIs, dataClasses, timeUnit);
             Assert.fail();
@@ -267,6 +270,129 @@ public class TimeSeriesClientTest {
             Assert.assertTrue(e.getMessage().contains("Inconsistent state created when deleting time series"));
             Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
             Assert.assertTrue(e.getMessage().contains(dataIRI));
+        }
+    }
+    
+    @Test
+    public void testDeleteTimeSeriesNoTSIRI() throws NoSuchFieldException, IllegalAccessException {
+    	String tsIRI = "tsIRI";
+    	// Set-up stubbing
+        Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(false);
+        setRDFMock();      
+        
+        try {
+            testClientWithMocks.deleteTimeSeries(tsIRI);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("does not exist in KG"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(tsIRI));
+        }
+    }
+
+    @Test
+    public void testDeleteTimeSeriesExceptionAfterStep1() throws NoSuchFieldException, IllegalAccessException {
+    	String tsIRI = "tsIRI";
+        // Set-up stubbing
+    	Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
+        Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
+        Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).removeTimeSeries(tsIRI);
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.deleteTimeSeries(tsIRI);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("was not deleted"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(tsIRI));
+            Assert.assertEquals("KG down", e.getCause().getMessage());
+            Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+        }
+    }
+
+    @Test
+    public void testDeleteTimeSeriesExceptionAfterStep2() throws NoSuchFieldException, IllegalAccessException {
+    	String tsIRI = "tsIRI";
+        // KG reversion works //
+        // Set-up stubbing
+    	Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
+        Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
+        Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
+        setRDFMock();
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0));
+        setRDBMock();
+        
+        try {
+            testClientWithMocks.deleteTimeSeries(tsIRI);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("was not deleted"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(tsIRI));
+            Assert.assertEquals("RDB down", e.getCause().getMessage());
+            Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+        }
+        
+        // KG reversion does not work //
+        // Set-up stubbing
+    	Mockito.when(mockSparqlClient.checkTimeSeriesExists(tsIRI)).thenReturn(true);
+        Mockito.when(mockSparqlClient.getAssociatedData(tsIRI)).thenReturn(dataIRIs);
+        Mockito.when(mockSparqlClient.getTimeUnit(tsIRI)).thenReturn(timeUnit);
+        Mockito.doNothing().when(mockSparqlClient).removeTimeSeries(tsIRI);
+        Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient)
+                .initTS(Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteTimeSeriesTable(dataIRIs.get(0));
+        
+        try {
+            testClientWithMocks.deleteTimeSeries(tsIRI);
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("Inconsistent state created when deleting time series"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertTrue(e.getMessage().contains(tsIRI));
+        }
+    }
+    
+    @Test
+    public void testDeleteAllException() throws NoSuchFieldException, IllegalAccessException {
+        // KG Exception //
+        // Set-up stubbing
+        Mockito.doThrow(new JPSRuntimeException("KG down")).when(mockSparqlClient).removeAllTimeSeries();
+        setRDFMock();
+        
+        try {
+            testClientWithMocks.deleteAll();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("Not all timeseries were deleted from KG!"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertEquals("KG down", e.getCause().getMessage());
+            Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
+        }
+        // RDB Exception //
+        // Set-up stubbing
+        Mockito.doNothing().when(mockSparqlClient).removeAllTimeSeries();
+        setRDFMock();
+        Mockito.doThrow(new JPSRuntimeException("RDB down")).when(mockRDBClient).deleteAll();
+        setRDBMock();
+        
+        try {
+            testClientWithMocks.deleteAll();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertTrue(e.getMessage().contains("Not all timeseries were deleted from database!"));
+            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
+            Assert.assertEquals("RDB down", e.getCause().getMessage());
+            Assert.assertEquals(JPSRuntimeException.class, e.getCause().getClass());
         }
     }
 
