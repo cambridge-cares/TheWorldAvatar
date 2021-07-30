@@ -6,6 +6,8 @@ services:
     image: derivedagent:1.0.0
     build:
       context: ./
+    volumes:
+      - external_maven_repo:/root/.m2
     ports:  
       - "8001:8000"
       - "8081:8080" 
@@ -50,4 +52,6 @@ volumes:
     name: "blazegraph_data"
   postgres_data:
     name: "postgres_data"
+  external_maven_repo:
+    name: "external_maven_repo" 
   
