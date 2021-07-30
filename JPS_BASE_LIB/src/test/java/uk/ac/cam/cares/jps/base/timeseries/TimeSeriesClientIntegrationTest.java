@@ -21,8 +21,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static org.mockito.Mockito.*;
 
-//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
-//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
 	
