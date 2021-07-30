@@ -6,7 +6,7 @@
         "Atom_11-11-111_C1",
         "Atom_11-11-111_C2"
     ],
-    "ScanCoordinateType": "Distance coordinate",
+    "ScanCoordinateType": "DistanceCoordinate",
     "ScanCoordinateUnit": "Angstrom",
     "EntryUUID": "OPStestID-111-111-11",
     "EntryIRI": "PotentialEnergySurfaceScan_OPStestID-111-111-11",
