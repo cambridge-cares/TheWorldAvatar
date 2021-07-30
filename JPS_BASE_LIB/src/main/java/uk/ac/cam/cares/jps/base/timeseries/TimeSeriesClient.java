@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -59,7 +58,7 @@ public class TimeSeriesClient<T> {
      * Load properties for RDB client
      * @param filepath: Absolute path to properties file with respective information
      */
-    public void loadRdbConfigs(String filepath) throws IOException {    	
+    private void loadRdbConfigs(String filepath) throws IOException {
     	rdbClient.loadRdbConfigs(filepath);
     }
     
@@ -67,7 +66,7 @@ public class TimeSeriesClient<T> {
      * Load properties for RDF/SPARQL client
      * @param filepath: Absolute path to properties file with respective information
      */
-    public void loadSparqlConfigs(String filepath) throws IOException {    	
+    private void loadSparqlConfigs(String filepath) throws IOException {
     	rdfClient.loadSparqlConfigs(filepath);   
     }
     
