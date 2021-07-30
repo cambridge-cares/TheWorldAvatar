@@ -90,27 +90,27 @@ public class TimeSeriesSparql {
 				throw new JPSRuntimeException("1");
 			}
 			
-			// Load properties in try-with-resource block to ensure closing of InputStream
-			try (InputStream input = new FileInputStream(file)) {
-				
-				// Load properties file from specified path
-	            Properties prop = new Properties();
-	            prop.load(input);
-            
-	            // Get the property values and assign
-	            if (prop.containsKey("sparql.query.endpoint")) {
-	            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-	            } else {
-	            	throw new JPSRuntimeException("2");
-	            }
-	            if (prop.containsKey("sparql.update.endpoint")) {
-	            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-	            } else {
-	            	throw new JPSRuntimeException("3");
-	            }
-			} catch (Exception e) {
-				throw e;
-			}
+			// Open input stream from file
+			InputStream input = new FileInputStream(file);
+							
+			// Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+            // Close the input stream
+            input.close();
+        
+            // Get the property values and assign
+            if (prop.containsKey("sparql.query.endpoint")) {
+            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+            } else {
+            	throw new JPSRuntimeException("2");
+            }
+            if (prop.containsKey("sparql.update.endpoint")) {
+            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+            } else {
+            	throw new JPSRuntimeException("3");
+            }
+
 		} catch (Exception e) {
 			if (e instanceof JPSRuntimeException) {
 				String m = "";

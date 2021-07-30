@@ -2,7 +2,9 @@ package uk.ac.cam.cares.jps.base.timeseries.test;
 
 
 import org.jooq.SQLDialect;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import java.io.*;
@@ -12,6 +14,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
@@ -22,9 +25,36 @@ import java.util.List;
 
 public class TimeSeriesRDBClientTest {
 
-    // Temporary folder to place a properties file
-    @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    @ClassRule
+    // Temporary folder to place a properties file (same file for all potential tests)
+    public static TemporaryFolder folder = new TemporaryFolder();
+    
+    @AfterClass
+    public static void deleteTemporaryFolder() throws IOException {
+    	// Normally junit temporary folder would take care of this; however no exception is thrown if
+    	// deletion fails (as AfterClass method); therefore, it is safer to delete an verify
+    	
+		// delete property file to clear folder
+		File file = new File(Paths.get(folder.getRoot().toString(), "timeseries.properties").toString());
+		System.out.println(file.exists());
+		if (file.exists()) {
+			file.delete();
+		}
+		
+		// delete empty folder
+		File dir = new File(folder.getRoot().toString());
+		System.out.println(dir.exists());
+		if (dir.exists()) {
+			dir.delete();
+		}		
+		
+		if (folder.getRoot().exists()) {
+			System.out.println("Temporary folder deletion failed: " + folder.getRoot().toString());
+		} else {
+			System.out.println("Temporary folder successfully deleted");
+		}
+
+    }
 
     @Test
     public void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -109,13 +139,14 @@ public class TimeSeriesRDBClientTest {
     @Test
     public void testLoadRdbConfig () throws IOException {
     	TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-    	// Filepath to not existing file
-    	String filepath = "no_file_with_that_name_1234.properties";
+    	// Filepath to not yet created file in temporary test folder
+    	String filepath = Paths.get(folder.getRoot().toString(), "timeseries.properties").toString();
     	// JPSRuntime error messages
     	String m1 = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
     	String m2 = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
     	String m3 = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
     	String m4 = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
+    	
     	// Test for non-existing properties file
     	try {
     		client.loadRdbConfigs(filepath);
@@ -123,8 +154,9 @@ public class TimeSeriesRDBClientTest {
     	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m1, e.getMessage());
     	}
+    	
     	// Test for missing Rdb URL by creating a file only containing user and password
-    	filepath = writePropertyFile(Arrays.asList("db.user=test_user", "db.password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
     	try {
     		client.loadRdbConfigs(filepath);
@@ -132,9 +164,9 @@ public class TimeSeriesRDBClientTest {
     	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m2, e.getMessage());
     	}
-    	deletePropertyFile(filepath);
+
     	// Test for missing user name by creating a file only containing url and password
-        filepath = writePropertyFile(Arrays.asList("db.url=test_url", "db.password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.password=test_password"));
 	    // Try loading RDB configs
     	try {
     		client.loadRdbConfigs(filepath);
@@ -142,9 +174,9 @@ public class TimeSeriesRDBClientTest {
     	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m3, e.getMessage());
     	}
-    	deletePropertyFile(filepath);
+
     	// Test for missing password  by creating a file only containing url and user
-        filepath = writePropertyFile(Arrays.asList("db.url=test_url", "db.user=test_user"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user"));
 	    // Try loading RDB configs
     	try {
     		client.loadRdbConfigs(filepath);
@@ -152,9 +184,9 @@ public class TimeSeriesRDBClientTest {
     	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m4, e.getMessage());
     	}
-        deletePropertyFile(filepath);
+
     	// Test for proper URL, username and password
-        filepath = writePropertyFile(Arrays.asList("db.url=test_url", "db.user=test_user", "db.password=test_password"));
+    	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
     	try {
     		client.loadRdbConfigs(filepath);
@@ -165,21 +197,15 @@ public class TimeSeriesRDBClientTest {
     	Assert.assertEquals("test_user", client.getRdbUser());
     }
     
-    private String writePropertyFile(List<String> properties) throws IOException {
-        // Create empty properties file
-    	File file = folder.newFile("timeseries.properties");
-    	FileWriter writer = new FileWriter(file);
+    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
+        // Overwrite potentially existing properties file
+    	FileWriter writer = new FileWriter(filepath, false);
     	// Populate file
     	for (String s : properties) {
     		writer.write(s + "\n");
     	}
     	// Close the file and return the file
     	writer.close();
-    	return file.getAbsolutePath();
     }
 
-    private void deletePropertyFile(String filepath) {
-        File file = new File(filepath);
-        file.delete();
-    }
 }

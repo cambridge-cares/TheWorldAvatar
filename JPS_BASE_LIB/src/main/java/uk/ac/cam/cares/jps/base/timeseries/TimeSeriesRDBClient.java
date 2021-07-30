@@ -95,13 +95,15 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
 	public void loadRdbConfigs(String filepath) throws IOException {
+		
 		try {
 			File file = new File(filepath);
 			
 			if (!file.exists()) {
 				throw new JPSRuntimeException("1");
 			}
-				
+			
+			// Open input stream from file
 			InputStream input = new FileInputStream(file);
 			
 			// Load properties file from specified path
