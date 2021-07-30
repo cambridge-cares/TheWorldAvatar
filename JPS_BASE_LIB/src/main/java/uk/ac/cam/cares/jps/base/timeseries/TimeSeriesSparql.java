@@ -59,7 +59,7 @@ public class TimeSeriesSparql {
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
 
     // Fields for class specific exceptions
-	private final String exceptionPrefix = this.getClass().toString() + ": ";
+	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
 
     /**
      * Standard constructor
@@ -116,13 +116,13 @@ public class TimeSeriesSparql {
 				String m = "";
 				switch (e.getMessage()) {
 					case "1":
-						m = "TimeSeriesSparql: No properties file found at specified filepath: " + filepath;
+						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
 						break;
 					case "2":
-						m = "TimeSeriesSparql: Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ";
+						m = exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ";
 						break;
 					case "3":
-						m = "TimeSeriesSparql: Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ";
+						m = exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ";
 						break;
 					default:
 						throw new JPSRuntimeException(e.getMessage());							

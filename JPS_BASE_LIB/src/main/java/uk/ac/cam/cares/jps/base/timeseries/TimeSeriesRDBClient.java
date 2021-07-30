@@ -56,7 +56,9 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     private static final Field<String> tsIRIcolumn = DSL.field(DSL.name("timeseriesIRI"), String.class);
     private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
     private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
-
+    // Exception prefix
+ 	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
+ 	// Allowed aggregation function
 	private enum AggregateFunction {
 		AVERAGE,
 		MAX,
@@ -134,16 +136,16 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				String m = "";
 				switch (e.getMessage()) {
 					case "1":
-						m = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
+						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
 						break;
 					case "2":
-						m = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
+						m = exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ";
 						break;
 					case "3":
-						m = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
+						m = exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ";
 						break;
 					case "4":
-						m = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
+						m = exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ";
 						break;
 					default:
 						throw new JPSRuntimeException(e.getMessage());							
@@ -182,13 +184,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			// Check if any data has already been initialised (i.e. is associated with different tsIRI)
 			for (String s : dataIRI) {
 				if(checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> already has a time series instance (i.e. tsIRI)");
+					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> already has a time series instance (i.e. tsIRI)");
 				}
 			}
 	
 			// Ensure that there is a class for each data IRI
 			if (dataIRI.size() != dataClass.size()) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: Length of dataClass is different from number of data IRIs");
+				throw new JPSRuntimeException(exceptionPrefix + "Length of dataClass is different from number of data IRIs");
 			}
 	
 			// Assign column name for each dataIRI; name for time column is fixed
@@ -211,7 +213,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -236,13 +238,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			
 			// Check if central database lookup table exists
 			if (context.meta().getTables(dbTableName).size() == 0) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet");
+				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
 			}
 	    	
 	    	// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 			for (String s : dataIRI) {
 				if(!checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)"); 
+					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> does not have a time series instance (i.e. tsIRI)"); 
 				}
 			}
 	    	
@@ -265,7 +267,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -292,13 +294,13 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			
 			// Check if central database lookup table exists
 			if (context.meta().getTables(dbTableName).size() == 0) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: Central RDB lookup table has not been initialised yet");
+				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
 			}
 
 			// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 			for (String s : dataIRI) {
 				if(!checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)");
+					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> does not have a time series instance (i.e. tsIRI)");
 				}
 			}
 	    	
@@ -351,7 +353,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -409,7 +411,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
@@ -425,7 +427,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -448,7 +450,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
@@ -464,7 +466,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -489,7 +491,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
 			}
 			
 			// Retrieve RDB table for dataIRI
@@ -504,7 +506,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -526,7 +528,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
 			}
 			
 			// Get time series RDB table		
@@ -578,7 +580,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
 			}
 
 			// Retrieve RDB table for dataIRI
@@ -598,7 +600,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();
@@ -656,7 +658,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
         	System.out.println("Connecting successful: " + this.rdbURL);        	
 		} catch (Exception e) {
 			System.out.println("Connecting failed: " + this.rdbURL);
-			throw new JPSRuntimeException("Establishing database connection failed");
+			throw new JPSRuntimeException(exceptionPrefix + "Establishing database connection failed");
 		}
     }
 	
@@ -669,7 +671,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 			System.out.println("Disconnecting successful"); 
 		} catch (Exception e) {
 			System.out.println("Disconnecting failed");
-			throw new JPSRuntimeException("Closing database connection failed");
+			throw new JPSRuntimeException(exceptionPrefix + "Closing database connection failed");
 		}
 	}
 	
@@ -789,7 +791,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
     		for (int i = 1; i < dataIRI.size(); i++) {
     			String curTsIRI = getTimeSeriesIRI(dataIRI.get(i));
     			if (!curTsIRI.contentEquals(tsIRI)) {
-    				throw new JPSRuntimeException("TimeSeriesRDBClient: Provided data is not within the same RDB table");
+    				throw new JPSRuntimeException(exceptionPrefix + "Provided data is not within the same RDB table");
     			}
     		}
     	}
@@ -870,7 +872,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 
 			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
 			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException("TimeSeriesRDBClient: <" + dataIRI + "> does not have a time series instance");
+				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
 			}
 
 			// Retrieve table corresponding to the time series connected to the data IRI
@@ -888,7 +890,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				case MIN:
 					return context.select(min(columnField)).from(table).fetch(min(columnField)).get(0);
 				default:
-					throw new JPSRuntimeException("Aggregate function "+aggregateFunction.name()+" not valid!");
+					throw new JPSRuntimeException(exceptionPrefix + "Aggregate function "+aggregateFunction.name()+" not valid!");
 			}
 
 		} catch (Exception e) {
@@ -897,7 +899,7 @@ public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
 				throw e;
 			} else {
 				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
+				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 			}
 		} finally {	
 			disconnect();

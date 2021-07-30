@@ -167,7 +167,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 		
 	@Test
-	@Ignore
+	 
 	public void testInitTimeSeriesWithoutExceptions() {
 		
 		// Retrieve RDB and RDF/SPARQL clients
@@ -196,7 +196,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testInitTimeSeriesWithKGInitException() {
 	
 		// Interrupt triple store connection
@@ -212,7 +212,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testInitTimeSeriesWithUnavailableRDB()  {
 	
 		// Interrupt database connection
@@ -228,7 +228,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testInitTimeSeriesWithUnavailableRDBAndKGRevertException() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		
 		// Retrieve the value of the private field 'rdfClient' of the time series client
@@ -256,7 +256,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testDeleteTimeSeriesWithoutExceptions() {
 		
 		// Retrieve RDB and RDF/SPARQL clients
@@ -302,7 +302,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testDeleteTimeSeriesWithUnavailableRDB() {
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
@@ -334,7 +334,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testDeleteTimeSeriesWithUnavailableKG() {
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
@@ -356,7 +356,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testDeleteTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
@@ -396,7 +396,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	@Ignore
+	 
 	public void testDeleteTimeSeriesWithKGRevertException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		

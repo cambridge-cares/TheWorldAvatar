@@ -332,7 +332,7 @@ public class TimeSeriesSparqlTest {
         String errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains(tsIRI1));
         Assert.assertTrue(errorMessage.contains("already in the Knowledge Graph"));
-        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.toString()));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName().toString()));
         // Trying to init different time series but same data IRI should result in an exception
         exception = Assert.assertThrows(JPSRuntimeException.class, () ->
                 sparqlClient.initTS(tsIRI2, dataIRI1, dbURL, timeUnit));
@@ -340,7 +340,7 @@ public class TimeSeriesSparqlTest {
         Assert.assertTrue(errorMessage.contains(tsIRI1));
         Assert.assertTrue(errorMessage.contains(dataIRI1.get(0)));
         Assert.assertTrue(errorMessage.contains("is already attached to time series"));
-        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.toString()));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName().toString()));
 	}
 
     @Test
