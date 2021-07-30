@@ -28,8 +28,8 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import static org.mockito.Mockito.*;
 
-@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
 	
@@ -163,17 +163,12 @@ public class TimeSeriesClientIntegrationTest {
 	}
 		
 	@Test
-	public void testInitTimeSeriesWithoutExceptions() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testInitTimeSeriesWithoutExceptions() {
 		
-		// Retrieve the value of the private field 'rdfClient' of the time series client
-		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
-		RDFClient.setAccessible(true);
-		TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
-		// Retrieve the value of the private field 'rdbClient' of the time series client
-		Field RDBClient = tsClient.getClass().getDeclaredField("rdbClient");
-		RDBClient.setAccessible(true);
-		TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) RDBClient.get(tsClient);
-		
+		// Retrieve RDB and RDF/SPARQL clients
+		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
+		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();	
+				
 		// Verify kb is initially empty
 		Assert.assertEquals(0, rdfClient.countTS());
 		
@@ -191,7 +186,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	public void testInitTimeSeriesWithUnavailableKG() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testInitTimeSeriesWithUnavailableKG() {
 	
 		// Interrupt triple store connection
 		blazegraph.stop();
@@ -206,7 +201,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	public void testInitTimeSeriesWithUnavailableRDB() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	public void testInitTimeSeriesWithUnavailableRDB()  {
 	
 		// Interrupt triple store connection
 		postgres.stop();
@@ -223,7 +218,6 @@ public class TimeSeriesClientIntegrationTest {
 	@Test
 	public void testInitTimeSeriesWithUnavailableRDBAndKGRevertIssues() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		
-		// mh807: use get method
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
@@ -247,6 +241,35 @@ public class TimeSeriesClientIntegrationTest {
 			Assert.assertTrue(e.getMessage().contains("Inconsistent state created when initialising time series"));
 		}		
 	}
+	
+//	@Test
+//	public void testDeleteTimeSeries() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+//		
+//		// Retrieve the value of the private field 'rdfClient' of the time series client
+//		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+//		RDFClient.setAccessible(true);
+//		TimeSeriesSparql rdfClient = (TimeSeriesSparql) RDFClient.get(tsClient);
+//		// Retrieve the value of the private field 'rdbClient' of the time series client
+//		Field RDBClient = tsClient.getClass().getDeclaredField("rdbClient");
+//		RDBClient.setAccessible(true);
+//		TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) RDBClient.get(tsClient);
+//		
+//		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
+//		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+//		tsClient.initTimeSeries(dataIRI_3, dataClass_3, timeUnit);
+//		
+//		// Verify correct instantiation in both kb and database
+//		Assert.assertEquals(2, rdfClient.countTS());
+//		TimeSeries<Instant> ts1 = rdbClient.getTimeSeries(dataIRI_1);
+//		Assert.assertEquals(3, ts1.getDataIRIs().size());
+//		TimeSeries<Instant> ts2 = rdbClient.getTimeSeries(dataIRI_3);
+//		Assert.assertEquals(1, ts2.getDataIRIs().size());
+//		
+//		// Delete first time series
+//		//String tsIRI = tsClient;
+//		//tsClient.deleteTimeSeries(tsIRI);
+//		
+//	}
 	
 }
 

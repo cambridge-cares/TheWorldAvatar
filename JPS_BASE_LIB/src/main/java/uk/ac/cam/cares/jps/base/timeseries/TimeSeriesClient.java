@@ -195,7 +195,7 @@ public class TimeSeriesClient<T> {
     	
 		// Check whether tsIRI exists
 		if (!rdfClient.checkTimeSeriesExists(tsIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + tsIRI + " does not exist.");
+			throw new JPSRuntimeException(exceptionPrefix + tsIRI + " does not exist in KG.");
 		}
 		
 		// Extract "backup" information (dataIRIs, TimeUnit, DBUrl) for potential later re-instantiation (in case RDB deletion fails)
