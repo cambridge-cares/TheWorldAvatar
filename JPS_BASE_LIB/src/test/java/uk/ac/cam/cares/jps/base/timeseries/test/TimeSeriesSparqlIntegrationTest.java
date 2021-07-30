@@ -45,7 +45,7 @@ public class TimeSeriesSparqlIntegrationTest {
 	}
 	
 	@After
-	public static void clearKb() {
+	public void clearKb() {
 		// Clear entire knowledge base
 		sparqlClient.removeAllTimeSeries();
 	}

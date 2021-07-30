@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
  * @author Kok Foong Lee
  */
 
-public class TimeSeriesRDBClient<T> implements TimeSeriesClientInterface<T>{
+public class TimeSeriesRDBClient<T> {
 	
 	// URL and credentials for the relational database
 	private String rdbURL = null; 

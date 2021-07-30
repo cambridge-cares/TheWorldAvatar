@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import static org.mockito.Mockito.*;
 
-// ("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
 //		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
@@ -396,7 +396,7 @@ public class TimeSeriesClientIntegrationTest {
 	}
 	
 	@Test
-	 
+	@Ignore
 	public void testDeleteTimeSeriesWithKGRevertException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		

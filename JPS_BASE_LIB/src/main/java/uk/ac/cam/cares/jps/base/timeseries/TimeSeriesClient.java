@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -18,7 +19,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  */
 
-public class TimeSeriesClient<T> {
+public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	// Associated RDB and RDF/SPARQL clients
 	private TimeSeriesRDBClient<T> rdbClient;
 	private TimeSeriesSparql rdfClient;

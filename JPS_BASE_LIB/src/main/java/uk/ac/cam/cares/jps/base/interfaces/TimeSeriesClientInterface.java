@@ -33,7 +33,7 @@ public interface TimeSeriesClientInterface<T> {
 	 * @param lowerBound
 	 * @param upperBound
 	 */
-	void deleteRows(String dataIRI, T lowerBound, T upperBound);
+	void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound);
 	
 	/**
 	 * deletes the entire time series data
