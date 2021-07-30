@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 
 import java.lang.reflect.Field;
@@ -22,7 +22,6 @@ import static org.jooq.impl.DSL.selectFrom;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-
 
 @Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
 		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")

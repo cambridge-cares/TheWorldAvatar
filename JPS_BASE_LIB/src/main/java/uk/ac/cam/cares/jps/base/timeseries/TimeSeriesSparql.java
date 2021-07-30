@@ -81,7 +81,7 @@ public class TimeSeriesSparql {
 	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
-	public void loadSparqlConfigs(String filepath) throws IOException {
+	void loadSparqlConfigs(String filepath) throws IOException {
 		
 		try {
 			File file = new File(filepath);
@@ -161,7 +161,7 @@ public class TimeSeriesSparql {
 	 * @param tsIRI: timeseries IRI provided as string
 	 * @return True if an the timeseries instance has a defined time unit, false otherwise
 	 */
-    private boolean checkTimeUnitExists(String tsIRI) {
+    public boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
@@ -174,7 +174,7 @@ public class TimeSeriesSparql {
      * @param dbURL: URL of the database where the timeseries data is stored provided as string
      * @param timeUnit: the time unit of the time series (optional)
      */    
-    public void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+    void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
     	// Construct time series IRI
     	Iri tsIRI;
 		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
@@ -248,7 +248,7 @@ public class TimeSeriesSparql {
      * @param dataIRI: data IRI provided as string
      * @param tsIRI: time series IRI provided as string
      */
-	public void insertTimeSeriesAssociation(String dataIRI, String tsIRI) {
+	void insertTimeSeriesAssociation(String dataIRI, String tsIRI) {
 		
 		// Check that the data IRI is not attached to a different time series IRI already
 		String ts = getTimeSeries(dataIRI);
@@ -272,7 +272,7 @@ public class TimeSeriesSparql {
      * Remove relationship between dataIRI and associated time series from kb
      * @param dataIRI: data IRI provided as string
      */
-	public void removeTimeSeriesAssociation(String dataIRI) {
+	void removeTimeSeriesAssociation(String dataIRI) {
 		
 		// Check whether associated time series has further data associated with it
 		String tsIRI = getTimeSeries(dataIRI);
@@ -297,7 +297,7 @@ public class TimeSeriesSparql {
      * Remove time series and all associated connections from kb
      * @param tsIRI: timeseries IRI provided as string
      */
-	public void removeTimeSeries(String tsIRI) {
+	void removeTimeSeries(String tsIRI) {
 
 		if (checkTimeSeriesExists(tsIRI)) {
 			
@@ -324,7 +324,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Remove all time series from kb
 	 */
-	public void removeAllTimeSeries() {
+	void removeAllTimeSeries() {
 		// Get all time series in kb
 		List<String> tsIRI = getAllTimeSeries();
 		

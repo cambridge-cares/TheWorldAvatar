@@ -1,18 +1,13 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.mockito.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.io.IOException;
 import java.lang.reflect.Field;

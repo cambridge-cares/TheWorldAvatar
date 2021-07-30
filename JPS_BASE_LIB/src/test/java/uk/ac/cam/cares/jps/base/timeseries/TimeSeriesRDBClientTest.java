@@ -1,17 +1,15 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 
 import org.jooq.SQLDialect;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import java.io.*;
 
 import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 import java.lang.reflect.Field;
 import java.nio.file.Paths;

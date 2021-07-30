@@ -1,4 +1,5 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
+
 
 import java.util.Arrays;
 import java.util.Collections;

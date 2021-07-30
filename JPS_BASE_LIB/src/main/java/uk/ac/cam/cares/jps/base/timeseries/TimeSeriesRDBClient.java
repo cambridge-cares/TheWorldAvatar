@@ -96,7 +96,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
 	 * @param filepath: Absolute path to timeseries properties file
 	 */
-	public void loadRdbConfigs(String filepath) throws IOException {
+	void loadRdbConfigs(String filepath) throws IOException {
 		
 		try {
 			File file = new File(filepath);
@@ -165,7 +165,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataClass: list with the corresponding Java class (typical String, double or int) for each data IRI
 	 * @param tsIRI: IRI of the timeseries provided as string
 	 */
-	public void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
+	void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		
 		// Generate UUID as unique RDB table name
 		String tsTableName = UUID.randomUUID().toString();		
@@ -226,7 +226,7 @@ public class TimeSeriesRDBClient<T> {
 	 * If certain columns within the table are not provided, they will be nulls
 	 * @param ts: timeseries object to add
      */
-	public void addTimeSeriesData(TimeSeries<T> ts) {
+	void addTimeSeriesData(TimeSeries<T> ts) {
 		
     	List<String> dataIRI = ts.getDataIRIs();
     	
@@ -481,7 +481,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param lowerBound: start timestamp from which to delete data
 	 * @param upperBound: end timestamp until which to delete data
 	 */
-	public void deleteRows(String dataIRI, T lowerBound, T upperBound) {
+	void deleteRows(String dataIRI, T lowerBound, T upperBound) {
 		
 		// Initialise connection and set jOOQ DSL context
 		connect();
@@ -518,7 +518,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Delete individual time series (i.e. data for one dataIRI only)
 	 * @param dataIRI: data IRI provided as string
 	 */
-	public void deleteTimeSeries(String dataIRI) {
+	void deleteTimeSeries(String dataIRI) {
 		
 		// Initialise connection and set jOOQ DSL context
 		connect();
@@ -570,7 +570,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Delete all time series information related to a dataIRI (i.e. entire RDB table and entries in central table)
 	 * @param dataIRI: data IRI provided as string
 	 */
-	public void deleteTimeSeriesTable(String dataIRI) {
+	void deleteTimeSeriesTable(String dataIRI) {
 		
 		// Initialise connection and set jOOQ DSL context
 		connect();
@@ -611,7 +611,7 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Delete all time series RDB tables and central lookup table
 	 */
-	public void deleteAll() {
+	void deleteAll() {
 
 		// Initialise connection and set jOOQ DSL context
 		connect();

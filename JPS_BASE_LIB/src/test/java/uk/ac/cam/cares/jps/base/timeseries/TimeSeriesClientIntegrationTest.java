@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 
 import java.lang.reflect.Field;
@@ -18,15 +18,11 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import static org.mockito.Mockito.*;
 
-@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
+//@Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesClientIntegrationTest {
 	
