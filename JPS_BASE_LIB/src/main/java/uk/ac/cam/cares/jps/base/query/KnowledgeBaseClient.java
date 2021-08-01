@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
@@ -233,19 +238,33 @@ public class KnowledgeBaseClient{
 	 * But if requesting http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service 
 	 * then percentage encoding results into http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service
 	 * and a consecutive Tomcat error.
-	 * To avoid %23 instead of #, we simply skip the #-part by applying this methode to the requested Url.
+	 * To avoid %23 instead of #, we simply skip the #-part by applying this method to the requested Url.
 	 * 
 	 * @return
+	 * @throws URISyntaxException 
+	 * @throws UnsupportedEncodingException 
 	 */
 	public static String cutHashFragment(String url) {
+
 		if (url == null) {
 			return null;
 		}
-		int i = url.lastIndexOf("#");
-		if (i >= 0) {
-			return url.substring(0, i);
+		
+		URI uri = null;
+		try {
+			uri = new URI(URLDecoder.decode(url,"UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return url;
+		
+		if(uri.getScheme()!=null) {
+			return uri.getScheme() + ":" + uri.getSchemeSpecificPart();	
+		}else {
+			return uri.getSchemeSpecificPart();
+		}
 	}
-
 }
