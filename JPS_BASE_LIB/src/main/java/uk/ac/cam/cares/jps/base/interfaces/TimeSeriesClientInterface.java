@@ -9,7 +9,7 @@ public interface TimeSeriesClientInterface<T> {
 	 * appends given time series data to your database
 	 * @param ts
 	 */
-	void addTimeSeries(TimeSeries<T> ts);
+	void addTimeSeriesData(TimeSeries<T> ts);
 	
 	/**
 	 * returns the entire time series
