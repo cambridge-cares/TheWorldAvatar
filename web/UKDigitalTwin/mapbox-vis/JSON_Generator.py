@@ -225,8 +225,8 @@ def query_to_geoJSON(endpoint, class_label):
  # performing SPARQL query  
   # sparql_sdg= SPARQLWrapper('http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql')
   # TODO: Modify the endpoint 
-  # sparql_pow= SPARQLWrapper('https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant')
-  sparql_pow= SPARQLWrapper('https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG')
+  sparql_pow= SPARQLWrapper('https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG_demo')
+  # sparql_pow= SPARQLWrapper('https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG')
   sparql_pow.setReturnFormat(JSON) 
   
   # TODO: query string passing 
