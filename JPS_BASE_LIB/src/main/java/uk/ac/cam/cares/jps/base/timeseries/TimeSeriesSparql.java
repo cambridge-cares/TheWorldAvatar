@@ -431,16 +431,8 @@ public class TimeSeriesSparql {
 		TriplePattern queryPattern = data.has(hasTimeSeries, iri(tsIRI));
 		
 		query.select(data).where(queryPattern).prefix(prefix_ontology);
-		
-		kbClient.setQuery(query.getQueryString());
-		JSONArray queryResult = kbClient.executeQuery();
-		
-		List<String> dataIRI = new ArrayList<String>();
-		for (int i = 0; i < queryResult.length(); i++) {
-			dataIRI.add(queryResult.getJSONObject(i).getString(queryString));
-		}
-		
-		return dataIRI;
+
+		return getInstances(query, queryString);
 	}
 	
     /**
@@ -455,15 +447,26 @@ public class TimeSeriesSparql {
 		TriplePattern queryPattern = ts.isA(TimeSeries);
 		
 		query.select(ts).where(queryPattern).prefix(prefix_ontology);
-		
-		kbClient.setQuery(query.getQueryString());
+
+		return getInstances(query, queryString);
+	}
+
+	/**
+	 * Excutes a query that selects all individuals in the kb that fulfill a certain pattern
+	 * @param instanceSelectQuery The query to execute. Should be a select query with a single triple pattern where
+	 *                               the subject represents the instance to retrieve.
+	 * @param placeholder The placeholder used in the select query for the instance to retrieve provided as string without ?
+	 * @return List of all instances' IRIs in the knowledge base provided as string
+	 */
+	private List<String> getInstances(SelectQuery instanceSelectQuery, String placeholder) {
+		kbClient.setQuery(instanceSelectQuery.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
-		
-		List<String> tsIRI = new ArrayList<String>();
+
+		List<String> instanceIRIs = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			tsIRI.add(queryResult.getJSONObject(i).getString(queryString));
+			instanceIRIs.add(queryResult.getJSONObject(i).getString(placeholder));
 		}
-		
-		return tsIRI;
+
+		return instanceIRIs;
 	}
 }
