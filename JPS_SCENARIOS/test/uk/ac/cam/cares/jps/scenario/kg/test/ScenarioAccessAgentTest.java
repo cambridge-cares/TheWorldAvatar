@@ -36,6 +36,7 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
+import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
 import uk.ac.cam.cares.jps.scenario.kg.ScenarioAccessAgent;
 
 public class ScenarioAccessAgentTest {
@@ -246,6 +247,21 @@ public class ScenarioAccessAgentTest {
 		verify(storeClient, Mockito.times(0)).put(any(String.class),any(String.class),any(String.class));
 	}
 
+	@Test
+	public void testGetDatasetUrl() {
+		String testUrl = "http://localhost:8080/kb/testDataset/test.owl";
+		String result = ScenarioAccessAgent.getDatasetUrl(testUrl);
+		assertEquals("http://localhost:8080/dataset/testDataset",result);
+		
+		testUrl = "http://localhost:8080/dataset/testDataset";
+		result = ScenarioAccessAgent.getDatasetUrl(testUrl);
+		assertEquals("http://localhost:8080/dataset/testDataset",result);
+		
+		testUrl = "http://localhost:8080/testDataset";
+		result = ScenarioAccessAgent.getDatasetUrl(testUrl);
+		assertEquals("http://localhost:8080/testDataset",result);
+	}
+	
 	//TODO copy on read
 	//TODO this call KBC -> KBAgent
 	/*

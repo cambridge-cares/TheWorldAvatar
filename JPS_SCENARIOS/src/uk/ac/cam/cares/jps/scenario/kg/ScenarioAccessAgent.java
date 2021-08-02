@@ -2,7 +2,11 @@ package uk.ac.cam.cares.jps.scenario.kg;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -35,10 +39,12 @@ public class ScenarioAccessAgent  extends AccessAgent {
 
 	private static Logger logger = LoggerFactory.getLogger(ScenarioAccessAgent.class);
 	
+	static List<String> datasetPaths = Arrays.asList("jps","data","kb","dataset","scenario");
+	
 	//Methods inherited from AccessAgent:
-	//public JSONObject processRequestParameters(JSONObject requestParams)
-    //public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) 
-	//public boolean validateInput(JSONObject requestParams) throws BadRequestException
+	//processRequestParameters(JSONObject requestParams)
+    //processRequestParameters(JSONObject requestParams, HttpServletRequest request) 
+	//validateInput(JSONObject requestParams)
 	
 	@Override
 	public JSONObject get(JSONObject requestParams) {
@@ -156,7 +162,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 			
 			String scenarioUrl = getScenarioUrl(scenarioName);
 			ScenarioStoreClient storeClient = new ScenarioStoreClient(scenarioUrl);
-			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
+			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl); //TODO use KBC.cutHashFragment
 			
 			String result = "";
 			
@@ -594,5 +600,53 @@ public class ScenarioAccessAgent  extends AccessAgent {
 			} 
 			// else skip the scenario log json file
 		}
+	}
+	
+	public static String getResourceUrl(String datasetUrl, String requestUrl, String parameterUrl) {
+
+		// Example: datasetUrl = http://www.thw.com/jps/data/test
+		
+		if (requestUrl.equals(datasetUrl)) {
+			
+			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
+				return null;
+			} else {
+				// case 2: indirect query
+				return KnowledgeBaseClient.cutHashFragment(parameterUrl);
+			}
+			
+		} else {
+			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
+				// case 3: direct query
+				return requestUrl;
+			}
+		}
+		
+		String message = "A URL was given by the query parameter " + JPSConstants.SCENARIO_RESOURCE 
+				+ ". This is not allowed since the requested URL does not define a dataset URL."
+				+ " parameter URL = " + parameterUrl + ", requested URL=" + requestUrl;
+		throw new JPSRuntimeException(message);
+	}
+	
+	public static String getDatasetUrl(String requestUrl) {
+		
+		String datasetUrl = null;
+		try {
+			
+			List<String> splitUrl = Arrays.asList((URLDecoder.decode(requestUrl, "UTF-8")).split("/"));
+			for( String element : datasetPaths) {
+				int index = splitUrl.indexOf(element);
+				if(index >= 0) {
+					datasetUrl = String.join("/", splitUrl.subList(0, index+2));
+					return datasetUrl;
+				}
+			}
+			datasetUrl = String.join("/", splitUrl);
+			
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return datasetUrl;
 	}
 }
