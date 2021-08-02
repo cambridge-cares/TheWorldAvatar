@@ -24,7 +24,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	private TimeSeriesRDBClient<T> rdbClient;
 	private TimeSeriesSparql rdfClient;
 	// Exception prefix
-	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
+	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	
     /**
      * Constructor for pre-defined kbClient and only RDB client to be created according to properties file
@@ -229,13 +229,11 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     }
     
     /**
-     * Delete all time series and associated connections from triple store and relational database 
+     * Delete all time series and associated connections from triple store and relational database
+	 * NOTE: When trying to delete all time series information, NO restore will be tried
+	 *     		 in case any exception occurs - only errors for inconsistent states are thrown.
      */
     public void deleteAll() {
-    	
-		// NOTE: When trying to delete all time series information, NO restore will be tried 
-    	// 		 in case any exception occurs - errors for inconsistent states are thrown only
-		
 		// Step1: Delete all time series in knowledge base
 		try {
 			// Removing all triples is done by repetitive deletion of time series IRIs from KG
