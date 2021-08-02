@@ -1,12 +1,9 @@
-import compchemparser.helpers.utils as utils
-import compchemparser.helpers.ccutils as ccutils
 import compchemparser.helpers.elements_data as eld
 import cclib
 import os
 import re
 from itertools import islice
 import json
-import math
 
 # keys/values uploaded to the kg
 #-------------------------------------------------
@@ -164,7 +161,7 @@ class CcGaussianParser():
                     if jobs_nr > 1:
                         # check if the found job was successful
                         job_success = get_job_success(buffer)
-                        print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
+                        #print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
                         if job_success:
                             # set temp file name and dump read content to it
                             log_names.append(logFile + '_#' + str(jobs_nr-1))
@@ -211,9 +208,9 @@ class CcGaussianParser():
             data_list = [data]
             if 'ScanFlag' in data:
                 flat_scanpoints = [item for sublist in data['Scan Points'] for item in sublist]
-                no_points = len(flat_scanpoints) 
-                
-                if no_points > 1 : 
+                no_points = len(flat_scanpoints)
+
+                if no_points > 1 :
                     data_list = []
                     for k in range(no_points):
                         temp_data = data.copy()
@@ -239,7 +236,7 @@ class CcGaussianParser():
         for log in split_logs:
             parseddata = self.parse_log(log)
             parseddata = data_splitter(parseddata)
-            for listdata in parseddata:                                    
+            for listdata in parseddata:
                 json_data = json.dumps(listdata)
                 uploaddata.append(json_data)
             #dict_data = json.loads(json_data)
@@ -314,25 +311,26 @@ class CcGaussianParser():
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
-            elif 'Standard orientation:' in line and data[GEOM] is None:
-                if data[SCANFLAG] is None:
-                    data[GEOM] = []
-                data[ATOM_TYPES] = []
-
-                cur_line = cur_line + 2
-                line = log_lines[cur_line].strip().split()[4]
-                data[GEOM_UNIT] = line.replace('(','').replace(')','')
-
-                cur_line = cur_line + 3
-                line = log_lines[cur_line].strip()
-                while '---' not in line:
-                    line = line.split()
+            elif 'Standard orientation:' in line:
+                if data[SCANFLAG] is not None or data[GEOM] is None:
                     if data[SCANFLAG] is None:
-                        data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
-                    el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
-                    data[ATOM_TYPES].append(el)
-                    cur_line = cur_line + 1
+                        data[GEOM] = []
+                    data[ATOM_TYPES] = []
+
+                    cur_line = cur_line + 2
+                    line = log_lines[cur_line].strip().split()[4]
+                    data[GEOM_UNIT] = line.replace('(','').replace(')','')
+
+                    cur_line = cur_line + 3
                     line = log_lines[cur_line].strip()
+                    while '---' not in line:
+                        line = line.split()
+                        if data[SCANFLAG] is None:
+                            data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                        el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
+                        data[ATOM_TYPES].append(el)
+                        cur_line = cur_line + 1
+                        line = log_lines[cur_line].strip()
             return cur_line
         #---------------------------------------------
         def check_elweights(data, cur_line,log_lines):
@@ -776,6 +774,8 @@ class CcGaussianParser():
                     data[GEOM] = placeholder_GEOM
                     data[ELECTRONIC_ENERGY] = placeholder_energy
                     data[GEOM] = data[GEOM].tolist()
+
+
                     if zvars and zmol:
                         for z in zvars:
                             if 'Scan' in z:

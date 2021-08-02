@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 import uk.ac.cam.cares.jps.scenario.ScenarioMockManager;
 import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 
-@WebServlet(urlPatterns = {"/scenario/*"})
+//@WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAccessAgent  extends AccessAgent { 
 
 	private static final long serialVersionUID = 1L;
