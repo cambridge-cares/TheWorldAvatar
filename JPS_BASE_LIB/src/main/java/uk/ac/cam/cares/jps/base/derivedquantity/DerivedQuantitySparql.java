@@ -35,7 +35,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  *
  */
 public class DerivedQuantitySparql{
-	private static String derivednamespace = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#";
+	public static String derivednamespace = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
