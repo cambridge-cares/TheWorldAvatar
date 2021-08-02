@@ -1,6 +1,13 @@
 package uk.ac.cam.cares.jps.scenario.kg;
 
-import javax.servlet.annotation.WebServlet;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
@@ -17,7 +24,6 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
@@ -27,7 +33,7 @@ public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseAgent.class);
-	
+
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -59,7 +65,7 @@ public class AccessAgent extends JPSAgent{
 	}
 		
 	/**
-	 * Perform HTTP GET. This will be either a sparql query or "get" all triples (from specified graph).
+	 * Perform HTTP GET. This will be either a SPARQL query or "get" all triples (from specified graph).
 	 * @param requestParams
 	 * @return
 	 */
@@ -67,12 +73,9 @@ public class AccessAgent extends JPSAgent{
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
-		String datasetUrl = getDatasetUrl(requestUrl);
-		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
-		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);
+		String graphIRI = null; //TODO 
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
-	    String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
+	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
 		
 	    if(sparqlupdate != null) {
 	    	throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
@@ -81,7 +84,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, true, false);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), true, false);
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
@@ -91,7 +94,7 @@ public class AccessAgent extends JPSAgent{
 				JSONresult.put("result",result);
 			}else {		//TODO: defaulting to this could be dangerous for large triple store
 				//get
-				result = kbClient.get(resourceUrl, accept);
+				result = kbClient.get(graphIRI, accept);
 				JSONresult.put("result",result);
 			}
 			return JSONresult;
@@ -110,13 +113,10 @@ public class AccessAgent extends JPSAgent{
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
-		String paramResourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
-		String datasetUrl = getDatasetUrl(requestUrl);
-		String resourceUrl = getResourceUrl(datasetUrl, requestUrl, paramResourceUrl);		
+		String graphIRI = null; //TODO 
 		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);	
-	    String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
+	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
 	    
 	    if(sparqlquery!=null && sparqlupdate!=null) {
 	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
@@ -127,9 +127,9 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, null, false);
 			
 			//TODO check target or datasetUrl for this
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, false, true);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), false, true);
 			
-			kbClient.insert(resourceUrl, body, contentType);
+			kbClient.insert(graphIRI, body, contentType);
 		} catch (RuntimeException e) {
 			logInputParams(requestParams, null, true);
 			throw new JPSRuntimeException(e);
@@ -137,14 +137,14 @@ public class AccessAgent extends JPSAgent{
 	}
 	
 	/**
-	 * Perform HTTP POST. This will perform a sparql update on the store. 
+	 * Perform HTTP POST. This will perform a SPARQL update on the store. 
 	 * @param requestParams
 	 */
 	public void post(JSONObject requestParams) {	
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
+		String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
 		
 		if(sparqlquery != null) {
 			throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
@@ -153,11 +153,9 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlupdate, false);
 			
-			//TODO check target or datasetUrl for this
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(targetResourceIRIOrPath, false, true);
+			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), false, true);
 			
 			if (sparqlupdate!=null) {
-				//perform update
 				kbClient.executeUpdate(sparqlupdate);
 			}else {
 				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is missing");
@@ -168,6 +166,7 @@ public class AccessAgent extends JPSAgent{
 		}
 	}
 	
+	//TODO
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {	    
 		
@@ -184,7 +183,6 @@ public class AccessAgent extends JPSAgent{
 	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
 	        if(!q) {return false;};
 	    	
-	        
 	        String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 			String sparqlupdate = MiscUtil.optNullKey(requestParams,  JPSConstants.QUERY_SPARQL_UPDATE);
 			if (sparqlquery != null && sparqlupdate != null) { //both query and update are filled. 
@@ -202,10 +200,7 @@ public class AccessAgent extends JPSAgent{
 				}
 			}
 			
-			String iriOrPath = requestParams.getString(JPSConstants.TARGETIRI);
-	        boolean isURL = InputValidator.checkIfURLpattern(iriOrPath);
-	        boolean isPath = InputValidator.checkIfFilePath(iriOrPath);
-	        return( isURL || isPath);
+			return true;
 	        
 	    }catch (JSONException ex) {
 	    	return false;
@@ -220,14 +215,12 @@ public class AccessAgent extends JPSAgent{
 		String resourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
 		String datasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);	
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
-		String targetResourceIRIOrPath = requestParams.getString(JPSConstants.TARGETIRI);
 		
 		StringBuffer b = new StringBuffer(method);
 		b.append(" with requestedUrl=").append(requestUrl);
 		b.append(", path=").append(path);
 		b.append(", datasetUrl=").append(datasetUrl);
 		b.append(", resourceUrl=").append(resourceUrl);
-		b.append(", targetResourceIRIOrPath=").append(targetResourceIRIOrPath);
 		b.append(", contentType=").append(contentType);
 		if (hasErrorOccured) {
 			b.append(", sparql=" + sparql);
@@ -247,53 +240,30 @@ public class AccessAgent extends JPSAgent{
 		}
 	}
 	
-	public static String getResourceUrl(String datasetUrl, String requestUrl, String parameterUrl) {
-
-		// Example: datasetUrl = http://www.thw.com/jps/data/test
-		
-		if (requestUrl.equals(datasetUrl)) {
-			
-			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
-				return null;
-			} else {
-				// case 2: indirect query
-				return KnowledgeBaseClient.cutHashFragment(parameterUrl);
+	/**
+	 * Create short iri required by the StoreRouter. Remove host from uri.
+	 * @param url
+	 * @return
+	 */
+	public static String getShortIRI(String url) {
+		URI uri = null;
+		try {
+			uri = new URI(URLDecoder.decode(url,"UTF-8"));
+			String authority = uri.getAuthority();
+			// A host should contain either a "." or be the "localhost", otherwise this is already a short iri
+			if(authority.contains(".") || authority.contains("localhost")) { 
+				final String host = authority;
+				return Arrays.stream(uri.toString().split("/"))
+						.filter(a -> !(host.equals(a)))
+						.collect(Collectors.joining("/"));
 			}
-			
-		} else {
-			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
-				// case 3: direct query
-				return requestUrl;
-			}
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-		String message = "A URL was given by the query parameter " + JPSConstants.SCENARIO_RESOURCE 
-				+ ". This is not allowed since the requested URL does not define a dataset URL."
-				+ " parameter URL = " + parameterUrl + ", requested URL=" + requestUrl;
-		throw new JPSRuntimeException(message);
-	}
-	
-	public static String getDatasetUrl(String requestUrl) {
-		String jps = "/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/";
-		int i = requestUrl.indexOf(jps) + jps.length();
-		String rest = requestUrl.substring(i);
-		if (rest.startsWith("data/")) {
-			i += "data/".length();
-		}  else if (rest.startsWith("dataset/")) {
-			i += "dataset/".length();
-		} else if (rest.startsWith("kb/")) {
-			i += "kb/".length();
-		} else if (rest.startsWith("scenario/")) {
-			i += "scenario/".length();
-		}
-		String datasetUrl = requestUrl.substring(0, i);
-		rest = requestUrl.substring(i);
-		i = rest.indexOf("/");
-		if (i >= 0) {
-			datasetUrl += rest.substring(0, i);
-		} else {
-			datasetUrl = requestUrl;
-		}
-		return datasetUrl;
+		return url;
 	}
 }

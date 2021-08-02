@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
 
-public class AccessAgentTest   {
+public class AccessAgentTest{
 
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
@@ -281,6 +281,25 @@ public class AccessAgentTest   {
 		AccessAgent jpsa = new AccessAgent();
         jpsa.post(jo);								
 	}	
+	
+	@Test
+	public void testgetShortIRI() {
+		String testUrl = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl";
+		String result = AccessAgent.getShortIRI(testUrl);
+		assertEquals("http://kb/sgp/singapore/SGTemperatureSensor-001.owl",result);
+		
+		testUrl = "http://www.theworldavatar.com/kb/ontokin";
+		result = AccessAgent.getShortIRI(testUrl);
+		assertEquals("http://kb/ontokin",result);
+		
+		testUrl = "http://localhost:8080/kb/ontokin";
+		result = AccessAgent.getShortIRI(testUrl);
+		assertEquals("http://kb/ontokin",result);
+		
+		testUrl = "http://kb/ontokin";
+		result = AccessAgent.getShortIRI(testUrl);
+		assertEquals("http://kb/ontokin",result);
+	}
 	
 	/**
 	 * Returns the test Sparql update.
