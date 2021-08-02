@@ -126,6 +126,9 @@ function install_local_dependencies {
     echo ""
     echo ""
 	$SPATH/../../../EntityRDFizer/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
+    echo ""
+    echo ""
+	$SPATH/../../../thermo/CoMoCompChemParser/install_script_conda.sh -i -s -n $VENV_NAME $DEV_INSTALL
 
     if [ $? -eq 0 ]; then
     	echo ""
@@ -157,7 +160,7 @@ case $key in
 	-n) VENV_NAME=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
     -s) DO_NOT_PROMPT='y'; shift;;
-	-e) DEP_FILE='dev-dependencies.yml'; DEV_INSTALL='-e' shift;;
+	-e) DEP_FILE='dev-dependencies.yml'; DEV_INSTALL='-e'; shift;;
      *)
 	# otherwise print the usage
     usage

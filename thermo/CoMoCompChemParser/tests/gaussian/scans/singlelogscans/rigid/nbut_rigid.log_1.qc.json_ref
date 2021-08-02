@@ -1,0 +1,145 @@
+{
+    "Empirical formula": "C4H10",
+    "Atom counts": {
+        "C": 4,
+        "H": 10
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "C",
+        "H",
+        "H",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        12.0107,
+        1.00783,
+        1.00783,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RB3LYP",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -0.428845,
+            1.887204,
+            1.9e-05
+        ],
+        [
+            0.428845,
+            0.631895,
+            -2.2e-05
+        ],
+        [
+            0.205099,
+            2.779418,
+            -8e-06
+        ],
+        [
+            -1.06872,
+            1.925133,
+            0.887413
+        ],
+        [
+            -1.068806,
+            1.925137,
+            -0.887312
+        ],
+        [
+            -0.428845,
+            -0.631895,
+            -2.2e-05
+        ],
+        [
+            1.079356,
+            0.6407,
+            0.88233
+        ],
+        [
+            1.07931,
+            0.640725,
+            -0.882407
+        ],
+        [
+            0.428845,
+            -1.887204,
+            1.9e-05
+        ],
+        [
+            -1.07931,
+            -0.640725,
+            -0.882407
+        ],
+        [
+            -1.079356,
+            -0.6407,
+            0.88233
+        ],
+        [
+            1.068806,
+            -1.925137,
+            -0.887312
+        ],
+        [
+            -0.205099,
+            -2.779418,
+            -8e-06
+        ],
+        [
+            1.06872,
+            -1.925133,
+            0.887413
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        12.493887,
+        6.0708563,
+        4.5500568
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -4311.838794689458,
+    "HOMO energy": -0.31325,
+    "HOMO-1 energy": -0.32186,
+    "HOMO-2 energy": -0.32945,
+    "LUMO energy": 0.09462,
+    "LUMO+1 energy": 0.1214,
+    "LUMO+2 energy": 0.13458,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Wed May 26 16:31:26 2021",
+    "ScanFlag": "Rigid",
+    "ScanType": "Dihedral",
+    "ScanAtoms": [
+        "9",
+        "6",
+        "2",
+        "1"
+    ],
+    "Scan Points": 180.0033
+}

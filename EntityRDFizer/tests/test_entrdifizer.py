@@ -25,7 +25,7 @@ def get_namespaces(fileString):
 def removeNodeId(fileString):
     return re.sub(nodeId_re,'',fileString)
 
-def prepareFileForComparison(filePath,writePreparedFile=False):
+def prepareFileForComparison(filePath):
     """This function expands the namespace tags and removes the
        random nodeId attribtue from the ref and test owl files.
        This is because the rdfizer csv->owl converter does not
@@ -40,22 +40,21 @@ def prepareFileForComparison(filePath,writePreparedFile=False):
         for namespTag, namespValue in namespacesDict.items():
             fileString = fileString.replace(namespTag,namespValue)
     preparedFile = '\n'.join(sorted(fileString.split('\n')))
-    if writePreparedFile:
-        with open(filePath, 'w') as file:
-            file.write(preparedFile)
+    with open(filePath, 'w') as file:
+        file.write(preparedFile)
     return preparedFile
 
 #@pytest.mark.skip
-@pytest.mark.parametrize("testDir, testFile",
+@pytest.mark.parametrize("testDir, testFile, regenerateResult",
 [
-('ontospecies','ontospecies_abox_1.csv'),
-('ontocropenergy','ontocropenergy_abox_1.csv'),
-('ontokgrouter','ontokgrouter_abox_1.csv'),
-('ontolanduse','ontolanduse_abox_1.csv'),
-('ontocompchem','ontocompchem_abox_1.csv')
+('ontospecies','ontospecies_abox_1.csv', False),
+('ontocropenergy','ontocropenergy_abox_1.csv', False),
+('ontokgrouter','ontokgrouter_abox_1.csv', False),
+('ontolanduse','ontolanduse_abox_1.csv', False),
+('ontocompchem','ontocompchem_abox_1.csv', False)
 ]
 )
-def test_csv2abox(testDir, testFile, regenerateResults=False):
+def test_csv2abox(testDir, testFile, regenerateResult, regenerateAllResults=False):
     print('========================================================')
     print('TEST DIR: ', testDir)
     print('TEST FILE: ', testFile)
@@ -65,15 +64,16 @@ def test_csv2abox(testDir, testFile, regenerateResults=False):
     testFile= os.path.join(testDir, testFile)
     refOWLFile= testFile+'_ref.owl'
     targetOWLFile = testFile +'.owl'
-    if regenerateResults:
+    if regenerateResult or regenerateAllResults:
         if os.path.exists(refOWLFile): os.remove(refOWLFile)
         convertFile(testFile)
+        refOwlFileString = prepareFileForComparison(targetOWLFile)
         os.rename(targetOWLFile,refOWLFile)
 
-    refOwlFileString = prepareFileForComparison(refOWLFile)
     convertFile(testFile)
     testOwlFileString = prepareFileForComparison(targetOWLFile)
 
+    refOwlFileString = prepareFileForComparison(refOWLFile)
     assert refOwlFileString==testOwlFileString
 
     os.remove(targetOWLFile)
