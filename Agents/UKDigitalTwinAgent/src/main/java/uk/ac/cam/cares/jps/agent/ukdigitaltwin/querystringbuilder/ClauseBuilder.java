@@ -36,13 +36,14 @@ public class ClauseBuilder implements Prefixes{
 	public boolean reducedFlag = false;
 	public int limit = -1;
 	
-	public  ClauseBuilder(boolean queryFlag, boolean updateFlag) {
+	public  ClauseBuilder(boolean queryFlag, boolean updateFlag, String entityName, String entityType) {
 		if((queryFlag && updateFlag) || (!queryFlag && !updateFlag)) {
 			System.out.print("The queryFlag and updateFlag cannot be both true or false.");
-		    System.exit(0);
 		}else {
 			this.queryFlag = queryFlag;
 			this.updateFlag = updateFlag;
+			this.entityName = entityName;
+			this.entityType = entityType;
 		}	
 		this.optionalClause = null;
 		this.filterClause = null;

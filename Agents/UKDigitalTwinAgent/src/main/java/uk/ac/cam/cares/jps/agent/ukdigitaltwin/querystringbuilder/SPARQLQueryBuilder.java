@@ -113,7 +113,7 @@ public class SPARQLQueryBuilder {
 		 pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, vl, pfmv.variableTypePrefix,
 				  pfmv.varNameIdentifier, pfmv.queryModelVariableSentence, pfmv.labelMap);
 		 //TODO: debug the adding filterClause function
-		 pb.filterClause =  Arrays.asList("?PrimaryFuel = power_plant:Biomass");
+		 //  pb.filterClause =  Arrays.asList("?PrimaryFuel = power_plant:Biomass");
 		 SPARQLQueryBuilder sqb = new SPARQLQueryBuilder(pb);
 		 String querystring = sqb.queryStringBuilder();
 		 System.out.println(querystring); 
