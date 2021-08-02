@@ -1,17 +1,15 @@
 #########################
 #
-# This docker file creates an Image with an environment
-# for running the Gas Grid Agent.
-#
-# This Dockerfile builds on the Python agent example
-# (located at '/Deploy/examples/python_agent').
+# This Dockerfile creates an image with an environment appropriate for running the Gas Grid Agent.
+# It builds on the Python agent example located at '/Deploy/examples/python_agent'.
 #
 # See the README for more details.
 #
 #########################
 
-# Base image is a lightweight version of Python
-FROM python:3.7.10
+
+#====================== Common configuration shared by 'dev' and 'prod' images ====================
+FROM python:3.7.10 as common
 
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
@@ -73,10 +71,9 @@ RUN chmod -R 755 ./output
 RUN mkdir /var/log/gas-grid
 RUN chmod 777 /var/log/gas-grid
 
-# Set environment variable
+# Set environment variables
 # TODO: Read this from the docker-compose file in future.
 ENV TARGET_MODE="CMCL"
-ENV KG_LOCATION="http://kg.cmclinnovations.com:8055/blazegraph"
 ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
 
 # Expose port for HTTP server
@@ -84,3 +81,13 @@ EXPOSE 80
 
 # Run cron daemon and boot script at start
 CMD [ "sh", "-c", "rsyslogd && /app/start-up.sh" ]
+
+
+#===================================== Development configuration ==================================
+FROM common as dev
+ENV KG_LOCATION="http://kg.cmclinnovations.com:81/blazegraph_geo"
+
+
+#===================================== Production configuration ===================================
+FROM common as prod
+ENV KG_LOCATION="https://kg.cmclinnovations.com/blazegraph_geo"
