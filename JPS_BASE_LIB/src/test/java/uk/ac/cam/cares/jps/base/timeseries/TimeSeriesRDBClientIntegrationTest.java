@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -20,8 +19,10 @@ import org.jooq.impl.DSL;
 import static org.jooq.impl.DSL.selectFrom;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
+
+/**
+ * This class provides integration tests for the TimeSeriesRDBClient class
+ */
 
 @Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
 		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")

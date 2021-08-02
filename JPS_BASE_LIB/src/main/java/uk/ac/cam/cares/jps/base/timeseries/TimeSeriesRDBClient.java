@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
@@ -29,9 +28,8 @@ import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-
 /**
- * This class uses the jooq library to interact with the relational database.
+ * This class uses the jooq library to interact with a relational database.
  * <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  * @author Kok Foong Lee
  */

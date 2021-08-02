@@ -33,16 +33,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This class contains a collection of methods to interact with kb.
+ * This class contains a collection of methods to interact with a triple store.
  * @author Kok Foong Lee
- *
  */
 
 public class TimeSeriesSparql {
 	// kbClient with the endpoint (triplestore/owl file) specified
 	private StoreClientInterface kbClient;
 	
-	// Namespaces for ontology and kb
+	// Namespaces for ontology and knowledge base
 	public static final String ns_ontology = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
 	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 	

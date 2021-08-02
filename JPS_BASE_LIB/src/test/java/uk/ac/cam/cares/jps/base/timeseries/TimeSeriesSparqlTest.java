@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-
 import java.io.*;
 import java.nio.file.Paths;
 import java.lang.reflect.Field;
@@ -24,6 +23,9 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+/**
+ * This class provides unit tests for the TimeSeriesSparql class
+ */
 
 public class TimeSeriesSparqlTest {
 	

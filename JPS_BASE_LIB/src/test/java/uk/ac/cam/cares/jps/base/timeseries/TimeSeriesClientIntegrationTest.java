@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-
 import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -20,6 +19,10 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static org.mockito.Mockito.*;
+
+/**
+ * This class provides integration tests for the TimeSeriesClient class
+ */
 
 @Ignore("Requires both triple store endpoint and postgreSQL database set up and running (using testcontainers)\n" +
 		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")

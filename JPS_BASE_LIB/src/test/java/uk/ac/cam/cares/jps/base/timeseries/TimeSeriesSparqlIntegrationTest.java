@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -12,6 +11,10 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+
+/**
+ * This class provides integration tests for the TimeSeriesSparql class
+ */
 
 @Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" + 
 		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
