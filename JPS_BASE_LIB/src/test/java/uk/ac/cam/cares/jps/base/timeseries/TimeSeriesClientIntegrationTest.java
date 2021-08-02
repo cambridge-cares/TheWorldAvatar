@@ -121,26 +121,22 @@ public class TimeSeriesClientIntegrationTest {
 	@Test	 
 	public void testInitTimeSeriesWithoutExceptions() {
 		
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();	
-				
 		// Verify kb is initially empty
-		Assert.assertEquals(0, rdfClient.countTS());
+		Assert.assertEquals(0, tsClient.countTimeSeries());
 		
 		// Initialise time series (3 dataIRIs, 1 tsIRI) in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		
 		// Verify correct instantiation in both kb and database
-		Assert.assertEquals(1, rdfClient.countTS());
-		Assert.assertEquals(3, rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0))).size());
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(1, tsClient.countTimeSeries());
+		Assert.assertEquals(3, tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertEquals(3, ts.getDataIRIs().size());
 		for (String iri : dataIRI_1) {
 			Assert.assertTrue(ts.getDataIRIs().contains(iri));
 		}	
 		List<String> kb = ts.getDataIRIs();
-		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0)));
+		List<String> db = tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
 		kb.sort(null);
 		db.sort(null);
 		Assert.assertEquals(kb, db);
@@ -206,26 +202,22 @@ public class TimeSeriesClientIntegrationTest {
 	@Test	
 	public void testDeleteIndividualTimeSeriesWithoutExceptions() {
 		
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
-		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		
 		// Verify correct instantiation in both kb and database
-		Assert.assertEquals(1, rdfClient.countTS());
-		Assert.assertEquals(dataIRI_1.size(), rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0))).size());
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(1, tsClient.countTimeSeries());
+		Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertEquals(dataIRI_1.size(), ts.getDataIRIs().size());
 		
 		// Delete 1st data series - verify deletion and that other data series are still unaltered
 		String dataIRI = dataIRI_1.remove(0);
 		tsClient.deleteIndividualTimeSeries(dataIRI);
-		Assert.assertEquals(1, rdfClient.countTS());
-		Assert.assertEquals(dataIRI_1.size(), rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0))).size());
-		Assert.assertNull(rdfClient.getTimeSeries(dataIRI));
-		ts = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(1, tsClient.countTimeSeries());
+		Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
+		ts = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
 		try {
 			tsClient.deleteIndividualTimeSeries(dataIRI);
@@ -237,10 +229,10 @@ public class TimeSeriesClientIntegrationTest {
 		// Delete 2nd data series - verify deletion and that other data series are still unaltered
 		dataIRI = dataIRI_1.remove(0);
 		tsClient.deleteIndividualTimeSeries(dataIRI);
-		Assert.assertEquals(1, rdfClient.countTS());
-		Assert.assertEquals(dataIRI_1.size(), rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0))).size());
-		Assert.assertNull(rdfClient.getTimeSeries(dataIRI));
-		ts = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(1, tsClient.countTimeSeries());
+		Assert.assertEquals(dataIRI_1.size(), tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0))).size());
+		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
+		ts = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertFalse(ts.getDataIRIs().contains(dataIRI));
 		try {
 			tsClient.deleteIndividualTimeSeries(dataIRI);
@@ -252,10 +244,10 @@ public class TimeSeriesClientIntegrationTest {
 		// Delete 3rd data series - verify deletion
 		dataIRI = dataIRI_1.remove(0);
 		tsClient.deleteIndividualTimeSeries(dataIRI);
-		Assert.assertEquals(0, rdfClient.countTS());
-		Assert.assertNull(rdfClient.getTimeSeries(dataIRI));
+		Assert.assertEquals(0, tsClient.countTimeSeries());
+		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI));
 		try {
-			rdbClient.getTimeSeries(dataIRI_1);
+			tsClient.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (Exception e) {
 			// Exception from executing SQL command with empty dataIRI
@@ -295,8 +287,6 @@ public class TimeSeriesClientIntegrationTest {
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		String dataIRI = dataIRI_1.get(0);
 
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
@@ -318,7 +308,7 @@ public class TimeSeriesClientIntegrationTest {
 		}
 
 		// Check that knowledge base and database are still consistent
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		List<String> kb = ts.getDataIRIs();
 		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI));
 		kb.sort(null);
@@ -331,12 +321,9 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
 		
 		// Retrieve latest database state and interrupt connection
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		postgres.stop();
 		
 		// DataIRI to be deleted
@@ -351,7 +338,7 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Check that knowledge base and database are still consistent
 		List<String> kb = ts.getDataIRIs();
-		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI));
+		List<String> db = tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI));
 		kb.sort(null);
 		db.sort(null);
 		Assert.assertEquals(kb, db);	
@@ -392,45 +379,41 @@ public class TimeSeriesClientIntegrationTest {
 	@Test	 
 	public void testDeleteTimeSeriesWithoutExceptions() {
 		
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
-		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit);
 		
 		// Verify correct instantiation in both kb and database
-		Assert.assertEquals(2, rdfClient.countTS());
-		TimeSeries<Instant> ts1 = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(2, tsClient.countTimeSeries());
+		TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertEquals(dataIRI_1.size(), ts1.getDataIRIs().size());
-		TimeSeries<Instant> ts2 = rdbClient.getTimeSeries(dataIRI_2);
+		TimeSeries<Instant> ts2 = tsClient.getTimeSeries(dataIRI_2);
 		Assert.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
 		
 		// Delete 1st time series - verify deletion and that 2nd time series is still unaltered
-		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
+		String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
 		tsClient.deleteTimeSeries(tsIRI);
-		Assert.assertEquals(1, rdfClient.countTS());
-		Assert.assertNull(rdfClient.getTimeSeries(dataIRI_1.get(0)));
+		Assert.assertEquals(1, tsClient.countTimeSeries());
+		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
 		try {
-			rdbClient.getTimeSeries(dataIRI_1);
+			tsClient.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("does not have a time series instance (i.e. tsIRI)"));
+			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI_1.get(0) + " is not attached to any time series instance in the KG"));
 		}
-		TimeSeries<Instant> ts3 = rdbClient.getTimeSeries(dataIRI_2);
+		TimeSeries<Instant> ts3 = tsClient.getTimeSeries(dataIRI_2);
 		Assert.assertEquals(ts2.getDataIRIs(), ts3.getDataIRIs());
 		
 		// Delete 2nd time series - verify deletion and that nothing remains in KG and database
-		tsIRI = rdfClient.getTimeSeries(dataIRI_2.get(0));
+		tsIRI = tsClient.getTimeSeriesIRI(dataIRI_2.get(0));
 		tsClient.deleteTimeSeries(tsIRI);
-		Assert.assertEquals(0, rdfClient.countTS());
-		Assert.assertNull(rdfClient.getTimeSeries(dataIRI_2.get(0)));
+		Assert.assertEquals(0, tsClient.countTimeSeries());
+		Assert.assertNull(tsClient.getTimeSeriesIRI(dataIRI_2.get(0)));
 		try {
-			rdbClient.getTimeSeries(dataIRI_2);
+			tsClient.getTimeSeries(dataIRI_2);
 			Assert.fail();
 		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("does not have a time series instance (i.e. tsIRI)"));
+			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI_2.get(0) + " is not attached to any time series instance in the KG"));
 		}		
 	}
 
@@ -439,9 +422,8 @@ public class TimeSeriesClientIntegrationTest {
 
 		// Initialise time series in knowledge base and database
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		// Retrieve RDF/SPARQL client and tsIRI to be deleted
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
+		// Retrieve tsIRI to be deleted
+		String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
 
 		// Interrupt triple store connection
 		blazegraph.stop();
@@ -461,8 +443,6 @@ public class TimeSeriesClientIntegrationTest {
 		// Initialise time series in knowledge base and database
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
@@ -486,7 +466,7 @@ public class TimeSeriesClientIntegrationTest {
 		}
 
 		// Check that knowledge base and database are still consistent
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		List<String> kb = ts.getDataIRIs();
 		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0)));
 		kb.sort(null);
@@ -499,14 +479,12 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
+
 		// Retrieve tsIRI to be deleted
-		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
+		String tsIRI = tsClient.getTimeSeriesIRI(dataIRI_1.get(0));
 		
 		// Retrieve latest database state and interrupt connection
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		TimeSeries<Instant> ts = tsClient.getTimeSeries(dataIRI_1);
 		postgres.stop();
 		
 		try {
@@ -519,7 +497,7 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Check that knowledge base and database are still consistent
 		List<String> kb = ts.getDataIRIs();
-		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0)));
+		List<String> db = tsClient.getAssociatedData(tsClient.getTimeSeriesIRI(dataIRI_1.get(0)));
 		kb.sort(null);
 		db.sort(null);
 		Assert.assertEquals(kb, db);		
@@ -559,34 +537,30 @@ public class TimeSeriesClientIntegrationTest {
 	
 	@Test	 
 	public void testDeleteAllWithoutExceptions() {
-		
-		// Retrieve RDB and RDF/SPARQL clients
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
-		
+			
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		tsClient.initTimeSeries(dataIRI_2, dataClass_2, timeUnit);
 		
 		// Verify correct instantiation in both kb and database
-		Assert.assertEquals(2, rdfClient.countTS());
-		TimeSeries<Instant> ts1 = rdbClient.getTimeSeries(dataIRI_1);
+		Assert.assertEquals(2, tsClient.countTimeSeries());
+		TimeSeries<Instant> ts1 = tsClient.getTimeSeries(dataIRI_1);
 		Assert.assertEquals(dataIRI_1.size(), ts1.getDataIRIs().size());
-		TimeSeries<Instant> ts2 = rdbClient.getTimeSeries(dataIRI_2);
+		TimeSeries<Instant> ts2 = tsClient.getTimeSeries(dataIRI_2);
 		Assert.assertEquals(dataIRI_2.size(), ts2.getDataIRIs().size());
 		
 		// Delete all data in database and knowledge base
 		tsClient.deleteAll();
 		
 		// Verify correct deletion
-		Assert.assertEquals(0, rdfClient.countTS());
+		Assert.assertEquals(0, tsClient.countTimeSeries());
 		List<List<String>> series = Arrays.asList(dataIRI_1, dataIRI_2);
 		for (List<String> s : series) {			
 			try {
-				rdbClient.getTimeSeries(s);
+				tsClient.getTimeSeries(s);
 				Assert.fail();
 			} catch (Exception e) {
-				Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
+				Assert.assertTrue(e.getMessage().contains("DataIRI " + s.get(0) + " is not attached to any time series instance in the KG"));
 			}
 		}			
 	}

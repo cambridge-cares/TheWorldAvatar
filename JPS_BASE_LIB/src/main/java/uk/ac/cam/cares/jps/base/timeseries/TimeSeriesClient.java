@@ -79,14 +79,6 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     	this.rdfClient.setKBClient(kbClient);
     }
 
-	/**
-	 * Getter for the sparql client to be able to perform SPARQl queries related to timeseries independently.
-	 * @return The sparql client used by this general client to access the knowledge graph.
-	 */
-	public TimeSeriesSparql getRdfClient() {
-		return this.rdfClient;
-	}
-
     /**
 	 * Setter for URL and credentials for the relational database (in RDB Client)
 	 * @param rdbURL URL to relational database (e.g. postgreSQL)
@@ -98,14 +90,6 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     	this.rdbClient.setRdbUser(user);
     	this.rdbClient.setRdbPassword(password);
     }
-
-	/**
-	 * Getter for the RDB client to be able to perform database queries related to timeseries independently.
-	 * @return The RDB client used by this general client to access the relational database.
-	 */
-	public TimeSeriesRDBClient<T> getRdbClient() {
-		return this.rdbClient;
-	}
 
     /**
      * Initialise time series in triple store and relational database

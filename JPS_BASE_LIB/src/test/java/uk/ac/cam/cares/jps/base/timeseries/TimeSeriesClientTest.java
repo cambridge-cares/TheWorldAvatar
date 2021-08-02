@@ -63,14 +63,18 @@ public class TimeSeriesClientTest {
                 Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
 
         // Retrieve the rdf client to test whether it is set correctly
-        TimeSeriesSparql rdfClient = client.getRdfClient();
+        Field rdfClientField = TimeSeriesClient.class.getDeclaredField("rdfClient");
+        rdfClientField.setAccessible(true);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(client);
         Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
         StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
         Assert.assertEquals(kbClient.getQueryEndpoint(), setKBClient.getQueryEndpoint());
         Assert.assertEquals(kbClient.getUpdateEndpoint(), setKBClient.getUpdateEndpoint());
         // Retrieve the rdb client to test whether it is set correctly
-        TimeSeriesRDBClient<Instant> rdbClient = client.getRdbClient();
+        Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
+        rdbClientField.setAccessible(true);
+        TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) rdbClientField.get(client);
         Assert.assertEquals("jdbc:postgresql:timeseries", rdbClient.getRdbURL());
         Assert.assertEquals("postgres", rdbClient.getRdbUser());
     }
@@ -88,14 +92,18 @@ public class TimeSeriesClientTest {
     @Test
     public void testConstructorWithOnlyPropertiesFile() throws NoSuchFieldException, IllegalAccessException {
         // Retrieve the rdf client to test whether it is set correctly
-        TimeSeriesSparql rdfClient = testClient.getRdfClient();
+        Field rdfClientField = TimeSeriesClient.class.getDeclaredField("rdfClient");
+        rdfClientField.setAccessible(true);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(testClient);
         Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
         StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
         Assert.assertEquals("http://localhost:9999/blazegraph/namespace/timeseries/sparql", setKBClient.getQueryEndpoint());
         Assert.assertEquals("http://localhost:9999/blazegraph/namespace/timeseries/sparql", setKBClient.getUpdateEndpoint());
         // Retrieve the rdb client to test whether it is set correctly
-        TimeSeriesRDBClient<Instant> rdbClient = testClient.getRdbClient();
+        Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
+        rdbClientField.setAccessible(true);
+        TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) rdbClientField.get(testClient);
         Assert.assertEquals("jdbc:postgresql:timeseries", rdbClient.getRdbURL());
         Assert.assertEquals("postgres", rdbClient.getRdbUser());
     }
@@ -107,7 +115,9 @@ public class TimeSeriesClientTest {
         kbClient.setUpdateEndpoint("sparql_update");
         testClient.setKBClient(kbClient);
         // Retrieve the rdf client to test whether it is set correctly
-        TimeSeriesSparql rdfClient = testClient.getRdfClient();
+        Field rdfClientField = TimeSeriesClient.class.getDeclaredField("rdfClient");
+        rdfClientField.setAccessible(true);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(testClient);
         Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
         kbClientField.setAccessible(true);
         StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
@@ -119,7 +129,9 @@ public class TimeSeriesClientTest {
     public void testSetRDBClient() throws NoSuchFieldException, IllegalAccessException {
         testClient.setRDBClient("testURL", "user", "password");
         // Retrieve the rdb client to test whether it is set correctly
-        TimeSeriesRDBClient<Instant> rdbClient = testClient.getRdbClient();
+        Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
+        rdbClientField.setAccessible(true);
+        TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) rdbClientField.get(testClient);
         Assert.assertEquals("testURL", rdbClient.getRdbURL());
         Assert.assertEquals("user", rdbClient.getRdbUser());
         Field passwordField = TimeSeriesRDBClient.class.getDeclaredField("rdbPassword");
