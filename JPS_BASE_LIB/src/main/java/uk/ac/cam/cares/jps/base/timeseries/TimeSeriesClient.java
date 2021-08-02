@@ -118,6 +118,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     	} catch (JPSRuntimeException e_RdbCreate) {
     		// For exceptions thrown when initialising RDB elements in relational database,
 			// try to revert previous knowledge base instantiation
+    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+    		//		a different exception depending on what the problem was, and how it should be handled
     		try {
     			rdfClient.removeTimeSeries(tsIRI);
     		} catch (Exception e_RdfDelete) {
@@ -200,6 +202,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	    	} catch (JPSRuntimeException e_RdbDelete) {
 				// For exceptions thrown when deleting RDB elements in relational database,
 				// try to revert previous knowledge base deletion
+	    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have insertTimeSeriesAssociation throw
+	    		//		a different exception depending on what the problem was, and how it should be handled
 	    		try {
 	    			rdfClient.insertTimeSeriesAssociation(dataIRI, tsIRI);
 	    		} catch (Exception e_RdfCreate) {
@@ -241,6 +245,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 		} catch (JPSRuntimeException e_RdbDelete) {
 			// For exceptions thrown when deleting RDB elements in relational database,
 			// try to revert previous knowledge base deletion
+    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have initTS throw
+    		//		a different exception depending on what the problem was, and how it should be handled
 			try {
 				rdfClient.initTS(tsIRI, dataIRIs, rdbClient.getRdbURL(), timeUnit);
 			} catch (Exception e_RdfCreate) {

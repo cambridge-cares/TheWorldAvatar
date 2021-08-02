@@ -179,14 +179,12 @@ public class TimeSeriesRDBClient<T> {
 			// Initialise RDB table for storing time series data
 			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, dataIRI, dataClass);
 			
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -233,14 +231,12 @@ public class TimeSeriesRDBClient<T> {
 			// Append time series data to time series table
 			populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
 			
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -319,14 +315,12 @@ public class TimeSeriesRDBClient<T> {
 
 	    	return new TimeSeries<>(timeValues, dataIRI, dataValues);
 	    	
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -393,14 +387,12 @@ public class TimeSeriesRDBClient<T> {
 	    	
 	    	return queryResult.get(0);
 	    	
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -432,14 +424,12 @@ public class TimeSeriesRDBClient<T> {
 	    	
 	    	return queryResult.get(0);
 	    	
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -472,14 +462,12 @@ public class TimeSeriesRDBClient<T> {
 	    	// Delete rows between bounds (including bounds!)
 	    	context.delete(table).where(timeColumn.between(lowerBound, upperBound)).execute();
 
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -524,14 +512,12 @@ public class TimeSeriesRDBClient<T> {
 				deleteTimeSeriesTable(dataIRI);
 			}
 			
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException("Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -566,14 +552,12 @@ public class TimeSeriesRDBClient<T> {
 	    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));
 	    	context.delete(dbTable).where(tsIRIcolumn.equal(tsIRI)).execute();
     	
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
@@ -865,14 +849,12 @@ public class TimeSeriesRDBClient<T> {
 					throw new JPSRuntimeException(exceptionPrefix + "Aggregate function "+aggregateFunction.name()+" not valid!");
 			}
 
+		} catch (JPSRuntimeException e) {
+			// Re-throw JPSRuntimeExceptions
+			throw e;
 		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				// Re-throw JPSRuntimeExceptions
-				throw e;
-			} else {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
+			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		} finally {	
 			disconnect();
 		}
