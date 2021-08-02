@@ -266,7 +266,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     	
     	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
     	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataExists(iri)) {
+    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
     			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
     					  " is not attached to any time series instance in the KG");
     		}    		
@@ -289,7 +289,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 		
     	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
     	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataExists(iri)) {
+    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
     			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
     					  " is not attached to any time series instance in the KG");
     		}    		
@@ -319,7 +319,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public double getAverage(String dataIRI) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		
@@ -336,7 +336,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public double getMaxValue(String dataIRI) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		
@@ -353,7 +353,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public double getMinValue(String dataIRI) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		
@@ -370,7 +370,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public T getMaxTime(String dataIRI) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		
@@ -387,7 +387,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public T getMinTime(String dataIRI) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		
@@ -405,7 +405,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		
     	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataExists(dataIRI)) {
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
 			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
 					  " is not attached to any time series instance in the KG");
 		}    		

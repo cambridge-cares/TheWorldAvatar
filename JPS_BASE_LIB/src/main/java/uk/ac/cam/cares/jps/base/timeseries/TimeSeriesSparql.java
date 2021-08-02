@@ -150,7 +150,7 @@ public class TimeSeriesSparql {
 	 * @param dataIRI: data IRI provided as string
 	 * @return True if an instance with the IRI exists, false otherwise
 	 */
-    public boolean checkDataExists(String dataIRI) {
+    public boolean checkDataHasTimeSeries(String dataIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
@@ -346,7 +346,7 @@ public class TimeSeriesSparql {
 		
 		String result = null;
 		
-		if (checkDataExists(dataIRI)) {		
+		if (checkDataHasTimeSeries(dataIRI)) {
 
 			String queryString = "tsIRI";
 			

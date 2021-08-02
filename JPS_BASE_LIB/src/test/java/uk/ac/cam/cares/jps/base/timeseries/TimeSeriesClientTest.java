@@ -401,7 +401,7 @@ public class TimeSeriesClientTest {
     	
         // Set-up stubbing
     	Mockito.when(mockTimeSeries.getDataIRIs()).thenReturn(dataIRI);
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -419,7 +419,7 @@ public class TimeSeriesClientTest {
     public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -437,7 +437,7 @@ public class TimeSeriesClientTest {
     public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -455,7 +455,7 @@ public class TimeSeriesClientTest {
     public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -473,7 +473,7 @@ public class TimeSeriesClientTest {
     public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -491,7 +491,7 @@ public class TimeSeriesClientTest {
     public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -509,7 +509,7 @@ public class TimeSeriesClientTest {
     public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -527,7 +527,7 @@ public class TimeSeriesClientTest {
     public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {
@@ -545,7 +545,7 @@ public class TimeSeriesClientTest {
     public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException {
     	
         // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataExists(Mockito.any())).thenReturn(false);
+        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
         setRDFMock();
         
         try {

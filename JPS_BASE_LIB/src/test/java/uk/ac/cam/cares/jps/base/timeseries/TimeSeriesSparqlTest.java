@@ -328,19 +328,19 @@ public class TimeSeriesSparqlTest {
 
     @Test
     public void testCheckDataExists() {
-        Assert.assertFalse(sparqlClient.checkDataExists("http://data1"));
+        Assert.assertFalse(sparqlClient.checkDataHasTimeSeries("http://data1"));
 
         // Initialise time series in kb
         sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
 
-        Assert.assertTrue(sparqlClient.checkDataExists("http://data1"));
-        Assert.assertFalse(sparqlClient.checkDataExists("http://data5"));
+        Assert.assertTrue(sparqlClient.checkDataHasTimeSeries("http://data1"));
+        Assert.assertFalse(sparqlClient.checkDataHasTimeSeries("http://data5"));
 
         // Retrieve test knowledge base
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
         // Add a data IRI with a property that is not attached to a time series
         testKnowledgeBase.add(testKnowledgeBase.createResource(dataIRI2.get(0)), RDFS.comment, "Data IRI without timeseries");
-        Assert.assertFalse(sparqlClient.checkDataExists(dataIRI2.get(0)));
+        Assert.assertFalse(sparqlClient.checkDataHasTimeSeries(dataIRI2.get(0)));
 
     }
 
