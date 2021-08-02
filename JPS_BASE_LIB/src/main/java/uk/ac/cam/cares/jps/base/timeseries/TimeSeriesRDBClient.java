@@ -95,63 +95,38 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	protected void loadRdbConfigs(String filepath) throws IOException {
 		
-		try {
-			File file = new File(filepath);
-			
-			if (!file.exists()) {
-				throw new JPSRuntimeException("1");
-			}
-			
-			// Open input stream from file
-			InputStream input = new FileInputStream(file);
-			
-			// Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-            // Close the input stream
-            input.close();
-
-            // Get the property values and assign
-            if (prop.containsKey("db.url")) {
-            	setRdbURL(prop.getProperty("db.url"));
-            } else {
-            	throw new JPSRuntimeException("2");
-            }
-            if (prop.containsKey("db.user")) {
-            	setRdbUser(prop.getProperty("db.user"));
-            } else {
-            	throw new JPSRuntimeException("3");
-            }
-            if (prop.containsKey("db.password")) {
-            	setRdbPassword(prop.getProperty("db.password"));
-            } else {
-            	throw new JPSRuntimeException("4");
-            }
-
-		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				String m;
-				switch (e.getMessage()) {
-					case "1":
-						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
-						break;
-					case "2":
-						m = exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ";
-						break;
-					case "3":
-						m = exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ";
-						break;
-					case "4":
-						m = exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ";
-						break;
-					default:
-						throw new JPSRuntimeException(e.getMessage());							
-				}
-				throw new JPSRuntimeException(m);
-			} else {
-				throw e;
-			}			
+		// Check whether properties file exists at specified location
+		File file = new File(filepath);		
+		if (!file.exists()) {
+			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
 		}
+		
+		// Open input stream from file
+		InputStream input = new FileInputStream(file);
+		
+		// Load properties file from specified path
+        Properties prop = new Properties();
+        prop.load(input);
+        // Close the input stream
+        input.close();
+
+        // Get the property values and assign
+        if (prop.containsKey("db.url")) {
+        	setRdbURL(prop.getProperty("db.url"));
+        } else {
+        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ");
+        }
+        if (prop.containsKey("db.user")) {
+        	setRdbUser(prop.getProperty("db.user"));
+        } else {
+        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
+        }
+        if (prop.containsKey("db.password")) {
+        	setRdbPassword(prop.getProperty("db.password"));
+        } else {
+        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
+        }
+
 	}
 
 	/**

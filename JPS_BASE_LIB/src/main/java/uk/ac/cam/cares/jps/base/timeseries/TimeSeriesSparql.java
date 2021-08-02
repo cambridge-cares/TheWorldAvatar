@@ -82,55 +82,33 @@ public class TimeSeriesSparql {
 	 */
 	protected void loadSparqlConfigs(String filepath) throws IOException {
 		
-		try {
-			File file = new File(filepath);
-			
-			if (!file.exists()) {
-				throw new JPSRuntimeException("1");
-			}
-			
-			// Open input stream from file
-			InputStream input = new FileInputStream(file);
-							
-			// Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-            // Close the input stream
-            input.close();
-        
-            // Get the property values and assign
-            if (prop.containsKey("sparql.query.endpoint")) {
-            	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-            } else {
-            	throw new JPSRuntimeException("2");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-            	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-            } else {
-            	throw new JPSRuntimeException("3");
-            }
-
-		} catch (Exception e) {
-			if (e instanceof JPSRuntimeException) {
-				String m;
-				switch (e.getMessage()) {
-					case "1":
-						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
-						break;
-					case "2":
-						m = exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ";
-						break;
-					case "3":
-						m = exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ";
-						break;
-					default:
-						throw new JPSRuntimeException(e.getMessage());							
-				}
-				throw new JPSRuntimeException(m);
-			} else {
-				throw e;
-			}			
+		// Check whether properties file exists at specified location
+		File file = new File(filepath);		
+		if (!file.exists()) {
+			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
 		}
+		
+		// Open input stream from file
+		InputStream input = new FileInputStream(file);
+						
+		// Load properties file from specified path
+        Properties prop = new Properties();
+        prop.load(input);
+        // Close the input stream
+        input.close();
+    
+        // Get the property values and assign
+        if (prop.containsKey("sparql.query.endpoint")) {
+        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+        } else {
+        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+        }
+        if (prop.containsKey("sparql.update.endpoint")) {
+        	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+        } else {
+        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+        }
+
 	}
     
 	/**
