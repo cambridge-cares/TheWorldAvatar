@@ -10,10 +10,10 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * This class represents the MAIN entry point to interact with time series in The World Avatar
+ * This class represents the MAIN interface to interact with time series in The World Avatar
  * 
- * It uses the TimeSeriesRDBClient class to interact with the relational database and the
- * TimeSeriesSparql class to interact with the Triple Store.
+ * It uses the TimeSeriesRDBClient class to interact with a relational database and the
+ * TimeSeriesSparql class to interact with a Triple Store.
  * 
  * @author Markus Hofmeister, Niklas Kasenburg
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
@@ -28,9 +28,9 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
     /**
      * Constructor for pre-defined kbClient and only RDB client to be created according to properties file
-     * @param kbClient: Knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
-     * @param timeClass: Class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
-     * @param filepath: Absolute path to file with RDB configs (URL, username, password) 
+     * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
+     * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
+     * @param filepath absolute path to file with RDB configs (URL, username, password) 
      */
     public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String filepath) throws IOException {
     	// Initialise Sparql client with pre-defined kbClient
@@ -42,8 +42,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
      * Constructor for both RDB and Sparql clients to be created according to properties file
-     * @param timeClass: Class type for the time values (to initialise RDB table)
-     * @param filepath: Absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints) 
+     * @param timeClass class type for the time values (to initialise RDB table)
+     * @param filepath absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints) 
      */
     public TimeSeriesClient(Class<T> timeClass, String filepath) throws IOException {
     	// Initialise Sparql client according to properties file
@@ -57,7 +57,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
      * Load properties for RDB client
-     * @param filepath: Absolute path to properties file with respective information
+     * @param filepath absolute path to properties file with respective information
      */
     private void loadRdbConfigs(String filepath) throws IOException {
     	rdbClient.loadRdbConfigs(filepath);
@@ -65,7 +65,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
      * Load properties for RDF/SPARQL client
-     * @param filepath: Absolute path to properties file with respective information
+     * @param filepath absolute path to properties file with respective information
      */
     private void loadSparqlConfigs(String filepath) throws IOException {
     	rdfClient.loadSparqlConfigs(filepath);   
@@ -73,7 +73,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
 	 * Setter for knowledge base client (in Sparql client)
-	 * @param kbClient: Knowledge base client used to query and update the knowledge base containing timeseries information with already specified endpoint (triplestore/owl file)
+	 * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information with already specified endpoint (triplestore/owl file)
 	*/
     public void setKBClient(StoreClientInterface kbClient) {    	
     	this.rdfClient.setKBClient(kbClient);
@@ -89,9 +89,9 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 
     /**
 	 * Setter for URL and credentials for the relational database (in RDB Client)
-	 * @param rdbURL: URL to relational database (e.g. postgreSQL)
-	 * @param user: username to access relational database
-	 * @param password: password to access relational database 
+	 * @param rdbURL URL to relational database (e.g. postgreSQL)
+	 * @param user username to access relational database
+	 * @param password password to access relational database 
 	*/
     public void setRDBClient(String rdbURL, String user, String password) {    	
     	this.rdbClient.setRdbURL(rdbURL);
@@ -109,9 +109,9 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 
     /**
      * Initialise time series in triple store and relational database
-     * @param dataIRIs: List of dataIRIs as Strings
-     * @param dataClass: List of data classes for each dataIRI
-     * @param timeUnit: time unit as (full) IRI
+     * @param dataIRIs list of dataIRIs as Strings
+     * @param dataClass list of data classes for each dataIRI
+     * @param timeUnit time unit as (full) IRI
      */
     public void initTimeSeries(List<String> dataIRIs, List<Class<?>> dataClass, String timeUnit) {
 
@@ -146,7 +146,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
      * Delete individual time series in triple store and relational database (i.e. time series for one dataIRI)
-     * @param dataIRI: dataIRIs as Strings
+     * @param dataIRI dataIRIs as Strings
      */
     public void deleteIndividualTimeSeries(String dataIRI) {
     	
@@ -190,7 +190,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 
     /**
      * Delete time series and all associated dataIRI connections from triple store and relational database 
-     * @param tsIRI: time series IRI as String
+     * @param tsIRI time series IRI as String
      */
     public void deleteTimeSeries(String tsIRI) {
     	
@@ -231,7 +231,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     /**
      * Delete all time series and associated connections from triple store and relational database
 	 * NOTE: When trying to delete all time series information, NO restore will be tried
-	 *     		 in case any exception occurs - only errors for inconsistent states are thrown.
+	 *     	 in case any exception occurs - only errors for inconsistent states are thrown.
      */
     public void deleteAll() {
 		// Step1: Delete all time series in knowledge base
@@ -255,7 +255,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     
     /**
      * Append time series data to an already instantiated time series
-	 * @param ts: timeseries object to add
+	 * @param ts TimeSeries object to add
      */
     public void addTimeSeriesData(TimeSeries<T> ts) {
 		
@@ -278,10 +278,10 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
      * Retrieve time series data within given bounds (time bounds are inclusive and optional)
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
-	 * @param dataIRIs: list of data IRIs provided as string
-	 * @param lowerBound: start timestamp from which to retrieve data (null if not applicable)
-	 * @param upperBound: end timestamp until which to retrieve data (null if not applicable)
-	 * @return Returns all data series from dataIRIs list as single time series object
+	 * @param dataIRIs list of data IRIs provided as string
+	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
+	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
+	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
 		
@@ -301,8 +301,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
      * Retrieve entire time series data history for given dataIRIs
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
-	 * @param dataIRIs: list of data IRIs provided as string
-	 * @return Returns all data series from dataIRIs list as single time series object
+	 * @param dataIRIs list of data IRIs provided as string
+	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
 		
@@ -311,7 +311,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve average value of an entire time series
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getAverage(String dataIRI) {
@@ -328,7 +328,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve maximum value of an entire time series
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMaxValue(String dataIRI) {
@@ -345,7 +345,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve minimum value of an entire time series
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMinValue(String dataIRI) {
@@ -362,8 +362,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve latest (maximum) time entry for a given dataIRI
-	 * @param dataIRI: data IRI provided as string
-	 * @return The maximum (latest) timestamp of the corresponding data
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum (latest) timestamp of the corresponding data series
 	 */
 	public T getMaxTime(String dataIRI) {
 		
@@ -379,8 +379,8 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Retrieve earliest (minimum) time entry for a given dataIRI
-	 * @param dataIRI: data IRI provided as string
-	 * @return The minimum (earliest) timestamp of the corresponding data
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum (earliest) timestamp of the corresponding data series
 	 */
 	public T getMinTime(String dataIRI) {
 		
@@ -396,9 +396,9 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	
 	/**
 	 * Delete time series history for given dataIRI (and all dataIRIs associated with same time series) between two time stamps
-	 * @param dataIRI: data IRI provided as string
-	 * @param lowerBound: start timestamp from which to delete data (inclusive)
-	 * @param upperBound: end timestamp until which to delete data (inclusive)
+	 * @param dataIRI data IRI provided as string
+	 * @param lowerBound start timestamp from which to delete data (inclusive)
+	 * @param upperBound end timestamp until which to delete data (inclusive)
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		

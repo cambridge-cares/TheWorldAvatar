@@ -64,7 +64,7 @@ public class TimeSeriesRDBClient<T> {
 
     /**
      * Standard constructor
-     * @param timeClass: class of the timestamps of the time series
+     * @param timeClass class of the timestamps of the time series
      */
     public TimeSeriesRDBClient(Class<T> timeClass) {
     	timeColumn = DSL.field(DSL.name("time"), timeClass);
@@ -91,7 +91,7 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Load RDB URL, username and password from properties file ("timeseries.properties") at specified path
-	 * @param filepath: Absolute path to timeseries properties file
+	 * @param filepath absolute path to timeseries properties file
 	 */
 	void loadRdbConfigs(String filepath) throws IOException {
 		
@@ -158,9 +158,9 @@ public class TimeSeriesRDBClient<T> {
 	 * Initialise RDB table for particular time series and add respective entries to central lookup table
 	 * <p>For the list of supported classes, refer org.jooq.impl.SQLDataType
 	 * <p>The timeseries IRI needs to be provided. A unique uuid for the corresponding table will be generated.
-	 * @param dataIRI: list of IRIs for the data provided as string
-	 * @param dataClass: list with the corresponding Java class (typical String, double or int) for each data IRI
-	 * @param tsIRI: IRI of the timeseries provided as string
+	 * @param dataIRI list of IRIs for the data provided as string
+	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * @param tsIRI IRI of the timeseries provided as string
 	 */
 	void initTimeSeriesTable(List<String> dataIRI, List<Class<?>> dataClass, String tsIRI) {
 		
@@ -221,7 +221,7 @@ public class TimeSeriesRDBClient<T> {
     /**
      * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
-	 * @param ts: timeseries object to add
+	 * @param ts TimeSeries object to add
      */
 	void addTimeSeriesData(TimeSeries<T> ts) {
 		
@@ -277,9 +277,9 @@ public class TimeSeriesRDBClient<T> {
      * <p>Returns all data series from dataIRI list as one time series object (with potentially multiple related data series);
      * <br>Returned time series are in ascending order with respect to time (from oldest to newest)
      * <br>Returned time series contain potential duplicates (i.e. multiple entries for same time stamp)
-	 * @param dataIRI: list of data IRIs provided as string
-	 * @param lowerBound: start timestamp from which to retrieve data (null if not applicable)
-	 * @param upperBound: end timestamp until which to retrieve data (null if not applicable)
+	 * @param dataIRI list of data IRIs provided as string
+	 * @param lowerBound start timestamp from which to retrieve data (null if not applicable)
+	 * @param upperBound end timestamp until which to retrieve data (null if not applicable)
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRI, T lowerBound, T upperBound) {
 
@@ -360,7 +360,7 @@ public class TimeSeriesRDBClient<T> {
 	
 	/** 
      * Retrieve entire time series from RDB
-	 * @param dataIRI: list of data IRIs provided as string
+	 * @param dataIRI list of data IRIs provided as string
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
 		return getTimeSeriesWithinBounds(dataIRI, null, null);
@@ -368,8 +368,8 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Retrieve average value of a column; stored data should be in numerics
-	 * @param dataIRI: data IRI provided as string
-	 * @return The average of the corresponding data as double
+	 * @param dataIRI data IRI provided as string
+	 * @return The average of the provided data series as double
 	 */
 	public double getAverage(String dataIRI) {
 		return getAggregate(dataIRI, AggregateFunction.AVERAGE);
@@ -377,8 +377,8 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Retrieve maximum value of a column; stored data should be in numerics
-	 * @param dataIRI: data IRI provided as string
-	 * @return The maximum of the corresponding data as double
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum of the provided data series as double
 	 */
 	public double getMaxValue(String dataIRI) {
 		return getAggregate(dataIRI, AggregateFunction.MAX);
@@ -386,8 +386,8 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Retrieve minimum value of a column; stored data should be in numerics
-	 * @param dataIRI: data IRI provided as string
-	 * @return The minimum of the corresponding data as double
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum of the provided data series as double
 	 */
 	public double getMinValue(String dataIRI) {
 		return getAggregate(dataIRI, AggregateFunction.MIN);
@@ -395,8 +395,8 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Retrieve latest (maximum) time entry for a given dataIRI
-	 * @param dataIRI: data IRI provided as string
-	 * @return The maximum (latest) timestamp of the corresponding data
+	 * @param dataIRI data IRI provided as string
+	 * @return The maximum (latest) timestamp of the provided data series
 	 */
 	public T getMaxTime(String dataIRI) {
 		
@@ -434,8 +434,8 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Retrieve earliest (minimum) time entry for a given dataIRI
-	 * @param dataIRI: data IRI provided as string
-	 * @return The minimum (earliest) timestamp of the corresponding data
+	 * @param dataIRI data IRI provided as string
+	 * @return The minimum (earliest) timestamp of the provided data series
 	 */
 	public T getMinTime(String dataIRI) {
 		
@@ -474,9 +474,9 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Delete RDB time series table rows between lower and upper Bound
 	 * <p>Note that this will delete the entire rows in the corresponding table, i.e. all columns (in addition to the given data IRI)
-	 * @param dataIRI: data IRI provided as string
-	 * @param lowerBound: start timestamp from which to delete data
-	 * @param upperBound: end timestamp until which to delete data
+	 * @param dataIRI data IRI provided as string
+	 * @param lowerBound start timestamp from which to delete data
+	 * @param upperBound end timestamp until which to delete data
 	 */
 	void deleteRows(String dataIRI, T lowerBound, T upperBound) {
 		
@@ -513,7 +513,7 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Delete individual time series (i.e. data for one dataIRI only)
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 */
 	void deleteTimeSeries(String dataIRI) {
 		
@@ -565,7 +565,7 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Delete all time series information related to a dataIRI (i.e. entire RDB table and entries in central table)
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 */
 	void deleteTimeSeriesTable(String dataIRI) {
 		
@@ -685,10 +685,10 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Add new entries to central RDB lookup table
 	 * <p>Requires existing RDB connection
-	 * @param tsTable: name of the timeseries table provided as string
-	 * @param dataIRI: list of data IRIs provided as string
-	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data IRIs
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsTable name of the timeseries table provided as string
+	 * @param dataIRI list of data IRIs provided as string
+	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
+	 * @param tsIRI timeseries IRI provided as string
 	 */
 	private void populateCentralTable(String tsTable, List<String> dataIRI, Map<String, String> dataColumnNames, String tsIRI) {	
 		InsertValuesStep4<Record, String, String, String, String> insertValueStep = context.insertInto(DSL.table(DSL.name(dbTableName)),
@@ -705,10 +705,10 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Create an empty RDB table with the given data types for the respective columns
 	 * <p>Requires existing RDB connection
-	 * @param tsTable: name of the timeseries table provided as string
-	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data IRIs
-	 * @param dataIRI: list of data IRIs provided as string
-	 * @param dataClass: list with the corresponding Java class (typical String, double or int) for each data IRI
+	 * @param tsTable name of the timeseries table provided as string
+	 * @param dataColumnNames list of column names in the tsTable corresponding to the data IRIs
+	 * @param dataIRI list of data IRIs provided as string
+	 * @param dataClass list with the corresponding Java class (typical String, double or int) for each data IRI
 	 */
 	private void createEmptyTimeSeriesTable(String tsTable, Map<String,String> dataColumnNames, List<String> dataIRI,
 											List<Class<?>> dataClass) {
@@ -729,11 +729,11 @@ public class TimeSeriesRDBClient<T> {
 	}
 	
 	/**
-	 * Append time series data from ts Object to (existing) RDB table
+	 * Append time series data from TimeSeries object to (existing) RDB table
 	 * <p>Requires existing RDB connection
-	 * @param tsTable: name of the timeseries table provided as string
-	 * @param ts: time series to write into the table
-	 * @param dataColumnNames: list of column names in the tsTable corresponding to the data in the ts
+	 * @param tsTable name of the timeseries table provided as string
+	 * @param ts time series to write into the table
+	 * @param dataColumnNames list of column names in the tsTable corresponding to the data in the ts
 	 */
 	private void populateTimeSeriesTable(String tsTable, TimeSeries<T> ts, Map<String,String> dataColumnNames) {
 		List<String> dataIRIs = ts.getDataIRIs();
@@ -765,7 +765,7 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Check whether dataIRI has a tsIRI associated with it (i.e. dataIRI exists in central lookup table)
 	 * <p>Requires existing RDB connection
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
 	 */
 	private boolean checkDataHasTimeSeries(String dataIRI) {
@@ -776,9 +776,9 @@ public class TimeSeriesRDBClient<T> {
 	
 	/**
 	 * Ensure that all dataIRIs are associated with same RDB table (i.e. have same time series IRI)
-	 * <br>Throws JPSRuntime Exception if not all dataIRIs are attached to same table
+	 * <br>Throws JPSRuntime Exception if not all dataIRIs are attached to same table in the database
 	 * <p>Requires existing RDB connection;
-	 * @param dataIRI: list of data IRIs provided as string
+	 * @param dataIRI list of data IRIs provided as string
 	 */
 	private void checkDataIsInSameTable(List<String> dataIRI) {
 		// Get time series IRI of first dataIRI
@@ -798,7 +798,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Retrieve tsIRI for provided dataIRI from central database lookup table (if it exists)
 	 * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return The attached time series IRI as string
 	 */
 	private String getTimeSeriesIRI(String dataIRI) {
@@ -813,7 +813,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Retrieve column name for provided dataIRI from central database lookup table (if it exists)
 	 * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return Corresponding column name in the RDB table related to the data IRI
 	 */
 	private String getColumnName(String dataIRI) {
@@ -826,9 +826,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve table name for provided dataIRI from central database lookup table (if it exists)
-	 * <br>Throws IndexOutOfBoundsException if tsIRI is not present in central lookup table (i.e. queryResult is empty)
+	 * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return Corresponding table name as string
 	 */
 	private String getTimeseriesTableName(String dataIRI) {
@@ -841,9 +841,9 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve time series table for provided dataIRI in database
-*    * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
+     * <br>Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 	 * <p>Requires existing RDB connection
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return Table object corresponding to the time series
 	 */
 	private Table<?> getTimeseriesTable(String dataIRI) {
@@ -855,8 +855,8 @@ public class TimeSeriesRDBClient<T> {
 
 	/**
 	 * Retrieve aggregate value of a column; stored data should be in numerics
-	 * @param dataIRI: data IRI provided as string
-	 * @param aggregateFunction: enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)   
+	 * @param dataIRI data IRI provided as string
+	 * @param aggregateFunction enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)   
 	 * @return The aggregate value of the whole time series corresponding to the dataIRI.
 	 */
 	private double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {

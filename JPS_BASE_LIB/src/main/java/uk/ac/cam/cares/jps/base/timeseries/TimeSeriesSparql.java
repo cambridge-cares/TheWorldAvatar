@@ -62,7 +62,7 @@ public class TimeSeriesSparql {
 
     /**
      * Standard constructor
-     * @param kbClient: The knowledge base client used to query and update the knowledge base containing timeseries information
+     * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
      */
     public TimeSeriesSparql(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
@@ -70,7 +70,7 @@ public class TimeSeriesSparql {
 
     /**
 	 * Setter for the knowledge base client
-	 * @param kbClient: The knowledge base client used to query and update the knowledge base containing timeseries information
+	 * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
 	*/
 	public void setKBClient(StoreClientInterface kbClient) {
         this.kbClient = kbClient;
@@ -78,7 +78,7 @@ public class TimeSeriesSparql {
 	
 	/**
 	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
-	 * @param filepath: Absolute path to timeseries properties file
+	 * @param filepath absolute path to timeseries properties file
 	 */
 	protected void loadSparqlConfigs(String filepath) throws IOException {
 		
@@ -135,7 +135,7 @@ public class TimeSeriesSparql {
     
 	/**
 	 * Check whether a particular time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI: timeseries IRI provided as string
+	 * @param timeSeriesIRI timeseries IRI provided as string
 	 * @return True if a time series instance with the tsIRI exists, false otherwise
 	 */
     public boolean checkTimeSeriesExists(String timeSeriesIRI) {
@@ -146,7 +146,7 @@ public class TimeSeriesSparql {
     
 	/**
 	 * Check whether given data IRI is attached to a time series
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
     public boolean checkDataHasTimeSeries(String dataIRI) {
@@ -157,7 +157,7 @@ public class TimeSeriesSparql {
     
 	/**
 	 * Check whether time series IRI has time unit
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return True if the timeseries instance has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
@@ -168,10 +168,10 @@ public class TimeSeriesSparql {
     
     /**
      * Instantiate the time series instance in the knowledge base (time unit is optional)
-     * @param timeSeriesIRI: timeseries IRI provided as string
-     * @param dataIRI: list of data IRI provided as string that should be attached to the timeseries
-     * @param dbURL: URL of the database where the timeseries data is stored provided as string
-     * @param timeUnit: the time unit of the time series (optional)
+     * @param timeSeriesIRI timeseries IRI provided as string
+     * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
+     * @param dbURL URL of the database where the timeseries data is stored provided as string
+     * @param timeUnit the time unit of the time series (optional)
      */    
     protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
     	// Construct time series IRI
@@ -243,8 +243,8 @@ public class TimeSeriesSparql {
 	
     /**
      * Attach data IRI to existing time series IRI in kb (i.e. insert "hasTimeSeries" relationship)
-     * @param dataIRI: data IRI provided as string
-     * @param tsIRI: time series IRI provided as string
+     * @param dataIRI data IRI provided as string
+     * @param tsIRI time series IRI provided as string
      */
 	protected void insertTimeSeriesAssociation(String dataIRI, String tsIRI) {
 		
@@ -268,7 +268,7 @@ public class TimeSeriesSparql {
 	
     /**
      * Remove relationship between dataIRI and associated time series from kb
-     * @param dataIRI: data IRI provided as string
+     * @param dataIRI data IRI provided as string
      */
 	protected void removeTimeSeriesAssociation(String dataIRI) {
 		
@@ -293,7 +293,7 @@ public class TimeSeriesSparql {
 	
     /**
      * Remove time series and all associated connections from kb (i.e. remove all triples with tsIRI as subject or object)
-     * @param tsIRI: timeseries IRI provided as string
+     * @param tsIRI timeseries IRI provided as string
      */
 	protected void removeTimeSeries(String tsIRI) {
 
@@ -337,7 +337,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Get time series IRI associated with given data IRI
 	 * <p>Returns null if dataIRI does not exist or no time series is attached to dataIRI
-	 * @param dataIRI: data IRI provided as string
+	 * @param dataIRI data IRI provided as string
 	 * @return The corresponding timeseries IRI as string
 	 */
 	public String getTimeSeries(String dataIRI) {
@@ -365,7 +365,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Get database URL associated with time series IRI
 	 * <p>Returns null if time series does not exist or does not have associated database URL
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return The URL to the database where data from that timeseries is stored as string
 	 */
 	public String getDbUrl(String tsIRI) {
@@ -392,7 +392,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Get time unit associated with time series IRI
 	 * <p>Returns null if time series does not exist or does not have associated time unit
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return The time unit of timeseries as string
 	 */
 	public String getTimeUnit(String tsIRI) {
@@ -419,7 +419,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Get data IRIs associated with a given time series IRI
 	 * <p>Returns empty List if time series does not exist or does not have associated data
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return List of data IRIs attached to the time series as string
 	 */
 	public List<String>  getAssociatedData(String tsIRI) {
@@ -453,9 +453,9 @@ public class TimeSeriesSparql {
 
 	/**
 	 * Execute a query that selects all individuals in the kb that fulfill a certain pattern
-	 * @param instanceSelectQuery: The query to execute. Should be a select query with a single triple pattern where
-	 *                             the subject represents the instance to retrieve.
-	 * @param placeholder: The placeholder used in the select query for the instance to retrieve provided as string without ?
+	 * @param instanceSelectQuery the query to execute. Should be a select query with a single triple pattern where
+	 *                            the subject represents the instance to retrieve.
+	 * @param placeholder the placeholder used in the select query for the instance to retrieve provided as string without ?
 	 * @return List of all instances' IRIs in the knowledge base provided as string
 	 */
 	private List<String> getInstances(SelectQuery instanceSelectQuery, String placeholder) {
