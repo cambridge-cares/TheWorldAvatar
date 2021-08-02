@@ -4,18 +4,13 @@
   <artifactId>UKDigitalTwinAgent</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
+    <properties>
+        <spring-version>3.2.9.RELEASE</spring-version>
+        <org.slf4j-version>1.6.6</org.slf4j-version>
+    </properties>
 
 <build>
-    <sourceDirectory>src</sourceDirectory>
-    <testSourceDirectory>test</testSourceDirectory>
-	<resources>
-		<resource>
-			<directory>src</directory>
-			<excludes>
-				<exclude>**/*.java</exclude>
-			</excludes>
-		</resource>
-	</resources>
+	<finalName>UKDigitalTwinAgent</finalName>
     <plugins>
 
 	<plugin>
@@ -36,39 +31,102 @@
 		</configuration>
 	</plugin>
       
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.1</version>
-        <configuration>
-          <webResources>
-						<resource>
-           					<directory>res</directory>
-           					<targetPath>res</targetPath>
-           				</resource>
-           				<resource>
-           					<directory>python</directory>
-           					<targetPath>python</targetPath>
-           				</resource>						
-						<resource>
-							<directory>workingdir</directory>
-							<targetPath>workingdir</targetPath>
-						</resource>
-						<resource>
-           					<directory>WebContent</directory>
-				     			<includes>
-                				<include>*.html</include>
-              				</includes>
-            			</resource>
-					</webResources>
-                    <warName>${project.artifactId}##${project.version}</warName>
-                    <outputDirectory>${tomcatPath}/webapps</outputDirectory>
-        </configuration>
-      </plugin>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.2.1</version>
+				<configuration>
+					<warName>UKDigitalTwinAgent</warName>
+					<outputDirectory>${tomcatPath}/webapps</outputDirectory>
+				</configuration>
+			</plugin>
       
     </plugins>
 </build>
 	
 	<dependencies>
+			<!-- Core utilities used by other modules. Define this if you use Spring 
+		Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+		<!-- Bean Factory and JavaBeans utilities (depends on spring-core) Define 
+		this if you use Spring Bean APIs (org.springframework.beans.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-beans</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+
+
+		<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
+		spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
+		Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring-version}</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>commons-logging</artifactId>
+					<groupId>commons-logging</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Support for testing Spring applications with tools such as JUnit and 
+		TestNG This artifact is generally always defined with a 'test' scope for 
+		the integration testing framework and unit testing stubs -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring-version}</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Spring Security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<version>${spring-version}</version>
+		</dependency>
+		
+		<!-- Logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.17</version>
+		</dependency>
 		<dependency>
 			<groupId>uk.ac.cam.cares.jps</groupId>
 			<artifactId>jps-base-lib</artifactId>
