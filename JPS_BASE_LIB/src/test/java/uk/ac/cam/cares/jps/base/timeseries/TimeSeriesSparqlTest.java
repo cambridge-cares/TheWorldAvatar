@@ -23,7 +23,6 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 
 public class TimeSeriesSparqlTest {
@@ -188,33 +187,6 @@ public class TimeSeriesSparqlTest {
     public void closeKnowledgeBase() {
 	    mockClient.closeKnowledgeBase();
     }
-    
-    @AfterClass
-    public static void deleteTemporaryFolder() throws IOException {
-    	// Normally junit temporary folder would take care of this; however no exception is thrown if
-    	// deletion fails (as AfterClass method); therefore, it is safer to delete an verify
-    	
-		// delete property file to clear folder
-		File file = new File(Paths.get(folder.getRoot().toString(), "timeseries.properties").toString());
-		System.out.println(file.exists());
-		if (file.exists()) {
-			file.delete();
-		}
-		
-		// delete empty folder
-		File dir = new File(folder.getRoot().toString());
-		System.out.println(dir.exists());
-		if (dir.exists()) {
-			dir.delete();
-		}		
-		
-		if (folder.getRoot().exists()) {
-			System.out.println("Temporary folder deletion failed: " + folder.getRoot().toString());
-		} else {
-			System.out.println("Temporary folder successfully deleted");
-		}
-
-    }
 
     @Test
     public void testConstructor() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -332,7 +304,7 @@ public class TimeSeriesSparqlTest {
         String errorMessage = exception.getMessage();
         Assert.assertTrue(errorMessage.contains(tsIRI1));
         Assert.assertTrue(errorMessage.contains("already in the Knowledge Graph"));
-        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName().toString()));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
         // Trying to init different time series but same data IRI should result in an exception
         exception = Assert.assertThrows(JPSRuntimeException.class, () ->
                 sparqlClient.initTS(tsIRI2, dataIRI1, dbURL, timeUnit));
@@ -340,7 +312,7 @@ public class TimeSeriesSparqlTest {
         Assert.assertTrue(errorMessage.contains(tsIRI1));
         Assert.assertTrue(errorMessage.contains(dataIRI1.get(0)));
         Assert.assertTrue(errorMessage.contains("is already attached to time series"));
-        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName().toString()));
+        Assert.assertTrue(errorMessage.contains(TimeSeriesSparql.class.getSimpleName()));
 	}
 
     @Test
@@ -466,12 +438,22 @@ public class TimeSeriesSparqlTest {
         sparqlClient.initTS(tsIRI1, dataIRI1, dbURL, timeUnit);
         // Retrieve the updated knowledge base from the mock client
         OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
-        
-        // Check correct association of dataIRI with time series
-        Assert.assertEquals(3, sparqlClient.getAssociatedData(tsIRI1).size());
+
+        // Test that data IRIs are attached to time series instance
+        for (String iri: dataIRI1) {
+            RDFNode object = testKnowledgeBase.getIndividual(iri)
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getObject();
+            Assert.assertTrue(object.isResource());
+            Assert.assertEquals(tsIRI1, object.asResource().getURI());
+        }
         sparqlClient.insertTimeSeriesAssociation(dataIRIThatGetsAdded, tsIRI1);
-        Assert.assertEquals(4, sparqlClient.getAssociatedData(tsIRI1).size());
-        Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(dataIRIThatGetsAdded));
+        // Test that new attached data IRI is really attached to time series instance
+        RDFNode object = testKnowledgeBase.getIndividual(dataIRIThatGetsAdded)
+                .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                .getObject();
+        Assert.assertTrue(object.isResource());
+        Assert.assertEquals(tsIRI1, object.asResource().getURI());
         
         // Check exception for already existing time series association (with any time series)
         try {
@@ -487,7 +469,12 @@ public class TimeSeriesSparqlTest {
         	Assert.fail();
         } catch (Exception e) {
         	Assert.assertTrue(e.getMessage().contains("does not exists in the Knowledge Graph"));
-        	Assert.assertEquals(tsIRI1, sparqlClient.getTimeSeries(dataIRIThatGetsAdded));
+            // Test that new attached data IRI is still attached to time series instance
+            object = testKnowledgeBase.getIndividual(dataIRIThatGetsAdded)
+                    .getProperty(ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries"))
+                    .getObject();
+            Assert.assertTrue(object.isResource());
+            Assert.assertEquals(tsIRI1, object.asResource().getURI());
         }
     }
     
@@ -615,7 +602,7 @@ public class TimeSeriesSparqlTest {
     	}
     	
     	// Test for missing query endpoint by creating a file only containing update endpoint
-    	writePropertyFile(filepath, Arrays.asList("sparql.update.endpoint=test_update"));
+    	writePropertyFile(filepath, Collections.singletonList("sparql.update.endpoint=test_update"));
 	    // Try loading SPARQL configs
     	try {
     		client.loadSparqlConfigs(filepath);
@@ -625,7 +612,7 @@ public class TimeSeriesSparqlTest {
     	}
 
     	// Test for missing update endpoint by creating a file only containing query endpoint
-        writePropertyFile(filepath, Arrays.asList("sparql.query.endpoint=test_query"));
+        writePropertyFile(filepath, Collections.singletonList("sparql.query.endpoint=test_query"));
 	    // Try loading SPARQL configs
     	try {
     		client.loadSparqlConfigs(filepath);
