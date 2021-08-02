@@ -25,7 +25,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
 @Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
 		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-public class TimeSeriesRDBClientlIntegrationTest {
+public class TimeSeriesRDBClientIntegrationTest {
 	
 	// Define RDB database setup (analogous to a triple-store endpoint)
 	// Using special testcontainers URL that will spin up a Postgres Docker container when accessed by a driver

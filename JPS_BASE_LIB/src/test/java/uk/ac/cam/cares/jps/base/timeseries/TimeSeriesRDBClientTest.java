@@ -30,7 +30,7 @@ public class TimeSeriesRDBClientTest {
     @AfterClass
     public static void deleteTemporaryFolder() throws IOException {
     	// Normally junit temporary folder would take care of this; however no exception is thrown if
-    	// deletion fails (as AfterClass method); therefore, it is safer to delete an verify
+    	// deletion fails (as AfterClass method); therefore, it is safer to delete and verify
     	
 		// delete property file to clear folder
 		File file = new File(Paths.get(folder.getRoot().toString(), "timeseries.properties").toString());

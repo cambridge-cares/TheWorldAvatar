@@ -28,7 +28,6 @@ import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 
 
 /**
@@ -57,7 +56,7 @@ public class TimeSeriesRDBClient<T> {
     private static final Field<String> tsTableNameColumn = DSL.field(DSL.name("tableName"), String.class);
     private static final Field<String> columnNameColumn = DSL.field(DSL.name("columnName"), String.class);
     // Exception prefix
- 	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
+ 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
  	// Allowed aggregation function
 	private enum AggregateFunction {
 		AVERAGE,
@@ -133,7 +132,7 @@ public class TimeSeriesRDBClient<T> {
 
 		} catch (Exception e) {
 			if (e instanceof JPSRuntimeException) {
-				String m = "";
+				String m;
 				switch (e.getMessage()) {
 					case "1":
 						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
@@ -860,7 +859,7 @@ public class TimeSeriesRDBClient<T> {
 	 * Retrieve aggregate value of a column; stored data should be in numerics
 	 * @param dataIRI: data IRI provided as string
 	 * @param aggregateFunction: enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)   
-	 * @return
+	 * @return The aggregate value of the whole time series corresponding to the dataIRI.
 	 */
 	private double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
 
