@@ -36,17 +36,18 @@ public class TimeSeriesClientIntegrationTest {
 
 	// Will create two Docker containers for Blazegraph and postgreSQL
 	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-	@Container
+
 	// Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
 	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker_Registry
+	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 												 .withExposedPorts(9999);
-	@Container
 	// Create Docker container with postgres 13.3 image from Docker Hub
+	@Container
 	private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
-	
-	@Before
+
 	// Initialise 2 test time series data sets
+	@Before
 	public void initialiseData() {
 		// Initialise time unit for all test data series
 		timeUnit = "http://s";
@@ -67,9 +68,9 @@ public class TimeSeriesClientIntegrationTest {
 		dataClass_2 = new ArrayList<>();
 		dataClass_2.add(Double.class);
 	}
-	
-	@Before
+
 	// Create clean slate (new Docker containers) for each test
+	@Before
 	public void initialiseTimeSeriesClient() {
 		
 		try {
@@ -93,7 +94,7 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Initialise TimeSeriesClient client with pre-configured kb client
 	    try {
-	    	tsClient = new TimeSeriesClient<Instant>(kbClient, Instant.class, 
+	    	tsClient = new TimeSeriesClient<>(kbClient, Instant.class,
 	    						Paths.get(getClass().getResource("/timeseries.properties").toURI()).toString());
 	    } catch (Exception e) {
 	    	// Simply suppress exceptions for potential issues, as properties will be overwritten anyway
@@ -240,7 +241,7 @@ public class TimeSeriesClientIntegrationTest {
 		Assert.assertEquals(0, rdfClient.countTS());
 		Assert.assertNull(rdfClient.getTimeSeries(dataIRI));
 		try {
-			ts = rdbClient.getTimeSeries(dataIRI_1);
+			rdbClient.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (Exception e) {
 			// Exception from executing SQL command with empty dataIRI
@@ -253,7 +254,64 @@ public class TimeSeriesClientIntegrationTest {
 			Assert.assertTrue(e.getMessage().contains("DataIRI " + dataIRI + " not associated with any timeseries."));
 		}		
 	}
-	
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithUnavailableKG() {
+
+		// Initialise time series in knowledge base and database
+		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+		String dataIRI = dataIRI_1.get(0);
+
+		// Interrupt triple store connection
+		blazegraph.stop();
+
+		try {
+			// Delete time series in knowledge base and database
+			tsClient.deleteIndividualTimeSeries(dataIRI);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
+		}
+	}
+
+	@Test
+	public void testDeleteIndividualTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+
+		// Initialise time series in knowledge base and database
+		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+		String dataIRI = dataIRI_1.get(0);
+
+		// Retrieve RDB client
+		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
+		// Retrieve the value of the private field 'rdfClient' of the time series client
+		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+		RDFClient.setAccessible(true);
+		TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
+
+		// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
+		// Spy's behave exactly like normal instances, except for particularly stubbed methods
+		TimeSeriesSparql rdfClient_spy = spy(rdfClient);
+		RDFClient.set(tsClient, rdfClient_spy);
+		// Throw error when removal of time series in KG is intended
+		doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeriesAssociation(Mockito.anyString());
+
+		try {
+			// Delete time series in knowledge base and database
+			tsClient.deleteIndividualTimeSeries(dataIRI);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
+		}
+
+		// Check that knowledge base and database are still consistent
+		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		List<String> kb = ts.getDataIRIs();
+		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI));
+		kb.sort(null);
+		db.sort(null);
+		Assert.assertEquals(kb, db);
+	}
+
 	@Test	
 	public void testDeleteIndividualTimeSeriesWithUnavailableRDB() {
 		
@@ -286,72 +344,13 @@ public class TimeSeriesClientIntegrationTest {
 		Assert.assertEquals(dataIRI_1.size(), kb.size());
 	}
 	
-	@Test	
-	public void testDeleteIndividualTimeSeriesWithUnavailableKG() {
-		
-		// Initialise time series in knowledge base and database		
-		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		String dataIRI = dataIRI_1.get(0);		
-
-		// Interrupt triple store connection
-		blazegraph.stop();
-		
-		try {
-			// Delete time series in knowledge base and database		
-			tsClient.deleteIndividualTimeSeries(dataIRI);
-			Assert.fail();
-		} catch(Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
-		}
-	}
-	
-	@Test	
-	public void testDeleteIndividualTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		
-		// Initialise time series in knowledge base and database		
-		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		String dataIRI = dataIRI_1.get(0);	
-		
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
-		// Retrieve the value of the private field 'rdfClient' of the time series client
-		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
-		RDFClient.setAccessible(true);
-		TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
-		
-		// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-		// Spy's behave exactly like normal instances, except for particularly stubbed methods
-		TimeSeriesSparql rdfClient_spy = spy(rdfClient);
-		RDFClient.set(tsClient, rdfClient_spy);
-		// Throw error when removal of time series in KG is intended
-		doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeriesAssociation(Mockito.anyString());
-		
-		try {
-			// Delete time series in knowledge base and database		
-			tsClient.deleteIndividualTimeSeries(dataIRI);
-			Assert.fail();
-		} catch(Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Timeseries association for " + dataIRI + " was not deleted!"));
-		}	
-		
-		// Check that knowledge base and database are still consistent
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
-		List<String> kb = ts.getDataIRIs();
-		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI));
-		kb.sort(null);
-		db.sort(null);
-		Assert.assertEquals(kb, db);		
-	}
-	
 	@Test
 	public void testDeleteIndividualTimeSeriesWithKGRevertException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		String dataIRI = dataIRI_1.get(0);	
-		
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
+
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
@@ -400,7 +399,7 @@ public class TimeSeriesClientIntegrationTest {
 		Assert.assertEquals(1, rdfClient.countTS());
 		Assert.assertNull(rdfClient.getTimeSeries(dataIRI_1.get(0)));
 		try {
-			ts1 = rdbClient.getTimeSeries(dataIRI_1);
+			rdbClient.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (Exception e) {
 			Assert.assertTrue(e.getMessage().contains("does not have a time series instance (i.e. tsIRI)"));
@@ -414,13 +413,73 @@ public class TimeSeriesClientIntegrationTest {
 		Assert.assertEquals(0, rdfClient.countTS());
 		Assert.assertNull(rdfClient.getTimeSeries(dataIRI_2.get(0)));
 		try {
-			ts2 = rdbClient.getTimeSeries(dataIRI_2);
+			rdbClient.getTimeSeries(dataIRI_2);
 			Assert.fail();
 		} catch (Exception e) {
 			Assert.assertTrue(e.getMessage().contains("does not have a time series instance (i.e. tsIRI)"));
 		}		
 	}
-	
+
+	@Test
+	public void testDeleteTimeSeriesWithUnavailableKG() {
+
+		// Initialise time series in knowledge base and database
+		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+		// Retrieve RDF/SPARQL client and tsIRI to be deleted
+		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
+		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
+
+		// Interrupt triple store connection
+		blazegraph.stop();
+
+		try {
+			// Delete time series in knowledge base and database
+			tsClient.deleteTimeSeries(tsIRI);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
+		}
+	}
+
+	@Test
+	public void testDeleteTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
+
+		// Initialise time series in knowledge base and database
+		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
+
+		// Retrieve RDB client
+		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
+		// Retrieve the value of the private field 'rdfClient' of the time series client
+		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
+		RDFClient.setAccessible(true);
+		TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
+
+		// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
+		// Spy's behave exactly like normal instances, except for particularly stubbed methods
+		TimeSeriesSparql rdfClient_spy = spy(rdfClient);
+		RDFClient.set(tsClient, rdfClient_spy);
+		// Throw error when removal of time series in KG is intended
+		doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeries(Mockito.anyString());
+
+		// Retrieve tsIRI to be deleted
+		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
+		try {
+			// Delete time series in knowledge base and database
+			tsClient.deleteTimeSeries(tsIRI);
+			Assert.fail();
+		} catch(Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Timeseries " + tsIRI + " was not deleted!"));
+		}
+
+		// Check that knowledge base and database are still consistent
+		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
+		List<String> kb = ts.getDataIRIs();
+		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0)));
+		kb.sort(null);
+		db.sort(null);
+		Assert.assertEquals(kb, db);
+	}
+
 	@Test	 
 	public void testDeleteTimeSeriesWithUnavailableRDB() {
 		
@@ -452,74 +511,12 @@ public class TimeSeriesClientIntegrationTest {
 		Assert.assertEquals(kb, db);		
 	}
 	
-	@Test	 
-	public void testDeleteTimeSeriesWithUnavailableKG() {
-		
-		// Initialise time series in knowledge base and database		
-		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		// Retrieve RDF/SPARQL client and tsIRI to be deleted
-		TimeSeriesSparql rdfClient = tsClient.getRdfClient();
-		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
-		
-		// Interrupt triple store connection
-		blazegraph.stop();
-		
-		try {
-			// Delete time series in knowledge base and database		
-			tsClient.deleteTimeSeries(tsIRI);
-			Assert.fail();
-		} catch(Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Error occurred during SPARQL query evaluation"));
-		}		
-	}
-	
-	@Test	 
-	public void testDeleteTimeSeriesWithKGDeleteException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
-		
-		// Initialise time series in knowledge base and database		
-		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
-		// Retrieve the value of the private field 'rdfClient' of the time series client
-		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
-		RDFClient.setAccessible(true);
-		TimeSeriesSparql rdfClient = (TimeSeriesSparql)	RDFClient.get(tsClient);
-		
-		// Create a spy object of the real rdfClient and substitute the initial rdfClient with it
-		// Spy's behave exactly like normal instances, except for particularly stubbed methods
-		TimeSeriesSparql rdfClient_spy = spy(rdfClient);
-		RDFClient.set(tsClient, rdfClient_spy);
-		// Throw error when removal of time series in KG is intended
-		doThrow(new JPSRuntimeException("")).when(rdfClient_spy).removeTimeSeries(Mockito.anyString());
-		
-		// Retrieve tsIRI to be deleted
-		String tsIRI = rdfClient.getTimeSeries(dataIRI_1.get(0));
-		try {
-			// Delete time series in knowledge base and database		
-			tsClient.deleteTimeSeries(tsIRI);
-			Assert.fail();
-		} catch(Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Timeseries " + tsIRI + " was not deleted!"));
-		}	
-		
-		// Check that knowledge base and database are still consistent
-		TimeSeries<Instant> ts = rdbClient.getTimeSeries(dataIRI_1);
-		List<String> kb = ts.getDataIRIs();
-		List<String> db = rdfClient.getAssociatedData(rdfClient.getTimeSeries(dataIRI_1.get(0)));
-		kb.sort(null);
-		db.sort(null);
-		Assert.assertEquals(kb, db);		
-	}
-	
 	@Test
 	public void testDeleteTimeSeriesWithKGRevertException() throws IllegalArgumentException, IllegalAccessException, NoSuchFieldException, SecurityException {
 		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
 		
-		// Retrieve RDB client
-		TimeSeriesRDBClient<Instant> rdbClient = tsClient.getRdbClient();
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
@@ -572,7 +569,7 @@ public class TimeSeriesClientIntegrationTest {
 		List<List<String>> series = Arrays.asList(dataIRI_1, dataIRI_2);
 		for (List<String> s : series) {			
 			try {
-				TimeSeries<Instant> ts = rdbClient.getTimeSeries(s);
+				rdbClient.getTimeSeries(s);
 				Assert.fail();
 			} catch (Exception e) {
 				Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
