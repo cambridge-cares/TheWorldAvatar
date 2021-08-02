@@ -103,7 +103,18 @@ public class TimeSeriesClientIntegrationTest {
 	    // Configure database access
 	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 	}
-		
+
+	// Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished
+	@After
+	public void stopContainers() {
+		if (blazegraph.isRunning()) {
+			blazegraph.stop();
+		}
+		if (postgres.isRunning()) {
+			postgres.stop();
+		}
+	}
+
 	@Test	 
 	public void testInitTimeSeriesWithoutExceptions() {
 		
@@ -516,7 +527,7 @@ public class TimeSeriesClientIntegrationTest {
 		
 		// Initialise time series in knowledge base and database		
 		tsClient.initTimeSeries(dataIRI_1, dataClass_1, timeUnit);
-		
+
 		// Retrieve the value of the private field 'rdfClient' of the time series client
 		Field RDFClient = tsClient.getClass().getDeclaredField("rdfClient");
 		RDFClient.setAccessible(true);
