@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.derivedquantity.test;
+package uk.ac.cam.cares.jps.base.derivedquantity;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.Query;

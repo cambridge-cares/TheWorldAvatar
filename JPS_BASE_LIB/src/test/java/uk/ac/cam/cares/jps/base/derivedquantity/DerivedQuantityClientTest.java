@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.derivedquantity.test;
+package uk.ac.cam.cares.jps.base.derivedquantity;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
