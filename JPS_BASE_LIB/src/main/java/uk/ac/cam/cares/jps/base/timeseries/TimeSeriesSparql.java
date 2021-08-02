@@ -158,7 +158,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Check whether time series IRI has time unit
 	 * @param tsIRI timeseries IRI provided as string
-	 * @return True if the timeseries instance has a defined time unit, false otherwise
+	 * @return True if the timeseries instance exists and has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));

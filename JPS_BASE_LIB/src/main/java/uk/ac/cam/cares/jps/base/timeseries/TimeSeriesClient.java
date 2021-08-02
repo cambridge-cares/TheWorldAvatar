@@ -145,6 +145,45 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     }
     
     /**
+     * Append time series data to an already instantiated time series
+	 * @param ts TimeSeries object to add
+     */
+    public void addTimeSeriesData(TimeSeries<T> ts) {
+		
+    	// Retrieve relevant dataIRIs
+    	List<String> dataIRIs = ts.getDataIRIs();
+    	
+    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
+    	for (String iri : dataIRIs) {
+    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
+    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
+    					  " is not attached to any time series instance in the KG");
+    		}    		
+    	}
+    	
+    	// Add time series data to respective database table
+    	rdbClient.addTimeSeriesData(ts);
+    }
+    
+	/**
+	 * Delete time series history for given dataIRI (and all dataIRIs associated with same time series) between two time stamps
+	 * @param dataIRI data IRI provided as string
+	 * @param lowerBound start timestamp from which to delete data (inclusive)
+	 * @param upperBound end timestamp until which to delete data (inclusive)
+	 */
+	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
+		
+    	// Check whether dataIRI is instantiated in the KG and attached to a time series
+		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+					  " is not attached to any time series instance in the KG");
+		}    		
+		
+		// Delete RDB time series table rows between lower and upper Bound
+		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
+	}
+    
+    /**
      * Delete individual time series in triple store and relational database (i.e. time series for one dataIRI)
      * @param dataIRI dataIRIs as Strings
      */
@@ -251,27 +290,6 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from database! " +
 					  "Potentially inconsistent state between KG and database", e_RdbDelete);
 		}
-    }
-    
-    /**
-     * Append time series data to an already instantiated time series
-	 * @param ts TimeSeries object to add
-     */
-    public void addTimeSeriesData(TimeSeries<T> ts) {
-		
-    	// Retrieve relevant dataIRIs
-    	List<String> dataIRIs = ts.getDataIRIs();
-    	
-    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
-    	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
-    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
-    					  " is not attached to any time series instance in the KG");
-    		}    		
-    	}
-    	
-    	// Add time series data to respective database table
-    	rdbClient.addTimeSeriesData(ts);
     }
     
     /** 
@@ -395,21 +413,86 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	}
 	
 	/**
-	 * Delete time series history for given dataIRI (and all dataIRIs associated with same time series) between two time stamps
-	 * @param dataIRI data IRI provided as string
-	 * @param lowerBound start timestamp from which to delete data (inclusive)
-	 * @param upperBound end timestamp until which to delete data (inclusive)
+	 * Check whether given time series (i.e. tsIRI) exists in kb
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return True if a time series instance with the tsIRI exists, false otherwise
 	 */
-	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
-		// Delete RDB time series table rows between lower and upper Bound
-		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
+    public boolean checkTimeSeriesExists(String tsIRI) {
+    	return rdfClient.checkTimeSeriesExists(tsIRI);
+    }
+    
+	/**
+	 * Check whether given data IRI is attached to a time series in kb
+	 * @param dataIRI data IRI provided as string
+	 * @return True if dataIRI exists and is attached to a time series, false otherwise
+	 */
+    public boolean checkDataHasTimeSeries(String dataIRI) {
+    	return rdfClient.checkDataHasTimeSeries(dataIRI);
+    }
+    
+	/**
+	 * Check whether given time series IRI has associated time unit in kb
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return True if tsIRI exists and has a defined time unit, false otherwise
+	 */
+    public boolean checkTimeUnitExists(String tsIRI) {
+    	return rdfClient.checkTimeUnitExists(tsIRI);
+    }
+    
+    /**
+     * Count number of time series IRIs in kb
+     * @return Total number of time series instances in the knowledge base as int
+     */
+	public int countTimeSeries() {
+		return rdfClient.countTS();
 	}
-
+	
+	/**
+	 * Get time series IRI associated with given data IRI in kb
+	 * <p>Returns null if dataIRI does not exist or no time series is attached to dataIRI
+	 * @param dataIRI data IRI provided as string
+	 * @return The corresponding timeseries IRI as string
+	 */
+	public String getTimeSeriesIRI(String dataIRI) {
+		return rdfClient.getTimeSeries(dataIRI);
+	}
+	
+	/**
+	 * Get database URL associated with given time series IRI in kb
+	 * <p>Returns null if time series does not exist or does not have associated database URL
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return The URL to the database where data from that timeseries is stored as string
+	 */
+	public String getDbUrl(String tsIRI) {
+		return rdfClient.getDbUrl(tsIRI);
+	}
+	
+	/**
+	 * Get time unit associated with time series IRI in kb
+	 * <p>Returns null if time series does not exist or does not have associated time unit
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return The time unit of timeseries as string
+	 */
+	public String getTimeUnit(String tsIRI) {
+		return rdfClient.getTimeUnit(tsIRI);
+	}
+	
+	/**
+	 * Get data IRIs associated with given time series IRI in kb
+	 * <p>Returns empty List if time series does not exist or does not have associated data
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return List of data IRIs attached to the time series as string
+	 */
+	public List<String> getAssociatedData(String tsIRI) {
+		return rdfClient.getAssociatedData(tsIRI);
+	}
+	
+    /**
+     * Extract all time series IRIs from kb
+     * <p>Returns empty List if no time series exist in kb
+     * @return List of all time series IRI in the knowledge base provided as string
+     */
+	public List<String> getAllTimeSeries() {
+		return rdfClient.getAllTimeSeries();
+	}
 }
