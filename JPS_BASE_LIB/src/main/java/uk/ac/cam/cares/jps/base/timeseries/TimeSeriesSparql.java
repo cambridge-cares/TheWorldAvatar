@@ -59,7 +59,7 @@ public class TimeSeriesSparql {
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
 
     // Fields for class specific exceptions
-	private final String exceptionPrefix = this.getClass().getSimpleName().toString() + ": ";
+	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 
     /**
      * Standard constructor
@@ -113,7 +113,7 @@ public class TimeSeriesSparql {
 
 		} catch (Exception e) {
 			if (e instanceof JPSRuntimeException) {
-				String m = "";
+				String m;
 				switch (e.getMessage()) {
 					case "1":
 						m = exceptionPrefix + "No properties file found at specified filepath: " + filepath;
@@ -159,7 +159,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Check whether time series IRI has time unit
 	 * @param tsIRI: timeseries IRI provided as string
-	 * @return True if an the timeseries instance has a defined time unit, false otherwise
+	 * @return True if the timeseries instance has a defined time unit, false otherwise
 	 */
     public boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
