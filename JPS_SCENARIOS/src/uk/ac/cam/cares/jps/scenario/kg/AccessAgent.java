@@ -5,9 +5,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
 
-//@WebServlet(urlPatterns = {"/kb/*"})
+@WebServlet(urlPatterns = {"/kb/*"})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
@@ -73,10 +73,10 @@ public class AccessAgent extends JPSAgent{
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String graphIRI = null; //TODO 
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-		
+	    String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
+	    
 	    if(sparqlupdate != null) {
 	    	throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
 	    }
@@ -113,10 +113,10 @@ public class AccessAgent extends JPSAgent{
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String graphIRI = null; //TODO 
 		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);	
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
+	    String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
 	    
 	    if(sparqlquery!=null && sparqlupdate!=null) {
 	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
@@ -126,7 +126,6 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, null, false);
 			
-			//TODO check target or datasetUrl for this
 			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), false, true);
 			
 			kbClient.insert(graphIRI, body, contentType);
@@ -166,7 +165,6 @@ public class AccessAgent extends JPSAgent{
 		}
 	}
 	
-	//TODO
 	@Override
 	public boolean validateInput(JSONObject requestParams) throws BadRequestException {	    
 		
@@ -180,6 +178,10 @@ public class AccessAgent extends JPSAgent{
 	        	return false;
 	        }
 	    	
+	        String targetiri = requestParams.getString(JPSConstants.TARGETIRI);
+	        boolean v = InputValidator.checkIfURLpattern(targetiri);
+	        if(!v) {return false;}
+	        
 	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
 	        if(!q) {return false;};
 	    	
@@ -211,17 +213,17 @@ public class AccessAgent extends JPSAgent{
 		
 		String method = MiscUtil.optNullKey(requestParams, JPSConstants.METHOD);
 		String path = MiscUtil.optNullKey(requestParams, JPSConstants.PATH);		
-		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);
-		String resourceUrl= MiscUtil.optNullKey(requestParams,JPSConstants.SCENARIO_RESOURCE);
-		String datasetUrl = MiscUtil.optNullKey(requestParams, JPSConstants.SCENARIO_DATASET);	
+		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);	
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
+		String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
+		String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
 		
 		StringBuffer b = new StringBuffer(method);
 		b.append(" with requestedUrl=").append(requestUrl);
 		b.append(", path=").append(path);
-		b.append(", datasetUrl=").append(datasetUrl);
-		b.append(", resourceUrl=").append(resourceUrl);
 		b.append(", contentType=").append(contentType);
+		b.append(", targetiri=").append(targetIRI);
+		b.append(", targetgraph=").append(graphIRI);
 		if (hasErrorOccured) {
 			b.append(", sparql=" + sparql);
 			logger.error(b.toString());
