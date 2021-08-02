@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.base.derivedquantity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,6 +105,7 @@ public class DerivedQuantityClient {
 			validateDerived(derived, vertexList);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
+			System.out.println(e.getMessage());
 			valid = false;
 		}
 		return valid;
@@ -238,10 +238,10 @@ public class DerivedQuantityClient {
 					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
 					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 				} else {
-					updateInstance(input, vertexList);
+					validateDerived(input, vertexList);
 				}
 			} else {
-				updateInstance(input, vertexList);
+				validateDerived(input, vertexList);
 			}
 		}
 		
