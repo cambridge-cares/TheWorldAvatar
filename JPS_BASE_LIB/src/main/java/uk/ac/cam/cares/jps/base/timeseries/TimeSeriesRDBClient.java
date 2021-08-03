@@ -101,31 +101,32 @@ public class TimeSeriesRDBClient<T> {
 			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
 		}
 		
-		// Open input stream from file
-		InputStream input = new FileInputStream(file);
+		// Try-with-resource to ensure closure of input stream
+		try (InputStream input = new FileInputStream(file)) {
 		
-		// Load properties file from specified path
-        Properties prop = new Properties();
-        prop.load(input);
-        // Close the input stream
-        input.close();
-
-        // Get the property values and assign
-        if (prop.containsKey("db.url")) {
-        	setRdbURL(prop.getProperty("db.url"));
-        } else {
-        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ");
-        }
-        if (prop.containsKey("db.user")) {
-        	setRdbUser(prop.getProperty("db.user"));
-        } else {
-        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
-        }
-        if (prop.containsKey("db.password")) {
-        	setRdbPassword(prop.getProperty("db.password"));
-        } else {
-        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
-        }
+			// Load properties file from specified path
+	        Properties prop = new Properties();
+	        prop.load(input);
+	
+	        // Get the property values and assign
+	        if (prop.containsKey("db.url")) {
+	        	setRdbURL(prop.getProperty("db.url"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.url=<rdb_url>\" ");
+	        }
+	        if (prop.containsKey("db.user")) {
+	        	setRdbUser(prop.getProperty("db.user"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.user=<rdb_username>\" ");
+	        }
+	        if (prop.containsKey("db.password")) {
+	        	setRdbPassword(prop.getProperty("db.password"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
+	        }
+		} catch (JPSRuntimeException e) {
+			throw e;
+		}
 
 	}
 

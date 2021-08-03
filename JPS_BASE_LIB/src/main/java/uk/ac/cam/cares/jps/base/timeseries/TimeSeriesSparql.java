@@ -88,26 +88,27 @@ public class TimeSeriesSparql {
 			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
 		}
 		
-		// Open input stream from file
-		InputStream input = new FileInputStream(file);
+		// Try-with-resource to ensure closure of input stream
+		try (InputStream input = new FileInputStream(file)) {
 						
-		// Load properties file from specified path
-        Properties prop = new Properties();
-        prop.load(input);
-        // Close the input stream
-        input.close();
+			// Load properties file from specified path
+	        Properties prop = new Properties();
+	        prop.load(input);
     
-        // Get the property values and assign
-        if (prop.containsKey("sparql.query.endpoint")) {
-        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-        } else {
-        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
-        }
-        if (prop.containsKey("sparql.update.endpoint")) {
-        	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-        } else {
-        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
-        }
+	        // Get the property values and assign
+	        if (prop.containsKey("sparql.query.endpoint")) {
+	        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+	        }
+	        if (prop.containsKey("sparql.update.endpoint")) {
+	        	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+	        }
+		} catch (JPSRuntimeException e) {
+			throw e;
+		}
 
 	}
     
