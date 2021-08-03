@@ -6,8 +6,9 @@ permissions: read-all
 
 # Trigger events
 on:
-  schedule:
-    - cron: '*/10 * * * *'
+  pull_request:
+    branches:
+      - develop
 
 # Job listings
 jobs:
@@ -21,6 +22,8 @@ jobs:
       # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v2
+        run: |
+          git branch --show-current
       
       # Configure Python
       - name: Set up Python 3.7
