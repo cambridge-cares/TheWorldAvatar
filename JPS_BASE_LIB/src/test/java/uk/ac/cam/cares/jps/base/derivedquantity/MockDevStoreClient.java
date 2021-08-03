@@ -48,15 +48,8 @@ public class MockDevStoreClient extends RemoteStoreClient{
     public String execute(String sparql) {
         Query query = QueryFactory.create(sparql);
         QueryExecution queryExec = QueryExecutionFactory.create(query, kb);
-        if (sparql.toLowerCase().contains("ask")) {
-            boolean askResult = queryExec.execAsk();
-            return new JSONArray("[{'ASK': "+ askResult + "}]").toString();
-        }
-        else {
-            ResultSet rs = queryExec.execSelect();
-            return JenaResultSetFormatter.convertToSimplifiedList(rs).getJSONArray("results").toString();
-        }
-
+        ResultSet rs = queryExec.execSelect();
+        return JenaResultSetFormatter.convertToSimplifiedList(rs).getJSONArray("results").toString();
     }
 
     @Override
