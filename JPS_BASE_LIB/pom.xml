@@ -21,7 +21,7 @@
     <!-- Repository locations to deploy to -->
     <distributionManagement>
         <repository>
-            <id>the-world-avatar</id>
+            <id>repo</id>
             <name>TheWorldAvatar Maven Repository</name>
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </repository>
