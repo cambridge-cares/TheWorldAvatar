@@ -1,9 +1,4 @@
-#
-# No-Op copy of "Test Workflow", to be overriden on 
-# the "dev-tests" branch.
-#
-
-# Name workflow
+# Workflow name
 name: Test Workflow
 
 # Read only permissions
@@ -11,11 +6,31 @@ permissions: read-all
 
 # Trigger events
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: '*/10 * * * *'
 
 # Job listings
 jobs:
 
-  # Test Job #1
+  # Just output some stuff for now
   job-one:
     name: Test Job One
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      
+      # Configure Python
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      
+      # Output test messages
+      - name: Sample Output
+        run: |
+          python -c "import sys; print(sys.version)"
+          python -c "import datetime; print(datetime.datetime.now())"
+  
