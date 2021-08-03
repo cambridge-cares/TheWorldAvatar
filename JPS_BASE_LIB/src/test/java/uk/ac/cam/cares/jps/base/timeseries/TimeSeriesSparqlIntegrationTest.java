@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,9 +11,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
-@Ignore("Requires triple store endpoint set up and running (using testcontainers)")
+/**
+ * This class provides integration tests for the TimeSeriesSparql class
+ */
+
+@Ignore("Requires triple store endpoint set up and running (using testcontainers)\n" + 
+		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution")
 @Testcontainers
 public class TimeSeriesSparqlIntegrationTest {
 
@@ -43,8 +47,8 @@ public class TimeSeriesSparqlIntegrationTest {
 		sparqlClient = new TimeSeriesSparql(kbClient);
 	}
 	
-	@AfterClass
-	public static void clearKb() {
+	@After
+	public void clearKb() {
 		// Clear entire knowledge base
 		sparqlClient.removeAllTimeSeries();
 	}
