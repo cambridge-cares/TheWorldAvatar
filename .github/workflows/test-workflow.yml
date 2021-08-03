@@ -1,0 +1,21 @@
+#
+# No-Op copy of "Test Workflow", to be overriden on 
+# the "dev-tests" branch.
+#
+
+# Name workflow
+name: Test Workflow
+
+# Read only permissions
+permissions: read-all
+
+# Trigger events
+on:
+  workflow_dispatch:
+
+# Job listings
+jobs:
+
+  # Test Job #1
+  job-one:
+    name: Test Job One
