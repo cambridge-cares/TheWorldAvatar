@@ -124,8 +124,6 @@ public class TimeSeriesRDBClient<T> {
 	        } else {
 	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"db.password=<rdb_password>\" ");
 	        }
-		} catch (JPSRuntimeException e) {
-			throw e;
 		}
 
 	}

@@ -55,6 +55,32 @@ public class TimeSeriesClientTest {
     }
 
     @Test
+    public void testConstructorWithKBClientAndRdbProperties() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
+        RemoteStoreClient kbClient = new RemoteStoreClient();
+        kbClient.setQueryEndpoint("sparql_query");
+        kbClient.setUpdateEndpoint("sparql_update");
+        String db_url = "jdbc:postgresql:test";
+        String db_user = "test_user";
+        TimeSeriesClient<Instant> client = new TimeSeriesClient<>(kbClient, Instant.class, db_url, db_user, "test_pw");
+
+        // Retrieve the rdf client to test whether it is set correctly
+        Field rdfClientField = TimeSeriesClient.class.getDeclaredField("rdfClient");
+        rdfClientField.setAccessible(true);
+        TimeSeriesSparql rdfClient = (TimeSeriesSparql) rdfClientField.get(client);
+        Field kbClientField = TimeSeriesSparql.class.getDeclaredField("kbClient");
+        kbClientField.setAccessible(true);
+        StoreClientInterface setKBClient = (StoreClientInterface) kbClientField.get(rdfClient);
+        Assert.assertEquals(kbClient.getQueryEndpoint(), setKBClient.getQueryEndpoint());
+        Assert.assertEquals(kbClient.getUpdateEndpoint(), setKBClient.getUpdateEndpoint());
+        // Retrieve the rdb client to test whether it is set correctly
+        Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
+        rdbClientField.setAccessible(true);
+        TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) rdbClientField.get(client);
+        Assert.assertEquals(db_url, rdbClient.getRdbURL());
+        Assert.assertEquals(db_user, rdbClient.getRdbUser());
+    }
+    
+    @Test
     public void testConstructorWithKBClient() throws IOException, NoSuchFieldException, IllegalAccessException, URISyntaxException {
         RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint("sparql_query");

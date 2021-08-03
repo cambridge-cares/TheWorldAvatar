@@ -96,12 +96,7 @@ public class TimeSeriesClientIntegrationTest {
 		kbClient.setQueryEndpoint(endpoint);
 		
 		// Initialise TimeSeriesClient client with pre-configured kb client
-	    try {
-	    	tsClient = new TimeSeriesClient<>(kbClient, Instant.class,
-	    						Paths.get(getClass().getResource("/timeseries.properties").toURI()).toString());
-	    } catch (Exception e) {
-	    	// Simply suppress exceptions for potential issues, as properties will be overwritten anyway
-	    }
+    	tsClient = new TimeSeriesClient<>(kbClient, Instant.class, null, null, null);
 	    
 	    // Configure database access
 	    tsClient.setRDBClient(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());

@@ -106,8 +106,6 @@ public class TimeSeriesSparql {
 	        } else {
 	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
 	        }
-		} catch (JPSRuntimeException e) {
-			throw e;
 		}
 
 	}

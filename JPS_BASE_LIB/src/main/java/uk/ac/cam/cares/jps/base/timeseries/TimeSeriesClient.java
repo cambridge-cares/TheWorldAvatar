@@ -27,6 +27,25 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
 	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 	
     /**
+     * Constructor with pre-defined kbClient and RDB client to be created with provided parameters
+     * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
+     * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
+	 * @param rdbURL URL to relational database (e.g. postgreSQL)
+	 * @param user username to access relational database
+	 * @param password password to access relational database 
+     */
+    public TimeSeriesClient(StoreClientInterface kbClient, Class<T> timeClass, String rdbURL, String user, String password) {
+    	// Initialise Sparql client with pre-defined kbClient
+    	this.rdfClient = new TimeSeriesSparql(kbClient);
+    	// Initialise RDB client according to properties file
+    	this.rdbClient = new TimeSeriesRDBClient<>(timeClass);
+    	// Set RDB credentials
+    	this.rdbClient.setRdbURL(rdbURL);
+    	this.rdbClient.setRdbUser(user);
+    	this.rdbClient.setRdbPassword(password);
+    }
+	
+	/**
      * Constructor for pre-defined kbClient and only RDB client to be created according to properties file
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
      * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
