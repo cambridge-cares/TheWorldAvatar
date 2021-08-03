@@ -5,10 +5,6 @@ import java.util.*;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 
-import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
-
-import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
-
 import uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder.ClauseBuilder;
 
 /**
@@ -26,7 +22,10 @@ public class SPARQLQueryBuilder {
 	}
 	
 	/**
-	 * This method is used to generate the most common used query string with prefixList, selectClause, and whereClause
+	 * This method is used to generate the most common used query string with prefixList, selectClause, whereClause.
+	 * distinctFlag and reducedFlag are used to identify the select constrain which can not be both true. 
+	 * The limit is set as -1 by default which means no limitation is set to the query result. It is only valid when limit is positive integer.  
+	 * The filterClause and optionalClause are optional clauses.
 	 * No arguments are passed as it takes the instance of ClauseBuilder
 	 */
 	public String queryStringBuilder() {
@@ -50,7 +49,7 @@ public class SPARQLQueryBuilder {
 			sb.setLimit(this.queryClause.limit);
 		}
 		
-		if(this.queryClause.filterClause != null) {
+		if(this.queryClause.filterClause.size() > 0) {
 			for (String i : this.queryClause.filterClause) {
 				try {
 					sb.addFilter(i);
@@ -61,7 +60,7 @@ public class SPARQLQueryBuilder {
 			}
 		}
 		
-		if(this.queryClause.optionalClause != null) {
+		if(this.queryClause.optionalClause.size() > 0) {
 			for (List<String> i : this.queryClause.optionalClause) {
 				sb.addOptional(i.get(0), i.get(1), i.get(2));
 			}
@@ -75,11 +74,12 @@ public class SPARQLQueryBuilder {
 	/**
 	 * Overload static method do not rely on the ClauseBuilder
 	 */
-	public static String queryStringBuilder(String[][] Prefix, String[] Select, String[][] Where, boolean distinctFlag, boolean reducedFlag, int limit) {
+	public static String queryStringBuilder(String[][] Prefix, String[] Select, String[][] Where, String[] filterClause, String[][] optionalClause, 
+			boolean distinctFlag, boolean reducedFlag, int limit) {
 		
 		if((distinctFlag && reducedFlag) || (!distinctFlag && !reducedFlag)) {
 			System.out.print("The distinctFlag and reducedFlag cannot be both true or false.");
-		    System.exit(0);
+		    return null;
 		    }			
 				
 		SelectBuilder sb = new SelectBuilder();
@@ -102,6 +102,23 @@ public class SPARQLQueryBuilder {
 		if(limit > 0) {
 			sb.setLimit(limit);
 		}
+		
+		if(filterClause != null) {
+			for (String i : filterClause) {
+				try {
+					sb.addFilter(i);
+				} catch (ParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		if(optionalClause != null) {
+			for (String[] i : optionalClause) {
+				sb.addOptional(i[0], i[1], i[2]);
+			}
+		}
 
 		String queryString = sb.build().toString();
 		return queryString;		
@@ -110,19 +127,23 @@ public class SPARQLQueryBuilder {
 	 public static void main(String[] args) {
 		 
 		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
-		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
-		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
-		  HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
-		  classPre_var.put(pfmv.variableTypePrefix, vl);
-		  LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();
-		  for(int i = 0 ; i < vl.size(); i++) {
+		 ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
+		 List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
+		 HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
+		 classPre_var.put(pfmv.variableTypePrefix, vl);
+		 LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();
+		 for(int i = 0 ; i < vl.size(); i++) {
 			  unlabeledVariable_querySentence.put(vl.get(i), pfmv.queryModelVariableSentence);			  
 		  }		
-		  pb.prefixClauseBuilder(pfmv.PrefixAbbrList);
-		  pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledVariable_querySentence);
-		  pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
-		 //TODO: debug the adding filterClause function
-		 // pb.filterClause =  Arrays.asList("?PrimaryFuel = OCPMATH:Biomass");
+		 pb.prefixClauseBuilder(pfmv.PrefixAbbrList);
+		 pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledVariable_querySentence);
+		 pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
+		 
+//		 pb.filterClause =  Arrays.asList("?PrimaryFuel = OCPMATH:Biomass");
+//		 List<String> optionalScentence = Arrays.asList("?Model_EGen", "a", "OCPMATH:Biomass");
+//		 System.out.printf("The optionalScentence is ", pb.optionalClause);
+//		 pb.optionalClause.add(optionalScentence);
+//		 System.out.println(pb.optionalClause); 
 		 SPARQLQueryBuilder sqb = new SPARQLQueryBuilder(pb);
 		 String querystring = sqb.queryStringBuilder();
 		 System.out.println(querystring); 

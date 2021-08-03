@@ -37,6 +37,16 @@ public class ClauseBuilder implements Prefixes{
 	public boolean reducedFlag = false;
 	public int limit = -1;
 	
+	/**
+	 * queryClauseBuilder is designed for creating the QUERY clauses
+	 * 
+	 * @queryFlag : the flag to identify the clause is build for SPARQL query.
+	 * @updateFlag : the flag to identify the clause is build for SPARQL update.
+	 * @entityName : the name of the query entity.
+	 * @entityType : the query entity type, e.g. "j1:Generator".
+	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
+	 */
+	
 	public  ClauseBuilder(boolean queryFlag, boolean updateFlag, String entityName, String entityType) {
 		if((queryFlag && updateFlag) || (!queryFlag && !updateFlag)) {
 			System.out.print("The queryFlag and updateFlag cannot be both true or false.");
@@ -46,28 +56,17 @@ public class ClauseBuilder implements Prefixes{
 			this.entityName = entityName;
 			this.entityType = entityType;
 		}	
-		this.optionalClause = null;
-		this.filterClause = null;
 	}
 	
+	//TODO: overload ClauseBuilder with querySentence, insertSentence, deleteSentence....;
+	
 	/**
-	 * queryClauseBuilder is designed for creating the QUERY clauses
+	 * prefixClauseBuilder is designed for creating the prefix clauses in a SPARQL query string
 	 * 
-	 * @entityName : the name of the query entity.
-	 * @entityType : the query entity type, e.g. "j1:Generator".
 	 * @PrefixAbbrList : a list contains the abbreviations of Prefix used in the query. The abbreviation pattern follows the PrefixToUrlMap.
-	 * @classPrefix_unlabeledVariable : a hashmap which maps the namespace of the variables class to the variables. A same namespace can map with multiple variables.
-	 * @variableTypePrefix : the abbreviated Prefix of variables type.
-	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
-	 * @unlabeledVariable_querySentence : a LinkedHashMap maps between the unlabeled variables with its query sentence pattern collection used to construct the query body (e.g. whereClause).
-	 * @labeledVariable_labels : a LinkedHashMap maps between labeled variables and its labels. Variables of a same type can have multiple labels.  
-	 * @labeledVariable_classPrefix : a hashmap the variables to the namespace of the variables class.
-	 * @labeledVariable_querySentence : if label is needed in constructing the query body, a label map need to be specified. The key is the variable whose going to be labeled. 
-	 *             The value is the list of label. If no labels are need, it is set to null.
-	 *  
-	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
+	 * 
+	 * Argument could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
 	 */
-	//TODO: overload ClauseBuilder with querySentence, insertSentence, deleteSentence....; overload the method for no arguments, write the comments of the new added methods	
 	public void prefixClauseBuilder(List<String> PrefixAbbrList){
 		for(String pre: PrefixAbbrList) {
 			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
@@ -75,6 +74,16 @@ public class ClauseBuilder implements Prefixes{
 			this.prefixList.add(prefixPair);
 		}	
 	} 
+	
+	/**
+	 * selectClauseAndWhereClauseBuilderWithoutLabels is designed for creating the selectClause and WhereClause without labeled variables
+	 * 
+	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
+	 * @classPrefix_unlabeledVariable : a hashmap which maps the namespace of the variables class to the variables. A same namespace can map with multiple variables.
+	 * @unlabeledVariable_querySentence : a LinkedHashMap maps between the unlabeled variables with its query sentence pattern collection used to construct the query body (e.g. whereClause).
+	 *  
+	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
+	 */
 	
 	public void selectClauseAndWhereClauseBuilderWithoutLabels(String varNameIdentifier, HashMap<String, List<String>> classPrefix_unlabeledVariable, 
 			LinkedHashMap<String, List<String>> unlabeledVariable_querySentence){
@@ -109,6 +118,18 @@ public class ClauseBuilder implements Prefixes{
 		}		
 		
 	} 
+	
+	/**
+	 * selectClauseAndWhereClauseBuilderWithLabels is designed for creating the selectClause and WhereClause with labeled variables
+	 * 
+	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
+	 * @labeledVariable_labels : a LinkedHashMap maps between labeled variables and its labels. Variables of a same type can have multiple labels.  
+	 * @labeledVariable_classPrefix : a hashmap the variables to the namespace of the variables class.
+	 * @labeledVariable_querySentence : if label is needed in constructing the query body, a label map need to be specified. The key is the variable whose going to be labeled. 
+	 *             The value is the list of label. If no labels are need, it is set to null.
+	 *  
+	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
+	 */
 	
 	public void selectClauseAndWhereClauseBuilderWithLabels(String varNameIdentifier, LinkedHashMap<String, List<String>> labeledVariable_labels, 
 			HashMap<String, String> labeledVariable_classPrefix, HashMap<String, List<String>> labeledVariable_querySentence){
@@ -198,6 +219,8 @@ public class ClauseBuilder implements Prefixes{
 		  ArrayList<List<String>> pl  = pb.prefixList;
 		  Printer.printArrayList(pl);
 		  System.out.println(pb.selectClause); 
+		  
+		  System.out.println(pb.filterClause.size()); 
 	 }
 	 
 	 
