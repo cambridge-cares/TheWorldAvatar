@@ -11,7 +11,7 @@ services:
       dockerfile: "docker/Dockerfile"
     container_name: "gas-grid-agent-${MODE}"
     restart: unless-stopped
-    mem_limit: 1g
+    mem_limit: 2g
     ports:
       - 4005:80
     labels:
