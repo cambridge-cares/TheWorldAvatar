@@ -1,0 +1,3 @@
+ENTRY_IRI='EntryIRI'
+SPECIES_IRI='SpeciesIRI'
+ENTRY_UUID='EntryUUID'
