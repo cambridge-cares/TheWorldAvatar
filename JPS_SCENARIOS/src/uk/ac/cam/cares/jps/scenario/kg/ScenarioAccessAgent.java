@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -198,7 +198,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 			return storeClient.get(resourceUrl, accept);
 		} 
 		
-		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
+		String content = AccessAgentCaller.get(externalDatasetUrl, resourceUrl, accept);
 		if (copyOnRead) {
 			storeClient.put(resourceUrl, content, accept);
 			if (accept != null) {
@@ -218,7 +218,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 			// will not work with current knowledge base implementation for Fuseki
 			//String datasetUrl = kb.getDatasetUrl();
 			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
-			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
+			return AccessAgentCaller.query(metadatasetUrl, null, sparql);
 		}
 		
 		if (storeClient.exists(resourceUrl)) {
@@ -226,12 +226,12 @@ public class ScenarioAccessAgent  extends AccessAgent {
 		} 
 		
 		if (copyOnRead) {
-			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			String content = AccessAgentCaller.get(null, resourceUrl, null);
 			storeClient.put(resourceUrl, content, null);
 			return storeClient.query(resourceUrl, sparql);
 		} else {
 			logger.info("query from KnowledgeBaseClient");	
-			return KnowledgeBaseClient.query(null, resourceUrl, sparql);
+			return AccessAgentCaller.query(null, resourceUrl, sparql);
 		}
 	}
 	
@@ -307,12 +307,12 @@ public class ScenarioAccessAgent  extends AccessAgent {
 			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
 			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
 			// (which is done bz the MetaDataAnnotator)
-			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
+			AccessAgentCaller.update(metadatasetUrl, null, sparql);
 			return;
 		}
 		
 		if (!storeClient.exists(resourceUrl)) {
-			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			String content = AccessAgentCaller.get(null, resourceUrl, null);
 			storeClient.put(resourceUrl, content, null);
 		}
 		storeClient.update(resourceUrl, sparql);
