@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
-import uk.ac.cam.cares.jps.base.interfaces.TimeSeriesClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -19,7 +18,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * @param <T> is the class type for the time values, e.g. LocalDateTime, Timestamp, Integer, Double etc.
  */
 
-public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
+public class TimeSeriesClient<T> {
 	// Associated RDB and RDF/SPARQL clients
 	private TimeSeriesRDBClient<T> rdbClient;
 	private TimeSeriesSparql rdfClient;
@@ -46,7 +45,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     }
 	
 	/**
-     * Constructor for pre-defined kbClient and only RDB client to be created according to properties file
+     * Constructor with pre-defined kbClient and only RDB client to be created according to properties file
      * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information (potentially with already specified endpoint (triplestore/owl file))
      * @param timeClass class type for the time values, e.g. Timestamp etc. (to initialise RDB table)
      * @param filepath absolute path to file with RDB configs (URL, username, password) 
@@ -60,7 +59,7 @@ public class TimeSeriesClient<T> implements TimeSeriesClientInterface<T>{
     }
     
     /**
-     * Constructor for both RDB and Sparql clients to be created according to properties file
+     * Constructor with both RDB and Sparql clients to be created according to properties file
      * @param timeClass class type for the time values (to initialise RDB table)
      * @param filepath absolute path to file with RDB and KB configs (RDB: URL, username, password; KB: endpoints) 
      */
