@@ -1,24 +1,29 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 import org.jooq.SQLDialect;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.Ignore;
 import java.io.*;
 
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
+import org.junit.rules.TemporaryFolder;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
 /**
  * This class provides unit tests for the TimeSeriesRDBClient class
- * <p>Selected functionality is mocked using Mockito
  */
 
 public class TimeSeriesRDBClientTest {
+
+    // Temporary folder to place a properties file (same file for all potential tests)
+    @ClassRule
+    public static TemporaryFolder folder = new TemporaryFolder();
 
     @Test
     public void testConstructor() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -72,14 +77,6 @@ public class TimeSeriesRDBClientTest {
     }
 
     @Test
-    public void testSetAndGetTimeUnit() {
-        TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-        Assert.assertNull(client.getTimeUnit());
-        client.setTimeUnit("s");
-        Assert.assertEquals("s", client.getTimeUnit());
-    }
-    
-    @Test
     public void testSetAndGetRdbURL() {
         TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
         Assert.assertNull(client.getRdbURL());
@@ -107,87 +104,77 @@ public class TimeSeriesRDBClientTest {
         Assert.assertNotNull(rdbPasswordField.get(client));
         Assert.assertEquals("password", rdbPasswordField.get(client));
     }
-    
+
     @Test
-    @Ignore("Overrides potentially existing timeseries.properties file in \"src/main/resources/\"")
-    public void testLoadRdbConfig () {
+    public void testLoadRdbConfig () throws IOException {
     	TimeSeriesRDBClient<Instant> client = new TimeSeriesRDBClient<>(Instant.class);
-    	String filepath = "src/test/resources/timeseries.properties";
-    	// Delete potentially existing properties file
-    	new File(filepath).delete();
+    	// Filepath to not yet created file in temporary test folder
+    	String filepath = Paths.get(folder.getRoot().toString(), "timeseries.properties").toString();
     	// JPSRuntime error messages
     	String m1 = "TimeSeriesRDBClient: No properties file found at specified filepath: " + filepath;
     	String m2 = "TimeSeriesRDBClient: Properties file is missing \"db.url=<rdb_url>\" ";
     	String m3 = "TimeSeriesRDBClient: Properties file is missing \"db.user=<rdb_username>\" ";
     	String m4 = "TimeSeriesRDBClient: Properties file is missing \"db.password=<rdb_password>\" ";
+    	
     	// Test for non-existing properties file
-    	boolean thrown = false;
     	try {
     		client.loadRdbConfigs(filepath);
-    	} catch (Exception e) {
+    		Assert.fail();
+    	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m1, e.getMessage());
-    		thrown = true;
     	}
-    	Assert.assertTrue(thrown);
-    	// Test for missing Rdb URL
+    	
+    	// Test for missing Rdb URL by creating a file only containing user and password
     	writePropertyFile(filepath, Arrays.asList("db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
-    	thrown = false;
     	try {
     		client.loadRdbConfigs(filepath);
-    	} catch (Exception e) {
+            Assert.fail();
+    	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m2, e.getMessage());
-    		thrown = true;
     	}
-    	Assert.assertTrue(thrown);
-    	// Test for missing user name
+
+    	// Test for missing user name by creating a file only containing url and password
     	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.password=test_password"));
 	    // Try loading RDB configs
-    	thrown = false;
     	try {
     		client.loadRdbConfigs(filepath);
-    	} catch (Exception e) {
+            Assert.fail();
+    	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m3, e.getMessage());
-    		thrown = true;
     	}
-    	Assert.assertTrue(thrown);
-    	// Test for missing password
+
+    	// Test for missing password  by creating a file only containing url and user
     	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user"));
 	    // Try loading RDB configs
-    	thrown = false;
     	try {
     		client.loadRdbConfigs(filepath);
-    	} catch (Exception e) {
+            Assert.fail();
+    	} catch (JPSRuntimeException e) {
     		Assert.assertEquals(m4, e.getMessage());
-    		thrown = true;
     	}
-    	Assert.assertTrue(thrown);
+
     	// Test for proper URL, username and password
     	writePropertyFile(filepath, Arrays.asList("db.url=test_url", "db.user=test_user", "db.password=test_password"));
 	    // Try loading RDB configs
-    	thrown = false;
     	try {
     		client.loadRdbConfigs(filepath);
     	} catch (Exception e) {
-    		thrown = true;
+    	    Assert.fail(e.getMessage());
     	}
-    	Assert.assertFalse(thrown);
     	Assert.assertEquals("test_url", client.getRdbURL());
     	Assert.assertEquals("test_user", client.getRdbUser());
     }
     
-    private void writePropertyFile(String filepath, List<String> properties) {
-    	try {
-    		// Create empty properties file
-    		File file = new File(filepath);
-    		FileWriter writer = new FileWriter(file);
-    		// Populate file
-    		for (String s : properties) {
-    			writer.write(s + "\n");
-    		}
-    	    writer.close();
-    	} catch (Exception e) {
-    		e.printStackTrace();
-    	} 
+    private void writePropertyFile(String filepath, List<String> properties) throws IOException {
+        // Overwrite potentially existing properties file
+    	FileWriter writer = new FileWriter(filepath, false);
+    	// Populate file
+    	for (String s : properties) {
+    		writer.write(s + "\n");
+    	}
+    	// Close the file and return the file
+    	writer.close();
     }
+
 }

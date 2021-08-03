@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.timeseries.test;
+package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -8,8 +8,11 @@ import org.junit.Test;
 import org.junit.Before;
 import org.junit.Assert;
 
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
+/**
+ * This class provides unit tests for the TimeSeries class
+ */
 
 public class TimeSeriesTest {
 	

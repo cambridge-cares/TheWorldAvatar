@@ -3,8 +3,13 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.literalOf;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -16,6 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
@@ -27,16 +33,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
- * This class contains a collection of methods to interact with kb.
+ * This class contains a collection of methods to interact with a triple store/knowledge base (kb).
  * @author Kok Foong Lee
- *
  */
 
 public class TimeSeriesSparql {
 	// kbClient with the endpoint (triplestore/owl file) specified
 	private StoreClientInterface kbClient;
 	
-	// Namespaces for ontology and kb
+	// Namespaces for ontology and knowledge base
 	public static final String ns_ontology = "http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#";
 	public static final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 	
@@ -53,28 +58,62 @@ public class TimeSeriesSparql {
     private static final Iri hasTimeUnit = prefix_ontology.iri("hasTimeUnit");
 
     // Fields for class specific exceptions
-	private final String exceptionPrefix = this.getClass().toString() + ": ";
+	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
 
     /**
      * Standard constructor
-     * @param kbClient: The knowledge base client used to query and update the knowledge base containing timeseries information
+     * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
      */
     public TimeSeriesSparql(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
     }
 
     /**
-	 * Setter for the client
-	 * @param kbClient: The knowledge base client used to query and update the knowledge base containing timeseries information
+	 * Setter for the knowledge base client
+	 * @param kbClient knowledge base client used to query and update the knowledge base containing timeseries information
 	*/
 	public void setKBClient(StoreClientInterface kbClient) {
         this.kbClient = kbClient;
 	}
+	
+	/**
+	 * Load SPARQL query and update endpoints from properties file ("timeseries.properties") at specified path
+	 * @param filepath absolute path to timeseries properties file
+	 */
+	protected void loadSparqlConfigs(String filepath) throws IOException {
+		
+		// Check whether properties file exists at specified location
+		File file = new File(filepath);		
+		if (!file.exists()) {
+			throw new JPSRuntimeException(exceptionPrefix + "No properties file found at specified filepath: " + filepath);
+		}
+		
+		// Try-with-resource to ensure closure of input stream
+		try (InputStream input = new FileInputStream(file)) {
+						
+			// Load properties file from specified path
+	        Properties prop = new Properties();
+	        prop.load(input);
+    
+	        // Get the property values and assign
+	        if (prop.containsKey("sparql.query.endpoint")) {
+	        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+	        }
+	        if (prop.containsKey("sparql.update.endpoint")) {
+	        	kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+	        } else {
+	        	throw new JPSRuntimeException(exceptionPrefix + "Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+	        }
+		}
+
+	}
     
 	/**
 	 * Check whether a particular time series (i.e. tsIRI) exists
-	 * @param timeSeriesIRI: timeseries IRI provided as string
-	 * @return True if an instance with the IRI exists, false otherwise
+	 * @param timeSeriesIRI timeseries IRI provided as string
+	 * @return True if a time series instance with the tsIRI exists, false otherwise
 	 */
     public boolean checkTimeSeriesExists(String timeSeriesIRI) {
     	String query = String.format("ask {<%s> a <%s>}", timeSeriesIRI, (ns_ontology + "TimeSeries"));
@@ -83,11 +122,11 @@ public class TimeSeriesSparql {
     }
     
 	/**
-	 * Check whether a particular data IRI is attached to a time series
-	 * @param dataIRI: data IRI provided as string
-	 * @return True if an instance with the IRI exists, false otherwise
+	 * Check whether given data IRI is attached to a time series
+	 * @param dataIRI data IRI provided as string
+	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
-    public boolean checkDataExists(String dataIRI) {
+    public boolean checkDataHasTimeSeries(String dataIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", dataIRI, (ns_ontology + "hasTimeSeries"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
@@ -95,23 +134,23 @@ public class TimeSeriesSparql {
     
 	/**
 	 * Check whether time series IRI has time unit
-	 * @param tsIRI: timeseries IRI provided as string
-	 * @return True if an the timeseries instance has a defined time unit, false otherwise
+	 * @param tsIRI timeseries IRI provided as string
+	 * @return True if the timeseries instance exists and has a defined time unit, false otherwise
 	 */
-    private boolean checkTimeUnitExists(String tsIRI) {
+    public boolean checkTimeUnitExists(String tsIRI) {
     	String query = String.format("ask {<%s> <%s> ?a}", tsIRI, (ns_ontology + "hasTimeUnit"));
     	kbClient.setQuery(query);
     	return kbClient.executeQuery().getJSONObject(0).getBoolean("ASK");
     }
     
     /**
-     * Instantiate the time series instance (time unit is optional)
-     * @param timeSeriesIRI: timeseries IRI provided as string
-     * @param dataIRI: list of data IRI provided as string that should be attached to the timeseries
-     * @param dbURL: URL of the database where the timeseries data is stored provided as string
-     * @param timeUnit: the time unit of the time series (optional)
+     * Instantiate the time series instance in the knowledge base (time unit is optional)
+     * @param timeSeriesIRI timeseries IRI provided as string
+     * @param dataIRI list of data IRI provided as string that should be attached to the timeseries
+     * @param dbURL URL of the database where the timeseries data is stored provided as string
+     * @param timeUnit the time unit of the time series (optional)
      */    
-    public void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
+    protected void initTS(String timeSeriesIRI, List<String> dataIRI, String dbURL, String timeUnit) {
     	// Construct time series IRI
     	Iri tsIRI;
 		// Check whether timeseriesIRI follows IRI naming convention of namespace & local_name
@@ -125,7 +164,7 @@ public class TimeSeriesSparql {
 
 		// Check that the time series IRI is not yet in the Knowledge Graph
 		if (checkTimeSeriesExists(timeSeriesIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " IRI already in the Knowledge Graph");
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + timeSeriesIRI + " already in the Knowledge Graph");
 		}
 		// Check that the data IRIs are not attached to a different time series IRI already
 		for (String iri: dataIRI) {
@@ -161,8 +200,7 @@ public class TimeSeriesSparql {
     
     /**
      * Count number of time series IRIs in kb
-     * <p>Previously used to generate a new unique time series IRI
-     * @return Number of timeseries instances in the knowledge base as int
+     * @return Total number of time series instances in the knowledge base as int
      */
 	public int countTS() {
 		SelectQuery query = Queries.SELECT();
@@ -181,10 +219,35 @@ public class TimeSeriesSparql {
 	}
 	
     /**
-     * Remove relationship between dataIRI and associated time series from kb
-     * @param dataIRI: data IRI provided as string
+     * Attach data IRI to existing time series IRI in kb (i.e. insert "hasTimeSeries" relationship)
+     * @param dataIRI data IRI provided as string
+     * @param tsIRI time series IRI provided as string
      */
-	public void removeTimeSeriesAssociation(String dataIRI) {
+	protected void insertTimeSeriesAssociation(String dataIRI, String tsIRI) {
+		
+		// Check that the data IRI is not attached to a different time series IRI already
+		String ts = getTimeSeries(dataIRI);
+		if(ts != null) {
+			throw new JPSRuntimeException(exceptionPrefix + "The data IRI " + dataIRI + " is already attached to time series " + ts);
+		}
+		
+		// Check whether time series IRI exists
+		if (!checkTimeSeriesExists(tsIRI)) {
+			throw new JPSRuntimeException(exceptionPrefix + "Time series " + tsIRI + " does not exists in the Knowledge Graph");
+		}
+		
+		// Add triple with "hasTimeSeries" relationship between dataIRI and tsIRI
+		InsertDataQuery insert = Queries.INSERT_DATA(iri(dataIRI).has(hasTimeSeries, iri(tsIRI)));
+		insert.prefix(prefix_ontology);
+		kbClient.executeUpdate(insert.getQueryString());
+			
+	}
+	
+    /**
+     * Remove relationship between dataIRI and associated time series from kb
+     * @param dataIRI data IRI provided as string
+     */
+	protected void removeTimeSeriesAssociation(String dataIRI) {
 		
 		// Check whether associated time series has further data associated with it
 		String tsIRI = getTimeSeries(dataIRI);
@@ -206,10 +269,10 @@ public class TimeSeriesSparql {
 	}
 	
     /**
-     * Remove time series and all associated connections from kb
-     * @param tsIRI: timeseries IRI provided as string
+     * Remove time series and all associated connections from kb (i.e. remove all triples with tsIRI as subject or object)
+     * @param tsIRI timeseries IRI provided as string
      */
-	public void removeTimeSeries(String tsIRI) {
+	protected void removeTimeSeries(String tsIRI) {
 
 		if (checkTimeSeriesExists(tsIRI)) {
 			
@@ -236,7 +299,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Remove all time series from kb
 	 */
-	public void removeAllTimeSeries() {
+	protected void removeAllTimeSeries() {
 		// Get all time series in kb
 		List<String> tsIRI = getAllTimeSeries();
 		
@@ -250,15 +313,15 @@ public class TimeSeriesSparql {
 	
 	/**
 	 * Get time series IRI associated with given data IRI
-	 * <p>Returns null if no time series is attached to dataIRI
-	 * @param dataIRI: data IRI provided as string
+	 * <p>Returns null if dataIRI does not exist or no time series is attached to dataIRI
+	 * @param dataIRI data IRI provided as string
 	 * @return The corresponding timeseries IRI as string
 	 */
 	public String getTimeSeries(String dataIRI) {
 		
 		String result = null;
 		
-		if (checkDataExists(dataIRI)) {		
+		if (checkDataHasTimeSeries(dataIRI)) {
 
 			String queryString = "tsIRI";
 			
@@ -278,8 +341,8 @@ public class TimeSeriesSparql {
 	
 	/**
 	 * Get database URL associated with time series IRI
-	 * <p>Returns null if time series does not exist
-	 * @param tsIRI: timeseries IRI provided as string
+	 * <p>Returns null if time series does not exist or does not have associated database URL
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return The URL to the database where data from that timeseries is stored as string
 	 */
 	public String getDbUrl(String tsIRI) {
@@ -306,7 +369,7 @@ public class TimeSeriesSparql {
 	/**
 	 * Get time unit associated with time series IRI
 	 * <p>Returns null if time series does not exist or does not have associated time unit
-	 * @param tsIRI: timeseries IRI provided as string
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return The time unit of timeseries as string
 	 */
 	public String getTimeUnit(String tsIRI) {
@@ -331,8 +394,9 @@ public class TimeSeriesSparql {
 	}
 	
 	/**
-	 * Get data IRIs associated with given time series IRI
-	 * @param tsIRI: timeseries IRI provided as string
+	 * Get data IRIs associated with a given time series IRI
+	 * <p>Returns empty List if time series does not exist or does not have associated data
+	 * @param tsIRI timeseries IRI provided as string
 	 * @return List of data IRIs attached to the time series as string
 	 */
 	public List<String>  getAssociatedData(String tsIRI) {
@@ -343,20 +407,13 @@ public class TimeSeriesSparql {
 		TriplePattern queryPattern = data.has(hasTimeSeries, iri(tsIRI));
 		
 		query.select(data).where(queryPattern).prefix(prefix_ontology);
-		
-		kbClient.setQuery(query.getQueryString());
-		JSONArray queryResult = kbClient.executeQuery();
-		
-		List<String> dataIRI = new ArrayList<String>();
-		for (int i = 0; i < queryResult.length(); i++) {
-			dataIRI.add(queryResult.getJSONObject(i).getString(queryString));
-		}
-		
-		return dataIRI;
+
+		return getInstances(query, queryString);
 	}
 	
     /**
      * Extract all time series IRIs from kb
+     * <p>Returns empty List if no time series exist in kb
      * @return List of all time series IRI in the knowledge base provided as string
      */
 	public List<String> getAllTimeSeries() {
@@ -367,15 +424,26 @@ public class TimeSeriesSparql {
 		TriplePattern queryPattern = ts.isA(TimeSeries);
 		
 		query.select(ts).where(queryPattern).prefix(prefix_ontology);
-		
-		kbClient.setQuery(query.getQueryString());
+
+		return getInstances(query, queryString);
+	}
+
+	/**
+	 * Execute a query that selects all individuals in the kb that fulfill a certain pattern
+	 * @param instanceSelectQuery the query to execute. Should be a select query with a single triple pattern where
+	 *                            the subject represents the instance to retrieve.
+	 * @param placeholder the placeholder used in the select query for the instance to retrieve provided as string without ?
+	 * @return List of all instances' IRIs in the knowledge base provided as string
+	 */
+	private List<String> getInstances(SelectQuery instanceSelectQuery, String placeholder) {
+		kbClient.setQuery(instanceSelectQuery.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
-		
-		List<String> tsIRI = new ArrayList<String>();
+
+		List<String> instanceIRIs = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			tsIRI.add(queryResult.getJSONObject(i).getString(queryString));
+			instanceIRIs.add(queryResult.getJSONObject(i).getString(placeholder));
 		}
-		
-		return tsIRI;
+
+		return instanceIRIs;
 	}
 }
