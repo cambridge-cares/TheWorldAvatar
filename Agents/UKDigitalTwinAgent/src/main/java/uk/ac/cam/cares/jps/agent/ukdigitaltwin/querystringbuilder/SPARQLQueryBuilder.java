@@ -9,6 +9,8 @@ import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 
+import uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder.ClauseBuilder;
+
 /**
  * SPARQLQueryBuilder developed for constructing any query strings used in UK digital Twin 
  * 
@@ -108,12 +110,19 @@ public class SPARQLQueryBuilder {
 	 public static void main(String[] args) {
 		 
 		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
-		 ClauseBuilder pb = new ClauseBuilder(true, false);
-		 List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
-		 pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, vl, pfmv.variableTypePrefix,
-				  pfmv.varNameIdentifier, pfmv.queryModelVariableSentence, pfmv.labelMap);
+		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
+		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
+		  HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
+		  classPre_var.put(pfmv.variableTypePrefix, vl);
+		  LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();
+		  for(int i = 0 ; i < vl.size(); i++) {
+			  unlabeledVariable_querySentence.put(vl.get(i), pfmv.queryModelVariableSentence);			  
+		  }		
+		  pb.prefixClauseBuilder(pfmv.PrefixAbbrList);
+		  pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledVariable_querySentence);
+		  pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
 		 //TODO: debug the adding filterClause function
-		 //  pb.filterClause =  Arrays.asList("?PrimaryFuel = power_plant:Biomass");
+		 // pb.filterClause =  Arrays.asList("?PrimaryFuel = OCPMATH:Biomass");
 		 SPARQLQueryBuilder sqb = new SPARQLQueryBuilder(pb);
 		 String querystring = sqb.queryStringBuilder();
 		 System.out.println(querystring); 

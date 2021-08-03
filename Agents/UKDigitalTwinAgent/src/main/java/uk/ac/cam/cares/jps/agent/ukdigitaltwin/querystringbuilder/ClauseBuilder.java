@@ -5,8 +5,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import uk.ac.cam.cares.jps.agent.ukdigitaltwin.tools.Printer;
 
+import uk.ac.cam.cares.jps.agent.ukdigitaltwin.tools.Printer;
+import uk.ac.cam.cares.jps.agent.ukdigitaltwin.querystringbuilder.PowerFlowModelVariableForQuery;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
@@ -66,172 +67,21 @@ public class ClauseBuilder implements Prefixes{
 	 *  
 	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
 	 */
-	//TODO: overload ClauseBuilder with querySentence, insertSentence, deleteSentence....; overload the method for no arguments
-	public void queryClauseBuilder(String entityName, String entityType, List<String> PrefixAbbrList, 
-			HashMap<String, List<String>> classPrefix_unlabeledVariable, String varNameIdentifier, LinkedHashMap<String, List<String>> unlabeledVariable_querySentence, 
-			LinkedHashMap<String, List<String>> labeledVariable_labels, HashMap<String, String> labeledVariable_classPrefix,  HashMap<String, List<String>> labeledVariable_querySentence){		
-		
-		// check query mode: 		
-		if(!this.queryFlag){
-			System.out.print("The method is for query only.");
-		    System.exit(0);}
-		
-		//check query sentence		
-		for(String key: unlabeledVariable_querySentence.keySet()) {
-			int sentenceLen = unlabeledVariable_querySentence.get(key).size();
-			if (sentenceLen % 2 != 0) {
-				System.out.print("The lenght of querySentence is " + sentenceLen + " of variable " + key + ".");
-				System.out.print("The lenght of querySentence should be even integer and it should be formated in p-o pairs.");
-			    System.exit(0);}
-		}	
-		
-		//check the format of entityType
-		if(!entityType.contains(":") || entityType.indexOf(":") == 0 || entityType.indexOf(":") == entityType.length() - 1) {
-			System.out.print("The entityType should be given in the farmat as nameSpace:className.");
-		    System.exit(0);
-		}
-		
-		//check the length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence
-		if(labeledVariable_labels!=null && labeledVariable_classPrefix !=null && labeledVariable_querySentence != null && 
-				(labeledVariable_labels.size() != labeledVariable_classPrefix.size() || labeledVariable_labels.size() != labeledVariable_querySentence.size())) {
-			System.out.print("The length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be equal.");
-		    System.exit(0);
-		}
-		if((labeledVariable_labels!=null && labeledVariable_classPrefix == null) || (labeledVariable_labels == null && labeledVariable_classPrefix != null)) {
-			System.out.print("The labeledVariable_labels and labeledVariable_classPrefix should be both null or both having content.");
-		    System.exit(0);
-		}
-		
-		if(labeledVariable_labels!=null) {
-			if(labeledVariable_classPrefix == null || labeledVariable_querySentence == null) {
-				System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
-			    System.exit(0);}
-			} else {
-				if(labeledVariable_classPrefix != null || labeledVariable_querySentence != null) {
-					System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
-				    System.exit(0);}
-			}
-			
-		//set up prefixList	
+	//TODO: overload ClauseBuilder with querySentence, insertSentence, deleteSentence....; overload the method for no arguments, write the comments of the new added methods	
+	public void prefixClauseBuilder(List<String> PrefixAbbrList){
 		for(String pre: PrefixAbbrList) {
 			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
 			List<String> prefixPair = Arrays.asList(pre, prefixiri);
 			this.prefixList.add(prefixPair);
-		}		
-		
-		// initialise selectClause and whereClause with the query entity
-		  //case 1: set the selectClause and whereClause without labels
-		if(entityName.indexOf("?") != 0) {
-			this.entityName = "?" + entityName;}
-		this.entityType = entityType;
-		this.selectClause.add(this.entityName);	
-		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityType);
-		this.whereClause.add(entityTypeTriple);
-		
-		for(String var : unlabeledVariable_querySentence.keySet()) {//set the selectClause
-			List<String> querySentence = unlabeledVariable_querySentence.get(var);
-			String selectName = querySentence.get(querySentence.size() - 1) + var;
-			this.selectClause.add(selectName);
-			for(int i = -1; i < querySentence.size() - 2; i+=2) {// set up whereClause
-				if(i == -1) {
-					List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + var);
-					this.whereClause.add(spo);
-				} else {
-					List<String> spo = Arrays.asList(querySentence.get(i)+var, querySentence.get(i+1), querySentence.get(i+2) + var);
-					this.whereClause.add(spo);					
-				}				
-			}							
-		}
-		for(String classPrefix : classPrefix_unlabeledVariable.keySet()) {
-			List<String> varInSameClassPrefix = classPrefix_unlabeledVariable.get(classPrefix);
-			for(String var : varInSameClassPrefix) {
-				List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", classPrefix + ":" + var);
-				this.whereClause.add(varTypeTriple);
-			}			
-		}		
-		
-		//case 2: set up selectClause and whereClause with labels
-		if(labeledVariable_labels != null) {									
-			for(String key: labeledVariable_labels.keySet()) {// key is the variable name needed to be labeled
-				List<String> querySentence = labeledVariable_querySentence.get(key);
-				for(String label:labeledVariable_labels.get(key)) {
-					for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
-						if(i == -1) {
-							List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);
-						} else {
-							List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);					
-						}	
-				    }
-					List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
-					this.whereClause.add(labelTriple);
-					List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  labeledVariable_classPrefix.get(key) + ":" + key);					
-					this.whereClause.add(varTypeTriple);
-					String selectName = querySentence.get(querySentence.size() - 1) + label;
-					this.selectClause.add(selectName);
-			     }				
-			}			
-		}
-		}
+		}	
+	} 
 	
-	public void insertClauseBuilder(String entityName, String entityType, List<String> PrefixAbbrList, 
-			HashMap<String, List<String>> classPrefix_unlabeledVariable, String varNameIdentifier, LinkedHashMap<String, List<String>> unlabeledVariable_querySentence, 
-			LinkedHashMap<String, List<String>> labeledVariable_labels, HashMap<String, String> labeledVariable_classPrefix,  HashMap<String, List<String>> labeledVariable_querySentence){		
-		
-		// check query mode: 		
-		if(!this.queryFlag){
-			System.out.print("The method is for query only.");
-		    System.exit(0);}
-		
-		//check query sentence		
-		for(String key: unlabeledVariable_querySentence.keySet()) {
-			int sentenceLen = unlabeledVariable_querySentence.get(key).size();
-			if (sentenceLen % 2 != 0) {
-				System.out.print("The lenght of querySentence is " + sentenceLen + " of variable " + key + ".");
-				System.out.print("The lenght of querySentence should be even integer and it should be formated in p-o pairs.");
-			    System.exit(0);}
-		}	
-		
-		//check the format of entityType
-		if(!entityType.contains(":") || entityType.indexOf(":") == 0 || entityType.indexOf(":") == entityType.length() - 1) {
-			System.out.print("The entityType should be given in the farmat as nameSpace:className.");
-		    System.exit(0);
-		}
-		
-		//check the length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence
-		if(labeledVariable_labels!=null && labeledVariable_classPrefix !=null && labeledVariable_querySentence != null && 
-				(labeledVariable_labels.size() != labeledVariable_classPrefix.size() || labeledVariable_labels.size() != labeledVariable_querySentence.size())) {
-			System.out.print("The length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be equal.");
-		    System.exit(0);
-		}
-		if((labeledVariable_labels!=null && labeledVariable_classPrefix == null) || (labeledVariable_labels == null && labeledVariable_classPrefix != null)) {
-			System.out.print("The labeledVariable_labels and labeledVariable_classPrefix should be both null or both having content.");
-		    System.exit(0);
-		}
-		
-		if(labeledVariable_labels!=null) {
-			if(labeledVariable_classPrefix == null || labeledVariable_querySentence == null) {
-				System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
-			    System.exit(0);}
-			} else {
-				if(labeledVariable_classPrefix != null || labeledVariable_querySentence != null) {
-					System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
-				    System.exit(0);}
-			}
-			
-		//set up prefixList	
-		for(String pre: PrefixAbbrList) {
-			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
-			List<String> prefixPair = Arrays.asList(pre, prefixiri);
-			this.prefixList.add(prefixPair);
-		}		
-		
+	public void selectClauseAndWhereClauseBuilderWithoutLabels(String varNameIdentifier, HashMap<String, List<String>> classPrefix_unlabeledVariable, 
+			LinkedHashMap<String, List<String>> unlabeledVariable_querySentence){
 		// initialise selectClause and whereClause with the query entity
 		  //case 1: set the selectClause and whereClause without labels
 		if(entityName.indexOf("?") != 0) {
 			this.entityName = "?" + entityName;}
-		this.entityType = entityType;
 		this.selectClause.add(this.entityName);	
 		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityType);
 		this.whereClause.add(entityTypeTriple);
@@ -258,150 +108,91 @@ public class ClauseBuilder implements Prefixes{
 			}			
 		}		
 		
-		//case 2: set up selectClause and whereClause with labels
-		if(labeledVariable_labels != null) {									
-			for(String key: labeledVariable_labels.keySet()) {// key is the variable name needed to be labeled
-				List<String> querySentence = labeledVariable_querySentence.get(key);
-				for(String label:labeledVariable_labels.get(key)) {
-					for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
-						if(i == -1) {
-							List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);
-						} else {
-							List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);					
-						}	
-				    }
-					List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
-					this.whereClause.add(labelTriple);
-					List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  labeledVariable_classPrefix.get(key) + ":" + key);					
-					this.whereClause.add(varTypeTriple);
-					String selectName = querySentence.get(querySentence.size() - 1) + label;
-					this.selectClause.add(selectName);
-			     }				
-			}			
-		}
-		}
-	/**
-	 * queryClauseBuilder is designed for creating the QUERY clauses
-	 * 
-	 * @entityName : the name of the query entity.
-	 * @entityType : the query entity type, e.g. "j1:Generator".
-	 * @PrefixAbbrList : a list contains the abbreviations of Prefix used in the query. The abbreviation pattern follows the PrefixToUrlMap.
-	 * @VariablesList : a list contains the query variables used to construct the selectClause. The attributes are queried of the query entity
-	 * @variableTypePrefix : the abbreviated Prefix of variables type.
-	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
-	 * @querySentence : a sentence pattern collection used to construct the query body (e.g. whereClause).
-	 * @labelMap : if label is needed in constructing the query body, a label map need to be specified. The key is the variable whose going to be labeled. 
-	 *             The value is the list of label. If no labels are need, it is set to null.
-	 *  
-	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
-	 */
-	public void queryClauseBuilder(String entityName, String entityType, List<String> PrefixAbbrList, 
-			List<String> VariablesList, String variableTypePrefix, String varNameIdentifier, List<String> querySentence, HashMap<String, List<String>>labelMap ){		
-		
-		// check query mode: 		
-		if(!this.queryFlag){
-			System.out.print("The method is for query only.");
-		    System.exit(0);}
-		
-		//check query sentence
-		int sentenceLen = querySentence.size();
-		if (sentenceLen % 2 != 0) {
-			System.out.print("The lenght of querySentence is " + sentenceLen + " .");
-			System.out.print("The lenght of querySentence should be even integer and it should be formated in p-o pairs.");
-		    System.exit(0);}
-		
-		//set up prefixList	
-		for(String pre: PrefixAbbrList) {
-			String prefixiri = PrefixToUrlMap.getPrefixUrl(pre);
-			List<String> prefixPair = Arrays.asList(pre, prefixiri);
-			this.prefixList.add(prefixPair);
-		}		
-		
-		// initialise selectClause and whereClause with the query entity
-		if(!entityName.contains("?")) {
-			this.entityName = "?" + entityName;}
-		this.entityType = entityType;
-		this.selectClause.add(this.entityName);	
-		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityType);
-		this.whereClause.add(entityTypeTriple);
-		
-		//case 1: set the selectClause and whereClause without labels
-		if(labelMap == null) {
-		for(String var : VariablesList) {//set the selectClause
-			String selectName = querySentence.get(querySentence.size() - 1) + var;
-			this.selectClause.add(selectName);
-		}				
-		for(String var : VariablesList) {// set up whereClause
-			for(int i = -1; i < querySentence.size() - 2; i+=2) {
-				if(i == -1) {
-					List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + var);
-					this.whereClause.add(spo);
-				} else {
-					List<String> spo = Arrays.asList(querySentence.get(i)+var, querySentence.get(i+1), querySentence.get(i+2) + var);
-					this.whereClause.add(spo);					
-				}				
-			}
-			List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", variableTypePrefix + ":" + var);
-			this.whereClause.add(varTypeTriple);	
-		  }
-		}		
-		
-		//case 2: set up selectClause and whereClause with labels
-		if(labelMap != null) {
-			for(String var : VariablesList) {//set the selectClause
-				String selectName = querySentence.get(querySentence.size() - 1) + var;
-				this.selectClause.add(selectName);}		
-			for(String var : VariablesList) {// set up whereClause
-				for(int i = -1; i < querySentence.size() - 2; i+=2) {
+	} 
+	
+	public void selectClauseAndWhereClauseBuilderWithLabels(String varNameIdentifier, LinkedHashMap<String, List<String>> labeledVariable_labels, 
+			HashMap<String, String> labeledVariable_classPrefix, HashMap<String, List<String>> labeledVariable_querySentence){
+		//case 2: set up selectClause and whereClause with labels											
+		for(String key: labeledVariable_labels.keySet()) {// key is the variable name needs to be labeled
+			List<String> querySentence = labeledVariable_querySentence.get(key);
+			for(String label:labeledVariable_labels.get(key)) {
+				for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
 					if(i == -1) {
-						List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + var);
+						List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
 						this.whereClause.add(spo);
 					} else {
-						List<String> spo = Arrays.asList(querySentence.get(i)+var, querySentence.get(i+1), querySentence.get(i+2) + var);
+						List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
 						this.whereClause.add(spo);					
-					}				
-				}
-				List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", variableTypePrefix + ":" + var);
-				this.whereClause.add(varTypeTriple);	
-			  }					
-			for(String key: labelMap.keySet()) {// key is the variable name needed to be labeled
-				for(String label:labelMap.get(key)) {
-					for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
-						if(i == -1) {
-							List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);
-						} else {
-							List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
-							this.whereClause.add(spo);					
-						}	
-				    }
-					List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
-					List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  variableTypePrefix + ":" + key);
-					this.whereClause.add(labelTriple);
-					this.whereClause.add(varTypeTriple);
-					String selectName = querySentence.get(querySentence.size() - 1) + label;
-					this.selectClause.add(selectName);
-			     }				
-			}			
-		}
-		}
+					}	
+			    }
+				List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
+				this.whereClause.add(labelTriple);
+				List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  labeledVariable_classPrefix.get(key) + ":" + key);					
+				this.whereClause.add(varTypeTriple);
+				String selectName = querySentence.get(querySentence.size() - 1) + label;
+				this.selectClause.add(selectName);
+		     }				
+		}			
+	} 
+	
+//	// check query mode: 		
+//			if(!this.queryFlag){
+//				System.out.print("The method is for query only.");
+//			    System.exit(0);}
+//			
+//			//check query sentence		
+//			for(String key: unlabeledVariable_querySentence.keySet()) {
+//				int sentenceLen = unlabeledVariable_querySentence.get(key).size();
+//				if (sentenceLen % 2 != 0) {
+//					System.out.print("The lenght of querySentence is " + sentenceLen + " of variable " + key + ".");
+//					System.out.print("The lenght of querySentence should be even integer and it should be formated in p-o pairs.");
+//				    System.exit(0);}
+//			}	
+//			
+//			//check the format of entityType
+//			if(!entityType.contains(":") || entityType.indexOf(":") == 0 || entityType.indexOf(":") == entityType.length() - 1) {
+//				System.out.print("The entityType should be given in the farmat as nameSpace:className.");
+//			    System.exit(0);
+//			}
+//			
+//			//check the length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence
+//			if(labeledVariable_labels!=null && labeledVariable_classPrefix !=null && labeledVariable_querySentence != null && 
+//					(labeledVariable_labels.size() != labeledVariable_classPrefix.size() || labeledVariable_labels.size() != labeledVariable_querySentence.size())) {
+//				System.out.print("The length of labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be equal.");
+//			    System.exit(0);
+//			}
+//			if((labeledVariable_labels!=null && labeledVariable_classPrefix == null) || (labeledVariable_labels == null && labeledVariable_classPrefix != null)) {
+//				System.out.print("The labeledVariable_labels and labeledVariable_classPrefix should be both null or both having content.");
+//			    System.exit(0);
+//			}
+//			
+//			if(labeledVariable_labels!=null) {
+//				if(labeledVariable_classPrefix == null || labeledVariable_querySentence == null) {
+//					System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
+//				    System.exit(0);}
+//				} else {
+//					if(labeledVariable_classPrefix != null || labeledVariable_querySentence != null) {
+//						System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
+//					    System.exit(0);}
+//				}
+				
+	
+
 	
 	 public static void main(String[] args) {
 		  
-		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
-		  ClauseBuilder pb = new ClauseBuilder(true, false);
+		  PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
+		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
 		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
 		  HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
 		  classPre_var.put(pfmv.variableTypePrefix, vl);
 		  LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();
 		  for(int i = 0 ; i < vl.size(); i++) {
 			  unlabeledVariable_querySentence.put(vl.get(i), pfmv.queryModelVariableSentence);			  
-		  }		  
-		  pb.queryClauseBuilder(pfmv.genEntityName, pfmv.entityType, pfmv.PrefixAbbrList, 
-				  classPre_var, pfmv.varNameIdentifier, unlabeledVariable_querySentence, 
-				  pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
+		  }		
+		  pb.prefixClauseBuilder(pfmv.PrefixAbbrList);
+		  pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledVariable_querySentence);
+		  pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
 		  ArrayList<List<String>> wc  = pb.whereClause;
 		  Printer.printArrayList(wc);
 		  ArrayList<List<String>> pl  = pb.prefixList;
