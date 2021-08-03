@@ -5,7 +5,7 @@ services:
 
   # Gas Grid Agent
   gas-grid-agent:
-    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT-${MODE}
     build:
       context: "../../../GasGrid/"
       dockerfile: "docker/Dockerfile"
