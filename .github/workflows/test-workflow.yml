@@ -22,6 +22,8 @@ jobs:
       # Checkout the repository
       - name: Checkout Repository
         uses: actions/checkout@v2
+        
+      - name: Output Branch Name
         run: |
           git branch --show-current
       
