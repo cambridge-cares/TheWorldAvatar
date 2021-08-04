@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -14,11 +13,10 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
 
 @WebServlet(urlPatterns = {"/InitialisingAgent"})
 public class InitialisingAgent extends JPSAgent{
@@ -55,17 +53,14 @@ public class InitialisingAgent extends JPSAgent{
     	
     	System.out.println("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();
-    	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
-    	tsClient.setRdbURL(ExampleConfig.dburl);
-    	tsClient.setRdbUser(ExampleConfig.dbuser);
-    	tsClient.setRdbPassword(ExampleConfig.dbpassword);
+    	TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, ExampleConfig.dburl, ExampleConfig.dbuser, ExampleConfig.dbpassword);
     	tsClient.deleteAll();
     	
     	// record the IRIs of the created instances to link them later
     	String input = sparqlClient.createInputData();
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
-    	createTimeSeries(input, storeClient);
+    	createTimeSeries(input, tsClient);
     	LOGGER.info("created input " + input);
     	InstancesDatabase.Input = input;
     	
@@ -126,20 +121,8 @@ public class InitialisingAgent extends JPSAgent{
 		return true;
 	}
 	
-    private static void createTimeSeries(String input_iri, StoreClientInterface storeClient) {
-    	// set up time series client..
-    	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
-    	tsClient.setRdbURL(ExampleConfig.dburl);
-    	tsClient.setRdbUser(ExampleConfig.dbuser);
-    	tsClient.setRdbPassword(ExampleConfig.dbpassword);
-    	
-    	TimeSeriesSparql tsSparql = new TimeSeriesSparql(storeClient);
-    	
-    	// create a time series instance
-    	String tsIRI = "http://" + UUID.randomUUID().toString();
-    	tsSparql.initTS(tsIRI, Arrays.asList(input_iri), ExampleConfig.dburl, null);
-    	
-    	tsClient.initTimeSeriesTable(Arrays.asList(input_iri), Arrays.asList(Integer.class), tsIRI);
+    private static void createTimeSeries(String input_iri, TimeSeriesClient<Integer> tsClient) {
+    	tsClient.initTimeSeries(Arrays.asList(input_iri), Arrays.asList(Integer.class), null);
     	
     	// create a new time series object with random numbers
     	Random rand = new Random();

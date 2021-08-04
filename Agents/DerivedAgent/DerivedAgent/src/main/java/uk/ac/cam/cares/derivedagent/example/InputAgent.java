@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
  * An agent to modify the input
@@ -35,10 +35,10 @@ public class InputAgent extends JPSAgent {
 		    
 		    ExampleConfig.initProperties();
 		    
-		    TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
-	    	tsClient.setRdbURL(ExampleConfig.dburl);
-	    	tsClient.setRdbUser(ExampleConfig.dbuser);
-	    	tsClient.setRdbPassword(ExampleConfig.dbpassword);
+		    RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
+	    	DerivedQuantityClient devClient = new DerivedQuantityClient(storeClient);
+		    
+		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, ExampleConfig.dburl, ExampleConfig.dbuser, ExampleConfig.dbpassword);
 	    	
 	    	// create random time series
 	    	Random rand = new Random();
@@ -49,10 +49,7 @@ public class InputAgent extends JPSAgent {
 	    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(input_iri), values);
 	    	
 	    	tsClient.addTimeSeriesData(ts);
-	    	
-	    	RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
-	    	DerivedQuantityClient devClient = new DerivedQuantityClient(storeClient);
-	    	
+
 	    	devClient.updateTimestamp(input_iri);
 		}
 		return requestParams;
