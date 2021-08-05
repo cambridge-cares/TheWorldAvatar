@@ -39,6 +39,7 @@ public class AQMeshAPIConnector {
     private String location = "";
     // Static fields for specific paths in the API
     private static final String AUTHENTICATE_PATH = "Authenticate";
+    private static final String PING_PATH = "serverping";
     private static final String ASSETS_PATH = "Pods/Assets";
     // Static fields for specific keys in response bodies
     private  static final String TOKEN_KEY = "token";
@@ -68,12 +69,14 @@ public class AQMeshAPIConnector {
      * Connects to the AQMesh API by retrieving and setting an access token that is required for all other API calls for authentication
      */
     public void connect() {
+
         try {
             token = getAccessToken();
+            String serverTime = ping();
+            System.out.println("Connection successful at server time " + serverTime + ". Token will be valid for 120 minutes.");
         } catch (IOException e) {
-            throw  new JPSRuntimeException("Access token for AQMesh API could not be retrieved!", e);
+            throw  new JPSRuntimeException("Unable to connect to AQMesh API!", e);
         }
-        System.out.println("Token received from AQMesh API. It will be valid for 120 minutes.");
     }
 
     /**
@@ -114,12 +117,37 @@ public class AQMeshAPIConnector {
                         JSONObject responseBody = new JSONObject(EntityUtils.toString(response.getEntity()));
                         return responseBody.get(TOKEN_KEY).toString();
                     default:
-                        throw new HttpResponseException(status, "Could not retrieve token.");
+                        throw new HttpResponseException(status, "Could not retrieve access token.");
                 }
             }
         }
     }
 
+    /**
+     * Method to test whether the API is accessible after the token was set
+     * @return The current server time
+     */
+    public String ping() throws IOException {
+        if (token.equals("")) {
+            throw new JPSRuntimeException("Token is not set. Use the connect method first.");
+        }
+
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpGet pingRequest = new HttpGet(api_url + PING_PATH);
+            setTokenAuthorization(pingRequest);
+
+            try (CloseableHttpResponse response = httpclient.execute(pingRequest)) {
+                if (response.getStatusLine().getStatusCode() != 200) {
+                    throw new HttpResponseException(response.getStatusLine().getStatusCode(),
+                            "Unexpected status code.");
+                }
+                else {
+                    JSONObject responseBody = new JSONObject(EntityUtils.toString(response.getEntity()));
+                    return responseBody.getString("server_time");
+                }
+            }
+        }
+    }
 
     /**
      * Retrieves and sets the location of the AQMesh
