@@ -24,12 +24,13 @@ public class AQMeshAPIConnector {
     private String username;
     private String password;
     private String token;
-    private static final String API_URL = "https://api.aqmeshdata.net/api";
-    private static final String AUTHENTICATE_URL = API_URL +"/Authenticate";
+    private String api_url = "https://api.aqmeshdata.net/api";
+    private static final String AUTHENTICATE_PATH = "/Authenticate";
 
-    public AQMeshAPIConnector(String username, String password) {
+    public AQMeshAPIConnector(String username, String password, String url) {
         this.username = username;
         this.password = password;
+        this.api_url = url;
     }
 
     public AQMeshAPIConnector(String filepath) throws IOException {
@@ -47,7 +48,7 @@ public class AQMeshAPIConnector {
 
     private String getAccessToken() throws IOException {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost postRequest = new HttpPost(AUTHENTICATE_URL);
+            HttpPost postRequest = new HttpPost(api_url + AUTHENTICATE_PATH);
             JSONObject body = new JSONObject();
             body.put("username", username);
             body.put("password", password);
@@ -116,7 +117,12 @@ public class AQMeshAPIConnector {
             if (prop.containsKey("aqmesh.password")) {
                 this.password = prop.getProperty("aqmesh.password");
             } else {
-                throw new IOException("Properties file is missing \"aqmesh.password=<aqmesh.password>\"");
+                throw new IOException("Properties file is missing \"aqmesh.password=<aqmesh_password>\"");
+            }
+            if (prop.containsKey("aqmesh.url")) {
+                this.api_url = prop.getProperty("aqmesh.url");
+            } else {
+                throw new IOException("Properties file is missing \"aqmesh.url=<aqmesh_url>\"");
             }
         }
     }

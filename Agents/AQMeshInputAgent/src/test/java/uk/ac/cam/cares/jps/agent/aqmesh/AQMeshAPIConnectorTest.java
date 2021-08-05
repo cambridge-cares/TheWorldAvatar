@@ -29,7 +29,7 @@ public class AQMeshAPIConnectorTest {
     @Test
     public void AQMeshAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
         // One connector constructed using the username and password directly
-        AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password");
+        AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password", "url");
         // One connector constructed using a properties file
         AQMeshAPIConnector connectorFile = new AQMeshAPIConnector(Paths.get(Objects.requireNonNull(getClass().getResource("/aqmesh.properties")).
                 toURI()).toString());
@@ -44,17 +44,23 @@ public class AQMeshAPIConnectorTest {
         passwordField.setAccessible(true);
         Assert.assertEquals("password", passwordField.get(connector));
         Assert.assertEquals("password", passwordField.get(connectorFile));
+
+        Field urlField = AQMeshAPIConnector.class.getDeclaredField("api_url");
+        urlField.setAccessible(true);
+        Assert.assertEquals("url", urlField.get(connector));
+        Assert.assertEquals("url", urlField.get(connectorFile));
     }
 
     @Test
     public void loadAPIConfigsTest() throws NoSuchMethodException, IllegalAccessException, IOException, NoSuchFieldException {
-        AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password");
+        AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password", "url");
         // Filepath to not yet created file in temporary test folder
         String filepath = Paths.get(folder.getRoot().toString(), "aqmesh.properties").toString();
         // Error messages
         String fileNotFound = "No properties file found at specified filepath: " + filepath;
         String noUsername = "Properties file is missing \"aqmesh.username=<aqmesh_username>\"";
-        String noPassword = "Properties file is missing \"aqmesh.password=<aqmesh.password>\"";
+        String noPassword = "Properties file is missing \"aqmesh.password=<aqmesh_password>\"";
+        String noURL = "Properties file is missing \"aqmesh.url=<aqmesh_url>\"";
 
         // Set private method to be accessible
         Method loadAPIConfig = AQMeshAPIConnector.class.getDeclaredMethod("loadAPIConfigs", String.class);
@@ -91,8 +97,19 @@ public class AQMeshAPIConnectorTest {
             Assert.assertEquals(noPassword, e.getCause().getMessage());
         }
 
-        // Test for proper username and password
+        // Test for missing URL by creating a file only containing user and password
         writePropertyFile(filepath, Arrays.asList("aqmesh.username=test_user", "aqmesh.password=test_password"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(connector, filepath);
+            Assert.fail();
+        } catch (InvocationTargetException e) {
+            Assert.assertEquals(IOException.class, e.getCause().getClass());
+            Assert.assertEquals(noURL, e.getCause().getMessage());
+        }
+
+        // Test for proper username and password
+        writePropertyFile(filepath, Arrays.asList("aqmesh.username=test_user", "aqmesh.password=test_password", "aqmesh.url=test_url"));
         // Try loading RDB configs
         try {
             loadAPIConfig.invoke(connector, filepath);
@@ -109,6 +126,9 @@ public class AQMeshAPIConnectorTest {
         passwordField.setAccessible(true);
         Assert.assertEquals("test_password", passwordField.get(connector));
 
+        Field urlField = AQMeshAPIConnector.class.getDeclaredField("api_url");
+        urlField.setAccessible(true);
+        Assert.assertEquals("test_url", urlField.get(connector));
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
