@@ -28,15 +28,15 @@ public class UpdateAgent extends JPSAgent{
 		String path = request.getServletPath();
 		switch (path) {
     		case URL_UpdateTimeDuration:
-    			devClient.updateInstance(InstancesDatabase.DerivedQuantityTimeDuration);
+    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityTimeDuration);
     			break;
     			
     		case URL_UpdateMinTimeCalc:
-    			devClient.updateInstance(InstancesDatabase.DerivedQuantityMinTimeCalc);
+    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityMinTimeCalc);
     			break;
     			
     		case URL_UpdateMaxTimeCalc:
-    			devClient.updateInstance(InstancesDatabase.DerivedQuantityMaxTimeCalc);
+    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityMaxTimeCalc);
     			break;
 		}
 		

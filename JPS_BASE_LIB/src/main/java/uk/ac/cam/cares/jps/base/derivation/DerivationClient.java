@@ -78,7 +78,7 @@ public class DerivationClient {
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
-	public void updateInstance(String derivedIRI) {
+	public void updateDerivation(String derivedIRI) {
 		// keep track of quantities to avoid circular dependencies
 		// String of the map is the derived/input IRI, Integer is the status
 		// assignment of the status follows the depth-first search principle
@@ -87,7 +87,7 @@ public class DerivationClient {
 		// there is a circular dependency when a derived quantity accesses an input with status=1, accessing an input
 		// with status =2 is fine
 		Map<String,Integer> vertexList = new HashMap<>();
-		updateInstance(derivedIRI, vertexList);
+		updateDerivation(derivedIRI, vertexList);
 	}
 	
 	/**
@@ -120,7 +120,7 @@ public class DerivationClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void updateInstance(String instance, Map<String,Integer> vertexList) {
+	private void updateDerivation(String instance, Map<String,Integer> vertexList) {
 		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
 		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
 		
@@ -134,10 +134,10 @@ public class DerivationClient {
 					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
 					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 				} else {
-					updateInstance(input, vertexList);
+					updateDerivation(input, vertexList);
 				}
 			} else {
-				updateInstance(input, vertexList);
+				updateDerivation(input, vertexList);
 			}
 		}
 		
