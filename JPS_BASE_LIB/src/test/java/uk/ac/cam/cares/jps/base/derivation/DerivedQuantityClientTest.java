@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.derivedquantity;
+package uk.ac.cam.cares.jps.base.derivation;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
@@ -14,8 +14,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
-import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantitySparql;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -25,7 +23,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 public class DerivedQuantityClientTest{
 	private MockDevStoreClient mockClient;
-	private DerivedQuantityClient devClient;
+	private DerivationClient devClient;
 	private String entity1 = "http://entity1"; 
 	private String entity2 = "http://entity2"; 
     private List<String> entities = Arrays.asList(entity1,entity2);
@@ -43,7 +41,7 @@ public class DerivedQuantityClientTest{
     public void initialiseSparqlClient() {
         OntModel kb = ModelFactory.createOntologyModel();
         mockClient = new MockDevStoreClient(kb);
-        devClient = new DerivedQuantityClient(mockClient);
+        devClient = new DerivationClient(mockClient);
     }
 	
 	@After
@@ -54,7 +52,7 @@ public class DerivedQuantityClientTest{
 	@Test
     public void testConstructor() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
     	RemoteStoreClient kbClient = new RemoteStoreClient();    
-    	DerivedQuantityClient client = new DerivedQuantityClient(kbClient);
+    	DerivationClient client = new DerivationClient(kbClient);
     	// Retrieve the value of the private field 'kbClient' of the client
         Field kbc = client.getClass().getDeclaredField("kbClient");
         kbc.setAccessible(true);
@@ -65,8 +63,8 @@ public class DerivedQuantityClientTest{
 	
 	@Test
 	public void testKeys() {
-		Assert.assertEquals("agent_input", DerivedQuantityClient.AGENT_INPUT_KEY);
-		Assert.assertEquals("agent_output", DerivedQuantityClient.AGENT_OUTPUT_KEY);
+		Assert.assertEquals("agent_input", DerivationClient.AGENT_INPUT_KEY);
+		Assert.assertEquals("agent_output", DerivationClient.AGENT_OUTPUT_KEY);
 	}
 	
 	@Test
@@ -75,18 +73,18 @@ public class DerivedQuantityClientTest{
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
-		Assert.assertEquals(DerivedQuantitySparql.derivednamespace + "DerivedQuantity", devIndividual.getRDFType().toString()) ;
+		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivedQuantity", devIndividual.getRDFType().toString()) ;
 		
 		// check that each entity is connected to the derived instance
 		for (String entity : entities) {
 		    Assert.assertTrue(testKG.contains(testKG.getIndividual(entity), 
-		    		ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"belongsTo"),
+		    		ResourceFactory.createProperty(DerivationSparql.derivednamespace+"belongsTo"),
 		    		devIndividual));
 		}
 		
 		// checks for agent
 		Assert.assertTrue(testKG.contains(devIndividual,
-				ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"isDerivedUsing"),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
 				testKG.getIndividual(derivedAgentIRI)));
 		Assert.assertTrue(testKG.contains(testKG.getIndividual(derivedAgentIRI), 
 				ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl"),
@@ -95,7 +93,7 @@ public class DerivedQuantityClientTest{
 		// checks for inputs
 		for (String input : inputs) {
 			Assert.assertTrue(testKG.contains(devIndividual,
-					ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"isDerivedFrom"),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedFrom"),
 					ResourceFactory.createResource(input)));
 		}
 		
@@ -113,16 +111,16 @@ public class DerivedQuantityClientTest{
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
-		Assert.assertEquals(DerivedQuantitySparql.derivednamespace + "DerivedQuantityWithTimeSeries", devIndividual.getRDFType().toString()) ;
+		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivedQuantityWithTimeSeries", devIndividual.getRDFType().toString()) ;
 		
 		// check that entity is connected to the derived instance
 	    Assert.assertTrue(testKG.contains(testKG.getIndividual(entity1), 
-	    		ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"belongsTo"),
+	    		ResourceFactory.createProperty(DerivationSparql.derivednamespace+"belongsTo"),
 	    		devIndividual));
 		
 		// checks for agent
 		Assert.assertTrue(testKG.contains(devIndividual,
-				ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"isDerivedUsing"),
+				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
 				testKG.getIndividual(derivedAgentIRI)));
 		Assert.assertTrue(testKG.contains(testKG.getIndividual(derivedAgentIRI), 
 				ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl"),
@@ -131,7 +129,7 @@ public class DerivedQuantityClientTest{
 		// checks for inputs
 		for (String input : inputs) {
 			Assert.assertTrue(testKG.contains(devIndividual,
-					ResourceFactory.createProperty(DerivedQuantitySparql.derivednamespace+"isDerivedFrom"),
+					ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedFrom"),
 					ResourceFactory.createResource(input)));
 		}
 		

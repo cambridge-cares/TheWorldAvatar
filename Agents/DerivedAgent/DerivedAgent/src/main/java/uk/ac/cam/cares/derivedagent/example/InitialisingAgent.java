@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -49,7 +49,7 @@ public class InitialisingAgent extends JPSAgent{
 		ExampleConfig.initProperties();
     	RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
     	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
-    	DerivedQuantityClient devClient = new DerivedQuantityClient(storeClient);
+    	DerivationClient devClient = new DerivationClient(storeClient);
     	
     	System.out.println("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();

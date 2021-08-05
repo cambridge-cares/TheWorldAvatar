@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.derivedquantity;
+package uk.ac.cam.cares.jps.base.derivation;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,16 +20,16 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Kok Foong Lee
  *
  */
-public class DerivedQuantityClient {
+public class DerivationClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs
 	public static final String AGENT_INPUT_KEY = "agent_input";
 	public static final String AGENT_OUTPUT_KEY = "agent_output";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DerivedQuantityClient.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DerivationClient.class);
     
-    public DerivedQuantityClient(StoreClientInterface kbClient) {
+    public DerivationClient(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
     }
     
@@ -42,7 +42,7 @@ public class DerivedQuantityClient {
      * @param agentIRI
      */
     public String createDerivedQuantity(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivedQuantitySparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    	return DerivationSparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     }
     
     /**
@@ -53,7 +53,7 @@ public class DerivedQuantityClient {
      * @param inputsIRI
      */
     public String createDerivedQuantityWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivedQuantitySparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    	return DerivationSparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
     }
     
     /**
@@ -62,14 +62,14 @@ public class DerivedQuantityClient {
      * @param entity
      */
     public void addTimeInstance(String entity) {
-    	DerivedQuantitySparql.addTimeInstance(kbClient, entity);
+    	DerivationSparql.addTimeInstance(kbClient, entity);
     }
     
     /**
      * you may want to use this to update an input's timestamp, the DerivedQuantityClient does not deal with inputs directly
      */
     public void updateTimestamp(String entity) {
-    	DerivedQuantitySparql.updateTimeStamp(kbClient, entity);
+    	DerivationSparql.updateTimeStamp(kbClient, entity);
     }
     
     /**
@@ -122,7 +122,7 @@ public class DerivedQuantityClient {
 	 */
 	private void updateInstance(String instance, Map<String,Integer> vertexList) {
 		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
-		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
+		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
 		
 		if (!vertexList.containsKey(instance)) {
 			vertexList.put(instance, 1);
@@ -145,13 +145,13 @@ public class DerivedQuantityClient {
 		vertexList.replace(instance, 1, 2);
 
 		// inputs required by the agent
-		String[] inputs = DerivedQuantitySparql.getInputs(this.kbClient, instance);
+		String[] inputs = DerivationSparql.getInputs(this.kbClient, instance);
 		if (inputs.length > 0) {
 			// at this point, "instance" is a derived instance for sure, any other instances will not go through this code
 			// getInputs queries for <instance> <isDerivedFrom> ?x
 			if (isOutOfDate(instance,inputs)) {
 				// calling agent to create a new instance
-				String agentURL = DerivedQuantitySparql.getAgentUrl(kbClient, instance);
+				String agentURL = DerivationSparql.getAgentUrl(kbClient, instance);
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray();
 				for (int i = 0; i < inputs.length; i++) {
@@ -161,7 +161,7 @@ public class DerivedQuantityClient {
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 				
 				// if it is a derived quantity with time series, there will be no changes to the instances
-				if (!DerivedQuantitySparql.isDerivedWithTimeSeries(this.kbClient, instance)) {
+				if (!DerivationSparql.isDerivedWithTimeSeries(this.kbClient, instance)) {
 					// collect new instances created by agent
 					JSONArray output = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY);
 					String[] newEntities = new String[output.length()];
@@ -171,23 +171,23 @@ public class DerivedQuantityClient {
 
 					// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
 					// query for ?x <belongsTo> <instance>
-					String[] entities = DerivedQuantitySparql.getDerivedEntities(kbClient, instance);
+					String[] entities = DerivationSparql.getDerivedEntities(kbClient, instance);
 					
 					// check if any of the old entities is an input for another derived quantity
 					// query ?x <isDerivedFrom> <entity>, <entity> a ?y
 					// where ?x = a derived instance, ?y = class of entity
 					// index 0 = derivedIRIs list, index 1 = type IRI list
-					List<List<String>> derivedAndType = DerivedQuantitySparql.getIsDerivedFromEntities(kbClient, entities);
+					List<List<String>> derivedAndType = DerivationSparql.getIsDerivedFromEntities(kbClient, entities);
 					
 					// delete old instances
-					DerivedQuantitySparql.deleteInstances(kbClient, entities);
+					DerivationSparql.deleteInstances(kbClient, entities);
 					
 					// link new entities to derived instance, adding ?x <belongsTo> <instance>
-					DerivedQuantitySparql.addNewEntitiesToDerived(kbClient, instance, newEntities);
+					DerivationSparql.addNewEntitiesToDerived(kbClient, instance, newEntities);
 					
 					if (derivedAndType.get(0).size() > 0) {
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
-						String[] classOfNewEntities = DerivedQuantitySparql.getInstanceClass(kbClient, newEntities);
+						String[] classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
 						
 						// look for the entity with the same rdf:type that we need to reconnect
 						List<String> oldDerivedList = derivedAndType.get(0);
@@ -211,12 +211,12 @@ public class DerivedQuantityClient {
 								throw new JPSRuntimeException("Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i));
 							}
 						    // reconnect
-							DerivedQuantitySparql.reconnectInputToDerived(kbClient, newEntities[matchingIndex], oldDerivedList.get(i));
+							DerivationSparql.reconnectInputToDerived(kbClient, newEntities[matchingIndex], oldDerivedList.get(i));
 						}
 					}
 				}
 				// if there are no errors, assume update is successful
-				DerivedQuantitySparql.updateTimeStamp(kbClient, instance);
+				DerivationSparql.updateTimeStamp(kbClient, instance);
 			}
 		}
 	}
@@ -227,7 +227,7 @@ public class DerivedQuantityClient {
 	 * @param derivedList
 	 */
 	private void validateDerived(String instance, Map<String,Integer> vertexList) {
-		List<String> inputsAndDerived = DerivedQuantitySparql.getInputsAndDerived(this.kbClient, instance);
+		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
 		if (!vertexList.containsKey(instance)) {
 			vertexList.put(instance, 1);
 		}
@@ -249,12 +249,12 @@ public class DerivedQuantityClient {
 		vertexList.replace(instance, 1, 2);
 		
 		// check that for each derived quantity, there is a timestamp to compare to
-		String[] inputs = DerivedQuantitySparql.getInputs(this.kbClient, instance);
+		String[] inputs = DerivationSparql.getInputs(this.kbClient, instance);
 		if (inputs.length > 0) {
 			// getTimestamp will throw an exception if there is no timestamp
-			DerivedQuantitySparql.getTimestamp(kbClient, instance);
+			DerivationSparql.getTimestamp(kbClient, instance);
 			for (String input : inputs) {
-				DerivedQuantitySparql.getTimestamp(kbClient, input);
+				DerivationSparql.getTimestamp(kbClient, input);
 			}
 		}
 	}
@@ -267,10 +267,10 @@ public class DerivedQuantityClient {
 	 */
 	private boolean isOutOfDate(String instance, String[] inputs) {
 	    boolean outOfDate = false;
-	    long instanceTimestamp = DerivedQuantitySparql.getTimestamp(this.kbClient, instance);
+	    long instanceTimestamp = DerivationSparql.getTimestamp(this.kbClient, instance);
 	    
 	    for (int i = 0; i < inputs.length; i++) {
-	    	long inputTimestamp = DerivedQuantitySparql.getTimestamp(this.kbClient, inputs[i]);
+	    	long inputTimestamp = DerivationSparql.getTimestamp(this.kbClient, inputs[i]);
 	    	if (inputTimestamp > instanceTimestamp) {
 	    		outOfDate = true;
 	    		return outOfDate;

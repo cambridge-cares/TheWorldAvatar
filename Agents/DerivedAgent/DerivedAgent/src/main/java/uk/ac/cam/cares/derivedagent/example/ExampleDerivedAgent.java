@@ -21,7 +21,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesRDBClient;
 
@@ -68,7 +68,7 @@ public class ExampleDerivedAgent extends JPSAgent {
     	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
 
         if (validateInput(requestParams,path,sparqlClient)) {
-        	JSONArray inputs = requestParams.getJSONArray(DerivedQuantityClient.AGENT_INPUT_KEY);
+        	JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
         	
         	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
         	tsClient.setRdbURL(ExampleConfig.dburl); 
@@ -85,7 +85,7 @@ public class ExampleDerivedAgent extends JPSAgent {
         			Integer mintime = tsClient.getMinTime(inputdata_iri);
         			createdInstances = sparqlClient.createMinTime(mintime);
         			LOGGER.info("created a new min time instance " + createdInstances);
-        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+        			response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        	    
 	        	case URL_MAXTIME:
@@ -94,7 +94,7 @@ public class ExampleDerivedAgent extends JPSAgent {
         			Integer maxtime = tsClient.getMaxTime(inputdata_iri);
         			createdInstances = sparqlClient.createMaxTime(maxtime);
         			LOGGER.info("created a new max time instance " + createdInstances);
-        			response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+        			response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		
 	        		break;
 	        	case URL_DURATION:
@@ -114,7 +114,7 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        		int timeduration = maxtime_input - mintime_input;
 	        		createdInstances = sparqlClient.createTimeDuration(timeduration);
 	        		LOGGER.info("created a new time duration instance " + createdInstances);
-	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+	        		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        		
 	        	case URL_MINTIMECALC:
@@ -132,7 +132,7 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        		int mintimecalc = maxtime_input - timeduration_input;
 	        		createdInstances = sparqlClient.createMinTimeCalc(mintimecalc);
 	        		LOGGER.info("calculated min time from max time and time duration " + createdInstances);
-	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+	        		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        		
 	        	case URL_MAXTIMECALC:
@@ -150,7 +150,7 @@ public class ExampleDerivedAgent extends JPSAgent {
 	        		int maxtimecalc = timeduration_input + mintime_input;
 	        		createdInstances = sparqlClient.createMaxTimeCalc(maxtimecalc);
 	        		LOGGER.info("calculated max time from min time and time duration " + createdInstances);
-	        		response.put(DerivedQuantityClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+	        		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        }
         } else {
@@ -162,7 +162,7 @@ public class ExampleDerivedAgent extends JPSAgent {
 
     public boolean validateInput(JSONObject requestParams, String path, ExampleSparqlClient sparqlClient) throws BadRequestException {
         boolean valid = false;
-        JSONArray inputs = requestParams.getJSONArray(DerivedQuantityClient.AGENT_INPUT_KEY);
+        JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
         switch (path) {
 	    	case URL_MINTIME:
 	    		LOGGER.info("Checking input for min time");

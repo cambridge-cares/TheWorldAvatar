@@ -10,7 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.derivedquantity.DerivedQuantityClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -36,7 +36,7 @@ public class InputAgent extends JPSAgent {
 		    ExampleConfig.initProperties();
 		    
 		    RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
-	    	DerivedQuantityClient devClient = new DerivedQuantityClient(storeClient);
+	    	DerivationClient devClient = new DerivationClient(storeClient);
 		    
 		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, ExampleConfig.dburl, ExampleConfig.dbuser, ExampleConfig.dbpassword);
 	    	

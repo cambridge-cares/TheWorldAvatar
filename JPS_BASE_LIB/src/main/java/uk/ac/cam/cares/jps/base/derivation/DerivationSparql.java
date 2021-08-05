@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.derivedquantity;
+package uk.ac.cam.cares.jps.base.derivation;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -34,7 +34,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Kok Foong Lee
  *
  */
-public class DerivedQuantitySparql{
+public class DerivationSparql{
 	public static String derivednamespace = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
