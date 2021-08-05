@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +21,8 @@ public class UpdateAgent extends JPSAgent{
 
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		ExampleConfig.initProperties();
-		RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
+		Config.initProperties();
+		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		DerivationClient devClient = new DerivationClient(storeClient);
 		
 		String path = request.getServletPath();

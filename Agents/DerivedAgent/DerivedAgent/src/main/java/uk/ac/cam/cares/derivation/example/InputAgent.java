@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,12 +33,12 @@ public class InputAgent extends JPSAgent {
 		if (validateInput(requestParams)) {
 		    String input_iri = InstancesDatabase.Input;
 		    
-		    ExampleConfig.initProperties();
+		    Config.initProperties();
 		    
-		    RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
+		    RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 	    	DerivationClient devClient = new DerivationClient(storeClient);
 		    
-		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, ExampleConfig.dburl, ExampleConfig.dbuser, ExampleConfig.dbpassword);
+		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
 	    	
 	    	// create random time series
 	    	Random rand = new Random();

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,33 +27,33 @@ public class InitialisingAgent extends JPSAgent{
     // this URL is based on the docker image, make sure the URL is accessible from the derived quantity's calling entity
 	private static String baseURL = "http://derivedagent:8080/DerivedAgent";
 	
-	private static String mintime_agent_iri = ExampleSparqlClient.namespace + "mintime_agent";
-	private static String mintime_agent_url = baseURL + ExampleDerivedAgent.URL_MINTIME;
+	private static String mintime_agent_iri = SparqlClient.namespace + "mintime_agent";
+	private static String mintime_agent_url = baseURL + DerivationAgents.URL_MINTIME;
 	
-	private static String maxtime_agent_iri = ExampleSparqlClient.namespace + "maxtime_agent";
-	private static String maxtime_agent_url = baseURL + ExampleDerivedAgent.URL_MAXTIME;
+	private static String maxtime_agent_iri = SparqlClient.namespace + "maxtime_agent";
+	private static String maxtime_agent_url = baseURL + DerivationAgents.URL_MAXTIME;
 	
-	private static String timeduration_agent_iri = ExampleSparqlClient.namespace + "timeduration_agent";
-	private static String timeduration_agent_url = baseURL + ExampleDerivedAgent.URL_DURATION;
+	private static String timeduration_agent_iri = SparqlClient.namespace + "timeduration_agent";
+	private static String timeduration_agent_url = baseURL + DerivationAgents.URL_DURATION;
 	
-	private static String mintimecalc_agent_iri = ExampleSparqlClient.namespace + "mintimecalc_agent";
-	private static String mintimecalc_agent_url = baseURL + ExampleDerivedAgent.URL_MINTIMECALC;
+	private static String mintimecalc_agent_iri = SparqlClient.namespace + "mintimecalc_agent";
+	private static String mintimecalc_agent_url = baseURL + DerivationAgents.URL_MINTIMECALC;
 	
-	private static String maxtimecalc_agent_iri = ExampleSparqlClient.namespace + "maxtimecalc_agent";
-	private static String maxtimecalc_agent_url = baseURL + ExampleDerivedAgent.URL_MAXTIMECALC;
+	private static String maxtimecalc_agent_iri = SparqlClient.namespace + "maxtimecalc_agent";
+	private static String maxtimecalc_agent_url = baseURL + DerivationAgents.URL_MAXTIMECALC;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitialisingAgent.class);
     
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-		ExampleConfig.initProperties();
-    	RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
-    	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
+		Config.initProperties();
+    	RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+    	SparqlClient sparqlClient = new SparqlClient(storeClient);
     	DerivationClient devClient = new DerivationClient(storeClient);
     	
     	System.out.println("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();
-    	TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, ExampleConfig.dburl, ExampleConfig.dbuser, ExampleConfig.dbpassword);
+    	TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	tsClient.deleteAll();
     	
     	// record the IRIs of the created instances to link them later

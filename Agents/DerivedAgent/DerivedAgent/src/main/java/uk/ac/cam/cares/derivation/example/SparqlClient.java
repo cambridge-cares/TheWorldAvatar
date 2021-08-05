@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -18,7 +18,7 @@ import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
-public class ExampleSparqlClient {
+public class SparqlClient {
 	StoreClientInterface storeClient;
 	
 	// namespace
@@ -38,7 +38,7 @@ public class ExampleSparqlClient {
 	private static Iri hasValue = p_namespace.iri("hasValue");
 	private static Iri numericalValue = p_namespace.iri("numericalValue");
 	
-    public ExampleSparqlClient(StoreClientInterface storeClient) {
+    public SparqlClient(StoreClientInterface storeClient) {
     	this.storeClient = storeClient;
     }
     

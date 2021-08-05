@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 /**
  * used to store IRIs of instances in the KG

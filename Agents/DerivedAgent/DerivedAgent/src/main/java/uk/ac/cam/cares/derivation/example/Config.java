@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-public class ExampleConfig{
+public class Config{
 	public static Properties props = null;
 	public static String dburl;
 	public static String dbuser;
@@ -21,7 +21,7 @@ public class ExampleConfig{
 	public static String kguser;
 	public static String kgpassword;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(ExampleConfig.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
 	
 	public static void initProperties() {
 		if (props == null) {
@@ -29,15 +29,15 @@ public class ExampleConfig{
 	    		String credentials_file = Paths.get("main","resources","credentials.properties").toString();
 	    		InputStream inputstream = new ClassPathResource(credentials_file).getInputStream();
 	
-	    		ExampleConfig.props = new Properties();
-	    		ExampleConfig.props.load(inputstream);
+	    		Config.props = new Properties();
+	    		Config.props.load(inputstream);
 	    		
-	    		ExampleConfig.dburl = ExampleConfig.props.getProperty("db.url");
-	    		ExampleConfig.dbuser = ExampleConfig.props.getProperty("db.user");
-	    		ExampleConfig.dbpassword = ExampleConfig.props.getProperty("db.password");
-	    		ExampleConfig.kgurl = ExampleConfig.props.getProperty("kg.url");
-	    		ExampleConfig.kguser = ExampleConfig.props.getProperty("kg.user");
-	    		ExampleConfig.kgpassword = ExampleConfig.props.getProperty("kg.password");
+	    		Config.dburl = Config.props.getProperty("db.url");
+	    		Config.dbuser = Config.props.getProperty("db.user");
+	    		Config.dbpassword = Config.props.getProperty("db.password");
+	    		Config.kgurl = Config.props.getProperty("kg.url");
+	    		Config.kguser = Config.props.getProperty("kg.user");
+	    		Config.kgpassword = Config.props.getProperty("kg.password");
 			} catch (IOException e1) {
 				LOGGER.error(e1.getMessage());
 				throw new JPSRuntimeException(e1);

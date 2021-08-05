@@ -11,7 +11,7 @@
  *
  * For more information please contact support(@)cmclinnovations.com
  */
-package uk.ac.cam.cares.derivedagent.example;
+package uk.ac.cam.cares.derivation.example;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -36,14 +36,14 @@ import javax.servlet.annotation.WebServlet;
  * 3) TimeDuration: inputs - MinTime & MaxTime, queries min time and max time, calculates the difference and write it to kg
  * @author Kok Foong Lee
  */
-@WebServlet(urlPatterns = {ExampleDerivedAgent.URL_MINTIME, ExampleDerivedAgent.URL_MAXTIME, ExampleDerivedAgent.URL_DURATION,
-		ExampleDerivedAgent.URL_MINTIMECALC, ExampleDerivedAgent.URL_MAXTIMECALC})
-public class ExampleDerivedAgent extends JPSAgent {
+@WebServlet(urlPatterns = {DerivationAgents.URL_MINTIME, DerivationAgents.URL_MAXTIME, DerivationAgents.URL_DURATION,
+		DerivationAgents.URL_MINTIMECALC, DerivationAgents.URL_MAXTIMECALC})
+public class DerivationAgents extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 
 	// ============================ Static variables ===========================
 	// logs are written to a hard coded location (C:/JPS_DATA/logs), defined in log4j2.xml located in src
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExampleDerivedAgent.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DerivationAgents.class);
 
     public static final String URL_MINTIME = "/TimeSeriesAgent/MinTime";
     public static final String URL_MAXTIME = "/TimeSeriesAgent/MaxTime";
@@ -63,17 +63,17 @@ public class ExampleDerivedAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         String path = request.getServletPath();
         JSONObject response = new JSONObject();
-        ExampleConfig.initProperties();
-        RemoteStoreClient storeClient = new RemoteStoreClient(ExampleConfig.kgurl,ExampleConfig.kgurl,ExampleConfig.kguser,ExampleConfig.kgpassword);
-    	ExampleSparqlClient sparqlClient = new ExampleSparqlClient(storeClient);
+        Config.initProperties();
+        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+    	SparqlClient sparqlClient = new SparqlClient(storeClient);
 
         if (validateInput(requestParams,path,sparqlClient)) {
         	JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
         	
         	TimeSeriesRDBClient<Integer> tsClient = new TimeSeriesRDBClient<Integer>(Integer.class);
-        	tsClient.setRdbURL(ExampleConfig.dburl); 
-        	tsClient.setRdbUser(ExampleConfig.dbuser);
-        	tsClient.setRdbPassword(ExampleConfig.dbpassword);
+        	tsClient.setRdbURL(Config.dburl); 
+        	tsClient.setRdbUser(Config.dbuser);
+        	tsClient.setRdbPassword(Config.dbpassword);
         	
         	String inputdata_iri;
         	String[] createdInstances;
@@ -160,7 +160,7 @@ public class ExampleDerivedAgent extends JPSAgent {
         return response;
     }
 
-    public boolean validateInput(JSONObject requestParams, String path, ExampleSparqlClient sparqlClient) throws BadRequestException {
+    public boolean validateInput(JSONObject requestParams, String path, SparqlClient sparqlClient) throws BadRequestException {
         boolean valid = false;
         JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
         switch (path) {
