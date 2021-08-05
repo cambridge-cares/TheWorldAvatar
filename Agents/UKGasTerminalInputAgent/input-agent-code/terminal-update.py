@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import time
+import pytz
 from py4jps.resources import JpsBaseLib
 from SPARQLWrapper import SPARQLWrapper, POST
 import os
@@ -59,6 +60,16 @@ def getKGLocation(namespace):
 
 
 def get_flow_data_from_csv():
+    """
+        Gathers instantaneous flow rate data for each terminal from national grid website.
+
+        Returns:
+            2D array of gas flow rates (triples [terminalName, time, flow]).
+    """
+
+    # Set correct timezone to account for daylight saving time
+    tz = pytz.timezone('Europe/London')
+
     print("Downloading latest flow data CSV...")
     url = "https://mip-prd-web.azurewebsites.net/InstantaneousViewFileDownload/DownloadFile"
     filename = wget.download(url)
@@ -88,9 +99,11 @@ def get_flow_data_from_csv():
             
                 # Parse the CSV rows
                 terminalName = row[0]
-                
+
+                # Times from CSV file are in local time
                 dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
-                dateTimeStr = dateTimeObj.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                dateTimeObjUTC = tz.localize(dateTimeObj).astimezone(pytz.utc)
+                dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
                 flowValue = row[2]
                 data.append([terminalName, dateTimeStr, flowValue])
@@ -167,7 +180,7 @@ def update_triple_store():
         sparql.setQuery(query)
         
         print("Running SPARQL update " + str(i + 1) + " of " + str(len(data)) + "...")
-        ret = sparql.query()
+        # ret = sparql.query()
         
 
     print("All SPARQL updates finished.")
