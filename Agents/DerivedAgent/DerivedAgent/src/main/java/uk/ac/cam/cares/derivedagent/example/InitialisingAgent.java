@@ -83,23 +83,23 @@ public class InitialisingAgent extends JPSAgent{
     	LOGGER.info("created max time calc " + maxtimecalc[0]);
     	
     	// create three derived quantities
-    	String derived_mintime = devClient.createDerivedQuantity(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
+    	String derived_mintime = devClient.createDerivation(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for min time " + derived_mintime);
     	InstancesDatabase.DerivedQuantityMinTime = derived_mintime;
     	
-    	String derived_maxtime = devClient.createDerivedQuantity(Arrays.asList(maxtime), maxtime_agent_iri, maxtime_agent_url, Arrays.asList(input));
+    	String derived_maxtime = devClient.createDerivation(Arrays.asList(maxtime), maxtime_agent_iri, maxtime_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for max time " + derived_maxtime);
     	InstancesDatabase.DerivedQuantityMaxTime = derived_maxtime;
     	
-    	String derived_timeduration = devClient.createDerivedQuantity(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime[0],maxtime[0]));
+    	String derived_timeduration = devClient.createDerivation(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime[0],maxtime[0]));
     	LOGGER.info("created derived quantity for time duration " + derived_timeduration);
     	InstancesDatabase.DerivedQuantityTimeDuration = derived_timeduration;
     	
-    	String derived_mintimecalc = devClient.createDerivedQuantity(Arrays.asList(mintimecalc), mintimecalc_agent_iri, mintimecalc_agent_url, Arrays.asList(timeduration[0],maxtime[0]));
+    	String derived_mintimecalc = devClient.createDerivation(Arrays.asList(mintimecalc), mintimecalc_agent_iri, mintimecalc_agent_url, Arrays.asList(timeduration[0],maxtime[0]));
     	LOGGER.info("created derived quantity for min time derived " + derived_mintimecalc);
     	InstancesDatabase.DerivedQuantityMinTimeCalc = derived_mintimecalc;
     	
-    	String derived_maxtimecalc = devClient.createDerivedQuantity(Arrays.asList(maxtimecalc), maxtimecalc_agent_iri, maxtimecalc_agent_url, Arrays.asList(timeduration[0],mintime[0]));
+    	String derived_maxtimecalc = devClient.createDerivation(Arrays.asList(maxtimecalc), maxtimecalc_agent_iri, maxtimecalc_agent_url, Arrays.asList(timeduration[0],mintime[0]));
     	LOGGER.info("created derived quantity for max time calc " + derived_maxtimecalc);
     	InstancesDatabase.DerivedQuantityMaxTimeCalc = derived_maxtimecalc;
     	

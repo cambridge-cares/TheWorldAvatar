@@ -69,7 +69,7 @@ public class DerivedQuantityClientTest{
 	
 	@Test
 	public void testCreateDerivedQuantity() {
-		String createdDerived = devClient.createDerivedQuantity(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String createdDerived = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
@@ -99,7 +99,7 @@ public class DerivedQuantityClientTest{
 		
 		// an instance cannot be part of two derived quantities
         try {
-        	devClient.createDerivedQuantity(entities, derivedAgentIRI3, derivedAgentURL3, inputs);
+        	devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs);
         } catch (Exception e) {
         	Assert.assertTrue(e.getMessage().contains("part of another derived quantity"));
         }
@@ -107,7 +107,7 @@ public class DerivedQuantityClientTest{
 	
 	@Test
 	public void testCreateDerivedQuantityWithTimeSeries() {
-		String createdDerived = devClient.createDerivedQuantityWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
+		String createdDerived = devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
@@ -135,7 +135,7 @@ public class DerivedQuantityClientTest{
 		
 		// an instance cannot be part of two derived quantities
         try {
-        	devClient.createDerivedQuantityWithTimeSeries(entity2, derivedAgentIRI3, derivedAgentURL3, inputs);
+        	devClient.createDerivationWithTimeSeries(entity2, derivedAgentIRI3, derivedAgentURL3, inputs);
         } catch (Exception e) {
         	Assert.assertTrue(e.getMessage().contains("part of another derived quantity"));
         }
@@ -155,7 +155,7 @@ public class DerivedQuantityClientTest{
 	@Test
 	public void testUpdateTimestamp() {
 		String namespace = "http://www.w3.org/2006/time#";
-		String devInstance = devClient.createDerivedQuantityWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
+		String devInstance = devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long oldtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
 		.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();
@@ -167,8 +167,8 @@ public class DerivedQuantityClientTest{
 	
 	@Test
 	public void testValidateDerived() {
-		devClient.createDerivedQuantity(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
-		String derived2 = devClient.createDerivedQuantity(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
+		String derived2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
 		Assert.assertFalse(devClient.validateDerived(derived2));
@@ -179,7 +179,7 @@ public class DerivedQuantityClientTest{
 		Assert.assertTrue(devClient.validateDerived(derived2));
 		
 	    // intentionally create a circular dependency
-		String derived3 = devClient.createDerivedQuantity(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
+		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
 		Assert.assertFalse(devClient.validateDerived(derived3));
 	}
 }

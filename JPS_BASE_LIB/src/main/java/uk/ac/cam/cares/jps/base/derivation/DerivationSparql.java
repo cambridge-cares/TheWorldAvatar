@@ -68,7 +68,7 @@ public class DerivationSparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	public static String createDerivedQuantity(StoreClientInterface kbClient, 
+	public static String createDerivation(StoreClientInterface kbClient, 
 			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
@@ -130,7 +130,7 @@ public class DerivationSparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	public static String createDerivedQuantityWithTimeSeries(StoreClientInterface kbClient, 
+	public static String createDerivationWithTimeSeries(StoreClientInterface kbClient, 
 			String entity, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		

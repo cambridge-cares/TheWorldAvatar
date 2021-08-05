@@ -41,8 +41,8 @@ public class DerivationClient {
      * @param inputsIRI
      * @param agentIRI
      */
-    public String createDerivedQuantity(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivationSparql.createDerivedQuantity(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	return DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     }
     
     /**
@@ -52,8 +52,8 @@ public class DerivationClient {
      * @param agentURL
      * @param inputsIRI
      */
-    public String createDerivedQuantityWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivationSparql.createDerivedQuantityWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    public String createDerivationWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	return DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
     }
     
     /**
