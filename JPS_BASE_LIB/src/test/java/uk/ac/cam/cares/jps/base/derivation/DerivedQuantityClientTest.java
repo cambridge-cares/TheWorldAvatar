@@ -171,15 +171,15 @@ public class DerivedQuantityClientTest{
 		String derived2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
-		Assert.assertFalse(devClient.validateDerived(derived2));
+		Assert.assertFalse(devClient.validateDerivation(derived2));
 		for (String input:inputs) {
 			devClient.addTimeInstance(input);
 		}
 		
-		Assert.assertTrue(devClient.validateDerived(derived2));
+		Assert.assertTrue(devClient.validateDerivation(derived2));
 		
 	    // intentionally create a circular dependency
 		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
-		Assert.assertFalse(devClient.validateDerived(derived3));
+		Assert.assertFalse(devClient.validateDerivation(derived3));
 	}
 }

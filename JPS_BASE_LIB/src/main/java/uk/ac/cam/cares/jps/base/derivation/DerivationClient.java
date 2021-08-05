@@ -96,13 +96,13 @@ public class DerivationClient {
 	 * @param derived
 	 * @return
 	 */
-	public boolean validateDerived(String derived) {
+	public boolean validateDerivation(String derived) {
 		boolean valid = true;
 		// keep track of quantities to avoid circular dependencies
 		Map<String,Integer> vertexList = new HashMap<>();
         
 		try {
-			validateDerived(derived, vertexList);
+			validateDerivation(derived, vertexList);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			System.out.println(e.getMessage());
@@ -226,7 +226,7 @@ public class DerivationClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void validateDerived(String instance, Map<String,Integer> vertexList) {
+	private void validateDerivation(String instance, Map<String,Integer> vertexList) {
 		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
 		if (!vertexList.containsKey(instance)) {
 			vertexList.put(instance, 1);
@@ -238,10 +238,10 @@ public class DerivationClient {
 					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
 					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
 				} else {
-					validateDerived(input, vertexList);
+					validateDerivation(input, vertexList);
 				}
 			} else {
-				validateDerived(input, vertexList);
+				validateDerivation(input, vertexList);
 			}
 		}
 		

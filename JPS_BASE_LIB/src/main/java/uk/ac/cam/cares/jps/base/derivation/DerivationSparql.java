@@ -87,7 +87,7 @@ public class DerivationSparql{
 			if (!hasBelongsTo(kbClient, entity)) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
 			} else {
-				throw new JPSRuntimeException(entity + " is already part of another derived quantity");
+				throw new JPSRuntimeException(entity + " is already part of another derivation");
 			}
 		}
 		
@@ -147,7 +147,7 @@ public class DerivationSparql{
 		if (!hasBelongsTo(kbClient,entity)) {
 			modify.insert(iri(entity).has(belongsTo, derived_iri));
 		} else {
-			throw new JPSRuntimeException(entity + " is already part of another derived quantity");
+			throw new JPSRuntimeException(entity + " is already part of another derivation");
 		}
 		
 		

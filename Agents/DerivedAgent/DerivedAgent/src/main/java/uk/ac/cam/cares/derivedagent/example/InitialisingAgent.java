@@ -107,7 +107,7 @@ public class InitialisingAgent extends JPSAgent{
     	// as time duration is derived from min time and max time, they get checked too
     	// the validate method only traverse down, not up
     	LOGGER.info("Validating " + derived_timeduration);
-    	if (devClient.validateDerived(derived_timeduration)) {
+    	if (devClient.validateDerivation(derived_timeduration)) {
     		LOGGER.info("validation success");
     	} else {
     		LOGGER.error("ERROR: validation fail");
