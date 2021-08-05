@@ -19,24 +19,41 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * Class to directly communicate with the AQMesh API.
+ * @author Niklas Kasenburg
+ */
 public class AQMeshAPIConnector {
 
     private String username;
     private String password;
-    private String token;
-    private String api_url = "https://api.aqmeshdata.net/api";
-    private static final String AUTHENTICATE_PATH = "/Authenticate";
+    private String token = "";
+    private String api_url = "https://apitest.aqmeshdata.net/api/";
+    private static final String AUTHENTICATE_PATH = "Authenticate";
 
+    /**
+     * Standard constructor
+     * @param username the username to access AQMesh API
+     * @param password the password to access AQMesh API
+     * @param url the  URL of AQMesh API
+     */
     public AQMeshAPIConnector(String username, String password, String url) {
         this.username = username;
         this.password = password;
         this.api_url = url;
     }
 
+    /**
+     * Constructor using a properties file
+     * @param filepath Path to the properties file from which to read the username, password and URL
+     */
     public AQMeshAPIConnector(String filepath) throws IOException {
         loadAPIConfigs(filepath);
     }
 
+    /**
+     * Connects to the AQMesh API by retrieving and setting an access token that is required for all other API calls for authentication
+     */
     public void connect() {
         try {
             token = getAccessToken();
@@ -46,6 +63,10 @@ public class AQMeshAPIConnector {
         System.out.println("Token received from AQMesh API. It will be valid for 120 minutes.");
     }
 
+    /**
+     * Retrieves an access token from the AQMesh API
+     * @return The access token as string
+     */
     private String getAccessToken() throws IOException {
         try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost postRequest = new HttpPost(api_url + AUTHENTICATE_PATH);
@@ -68,6 +89,14 @@ public class AQMeshAPIConnector {
                 }
             }
         }
+    }
+
+    /**
+     * Get method for the access token. String is empty if connect() was not run
+     * @return The access token as string
+     */
+    public String getToken() {
+        return token;
     }
 
     public TimeSeries<LocalDateTime> getParticleReadings() {
@@ -94,6 +123,10 @@ public class AQMeshAPIConnector {
         return new JSONArray();
     }
 
+    /**
+     * Reads the username, password and URL needed to connect to the API from a properties file and saves it in fields
+     * @param filepath Path to the properties file from which to read the username, password and URL
+     */
     private void loadAPIConfigs(String filepath) throws IOException {
         // Check whether properties file exists at specified location
         File file = new File(filepath);
