@@ -1,13 +1,12 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -79,15 +78,9 @@ public class DerivationClient {
 	 * @param derivedIRI
 	 */
 	public void updateDerivation(String derivedIRI) {
-		// keep track of quantities to avoid circular dependencies
-		// String of the map is the derived/input IRI, Integer is the status
-		// assignment of the status follows the depth-first search principle
-		// a vertex is assigned status = 1 when first discovered
-		// then assigned status = 2 after it has no inputs
-		// there is a circular dependency when a derived quantity accesses an input with status=1, accessing an input
-		// with status =2 is fine
-		Map<String,Integer> vertexList = new HashMap<>();
-		updateDerivation(derivedIRI, vertexList);
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
+		updateDerivation(derivedIRI, graph);
 	}
 	
 	/**
@@ -99,10 +92,10 @@ public class DerivationClient {
 	public boolean validateDerivation(String derived) {
 		boolean valid = true;
 		// keep track of quantities to avoid circular dependencies
-		Map<String,Integer> vertexList = new HashMap<>();
+		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
         
 		try {
-			validateDerivation(derived, vertexList);
+			validateDerivation(derived, graph);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			System.out.println(e.getMessage());
@@ -120,29 +113,21 @@ public class DerivationClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void updateDerivation(String instance, Map<String,Integer> vertexList) {
+	private void updateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph) {
 		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
 		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
-		
-		if (!vertexList.containsKey(instance)) {
-			vertexList.put(instance, 1);
+
+		if (!graph.containsVertex(instance)) {
+			graph.addVertex(instance);
 		}
 		
 		for (String input : inputsAndDerived) {
-			if (vertexList.containsKey(input)) {
-				if (vertexList.get(input) == 1) { 
-					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
-					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
-				} else {
-					updateDerivation(input, vertexList);
-				}
-			} else {
-				updateDerivation(input, vertexList);
+			if (!graph.containsVertex(input)) {
+				graph.addVertex(input);
 			}
+			graph.addEdge(instance, input); // will throw an error here if there is circular dependency
+			updateDerivation(input, graph);
 		}
-		
-		// modify status to "finished"
-		vertexList.replace(instance, 1, 2);
 
 		// inputs required by the agent
 		String[] inputs = DerivationSparql.getInputs(this.kbClient, instance);
@@ -226,27 +211,19 @@ public class DerivationClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void validateDerivation(String instance, Map<String,Integer> vertexList) {
+	private void validateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph) {
 		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
-		if (!vertexList.containsKey(instance)) {
-			vertexList.put(instance, 1);
+		if (!graph.containsVertex(instance)) {
+			graph.addVertex(instance);
 		}
 		
 		for (String input : inputsAndDerived) {
-			if (vertexList.containsKey(input)) {
-				if (vertexList.get(input) == 1) { 
-					LOGGER.error("DerivedQuantityClient: Circular dependency detected");
-					throw new JPSRuntimeException("DerivedQuantityClient: Circular dependency detected");
-				} else {
-					validateDerivation(input, vertexList);
-				}
-			} else {
-				validateDerivation(input, vertexList);
+			if (!graph.containsVertex(input)) {
+				graph.addVertex(input);
 			}
+			graph.addEdge(instance, input); // will throw an error here if there is circular dependency
+			validateDerivation(input, graph);
 		}
-		
-		// modify status to "finished"
-		vertexList.replace(instance, 1, 2);
 		
 		// check that for each derived quantity, there is a timestamp to compare to
 		String[] inputs = DerivationSparql.getInputs(this.kbClient, instance);
