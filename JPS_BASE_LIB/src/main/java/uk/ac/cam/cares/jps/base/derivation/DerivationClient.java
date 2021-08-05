@@ -80,7 +80,12 @@ public class DerivationClient {
 	public void updateDerivation(String derivedIRI) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
-		updateDerivation(derivedIRI, graph);
+		try {
+			updateDerivation(derivedIRI, graph);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			System.out.println(e.getMessage());
+		}
 	}
 	
 	/**
