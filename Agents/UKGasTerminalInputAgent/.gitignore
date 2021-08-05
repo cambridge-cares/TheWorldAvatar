@@ -2,6 +2,10 @@
 *.war
 
 *.pyc
-/*/__pycache__/
+__pycache__/
+build/
+dist/
+*~*
 .idea/
-venv/
+*venv/
+.mypy_cache/

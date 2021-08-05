@@ -1,0 +1,6 @@
+py4jps
+requests_html
+SPARQLWrapper
+tabulate
+tqdm
+wget
