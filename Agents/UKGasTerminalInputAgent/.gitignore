@@ -1,0 +1,7 @@
+*.jar
+*.war
+
+*.pyc
+/*/__pycache__/
+.idea/
+venv/
