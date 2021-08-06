@@ -46,9 +46,9 @@ public class DerivationAgents extends JPSAgent {
 	// logs are written to a hard coded location (C:/JPS_DATA/logs), defined in log4j2.xml located in src
     private static final Logger LOGGER = LoggerFactory.getLogger(DerivationAgents.class);
 
-    public static final String URL_MINTIME = "/TimeSeriesAgent/MinTime";
-    public static final String URL_MAXTIME = "/TimeSeriesAgent/MaxTime";
-    public static final String URL_DURATION = "/TimeSeriesAgent/TimeDuration";
+    public static final String URL_MINTIME = "/TimeSeries/MinTime";
+    public static final String URL_MAXTIME = "/TimeSeries/MaxTime";
+    public static final String URL_DURATION = "/TimeSeries/TimeDuration";
 
     // ================================ Methods ================================
     /**
