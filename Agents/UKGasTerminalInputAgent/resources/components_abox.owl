@@ -770,7 +770,7 @@ xmlns:owl="http://www.w3.org/2002/07/owl#"
     <ns1:hasLinepackZone>6.0</ns1:hasLinepackZone>
     <rdfs:label>Pucklechurch</rdfs:label>
   </rdf:Description>
-  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin">
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTerminal">
     <ns2:lat-lon>53.36136029#0.232686996</ns2:lat-lon>
     <ns1:isConnectedToPipeline rdf:resource="http://www.theworldavatar.com/kb/ontogasgrid/gas_network_system/THEDDLETHORPETOHATTONONE0Connection"/>
     <rdfs:label>Theddlethorpe Terminal</rdfs:label>
