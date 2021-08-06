@@ -1,7 +1,6 @@
 from tqdm import tqdm
 import time
 import pytz
-from py4jps.resources import JpsBaseLib
 from SPARQLWrapper import SPARQLWrapper, POST
 import os
 import datetime
@@ -10,6 +9,10 @@ import sys
 import traceback
 import wget
 import csv
+import re
+
+# get the jpsBaseLibGW instance from the jpsSingletons module
+from jpsSingletons import jpsBaseLibGW
 
 """
 Script to periodically gather instantaneous gas flow data for UK's gas supply terminals (from National Grid)
@@ -22,7 +25,6 @@ Local deployment requires:
 
 # Local KG location (fallback)
 FALLBACK_KG = "http://localhost:9999/blazegraph/"
-
 
 # Knowledge base endpoint to use for assimilation of data (namespace in Blazegraph)
 KB = "timeseries"
@@ -58,6 +60,43 @@ def getKGLocation(namespace):
         return kgRoot + "namespace/" + namespace + "/sparql"
     else:
         return kgRoot + "/namespace/" + namespace + "/sparql"
+
+
+def get_terminal_names(endpoint):
+    """
+        Retrieves the names of all instantiated GasTerminals in the knowledge base
+
+        Arguments:
+            endpoint - SPARQL endpoint for knowledge base.
+
+        Returns:
+            List of Strings with gas terminal names (empty list in case no terminals are instantiated)
+    """
+
+    # Initialise Sparql query variable (cannot be 'var')
+    var = 'name'
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    query = 'PREFIX comp: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#> \
+             PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
+             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
+             SELECT ?' + var + '\n' \
+             'WHERE { ?var rdf:type comp:GasTerminal. \
+                      ?var rdfs:label ?' + var + '. }'
+    response = KGClient.execute(query)
+
+    # Extract gas terminal names from query result string
+    r = response.replace('"', '')
+    r = r.replace('[{', '')
+    r = r.replace('}]', '')
+    list = re.split(var+':|},{', r)
+    list = [list[i] for i in range(len(list)) if i%2==1]
+    return list
 
 
 def get_flow_data_from_csv():
@@ -121,15 +160,6 @@ def update_triple_store():
 
     today = datetime.datetime.now()
     print("\nPerforming update at: ", today)
-
-    # # Instantiate and start resource gateway object to JPS_BASE_LIB
-    # jpsBaseLibGW = JpsBaseLib()
-    # jpsBaseLibGW.launchGateway()
-    #
-    # # Create (Java Virtual Machine) module view
-    # jpsGW_view = jpsBaseLibGW.createModuleView()
-    # # Import classes via the module view
-    # jpsBaseLibGW.importPackages(jpsGW_view, "uk.ac.cam.cares.jps.base.query.*")
 
     # Build the correct KG URL
     kgURL = getKGLocation(KB)
@@ -228,3 +258,7 @@ elif sys.argv[1] == '-continuous':
 else:
     single_update()
 
+# if __name__ == '__main__':
+#
+#     endpoint =getKGLocation(KB)
+#     terminals = get_terminal_names(endpoint)
