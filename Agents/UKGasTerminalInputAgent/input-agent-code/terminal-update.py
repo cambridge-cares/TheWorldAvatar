@@ -67,7 +67,8 @@ def get_flow_data_from_csv():
             2D array of gas flow rates (triples [terminalName, time, flow]).
     """
 
-    # Set correct timezone to account for daylight saving time
+    # Get current UK timezone to properly convert reported local times into UTC
+    # (i.e. account for daylight saving time)
     tz = pytz.timezone('Europe/London')
 
     print("Downloading latest flow data CSV...")
@@ -102,7 +103,9 @@ def get_flow_data_from_csv():
 
                 # Times from CSV file are in local time
                 dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
-                dateTimeObjUTC = tz.localize(dateTimeObj).astimezone(pytz.utc)
+                # is_dst=False is used to determine correct timezone in the ambigous period
+                # at the end of daylight saving time
+                dateTimeObjUTC = tz.localize(dateTimeObj, False).astimezone(pytz.utc)
                 dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
                 flowValue = row[2]
@@ -114,17 +117,19 @@ def get_flow_data_from_csv():
 
 
 def update_triple_store():
+
     today = datetime.datetime.now()
     print("\nPerforming update at: ", today)
-    
-    jpsBaseLibGW = JpsBaseLib()
-    jpsBaseLibGW.launchGateway()
 
-    jpsGW_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsGW_view, "uk.ac.cam.cares.jps.base.query.*")
+    # # Instantiate and start resource gateway object to JPS_BASE_LIB
+    # jpsBaseLibGW = JpsBaseLib()
+    # jpsBaseLibGW.launchGateway()
+    #
+    # # Create (Java Virtual Machine) module view
+    # jpsGW_view = jpsBaseLibGW.createModuleView()
+    # # Import classes via the module view
+    # jpsBaseLibGW.importPackages(jpsGW_view, "uk.ac.cam.cares.jps.base.query.*")
 
-    KGRouter = jpsGW_view.KGRouter
-    
     # Build the correct KG URL
     kgURL = getKGLocation(KB)
     print("Determined KG URL as", kgURL)
@@ -180,11 +185,11 @@ def update_triple_store():
         sparql.setQuery(query)
         
         print("Running SPARQL update " + str(i + 1) + " of " + str(len(data)) + "...")
-        # ret = sparql.query()
+        ret = sparql.query()
         
 
     print("All SPARQL updates finished.")
-    return 
+    return
 
 def continuous_update():
     while True:
