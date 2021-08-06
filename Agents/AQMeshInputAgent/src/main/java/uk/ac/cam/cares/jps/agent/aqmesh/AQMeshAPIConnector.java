@@ -38,12 +38,12 @@ public class AQMeshAPIConnector {
     // Location needed for retrieving data
     private String location = "";
     // Static fields for specific paths in the API
-    private static final String AUTHENTICATE_PATH = "Authenticate";
-    private static final String PING_PATH = "serverping";
-    private static final String ASSETS_PATH = "Pods/Assets";
+    protected static final String AUTHENTICATE_PATH = "Authenticate";
+    protected static final String PING_PATH = "serverping";
+    protected static final String ASSETS_PATH = "Pods/Assets";
     // Static fields for specific keys in response bodies
-    private  static final String TOKEN_KEY = "token";
-    private  static final String LOCATION_KEY = "location_number";
+    protected static final String TOKEN_KEY = "token";
+    protected static final String LOCATION_KEY = "location_number";
 
     /**
      * Standard constructor
@@ -69,7 +69,6 @@ public class AQMeshAPIConnector {
      * Connects to the AQMesh API by retrieving and setting an access token that is required for all other API calls for authentication
      */
     public void connect() {
-
         try {
             token = getAccessToken();
             String serverTime = ping();
@@ -165,7 +164,8 @@ public class AQMeshAPIConnector {
                             throw new JSONException("No assets available in returned JSON Array.");
                         }
                         else {
-                            location = responseBody.getJSONObject(0).getString(LOCATION_KEY);
+                            int location = responseBody.getJSONObject(0).getInt(LOCATION_KEY);
+                            this.location = Integer.toString(location);
                         }
                 }
                 else {

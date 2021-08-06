@@ -1,11 +1,11 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.HttpResponseException;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
@@ -41,21 +41,11 @@ public class AQMeshAPIConnectorTest {
     public WireMockRule aqMeshAPIMock = new WireMockRule(PORT);
 
     private AQMeshAPIConnector testConnector;
-    private String authenticatePath;
-    private String pingPath;
+    private static final String TEST_TOKEN = "token";
 
     @Before
-    public void initializeTestConnector() throws NoSuchFieldException, IllegalAccessException {
+    public void initializeTestConnector() {
         testConnector = new AQMeshAPIConnector("username", "password", TEST_URL);
-
-        // Access static field to create the authentication path
-        Field authenticateField = AQMeshAPIConnector.class.getDeclaredField("AUTHENTICATE_PATH");
-        authenticateField.setAccessible(true);
-        authenticatePath = "/" + authenticateField.get(testConnector).toString();
-        // Access static field to create the ping path
-        Field pingField = AQMeshAPIConnector.class.getDeclaredField("PING_PATH");
-        pingField.setAccessible(true);
-        pingPath = "/" + pingField.get(testConnector).toString();
     }
 
     @After
@@ -182,7 +172,7 @@ public class AQMeshAPIConnectorTest {
     public void testConnect() {
         // Mock response body
         JSONObject responseBody = new JSONObject();
-        responseBody.put("token", "test_token");
+        responseBody.put(AQMeshAPIConnector.TOKEN_KEY, "test_token");
 
         // The API returns a proper token ...
         setTokenAPIMock(ok()
@@ -206,14 +196,14 @@ public class AQMeshAPIConnectorTest {
                 .withHeader("Content-Type", "application/json; charset=utf-8")
                 .withBody(responseBody.toString()));
         // ... and the ping works properly
-        aqMeshAPIMock.stubFor(get(urlPathEqualTo(pingPath))
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.PING_PATH))
                 .atPriority(2)
                 .withHeader(HttpHeaders.AUTHORIZATION, equalToIgnoreCase("Bearer test_token"))
                 .willReturn(ok().withBody("{ \"server_time\": '2021-08-05T04:24:01.75' }")));
 
         testConnector.connect();
         // Check whether token field was set correctly
-        Assert.assertEquals(responseBody.get("token"), testConnector.getToken());
+        Assert.assertEquals(responseBody.get(AQMeshAPIConnector.TOKEN_KEY), testConnector.getToken());
 
         // The API has an error //
         // Bad request
@@ -255,7 +245,7 @@ public class AQMeshAPIConnectorTest {
     }
 
     @Test
-    public void testPing() throws NoSuchFieldException, IllegalAccessException, IOException {
+    public void testPing() throws IOException, NoSuchFieldException, IllegalAccessException {
         // Ping without set token
         try {
             testConnector.ping();
@@ -264,10 +254,12 @@ public class AQMeshAPIConnectorTest {
             Assert.assertEquals(JPSRuntimeException.class, e.getClass());
             Assert.assertEquals("Token is not set. Use the connect method first.", e.getMessage());
         }
-        // Set a token
+
+        // Set a token to avoid needing to invoke connect
         Field tokenField = AQMeshAPIConnector.class.getDeclaredField("token");
         tokenField.setAccessible(true);
-        tokenField.set(testConnector, "test_token");
+        tokenField.set(testConnector, TEST_TOKEN);
+
         // The server returns an error
         try {
             testConnector.ping();
@@ -278,10 +270,61 @@ public class AQMeshAPIConnectorTest {
         }
         // The server returns a proper response
         String serverTime = "2021-08-05T04:24:01.75";
-        aqMeshAPIMock.stubFor(get(urlPathEqualTo(pingPath))
-                .withHeader(HttpHeaders.AUTHORIZATION, equalToIgnoreCase("Bearer test_token"))
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.PING_PATH))
+                .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer " + TEST_TOKEN))
                 .willReturn(ok().withBody("{ \"server_time\": '" + serverTime + "' }")));
         Assert.assertEquals(serverTime, testConnector.ping());
+    }
+
+    @Test
+    public void testSetLocation() throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException {
+        Assert.assertEquals("", testConnector.getLocation());
+        // Set a token to avoid needing to invoke connect
+        Field tokenField = AQMeshAPIConnector.class.getDeclaredField("token");
+        tokenField.setAccessible(true);
+        tokenField.set(testConnector, TEST_TOKEN);
+        // Set the method to be invokable
+        Method setLocation = AQMeshAPIConnector.class.getDeclaredMethod("setLocation");
+        setLocation.setAccessible(true);
+
+        // API returns an error (not status 200)
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.ASSETS_PATH))
+                .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer " + TEST_TOKEN))
+                .willReturn(badRequest()));
+        try {
+            setLocation.invoke(testConnector);
+        }
+        catch (InvocationTargetException e) {
+            Assert.assertEquals(HttpResponseException.class, e.getCause().getClass());
+            Assert.assertTrue(e.getCause().getMessage().contains("Could not retrieve location number."));
+        }
+
+        // API returns no assets
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.ASSETS_PATH))
+                .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer " + TEST_TOKEN))
+                .willReturn(ok().withBody(new JSONArray().toString())));
+        try {
+            setLocation.invoke(testConnector);
+        }
+        catch (InvocationTargetException e) {
+            Assert.assertEquals(JSONException.class, e.getCause().getClass());
+            Assert.assertTrue(e.getCause().getMessage().contains("No assets available in returned JSON Array."));
+        }
+        // API returns proper response
+        int location = 12345;
+        JSONArray responseBody = new JSONArray();
+        JSONObject asset = new JSONObject();
+        asset.put(AQMeshAPIConnector.LOCATION_KEY, location);
+        responseBody.put(asset);
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.ASSETS_PATH))
+                .withHeader(HttpHeaders.AUTHORIZATION, equalTo("Bearer " + TEST_TOKEN))
+                .willReturn(ok().withBody(responseBody.toString())));
+        try {
+            setLocation.invoke(testConnector);
+            Assert.assertEquals(Integer.toString(location), testConnector.getLocation());
+        } catch (InvocationTargetException e) {
+            Assert.fail(e.getMessage());
+        }
     }
 
     private void setTokenAPIMock(ResponseDefinitionBuilder response) {
@@ -290,7 +333,7 @@ public class AQMeshAPIConnectorTest {
         requestBody.put("username", "username");
         requestBody.put("password", "password");
 
-        aqMeshAPIMock.stubFor(post(urlPathEqualTo(authenticatePath))
+        aqMeshAPIMock.stubFor(post(urlPathEqualTo("/" + AQMeshAPIConnector.AUTHENTICATE_PATH))
                 .atPriority(1)
                 .withHeader("Content-Type", equalToIgnoreCase("application/json; charset=utf-8"))
                 .withRequestBody(equalToJson(requestBody.toString(), true, false))
