@@ -25,7 +25,7 @@ FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
 
 # Knowledge base endpoint to use for assimilation of data (namespace in Blazegraph)
-KB = "ontogasgrid"
+KB = "timeseries"
 
 # Defining IRI of each terminal
 TERMINAL_DICTIONARY = {

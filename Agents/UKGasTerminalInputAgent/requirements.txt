@@ -1,6 +1,5 @@
-py4jps
-requests_html
-SPARQLWrapper
-tabulate
-tqdm
-wget
+py4jps~=1.0.0
+SPARQLWrapper~=1.8.5
+tqdm~=4.62.0
+wget~=3.2
+pytz~=2021.1
