@@ -69,7 +69,9 @@ def formula_clean(formula):
     return clean_form
 
 def write_initial(spamwriter,jobIRI, calc_id,spec_IRI):
-    #This is all the initialization part of the ABox
+    #This is all the initialization part of the ABox        
+    spamwriter.writerow(['ABoxOntoCompChem','Ontology',onto_pref,'http://www.w3.org/2002/07/owl#imports','',''])
+    spamwriter.writerow(['ABoxOntoCompChem','Ontology',comp_pref[:-1],'base','',''])
     spamwriter.writerow([jobIRI, 'Instance',onto_pref + '#G09','','',''])
     if spec_IRI: #If you have the ontospecies IRI, it puts it here. Otherwise, it leaves it out.
         spamwriter.writerow([spec_IRI, 'Instance', onto_spec,'','',''])
