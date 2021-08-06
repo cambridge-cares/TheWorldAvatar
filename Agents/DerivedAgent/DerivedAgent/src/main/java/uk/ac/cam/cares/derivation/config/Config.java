@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.config;
 
 import java.io.IOException;
 import java.io.InputStream;

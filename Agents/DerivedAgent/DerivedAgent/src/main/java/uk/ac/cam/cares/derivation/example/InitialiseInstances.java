@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.derivation.config.Config;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -18,8 +19,8 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 
-@WebServlet(urlPatterns = {"/InitialisingAgent"})
-public class InitialisingAgent extends JPSAgent{
+@WebServlet(urlPatterns = {"/InitialiseInstances"})
+public class InitialiseInstances extends JPSAgent{
 	/**
 	 * 
 	 */
@@ -42,7 +43,7 @@ public class InitialisingAgent extends JPSAgent{
 	private static String maxtimecalc_agent_iri = SparqlClient.namespace + "maxtimecalc_agent";
 	private static String maxtimecalc_agent_url = baseURL + DerivationAgents.URL_MAXTIMECALC;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(InitialisingAgent.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(InitialiseInstances.class);
     
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
