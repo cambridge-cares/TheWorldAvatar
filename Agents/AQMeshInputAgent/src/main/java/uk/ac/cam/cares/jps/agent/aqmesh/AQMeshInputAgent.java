@@ -40,7 +40,7 @@ public class AQMeshInputAgent {
         agent.setAPIConnector(connector);
     }
 
-    private void setAPIConnector(AQMeshAPIConnector connector) {
+    public void setAPIConnector(AQMeshAPIConnector connector) {
         this.connector = connector;
     }
 
