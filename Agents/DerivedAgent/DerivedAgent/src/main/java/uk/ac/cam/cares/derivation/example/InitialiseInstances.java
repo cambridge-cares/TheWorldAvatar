@@ -37,12 +37,6 @@ public class InitialiseInstances extends JPSAgent{
 	private static String timeduration_agent_iri = SparqlClient.namespace + "timeduration_agent";
 	private static String timeduration_agent_url = baseURL + DerivationAgents.URL_DURATION;
 	
-	private static String mintimecalc_agent_iri = SparqlClient.namespace + "mintimecalc_agent";
-	private static String mintimecalc_agent_url = baseURL + DerivationAgents.URL_MINTIMECALC;
-	
-	private static String maxtimecalc_agent_iri = SparqlClient.namespace + "maxtimecalc_agent";
-	private static String maxtimecalc_agent_url = baseURL + DerivationAgents.URL_MAXTIMECALC;
-	
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitialiseInstances.class);
     
 	@Override
@@ -76,12 +70,6 @@ public class InitialiseInstances extends JPSAgent{
     	String[] timeduration = sparqlClient.createTimeDuration(0);
     	LOGGER.info("created time duration " + timeduration[0]);
     	InstancesDatabase.TimeDuration = timeduration[0];
-
-    	String[] mintimecalc = sparqlClient.createMinTimeCalc(0);	
-    	LOGGER.info("created min time calc " + mintimecalc[0]);
-    	
-    	String[] maxtimecalc = sparqlClient.createMaxTimeCalc(0);
-    	LOGGER.info("created max time calc " + maxtimecalc[0]);
     	
     	// create three derived quantities
     	String derived_mintime = devClient.createDerivation(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
@@ -95,14 +83,6 @@ public class InitialiseInstances extends JPSAgent{
     	String derived_timeduration = devClient.createDerivation(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime[0],maxtime[0]));
     	LOGGER.info("created derived quantity for time duration " + derived_timeduration);
     	InstancesDatabase.DerivedQuantityTimeDuration = derived_timeduration;
-    	
-    	String derived_mintimecalc = devClient.createDerivation(Arrays.asList(mintimecalc), mintimecalc_agent_iri, mintimecalc_agent_url, Arrays.asList(timeduration[0],maxtime[0]));
-    	LOGGER.info("created derived quantity for min time derived " + derived_mintimecalc);
-    	InstancesDatabase.DerivedQuantityMinTimeCalc = derived_mintimecalc;
-    	
-    	String derived_maxtimecalc = devClient.createDerivation(Arrays.asList(maxtimecalc), maxtimecalc_agent_iri, maxtimecalc_agent_url, Arrays.asList(timeduration[0],mintime[0]));
-    	LOGGER.info("created derived quantity for max time calc " + derived_maxtimecalc);
-    	InstancesDatabase.DerivedQuantityMaxTimeCalc = derived_maxtimecalc;
     	
     	// check all connections between the derived quantities
     	// as time duration is derived from min time and max time, they get checked too

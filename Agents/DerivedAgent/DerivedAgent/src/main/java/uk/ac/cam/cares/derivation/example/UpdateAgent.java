@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.derivation.example;
 
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
 
@@ -21,26 +20,12 @@ public class UpdateAgent extends JPSAgent{
 	private static final long serialVersionUID = 1L;
 
 	@Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams) {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		DerivationClient devClient = new DerivationClient(storeClient);
-		
-		String path = request.getServletPath();
-		switch (path) {
-    		case URL_UpdateTimeDuration:
-    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityTimeDuration);
-    			break;
-    			
-    		case URL_UpdateMinTimeCalc:
-    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityMinTimeCalc);
-    			break;
-    			
-    		case URL_UpdateMaxTimeCalc:
-    			devClient.updateDerivation(InstancesDatabase.DerivedQuantityMaxTimeCalc);
-    			break;
-		}
-		
+		devClient.updateDerivation(InstancesDatabase.DerivedQuantityTimeDuration);
+    	devClient.updateDerivation(InstancesDatabase.DerivedQuantityTimeDuration);
 		return requestParams;	
 	}
 }
