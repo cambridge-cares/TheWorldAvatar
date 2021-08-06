@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class AQMeshInputAgent {
 
     private TimeSeriesClient<LocalDateTime> tsClient;
+    private AQMeshAPIConnector connector;
 
     public AQMeshInputAgent(String propertiesFile) throws IOException {
         // Initialize time series client
@@ -36,23 +37,27 @@ public class AQMeshInputAgent {
 
         AQMeshAPIConnector connector = new AQMeshAPIConnector(propertiesFile);
         connector.connect();
-        agent.updateTimeSeries(connector);
+        agent.setAPIConnector(connector);
     }
 
-    private void updateTimeSeries(AQMeshAPIConnector connector) {
+    private void setAPIConnector(AQMeshAPIConnector connector) {
+        this.connector = connector;
+    }
+
+    private void updateTimeSeries() {
         try {
-            updateParticleReadings(connector);
-            updateGasReadings(connector);
+            updateParticleReadings();
+            updateGasReadings();
         }
         catch (Exception e) {
         }
     }
 
-    private void updateGasReadings(AQMeshAPIConnector connector) {
+    private void updateGasReadings() {
         JSONArray gasReadings = connector.getGasReadings();
     }
 
-    private void updateParticleReadings(AQMeshAPIConnector connector) {
+    private void updateParticleReadings() {
         JSONArray particleReadings = connector.getParticleReadings();
     }
 
