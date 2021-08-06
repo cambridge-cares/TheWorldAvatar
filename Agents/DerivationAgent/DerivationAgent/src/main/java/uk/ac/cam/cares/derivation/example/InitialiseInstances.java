@@ -26,7 +26,7 @@ public class InitialiseInstances extends JPSAgent{
 	 */
 	private static final long serialVersionUID = 1L;
     // this URL is based on the docker image, make sure the URL is accessible from the derived quantity's calling entity
-	private static String baseURL = "http://derivedagent:8080/DerivedAgent";
+	private static String baseURL = "http://derivedagent:8080/DerivationAgent";
 	
 	private static String mintime_agent_iri = SparqlClient.namespace + "mintime_agent";
 	private static String mintime_agent_url = baseURL + DerivationAgents.URL_MINTIME;
