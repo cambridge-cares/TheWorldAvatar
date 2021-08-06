@@ -12,6 +12,7 @@ import org.junit.rules.TemporaryFolder;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -325,6 +326,104 @@ public class AQMeshAPIConnectorTest {
         } catch (InvocationTargetException e) {
             Assert.fail(e.getMessage());
         }
+    }
+
+    @Test
+    public void testGetGasReadings() throws NoSuchFieldException, IllegalAccessException {
+        // Set a token to avoid needing to invoke connect
+        Field tokenField = AQMeshAPIConnector.class.getDeclaredField("token");
+        tokenField.setAccessible(true);
+        tokenField.set(testConnector, TEST_TOKEN);
+
+        // No location set and the API gives an error when retrieving the location
+        try {
+            testConnector.getGasReadings();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertEquals("Gas readings could not be retrieved", e.getMessage());
+        }
+
+        // Set the location
+        String location = "12345";
+        Field locationField = AQMeshAPIConnector.class.getDeclaredField("location");
+        locationField.setAccessible(true);
+        locationField.set(testConnector, location);
+
+        // API has an error when trying to retrieve the data
+        try {
+            testConnector.getGasReadings();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            aqMeshAPIMock.verify(1,
+                    getRequestedFor(urlPathEqualTo(String.join("/","", AQMeshAPIConnector.READINGS_PATH,
+                            location, "1", AQMeshAPIConnector.CELSIUS_MASS_PER_VOLUME))));
+            Assert.assertEquals("Gas readings could not be retrieved", e.getMessage());
+            Assert.assertEquals(HttpResponseException.class, e.getCause().getClass());
+            Assert.assertTrue(e.getCause().getMessage().contains("Could not retrieve readings due to server error."));
+        }
+        aqMeshAPIMock.resetAll();
+
+        // API returns a response
+        JSONArray responseBody = new JSONArray();
+        JSONObject asset = new JSONObject();
+        asset.put("test", "123");
+        responseBody.put(asset);
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo(String.join("/","", AQMeshAPIConnector.READINGS_PATH,
+                location, "1", AQMeshAPIConnector.CELSIUS_MASS_PER_VOLUME)))
+                .willReturn(ok().withBody(responseBody.toString())));
+        Assert.assertEquals(responseBody.toString(), testConnector.getGasReadings().toString());
+
+    }
+
+    @Test
+    public void testGetParticleReadings() throws NoSuchFieldException, IllegalAccessException {
+        // Set a token to avoid needing to invoke connect
+        Field tokenField = AQMeshAPIConnector.class.getDeclaredField("token");
+        tokenField.setAccessible(true);
+        tokenField.set(testConnector, TEST_TOKEN);
+
+        // No location set and the API gives an error when retrieving the location
+        try {
+            testConnector.getParticleReadings();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            Assert.assertEquals("Particle readings could not be retrieved", e.getMessage());
+        }
+
+        // Set the location
+        String location = "12345";
+        Field locationField = AQMeshAPIConnector.class.getDeclaredField("location");
+        locationField.setAccessible(true);
+        locationField.set(testConnector, location);
+
+        // API has an error when trying to retrieve the data
+        try {
+            testConnector.getParticleReadings();
+            Assert.fail();
+        }
+        catch (JPSRuntimeException e) {
+            aqMeshAPIMock.verify(1,
+                    getRequestedFor(urlPathEqualTo(String.join("/","", AQMeshAPIConnector.READINGS_PATH, location, "2",
+                            AQMeshAPIConnector.CELSIUS_MASS_PER_VOLUME, AQMeshAPIConnector.TPC))));
+            Assert.assertEquals("Particle readings could not be retrieved", e.getMessage());
+            Assert.assertEquals(HttpResponseException.class, e.getCause().getClass());
+            Assert.assertTrue(e.getCause().getMessage().contains("Could not retrieve readings due to server error."));
+        }
+        aqMeshAPIMock.resetAll();
+
+        // API returns a response
+        JSONArray responseBody = new JSONArray();
+        JSONObject asset = new JSONObject();
+        asset.put("test", "123");
+        responseBody.put(asset);
+        aqMeshAPIMock.stubFor(get(urlPathEqualTo(String.join("/","", AQMeshAPIConnector.READINGS_PATH, location, "2",
+                AQMeshAPIConnector.CELSIUS_MASS_PER_VOLUME, AQMeshAPIConnector.TPC)))
+                .willReturn(ok().withBody(responseBody.toString())));
+        Assert.assertEquals(responseBody.toString(), testConnector.getParticleReadings().toString());
+
     }
 
     private void setTokenAPIMock(ResponseDefinitionBuilder response) {

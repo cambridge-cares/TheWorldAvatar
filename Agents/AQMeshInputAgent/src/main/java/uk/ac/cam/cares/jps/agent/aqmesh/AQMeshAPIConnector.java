@@ -15,12 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 import java.io.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 /**
@@ -41,9 +37,24 @@ public class AQMeshAPIConnector {
     protected static final String AUTHENTICATE_PATH = "Authenticate";
     protected static final String PING_PATH = "serverping";
     protected static final String ASSETS_PATH = "Pods/Assets";
+    protected static final String READINGS_PATH = "LocationData/Next";
+    protected static final String CELSIUS_MASS_PER_VOLUME = "01";
+    protected static final String TPC = "1";
     // Static fields for specific keys in response bodies
     protected static final String TOKEN_KEY = "token";
     protected static final String LOCATION_KEY = "location_number";
+
+    // Enum class for allowed reading types
+    private enum ReadingType {
+        GAS("1"),
+        PARTICLE("2");
+
+        public final String param;
+
+        ReadingType(String param) {
+            this.param = param;
+        }
+    }
 
     /**
      * Standard constructor
@@ -184,28 +195,64 @@ public class AQMeshAPIConnector {
         request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
     }
 
-    public TimeSeries<LocalDateTime> getParticleReadings() {
-
-        JSONArray particleReadings = retrieveReadings();
-        List<LocalDateTime> times = new ArrayList<>();
-        List<List<?>> values = new ArrayList<>();
-        List<String> dataIRI = new ArrayList<>();
-
-        return new TimeSeries<LocalDateTime>(times, dataIRI, values);
+    /**
+     * Retrieves the latest particle readings from the AqMesh API
+     * @return Readings in a JSON Array with a JSON object for each measurement time
+     */
+    public JSONArray getParticleReadings() {
+        try {
+            return retrieveReadings(ReadingType.PARTICLE);
+        }
+        catch (IOException e) {
+            throw new JPSRuntimeException("Particle readings could not be retrieved", e);
+        }
     }
 
-    public TimeSeries<LocalDateTime> getGasReadings() {
-
-        JSONArray particleReadings = retrieveReadings();
-        List<LocalDateTime> times = new ArrayList<>();
-        List<List<?>> values = new ArrayList<>();
-        List<String> dataIRI = new ArrayList<>();
-
-        return new TimeSeries<LocalDateTime>(times, dataIRI, values);
+    /**
+     * Retrieves the latest gas readings from the AqMesh API
+     * @return Readings in a JSON Array with a JSON object for each measurement time
+     */
+    public JSONArray getGasReadings() {
+        try {
+            return retrieveReadings(ReadingType.GAS);
+        }
+        catch (IOException e) {
+            throw new JPSRuntimeException("Gas readings could not be retrieved", e);
+        }
     }
 
-    private JSONArray retrieveReadings() {
-        return new JSONArray();
+    /**
+     * Retrieves the latest readings from the AqMesh API
+     * @param readingType Specifies the type of readings (GAS or PARTICLE)
+     * @return Readings in a JSON Array with a JSON object for each measurement time
+     */
+    private JSONArray retrieveReadings(ReadingType readingType) throws IOException, JSONException {
+
+        if (location.equals("")) {
+            System.out.println("No location (pod) set. Will retrieve location number first.");
+            setLocation();
+        }
+
+        String readingPath = String.join("/",api_url, READINGS_PATH, location, readingType.param, CELSIUS_MASS_PER_VOLUME);
+        // For particle readings add TPC to the API path
+        if (readingType.equals(ReadingType.PARTICLE)) {
+            readingPath = readingPath + "/" + TPC;
+        }
+
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpGet readingRequest = new HttpGet(readingPath);
+            setTokenAuthorization(readingRequest);
+
+            try (CloseableHttpResponse response = httpclient.execute(readingRequest)) {
+                int status = response.getStatusLine().getStatusCode();
+                if (status == 200) {
+                    return new JSONArray(EntityUtils.toString(response.getEntity()));
+                }
+                else {
+                    throw new HttpResponseException(status, "Could not retrieve readings due to server error.");
+                }
+            }
+        }
     }
 
     /**

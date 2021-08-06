@@ -1,16 +1,17 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Properties;
 
+/**
+ * Class to retrieve data from the AQMesh API and storing it with connection to The World Avatar (Knowledge Base).
+ * @author Niklas Kasenburg
+ */
 public class AQMeshInputAgent {
 
     private TimeSeriesClient<LocalDateTime> tsClient;
@@ -48,11 +49,11 @@ public class AQMeshInputAgent {
     }
 
     private void updateGasReadings(AQMeshAPIConnector connector) {
-        TimeSeries<LocalDateTime> gasReadings = connector.getGasReadings();
+        JSONArray gasReadings = connector.getGasReadings();
     }
 
     private void updateParticleReadings(AQMeshAPIConnector connector) {
-        TimeSeries<LocalDateTime> particleReadings = connector.getParticleReadings();
+        JSONArray particleReadings = connector.getParticleReadings();
     }
 
     private boolean timeSeriesExists() {
