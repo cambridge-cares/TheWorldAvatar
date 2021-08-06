@@ -85,6 +85,7 @@ public class DerivationClient {
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			System.out.println(e.getMessage());
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
@@ -95,18 +96,17 @@ public class DerivationClient {
 	 * @return
 	 */
 	public boolean validateDerivation(String derived) {
-		boolean valid = true;
 		// keep track of quantities to avoid circular dependencies
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
         
 		try {
 			validateDerivation(derived, graph);
+			return true;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			System.out.println(e.getMessage());
-			valid = false;
+		    throw new JPSRuntimeException(e);
 		}
-		return valid;
 	}
 	
 	/**
