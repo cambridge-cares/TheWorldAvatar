@@ -40,3 +40,11 @@ def selectStoragePath():
     print('Please select a folder')
     return askdirectory()
 
+def specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile): 
+    if OWLFileStoragePath == None and os.path.exists(defaultStoredPath):
+        return defaultStoredPath
+    elif os.path.exists(OWLFileStoragePath):
+        return OWLFileStoragePath
+    elif updateLocalOWLFile == True:
+        print("Please provide a valid path for storing the OWL files.")
+        return None

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -20,7 +20,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -36,6 +36,9 @@ t_box = T_BOX.UKDigitalTwinTBox()
 
 """Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
+
+"""OWL file storage path"""
+defaultStoredPath = ukpp.StoreGeneratedOWLs
 
 """Sleepycat storage path"""
 userSpecifiePath_Sleepycat = None # user specified path
@@ -86,9 +89,12 @@ def createDUKESDataPropertyInstance(version):
         designcapacityArrays, builtYearArrays, ownerArrays, gpslocationArrays, regionArrays, root_uri, fileNum
 
 """Main Function: Add Triples to the named graph"""
-def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
-    store = LocalGraphStore(storeType)
+def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOWLFile = True):  
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return
+    store = LocalGraphStore(storeType)   
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
         powerPlantConjunctiveGraph = ConjunctiveGraph(store=store)
@@ -230,23 +236,13 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
             
             # generate/update OWL files
             if updateLocalOWLFile == True:
-                # specify the owl file storage path
-                defaultStoredPath = ukpp.StoreGeneratedOWLs + str(counter) + UNDERSCORE + plantname + '_UK' + OWL #default path
-                global filepath, userSpecified
-            
                 # Store/update the generated owl files      
-                if os.path.exists(ukpp.StoreGeneratedOWLs) and not userSpecified:
-                    print('****Non user specified storage path, will use the default storage path****')
-                    storeGeneratedOWLs(graph, defaultStoredPath)
-            
-                elif filepath == None:
-                    print('****Needs user to specify a storage path****')
-                    filepath = selectStoragePath()
+                if filepath[-2:] != "\\": 
                     filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
-                    storeGeneratedOWLs(graph, filepath_)
-                else: 
-                    filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
-                    storeGeneratedOWLs(graph, filepath_)            
+                else:
+                    filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
+                storeGeneratedOWLs(graph, filepath_)
+                  
         counter += 1 
     
     if isinstance(store, Sleepycat):  
@@ -254,5 +250,5 @@ def addUKPowerPlantTriples(storeType, version, updateLocalOWLFile = True):
     return
 
 if __name__ == '__main__':
-    addUKPowerPlantTriples('default', 2019, True)
+    addUKPowerPlantTriples('default', 2019, None, True)
     print('terminated')

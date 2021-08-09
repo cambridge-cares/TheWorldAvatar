@@ -55,7 +55,7 @@ class UKDigitalTwin:
         10 : "10_bus_model"
         }
     
-    """Model_EGen, Model_EBus, Model_ELine """ # fourth level nodes
+    """Model_EGen, Model_EBus, Model_ELine""" # fourth level nodes
     SubModel = {
         "EGen": "Model_EGen",
         "EBus": "Model_EBus",

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 17 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
@@ -21,7 +21,7 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologicalInformationPropertyInstance
@@ -57,6 +57,9 @@ topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
+"""OWL file storage path"""
+defaultStoredPath = uk_eline_model.StoreGeneratedOWLs # default path
+
 """father node"""
 father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "ELine")
 
@@ -79,10 +82,13 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 
 ### Functions ###
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
-def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_model, updateLocalOWLFile = True):
+def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True): 
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return    
     store = LocalGraphStore(storeType)
     topo_info, busInfoArrays, branchTopoInfoArrays, branchPropertyArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
-    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
+    global defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
     # create conjunctive graph storing the generated graphs in a specified Sleepycat on-disc graph store
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
@@ -181,22 +187,13 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
                
         # generate/update OWL files
         if updateLocalOWLFile == True:    
-            # specify the owl file storage path
-            defaultStoredPath = uk_eline_model.StoreGeneratedOWLs + 'Model_' + node_locator + OWL #default path
-        
             # Store/update the generated owl files      
-            if os.path.exists(uk_eline_model.StoreGeneratedOWLs) and not userSpecified:
-                print('****Non user specified storage path, will use the default storage path****')
-                storeGeneratedOWLs(g, defaultStoredPath)
-        
-            elif filepath == None:
-                print('****Needs user to specify a storage path****')
-                filepath = selectStoragePath()
+            if filepath[-2:] != "\\": 
                 filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
-            else: 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
+            else:
+                filepath_ = filepath + 'Model_' + node_locator + OWL
+            storeGeneratedOWLs(g, filepath_)
+    
     if isinstance(store, Sleepycat):  
         cg_model_ELine.close()       
     return
@@ -233,5 +230,5 @@ def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine)
     return ELine_Model
 
 if __name__ == '__main__':    
-    createModel_ELine('default', False, 10, 14, 2019, False)       
+    createModel_ELine('default', False, 10, 14, 2019, None, True)       
     print('Terminated')
