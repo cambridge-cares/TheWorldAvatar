@@ -40,7 +40,8 @@ class UKDigitalTwin:
     
     """ Raw data version""" # Third level node
     dukesDataVersion = {
-        2019 : "operationalPowerPlantBy2019"
+        2019 : "operationalPowerPlantBy2019",
+        9999: "operationalPowerPlantBy9999",
         }
     
     consumptionDataVersion = {
@@ -74,6 +75,10 @@ class UKDigitalTwin:
 """ Named-graphs URI generator"""   
 # 'namedGraphURIGenerator' is defined as a funciton belongs to the module 'UKDigitalTwin' instead of a method of class UKDigitalTwin
 def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName = None):
+    print('nodeIdentifier',nodeIdentifier)
+    print('nodeName',nodeName)
+    print('dataOrModelVersion',dataOrModelVersion)
+    print('subModelName',subModelName)
     if nodeIdentifier == UKDigitalTwin.topLevelNode and nodeName == UKDigitalTwin.topNode and dataOrModelVersion == None:
         _topNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.topNode
         return _topNode
@@ -86,6 +91,7 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
               if nodeName == UKDigitalTwin.powerPlant and dataOrModelVersion in UKDigitalTwin.dukesDataVersion.keys():
                   _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.dukesDataVersion[dataOrModelVersion]\
                   + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.dukesDataVersion[dataOrModelVersion]
+                  print('_thirdLevelNode', _thirdLevelNode)
                   return _thirdLevelNode
               elif nodeName == UKDigitalTwin.energyConsumption and dataOrModelVersion in UKDigitalTwin.consumptionDataVersion.keys():
                   _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.consumptionDataVersion[dataOrModelVersion]\
