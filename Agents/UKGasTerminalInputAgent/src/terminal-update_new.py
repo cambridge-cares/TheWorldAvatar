@@ -38,6 +38,20 @@ PREFIXES = {
     'rdf':   '<http://www.w3.org/1999/02/22-rdf-syntax-ns#>',
     'rdfs':  '<http://www.w3.org/2000/01/rdf-schema#>',
     'ts':    '<http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#>',
+    'xsd':   '<http://www.w3.org/2001/XMLSchema#>',
+}
+
+# Defining IRI of each terminal
+TERMINAL_DICTIONARY = {
+    "BACTON IPs Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal>",
+    "BACTON UKCS Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal>",
+    "BARROW TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal>",
+    "EASINGTON TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal>",
+    "ISLE OF GRAIN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal>",
+    "MILFORD HAVEN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal>",
+    "ST FERGUS TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal>",
+    "TEESSIDE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
+    "THEDDLETHORPE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
 }
 
 
@@ -66,20 +80,6 @@ def create_sparql_prefix(abbreviation, prefixes):
         iri = iri + '>'
 
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
-
-
-# Defining IRI of each terminal
-TERMINAL_DICTIONARY = {
-    "BACTON IPs Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal>",
-    "BACTON UKCS Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal>",
-    "BARROW TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal>",
-    "EASINGTON TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal>",
-    "ISLE OF GRAIN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal>",
-    "MILFORD HAVEN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal>",
-    "ST FERGUS TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal>",
-    "TEESSIDE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
-    "THEDDLETHORPE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
-}
 
 
 def getKGLocation(namespace):
@@ -121,8 +121,9 @@ def get_instantiated_terminals(endpoint):
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp', PREFIXES) + \
             create_sparql_prefix('rdf', PREFIXES) + \
             create_sparql_prefix('rdfs', PREFIXES) + \
@@ -157,8 +158,9 @@ def check_timeseries_instantiation(terminalIRI):
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp', PREFIXES) + \
             create_sparql_prefix('om', PREFIXES) + \
             create_sparql_prefix('ts', PREFIXES) + \
@@ -173,6 +175,49 @@ def check_timeseries_instantiation(terminalIRI):
         return True
     else:
         return False
+
+
+def instantiate_timeseries(terminalIRI):
+    """
+        ...
+
+        Arguments:
+            terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
+
+        Returns:
+
+    """
+
+    # Create UUID for IntakenGas, quantity and measurement.
+    gas = 'GasAmount_' + str(uuid.uuid4())
+    quantity = 'Quantity_' + str(uuid.uuid4())
+    measurement = 'Measurement_' + str(uuid.uuid4())
+    ts = 'TimeSeries_' + str(uuid.uuid4())
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint, endpoint)
+    # Perform SPARQL update (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('compa', PREFIXES) + \
+            create_sparql_prefix('om', PREFIXES) + \
+            create_sparql_prefix('rdf', PREFIXES) + \
+            create_sparql_prefix('ts', PREFIXES) + \
+            create_sparql_prefix('xsd', PREFIXES) + \
+            '''INSERT DATA { \
+            <%s> comp:hasTaken compa:%s. \
+            compa:%s rdf:type comp:IntakenGas. \
+            compa:%s rdf:type om:VolumetricFlowRate; \
+                     om:hasPhenomenon compa:%s; \
+                     om:hasValue compa:%s. \
+            compa:%s om:hasUnit om:cubicMetrePerSecond-Time; \
+                     ts:hasTimeSeries compa:%s. }'''%(
+            terminalIRI, gas, gas, quantity, gas, measurement, measurement, ts)
+
+    KGClient.executeUpdate(query)
 
 
 def get_flow_data_from_csv():
@@ -344,5 +389,10 @@ if __name__ == '__main__':
 
     for gt in terminals:
 
-        # check if associated time series is already instantiated
-        check_timeseries_instantiation(terminals[gt])
+        if gt == 'Bacton IPs Terminal':
+
+            # check if associated time series is already instantiated
+            instantiated = check_timeseries_instantiation(terminals[gt])
+
+            if not instantiated:
+                instantiate_timeseries(terminals[gt])
