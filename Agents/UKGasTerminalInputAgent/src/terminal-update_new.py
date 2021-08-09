@@ -27,8 +27,46 @@ Local deployment requires:
 # Local KG location (fallback)
 FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
-# Knowledge base endpoint to use for assimilation of data (namespace in Blazegraph)
-KB = "timeseries"
+# KG's SPARQL endpoint to use for assimilation of data (NAMESPACE in Blazegraph)
+NS = "timeseries"
+
+# Defining PREFIXES for SPARQL queries
+PREFIXES = {
+    'comp':  '<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>',
+    'compa': '<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>',
+    'om':    '<http://www.ontology-of-units-of-measure.org/resource/om-2/>',
+    'rdf':   '<http://www.w3.org/1999/02/22-rdf-syntax-ns#>',
+    'rdfs':  '<http://www.w3.org/2000/01/rdf-schema#>',
+    'ts':    '<http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#>',
+}
+
+
+def create_sparql_prefix(abbreviation, prefixes):
+    """
+        Constructs proper SPARQL Prefix String for given namespace abbreviation
+
+        Arguments:
+            abbreviation - namespace abbreviation to construct SPARQL PREFIX string for.
+            prefixes - dictionary of pre-specified prefixes and respective full IRIs.
+
+        Returns:
+            SPARQL query prefix string in the form "PREFIX ns: <full IRI>".
+    """
+
+    # Raise key error if given namespace abbreviation has not been specified
+    if abbreviation not in prefixes.keys():
+        raise KeyError('Prefix: "' + abbreviation + '" has not been specified')
+
+    # Get full IRI from pre-specified prefixes dictionary
+    iri = prefixes[abbreviation]
+
+    if not iri.startswith('<'):
+        iri = '<' + iri
+    if not iri.endswith('>'):
+        iri = iri + '>'
+
+    return 'PREFIX ' + abbreviation + ': ' + iri + ' '
+
 
 # Defining IRI of each terminal
 TERMINAL_DICTIONARY = {
@@ -42,7 +80,8 @@ TERMINAL_DICTIONARY = {
     "TEESSIDE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
     "THEDDLETHORPE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
 }
-        
+
+
 def getKGLocation(namespace):
     """
         Determines the correct URL for the KG's SPARQL endpoint.
@@ -65,7 +104,7 @@ def getKGLocation(namespace):
 
 def get_instantiated_terminals(endpoint):
     """
-        Retrieve names and IRIs of all instantiated GasTerminals in the knowledge graph
+        Retrieves names and IRIs of all instantiated GasTerminals in the knowledge graph
 
         Arguments:
             endpoint - SPARQL endpoint for knowledge graph.
@@ -84,14 +123,13 @@ def get_instantiated_terminals(endpoint):
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
-    query = 'PREFIX comp: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#> \
-             PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
-             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
-             SELECT ?' + var1 + ' ?' + var2 + ' ' \
-             'WHERE { ?' + var1 + ' rdf:type comp:GasTerminal; \
-                                    rdfs:label ?' + var2 + '. }'
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('rdf', PREFIXES) + \
+            create_sparql_prefix('rdfs', PREFIXES) + \
+            'SELECT ?' + var1 + ' ?' + var2 + ' ' \
+            'WHERE { ?' + var1 + ' rdf:type comp:GasTerminal; \
+                                   rdfs:label ?' + var2 + '. }'
     response = KGClient.execute(query)
-
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -101,6 +139,40 @@ def get_instantiated_terminals(endpoint):
         res[r[var2]] = r[var1]
 
     return res
+
+
+def check_timeseries_instantiation(terminalIRI):
+    """
+        Check whether terminalIRI already has an instantiated time series attached to it
+
+        Arguments:
+            terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
+
+        Returns:
+            True - if gas terminal is associated with a time serie via the specified path.
+            False - otherwise.
+    """
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('om', PREFIXES) + \
+            create_sparql_prefix('ts', PREFIXES) + \
+            'SELECT * ' \
+            'WHERE { <' + terminalIRI + '> comp:hasTaken/om:hasPhenomenon/om:hasValue/ts:hasTimeSeries ?a }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Return True if any TimeSeries is associated with gas terminal via specified property path
+    if len(response) > 0:
+        return True
+    else:
+        return False
 
 
 def get_flow_data_from_csv():
@@ -166,27 +238,27 @@ def update_triple_store():
     print("\nPerforming update at: ", today)
 
     # Build the correct KG URL
-    kgURL = getKGLocation(KB)
+    kgURL = getKGLocation(NS)
     print("Determined KG URL as", kgURL)
-        
+
     # Get the flow data from CSV
     # 2D array of tiples ([terminal-name, time, flow])
     data = get_flow_data_from_csv()
-   
+
     for i in range(0, len(data)):
         dataRow = data[i]
         terminalURI = TERMINAL_DICTIONARY[dataRow[0]]
         time = dataRow[1]
-            
+
         # Convert flow from MCM/Day to M^3/S
         flow = dataRow[2]
         gasVolume = str( (float(flow) * 1000000) / (24*60*60) )
-            
-        # Create UUID for IntakenGas, quantity and measurement. 
+
+        # Create UUID for IntakenGas, quantity and measurement.
         gas_uuid = uuid.uuid1()
         quan_uuid = uuid.uuid1()
         mes_uuid = uuid.uuid1()
-        
+
         query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
@@ -212,16 +284,16 @@ def update_triple_store():
                                                        mes_uuid,
                                                        gas_uuid,
                                                        time)
-        
 
-                   
+
+
         sparql = SPARQLWrapper(kgURL)
         sparql.setMethod(POST) # POST query, not GET
         sparql.setQuery(query)
-        
+
         print("Running SPARQL update " + str(i + 1) + " of " + str(len(data)) + "...")
         ret = sparql.query()
-        
+
 
     print("All SPARQL updates finished.")
     return
@@ -264,5 +336,13 @@ def single_update():
 
 if __name__ == '__main__':
 
-    endpoint = getKGLocation(KB)
+    # set URL to KG SPARQL endpoint
+    endpoint = getKGLocation(NS)
+
+    # retrieve all instantiated gas terminals in KG
     terminals = get_instantiated_terminals(endpoint)
+
+    for gt in terminals:
+
+        # check if associated time series is already instantiated
+        check_timeseries_instantiation(terminals[gt])
