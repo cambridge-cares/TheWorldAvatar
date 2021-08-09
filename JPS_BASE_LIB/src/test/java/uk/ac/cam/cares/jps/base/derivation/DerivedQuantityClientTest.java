@@ -101,7 +101,7 @@ public class DerivedQuantityClientTest{
         try {
         	devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs);
         } catch (Exception e) {
-        	Assert.assertTrue(e.getMessage().contains("part of another derived quantity"));
+        	Assert.assertTrue(e.getMessage().contains("part of another derivation"));
         }
 	}
 	
@@ -171,7 +171,12 @@ public class DerivedQuantityClientTest{
 		String derived2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
-		Assert.assertFalse(devClient.validateDerivation(derived2));
+		try {
+			devClient.validateDerivation(derived2);
+		} catch (Exception e) {
+			Assert.assertTrue(e.getMessage().contains("No timestamp"));
+		}
+
 		for (String input:inputs) {
 			devClient.addTimeInstance(input);
 		}
@@ -180,6 +185,11 @@ public class DerivedQuantityClientTest{
 		
 	    // intentionally create a circular dependency
 		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
-		Assert.assertFalse(devClient.validateDerivation(derived3));
+		
+		try {
+			devClient.validateDerivation(derived3);
+		} catch (Exception e) {
+			Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
+		}
 	}
 }
