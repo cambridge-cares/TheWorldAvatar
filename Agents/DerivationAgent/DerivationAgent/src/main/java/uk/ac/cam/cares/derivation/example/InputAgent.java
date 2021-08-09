@@ -41,9 +41,9 @@ public class InputAgent extends JPSAgent {
 		    
 		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
 	    	
-	    	// create random time series
+	    	// add random value to value column
 	    	Random rand = new Random();
-	    	List<Integer> time_column = Arrays.asList(rand.nextInt());
+	    	List<Integer> time_column = Arrays.asList(tsClient.getMaxTime(input_iri)+1);
 	    	List<List<?>> values = new ArrayList<>();
 	    	List<Integer> value_column = Arrays.asList(rand.nextInt());
 	    	values.add(value_column);

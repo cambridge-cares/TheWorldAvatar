@@ -1,9 +1,9 @@
 version: "3.8"
 
 services:
-  derivedagent:
-    container_name: derivedagent
-    image: derivedagent:1.0.0
+  derivationagent:
+    container_name: derivationagent
+    image: derivationagent:1.0.0
     build:
       context: ./
     volumes:

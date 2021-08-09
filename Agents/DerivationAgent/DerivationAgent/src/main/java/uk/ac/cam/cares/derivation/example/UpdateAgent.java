@@ -21,7 +21,7 @@ public class UpdateAgent extends JPSAgent{
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		DerivationClient devClient = new DerivationClient(storeClient);
-		devClient.updateDerivation(InstancesDatabase.DerivedQuantityTimeDuration);
-		return requestParams;	
+		devClient.updateDerivation(InstancesDatabase.DerivedQuantityDifference);
+		return requestParams;
 	}
 }

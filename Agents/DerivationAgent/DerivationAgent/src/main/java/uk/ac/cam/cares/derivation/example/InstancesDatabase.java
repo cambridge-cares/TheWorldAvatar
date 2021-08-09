@@ -7,12 +7,12 @@ package uk.ac.cam.cares.derivation.example;
  */
 
 public class InstancesDatabase {
-    public static String Input;
-    public static String MinTime;
-    public static String MaxTime;
-    public static String TimeDuration;
+    public static String Input = null;
+    public static String MinValue = null;
+    public static String MaxValue = null;
+    public static String Difference = null;
     
-    public static String DerivedQuantityMinTime;
-    public static String DerivedQuantityMaxTime;
-    public static String DerivedQuantityTimeDuration;
+    public static String DerivedQuantityMinValue = null;
+    public static String DerivedQuantityMaxValue = null;
+    public static String DerivedQuantityDifference = null;
 }

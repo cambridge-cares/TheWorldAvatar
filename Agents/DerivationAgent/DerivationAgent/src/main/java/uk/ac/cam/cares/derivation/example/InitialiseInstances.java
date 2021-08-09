@@ -26,16 +26,16 @@ public class InitialiseInstances extends JPSAgent{
 	 */
 	private static final long serialVersionUID = 1L;
     // this URL is based on the docker image, make sure the URL is accessible from the derived quantity's calling entity
-	private static String baseURL = "http://derivedagent:8080/DerivationAgent";
+	private static String baseURL = "http://derivationagent:8080/DerivationAgent";
 	
-	private static String mintime_agent_iri = SparqlClient.namespace + "mintime_agent";
-	private static String mintime_agent_url = baseURL + DerivationAgents.URL_MINTIME;
+	private static String minvalue_agent_iri = SparqlClient.namespace + "minvalue_agent";
+	private static String minvalue_agent_url = baseURL + DerivationAgents.URL_MINVALUE;
 	
-	private static String maxtime_agent_iri = SparqlClient.namespace + "maxtime_agent";
-	private static String maxtime_agent_url = baseURL + DerivationAgents.URL_MAXTIME;
+	private static String maxvalue_agent_iri = SparqlClient.namespace + "maxvalue_agent";
+	private static String maxvalue_agent_url = baseURL + DerivationAgents.URL_MAXVALUE;
 	
-	private static String timeduration_agent_iri = SparqlClient.namespace + "timeduration_agent";
-	private static String timeduration_agent_url = baseURL + DerivationAgents.URL_DURATION;
+	private static String difference_agent_iri = SparqlClient.namespace + "difference_agent";
+	private static String difference_agent_url = baseURL + DerivationAgents.URL_CalculatedDifference;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitialiseInstances.class);
     
@@ -59,36 +59,36 @@ public class InitialiseInstances extends JPSAgent{
     	LOGGER.info("created input " + input);
     	InstancesDatabase.Input = input;
     	
-    	String[] mintime = sparqlClient.createMinTime(0);
-    	LOGGER.info("created min time " + mintime[0]);
-    	InstancesDatabase.MinTime = mintime[0];
+    	String[] minvalue = sparqlClient.createMinValue(0);
+    	LOGGER.info("created min value " + minvalue[0]);
+    	InstancesDatabase.MinValue = minvalue[0];
     	
-    	String[] maxtime = sparqlClient.createMaxTime(0);
-    	LOGGER.info("created max time " + maxtime[0]);
-    	InstancesDatabase.MaxTime = maxtime[0];
+    	String[] maxvalue = sparqlClient.createMaxValue(0);
+    	LOGGER.info("created max value " + maxvalue[0]);
+    	InstancesDatabase.MaxValue = maxvalue[0];
     	
-    	String[] timeduration = sparqlClient.createTimeDuration(0);
-    	LOGGER.info("created time duration " + timeduration[0]);
-    	InstancesDatabase.TimeDuration = timeduration[0];
+    	String[] difference = sparqlClient.createCalculatedDifference(0);
+    	LOGGER.info("created calculated difference " + difference[0]);
+    	InstancesDatabase.Difference = difference[0];
     	
     	// create three derived quantities
-    	String derived_mintime = devClient.createDerivation(Arrays.asList(mintime), mintime_agent_iri, mintime_agent_url, Arrays.asList(input));
-    	LOGGER.info("created derived quantity for min time " + derived_mintime);
-    	InstancesDatabase.DerivedQuantityMinTime = derived_mintime;
+    	String derived_minvalue = devClient.createDerivation(Arrays.asList(minvalue), minvalue_agent_iri, minvalue_agent_url, Arrays.asList(input));
+    	LOGGER.info("created derived quantity for min value " + derived_minvalue);
+    	InstancesDatabase.DerivedQuantityMinValue = derived_minvalue;
     	
-    	String derived_maxtime = devClient.createDerivation(Arrays.asList(maxtime), maxtime_agent_iri, maxtime_agent_url, Arrays.asList(input));
-    	LOGGER.info("created derived quantity for max time " + derived_maxtime);
-    	InstancesDatabase.DerivedQuantityMaxTime = derived_maxtime;
+    	String derived_maxvalue = devClient.createDerivation(Arrays.asList(maxvalue), maxvalue_agent_iri, maxvalue_agent_url, Arrays.asList(input));
+    	LOGGER.info("created derived quantity for max value " + derived_maxvalue);
+    	InstancesDatabase.DerivedQuantityMaxValue = derived_maxvalue;
     	
-    	String derived_timeduration = devClient.createDerivation(Arrays.asList(timeduration), timeduration_agent_iri, timeduration_agent_url, Arrays.asList(mintime[0],maxtime[0]));
-    	LOGGER.info("created derived quantity for time duration " + derived_timeduration);
-    	InstancesDatabase.DerivedQuantityTimeDuration = derived_timeduration;
+    	String derived_difference = devClient.createDerivation(Arrays.asList(difference), difference_agent_iri, difference_agent_url, Arrays.asList(minvalue[0],maxvalue[0]));
+    	LOGGER.info("created derived quantity for calculated difference " + derived_difference);
+    	InstancesDatabase.DerivedQuantityDifference = derived_difference;
     	
     	// check all connections between the derived quantities
-    	// as time duration is derived from min time and max time, they get checked too
+    	// as calculated difference is derived from min time and max time, they get checked too
     	// the validate method only traverse down, not up
-    	LOGGER.info("Validating " + derived_timeduration);
-    	if (devClient.validateDerivation(derived_timeduration)) {
+    	LOGGER.info("Validating " + derived_difference);
+    	if (devClient.validateDerivation(derived_difference)) {
     		LOGGER.info("validation success");
     	} else {
     		LOGGER.error("ERROR: validation fail");
@@ -96,18 +96,13 @@ public class InitialiseInstances extends JPSAgent{
 
     	return requestParams;
     }
-    
-	@Override
-	public boolean validateInput(JSONObject requestParams) {
-		return true;
-	}
 	
     private static void createTimeSeries(String input_iri, TimeSeriesClient<Integer> tsClient) {
     	tsClient.initTimeSeries(Arrays.asList(input_iri), Arrays.asList(Integer.class), null);
     	
     	// create a new time series object with random numbers
     	Random rand = new Random();
-    	List<Integer> time_column = Arrays.asList(rand.nextInt(),rand.nextInt());
+    	List<Integer> time_column = Arrays.asList(1,2);
     	List<List<?>> values = new ArrayList<>();
     	List<Integer> value_column = Arrays.asList(rand.nextInt(),rand.nextInt());
     	values.add(value_column);

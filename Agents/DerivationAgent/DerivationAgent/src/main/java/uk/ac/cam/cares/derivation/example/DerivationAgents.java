@@ -33,12 +33,12 @@ import javax.servlet.annotation.WebServlet;
 
 /**
  * This agent has three functions
- * 1) MinTime: input - time series, queries min time from its input, and write a new instance in kg
- * 2) MaxTime: input - time series, queries max time from its input, and write a new instance in kg
- * 3) TimeDuration: inputs - MinTime & MaxTime, queries min time and max time, calculates the difference and write it to kg
+ * 1) MinValue: input - time series, queries min value from its input, and write a new instance in kg
+ * 2) MaxValue: input - time series, queries max value from its input, and write a new instance in kg
+ * 3) CalculatedDifference: inputs - MinTime & MaxTime, queries min time and max time, calculates the difference and write it to kg
  * @author Kok Foong Lee
  */
-@WebServlet(urlPatterns = {DerivationAgents.URL_MINTIME, DerivationAgents.URL_MAXTIME, DerivationAgents.URL_DURATION})
+@WebServlet(urlPatterns = {DerivationAgents.URL_MINVALUE, DerivationAgents.URL_MAXVALUE, DerivationAgents.URL_CalculatedDifference})
 public class DerivationAgents extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 
@@ -46,9 +46,9 @@ public class DerivationAgents extends JPSAgent {
 	// logs are written to a hard coded location (C:/JPS_DATA/logs), defined in log4j2.xml located in src
     private static final Logger LOGGER = LoggerFactory.getLogger(DerivationAgents.class);
 
-    public static final String URL_MINTIME = "/TimeSeries/MinTime";
-    public static final String URL_MAXTIME = "/TimeSeries/MaxTime";
-    public static final String URL_DURATION = "/TimeSeries/TimeDuration";
+    public static final String URL_MINVALUE = "/TimeSeries/MinValue";
+    public static final String URL_MAXVALUE = "/TimeSeries/MaxValue";
+    public static final String URL_CalculatedDifference = "/TimeSeries/CalculatedDifference";
 
     // ================================ Methods ================================
     /**
@@ -78,41 +78,41 @@ public class DerivationAgents extends JPSAgent {
         	String[] createdInstances;
         	
 	        switch (path) {
-	        	case URL_MINTIME:
-	        		LOGGER.info("Querying min time");
+	        	case URL_MINVALUE:
+	        		LOGGER.info("Querying min value");
 	        		inputdata_iri = inputs.getString(0);
-        			Integer mintime = tsClient.getMinTime(inputdata_iri);
-        			createdInstances = sparqlClient.createMinTime(mintime);
+        			Integer minvalue = (int) tsClient.getMinValue(inputdata_iri);
+        			createdInstances = sparqlClient.createMinValue(minvalue);
         			LOGGER.info("created a new min time instance " + createdInstances);
         			response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        	    
-	        	case URL_MAXTIME:
-	        		LOGGER.info("Querying max time");
+	        	case URL_MAXVALUE:
+	        		LOGGER.info("Querying max value");
 	        		inputdata_iri = inputs.getString(0);
-        			Integer maxtime = tsClient.getMaxTime(inputdata_iri);
-        			createdInstances = sparqlClient.createMaxTime(maxtime);
-        			LOGGER.info("created a new max time instance " + createdInstances);
+        			Integer maxvalue = (int) tsClient.getMaxValue(inputdata_iri);
+        			createdInstances = sparqlClient.createMaxValue(maxvalue);
+        			LOGGER.info("created a new max value instance " + createdInstances);
         			response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		
 	        		break;
-	        	case URL_DURATION:
-	        		LOGGER.info("Processing duration");
-	        		Integer mintime_input = null; Integer maxtime_input = null;
+	        	case URL_CalculatedDifference:
+	        		LOGGER.info("Calculating difference");
+	        		Integer minvalue_input = null; Integer maxvalue_input = null;
 
 	        		// validate input should already ensure that one of them is a max time and the other is a min time
-	        		if (sparqlClient.isMaxTime(inputs.getString(0))) {
-	        			maxtime_input = sparqlClient.getValue(inputs.getString(0));
-	        			mintime_input = sparqlClient.getValue(inputs.getString(1));
-	        		} else if (sparqlClient.isMinTime(inputs.getString(0))) {
-	        			mintime_input = sparqlClient.getValue(inputs.getString(0));
-	        			maxtime_input = sparqlClient.getValue(inputs.getString(1));
+	        		if (sparqlClient.isMaxValue(inputs.getString(0))) {
+	        			maxvalue_input = sparqlClient.getValue(inputs.getString(0));
+	        			minvalue_input = sparqlClient.getValue(inputs.getString(1));
+	        		} else if (sparqlClient.isMinValue(inputs.getString(0))) {
+	        			minvalue_input = sparqlClient.getValue(inputs.getString(0));
+	        			maxvalue_input = sparqlClient.getValue(inputs.getString(1));
 	        		}
 	        		
 	        		// calculate a new value and create a new instance
-	        		int timeduration = maxtime_input - mintime_input;
-	        		createdInstances = sparqlClient.createTimeDuration(timeduration);
-	        		LOGGER.info("created a new time duration instance " + createdInstances);
+	        		int difference = maxvalue_input - minvalue_input;
+	        		createdInstances = sparqlClient.createCalculatedDifference(difference);
+	        		LOGGER.info("created a new calculated difference instance " + createdInstances);
 	        		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
 	        		break;
 	        }
@@ -127,7 +127,7 @@ public class DerivationAgents extends JPSAgent {
         boolean valid = false;
         JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
         switch (path) {
-	    	case URL_MINTIME:
+	    	case URL_MINVALUE:
 	    		LOGGER.info("Checking input for min time");
 	    		
 	    		if (inputs.length() == 1) {
@@ -138,7 +138,7 @@ public class DerivationAgents extends JPSAgent {
 	    		
 	    		break;
 	    	
-	    	case URL_MAXTIME:
+	    	case URL_MAXVALUE:
 	    		LOGGER.info("Checking input for max time");
 	    		
 	    		if (inputs.length() == 1) {
@@ -148,17 +148,17 @@ public class DerivationAgents extends JPSAgent {
 	    		}
 	    		break;
 	    		
-	    	case URL_DURATION:
-	    		LOGGER.info("Checking duration");
+	    	case URL_CalculatedDifference:
+	    		LOGGER.info("Checking difference");
 	    		
-	    		// if the first input is max time, the second one must be min time, and vice versa
+	    		// if the first input is max value, the second one must be min value, and vice versa
 	    		if (inputs.length() == 2) {
-	    			if (sparqlClient.isMaxTime(inputs.getString(0))) {
-	    				if (sparqlClient.isMinTime(inputs.getString(1))) {
+	    			if (sparqlClient.isMaxValue(inputs.getString(0))) {
+	    				if (sparqlClient.isMinValue(inputs.getString(1))) {
 	    					valid = true;
 	    				}
-	    			} else if (sparqlClient.isMinTime(inputs.getString(0))) {
-	    				if (sparqlClient.isMaxTime(inputs.getString(1))) {
+	    			} else if (sparqlClient.isMinValue(inputs.getString(0))) {
+	    				if (sparqlClient.isMaxValue(inputs.getString(1))) {
 	    					valid = true;
 	    				}
 	    			}
