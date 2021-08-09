@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!--
+        This Maven project contains no Java source code, it acts only to compress and upload
+        the Java logging configuration files to the packages repository of TheWorldAvatar
+        GitHub repository.
+    -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>jps-parent-pom</artifactId>
+    <packaging>pom</packaging>
+
+    <!-- Version of this configuration -->
+    <version>1.0.0-SNAPSHOT</version>
+
+    <!-- Common properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+           
+        <!-- Classifier used to download Log4J2 config (for runtime) -->
+        <log.classifier>java-log-config-dev</log.classifier>
+    </properties>
+	
+    <!-- Snapshot repository location to push to (note the ID should match a server ID in your ~/.m2/settings.xml -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>repo</id>
+            <name>TheWorldAvatar Maven Repository</name>
+            <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            
+            <!-- Ensures everything in ./WEB-INF gets copied into the final WAR
+            file's internal WEB-INF directory. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.2</version>
+                <configuration>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <warName>${project.artifactId}##${project.version}</warName>
+                    <outputDirectory>output</outputDirectory>
+                   
+                    <webResources>
+                        <resource>
+                            <directory>${basedir}/WEB-INF</directory>
+                            <targetPath>WEB-INF</targetPath>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>          
+                    
+                    <!-- Downloads the Log4J2 config that will be used at runtime -->
+                    <execution>
+                        <id>download-runtime-log-config</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>   
+                                    <groupId>uk.ac.cam.cares.jps</groupId>
+                                    <artifactId>java-log-configs</artifactId>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                    <classifier>${log.classifier}</classifier>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${basedir}/WEB-INF</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    
+                    <!-- Downloads the Log4J2 config (development) that will be used for unit tests --> 
+                    <execution>
+                        <id>download-test-log-config</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>   
+                                    <groupId>uk.ac.cam.cares.jps</groupId>
+                                    <artifactId>java-log-configs</artifactId>
+                                    <version>1.0.0-SNAPSHOT</version>
+                                    <classifier>java-log-config-dev</classifier>
+                                    <type>zip</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${basedir}/src/test/resources</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    
+                </executions>
+            </plugin>
+
+        </plugins>
+    </build>
+    
+    <!-- Commonly used, third party libraries -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- Java servlet API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>4.0.1</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Logging -->
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>2.14.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>2.14.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-web</artifactId>
+                <version>2.14.1</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- Testing -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.7.2</version>
+                <scope>test</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+</project>

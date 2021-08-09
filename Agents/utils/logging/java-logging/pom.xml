@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project 
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!--
+		This Maven project contains no Java source code, it acts only to compress and upload
+		the Java logging configuration files to the packages repository of TheWorldAvatar
+		GitHub repository.
+	-->
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>uk.ac.cam.cares.jps</groupId>
+	<artifactId>java-log-configs</artifactId>
+	<packaging>pom</packaging>
+
+	<!-- Version of this configuration -->
+	<version>1.0.0-SNAPSHOT</version>
+
+	<!-- Snapshot repository location to push to (note the ID should match a server ID in your ~/.m2/settings.xml -->
+	<distributionManagement>
+		<snapshotRepository>
+			<id>repo</id>
+			<name>TheWorldAvatar Maven Repository</name>
+			<url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
+		</snapshotRepository>
+	</distributionManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<appendAssemblyId>true</appendAssemblyId>
+				</configuration>
+				<executions>
+
+					<!-- Upload the production configuration -->
+					<execution>
+						<id>upload-production-config</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>java-log-config-prod</finalName>
+							<descriptors>
+								<descriptor>descriptor.production.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+
+					<!-- Upload the development configuration -->
+					<execution>
+						<id>upload-development-configuration</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+						<configuration>
+							<finalName>java-log-config-dev</finalName>
+							<descriptors>
+								<descriptor>descriptor.development.xml</descriptor>
+							</descriptors>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

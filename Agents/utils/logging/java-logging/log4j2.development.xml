@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+	This Log4J2 configuration should be used in DEVELOPMENT and debugging
+	environments and logs with a minimum level of DEBUG.
+-->	
+
+<!-- Give configuration a name and set level for internal Log4J events -->
+<Configuration name="JPS Development Configuration" status="WARN" >
+	<Appenders>
+		<!-- Logs to a file, archiving that log if it hits the size limit -->
+		<RollingFile
+			name="RollingFile" 
+			fileName="${sys:user.home}/.jps/logs/jps.log"
+			filePattern="${sys:user.home}/.jps/logs/jps-$${date:yyyy-MM}/app-%d{yyyy-MM-dd}-%i.log.gz">
+			
+			<PatternLayout>
+				<Pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n</Pattern>
+			</PatternLayout>
+			<Policies>
+				<TimeBasedTriggeringPolicy />
+				<SizeBasedTriggeringPolicy size="250 MB"/>
+			</Policies>
+		</RollingFile>
+
+		<!-- Logs to standard out -->
+		<Console
+			name="Console"
+			target="SYSTEM_OUT">
+			
+			<PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n"/>
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<!-- Sets the minimum logging level and adds appenders -->
+		<Root level="DEBUG">
+			<AppenderRef ref="RollingFile"/>
+			<AppenderRef ref="Console"/>
+		</Root>
+	</Loggers>
+</Configuration>
