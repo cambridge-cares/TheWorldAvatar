@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.derivation.config.Config;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -88,10 +89,12 @@ public class InitialiseInstances extends JPSAgent{
     	// as calculated difference is derived from min time and max time, they get checked too
     	// the validate method only traverse down, not up
     	LOGGER.info("Validating " + derived_difference);
-    	if (devClient.validateDerivation(derived_difference)) {
-    		LOGGER.info("validation success");
-    	} else {
-    		LOGGER.error("ERROR: validation fail");
+    	try {
+    		devClient.validateDerivation(derived_difference);
+    		LOGGER.info("Validation success");
+    	} catch (Exception e) {
+    		LOGGER.error("Validation fail");
+    		throw new JPSRuntimeException(e);
     	}
 
     	return requestParams;

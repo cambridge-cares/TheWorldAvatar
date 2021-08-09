@@ -32,7 +32,7 @@ import java.util.Arrays;
 import javax.servlet.annotation.WebServlet;
 
 /**
- * This agent has three functions
+ * This class contains one servlet with 3 access URLs (3 agents)
  * 1) MinValue: input - time series, queries min value from its input, and write a new instance in kg
  * 2) MaxValue: input - time series, queries max value from its input, and write a new instance in kg
  * 3) CalculatedDifference: inputs - MinTime & MaxTime, queries min time and max time, calculates the difference and write it to kg

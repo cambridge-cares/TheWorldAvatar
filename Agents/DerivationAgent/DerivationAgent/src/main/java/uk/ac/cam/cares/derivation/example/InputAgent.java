@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 /**
- * An agent to modify the input
+ * This input agent adds a row of value in the table and updates its timestamp
  * @author Kok Foong Lee
  *
  */
@@ -31,33 +31,30 @@ public class InputAgent extends JPSAgent {
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-		if (validateInput(requestParams)) {
-		    String input_iri = InstancesDatabase.Input;
-		    
-		    Config.initProperties();
-		    
-		    RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-	    	DerivationClient devClient = new DerivationClient(storeClient);
-		    
-		    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
-	    	
-	    	// add random value to value column
-	    	Random rand = new Random();
-	    	List<Integer> time_column = Arrays.asList(tsClient.getMaxTime(input_iri)+1);
-	    	List<List<?>> values = new ArrayList<>();
-	    	List<Integer> value_column = Arrays.asList(rand.nextInt());
-	    	values.add(value_column);
-	    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(input_iri), values);
-	    	
-	    	tsClient.addTimeSeriesData(ts);
+		Config.initProperties();
+	    
+	    RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+	    SparqlClient sparqlClient = new SparqlClient(storeClient);
+    	DerivationClient devClient = new DerivationClient(storeClient);
+		
+		if (InstancesDatabase.Input == null) { 
+			InstancesDatabase.Input = sparqlClient.getInputIRI();
+	    }
+	    
+	    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    	
+    	// add random value to value column
+    	Random rand = new Random();
+    	List<Integer> time_column = Arrays.asList(tsClient.getMaxTime(InstancesDatabase.Input)+1);
 
-	    	devClient.updateTimestamp(input_iri);
-		}
+    	List<List<?>> values = new ArrayList<>();
+    	List<Integer> value_column = Arrays.asList(rand.nextInt());
+    	values.add(value_column);
+    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(InstancesDatabase.Input), values);
+    	
+    	tsClient.addTimeSeriesData(ts);
+
+    	devClient.updateTimestamp(InstancesDatabase.Input);
 		return requestParams;
-	}
-	
-	@Override
-	public boolean validateInput(JSONObject requestParams) {
-		return true;
 	}
 }

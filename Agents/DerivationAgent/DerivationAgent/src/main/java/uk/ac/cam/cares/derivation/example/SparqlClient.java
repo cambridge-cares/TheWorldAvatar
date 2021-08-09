@@ -16,6 +16,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class SparqlClient {
@@ -209,6 +210,60 @@ public class SparqlClient {
     		return false;
     	} else {
     		return true;
+    	}
+    }
+    
+    /**
+     * returns the input instance. There can only be one input instance at a time based on the way it is initialised
+     * @return
+     */
+    public String getInputIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	String queryKey = "input";
+    	Variable input = SparqlBuilder.var(queryKey);
+    	
+    	GraphPattern queryPattern = input.isA(InputData);
+    	
+    	query.prefix(p_namespace).select(input).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one input instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(queryKey);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("Input is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+    
+    /**
+     * returns the CalculatedDifference instance.
+     * @return
+     */
+    public String getDerivationOfCalculatedDifference() {
+    	SelectQuery query = Queries.SELECT();
+    	String queryKey = "derivation";
+    	Variable diff = SparqlBuilder.var(queryKey);
+    	
+    	GraphPattern queryPattern = diff.isA(CalculatedDifference);
+    	
+    	query.prefix(p_namespace).select(diff).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one CalculatedDifference instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(queryKey);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("CalculatedDifference is probably not initialised yet/properly, please run InitialiseInstances");
     	}
     }
 }
