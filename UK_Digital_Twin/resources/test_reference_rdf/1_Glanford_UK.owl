@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"
+   xmlns:ns3="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+   xmlns:ns4="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+   xmlns:ns6="http://www.w3.org/2002/07/owl#"
+   xmlns:ns7="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#y_coordinate_Glanford">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_y_coordinate_Glanford"/>
+    <ns5:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <ns1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_YearOfBuilt_Glanford">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1993</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns6:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"/>
+    <ns6:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#YearOfBuilt_Glanford">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_YearOfBuilt_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#YearOfBuilt"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_y_coordinate_Glanford">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">53.6225479</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#DesignCapacity_Glanford">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#DesignCapacity"/>
+    <ns4:isAchievedThrough rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#BiomassGeneration_Glanford"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_DesignCapacity_Glanford"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#Glanford">
+    <ns2:hasYearOfBuilt rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#YearOfBuilt_Glanford"/>
+    <ns4:hasFunctionalAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#BiomassGeneration_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
+    <ns4:hasRequirementsAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#DesignCapacity_Glanford"/>
+    <ns1:hasAddress rdf:resource="http://dbpedia.org/resource/Yorkshire_and_the_Humber"/>
+    <rdfs:label>Glanford</rdfs:label>
+    <ns3:isOwnedBy rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#Owner_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BiomassPlant"/>
+    <ns7:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#CoordinateSystem_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant"/>
+    <ns4:hasRealizationAspect rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#PowerGenerator_Glanford"/>
+    <ns1:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999.owl#operationalPowerPlantBy9999"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#x_coordinate_Glanford">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+    <ns1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <ns5:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_x_coordinate_Glanford"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#BiomassGeneration_Glanford">
+    <ns2:consumesPrimaryFuel rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Biomass"/>
+    <ns2:usesGenerationTechnology rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#ConventionalSteam"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#CoordinateSystem_Glanford">
+    <ns7:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#x_coordinate_Glanford"/>
+    <ns7:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#y_coordinate_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_x_coordinate_Glanford">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.701682</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#PowerGenerator_Glanford">
+    <ns4:realizes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#BiomassGeneration_Glanford"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerGenerator"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#value_DesignCapacity_Glanford">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">16.7</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#ConventionalSteam">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PlantGenerationTechnology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#Biomass">
+    <rdfs:label>Biomass (meat and bone meal)</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PrimaryFuel"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_plant/operationalPowerPlantBy9999/Glanford.owl#Owner_Glanford">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#Organization"/>
+    <ns3:hasName>EPR</ns3:hasName>
+  </rdf:Description>
+</rdf:RDF>
