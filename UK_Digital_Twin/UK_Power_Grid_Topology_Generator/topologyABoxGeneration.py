@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 May 2021          #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -24,7 +24,7 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPDLocation
 
@@ -61,6 +61,9 @@ ukec = UKec.UKEnergyConsumption()
 uk_ebus_model = UK_PG.UKEbusModel()
 uk_eline_model = UK_PG.UKElineModel()
 uk_egen_model = UK_PG.UKEGenModel()
+
+"""OWL file storage path"""
+defaultStoredPath = uk_topo.StoreGeneratedOWLs
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
@@ -120,11 +123,14 @@ def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch):
     return topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays
 
 """Main function: create the sub graph represents the Topology"""
-def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, updateLocalOWLFile = True):
+def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, OWLFileStoragePath, updateLocalOWLFile = True):
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return
     store = LocalGraphStore(storeType)
     topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
     print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology' )
-    global filepath, userSpecified, defaultPath_Sleepycat
+    global defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
         cg_topo_ukec = ConjunctiveGraph(store=store, identifier = topo_cg_id)
         sl = cg_topo_ukec.open(defaultPath_Sleepycat, create = False)
@@ -147,30 +153,20 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
     
     if addEBusNodes != None:
-        g = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays) 
+        g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays)
     if addELineNodes != None:    
-        g = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery)
+        g, nodeName = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery)
     if addEGenNodes != None:
-        g = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery)
+        g, nodeName = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery)
     
     # generate/update OWL files
-    if updateLocalOWLFile == True:    
-        # specify the owl file storage path
-        defaultStoredPath = uk_topo.StoreGeneratedOWLs + 'UK_' + topo_info.Name + OWL #default path
-    
-        # Store/update the generated owl files      
-        if os.path.exists(uk_topo.StoreGeneratedOWLs) and not userSpecified:
-            print('****Non user specified storage path, will use the default storage path****')
-            storeGeneratedOWLs(g, defaultStoredPath)
-    
-        elif filepath == None:
-            print('****Needs user to specify a storage path****')
-            filepath = selectStoragePath()
-            filepath_ = filepath + '\\' + 'UK_' + topo_info.Name + OWL
-            storeGeneratedOWLs(g, filepath_)
-        else: 
-            filepath_ = filepath + '\\' +'UK_' + topo_info.Name + OWL
-            storeGeneratedOWLs(g, filepath_)
+    if updateLocalOWLFile == True:  
+        if filepath[-2:] != "\\": 
+            filepath_ = filepath + '\\' + 'UK_' + topo_info.Name + "_" + nodeName + OWL
+        else:
+            filepath_ = filepath + 'UK_' + topo_info.Name + "_" + nodeName + OWL
+        storeGeneratedOWLs(g, filepath_)
+        
     if isinstance(store, Sleepycat):  
         cg_topo_ukec.close()       
     return
@@ -179,6 +175,7 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
 """Add nodes represent Buses"""
 def addEBusNodes(graph, header, dataArray): 
     print('Start adding bus node triples in the topology graph')
+    nodeName = "EBus"
     if dataArray[0] == header:
         pass
     else:
@@ -235,10 +232,12 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
                    Literal(float(busTopoData[4].strip('\n')))))        
         counter += 1
-    return graph
+    return graph, nodeName
 
 """Add nodes represent Branches"""
 def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery):  
+    print("Adding the triples of ELine of the grid topology.")
+    nodeName = "ELine"
     if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
         pass
     else:
@@ -309,10 +308,12 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
 
         counter += 1
         
-    return graph 
+    return graph, nodeName 
 
 """Add nodes represent Branches"""
 def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery): 
+    print("Adding the triples of EGen of the grid topology.")
+    nodeName = "EGen"
     global counter
     if modelFactorArrays[0] == ukmf.headerModelFactor:
         pass
@@ -363,7 +364,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
                 local_counter += 1
         # print('Counter is ', counter)
         # print('Local counter is ', local_counter)           
-    return graph   
+    return graph, nodeName   
 
 def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
     EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
@@ -410,7 +411,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    # createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, False)
-    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, False)
+    createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, None, True)
+    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
     print('Terminated')

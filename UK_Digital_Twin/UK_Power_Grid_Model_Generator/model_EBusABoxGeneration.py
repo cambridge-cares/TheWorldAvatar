@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 24 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -21,7 +21,7 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
@@ -60,6 +60,9 @@ topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
+"""OWL file storage path"""
+defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs # default path
+
 """father node"""
 father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EBus")
 
@@ -82,9 +85,12 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(storeType, localQuery, version_of_model, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True):
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return
     store = LocalGraphStore(storeType)
-    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
+    global defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
         cg_model_EBus = ConjunctiveGraph(store=store, identifier = model_EBus_cg_id)
@@ -185,22 +191,13 @@ def createModel_EBus(storeType, localQuery, version_of_model, updateLocalOWLFile
                
         # generate/update OWL files
         if updateLocalOWLFile == True:    
-            # specify the owl file storage path
-            defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs + 'Model_' + node_locator + OWL #default path
-        
             # Store/update the generated owl files      
-            if os.path.exists(uk_ebus_model.StoreGeneratedOWLs) and not userSpecified:
-                print('****Non user specified storage path, will use the default storage path****')
-                storeGeneratedOWLs(g, defaultStoredPath)
-        
-            elif filepath == None:
-                print('****Needs user to specify a storage path****')
-                filepath = selectStoragePath()
+            if filepath[-2:] != "\\": 
                 filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
-            else: 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
+            else:
+                filepath_ = filepath + 'Model_' + node_locator + OWL
+            storeGeneratedOWLs(g, filepath_)
+            
     if isinstance(store, Sleepycat):  
         cg_model_EBus.close()       
     return
@@ -239,5 +236,5 @@ def initialiseEBusModelVar(EBus_Model, EBus):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, True)       
+    createModel_EBus('default', False, 2019, None, True)       
     print('Terminated')

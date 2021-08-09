@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 16 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -23,7 +23,7 @@ from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Power_Grid_Model_Generator.costFunctionParameterAgent import costFuncPara
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
@@ -73,6 +73,9 @@ powerPlant_Sleepycat = ukpp.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
+"""OWL file storage path"""
+defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
+
 """father node"""
 father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EGen")
 
@@ -99,9 +102,12 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True):
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return   
     store = LocalGraphStore(storeType)
-    global filepath, userSpecified, defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
+    global defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
     if isinstance(store, Sleepycat):
         print('The store is Sleepycat')
         cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
@@ -243,23 +249,14 @@ def createModel_EGen(storeType, localQuery, version_of_model, updateLocalOWLFile
                                  ontopowsys_PowerSystemModel.APF.iri, ontocape_mathematical_model.Parameter.iri)      
                
         # generate/update OWL files
-        if updateLocalOWLFile == True:    
-            # specify the owl file storage path
-            defaultStoredPath = uk_egen_model.StoreGeneratedOWLs + 'Model_' + node_locator + OWL #default path
-        
+        if updateLocalOWLFile == True: 
             # Store/update the generated owl files      
-            if os.path.exists(uk_egen_model.StoreGeneratedOWLs) and not userSpecified:
-                print('****Non user specified storage path, will use the default storage path****')
-                storeGeneratedOWLs(g, defaultStoredPath)
-        
-            elif filepath == None:
-                print('****Needs user to specify a storage path****')
-                filepath = selectStoragePath()
+            if filepath[-2:] != "\\": 
                 filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
-            else: 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
-                storeGeneratedOWLs(g, filepath_)
+            else:
+                filepath_ = filepath + 'Model_' + node_locator + OWL
+            storeGeneratedOWLs(g, filepath_)
+
     if isinstance(store, Sleepycat):  
         cg_model_EGen.close()       
     return
@@ -300,5 +297,5 @@ def capa_demand_ratio_calculator(EGenInfo, localQuery):
 
 
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, True)    
+    createModel_EGen('default', False, 2019, None, True)    
     print('Terminated')

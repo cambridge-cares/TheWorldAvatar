@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate the top node of UK digital twin."""
@@ -24,7 +24,7 @@ from UK_Digital_Twin_Package import UKEnergyConsumption as UK_con
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 import Top_Node_Generator.SPARQLQueryUsedInTopNode as query_topNode
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
 """Notation used in URI construction"""
@@ -87,9 +87,9 @@ ontocape_mathematical_model = owlready2.get_ontology(t_box.ontocape_mathematical
 ontocape_network_system = owlready2.get_ontology(t_box.ontocape_network_system).load()
 
 """OWL file storage path"""
-defaultStoredPath = dt.StoreGeneratedOWLs + dt.topNode + OWL # default path
-filepath = None # user specified path
-userSpecified = False # storage mode: False: default, True: user specified
+defaultStoredPath = dt.StoreGeneratedOWLs # default path
+# filepath = None # user specified path
+# userSpecified = False # storage mode: False: default, True: user specified
 
 """Sleepycat storage config"""
 userSpecifiePath_Sleepycat = None # user specified path
@@ -206,11 +206,14 @@ def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = Non
     
 
 """####Main function: Create or update the top node owl file####"""
-def generateTopNodeGraph(storeType, localQuery, updateLocalOWLFile = True):
+def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalOWLFile = True):
+    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return
     store = LocalGraphStore(storeType)
     baseURI = (Top_Level_Node['UKDigitalTwin'].split('#'))[0]
-    
-    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
+
     if isinstance(store, Sleepycat):    
         # Create Conjunctive graph maintain all power plant graphs
         dtConjunctiveGraph = ConjunctiveGraph(store=store, identifier = ukdt_cg_id)
@@ -245,27 +248,19 @@ def generateTopNodeGraph(storeType, localQuery, updateLocalOWLFile = True):
     g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
     print('#########TOP NODE GRAPH IS GENERATED#######')
     
-    global filepath, userSpecified
     
     if updateLocalOWLFile == True: 
         # Store/update the generated owl files      
-        if os.path.exists(dt.StoreGeneratedOWLs) and not userSpecified:
-            print('****Non user specified storage path, will use the default storage path****')
-            storeGeneratedOWLs(g, defaultStoredPath)
-    
-        elif filepath == None:
-            print('****Needs user to specify a storage path****')
-            filepath = selectStoragePath()
+        if filepath[-2:] != "\\": 
             filepath_ = filepath + '\\' + dt.topNode + OWL
-            storeGeneratedOWLs(g, filepath_)
-        else: 
-            filepath_ = filepath + '\\' + dt.topNode + OWL
-            storeGeneratedOWLs(g, filepath_)
+        else:
+            filepath_ = filepath + dt.topNode + OWL
+        storeGeneratedOWLs(g, filepath_)
             
     if isinstance(store, Sleepycat):  
         dtConjunctiveGraph.close()     
     return
 
 if __name__ == '__main__':
-   generateTopNodeGraph('default', False, True)
+   generateTopNodeGraph('default', False, None, True)
    

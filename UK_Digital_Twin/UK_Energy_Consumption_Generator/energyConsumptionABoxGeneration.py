@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 June 2021         #
+# Last Update Date: 09 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -21,7 +21,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import EnergyConsumptionDataProperty as EngConsump
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile
+from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -48,6 +48,9 @@ ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_le
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
 ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
+
+"""OWL file storage path"""
+defaultStoredPath = ukec.StoreGeneratedOWLs # default path
 
 """User specified folder path"""
 filepath = None
@@ -156,9 +159,11 @@ def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, *co
 
 
 """Main function: Add Triples to the regional and local nodes"""
-def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = True):
+def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, updateLocalOWLFile = True):
     print('Starts adding regional and local nodes.')
-
+    filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
+    if filepath == None:
+        return
     store = LocalGraphStore(storeType)
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     if isinstance(store, Sleepycat):    
@@ -187,7 +192,6 @@ def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = 
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
         pass
-    global filepath, userSpecified
     counter = 1
     counter_region = 0  
     
@@ -217,22 +221,12 @@ def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = 
         
         # generate/update OWL files
         if updateLocalOWLFile == True:
-            # specify the owl file storage path
-            defaultStoredPath = ukec.StoreGeneratedOWLs + 'UK_energy_consumption_' + region + '_UK' + OWL #default path
-        
-            # Store/update the generated owl files      
-            if os.path.exists(ukec.StoreGeneratedOWLs) and not userSpecified:
-                print('****Non user specified strorage path, will use the default storage path****')
-                storeGeneratedOWLs(graph, defaultStoredPath)
-        
-            elif filepath == None:
-                print('****Needs user to specify a strorage path****')
-                filepath = selectStoragePath()
-                filepath_ = filepath + '\\' + 'UK_energy_consumption_' + region + '_UK' + OWL
-                storeGeneratedOWLs(graph, filepath_)
-            else: 
-                filepath_ = filepath + '\\' +'UK_energy_consumption_' + region + '_UK' + OWL
-                storeGeneratedOWLs(graph, filepath_)
+             # Store/update the generated owl files      
+            if filepath[-2:] != "\\": 
+                filepath_ = filepath + '\\' 'UK_energy_consumption_' + region + '_UK' + OWL
+            else:
+                filepath_ = filepath + 'UK_energy_consumption_' + region + '_UK' + OWL
+            storeGeneratedOWLs(graph, filepath_)
             
         print('counter_region is: ')
         print(counter_region, "the attributes of this reginal node has been all added")    
@@ -245,5 +239,5 @@ def addUKElectricityConsumptionTriples(storeType, version, updateLocalOWLFile = 
     return 
 
 if __name__ == '__main__':
-    addUKElectricityConsumptionTriples('sleepycat', 2017, False)
+    addUKElectricityConsumptionTriples('sleepycat', 2017, None, False)
     print('terminated')
