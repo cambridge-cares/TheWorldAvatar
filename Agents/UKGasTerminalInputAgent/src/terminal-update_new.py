@@ -10,6 +10,7 @@ import traceback
 import wget
 import csv
 import re
+import json
 
 # get the jpsBaseLibGW instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
@@ -62,19 +63,20 @@ def getKGLocation(namespace):
         return kgRoot + "/namespace/" + namespace + "/sparql"
 
 
-def get_terminal_names(endpoint):
+def get_instantiated_terminals(endpoint):
     """
-        Retrieves the names of all instantiated GasTerminals in the knowledge base
+        Retrieve names and IRIs of all instantiated GasTerminals in the knowledge graph
 
         Arguments:
-            endpoint - SPARQL endpoint for knowledge base.
+            endpoint - SPARQL endpoint for knowledge graph.
 
         Returns:
-            List of Strings with gas terminal names (empty list in case no terminals are instantiated)
+            Dictionary of all instantiated gas terminals (name as key, IRI as value)
+            (empty dictionary in case no terminals are instantiated)
     """
 
-    # Initialise Sparql query variable (cannot be 'var')
-    var = 'name'
+    # Initialise SPARQL query variables for gas terminal IRIs and names
+    var1, var2 = 'iri', 'name'
 
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
@@ -85,18 +87,20 @@ def get_terminal_names(endpoint):
     query = 'PREFIX comp: <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#> \
              PREFIX rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \
              PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \
-             SELECT ?' + var + '\n' \
-             'WHERE { ?var rdf:type comp:GasTerminal. \
-                      ?var rdfs:label ?' + var + '. }'
+             SELECT ?' + var1 + ' ?' + var2 + ' ' \
+             'WHERE { ?' + var1 + ' rdf:type comp:GasTerminal; \
+                                    rdfs:label ?' + var2 + '. }'
     response = KGClient.execute(query)
 
-    # Extract gas terminal names from query result string
-    r = response.replace('"', '')
-    r = r.replace('[{', '')
-    r = r.replace('}]', '')
-    list = re.split(var+':|},{', r)
-    list = [list[i] for i in range(len(list)) if i%2==1]
-    return list
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Create dictionary of query results with gas terminal name as key and IRI as value
+    res = dict()
+    for r in response:
+        res[r[var2]] = r[var1]
+
+    return res
 
 
 def get_flow_data_from_csv():
@@ -246,19 +250,19 @@ def single_update():
     return 
 
 
-# Try to detect (command-line) arguments passed to the script and launch update method
-if len(sys.argv) <= 1:
-    single_update()
-elif sys.argv[1] == '-single':
-    print('Detected \'-single\' argument, running single update...')
-    single_update()
-elif sys.argv[1] == '-continuous':
-    print('Detected \'-continuous\' argument, running continuous updates...')
-    continuous_update()
-else:
-    single_update()
+# # Try to detect (command-line) arguments passed to the script and launch update method
+# if len(sys.argv) <= 1:
+#     single_update()
+# elif sys.argv[1] == '-single':
+#     print('Detected \'-single\' argument, running single update...')
+#     single_update()
+# elif sys.argv[1] == '-continuous':
+#     print('Detected \'-continuous\' argument, running continuous updates...')
+#     continuous_update()
+# else:
+#     single_update()
 
-# if __name__ == '__main__':
-#
-#     endpoint =getKGLocation(KB)
-#     terminals = get_terminal_names(endpoint)
+if __name__ == '__main__':
+
+    endpoint = getKGLocation(KB)
+    terminals = get_instantiated_terminals(endpoint)
