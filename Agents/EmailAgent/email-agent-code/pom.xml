@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>email_agent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0-dev-jps-logging-SNAPSHOT</version>
     <packaging>war</packaging>
     
     <!-- Project properties -->
@@ -13,8 +13,11 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         
-        <org.slf4j-version>1.6.6</org.slf4j-version>
-        <jps.base.version>1.4.0-SNAPSHOT</jps.base.version>
+        <!-- Version of the JPS Base Library to use -->
+        <jps.base.version>1.4.0-dev-jps-logging-SNAPSHOT</jps.base.version>
+        
+        <!-- Classifier used to download Log4J2 config (for runtime) -->
+        <log.classifier>java-log-config-dev</log.classifier>
     </properties>
     
     <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
@@ -29,16 +32,17 @@
         </repository>
     </distributionManagement>
     
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    
     <!-- Build settings -->
     <build>
         <finalName>email_agent</finalName>
-         
-        <resources>
-            <resource>  
-                <directory>${basedir}/logging</directory>
-            </resource>
-        </resources>
-    
+            
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -63,32 +67,43 @@
                 <version>2.22.0</version>
             </plugin>
             
+            <!-- Ensures everything in ./WEB-INF gets copied into the final WAR
+            file's internal WEB-INF directory. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <failOnMissingWebXml>true</failOnMissingWebXml>
-                    <webXml>WEB-INF\web.xml</webXml>
-                    <warName>${project.artifactId}##${project.version}</warName>
-                    <outputDirectory>output</outputDirectory>
-                </configuration>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
             </plugin>
-         
+            
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
+            </plugin>
+
         </plugins>
     </build>
     
     <!-- Dependencies -->
     <dependencies>
         
-        <!-- Java servlet API -->
+        <!-- JPS Base Library -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>${jps.base.version}</version>
+        </dependency>
+        
+        <!-- Java servlet API, version pulled from parent -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
         </dependency>
         
+        <!-- Mail handling -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
@@ -102,25 +117,29 @@
             <version>20210307</version>
         </dependency>
         
-        <!-- JPS Base Library -->
+        <!-- Logging, versions pulled from parent -->
         <dependency>
-            <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>jps-base-lib</artifactId>
-            <version>${jps.base.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+        </dependency>
+       
         
-        <!-- Testing -->
+        <!-- Testing, versions pulled from parent -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
         </dependency>
         
         <!-- Used to mock environment variables in testing -->

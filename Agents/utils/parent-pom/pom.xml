@@ -36,85 +36,87 @@
     </distributionManagement>
 
     <build>
-        <plugins>
+        <pluginManagement>
+            <plugins>
             
-            <!-- Ensures everything in ./WEB-INF gets copied into the final WAR
-            file's internal WEB-INF directory. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <failOnMissingWebXml>true</failOnMissingWebXml>
-                    <warName>${project.artifactId}##${project.version}</warName>
-                    <outputDirectory>output</outputDirectory>
+                <!-- Ensures everything in ./WEB-INF gets copied into the final WAR
+                file's internal WEB-INF directory. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>3.2.2</version>
+                    <configuration>
+                        <failOnMissingWebXml>true</failOnMissingWebXml>
+                        <warName>${project.artifactId}##${project.version}</warName>
+                        <outputDirectory>output</outputDirectory>
                    
-                    <webResources>
-                        <resource>
-                            <directory>${basedir}/WEB-INF</directory>
-                            <targetPath>WEB-INF</targetPath>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
+                        <webResources>
+                            <resource>
+                                <directory>${basedir}/WEB-INF</directory>
+                                <targetPath>WEB-INF</targetPath>
+                            </resource>
+                        </webResources>
+                    </configuration>
+                </plugin>
             
-            <!-- Downloads and extracts ZIP archives from Maven repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>          
+                <!-- Downloads and extracts ZIP archives from Maven repository -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>          
                     
-                    <!-- Downloads the Log4J2 config that will be used at runtime -->
-                    <execution>
-                        <id>download-runtime-log-config</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
+                        <!-- Downloads the Log4J2 config that will be used at runtime -->
+                        <execution>
+                            <id>download-runtime-log-config</id>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>unpack</goal>
+                            </goals>
 
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>   
-                                    <groupId>uk.ac.cam.cares.jps</groupId>
-                                    <artifactId>java-log-configs</artifactId>
-                                    <version>1.0.0-SNAPSHOT</version>
-                                    <classifier>${log.classifier}</classifier>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/WEB-INF</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>   
+                                        <groupId>uk.ac.cam.cares.jps</groupId>
+                                        <artifactId>java-log-configs</artifactId>
+                                        <version>1.0.0-SNAPSHOT</version>
+                                        <classifier>${log.classifier}</classifier>
+                                        <type>zip</type>
+                                        <overWrite>true</overWrite>
+                                        <outputDirectory>${basedir}/WEB-INF</outputDirectory>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
                     
-                    <!-- Downloads the Log4J2 config (development) that will be used for unit tests --> 
-                    <execution>
-                        <id>download-test-log-config</id>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
+                        <!-- Downloads the Log4J2 config (development) that will be used for unit tests --> 
+                        <execution>
+                            <id>download-test-log-config</id>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>unpack</goal>
+                            </goals>
 
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>   
-                                    <groupId>uk.ac.cam.cares.jps</groupId>
-                                    <artifactId>java-log-configs</artifactId>
-                                    <version>1.0.0-SNAPSHOT</version>
-                                    <classifier>java-log-config-dev</classifier>
-                                    <type>zip</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${basedir}/src/test/resources</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
+                            <configuration>
+                                <artifactItems>
+                                    <artifactItem>   
+                                        <groupId>uk.ac.cam.cares.jps</groupId>
+                                        <artifactId>java-log-configs</artifactId>
+                                        <version>1.0.0-SNAPSHOT</version>
+                                        <classifier>java-log-config-dev</classifier>
+                                        <type>zip</type>
+                                        <overWrite>true</overWrite>
+                                        <outputDirectory>${basedir}/src/test/resources</outputDirectory>
+                                    </artifactItem>
+                                </artifactItems>
+                            </configuration>
+                        </execution>
                     
-                </executions>
-            </plugin>
+                    </executions>
+                </plugin>
 
-        </plugins>
+            </plugins>
+        </pluginManagement>
     </build>
     
     <!-- Commonly used, third party libraries -->
