@@ -39,6 +39,7 @@
         <finalName>jps-base-lib</finalName>
         
         <plugins>
+            
             <!-- Compile and build to specific Java version -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -88,6 +89,25 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
+                
+                <executions>          
+                    <!-- Skip downloading the runtime Log4J2 config -->
+                    <execution>
+                        <id>download-runtime-log-config</id>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 
@@ -178,7 +198,7 @@
             <version>0.0.9</version>
         </dependency>
 
-         <!-- Logging -->
+        <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -303,7 +323,7 @@
         </dependency>
         
         <!-- Testing -->
-           <dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
         </dependency>
