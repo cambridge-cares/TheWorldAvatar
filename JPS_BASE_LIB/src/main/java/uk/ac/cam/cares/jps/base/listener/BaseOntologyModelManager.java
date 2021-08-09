@@ -24,8 +24,8 @@ import org.apache.jena.query.ResultSetFactory;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.shared.Lock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -47,7 +47,7 @@ public class BaseOntologyModelManager {
 
     static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
     static OntModel baseEntityModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-    private static Logger logger = LoggerFactory.getLogger(BaseOntologyModelManager.class);
+    private static Logger LOGGER = LogManager.getLogger(BaseOntologyModelManager.class);
 
     public void contextDestroyed(ServletContextEvent sce) {
         baseEntityModel.close();
@@ -83,7 +83,7 @@ public class BaseOntologyModelManager {
         } else {
             filePath2= Paths.get(ABSDIR_KB_TEST,"ships",mmsi,"Chimney-1.owl").toString();
         }
-        logger.info("the filepath created= "+filePath2);
+        LOGGER.info("the filepath created= "+filePath2);
 
         try {
             prepareDirectory(filePath2);

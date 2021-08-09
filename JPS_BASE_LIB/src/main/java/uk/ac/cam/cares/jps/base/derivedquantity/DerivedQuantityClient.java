@@ -3,11 +3,11 @@ package uk.ac.cam.cares.jps.base.derivedquantity;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -27,7 +27,10 @@ public class DerivedQuantityClient {
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DerivedQuantityClient.class);
+     /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(DerivedQuantityClient.class);
     
     public DerivedQuantityClient(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;

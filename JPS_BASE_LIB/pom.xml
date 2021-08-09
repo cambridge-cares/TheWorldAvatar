@@ -10,7 +10,7 @@
     
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0-dev-jps-logging-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
@@ -26,6 +26,13 @@
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </repository>
     </distributionManagement>
+    
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
   
     <!-- Build Configuration -->
     <build>
@@ -88,16 +95,12 @@
     <!-- If adding dependencies, please include a comment detailing what they're for -->
     <dependencies>
         
-        <!-- === Provided Dependencies === -->
         <!-- Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
         </dependency>
 
-        <!-- === Compile Dependencies === -->
         <!-- For constructing SQL queries -->
         <dependency>
             <groupId>org.jooq</groupId>
@@ -175,11 +178,14 @@
             <version>0.0.9</version>
         </dependency>
 
-        <!-- Logging -->
+         <!-- Logging -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.11.0</version>
         </dependency>
 
         <!-- Processing JSON content -->
@@ -296,23 +302,19 @@
             <version>3.1.0</version>
         </dependency>
         
-        <!-- === Testing === -->
-        <dependency>
+        <!-- Testing -->
+           <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
+            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
+            <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
         
@@ -338,24 +340,24 @@
             <scope>test</scope>
         </dependency>
             
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
