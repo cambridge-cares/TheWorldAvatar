@@ -17,29 +17,33 @@ from configobj import ConfigObj
 from jpsSingletons import jpsBaseLibGW
 
 """
-Script to periodically gather instantaneous gas flow data for UK's gas supply terminals (from National Grid)
+Script to (periodically) gather instantaneous gas flow data for UK's gas supply terminals (from National Grid)
 
 Local deployment requires:
     - Blazegraph running in local Tomcat server with port 9999 exposed
     - Triple store endpoint to use for data assimilation (namespace in Blazegraph) needs to be created beforehand
-
+    - PostgreSQL database set up locally (with URL and credentials provided in properties file)
 """
 
 # Define location of properties file (with Triple Store and RDB settings)
-properties_file = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
+
+# Define time series properties
+# Define format of time series time entries: Year-Day-Month T hour:minute:second:millisecond Z
+FORMAT = 'YYYY-dd-mmTHH:MM:SS.msZ'
 
 # Define global variables
 global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
 
-# Define PREFIXES for SPARQL queries
+# Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
-    'comp':  '<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>',
-    'compa': '<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>',
-    'om':    '<http://www.ontology-of-units-of-measure.org/resource/om-2/>',
-    'rdf':   '<http://www.w3.org/1999/02/22-rdf-syntax-ns#>',
-    'rdfs':  '<http://www.w3.org/2000/01/rdf-schema#>',
-    'ts':    '<http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#>',
-    'xsd':   '<http://www.w3.org/2001/XMLSchema#>',
+    'comp':  'http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#',
+    'compa': 'http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/',
+    'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
+    'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+    'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
+    'ts':    'http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#',
+    'xsd':   'http://www.w3.org/2001/XMLSchema#',
 }
 
 # Defining IRI of each terminal
@@ -186,7 +190,7 @@ def get_instantiated_terminals(endpoint):
 
 def check_timeseries_instantiation(endpoint, terminalIRI):
     """
-        Check whether terminalIRI already has an instantiated time series attached to it.
+        Check whether terminal already has an instantiated gas flow time series attached to it.
 
         Arguments:
             endpoint - SPARQL Query endpoint for knowledge graph.
@@ -222,36 +226,28 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
 
 def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
     """
-        ...
+        Instantiates all relevant triples for time series storage in KG and initialises RDB tables for terminal.
+        (raises exception if time series association is already initialised)
 
         Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
             terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
-
-        Returns:
-
     """
 
-    # Create UUID for IntakenGas, quantity and measurement.
+    # Create UUIDs for IntakenGas, VolumetricFlowRate, and Measure instances
     gas = 'GasAmount_' + str(uuid.uuid4())
     quantity = 'Quantity_' + str(uuid.uuid4())
     measurement = 'Measurement_' + str(uuid.uuid4())
-    ts = 'TimeSeries_' + str(uuid.uuid4())
 
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-    #jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
-    #jpsBaseLibGW.importPackages(jpsBaseLib_view, 'uk.ac.cam.cares.jps.base.util.*')
-
-    # .class does not work as also exists in python
-    #Instant = jpsBaseLib_view.java.time.Instant
-    #instant_class = Instant.now().getClass()
-
-    #TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, properties)
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
-    # Perform SPARQL update (see StoreRouter in jps-base-lib for further details)
+    # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     query = create_sparql_prefix('comp', PREFIXES) + \
             create_sparql_prefix('compa', PREFIXES) + \
             create_sparql_prefix('om', PREFIXES) + \
@@ -265,11 +261,23 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
                      om:hasPhenomenon compa:%s; \
                      om:hasValue compa:%s. \
             compa:%s rdf:type om:Measure; \
-                     om:hasUnit om:cubicMetrePerSecond-Time; \
-                     ts:hasTimeSeries compa:%s. }'''%(
-            terminalIRI, gas, gas, quantity, gas, measurement, measurement, ts)
-
+                     om:hasUnit om:cubicMetrePerSecond-Time. }'''%(
+            terminalIRI, gas, gas, quantity, gas, measurement, measurement)
     KGClient.executeUpdate(query)
+
+    # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
+    # ".class" does not work as this command also exists in Python
+    Instant = jpsBaseLib_view.java.time.Instant
+    instant_class = Instant.now().getClass()
+    double_class = jpsBaseLib_view.java.lang.Double.TYPE
+
+    # Get MeasurementIRI to which time series is actually connected to
+    measurement_iri = PREFIXES['compa'] + measurement
+
+    # Initialise time series in both KG and RDB using TimeSeriesClass
+    TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, PROPERTIES_FILE)
+    TSClient.initTimeSeries([measurement_iri], [double_class], FORMAT)
 
 
 def get_flow_data_from_csv():
@@ -434,10 +442,10 @@ def single_update():
 if __name__ == '__main__':
 
     # read properties file
-    read_properties_file(properties_file)
+    read_properties_file(PROPERTIES_FILE)
 
     # set URL to KG SPARQL endpoint
-    setKGEndpoints(properties_file)
+    setKGEndpoints(PROPERTIES_FILE)
 
     # retrieve all instantiated gas terminals in KG
     terminals = get_instantiated_terminals(QUERY_ENDPOINT)
@@ -446,10 +454,8 @@ if __name__ == '__main__':
 
         if gt == 'Bacton IPs Terminal':
 
-            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
+            # check if associated time series is already instantiated
+            instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
 
-            # # check if associated time series is already instantiated
-            # instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
-            #
-            # if not instantiated:
-            #     instantiate_timeseries(terminals[gt])
+            if not instantiated:
+                instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
