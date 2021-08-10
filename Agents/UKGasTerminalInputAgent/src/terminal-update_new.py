@@ -42,7 +42,7 @@ PREFIXES = {
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl#',
+    'ts':    'http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
 }
 
@@ -224,6 +224,43 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
         return False
 
 
+def get_measurementIRI(endpoint, terminalIRI):
+    """
+        Retrieves gas flow MeasurementIRI for terminal, which is actually connected to time series.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+            terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
+
+        Returns:
+            Full gas flow MeasurementIRI incl. namespace (without trailing '<' or '>').
+    """
+
+    # Initialise SPARQL query variable
+    var = 'iri'
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('om', PREFIXES) + \
+            create_sparql_prefix('ts', PREFIXES) + \
+            'SELECT ?' + var + ' '\
+            'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue ?' + var + '. }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    if len(response) == 0:
+        return None
+    else:
+        return response[0][var]
+
+
 def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
     """
         Instantiates all relevant triples for time series storage in KG and initialises RDB tables for terminal.
@@ -273,7 +310,7 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
     double_class = jpsBaseLib_view.java.lang.Double.TYPE
 
     # Get MeasurementIRI to which time series is actually connected to
-    measurement_iri = PREFIXES['compa'] + measurement
+    measurement_iri = get_measurementIRI(QUERY_ENDPOINT, terminalIRI)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, PROPERTIES_FILE)
