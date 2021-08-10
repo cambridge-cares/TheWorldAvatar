@@ -47,7 +47,7 @@ public class BaseChimneyOntologyModelManagerTest {
     }
     
     @Test
-    public void testGetWasteStreamInfo() throws IOException{
+    public void testGetWasteStreamInfo() {
 
         OntModel testModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         QueryExecution queryExec = QueryExecutionFactory.create(SPQ_WASTE, testModel);
