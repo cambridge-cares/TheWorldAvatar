@@ -14,6 +14,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -98,11 +99,8 @@ public class DerivedQuantityClientTest{
 		}
 		
 		// an instance cannot be part of two derived quantities
-        try {
-        	devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs);
-        } catch (Exception e) {
-        	Assert.assertTrue(e.getMessage().contains("part of another derivation"));
-        }
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivation(entities, derivedAgentIRI3, derivedAgentURL3, inputs));
+        Assert.assertTrue(e.getMessage().contains("part of another derivation"));
 	}
 	
 	@Test
@@ -134,11 +132,8 @@ public class DerivedQuantityClientTest{
 		}
 		
 		// an instance cannot be part of two derived quantities
-        try {
-        	devClient.createDerivationWithTimeSeries(entity2, derivedAgentIRI3, derivedAgentURL3, inputs);
-        } catch (Exception e) {
-        	Assert.assertTrue(e.getMessage().contains("part of another derived quantity"));
-        }
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI3, derivedAgentURL3, inputs));
+        Assert.assertTrue(e.getMessage().contains("part of another derivation"));
 	}
 	
 	@Test
@@ -171,11 +166,8 @@ public class DerivedQuantityClientTest{
 		String derived2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
-		try {
-			devClient.validateDerivation(derived2);
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("No timestamp"));
-		}
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived2));
+		Assert.assertTrue(e.getMessage().contains("No timestamp"));
 
 		for (String input:inputs) {
 			devClient.addTimeInstance(input);
@@ -185,11 +177,7 @@ public class DerivedQuantityClientTest{
 		
 	    // intentionally create a circular dependency
 		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
-		
-		try {
-			devClient.validateDerivation(derived3);
-		} catch (Exception e) {
-			Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
-		}
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived3));
+		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 	}
 }

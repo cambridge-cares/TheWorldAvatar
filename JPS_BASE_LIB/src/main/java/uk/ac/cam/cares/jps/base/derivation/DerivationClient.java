@@ -14,13 +14,11 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * this class acts as an interface to create and deal with derived quantities
- * certain functions could be called directly from DerivedQuantitySparql, e.g. createDerivedQuantity
- * this class lists the functions that are intended for users to use
  * @author Kok Foong Lee
  *
  */
 public class DerivationClient {
-	// input and output of agents need to be a JSONArray consisting a list of IRIs
+	// input and output of agents need to be a JSONArray consisting a list of IRIs with the do
 	public static final String AGENT_INPUT_KEY = "agent_input";
 	public static final String AGENT_OUTPUT_KEY = "agent_output";
 	// defines the endpoint DerivedQuantityClient should act on
@@ -41,7 +39,12 @@ public class DerivationClient {
      * @param agentIRI
      */
     public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    	String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    	LOGGER.info("Instantiated derivation <" + createdDerivation + "> with the following properties");
+    	LOGGER.info(entities + " belongsTo " + createdDerivation);
+    	LOGGER.info(createdDerivation + " isDerivedFrom " + inputsIRI);
+    	LOGGER.info(createdDerivation + " isDerivedUsing " + agentIRI + " located at " + agentURL);
+    	return createdDerivation;
     }
     
     /**
@@ -52,7 +55,12 @@ public class DerivationClient {
      * @param inputsIRI
      */
     public String createDerivationWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	return DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    	String createdDerivation = DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + "> with the following properties");
+    	LOGGER.info(entity + " belongsTo " + createdDerivation);
+    	LOGGER.info(createdDerivation + " isDerivedFrom " + inputsIRI);
+    	LOGGER.info(createdDerivation + " isDerivedUsing " + agentIRI + " located at " + agentURL);
+    	return createdDerivation;
     }
     
     /**
@@ -62,6 +70,7 @@ public class DerivationClient {
      */
     public void addTimeInstance(String entity) {
     	DerivationSparql.addTimeInstance(kbClient, entity);
+    	LOGGER.info("Added timestamp to " + entity);
     }
     
     /**
@@ -69,6 +78,7 @@ public class DerivationClient {
      */
     public void updateTimestamp(String entity) {
     	DerivationSparql.updateTimeStamp(kbClient, entity);
+    	LOGGER.info("Updated timestamp of " + entity);
     }
     
     /**
@@ -140,15 +150,21 @@ public class DerivationClient {
 			// at this point, "instance" is a derived instance for sure, any other instances will not go through this code
 			// getInputs queries for <instance> <isDerivedFrom> ?x
 			if (isOutOfDate(instance,inputs)) {
+				LOGGER.info(instance + " is out-of-date when compared to " + inputs);
 				// calling agent to create a new instance
 				String agentURL = DerivationSparql.getAgentUrl(kbClient, instance);
+				LOGGER.info("Calling agent at " + agentURL);
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray();
 				for (int i = 0; i < inputs.length; i++) {
 					iris.put(inputs[i]);
 				}
 				requestParams.put(AGENT_INPUT_KEY, iris);
+				
+				LOGGER.info("Updating " + instance + " using agent at " + agentURL + " with http request " + requestParams);
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
+				
+				LOGGER.info("Obtained http response from agent: " + response);
 				
 				// if it is a derived quantity with time series, there will be no changes to the instances
 				if (!DerivationSparql.isDerivedWithTimeSeries(this.kbClient, instance)) {
@@ -171,11 +187,15 @@ public class DerivationClient {
 					
 					// delete old instances
 					DerivationSparql.deleteInstances(kbClient, entities);
+					LOGGER.info("Deleted old instances: " + entities);
 					
 					// link new entities to derived instance, adding ?x <belongsTo> <instance>
 					DerivationSparql.addNewEntitiesToDerived(kbClient, instance, newEntities);
+					LOGGER.info("Added new instances " + newEntities + " to the derivation " + instance);
 					
 					if (derivedAndType.get(0).size() > 0) {
+						LOGGER.info("This derivation contains at least one entity which is an input to another derivation");
+						LOGGER.info("Relinking new instance(s) to the derivation by matching their rdf:type");
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
 						String[] classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
 						
@@ -185,20 +205,20 @@ public class DerivationClient {
 				
 						// for each instance in the old derived instance that is connected to another derived instance, reconnect it
 						for (int i = 0; i < oldDerivedList.size(); i++) {
+							LOGGER.info("Searching within " + newEntities + " with rdf:type " + oldTypeList.get(i));
 							// index in the new array with the matching type
 							Integer matchingIndex = null;
 							for (int j = 0; j < classOfNewEntities.length; j++) {
 								if (classOfNewEntities[j].contentEquals(oldTypeList.get(i))) {
 									if (matchingIndex != null) {
-										LOGGER.error("Duplicate type found within output, the DerivedQuantityClient does not support this");
-										throw new JPSRuntimeException("Duplicate type found within output, the DerivedQuantityClient does not support this");
+										throw new JPSRuntimeException("Duplicate rdf:type found within output, the DerivationClient does not support this");
 									}
 									matchingIndex = j;
 								}
 							}
 							if (matchingIndex == null) {
-								LOGGER.error("Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i));
-								throw new JPSRuntimeException("Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i));
+								String reconnectError = "Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i);
+								throw new JPSRuntimeException(reconnectError);
 							}
 						    // reconnect
 							DerivationSparql.reconnectInputToDerived(kbClient, newEntities[matchingIndex], oldDerivedList.get(i));
@@ -207,6 +227,7 @@ public class DerivationClient {
 				}
 				// if there are no errors, assume update is successful
 				DerivationSparql.updateTimeStamp(kbClient, instance);
+				LOGGER.info("Updated timestamp of " + instance);
 			}
 		}
 	}
