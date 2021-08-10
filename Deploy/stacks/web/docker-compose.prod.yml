@@ -64,8 +64,6 @@ services:
       target: production
 
 
-
-
 # Production network
 networks:
   default:

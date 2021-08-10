@@ -1,0 +1,19 @@
+intents:
+  - select_mechanism_by_reaction
+  - select_reaction_by_species
+  - query_reaction_property
+  - query_quantum_chemistry
+  - query_thermodynamic
+
+entities:
+  - to
+  - reaction
+  - indicator
+  - species
+  - class
+  - attribute
+
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true
