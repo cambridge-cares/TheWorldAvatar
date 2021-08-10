@@ -14,12 +14,16 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         
-        <!-- Version of the JPS Base Library to use -->
+        <!-- Version of the JPS Base Library to use, can be overridden by child projects. -->
         <jps.base.version>1.4.0-dev-jps-logging-SNAPSHOT</jps.base.version>
-        
-        <!-- Classifier used to download Log4J2 config (for runtime) -->
-        <log.classifier>java-log-config-dev</log.classifier>
     </properties>
+    
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
     
     <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
     <distributionManagement>
@@ -33,12 +37,30 @@
         </repository>
     </distributionManagement>
     
-    <!-- Parent POM -->
-    <parent>
-        <groupId>uk.ac.cam.cares.jps</groupId>
-        <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
+    <!-- Profiles are used to switch between building for development and production 
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+    <profiles>
+        <!-- This profile should be used for development builds. -->
+        <profile>
+            <id>dev-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Set property to download development logging config -->
+                <log.classifier>java-log-config-dev</log.classifier>
+            </properties>
+        </profile>
+        
+        <!-- This profile should be used for production builds. -->
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <!-- Set property to download production logging config -->
+                <log.classifier>java-log-config-prod</log.classifier>
+            </properties>
+        </profile>
+    </profiles>
     
     <!-- Build settings -->
     <build>

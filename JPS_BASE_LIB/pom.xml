@@ -18,6 +18,13 @@
         <spring-version>3.2.9.RELEASE</spring-version>
     </properties>
     
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    
     <!-- Repository locations to deploy to -->
     <distributionManagement>
         <repository>
@@ -26,13 +33,6 @@
             <url>https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/</url>
         </repository>
     </distributionManagement>
-    
-    <!-- Parent POM -->
-    <parent>
-        <groupId>uk.ac.cam.cares.jps</groupId>
-        <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
-    </parent>
   
     <!-- Build Configuration -->
     <build>
