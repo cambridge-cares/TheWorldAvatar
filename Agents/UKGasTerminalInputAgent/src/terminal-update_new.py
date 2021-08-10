@@ -11,6 +11,7 @@ import wget
 import csv
 import re
 import json
+from configobj import ConfigObj
 
 # get the jpsBaseLibGW instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
@@ -24,13 +25,13 @@ Local deployment requires:
 
 """
 
-# Local KG location (fallback)
-FALLBACK_KG = "http://localhost:9999/blazegraph/"
+# Define location of properties file (with Triple Store and RDB settings)
+properties_file = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
 
-# KG's SPARQL endpoint to use for assimilation of data (NAMESPACE in Blazegraph)
-NS = "timeseries"
+# Define global variables
+global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
 
-# Defining PREFIXES for SPARQL queries
+# Define PREFIXES for SPARQL queries
 PREFIXES = {
     'comp':  '<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>',
     'compa': '<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>',
@@ -55,9 +56,70 @@ TERMINAL_DICTIONARY = {
 }
 
 
+def read_properties_file(filepath):
+    """
+        Reads local KG location and namespace from properties file (as global variables).
+
+        Arguments:
+            filepath - absolute file path to properties file.
+    """
+
+    # Define global variables as scope
+    global FALLBACK_KG, NAMESPACE
+
+    # Read properties file
+    props = ConfigObj(filepath)
+
+    # Extract local KG location and set as fallback
+    try:
+        FALLBACK_KG = props['fallback_kg']
+    except KeyError:
+        raise KeyError('Key "fallback_kg" is missing in properties file: ' + filepath)
+    if FALLBACK_KG == '':
+        raise KeyError('No "fallback_kg" value has been provided in properties file: ' + filepath)
+
+    # Extract KG's SPARQL endpoint to use (namespace in Blazegraph)
+    try:
+        NAMESPACE = props['namespace']
+    except KeyError:
+        raise KeyError('Key "namespace" is missing in properties file: ' + filepath)
+    if NAMESPACE == '':
+        raise KeyError('No "namespace" value has been provided in properties file: ' + filepath)
+
+
+def setKGEndpoints(filepath):
+    """
+        Sets the correct URLs for KG's SPARQL Query and Update endpoints (as global variables).
+
+        Arguments:
+             filepath - absolute file path to properties file.
+    """
+
+    # Define global variables as scope
+    global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
+
+    # Check for the KG_LOCATION environment variable, using local fallback
+    kgRoot = os.getenv('KG_LOCATION', FALLBACK_KG)
+
+    # Construct full URLs for SPARQL endpoints
+    if kgRoot.endswith("/"):
+        QUERY_ENDPOINT = kgRoot + "namespace/" + NAMESPACE + "/sparql"
+        UPDATE_ENDPOINT = QUERY_ENDPOINT
+    else:
+        QUERY_ENDPOINT = kgRoot + "/namespace/" + NAMESPACE + "/sparql"
+        UPDATE_ENDPOINT = QUERY_ENDPOINT
+
+    # Read properties file
+    props = ConfigObj(filepath)
+    # Write SPARQL endpoints to properties file (overwrite potentially existing entries)
+    props['sparql.query.endpoint'] = QUERY_ENDPOINT
+    props['sparql.update.endpoint'] = UPDATE_ENDPOINT
+    props.write()
+
+
 def create_sparql_prefix(abbreviation, prefixes):
     """
-        Constructs proper SPARQL Prefix String for given namespace abbreviation
+        Constructs proper SPARQL Prefix String for given namespace abbreviation.
 
         Arguments:
             abbreviation - namespace abbreviation to construct SPARQL PREFIX string for.
@@ -82,32 +144,12 @@ def create_sparql_prefix(abbreviation, prefixes):
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
 
 
-def getKGLocation(namespace):
-    """
-        Determines the correct URL for the KG's SPARQL endpoint.
-        
-        Arguments:
-            namespace - KG namespace.
-            
-        Returns:
-            Full URL for the KG.
-    """
-    
-    # Check for the KG_LOCATION environment variable, using local fallback
-    kgRoot = os.getenv('KG_LOCATION', FALLBACK_KG)
-    
-    if kgRoot.endswith("/"):
-        return kgRoot + "namespace/" + namespace + "/sparql"
-    else:
-        return kgRoot + "/namespace/" + namespace + "/sparql"
-
-
 def get_instantiated_terminals(endpoint):
     """
-        Retrieves names and IRIs of all instantiated GasTerminals in the knowledge graph
+        Retrieves names and IRIs of all instantiated GasTerminals in the knowledge graph.
 
         Arguments:
-            endpoint - SPARQL endpoint for knowledge graph.
+            endpoint - SPARQL Query endpoint for knowledge graph.
 
         Returns:
             Dictionary of all instantiated gas terminals (name as key, IRI as value)
@@ -142,15 +184,16 @@ def get_instantiated_terminals(endpoint):
     return res
 
 
-def check_timeseries_instantiation(terminalIRI):
+def check_timeseries_instantiation(endpoint, terminalIRI):
     """
-        Check whether terminalIRI already has an instantiated time series attached to it
+        Check whether terminalIRI already has an instantiated time series attached to it.
 
         Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
             terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
 
         Returns:
-            True - if gas terminal is associated with a time serie via the specified path.
+            True - if gas terminal is associated with a time series via the specified path.
             False - otherwise.
     """
 
@@ -165,7 +208,7 @@ def check_timeseries_instantiation(terminalIRI):
             create_sparql_prefix('om', PREFIXES) + \
             create_sparql_prefix('ts', PREFIXES) + \
             'SELECT * ' \
-            'WHERE { <' + terminalIRI + '> comp:hasTaken/om:hasPhenomenon/om:hasValue/ts:hasTimeSeries ?a }'
+            'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue/ts:hasTimeSeries ?a }'
     response = KGClient.execute(query)
     # Convert JSONArray String back to list
     response = json.loads(response)
@@ -177,7 +220,7 @@ def check_timeseries_instantiation(terminalIRI):
         return False
 
 
-def instantiate_timeseries(terminalIRI):
+def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
     """
         ...
 
@@ -197,9 +240,17 @@ def instantiate_timeseries(terminalIRI):
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+    #jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
+    #jpsBaseLibGW.importPackages(jpsBaseLib_view, 'uk.ac.cam.cares.jps.base.util.*')
+
+    # .class does not work as also exists in python
+    #Instant = jpsBaseLib_view.java.time.Instant
+    #instant_class = Instant.now().getClass()
+
+    #TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, properties)
 
     # Initialise remote KG client with query AND update endpoints specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint, endpoint)
+    KGClient = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
     # Perform SPARQL update (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp', PREFIXES) + \
             create_sparql_prefix('compa', PREFIXES) + \
@@ -213,7 +264,8 @@ def instantiate_timeseries(terminalIRI):
             compa:%s rdf:type om:VolumetricFlowRate; \
                      om:hasPhenomenon compa:%s; \
                      om:hasValue compa:%s. \
-            compa:%s om:hasUnit om:cubicMetrePerSecond-Time; \
+            compa:%s rdf:type om:Measure; \
+                     om:hasUnit om:cubicMetrePerSecond-Time; \
                      ts:hasTimeSeries compa:%s. }'''%(
             terminalIRI, gas, gas, quantity, gas, measurement, measurement, ts)
 
@@ -381,18 +433,23 @@ def single_update():
 
 if __name__ == '__main__':
 
+    # read properties file
+    read_properties_file(properties_file)
+
     # set URL to KG SPARQL endpoint
-    endpoint = getKGLocation(NS)
+    setKGEndpoints(properties_file)
 
     # retrieve all instantiated gas terminals in KG
-    terminals = get_instantiated_terminals(endpoint)
+    terminals = get_instantiated_terminals(QUERY_ENDPOINT)
 
     for gt in terminals:
 
         if gt == 'Bacton IPs Terminal':
 
-            # check if associated time series is already instantiated
-            instantiated = check_timeseries_instantiation(terminals[gt])
+            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
 
-            if not instantiated:
-                instantiate_timeseries(terminals[gt])
+            # # check if associated time series is already instantiated
+            # instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
+            #
+            # if not instantiated:
+            #     instantiate_timeseries(terminals[gt])

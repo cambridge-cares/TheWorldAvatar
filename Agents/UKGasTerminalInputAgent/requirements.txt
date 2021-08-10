@@ -1,5 +1,6 @@
+configobj~=5.0.6
 py4jps~=1.0.0
+pytz~=2021.1
 SPARQLWrapper~=1.8.5
 tqdm~=4.62.0
 wget~=3.2
-pytz~=2021.1
