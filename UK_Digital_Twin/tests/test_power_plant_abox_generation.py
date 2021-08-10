@@ -1,18 +1,3 @@
-import unittest
-
-from UK_Power_Plant_Generator.powerPlantABoxGeneration import addUKPowerPlantTriples
-
-
-class TestUKDigitalTwin(unittest.TestCase):
-    def test_list_int(self):
-        """
-        Test that it can generate the instances provided in the reference OWL files.
-        """
-        addUKPowerPlantTriples('default', 9999, True)
-
-        data = [1, 2, 3]
-        result = sum(data)
-        self.assertEqual(result, 6)
-
-if __name__ == '__main__':
-    unittest.main()
+path_to_generated_rdf = '../resources/test_generated_rdf'
+path_to_reference_rdf = '../resources/test_reference_rdf'
+test_input_folder_name = 9999
