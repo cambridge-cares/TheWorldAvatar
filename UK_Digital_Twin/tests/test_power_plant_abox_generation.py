@@ -1,5 +1,6 @@
 import unittest
 import os
+from rdflib import Graph
 
 path_to_generated_rdf = '../resources/test_generated_rdf'
 path_to_reference_rdf = '../resources/test_reference_rdf'
@@ -22,3 +23,14 @@ class TestUKDigitalTwin(unittest.TestCase):
        """
        abs_path_generated_rdf = os.path.abspath(path_to_generated_rdf)
        abs_path_reference_rdf = os.path.abspath(path_to_reference_rdf)
+
+    """
+    Reads an RDF model to return all the statements codified it
+    """
+    def read_rdf_model_statements(self, path):
+        g = Graph()
+        g.parse(path)
+        stmts = set()
+        for stmt in g:
+            stmts.add(stmt)
+        return stmts
