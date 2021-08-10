@@ -9,9 +9,9 @@ import sys
 import traceback
 import wget
 import csv
-import re
 import json
 from configobj import ConfigObj
+import pandas as pd
 
 # get the jpsBaseLibGW instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
@@ -30,7 +30,7 @@ PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "
 
 # Define time series properties
 # Define format of time series time entries: Year-Day-Month T hour:minute:second:millisecond Z
-FORMAT = 'YYYY-dd-mmTHH:MM:SS.msZ'
+FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 # Define global variables
 global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -44,19 +44,6 @@ PREFIXES = {
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
     'ts':    'http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
-}
-
-# Defining IRI of each terminal
-TERMINAL_DICTIONARY = {
-    "BACTON IPs Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonIPsTerminal>",
-    "BACTON UKCS Terminal": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BactonUKCSTerminal>",
-    "BARROW TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/BarrowTerminal>",
-    "EASINGTON TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/EasingtonTerminal>",
-    "ISLE OF GRAIN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/IsleofGrainTerminal>",
-    "MILFORD HAVEN TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/MilfordHavenTerminal>",
-    "ST FERGUS TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/StFergusTerminal>",
-    "TEESSIDE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TeessideTerminal>",
-    "THEDDLETHORPE TERMINAL": "<http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin>"
 }
 
 
@@ -374,94 +361,74 @@ def get_flow_data_from_csv():
     return data
 
 
-def update_triple_store():
+def add_time_series_data():
 
-    today = datetime.datetime.now()
-    print("\nPerforming update at: ", today)
-
-    # Build the correct KG URL
-    kgURL = getKGLocation(NS)
-    print("Determined KG URL as", kgURL)
-
-    # Get the flow data from CSV
-    # 2D array of tiples ([terminal-name, time, flow])
+    # Get the flow data from CSV: 2D array of tiples ([terminal-name, time, flow])
     data = get_flow_data_from_csv()
 
-    for i in range(0, len(data)):
-        dataRow = data[i]
-        terminalURI = TERMINAL_DICTIONARY[dataRow[0]]
-        time = dataRow[1]
+    # Create DataFrame
+    df = pd.DataFrame(data, columns=['terminal', 'time', 'flowrate'])
+    # Convert flow from MCM/Day to M^3/S
+    df['flowrate'] = (df['flowrate'].astype(float) * 1000000) / (24*60*60)
+    # Capitalise terminal names (for consistent comparisons)
+    df['terminal'] = df['terminal'].str.upper()
+    # Get unique terminals
+    terminals_with_data = df['terminal'].unique()
 
-        # Convert flow from MCM/Day to M^3/S
-        flow = dataRow[2]
-        gasVolume = str( (float(flow) * 1000000) / (24*60*60) )
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-        # Create UUID for IntakenGas, quantity and measurement.
-        gas_uuid = uuid.uuid1()
-        quan_uuid = uuid.uuid1()
-        mes_uuid = uuid.uuid1()
+    # Get instantiated terminals
+    instantiated_terminals = get_instantiated_terminals(QUERY_ENDPOINT)
+    old_keys = list(instantiated_terminals.keys())
+    for k in old_keys:
+        instantiated_terminals[k.upper()] = instantiated_terminals.pop(k)
 
-        query = '''PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX comp:    <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#>
-        PREFIX compa:   <http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/>
-        PREFIX om:      <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+    # loop through all terminals
+    for t in instantiated_terminals:
 
-        INSERT DATA
-        { compa:%s rdf:type comp:IntakenGas.
-        %s comp:hasTaken compa:%s.
-        compa:%s rdf:type om:Measure;
-                 om:hasNumericalValue %s;
-                om:hasUnit om:cubicMetrePerSecond-Time.
-        compa:%s rdf:type om:VolumetricFlowRate;
-              om:hasPhenomenon compa:%s;
-              om:hasValue compa:%s.
-        compa:%s comp:atUTC "%s"^^xsd:dateTime .} '''%(gas_uuid,
-                                                       terminalURI,
-                                                       gas_uuid,
-                                                       mes_uuid,
-                                                       gasVolume,
-                                                       quan_uuid,
-                                                       gas_uuid,
-                                                       mes_uuid,
-                                                       gas_uuid,
-                                                       time)
+        # Extract data
+        terminalIRI = instantiated_terminals[t]
+        measurementIRI = get_measurementIRI(QUERY_ENDPOINT, terminalIRI)
+        times = list(df[df['terminal'] == t]['time'].values)
+        flows = list(df[df['terminal'] == t]['flowrate'].values)
+        # Create Java TimeSeries object
+        TS = jpsBaseLib_view.TimeSeries(times, [measurementIRI], [flows])
 
+        # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+        # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
+        # ".class" does not work as this command also exists in Python
+        Instant = jpsBaseLib_view.java.time.Instant
+        instant_class = Instant.now().getClass()
 
-
-        sparql = SPARQLWrapper(kgURL)
-        sparql.setMethod(POST) # POST query, not GET
-        sparql.setQuery(query)
-
-        print("Running SPARQL update " + str(i + 1) + " of " + str(len(data)) + "...")
-        ret = sparql.query()
+        # Initialise time series in both KG and RDB using TimeSeriesClass
+        TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, PROPERTIES_FILE)
+        TSClient.addTimeSeriesData(TS)
 
 
-    print("All SPARQL updates finished.")
-    return
-
-
-def continuous_update():
-    while True:
-        start = time.time()
-        
-        try:
-            update_triple_store()
-        except Exception:
-            print("Encountered exception, will try again in 15 minutes...")
-            print(traceback.format_exc())
-               
-        end = time.time()
-        
-        # wait for 12 minutes taking into account time to update queries
-        for i in tqdm(range(60*12-int((end-start)))):
-            time.sleep(1)
-    return 
-
-
-def single_update():
-    update_triple_store()
-    return 
+# def continuous_update():
+#     while True:
+#         start = time.time()
+#
+#         try:
+#             update_triple_store()
+#         except Exception:
+#             print("Encountered exception, will try again in 15 minutes...")
+#             print(traceback.format_exc())
+#
+#         end = time.time()
+#
+#         # wait for 12 minutes taking into account time to update queries
+#         for i in tqdm(range(60*12-int((end-start)))):
+#             time.sleep(1)
+#     return
+#
+#
+# def single_update():
+#     update_triple_store()
+#     return
 
 
 # # Try to detect (command-line) arguments passed to the script and launch update method
@@ -489,10 +456,11 @@ if __name__ == '__main__':
 
     for gt in terminals:
 
-        if gt == 'Bacton IPs Terminal':
+        # check if associated time series is already instantiated
+        instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
 
-            # check if associated time series is already instantiated
-            instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
+        if not instantiated:
+            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
 
-            if not instantiated:
-                instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
+        # add data
+        add_time_series_data()
