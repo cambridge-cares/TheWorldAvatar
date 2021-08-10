@@ -11,7 +11,7 @@
  *
  * For more information please contact support(@)cmclinnovations.com
  */
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.example.standard;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.derivation.config.Config;
+import uk.ac.cam.cares.derivation.example.common.SparqlClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -46,9 +47,9 @@ public class DerivationAgents extends JPSAgent {
 	// logs are written to a hard coded location (C:/JPS_DATA/logs), defined in log4j2.xml located in src
     private static final Logger LOGGER = LoggerFactory.getLogger(DerivationAgents.class);
 
-    public static final String URL_MINVALUE = "/TimeSeries/MinValue";
-    public static final String URL_MAXVALUE = "/TimeSeries/MaxValue";
-    public static final String URL_CalculatedDifference = "/TimeSeries/CalculatedDifference";
+    public static final String URL_MINVALUE = "/Example1/MinValue";
+    public static final String URL_MAXVALUE = "/Example1/MaxValue";
+    public static final String URL_CalculatedDifference = "/Example1/CalculatedDifference";
 
     // ================================ Methods ================================
     /**

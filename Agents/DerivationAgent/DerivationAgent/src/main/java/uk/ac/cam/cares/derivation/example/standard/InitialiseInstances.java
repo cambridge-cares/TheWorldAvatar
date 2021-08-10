@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.example.standard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.derivation.config.Config;
+import uk.ac.cam.cares.derivation.example.common.SparqlClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.example.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.derivation.config.Config;
+import uk.ac.cam.cares.derivation.example.standard.InstancesDatabase;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;

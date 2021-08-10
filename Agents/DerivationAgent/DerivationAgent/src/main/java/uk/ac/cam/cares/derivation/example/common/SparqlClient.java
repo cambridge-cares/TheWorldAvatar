@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.example.common;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 

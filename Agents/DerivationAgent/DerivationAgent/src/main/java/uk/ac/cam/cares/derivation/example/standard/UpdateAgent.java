@@ -1,15 +1,16 @@
-package uk.ac.cam.cares.derivation.example;
+package uk.ac.cam.cares.derivation.example.standard;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.derivation.config.Config;
+import uk.ac.cam.cares.derivation.example.common.SparqlClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-@WebServlet(urlPatterns = {"/UpdateAgent"})
+@WebServlet(urlPatterns = {"/Example1/UpdateAgent"})
 public class UpdateAgent extends JPSAgent{
 	/**
 	 * 
