@@ -8,7 +8,7 @@ setup(
     # $ pip install sampleproject
     #
     name='compchemparser', # Required
-    version='1.0.0', # Required    
+    version='1.0.0', # Required
     # This should be your name or the name of the organization which owns the
     # project.
     author='Daniel Nurkowski and Angiras Menon', # Optional
@@ -30,7 +30,7 @@ setup(
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # `pip` to create the appropriate form of executable for the target
     # platform.
-    #
+    install_requires= ["docopt", "cclib"],
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional

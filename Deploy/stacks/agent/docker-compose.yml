@@ -2,6 +2,20 @@ version: "3.8"
 
 # Services
 services:
+  # Email Agent
+  email-agent:
+    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+    container_name: email-agent
+    hostname: email-agent
+    restart: unless-stopped
+    ports:
+      - "8099:8080"  
+    labels:
+      description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
+      authors: "mdhillman@cmclinnovations.com"
 
   # Gas Grid Agent
   gas-grid-agent:
@@ -43,7 +57,7 @@ services:
       builder: "${BUILDER}"
       hash: "${HASH}"
 
-  # Local execution environment for SRM Driver.
+      # Local execution environment for SRM Driver.
   # Note: This Image contains the SRM Driver and Intel MPI files (without
   #       any queueing functionality).
   srm-driver:
