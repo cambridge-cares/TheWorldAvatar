@@ -29,7 +29,7 @@ services:
       - "8099:8080"  
     labels:
       description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
-      authors: "mdhillman@cmclinnovations.com
+      authors: "mdhillman@cmclinnovations.com"
       
       
   # Local execution environment for SRM Driver.
