@@ -29,7 +29,7 @@ public class SparqlClient {
 	// rdf:type
 	private static Iri MaxValue = p_namespace.iri("MaxValue");
 	private static Iri MinValue = p_namespace.iri("MinValue");
-	private static Iri CalculatedDifference = p_namespace.iri("CalculatedDifference");
+	private static Iri Difference = p_namespace.iri("Difference");
 	private static Iri Average = p_namespace.iri("Average");
 	private static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
 	private static Iri ScalarValue = p_namespace.iri("ScalarValue");
@@ -153,10 +153,10 @@ public class SparqlClient {
      * @param difference
      * @return
      */
-    public String createCalculatedDifference() {
+    public String createDifference() {
     	String difference_iri = namespace + UUID.randomUUID().toString();    	
     	ModifyQuery modify = Queries.MODIFY();
-    	modify.insert(iri(difference_iri).isA(CalculatedDifference).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+    	modify.insert(iri(difference_iri).isA(Difference).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return difference_iri;
     }
@@ -245,12 +245,12 @@ public class SparqlClient {
      * returns the CalculatedDifference instance.
      * @return
      */
-    public String getCalculatedDifference() {
+    public String getDifference() {
     	SelectQuery query = Queries.SELECT();
     	String queryKey = "derivation";
     	Variable diff = SparqlBuilder.var(queryKey);
     	
-    	GraphPattern queryPattern = diff.isA(CalculatedDifference);
+    	GraphPattern queryPattern = diff.isA(Difference);
     	
     	query.prefix(p_namespace).select(diff).where(queryPattern);
     	

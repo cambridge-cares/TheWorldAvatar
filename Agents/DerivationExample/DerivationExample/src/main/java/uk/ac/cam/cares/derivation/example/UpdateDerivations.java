@@ -23,7 +23,7 @@ public class UpdateDerivations extends JPSAgent{
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
 		if (InstancesDatabase.DerivedDifference == null) {
-			String calcDiff = sparqlClient.getCalculatedDifference();
+			String calcDiff = sparqlClient.getDifference();
 			InstancesDatabase.DerivedDifference = devClient.getDerivationOf(calcDiff);
 		}
 		

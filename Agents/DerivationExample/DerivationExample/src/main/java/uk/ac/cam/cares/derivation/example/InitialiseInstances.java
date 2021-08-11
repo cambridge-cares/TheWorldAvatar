@@ -36,7 +36,7 @@ public class InitialiseInstances extends JPSAgent{
 	private static String maxvalue_agent_url = baseURL + MaxValueAgent.URL_MAXVALUE;
 	
 	private static String difference_agent_iri = SparqlClient.namespace + "difference_agent";
-	private static String difference_agent_url = baseURL + DifferenceAgent.URL_CalculatedDifference;
+	private static String difference_agent_url = baseURL + DifferenceAgent.URL_Difference;
 	
 	private static String average_agent_iri = SparqlClient.namespace + "average_agent";
  	private static String average_agent_url = baseURL + AverageAgent.URL_AVERAGE;
@@ -71,7 +71,7 @@ public class InitialiseInstances extends JPSAgent{
     	String max_value = sparqlClient.addValueInstance(max_property, 0);
     	LOGGER.info("created max value " + max_property);
     	
-    	String diff_property = sparqlClient.createCalculatedDifference();
+    	String diff_property = sparqlClient.createDifference();
     	String diff_value = sparqlClient.addValueInstance(diff_property, 0);
     	LOGGER.info("created calculated difference " + diff_property);
     	

@@ -19,13 +19,13 @@ import javax.servlet.annotation.WebServlet;
  * This agent takes two inputs (MinValue and MaxValue), calculate the difference between them, and write the value in the KG
  * @author Kok Foong Lee
  */
-@WebServlet(urlPatterns = {DifferenceAgent.URL_CalculatedDifference})
+@WebServlet(urlPatterns = {DifferenceAgent.URL_Difference})
 public class DifferenceAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 
 	// ============================ Static variables ===========================
     private static final Logger LOGGER = LoggerFactory.getLogger(DifferenceAgent.class);
-    public static final String URL_CalculatedDifference = "/DifferenceAgent";
+    public static final String URL_Difference = "/DifferenceAgent";
 
     // ================================ Methods ================================
     /**
@@ -59,7 +59,7 @@ public class DifferenceAgent extends JPSAgent {
     		
     		// calculate a new value and create a new instance
     		int difference = maxvalue_input - minvalue_input;
-    		createdInstances[0] = sparqlClient.createCalculatedDifference();
+    		createdInstances[0] = sparqlClient.createDifference();
     		createdInstances[1] = sparqlClient.addValueInstance(createdInstances[0], difference);
     		LOGGER.info("created a new calculated difference instance " + createdInstances);
     		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));

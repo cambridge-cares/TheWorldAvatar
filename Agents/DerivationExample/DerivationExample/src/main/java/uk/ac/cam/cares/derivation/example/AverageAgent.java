@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 /**
  * This is an example of an agent updating a derivation that has a time series data
  * The derivation needs to be initialised with createDerivationWithTimeSeries
- * It is not required to give a proper HTTP response to the DerivationClient as this agent did not write any new instances
+ * It is not required to give a proper HTTP response to the DerivationClient as this agent does not write any new instances
  * @author Kok Foong Lee
  *
  */
