@@ -22,6 +22,7 @@ public class JSONKeyToIRIMapperTest {
     public static TemporaryFolder folder = new TemporaryFolder();
 
     private final String prefix = "http://example.com/api";
+    private final String[] keys = new String[]{"key1", "key2", "key3"};
 
     @Test
     public void testConstructorWithPrefix() {
@@ -42,6 +43,7 @@ public class JSONKeyToIRIMapperTest {
         // Assert that the map was set correctly
         for(String key: keys) {
             Assert.assertEquals(prefix + "_" + key, mapper.getIRI(key));
+            Assert.assertEquals(key, mapper.getJSONKey(prefix + "_" + key));
         }
     }
 
@@ -71,7 +73,7 @@ public class JSONKeyToIRIMapperTest {
     }
 
     @Test
-    public void testReadMappingFromFile() throws IOException {
+    public void testReadMappingFromFileWithInvalidPath() {
         // Filepath to not yet created file in temporary test folder
         String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
         // Error messages
@@ -86,11 +88,16 @@ public class JSONKeyToIRIMapperTest {
             Assert.assertEquals(FileNotFoundException.class, e.getClass());
             Assert.assertEquals(fileNotFound, e.getMessage());
         }
-        // Test with one mapping that is invalid IRI //
+    }
+
+    @Test
+    public void testReadMappingFromFileWithInvalidIRI() throws IOException {
+        // Initialize mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix);
         // Initialize mapping
-        String[] keys = new String[]{"key1", "key2", "key3"};
         ArrayList<String> mappings = generateMapping(keys, "key3", "prefix");
         // Write mapping to file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
         writeMappingFile(filepath, mappings);
         // Test that error is thrown when parsing invalid IRI
         try {
@@ -99,21 +106,80 @@ public class JSONKeyToIRIMapperTest {
         } catch (IOException e) {
             Assert.assertEquals("The value for key key3 is not a valid URI: prefix", e.getMessage());
         }
-        // Test with one mapping that requires the generation of an IRI //
+    }
+
+    @Test
+    public void testReadMappingFromFileWithDuplicatedIRI() throws IOException {
+        // Initialize mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix);
+        // Initialize mapping
+        ArrayList<String> mappings = generateMapping(keys, null, null);
+        String sameIRI = mappings.get(0).split("=")[1];
+        mappings.set(2, keys[2] + "=" + sameIRI);
+        // Write mapping to file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
+        writeMappingFile(filepath, mappings);
+        // Test that error is thrown when using same IRI more than once
+        try {
+            mapper.readMappingFromFile(filepath);
+            Assert.fail();
+        } catch (IOException e) {
+            Assert.assertTrue(e.getMessage().contains("The IRI " + sameIRI + " is already used for the key "));
+            Assert.assertTrue(e.getMessage().contains(keys[0]));
+            Assert.assertTrue(e.getMessage().contains(keys[2]));
+        }
+    }
+
+    @Test
+    public void testReadMappingFromFileWithEmptyIRI() throws IOException {
+        // Initialize mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix);
         // Define the key without mapping
         String keyWithoutMapping = "key2";
         // Create a spy to mock the generating method
         JSONKeyToIRIMapper spyMapper = Mockito.spy(mapper);
         Mockito.when(spyMapper.generateIRI(prefix, keyWithoutMapping)).thenReturn(prefix + "_" + keyWithoutMapping);
         // Initialize mapping
-        mappings = generateMapping(keys, keyWithoutMapping, "");
+        ArrayList<String> mappings = generateMapping(keys, keyWithoutMapping, "");
         // Write mapping to file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
         writeMappingFile(filepath, mappings);
         // Parse the mapping
         spyMapper.readMappingFromFile(filepath);
         // Assert that the map was set correctly
         for(String key: keys) {
             Assert.assertEquals(prefix + "_" + key, spyMapper.getIRI(key));
+        }
+    }
+
+    @Test
+    public void testGetAllIRIs() throws IOException {
+        // Create a mapping file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
+        String[] keys = new String[]{"key1", "key2", "key3"};
+        ArrayList<String> mappings = generateMapping(keys, null, "prefix");
+        writeMappingFile(filepath, mappings);
+        // Initialize mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix, filepath);
+        List<String> iris = mapper.getAllIRIs();
+        for (String mapping: mappings) {
+            String iri = mapping.split("=")[1];
+            Assert.assertTrue(iris.contains(iri));
+        }
+    }
+
+    @Test
+    public void testGetAllJSONKeys() throws IOException {
+        // Create a mapping file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
+        String[] keys = new String[]{"key1", "key2", "key3"};
+        ArrayList<String> mappings = generateMapping(keys, null, "prefix");
+        writeMappingFile(filepath, mappings);
+        // Initialize mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix, filepath);
+        List<String> setKeys = mapper.getAllJSONKeys();
+        for (String key: keys) {
+            Assert.assertTrue(setKeys.contains(key));
         }
     }
 

@@ -1,10 +1,7 @@
 package uk.ac.cam.cares.jps.agent.utils;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -14,7 +11,10 @@ import java.util.regex.Pattern;
 public class JSONKeyToIRIMapper {
 
     private String iriPrefix;
-    private final HashMap<String, String> mapping  = new HashMap<>();
+    // Mapping from JSON key to IRI
+    private final HashMap<String, String> jsonToIRIMapping  = new HashMap<>();
+    // Mapping from IRI to JSON key
+    private final HashMap<String, String> iriToJSONMapping  = new HashMap<>();
 
 
     /**
@@ -69,7 +69,16 @@ public class JSONKeyToIRIMapper {
                 }
                 // Check that the IRI is valid
                 if (checkIRI(value)) {
-                    mapping.put(key, value);
+                    // Check that the IRI is not already used for another key
+                    String oldKey = iriToJSONMapping.get(value);
+                    if (oldKey != null) {
+                        throw new IOException("The IRI "+ value + " is already used for the key " + oldKey + ", and can not be used for key " + key);
+                    }
+                    // Update both maps
+                    else {
+                        jsonToIRIMapping.put(key, value);
+                        iriToJSONMapping.put(value, key);
+                    }
                 }
                 else {
                     throw new IOException("The value for key "+ key + " is not a valid URI: " + value);
@@ -94,7 +103,32 @@ public class JSONKeyToIRIMapper {
      * @return The IRI that is mapped to the JSON key or null if there is no mapping.
      */
     public String getIRI(String jsonKey) {
-        return mapping.get(jsonKey);
+        return jsonToIRIMapping.get(jsonKey);
+    }
+
+    /**
+     * Retrieves the JSON key for an IRI. Wraps the get method of the HashMap field.
+     * @param iri The IRI provided as string.
+     * @return The JSON key that is mapped to the IRI or null if there is no mapping.
+     */
+    public String getJSONKey(String iri) {
+        return iriToJSONMapping.get(iri);
+    }
+
+    /**
+     * Retrieves all IRIs that are handled in the mapping.
+     * @return The IRIs as a list of string in no particular order.
+     */
+    public List<String> getAllIRIs() {
+        return new ArrayList<>(iriToJSONMapping.keySet());
+    }
+
+    /**
+     * Retrieves all JSON keys that are handled in the mapping.
+     * @return The JSON keys as a list of string in no particular order.
+     */
+    public List<String> getAllJSONKeys() {
+        return new ArrayList<>(jsonToIRIMapping.keySet());
     }
 
     /**
