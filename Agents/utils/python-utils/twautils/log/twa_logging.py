@@ -24,14 +24,14 @@ def _config_logging():
 	"""
 		Initialise and configure loggers.
 	"""
+	# Create logs directory
+	log_dir = os.path.join(os.path.expanduser("~"), ".jps", "logs")
+	if not os.path.isdir(log_dir):
+		os.mkdirs(log_dir)
+	
 	# Set the logfile to be generated in ~/.jps/logs
-	log_fpath = os.path.join(
-		os.path.expanduser("~"), 
-		".jps",
-		"logs",
-		"jps.log"
-	)
-
+	log_fpath = os.path.join(os.path.expanduser("~"), ".jps", "logs", "jps.log")
+	
 	# Configure logging from file
 	this_dir = os.path.dirname(os.path.abspath(__file__))
 	log_file = os.path.join(this_dir, "twa_logging.conf")
@@ -63,6 +63,14 @@ def get_logger(logger_name):
 	else:
 		raise ValueError("Invalid logger name: allowed values are "+",".join(valid_logger_names))
 		return None
+
+
+def shutdown():
+	"""
+		Shutdown the logging system, should be called
+		before application exit after all logging calls.
+	"""
+	logging.shutdown()
 
 
 # Perform configuration on module import
