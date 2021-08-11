@@ -31,7 +31,7 @@ public class QueryBroker {
 		if (!url.startsWith("http")) {
 			throw new JPSRuntimeException("destinationUrl must be a URL");
 		}
-		String result = KnowledgeBaseClient.get(null, url, null);
+		String result = AccessAgentCaller.get(null, url, null);
 		return result;
 	}
 	
@@ -86,7 +86,7 @@ public class QueryBroker {
 	}
 	
 	public String queryFile(String targetUrl, String sparqlQuery) {
-		String result = KnowledgeBaseClient.query(null, targetUrl, sparqlQuery);
+		String result = AccessAgentCaller.query(null, targetUrl, sparqlQuery);
 		return result;
 	}
 
@@ -163,7 +163,7 @@ public class QueryBroker {
 	}
 	
 	public String writeFile(String urlOrPath, String content) {
-		String result = KnowledgeBaseClient.put(null, urlOrPath, content, null);
+		String result = AccessAgentCaller.put(null, urlOrPath, content, null);
 		return result;
 	}
 	
@@ -204,7 +204,7 @@ public class QueryBroker {
 		if (!destinationUrl.startsWith("http")) {
 			throw new JPSRuntimeException("destinationUrl must be a URL");
 		}
-		KnowledgeBaseClient.put(null, destinationUrl, content, null);
+		AccessAgentCaller.put(null, destinationUrl, content, null);
 	}
 	
 	public void putLocal(String destinationUrl, String content) {
@@ -250,7 +250,7 @@ public class QueryBroker {
 	}
 
 	public void updateFile(String targetUrl, String sparqlUpdate) {
-		KnowledgeBaseClient.update(null, targetUrl, sparqlUpdate);
+		AccessAgentCaller.update(null, targetUrl, sparqlUpdate);
 	}
 	
 	/**

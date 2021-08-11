@@ -9,7 +9,7 @@ import org.json.JSONStringer;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 public class ScenarioClient {
 	
@@ -80,7 +80,7 @@ public class ScenarioClient {
 		
 		//throw new UnsupportedOperationException();
 		
-		Object[] a = KnowledgeBaseClient.createRequestUrl(null, resourceUrl, false);
+		Object[] a = AccessAgentCaller.createRequestUrl(null, resourceUrl, false);
 		String requestUrl = (String) a[0];
 		JSONObject joparams = (JSONObject) a[1];
 		HttpGet get = Http.get(requestUrl, null, joparams);

@@ -12,7 +12,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
@@ -51,7 +51,7 @@ public class MetaDataAnnotator implements Prefixes {
 	
 	public static void update(String sparql) {
 		//MetaDataAnnotator.getInstance().sparqlService.executePost(sparql);
-		KnowledgeBaseClient.update(getMetadataSetUrl(), null, sparql);
+		AccessAgentCaller.update(getMetadataSetUrl(), null, sparql);
 	}
 	
 	public static void annotateWithTimeAndAgent(String iriTarget, String time, String iriCreatingAgent) {
