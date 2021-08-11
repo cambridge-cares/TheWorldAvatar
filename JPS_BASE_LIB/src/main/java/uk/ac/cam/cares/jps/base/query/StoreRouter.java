@@ -41,6 +41,9 @@ public class StoreRouter{
 	public static final String HAS_QUERY_ENDPOINT = "hasQueryEndpoint";
 	public static final String UPDATE_ENDPOINT = "updateEndpoint";
 	public static final String HAS_UPDATE_ENDPOINT = "hasUpdateEndpoint";
+	public static final String FILE_PATH = "filePath";
+	public static final String HAS_FILE_PATH = "hasFilePath";
+	public static final String TOMCAT_ROOT_LABEL = "tomcatrootpath";
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
@@ -58,31 +61,39 @@ public class StoreRouter{
 	 *    - http://kb/ontokin
 	 *    - http://kb/ontospecies
 	 *    - http://kb/ontocompchem
-	 * b) Example ontology files are:<br>
-	 *    - C://path/to/an/abox.owl (On Windows)
-	 *    - /home/path/to/an/abox.owl (On Linux)
+	 * b) The target resource IRI for a file based store is expected to end in .owl or .rdf, e.g.:
+	 *    - http://kb/sgp/singapore/SGTemperatureSensor-001.owl
 	 * 
-	 * @param targetResourceIRIOrPath the IRI of an RDF/OWL repository/namespace<br>
-	 *  or the path to an RDF/OWL file. 
+	 * @param targetResourceIRI the IRI of an RDF/OWL repository/namespace
 	 * @param isQueryOperation true/false
 	 * @param isUpdateOperation true/false. Note: both query and update operations<br>
 	 *  can be true at the same time.
 	 * @return
 	 */
-	public static StoreClientInterface getStoreClient(String targetResourceIRIOrPath, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static StoreClientInterface getStoreClient(String targetResourceIRI, boolean isQueryOperation, boolean isUpdateOperation) {
 		String queryIRI = null;
 		String updateIRI = null;
 		StoreClientInterface kbClient = null;
-		if (targetResourceIRIOrPath != null && !targetResourceIRIOrPath.isEmpty()) {
-			if (targetResourceIRIOrPath.trim().startsWith(HTTP_KB_PREFIX)) {
+		if (targetResourceIRI != null && !targetResourceIRI.isEmpty()) {
+			
 				if (storeRouter == null) {
 					storeRouter = new StoreRouter();
 				}
+			
+			if (targetResourceIRI.trim().endsWith(OWL_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(RDF_FILE_EXTENSION)) {
+			  
+				String rootPath = storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL);
+				
+				String filePath =  targetResourceIRI.replace(HTTP, rootPath + BACKSLASH);
+				
+				kbClient = new FileBasedStoreClient(filePath);	
+			}else{
+				
 				if (isQueryOperation) {
-					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
+					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceIRI.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (isUpdateOperation) {
-					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceIRIOrPath.replace(HTTP_KB_PREFIX, EMPTY));
+					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceIRI.replace(HTTP_KB_PREFIX, EMPTY));
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteStoreClient(queryIRI);
@@ -94,16 +105,45 @@ public class StoreRouter{
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
 				if(queryIRI==null && updateIRI==null){
-					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRIOrPath);
+					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRI);
 				}
 				if(isQueryOperation == false && isUpdateOperation == false){
 					LOGGER.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
-			}else{
-				kbClient = new FileBasedStoreClient(targetResourceIRIOrPath);
 			}
 		}
 		return kbClient;
+	}
+	
+	/**
+	 * Retrieve file path of the target resource/owl file.
+	 * 
+	 * @param kgrouterEndpoint
+	 * @param targetResourceName
+	 * @return
+	 */
+	private String getLocalFilePath(String kgrouterEndpoint, String targetResourceName) {
+		SelectBuilder builder = new SelectBuilder()
+				.addPrefix( RDFS_PREFIX,  RDFS )
+				.addPrefix( RDF_PREFIX,  RDF )
+				.addPrefix( ONTOKGROUTER_PREFIX,  ONTOKGROUTER )
+				.addVar( QUESTION_MARK.concat(RESOURCE))
+				.addVar( QUESTION_MARK.concat(LABEL) )
+				.addVar( QUESTION_MARK.concat(FILE_PATH) )
+				.addWhere( getCommonKGRouterWhereBuilder() )
+			    .addWhere( QUESTION_MARK.concat(RESOURCE), ONTOKGROUTER_PREFIX.concat(COLON).concat(HAS_FILE_PATH), QUESTION_MARK.concat(FILE_PATH) );
+		RemoteStoreClient rKBClient = new RemoteStoreClient(kgrouterEndpoint);
+		System.out.println(builder.toString());
+		String json = rKBClient.execute(builder.toString());
+		JSONArray jsonArray = new JSONArray(json);
+		for (int i = 0; i<jsonArray.length(); i++){
+			JSONObject obj = jsonArray.getJSONObject(i);
+			if(obj.getString(LABEL).equals(targetResourceName)){
+				System.out.println(obj.get(FILE_PATH));
+				return obj.getString(FILE_PATH);
+			}
+		}
+		return null;
 	}
 	
 	/**
@@ -170,7 +210,6 @@ public class StoreRouter{
 		return null;
 	}
 
-	
 	/**
 	 * Created to put the generic part of the SPARQL query commands using the Jena Query Builder.
 	 * 

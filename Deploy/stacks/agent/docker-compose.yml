@@ -2,6 +2,20 @@ version: "3.8"
 
 # Services
 services:
+  # Email Agent
+  email-agent:
+    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+    container_name: email-agent
+    hostname: email-agent
+    restart: unless-stopped
+    ports:
+      - "8099:8080"  
+    labels:
+      description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
+      authors: "mdhillman@cmclinnovations.com"
 
   # Gas Grid Agent
   gas-grid-agent:
@@ -15,24 +29,35 @@ services:
       authors: "support@cmclinnovations.com"
       builder: "${BUILDER}"
       hash: "${HASH}"
-      
-   # Email Agent
-   email-agent:
-    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
+
+  # JPS Chatbot
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-chatbot:
+    image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     build:
-      context: "../"
-      dockerfile: "./docker/Dockerfile"
-    container_name: email-agent
-    hostname: email-agent
+      context: "../../../JPS_Chatbot"
+    container_name: "jps-chatbot"
     restart: unless-stopped
-    ports:
-      - "8099:8080"  
     labels:
-      description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
-      authors: "mdhillman@cmclinnovations.com
-      
-      
-  # Local execution environment for SRM Driver.
+      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+
+  # JPS LDF Server
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
+    build:
+      context: "../../../JPS_LDF"
+    container_name: "jps-ldf"
+    restart: unless-stopped
+    labels:
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+
+      # Local execution environment for SRM Driver.
   # Note: This Image contains the SRM Driver and Intel MPI files (without
   #       any queueing functionality).
   srm-driver:
@@ -49,8 +74,7 @@ services:
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
-    
-    
+
   # Kinetics Agent.
   # Note: This Image mounts a volume so that it can access the SRM Driver and
   #       Intel MPI files stored within the 'srm-driver' Image.
@@ -66,7 +90,6 @@ services:
     volumes:
       - driver:/usr/local/srm-driver
 
-    
   # Slurm compute node.
   # Note: This Image exists as a generic job queue/executor for any other
   #       services submitting Slurm jobs (such as the KineticsAgent).
@@ -87,6 +110,7 @@ services:
       - mpi:/usr/local/intel-mpi
     env_file:
       - Slurm/slurm-variables.env
+
 
 # Volumes
 volumes:

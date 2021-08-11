@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public abstract class TestKnowledgeBaseHelper extends TestCase {
@@ -81,7 +81,7 @@ public abstract class TestKnowledgeBaseHelper extends TestCase {
 		if (numbermarker != null) {
 			body = body.replace("0.27", numbermarker);
 		}
-		KnowledgeBaseClient.put(datasetUrl, targetUrl, body, MediaType.APPLICATION_RDF_XML.type);
+		AccessAgentCaller.put(datasetUrl, targetUrl, body, MediaType.APPLICATION_RDF_XML.type);
 		return body;
 	}
 	
