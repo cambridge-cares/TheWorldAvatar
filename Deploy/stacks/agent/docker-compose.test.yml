@@ -1,5 +1,13 @@
 version: "3.8"
 
+services:
+
+  # Gas Grid Agent
+  gas-grid-agent:
+    build:
+      target: dev
+
+
 networks:
   default:
     name: test-agent

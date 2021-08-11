@@ -5,10 +5,13 @@ services:
 
   # Gas Grid Agent
   gas-grid-agent:
-    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
-    container_name: "gas-grid-agent"
+    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT-${MODE}
+    build:
+      context: "../../../GasGrid/"
+      dockerfile: "docker/Dockerfile"
+    container_name: "gas-grid-agent-${MODE}"
     restart: unless-stopped
-    mem_limit: 1g
+    mem_limit: 2g
     ports:
       - 4005:80
     labels:
