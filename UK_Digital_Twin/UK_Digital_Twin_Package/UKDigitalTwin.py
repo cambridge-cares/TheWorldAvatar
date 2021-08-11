@@ -45,7 +45,8 @@ class UKDigitalTwin:
         }
     
     consumptionDataVersion = {
-        2017: "energyConsumptionIn2017"
+        2017: "energyConsumptionIn2017",
+		9999: "energyConsumptionIn9999"
         }
     
     
