@@ -5,24 +5,17 @@ from os.path import isfile, join
 from rdflib import Graph
 from UK_Power_Plant_Generator.powerPlantABoxGeneration import addUKPowerPlantTriples
 
-path_to_generated_rdf = '../resources/test_generated_rdf'
-path_to_reference_rdf = '../resources/test_reference_rdf'
+path_to_generated_rdf = '../resources/test_generated_power_plant_rdf'
+path_to_reference_rdf = '../resources/test_reference_power_plant_rdf'
 test_input_folder_name = 9999
 
 """
-The goal of this class is to test all major features of the UK Ditial Twin project,
-namely, representations of:<br>
-i) power plants,
-ii) energy consumption, and
-iii) power-grid topology.
+The goal of this class is to test the semantic representation of power plants data and metadata.
 """
-
-
-class TestUKDigitalTwin(unittest.TestCase):
+class TestPowerPlantInfoRDF(unittest.TestCase):
     """
-    Test that it can generate the instances provided in the reference OWL files.
+    Test that it can generate the same instances provided in the reference OWL files.
     """
-
     def test_compare_power_plant_rdf_representations(self):
         """
         Gets absolute path from a relative path
@@ -34,9 +27,10 @@ class TestUKDigitalTwin(unittest.TestCase):
         """
         addUKPowerPlantTriples('default', test_input_folder_name, abs_path_generated_rdf)
         owl_files = [f for f in listdir(path_to_generated_rdf) if isfile(join(path_to_generated_rdf, f))]
+        testPowerPlantInfoRDF = TestPowerPlantInfoRDF()
         for an_owl_file in owl_files:
-            generated_statements = self.read_rdf_model_statements(abs_path_generated_rdf + os.sep + an_owl_file)
-            reference_statements = self.read_rdf_model_statements(abs_path_reference_rdf + os.sep + an_owl_file)
+            generated_statements = testPowerPlantInfoRDF.read_rdf_model_statements(abs_path_generated_rdf + os.sep + an_owl_file)
+            reference_statements = testPowerPlantInfoRDF.read_rdf_model_statements(abs_path_reference_rdf + os.sep + an_owl_file)
             print('Comparing the content of the following two files:\n', abs_path_generated_rdf + os.sep + an_owl_file,
                   '\n', abs_path_reference_rdf + os.sep + an_owl_file)
             self.assertEqual(generated_statements, reference_statements)
@@ -46,7 +40,6 @@ class TestUKDigitalTwin(unittest.TestCase):
     """
     Reads an RDF model to return all the statements codified it
     """
-
     def read_rdf_model_statements(self, path):
         g = Graph()
         g.parse(path)
@@ -54,7 +47,6 @@ class TestUKDigitalTwin(unittest.TestCase):
         for stmt in g:
             stmts.add(stmt)
         return stmts
-
 
 if __name__ == '__main__':
     """
