@@ -1,17 +1,15 @@
-package uk.ac.cam.cares.derivation.example.standard;
+package uk.ac.cam.cares.derivation.example;
 
 import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.derivation.config.Config;
-import uk.ac.cam.cares.derivation.example.common.SparqlClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-@WebServlet(urlPatterns = {"/Example1/UpdateAgent"})
-public class UpdateAgent extends JPSAgent{
+@WebServlet(urlPatterns = {"/UpdateDerivations"})
+public class UpdateDerivations extends JPSAgent{
 	/**
 	 * 
 	 */
@@ -24,11 +22,18 @@ public class UpdateAgent extends JPSAgent{
 		DerivationClient devClient = new DerivationClient(storeClient);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		
-		if (InstancesDatabase.DerivedQuantityDifference == null) {
-			InstancesDatabase.DerivedQuantityDifference = sparqlClient.getDerivationOfCalculatedDifference();
+		if (InstancesDatabase.DerivedDifference == null) {
+			String calcDiff = sparqlClient.getCalculatedDifference();
+			InstancesDatabase.DerivedDifference = devClient.getDerivationOf(calcDiff);
 		}
 		
-		devClient.updateDerivation(InstancesDatabase.DerivedQuantityDifference);
+		if (InstancesDatabase.DerivedAverage == null) {
+			String average = sparqlClient.getAverageIRI();
+			InstancesDatabase.DerivedAverage = devClient.getDerivationOf(average);
+		}
+		
+		devClient.updateDerivation(InstancesDatabase.DerivedDifference);
+		devClient.updateDerivation(InstancesDatabase.DerivedAverage);
 		return requestParams;
 	}
 }

@@ -1,5 +1,6 @@
-package uk.ac.cam.cares.derivation.example.common;
+package uk.ac.cam.cares.derivation.example;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -9,8 +10,6 @@ import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.derivation.config.Config;
-import uk.ac.cam.cares.derivation.example.standard.InstancesDatabase;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -24,10 +23,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  */
 @WebServlet(urlPatterns = {"/InputAgent"}) 
 public class InputAgent extends JPSAgent {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -42,16 +37,16 @@ public class InputAgent extends JPSAgent {
 			InstancesDatabase.Input = sparqlClient.getInputIRI();
 	    }
 	    
-	    TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
+	    TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	
     	// add random value to value column
     	Random rand = new Random();
-    	List<Integer> time_column = Arrays.asList(tsClient.getMaxTime(InstancesDatabase.Input)+1);
+    	List<Instant> time_column = Arrays.asList(Instant.now());
 
     	List<List<?>> values = new ArrayList<>();
     	List<Integer> value_column = Arrays.asList(rand.nextInt());
     	values.add(value_column);
-    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(InstancesDatabase.Input), values);
+    	TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(InstancesDatabase.Input), values);
     	
     	tsClient.addTimeSeriesData(ts);
 

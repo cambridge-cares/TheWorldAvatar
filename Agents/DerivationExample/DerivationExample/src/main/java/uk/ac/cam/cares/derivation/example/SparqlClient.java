@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.derivation.example.common;
+package uk.ac.cam.cares.derivation.example;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
@@ -30,6 +30,7 @@ public class SparqlClient {
 	private static Iri MaxValue = p_namespace.iri("MaxValue");
 	private static Iri MinValue = p_namespace.iri("MinValue");
 	private static Iri CalculatedDifference = p_namespace.iri("CalculatedDifference");
+	private static Iri Average = p_namespace.iri("Average");
 	private static Iri InputData = p_namespace.iri("InputData"); // has a time series instance
 	private static Iri ScalarValue = p_namespace.iri("ScalarValue");
 	
@@ -56,8 +57,7 @@ public class SparqlClient {
     }
     
     /**
-     * in this example the instances are simple, directly linked to a literal
-     * <instance> <hasValue> ?x
+     * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
      * @param instance
      * @return
      */
@@ -97,12 +97,15 @@ public class SparqlClient {
     	return result;
     }
     
+    boolean isAverage(String instance) {
+    	String query = String.format("ask {<%s> a <%s>}", instance, (namespace + "Average"));
+    	storeClient.setQuery(query);
+    	boolean result = storeClient.executeQuery().getJSONObject(0).getBoolean("ASK");
+    	return result;
+    }
+    
     public String createInputData() {
     	String inputIRI = namespace + UUID.randomUUID().toString();
-    	
-    	while (checkInstanceExists(inputIRI)) {
-    		inputIRI = namespace + UUID.randomUUID().toString();
-    	}
     	
     	ModifyQuery modify = Queries.MODIFY();
     	modify.insert(iri(inputIRI).isA(InputData)).prefix(p_namespace);
@@ -115,102 +118,78 @@ public class SparqlClient {
     
     /**
      * create a new max value instance, return the IRI of the new instance
+     * <iri> a <MasValue>
+     * <iri> a owl:NamedIndividual
      * @param maxtime
      * @return
      */
-    public String[] createMaxValue(int maxvalue) {
+    public String createMaxValue() {
     	String max_value_iri = namespace + UUID.randomUUID().toString();
-    	String max_value_value_iri = namespace + UUID.randomUUID().toString();
-    	
     	ModifyQuery modify = Queries.MODIFY();
-    	
-    	// instantiate max time
-    	while (checkInstanceExists(max_value_iri) || checkInstanceExists(max_value_value_iri)) {
-    		max_value_iri = namespace + UUID.randomUUID().toString();
-    		max_value_value_iri = namespace + UUID.randomUUID().toString();
-    	}
-    	
-    	modify.insert(iri(max_value_iri).isA(MaxValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(max_value_value_iri)));
-    	modify.insert(iri(max_value_value_iri).has(numericalValue, maxvalue).andIsA(ScalarValue));
-    	
+    	modify.insert(iri(max_value_iri).isA(MaxValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-    	
-    	String[] createdEntities = {max_value_iri,max_value_value_iri};
-    	
-    	return createdEntities;
+    	return max_value_iri;
     }
     
     /**
-     * creates a new min time instance
+     * creates a new min value instance
+     * <iri> a <MinValue>
+     * <iri> a owl:NamedIndividual
      * @param mintime
      * @return
      */
-    public String[] createMinValue(int minvalue) {
+    public String createMinValue() {
     	String min_value_iri = namespace + UUID.randomUUID().toString();
-    	String min_value_value_iri = namespace + UUID.randomUUID().toString();
-    	
     	ModifyQuery modify = Queries.MODIFY();
-    	
-    	while (checkInstanceExists(min_value_iri) || checkInstanceExists(min_value_value_iri)) {
-    		min_value_iri = namespace + UUID.randomUUID().toString();
-    		min_value_value_iri = namespace + UUID.randomUUID().toString();
-    	}
-    	
-    	modify.insert(iri(min_value_iri).isA(MinValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(min_value_value_iri)));
-    	modify.insert(iri(min_value_value_iri).has(numericalValue, minvalue).andIsA(ScalarValue));
-    	
+    	modify.insert(iri(min_value_iri).isA(MinValue).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-    	String[] createdEntities = {min_value_iri,min_value_value_iri};
-    	
-    	return createdEntities;
+    	return min_value_iri;
     }
     
     /**
-     * creates a difference instance
+     * creates a difference instance. 
+     * <iri> a <CalculatedDifference>
+     * <iri> a owl:NamedIndividual
      * @param difference
      * @return
      */
-    public String[] createCalculatedDifference(int difference) {
-    	String difference_iri = namespace + UUID.randomUUID().toString();
-    	String difference_value_iri = namespace + UUID.randomUUID().toString();
-    	
+    public String createCalculatedDifference() {
+    	String difference_iri = namespace + UUID.randomUUID().toString();    	
     	ModifyQuery modify = Queries.MODIFY();
-    	
-    	while (checkInstanceExists(difference_iri) || checkInstanceExists(difference_value_iri)) {
-    		difference_iri = namespace + UUID.randomUUID().toString();
-    		difference_value_iri = namespace + UUID.randomUUID().toString();
-    	}
-    	
-    	modify.insert(iri(difference_iri).isA(CalculatedDifference).andIsA(iri(OWL.NAMEDINDIVIDUAL)).andHas(hasValue, iri(difference_value_iri)));
-    	modify.insert(iri(difference_value_iri).has(numericalValue, difference).andIsA(ScalarValue));
-    	
+    	modify.insert(iri(difference_iri).isA(CalculatedDifference).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
-    	String[] createdEntities = {difference_iri,difference_value_iri};
-    	
-    	return createdEntities;
+    	return difference_iri;
     }
     
     /**
-     * returns true if instance exists in the triple store
-     * @param instance
+     * creates an average instance. 
+     * <iri> a <Average>
+     * <iri> a owl:NamedIndividual
+     * @param difference
      * @return
      */
-    private boolean checkInstanceExists(String instance) {
-    	SelectQuery query = Queries.SELECT();
-    	
-    	// includes both cases where the instance is a subject and object
-    	GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(query.var(),query.var()).optional(),
-    			query.var().has(query.var(),iri(instance)).optional());
-    	
-    	query.prefix(p_namespace).where(queryPattern);
+    String createAverage() {
+    	String average_iri = namespace + UUID.randomUUID().toString();  
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.insert(iri(average_iri).isA(Average).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	return average_iri;
+    }
     
-    	JSONArray queryresult = storeClient.executeQuery(query.getQueryString());
-    	
-    	if (queryresult.getJSONObject(0).isEmpty()) {
-    		return false;
-    	} else {
-    		return true;
-    	}
+    /**
+     * adds a value instance to the given property
+     * <property> <hasValue> <valueIRI>, <valueIRI> a <ScalarValue>, <valueIRI> <numericalValue> value
+     * @param property
+     * @param value
+     * @return
+     */
+    public String addValueInstance(String property, int value) {
+    	String value_iri = namespace + UUID.randomUUID().toString();
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.insert(iri(property).has(hasValue,iri(value_iri)));
+    	modify.insert(iri(value_iri).isA(ScalarValue).andHas(numericalValue,value));
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	return value_iri;
     }
     
     /**
@@ -240,11 +219,33 @@ public class SparqlClient {
     	}
     }
     
+    public String getAverageIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	String queryKey = "average";
+    	Variable average = SparqlBuilder.var(queryKey);
+    	
+    	GraphPattern queryPattern = average.isA(Average);
+    	
+    	query.prefix(p_namespace).select(average).where(queryPattern);
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one average instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(queryKey);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("Average is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+    
     /**
      * returns the CalculatedDifference instance.
      * @return
      */
-    public String getDerivationOfCalculatedDifference() {
+    public String getCalculatedDifference() {
     	SelectQuery query = Queries.SELECT();
     	String queryKey = "derivation";
     	Variable diff = SparqlBuilder.var(queryKey);

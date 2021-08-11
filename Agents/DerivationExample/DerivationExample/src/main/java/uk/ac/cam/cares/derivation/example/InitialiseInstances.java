@@ -1,5 +1,6 @@
-package uk.ac.cam.cares.derivation.example.standard;
+package uk.ac.cam.cares.derivation.example;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -11,8 +12,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.derivation.config.Config;
-import uk.ac.cam.cares.derivation.example.common.SparqlClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -28,16 +27,19 @@ public class InitialiseInstances extends JPSAgent{
 	 */
 	private static final long serialVersionUID = 1L;
     // this URL is based on the docker image, make sure the URL is accessible from the derived quantity's calling entity
-	private static String baseURL = "http://derivationagent:8080/DerivationAgent";
+	private static String baseURL = "http://derivationexample:8080/DerivationExample";
 	
 	private static String minvalue_agent_iri = SparqlClient.namespace + "minvalue_agent";
-	private static String minvalue_agent_url = baseURL + DerivationAgents.URL_MINVALUE;
+	private static String minvalue_agent_url = baseURL + MinValueAgent.URL_MINVALUE;
 	
 	private static String maxvalue_agent_iri = SparqlClient.namespace + "maxvalue_agent";
-	private static String maxvalue_agent_url = baseURL + DerivationAgents.URL_MAXVALUE;
+	private static String maxvalue_agent_url = baseURL + MaxValueAgent.URL_MAXVALUE;
 	
 	private static String difference_agent_iri = SparqlClient.namespace + "difference_agent";
-	private static String difference_agent_url = baseURL + DerivationAgents.URL_CalculatedDifference;
+	private static String difference_agent_url = baseURL + DifferenceAgent.URL_CalculatedDifference;
+	
+	private static String average_agent_iri = SparqlClient.namespace + "average_agent";
+ 	private static String average_agent_url = baseURL + AverageAgent.URL_AVERAGE;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(InitialiseInstances.class);
     
@@ -48,43 +50,52 @@ public class InitialiseInstances extends JPSAgent{
     	SparqlClient sparqlClient = new SparqlClient(storeClient);
     	DerivationClient devClient = new DerivationClient(storeClient);
     	
-    	System.out.println("Initialising new instances, all existing instances will get deleted");
+    	LOGGER.info("Initialising new instances, all existing instances will get deleted");
     	sparqlClient.clearKG();
-    	TimeSeriesClient<Integer> tsClient = new TimeSeriesClient<Integer>(storeClient, Integer.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    	TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	tsClient.deleteAll();
     	
     	// record the IRIs of the created instances to link them later
     	String input = sparqlClient.createInputData();
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
-    	createTimeSeries(input, tsClient);
+    	createInputTimeSeries(input, tsClient);
     	LOGGER.info("created input " + input);
     	InstancesDatabase.Input = input;
     	
-    	String[] minvalue = sparqlClient.createMinValue(0);
-    	LOGGER.info("created min value " + minvalue[0]);
-    	InstancesDatabase.MinValue = minvalue[0];
+    	String min_property = sparqlClient.createMinValue();
+    	String min_value = sparqlClient.addValueInstance(min_property, 0);
+    	LOGGER.info("created min value " + min_property);
     	
-    	String[] maxvalue = sparqlClient.createMaxValue(0);
-    	LOGGER.info("created max value " + maxvalue[0]);
-    	InstancesDatabase.MaxValue = maxvalue[0];
+    	String max_property = sparqlClient.createMaxValue();
+    	String max_value = sparqlClient.addValueInstance(max_property, 0);
+    	LOGGER.info("created max value " + max_property);
     	
-    	String[] difference = sparqlClient.createCalculatedDifference(0);
-    	LOGGER.info("created calculated difference " + difference[0]);
-    	InstancesDatabase.Difference = difference[0];
+    	String diff_property = sparqlClient.createCalculatedDifference();
+    	String diff_value = sparqlClient.addValueInstance(diff_property, 0);
+    	LOGGER.info("created calculated difference " + diff_property);
     	
-    	// create three derived quantities
-    	String derived_minvalue = devClient.createDerivation(Arrays.asList(minvalue), minvalue_agent_iri, minvalue_agent_url, Arrays.asList(input));
+    	String average = sparqlClient.createAverage();
+    	LOGGER.info("created average " + average);
+    	tsClient.initTimeSeries(Arrays.asList(average), Arrays.asList(Double.class), null);
+    	LOGGER.info("initialise a table for average values");
+    	InstancesDatabase.Average = average;
+    	
+    	// create 3 standard derived quantities
+    	String derived_minvalue = devClient.createDerivation(Arrays.asList(min_property,min_value), minvalue_agent_iri, minvalue_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for min value " + derived_minvalue);
-    	InstancesDatabase.DerivedQuantityMinValue = derived_minvalue;
     	
-    	String derived_maxvalue = devClient.createDerivation(Arrays.asList(maxvalue), maxvalue_agent_iri, maxvalue_agent_url, Arrays.asList(input));
+    	String derived_maxvalue = devClient.createDerivation(Arrays.asList(max_property,max_value), maxvalue_agent_iri, maxvalue_agent_url, Arrays.asList(input));
     	LOGGER.info("created derived quantity for max value " + derived_maxvalue);
-    	InstancesDatabase.DerivedQuantityMaxValue = derived_maxvalue;
     	
-    	String derived_difference = devClient.createDerivation(Arrays.asList(difference), difference_agent_iri, difference_agent_url, Arrays.asList(minvalue[0],maxvalue[0]));
+    	String derived_difference = devClient.createDerivation(Arrays.asList(diff_property,diff_value), difference_agent_iri, difference_agent_url, Arrays.asList(min_property,max_property));
     	LOGGER.info("created derived quantity for calculated difference " + derived_difference);
-    	InstancesDatabase.DerivedQuantityDifference = derived_difference;
+    	InstancesDatabase.DerivedDifference = derived_difference;
+    	
+    	// average is a derivation with a time series
+    	String derived_average = devClient.createDerivationWithTimeSeries(average, average_agent_iri, average_agent_url, Arrays.asList(input));
+    	LOGGER.info("created derivation for average " + derived_average);
+    	InstancesDatabase.DerivedAverage = derived_average;
     	
     	// check all connections between the derived quantities
     	// as calculated difference is derived from min time and max time, they get checked too
@@ -101,16 +112,16 @@ public class InitialiseInstances extends JPSAgent{
     	return requestParams;
     }
 	
-    private static void createTimeSeries(String input_iri, TimeSeriesClient<Integer> tsClient) {
+    private static void createInputTimeSeries(String input_iri, TimeSeriesClient<Instant> tsClient) {
     	tsClient.initTimeSeries(Arrays.asList(input_iri), Arrays.asList(Integer.class), null);
     	
     	// create a new time series object with random numbers
     	Random rand = new Random();
-    	List<Integer> time_column = Arrays.asList(1,2);
+    	List<Instant> time_column = Arrays.asList(Instant.now());
     	List<List<?>> values = new ArrayList<>();
-    	List<Integer> value_column = Arrays.asList(rand.nextInt(),rand.nextInt());
+    	List<Integer> value_column = Arrays.asList(rand.nextInt());
     	values.add(value_column);
-    	TimeSeries<Integer> ts = new TimeSeries<Integer>(time_column, Arrays.asList(input_iri), values);
+    	TimeSeries<Instant> ts = new TimeSeries<Instant>(time_column, Arrays.asList(input_iri), values);
     	
     	tsClient.addTimeSeriesData(ts);
     }
