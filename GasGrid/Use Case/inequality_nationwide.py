@@ -704,13 +704,16 @@ def return_geo_df(month,uptake,temp_var_type):
 
         delta_cost[i] = (delta_elec_values[i]*elec_per_kwh) + (delta_gas_values[i]*gas_per_kwh)
 
-    mean_cost = np.mean(delta_cost)
-    std_cost = np.std(delta_cost)
-    mean_poverty = np.mean(poverty_values)
-    std_poverty = np.std(poverty_values)
 
+    min_fp = 0
+    max_fp = 30
+    min_dc = -200
+    max_dc = -60
     for i in range(len(gas_values)):
-        inequality_index[i] = (((mean_cost-delta_cost[i])/std_cost) * ((mean_poverty-poverty_values[i])/std_poverty))
+        poverty_values[i] = poverty_values[i] * 100
+        a = ((poverty_values[i]-min_fp)/(max_fp-min_fp)) 
+        b = ((2*(delta_cost[i]-min_dc))/(max_dc-min_dc))-1
+        inequality_index[i] = a*b
 
 
     ## CODE FOR PLOTTING *IN* PYTHON
@@ -731,14 +734,17 @@ def return_geo_df(month,uptake,temp_var_type):
     df['Electricity Change'] = list(delta_elec_values)
     df['Temperature'] = list(np.around(temp_values,decimals=3))
     df['COP'] = list(cop_values)
-    df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
+    df['Percentage Fuel Poor'] = list(np.around(poverty_values,decimals=3))
     df['Inequality Index']   = list(np.around(inequality_index,decimals=3))
     df['Emissions'] = list(np.round(emissions,decimals=3))
     df['Change in Emissions'] = list(np.around(delta_emissions,decimals=3))
     df['Change in Fuel Cost'] = list(delta_cost)
-    # specifying geodata frame
-
+    # specifying geodata frame  
+    #df.to_csv('results.csv')
+    
     my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
+    my_geo_df = my_geo_df[my_geo_df['Percentage Fuel Poor'] > 0.001]
+
     my_geo_df = my_geo_df.set_crs("EPSG:4326")
     print('Converting to Mercator projection (better than WGS84 for UK)')
     my_geo_df = my_geo_df.to_crs("EPSG:3395")
@@ -747,7 +753,6 @@ def return_geo_df(month,uptake,temp_var_type):
 
 # define min mean or max 
 temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
 
 
 print('Change of projection completed!')
@@ -784,8 +789,8 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     UK_gdf.boundary.plot(ax=axs['A'],color='k',linewidth=0.5)
     boundary = my_geo_df.bounds
     boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
-    axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
-    axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]]))
+    axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+20E4])
+    axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]+1E4]))
     #plt.subplots_adjust(left=0)
     cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
     val_values = my_geo_df[vars[0]].values
@@ -793,7 +798,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     q1,q3 = st.mstats.idealfourths(val_values)
     bottom = q1-1.5*iqr
     top = q3 +1.5*iqr
-    divnorm = cl.Normalize(vmin=bottom, vmax=top)
+    divnorm = cl.Normalize(vmin=-1, vmax=1)
     axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
     axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
     tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
@@ -802,8 +807,9 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         legend=True,\
         norm = divnorm,\
         cax=cax,
-        legend_kwds={'label':'Inequality Index (-)'})  
+        legend_kwds={'label':'Inequality Index (-)','ticks':[-1,-0.5,0,0.5,1]})  
     cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
+    cax.set_yticklabels(['-1','-0.5','0','0.5','1'])
     axs['A'].set_xticks([])
     axs['A'].set_yticks([])
     axs['A'].spines["top"].set_visible(False)

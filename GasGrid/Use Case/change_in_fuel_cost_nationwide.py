@@ -790,7 +790,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     q1,q3 = st.mstats.idealfourths(val_values)
     bottom = q1-1.5*iqr
     top = q3 +1.5*iqr
-    divnorm = cl.Normalize(vmin=bottom, vmax=top)
+    divnorm = cl.Normalize(vmin=-200, vmax=-60)
     axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
     axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
     tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
@@ -799,7 +799,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         legend=True,\
         norm = divnorm,\
         cax=cax,
-        legend_kwds={'label':'Change in Fuel Cost (£/year/household)'})  
+        legend_kwds={'label':'Change in Fuel Cost (£/year/household)','ticks':[-60,-80,-100,-120,-140,-160,-180,-200]})  
     #cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
     axs['A'].set_xticks([])
     axs['A'].set_yticks([])
@@ -807,8 +807,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     axs['A'].spines["right"].set_visible(False)
     axs['A'].spines["left"].set_visible(False)
     axs['A'].spines["bottom"].set_visible(False)
-
-
+    cax.set_yticklabels(['> -60','-80','-100','-120','-140','-160','-180','< -200'])
 
     # axs[i].set_xlabel('Longitude')
     # axs[i].set_ylabel('Latitude')

@@ -743,16 +743,16 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
 
     # ADD UP EMISSIONS HERE 
     mosaic = '''
-        ABCD
-        ABCD
+        ABCDE
+        ABCDE
         '''
     fig = plt.figure(figsize=(11,4))
     axs = fig.subplot_mosaic(mosaic)    
     UK_gdf = gpd.read_file("GBR_adm2.shp")
     UK_gdf = UK_gdf.to_crs("EPSG:3395")
-    uptakes = [0.25,0.5,0.75,1]
+    uptakes = [0,0.25,0.5,0.75,1]
     my_geo_df = return_geo_df(1,1,temp_var_type)
-    plot_names = ['A','B','C','D']
+    plot_names = ['A','B','C','D','E']
     val_values = my_geo_df[vars[0]].values
     iqr = st.iqr(val_values)
     q1,q3 = st.mstats.idealfourths(val_values)
@@ -770,7 +770,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         axs[plot_names[it]].set_xlim(([boundary[0]-5E4,boundary[2]]))
 
         plt.subplots_adjust(left=0.112,right=0.836)
-        if plot_names[it] == 'D':
+        if plot_names[it] == 'E':
             cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
             tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
                 antialiased=False,\
