@@ -73,10 +73,7 @@ public class AQMeshInputAgentTest {
         // Create agent
         AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
         // Assert that the mappings were set
-        Field mappingField = AQMeshInputAgent.class.getDeclaredField("mappings");
-        mappingField.setAccessible(true);
-        ArrayList<JSONKeyToIRIMapper> mappingList = (ArrayList<JSONKeyToIRIMapper>) mappingField.get(agent);
-        Assert.assertEquals(2, mappingList.size());
+        Assert.assertEquals(2, agent.getNumberOfTimeSeries());
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {

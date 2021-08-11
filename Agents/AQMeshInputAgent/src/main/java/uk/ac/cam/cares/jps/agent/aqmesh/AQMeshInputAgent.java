@@ -22,9 +22,13 @@ import java.util.Properties;
  */
 public class AQMeshInputAgent {
 
+    // The time series client to interact with the knowledge graph and data storage
     private TimeSeriesClient<LocalDateTime> tsClient;
+    // The connector to interact with the AQMesh API
     private AQMeshAPIConnector connector;
+    // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
     private List<JSONKeyToIRIMapper> mappings;
+    // The prefix to use when no IRI exists for a JSON key originally
     private static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
 
     /**
@@ -45,31 +49,31 @@ public class AQMeshInputAgent {
         }
     }
 
-    public static void main(String[] args) throws IOException {
-
-        if (args.length == 0) {
-            throw new JPSRuntimeException("No properties file provided as command line argument.");
-        }
-        String propertiesFile = args[0];
-
-        AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
-        // Check whether time series already exists
-        if (!agent.timeSeriesExists()) {
-            agent.initializeTimeSeries();
-        }
-
-        AQMeshAPIConnector connector = new AQMeshAPIConnector(propertiesFile);
-        connector.connect();
-        agent.setAPIConnector(connector);
+    /**
+     * Retrieves the number of time series the input agent is handling.
+     * @return  The number of time series maintained by the agent.
+     */
+    public int getNumberOfTimeSeries() {
+        return mappings.size();
     }
 
-
+    /**
+     * Setter for the time series client.
+     * @param tsClient The time series client to use.
+     */
     public void setTsClient(TimeSeriesClient tsClient) {
         this.tsClient = tsClient;
     }
 
+    /**
+     * Setter for the AQMesh API connector.
+     * @param connector The AQMesh API connector to use.
+     */
     public void setAPIConnector(AQMeshAPIConnector connector) {
         this.connector = connector;
+    }
+
+    public void initializeTimeSeriesIfNotExist() {
     }
 
     private void updateTimeSeries() {
@@ -112,13 +116,6 @@ public class AQMeshInputAgent {
 
     private void updateParticleReadings() {
         JSONArray particleReadings = connector.getParticleReadings();
-    }
-
-    private boolean timeSeriesExists() {
-        return true;
-    }
-
-    private void initializeTimeSeries() {
     }
 
 }
