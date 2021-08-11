@@ -594,7 +594,7 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     # caluclating converted gas to electricity via HP
     hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * uptake
+    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
@@ -699,6 +699,8 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
     df_box = df_box.append(new_df)  
  
+    elec_co = 0.233
+    gas_co = 0.184
 
     new_df = pd.DataFrame({'LSOA':[]})
     new_df['Gas']    = list(np.around(gas_values,decimals=3))
@@ -711,49 +713,121 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     new_df['Temperature'] = list(np.around(temp_values,decimals=3))
     new_df['COP'] = list(cop_values)
     new_df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
+    delta_elec_values = np.array(delta_elec_values)/np.array(elec_values)
+    scaled_delta_elec = (delta_elec_values-np.mean(delta_elec_values))/(np.std(delta_elec_values))
+    scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
+    inequality = scaled_delta_elec - scaled_fuel_pov
+    new_df['Inequality Index']   = list(np.around(inequality,decimals=3))
+    new_df['Emissions'] = ((np.array(remaining_gas_values)*gas_co)+(np.array(remaining_elec_values)*elec_co)) 
+    new_df['Change in Emissions'] = new_df['Emissions'].to_numpy() - (new_df['Gas'].to_numpy()*gas_co + new_df['Electricity'].to_numpy()*elec_co) 
+
     complete_df = complete_df.append(new_df)  
 
     return df_box, complete_df
 
 
 
-plt.rc('text', usetex=True)
+#plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif')
 import os
 
-# define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
-# define amount of heat pump uptake 
-uptake = 0.5 
-df_box = pd.DataFrame({'Gas' : []})
-complete_df = pd.DataFrame({'Gas' : []})
-for i in tqdm(range(12)):
-    df_box, complete_df = dataframe_construction(temp_var_type,uptake,i,df_box,complete_df)
+def plot_var_month_with_temps(var):
+    # define min mean or max 
+    min  = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
+    mean = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+    max  ='http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' 
+    temp_vars = [min,mean,max]
+    temp_vars_label = ['Minimum Air Temperature','Mean Air Temperature','Maximum Air Temperature']
+    temp_colors = ['tab:blue','k','tab:orange']
+
+    months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
+    plt.figure(figsize=(6,3))
+    plt.title('Monthly '+var+' across LSOAs throughout the UK ')
+    plt.xlabel('Month')
+    plt.tight_layout()
+    plt.ylabel('COP')
+    for j in range(len(temp_vars)):
+        temp_var_type = temp_vars[j]
+
+        # define amount of heat pump uptake 
+        uptake = 0.5 
+        df_box = pd.DataFrame({'Gas' : []})
+        complete_df = pd.DataFrame({'Gas' : []})
+        for i in tqdm(range(12)):
+            df_box, complete_df = dataframe_construction(temp_var_type,uptake,i,df_box,complete_df)
+
+        # fig,axs = plt.subplots(2,1)
+        # sb.boxplot(y=df_box['Gas'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax=axs[0])
+        # sb.boxplot(y=df_box['Electricity'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax = axs[1])
+        # plt.show()
+
+        var_mean = np.mean(complete_df[var].values)
+
+        mean = [] 
+        std = []
+        for i in range(len(months)):
+            temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
+            mean.append(np.mean(temp_df[var].values,axis=0))
+            std.append(np.std(temp_df[var].values,axis=0))
+
+        plt.plot(np.arange(len(mean)),mean,c=temp_colors[j],label=temp_vars_label[j])
+        plt.fill_between(np.arange(len(mean)),np.array(mean)+np.array(std),np.array(mean)-np.array(std),color=temp_colors[j],alpha=0.3)
+        # plt.plot(np.arange(len(mean)),np.array(mean)+np.array(std),c=temp_colors[j],linestyle='--')
+        # plt.plot(np.arange(len(mean)),np.array(mean)-np.array(std),c=temp_colors[j],linestyle='--')
+    plt.legend()
+    plt.xticks(np.arange(len(months)),months_letter)
+    plt.savefig('figure_output/year_temp'+var+'.pdf')
 
 
+# var = "COP"
+# plot_var_month_with_temps(var)
 
-# fig,axs = plt.subplots(2,1)
-# sb.boxplot(y=df_box['Gas'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax=axs[0])
-# sb.boxplot(y=df_box['Electricity'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax = axs[1])
-# plt.show()
+min  = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
+mean = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+max  ='http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' 
+temp_vars = [min,mean,max]
+temp_vars_label = ['Minimum Air Temperature','Mean Air Temperature','Maximum Air Temperature']
 
+def plot_var_month_with_uptakes(var,temp_var,temp_var_name):
+    # define min mean or max 
+    uptakes = [0,0.2,0.4,0.6,0.8,1]
+    uptake_colors = ['tab:blue','k','tab:orange','red','darkgreen','gold']
+    months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
+    plt.figure(figsize=(6,3))
+    plt.title('Monthly '+var+' across LSOAs throughout the UK: '+temp_var_name)
+    plt.xlabel('Month')
+    plt.tight_layout()
+    plt.ylabel('Emissions per LSOA (kg CO$_2$e)')
+    for j in range(len(uptakes)):
+        # define amount of heat pump uptake 
+        uptake = uptakes[j]
+        df_box = pd.DataFrame({'Gas' : []})
+        complete_df = pd.DataFrame({'Gas' : []})
+        for i in tqdm(range(12)):
+            df_box, complete_df = dataframe_construction(temp_var,uptake,i,df_box,complete_df)
 
-var = "Electricity Change"
-var_mean = np.mean(complete_df[var].values)
+        # fig,axs = plt.subplots(2,1,figsize=(10,7),sharex=True)
+        # sb.boxplot(y=df_box['Gas'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax=axs[0])
+        # sb.boxplot(y=df_box['Electricity'],x=df_box['Month (2019)'],hue=df_box['Usage'],fliersize=0.1,linewidth=1,ax = axs[1])
+        # fig.savefig('figure_output/gas_elec_box_'+str(uptake)+'.pdf')
 
-mean = [] 
-std = []
-for i in range(len(months)):
-    temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
-    mean.append(np.mean(temp_df[var].values,axis=0))
-    std.append(np.std(temp_df[var].values,axis=0))
+        var_mean = np.mean(complete_df[var].values)
 
+        mean = [] 
+        std = []
+        for i in range(len(months)):
+            temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
+            mean.append(np.mean(temp_df[var].values,axis=0))
+            std.append(np.std(temp_df[var].values,axis=0))
 
-plt.figure()
-axs = plt.axes()
-for i in range(0,len(unique_LSOA),100):
-    df = complete_df[complete_df['LSOA'] == unique_LSOA[i]]
-    df.plot(x='Month (2019)',y=var,ax=axs,color='k',alpha=0.1,legend=False)
-plt.show()
+        plt.plot(np.arange(len(mean)),mean,c=uptake_colors[j],label=str(uptake*100)+'% uptake')
+        plt.fill_between(np.arange(len(mean)),np.array(mean)+np.array(std),np.array(mean)-np.array(std),color=uptake_colors[j],alpha=0.3)
+        # plt.plot(np.arange(len(mean)),np.array(mean)+np.array(std),c=temp_colors[j],linestyle='--')
+        # plt.plot(np.arange(len(mean)),np.array(mean)-np.array(std),c=temp_colors[j],linestyle='--')
+    plt.legend()
+    plt.xticks(np.arange(len(months)),months_letter)
+    #plt.savefig('figure_output/year_uptake'+var+'.pdf')
+    plt.show()
 
-
+tv_index = 1 
+plot_var_month_with_uptakes('Change in Emissions',temp_vars[tv_index],temp_vars_label[tv_index])

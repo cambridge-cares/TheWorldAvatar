@@ -340,6 +340,67 @@ def plot_LSOA_temps(LSOA):
     plt.show()
     return 
 #plot_LSOA_temps('S01011468')
+# Querying Polygons from KG to construct geoJSON
+def query_poly(limit):
+    '''
+    Querying the KG for all regions gas-usages in 2019 
+    '''
+    if limit == False:
+        limit = str(100000000)
+    limit = str(limit)
+    # clearing terminal
+    os.system('clear')
+    
+
+    query='''
+    PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
+
+    SELECT ?s ?geom
+    WHERE
+    {       
+    ?s rdf:type ons_t:Statistical-Geography.
+    OPTIONAL{ ?s gsp:hasGeometry ?o.
+              ?o gsp:asWKT ?geom}
+    }
+    '''
+    DEF_NAMESPACE = 'ontogasgrid'
+    LOCAL_KG = "http://localhost:9999/blazegraph"
+    LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
+
+    sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
+    sparql.setMethod(POST) # POST query, not GET
+    sparql.setQuery(query)
+    sparql.setReturnFormat(JSON)
+    print('Starting Gas Usage Query...')
+    start = time.time()
+    ret = sparql.query().convert()
+    end = time.time()
+    print('Finished in a time of ',np.round(end-start,3),' seconds')
+
+    # parsing JSON into an array 
+    values = ret['results']['bindings']
+    head = ret['head']['vars']
+    res_array = np.zeros((len(values)+1,len(head)),dtype='object')
+    res_array[0,:] = head
+    i = 1
+    for row in values:
+        j = 0 
+        for val in row.values():
+            res_array[i,j] = val['value']
+            j += 1 
+        i += 1 
+
+    LSOA_shapes = res_array[1:,:]
+
+    return LSOA_shapes
+
+# Function to calculate heating COP from outside temperature
+# Assumes a heating temp of 35 degrees C and efficiency of 0.5
+def COP(T_c):
+    return 0.5*((35+273.15)/(35-T_c))
+
 
 
 unique_LSOA = np.unique(all_results[:,0]) # Get unique LSOA keys
@@ -469,11 +530,6 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
-
 
 # vector of TOTAL gas consumption in 2019 by month
 # used to scale yearly LSOA values
@@ -499,8 +555,7 @@ monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
-        # monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
-        monthly_gas_tensor[i,j] = gas_tensor[i] 
+        monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
 
 
 # vector of TOTAL electricity consumption in 2019 by month
@@ -525,10 +580,11 @@ monthly_elec_tensor = np.zeros((len(unique_LSOA),12))
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(elec_tensor)):
     for j in range(len(months)):
-        # monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
-        monthly_elec_tensor[i,j] = elec_tensor[i]
+        monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
 
-def return_geo_df(month,uptake,temp_var_type):
+
+
+def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     month_str = months[month]
 
     # getting mean min or max tensor
@@ -538,95 +594,12 @@ def return_geo_df(month,uptake,temp_var_type):
     # caluclating converted gas to electricity via HP
     hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * uptake
+    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
 
-    # Querying Polygons from KG to construct geoJSON
-    def query_poly(limit):
-        '''
-        Querying the KG for all regions gas-usages in 2019 
-        '''
-        if limit == False:
-            limit = str(100000000)
-        limit = str(limit)
-        # clearing terminal
-        os.system('clear')
-        
 
-        query='''
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
-        PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
-
-        SELECT ?s ?geom
-        WHERE
-        {       
-        ?s rdf:type ons_t:Statistical-Geography.
-        OPTIONAL{ ?s gsp:hasGeometry ?o.
-                ?o gsp:asWKT ?geom}
-        }
-        '''
-        DEF_NAMESPACE = 'ontogasgrid'
-        LOCAL_KG = "http://localhost:9999/blazegraph"
-        LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-
-        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-        sparql.setMethod(POST) # POST query, not GET
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        print('Starting Gas Usage Query...')
-        start = time.time()
-        ret = sparql.query().convert()
-        end = time.time()
-        print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-        # parsing JSON into an array 
-        values = ret['results']['bindings']
-        head = ret['head']['vars']
-        res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-        res_array[0,:] = head
-        i = 1
-        for row in values:
-            j = 0 
-            for val in row.values():
-                res_array[i,j] = val['value']
-                j += 1 
-            i += 1 
-
-        LSOA_shapes = res_array[1:,:]
-
-        return LSOA_shapes
-
-
-    # importing pickle file if testing but querying from KG if not 
-    shapes_filename = 'pickle_files/shapes_array'
-    if testing == True:
-        LSOA_shapes = call_pickle(shapes_filename)
-    else:
-        LSOA_shapes = save_pickle(query_poly,shapes_filename)
-
-    # check if WKT is valid and 
-    # uploading polygons to Shapely to reduce precision to 5 DP (1m)
-    for i in range(len(LSOA_shapes[:,1])):
-        shape = LSOA_shapes[i,1]
-        try:
-            P = shapely.wkt.loads(shape)
-            LSOA_shapes[i,1] = shapely.wkt.dumps(P,rounding_precision=5)
-        # if shape is invalid do chuff all 
-        except TypeError:
-            nothing = 0 
-        # if the shape is just a number (basically meaningless)
-        # add to index of shapes to be deleted
-        if type(LSOA_shapes[i,1]) == int:
-            del_ind = i 
-
-    # get rid of invalid shapes
-    LSOA_shapes = np.delete(LSOA_shapes,del_ind,axis=0)
-
-    # convert to a dictionary
-    LSOA_shapes = dict(LSOA_shapes)
 
     # Create arrays to extract values from the tensors from 
     # Note the tensors were just to organise everything and make 
@@ -648,7 +621,6 @@ def return_geo_df(month,uptake,temp_var_type):
     for i in range(len(gas_values)):
         key = unique_LSOA[i] # getting the key for the specific LSOA
         # finding the respective 'shape'
-        shapes_of_interest[i] = LSOA_shapes[key]
         # assigning gas consumption 
         gas_values[i] = monthly_gas_tensor[i,month]
         # assigning elec consumption 
@@ -670,164 +642,112 @@ def return_geo_df(month,uptake,temp_var_type):
 
     ## CODE FOR PLOTTING *IN* PYTHON
 
+    # new_df = pd.DataFrame(unique_LSOA)
+    # new_df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
+    # new_df['geom_str'] = list([str(x) for x in shapes_of_interest])
+    # # properties 
+    # new_df['delta_elec'] = list(delta_elec_values)
+    # new_df['gas']    = list(np.around(gas_values,decimals=3))
+    # new_df['elec']   = list(np.around(elec_values,decimals=3))
+    # new_df['temp']   = list(np.around(temp_values,decimals=3))
+    # new_df['cop']    = list(cop_values)
+    # new_df['fuel_poor_percen'] = list(np.around(100*poverty_values,decimals=3))
+    # new_df['remaining_gas']    = list(np.around(remaining_gas_values,decimals=3))
+    # new_df['remaining_elec']   = list(np.around(remaining_elec_values,decimals=3))
+    # new_df['month'] = list(np.array([month_str for i in range(len(gas_values))]))
+    # df = df.append(new_df)
+
+    new_df = pd.DataFrame({'LSOA':[]})
+    new_df['Gas']    = list(np.around(gas_values,decimals=3))
+    new_df['Electricity']   = list(np.around(elec_values,decimals=3))
+    new_df['Usage']  = list(np.array(['Original' for i in range(len(gas_values))])) 
+    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
+    df_box = df_box.append(new_df)  
+
+    new_df = pd.DataFrame({'LSOA':[]})
+    new_df['Gas']    = list(np.around(remaining_gas_values,decimals=3))
+    new_df['Electricity']   = list(np.around(remaining_elec_values,decimals=3))
+    new_df['Usage']  = list(np.array(['Transition' for i in range(len(gas_values))])) 
+    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
+    df_box = df_box.append(new_df)  
+ 
     elec_co = 0.233
     gas_co = 0.184
 
-    # https://bulb.co.uk/carbon-tracker/
-
-    df = pd.DataFrame(unique_LSOA)
-    df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
-    df['geom_str'] = list([str(x) for x in shapes_of_interest])
-    # properties 
-    df['Gas']    = list(np.around(gas_values,decimals=3))
-    df['Electricity']   = list(np.around(elec_values,decimals=3))
-    df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
-    df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
-    df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
-    df['LSOA'] = list(unique_LSOA)
-    df['Electricity Change'] = list(delta_elec_values)
-    df['Temperature'] = list(np.around(temp_values,decimals=3))
-    df['COP'] = list(cop_values)
-    df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
+    new_df = pd.DataFrame({'LSOA':[]})
+    new_df['Gas']    = list(np.around(gas_values,decimals=3))
+    new_df['Gas Emissions'] = list(np.around(gas_co * gas_values,decimals=3)) 
+    new_df['Electricity']   = list(np.around(elec_values,decimals=3))
+    new_df['Electricity Emissions']   = list(np.around(elec_co * elec_values,decimals=3))
+    new_df['Total Emissions'] = list(np.around(elec_co * elec_values + gas_co * gas_values,decimals=3))
+    new_df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
+    new_df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
+    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
+    new_df['LSOA'] = list(unique_LSOA)
+    new_df['Electricity Change'] = list(delta_elec_values)
+    new_df['Temperature'] = list(np.around(temp_values,decimals=3))
+    new_df['COP'] = list(cop_values)
+    new_df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
     delta_elec_values = np.array(delta_elec_values)/np.array(elec_values)
     scaled_delta_elec = (delta_elec_values-np.mean(delta_elec_values))/(np.std(delta_elec_values))
     scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
     inequality = scaled_delta_elec - scaled_fuel_pov
-    df['Inequality Index']   = list(np.around(inequality,decimals=3))
-    df['Emissions'] = ((np.array(remaining_gas_values)*gas_co)+(np.array(remaining_elec_values)*elec_co)) 
-    df['Change in Emissions'] = df['Emissions'].to_numpy() - (df['Gas'].to_numpy()*gas_co + df['Electricity'].to_numpy()*elec_co) 
+    new_df['Inequality Index']   = list(np.around(inequality,decimals=3))
+    new_df['Emissions'] = ((np.array(remaining_gas_values)*gas_co)+(np.array(remaining_elec_values)*elec_co)) 
+    new_df['Change in Emissions'] = new_df['Emissions'].to_numpy() - (new_df['Gas'].to_numpy()*gas_co + new_df['Electricity'].to_numpy()*elec_co) 
 
-    # specifying geodata frame
+    complete_df = complete_df.append(new_df)  
 
-    my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
-    my_geo_df = my_geo_df.set_crs("EPSG:4326")
-    print('Converting to Mercator projection (better than WGS84 for UK)')
-    my_geo_df = my_geo_df.to_crs("EPSG:3395")
-
-    return my_geo_df
-
-# define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
+    return df_box, complete_df
 
 
-print('Change of projection completed!')
+
 #plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif')
 import os
-from matplotlib.colors import ListedColormap
-from matplotlib import cm
 
-top = cm.get_cmap('coolwarm', 128)
+def plot_var_month_with_temps(vars):
+    # define min mean or max 
+    min  = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
+    mean = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+    max  ='http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' 
+    temp_vars = [min,mean,max]
+    temp_vars_label = ['Minimum Air Temperature','Mean Air Temperature','Maximum Air Temperature']
+    temp_colors = ['tab:blue','tab:orange','k']
+    styles = ['solid','dashed','dotted']
 
-newcolors = np.vstack((top(np.linspace(0, 1, 128)),
-                       np.flip(top(np.linspace(0, 1, 128)),axis=0)))
+    months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
+    plt.figure(figsize=(5,2.5))
+    plt.xlabel('Month')
+    plt.tight_layout()
+    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
+    plt.subplots_adjust(left = 0.076,right=0.967)
+    plt.ylabel('Emissions \n (kgCO$_2$eq/month)')
+    for j in range(len(vars)):
+        temp_var_type = temp_vars[1]
+        var = vars[j]
 
-newcmp = ListedColormap(newcolors, name='ineq')
+        # define amount of heat pump uptake 
+        uptake = 0.5 
+        df_box = pd.DataFrame({'Gas' : []})
+        complete_df = pd.DataFrame({'Gas' : []})
+        for i in tqdm(range(12)):
+            df_box, complete_df = dataframe_construction(temp_var_type,uptake,i,df_box,complete_df)
 
-vars      = ['Temperature','Gas','Electricity','COP','Percentage Fuel Poor','Electricity Change','Emissions','Change in Emissions','Inequality Index']
-var_names = ['Mean Air Temperature (°C)','Gas Consumption (kWh)','Electricity Consumption(kWh)','Coefficient of Performance (-)','''Fuel Poverty ($\%$)''','''$\Delta$ Electricity (kWh)''','''Carbon emissions (kg CO$_2$e)''','$\Delta$ Carbon emissions (kg CO$_2$e)','Inequality Index (-)']
+        median = [] 
+        for i in range(len(months)):
+            temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
+            median.append(sum(list(temp_df[var].values)))
+        plt.plot(np.arange(len(median)),median,c='k',linestyle=styles[j],label=vars[j].split('Emissions')[0])
+        #plt.scatter(np.arange(len(median)),median,c='k',s=12)
+    plt.ylim(bottom=0)
+    plt.legend(frameon=False,bbox_to_anchor=(0.6,0.5))
+    plt.xticks(np.arange(len(months)),months_letter)
+    plt.subplots_adjust(left = 0.175)
 
-def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
-    print('Beginning plot...')
-    color_theme = 'coolwarm'
-    my_geo_df = return_geo_df(month,uptake,temp_var_type)
-    for i in range(len(vars)):
-        if i == len(vars)-1:
-            color_theme = newcmp
-        fig = plt.figure(figsize=(3,5))
-        plt.subplots_adjust(left=0,bottom=0.064,right=0.906,top=0.9)
-        plt.tight_layout()
-        axs = plt.axes()
-        divider = make_axes_locatable(axs)
-        cax1    = divider.append_axes("right", size="5%", pad=0.05)
-        tl  = my_geo_df.plot(column=vars[i],cmap=color_theme,\
-            antialiased=False,\
-            ax = axs,\
-            legend=True,\
-            cax=cax1)        
-        axs.set_xticks([])
-        axs.set_yticks([])
-        axs.set_title(var_names[i])
-        # axs[i].set_xlabel('Longitude')
-        # axs[i].set_ylabel('Latitude')
-        if inset == True:
-            axins2 = zoomed_inset_axes(axs, zoom=4, loc=1)
-            plt.setp(axins2.get_xticklabels(), visible=False)
-            plt.setp(axins2.get_yticklabels(), visible=False)
-            axins2.set_xticks([])
-            axins2.set_yticks([])
-            axins2.set_ylim(7.025E6,7.175E6)
-            axins2.set_xlim(-300000,-180000)
-            my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
-            mark_inset(axs,axins2,loc1=2,loc2=4,fc='none',ec='0.5')
-        temp_var_short = temp_var_type.split('/')[-1]
-        plt.savefig('figure_output/'+str(vars[i])+'_'+str(months[month])+'_'+str(uptake)+'_'+str(temp_var_short)+'.pdf') 
-
-    return 
-    
-inset = False
-plot_variables(vars,var_names,inset,2,1,temp_var_type)
-
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
-
-def plot_months(var,var_name,uptake,temp_var_type):
-    print('Beginning to plot months...')
-    color_theme = 'coolwarm'
-    for i in range(len(months)):
-        my_geo_df = return_geo_df(i,uptake,temp_var_type)
-        fig = plt.figure(figsize=(4,5))
-        plt.tight_layout()
-        plt.subplots_adjust(left=0,bottom=0.064,right=0.906,top=0.9)
-        axs = plt.axes()
-        divider = make_axes_locatable(axs)
-        cax1    = divider.append_axes("right", size="5%", pad=0.05)
-        tl  = my_geo_df.plot(column=var,cmap='coolwarm',\
-            antialiased=False,\
-            ax = axs,\
-            legend=True,\
-            cax=cax1)        
-        axs.set_xticks([])
-        axs.set_yticks([])
-        temp_var_short = temp_var_type.split('/')[-1]
-        plt.savefig('figure_output/'+str(var)+'_'+str(months[i])+'_'+str(uptake)+'_'+str(temp_var_short)+'.pdf') 
-
-    return 
-    
-plot_months('Emissions','Emissions per LSOA (kg CO$_2$e)',uptake,temp_var_type)
+    plt.savefig('figure_output/total_emissions.png')
+    plt.savefig('figure_output/total_emissions.pdf')
 
 
-geojson_creation = False 
-if geojson_creation == True:
-    my_geo_df = return_geo_df(0,0.5,temp_var_type)
-    # making sure we're in WGS84
-    print('Projecting to WGS84')
-    my_geo_df = my_geo_df.to_crs("EPSG:4326")
-    # Parsing information into a geoJSON file
-    # Each LSOA is represented with associated
-    # properties are key values that we should plot
-    print('Parsing shapes as geoJSON...')
-    df['geojson'] =  df['geom_str'].apply(lambda x: json.dumps(wkt.loads(x)))
-    polygons = list(df['geojson'])
-    start = """{"type": "FeatureCollection","features": ["""
-    for i in tqdm(range(len(polygons))):
-        property_dict = {}
-        polygons[i] = json.loads(polygons[i])
-        polygons[i] = {"geometry":polygons[i]}
-        polygons[i]["properties"] = {"temp":temp_values[i],"start_gas":gas_values[i],"cop":cop_values[i],"delta_elec":delta_elec_values[i],"gas_rem":remaining_gas_values[i],"elec":elec_values[i],"remaining_elec":remaining_elec_values[i]}
-        if i != len(polygons)-1:
-            start += str(polygons[i])+','
-        else:
-            start += str(polygons[i])
-    end = ''']}'''
-    start += end 
-    start = str(start).replace("'", '"')
-    start = start.replace(' ','')
-    start = start.replace('/n','')
-    # geojson_written = open('mapbox_current/'+month_str+'_'+temp_var_type.split('/')[-1]+'_LSOA.geojson','w')
-    geojson_written = open('mapbox_current/LSOA.geojson','w')
-    geojson_written.write(start)
-    geojson_written.close() 
-    print('Succesfully created geoJSON file')
-
+vars = ["Total Emissions","Gas Emissions", "Electricity Emissions"]
+plot_var_month_with_temps(vars)

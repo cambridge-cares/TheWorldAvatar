@@ -1,9 +1,12 @@
+import matplotlib.patches
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from enum import unique
 from typing import Type
 from SPARQLWrapper import SPARQLWrapper, CSV, JSON, POST
 from numpy.core.defchararray import add
 from tqdm import tqdm 
 import numpy as np 
+import scipy.stats as st
 import matplotlib.pyplot as plt
 import geopandas as gpd
 from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes, mark_inset
@@ -499,8 +502,7 @@ monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
-        # monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
-        monthly_gas_tensor[i,j] = gas_tensor[i] 
+        monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
 
 
 # vector of TOTAL electricity consumption in 2019 by month
@@ -525,12 +527,10 @@ monthly_elec_tensor = np.zeros((len(unique_LSOA),12))
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(elec_tensor)):
     for j in range(len(months)):
-        # monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
-        monthly_elec_tensor[i,j] = elec_tensor[i]
+        monthly_elec_tensor[i,j] = elec_tensor[i] * monthly_total_elec_demand[j] / total_uk_elec_demand
 
 def return_geo_df(month,uptake,temp_var_type):
     month_str = months[month]
-
     # getting mean min or max tensor
     temp_tensor = results_tensor[t_dict[temp_var_type],:,:] 
     # calculating COP
@@ -678,9 +678,11 @@ def return_geo_df(month,uptake,temp_var_type):
     df = pd.DataFrame(unique_LSOA)
     df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
     df['geom_str'] = list([str(x) for x in shapes_of_interest])
-    # properties 
     df['Gas']    = list(np.around(gas_values,decimals=3))
+    df['Gas Emissions'] = list(np.around(gas_co * gas_values,decimals=3)) 
     df['Electricity']   = list(np.around(elec_values,decimals=3))
+    df['Electricity Emissions']   = list(np.around(elec_co * elec_values,decimals=3))
+    df['Total Emissions'] = list(np.around(elec_co * elec_values + gas_co * gas_values,decimals=3))
     df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
     df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
     df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
@@ -704,6 +706,7 @@ def return_geo_df(month,uptake,temp_var_type):
     print('Converting to Mercator projection (better than WGS84 for UK)')
     my_geo_df = my_geo_df.to_crs("EPSG:3395")
 
+    my_geo_df = my_geo_df[my_geo_df['Percentage Fuel Poor'] > 0.001]
     return my_geo_df
 
 # define min mean or max 
@@ -725,109 +728,92 @@ newcolors = np.vstack((top(np.linspace(0, 1, 128)),
 
 newcmp = ListedColormap(newcolors, name='ineq')
 
-vars      = ['Temperature','Gas','Electricity','COP','Percentage Fuel Poor','Electricity Change','Emissions','Change in Emissions','Inequality Index']
-var_names = ['Mean Air Temperature (°C)','Gas Consumption (kWh)','Electricity Consumption(kWh)','Coefficient of Performance (-)','''Fuel Poverty ($\%$)''','''$\Delta$ Electricity (kWh)''','''Carbon emissions (kg CO$_2$e)''','$\Delta$ Carbon emissions (kg CO$_2$e)','Inequality Index (-)']
+vars      = ['Percentage Fuel Poor']
+var_names = ['Percentage Fuel Poor (%)']
 
 def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     print('Beginning plot...')
     color_theme = 'coolwarm'
     my_geo_df = return_geo_df(month,uptake,temp_var_type)
-    for i in range(len(vars)):
-        if i == len(vars)-1:
-            color_theme = newcmp
-        fig = plt.figure(figsize=(3,5))
-        plt.subplots_adjust(left=0,bottom=0.064,right=0.906,top=0.9)
-        plt.tight_layout()
-        axs = plt.axes()
-        divider = make_axes_locatable(axs)
-        cax1    = divider.append_axes("right", size="5%", pad=0.05)
-        tl  = my_geo_df.plot(column=vars[i],cmap=color_theme,\
-            antialiased=False,\
-            ax = axs,\
-            legend=True,\
-            cax=cax1)        
-        axs.set_xticks([])
-        axs.set_yticks([])
-        axs.set_title(var_names[i])
-        # axs[i].set_xlabel('Longitude')
-        # axs[i].set_ylabel('Latitude')
-        if inset == True:
-            axins2 = zoomed_inset_axes(axs, zoom=4, loc=1)
-            plt.setp(axins2.get_xticklabels(), visible=False)
-            plt.setp(axins2.get_yticklabels(), visible=False)
-            axins2.set_xticks([])
-            axins2.set_yticks([])
-            axins2.set_ylim(7.025E6,7.175E6)
-            axins2.set_xlim(-300000,-180000)
-            my_geo_df.plot(column=vars[i],cmap=color_theme,antialiased=False,ax=axins2)
-            mark_inset(axs,axins2,loc1=2,loc2=4,fc='none',ec='0.5')
-        temp_var_short = temp_var_type.split('/')[-1]
-        plt.savefig('figure_output/'+str(vars[i])+'_'+str(months[month])+'_'+str(uptake)+'_'+str(temp_var_short)+'.pdf') 
+    mosaic = '''
+        A
+        A
+        '''
+    fig = plt.figure(figsize=(11,7))
+    axs = fig.subplot_mosaic(mosaic)    
+    cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
+        # Querying Polygons from KG to construct geoJSON
+    UK_gdf = gpd.read_file("GBR_adm2.shp")
+    UK_gdf = UK_gdf.to_crs("EPSG:3395")
+    UK_gdf.boundary.plot(ax=axs['A'],color='k',linewidth=0.5)
+    boundary = my_geo_df.bounds
+    boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
+    axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+20E4])
+    axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]+1E4]))
+    val_values = my_geo_df[vars[0]].values
+    iqr = st.iqr(val_values)
+    q1,q3 = st.mstats.idealfourths(val_values)
+    bottom = q1-1.5*iqr
+    top = q3 +1.5*iqr
+    divnorm = cl.Normalize(vmin=5, vmax=30)
+    axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
+    axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
+    tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
+        antialiased=False,\
+        ax = axs['A'],\
+        norm = divnorm,\
+        legend=True,\
+        cax=cax,
+        legend_kwds={'label':'Fuel Poverty (%)','ticks':[5,10,15,20,25,30]}) 
+        # Querying Polygons from KG to construct geoJSON
 
+    
+    cax.set_yticklabels(['< 5','10','15','20','25','> 30'])
+    axs['A'].set_xticks([])
+    axs['A'].set_yticks([])
+    axs['A'].spines["top"].set_visible(False)
+    axs['A'].spines["right"].set_visible(False)
+    axs['A'].spines["left"].set_visible(False)
+    axs['A'].spines["bottom"].set_visible(False)
+    # axs[i].set_xlabel('Longitude')
+    # axs[i].set_ylabel('Latitude')
+    order = [4,3,2,1]
+    loc1 = [1,2,2,1]
+    loc2 = [3,3,3,4]
+    names = ['Greater Manchester','North East','London','South West']
+
+    for f in range(4):
+        if f == 0 or f == 1:
+            axins2 = inset_axes(axs['A'], width=4, height=2.5,
+                    bbox_to_anchor=(0.5, 0.3),
+                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
+        else:
+            axins2 = inset_axes(axs['A'], width=4, height=2.5,
+                    bbox_to_anchor=(0.5, 0.5),
+                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
+        plt.subplots_adjust(bottom = 0.225,left=0.07)
+        UK_gdf.boundary.plot(ax=axins2,color='k',linewidth=0.25)
+
+        plt.setp(axins2.get_xticklabels(), visible=False)
+        plt.setp(axins2.get_yticklabels(), visible=False)
+        UK_gdf.boundary.plot(ax=axins2,color='k',linewidth=0.5)
+        axins2.set_xticks([])
+        axins2.set_title(str(names[f]))
+        axins2.set_yticks([])
+        axins2.set_ylim(axs_ybounds[f])
+        axins2.set_xlim(axs_xbounds[f])
+        my_geo_df.plot(column=vars[0],cmap=color_theme,\
+                antialiased=False,\
+                norm = divnorm,\
+                ax = axins2)
+        mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
+    plt.savefig('figure_output/fuel_poverty_nationwide.png') 
+    plt.savefig('figure_output/fuel_poverty_nationwide.pdf') 
+
+    
+
+    
     return 
     
 inset = False
-plot_variables(vars,var_names,inset,2,1,temp_var_type)
-
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
-
-def plot_months(var,var_name,uptake,temp_var_type):
-    print('Beginning to plot months...')
-    color_theme = 'coolwarm'
-    for i in range(len(months)):
-        my_geo_df = return_geo_df(i,uptake,temp_var_type)
-        fig = plt.figure(figsize=(4,5))
-        plt.tight_layout()
-        plt.subplots_adjust(left=0,bottom=0.064,right=0.906,top=0.9)
-        axs = plt.axes()
-        divider = make_axes_locatable(axs)
-        cax1    = divider.append_axes("right", size="5%", pad=0.05)
-        tl  = my_geo_df.plot(column=var,cmap='coolwarm',\
-            antialiased=False,\
-            ax = axs,\
-            legend=True,\
-            cax=cax1)        
-        axs.set_xticks([])
-        axs.set_yticks([])
-        temp_var_short = temp_var_type.split('/')[-1]
-        plt.savefig('figure_output/'+str(var)+'_'+str(months[i])+'_'+str(uptake)+'_'+str(temp_var_short)+'.pdf') 
-
-    return 
-    
-plot_months('Emissions','Emissions per LSOA (kg CO$_2$e)',uptake,temp_var_type)
-
-
-geojson_creation = False 
-if geojson_creation == True:
-    my_geo_df = return_geo_df(0,0.5,temp_var_type)
-    # making sure we're in WGS84
-    print('Projecting to WGS84')
-    my_geo_df = my_geo_df.to_crs("EPSG:4326")
-    # Parsing information into a geoJSON file
-    # Each LSOA is represented with associated
-    # properties are key values that we should plot
-    print('Parsing shapes as geoJSON...')
-    df['geojson'] =  df['geom_str'].apply(lambda x: json.dumps(wkt.loads(x)))
-    polygons = list(df['geojson'])
-    start = """{"type": "FeatureCollection","features": ["""
-    for i in tqdm(range(len(polygons))):
-        property_dict = {}
-        polygons[i] = json.loads(polygons[i])
-        polygons[i] = {"geometry":polygons[i]}
-        polygons[i]["properties"] = {"temp":temp_values[i],"start_gas":gas_values[i],"cop":cop_values[i],"delta_elec":delta_elec_values[i],"gas_rem":remaining_gas_values[i],"elec":elec_values[i],"remaining_elec":remaining_elec_values[i]}
-        if i != len(polygons)-1:
-            start += str(polygons[i])+','
-        else:
-            start += str(polygons[i])
-    end = ''']}'''
-    start += end 
-    start = str(start).replace("'", '"')
-    start = start.replace(' ','')
-    start = start.replace('/n','')
-    # geojson_written = open('mapbox_current/'+month_str+'_'+temp_var_type.split('/')[-1]+'_LSOA.geojson','w')
-    geojson_written = open('mapbox_current/LSOA.geojson','w')
-    geojson_written.write(start)
-    geojson_written.close() 
-    print('Succesfully created geoJSON file')
-
+plot_variables(vars,var_names,inset,7,1,temp_var_type)
