@@ -6,5 +6,5 @@ This Python package contains a number of common utilities that may be useful to 
 
 The library currently contains the following functionality:
 
-* twautils.log
+* Logging
 ..* The `log` subpackage contains scripts to initialise and generate loggers that should be used in all TWA codes. For more details, see the [Logging](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Logging) page on the Wiki.

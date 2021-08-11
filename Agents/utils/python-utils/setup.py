@@ -12,7 +12,7 @@ setuptools.setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/cambridge-cares/TheWorldAvatar",
-    packages=['twautils'],
+    packages=['twautils', 'twautils.log'],
     classifiers=(
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
