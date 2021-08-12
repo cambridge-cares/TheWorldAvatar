@@ -121,14 +121,15 @@ public class InitialiseInstances extends JPSAgent{
     	}
 
     	JSONObject response = new JSONObject();
-    	response.put("status", "Initialised instances successfully");
     	response.put("input", input);
     	response.put("min value", min_property);
     	response.put("derivation of min value", derived_minvalue);
     	response.put("max value", max_property);
     	response.put("derivation of max value", derived_maxvalue);
     	response.put("difference", diff_property);
+    	response.put("derivation of difference", derived_difference);
     	response.put("average", average);
+    	response.put("derivation of average", derived_average);
     	
     	return response;
     }

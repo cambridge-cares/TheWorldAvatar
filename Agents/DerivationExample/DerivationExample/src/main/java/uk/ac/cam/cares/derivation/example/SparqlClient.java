@@ -23,8 +23,8 @@ public class SparqlClient {
 	StoreClientInterface storeClient;
 	
 	// namespace
-	public static String namespace = "http://derived_example#";
-	private static Prefix p_namespace = SparqlBuilder.prefix("derived_example", iri(namespace));
+	public static String namespace = "http://derivation_example#";
+	private static Prefix p_namespace = SparqlBuilder.prefix("derivation_example", iri(namespace));
 	
 	// rdf:type
 	private static Iri MaxValue = p_namespace.iri("MaxValue");
