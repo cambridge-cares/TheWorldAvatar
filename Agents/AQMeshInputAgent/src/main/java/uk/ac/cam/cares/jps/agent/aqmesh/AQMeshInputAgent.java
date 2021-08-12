@@ -11,11 +11,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Class to retrieve data from the AQMesh API and storing it with connection to The World Avatar (Knowledge Base).
@@ -24,13 +25,15 @@ import java.util.regex.Pattern;
 public class AQMeshInputAgent {
 
     // The time series client to interact with the knowledge graph and data storage
-    private TimeSeriesClient<LocalDateTime> tsClient;
+    private TimeSeriesClient<ZonedDateTime> tsClient;
     // The connector to interact with the AQMesh API
     private AQMeshAPIConnector connector;
     // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
     private List<JSONKeyToIRIMapper> mappings;
     // The prefix to use when no IRI exists for a JSON key originally
-    private static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
+    // The time unit used for all time series maintained by the AQMesh input agent
+    public static final String timeUnit = ZonedDateTime.class.getSimpleName();
 
     /**
      * Standard constructor which reads in JSON key to IRI mappings from the config folder
@@ -62,7 +65,7 @@ public class AQMeshInputAgent {
      * Setter for the time series client.
      * @param tsClient The time series client to use.
      */
-    public void setTsClient(TimeSeriesClient tsClient) {
+    public void setTsClient(TimeSeriesClient<ZonedDateTime> tsClient) {
         this.tsClient = tsClient;
     }
 
@@ -74,18 +77,31 @@ public class AQMeshInputAgent {
         this.connector = connector;
     }
 
+    /**
+     * Initializes all time series maintained by the agent (represented by the key to IRI mappings) if they do no exist
+     * using the time series client.
+     */
     public void initializeTimeSeriesIfNotExist() {
         // Iterate through all mappings (each represents one time series)
         for (JSONKeyToIRIMapper mapping: mappings) {
             // The IRIs used by the current mapping
             List<String> iris = mapping.getAllIRIs();
             // Check whether IRIs have a time series linked and if not initialize the corresponding time series
-            if(timeSeriesExist(iris)) {
-                initializeTimeSeries(iris);
+            if(!timeSeriesExist(iris)) {
+                // Get the classes (datatype) corresponding to each JSON key needed for initialization
+                List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
+                // Initialize the time series
+                tsClient.initTimeSeries(iris, classes, timeUnit);
             }
         }
     }
 
+    /**
+     * Checks whether a time series exists by checking whether any of the IRIs
+     * that should be attached to the time series has no attachment using the time series client.
+     * @param iris The IRIs that should be attached to the same time series provided as list of strings.
+     * @return True if all IRIs have a time series attached, false otherwise.
+     */
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
         for(String iri: iris) {
@@ -94,11 +110,6 @@ public class AQMeshInputAgent {
             }
         }
         return true;
-    }
-
-    private void initializeTimeSeries(List<String> iris) {
-        // TODO: How to get the datatype for each key/iri? Config file or parsing from JSON?
-        //tsClient.initTimeSeries(iris);
     }
 
     private void updateTimeSeries() {

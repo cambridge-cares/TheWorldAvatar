@@ -5,6 +5,8 @@ import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -13,10 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 public class AQMeshInputAgentTest {
 
@@ -26,6 +26,12 @@ public class AQMeshInputAgentTest {
 
     // The default instance used in the tests
     private AQMeshInputAgent testAgent;
+    // The mocking instance for the time series client
+    @SuppressWarnings("unchecked")
+    private final TimeSeriesClient<ZonedDateTime> mockTSClient = (TimeSeriesClient<ZonedDateTime>) Mockito.mock(TimeSeriesClient.class);
+
+    // A default list of IRIs
+    private final List<String> iris = Arrays.asList("iri1", "iri2", "iri3");
 
     @Before
     public void initializeAgent() throws URISyntaxException, IOException {
@@ -36,6 +42,8 @@ public class AQMeshInputAgentTest {
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
         writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder));
         testAgent = new AQMeshInputAgent(propertiesFile);
+        // Set the mocked time series client
+        testAgent.setTsClient(mockTSClient);
     }
 
     @Test
@@ -129,6 +137,72 @@ public class AQMeshInputAgentTest {
         // Battery low warning and particle modem overlap should be boolean
         Assert.assertEquals(Boolean.class, getClassFromJSONKey.invoke(testAgent, "battery_low"));
         Assert.assertEquals(Boolean.class, getClassFromJSONKey.invoke(testAgent, "particle_modem_overlap"));
+    }
+
+    @Test
+    public void testTimeSeriesExistAllIRIsTrue() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Make method accessible
+        Method timeSeriesExist = AQMeshInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        timeSeriesExist.setAccessible(true);
+        // Set the mock to return true for any IRI
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(true);
+        // Empty list should return true
+        Assert.assertTrue((Boolean) timeSeriesExist.invoke(testAgent, new ArrayList<String>()));
+        // Should return true as all IRIs are attached (based on the mock)
+        Assert.assertTrue((Boolean) timeSeriesExist.invoke(testAgent, iris));
+        // Check also that the check was invoked for all keys
+        for (String iri : iris) {
+            Mockito.verify(mockTSClient, Mockito.times(1)).checkDataHasTimeSeries(iri);
+        }
+    }
+
+    @Test
+    public void testTimeSeriesExistAllOneIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Make method accessible
+        Method timeSeriesExist = AQMeshInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        timeSeriesExist.setAccessible(true);
+        // Set the mock to return false on second IRI
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(iris.get(0))).thenReturn(true);
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(iris.get(1))).thenReturn(false);
+        // Should return false as second IRIs is not attached (based on the mock)
+        Assert.assertFalse((Boolean) timeSeriesExist.invoke(testAgent, iris));
+    }
+
+    @Test
+    public void testTimeSeriesExistAllIRIFalse() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Make method accessible
+        Method timeSeriesExist = AQMeshInputAgent.class.getDeclaredMethod("timeSeriesExist", List.class);
+        timeSeriesExist.setAccessible(true);
+        // Set the mock to return false for any IRI
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(false);
+        // Should return false as no IRI is attached (based on the mock)
+        Assert.assertFalse((Boolean) timeSeriesExist.invoke(testAgent, iris));
+        // Should have returned false after first IRI
+        Mockito.verify(mockTSClient, Mockito.times(1)).checkDataHasTimeSeries(iris.get(0));
+        Mockito.verify(mockTSClient, Mockito.never()).checkDataHasTimeSeries(iris.get(1));
+        Mockito.verify(mockTSClient, Mockito.never()).checkDataHasTimeSeries(iris.get(2));
+    }
+
+    @Test
+    public void testInitializeTimeSeriesIfNotExistCreateAll() {
+        // Set the mock to return false for any IRI
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(false);
+        // Run the initialization method
+        testAgent.initializeTimeSeriesIfNotExist();
+        // Should have invoked the time series initialization for each mapping
+        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries()))
+                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
+    }
+
+    @Test
+    public void testInitializeTimeSeriesIfNotExistCreateNone() {
+        // Set the mock to return true for any IRI
+        Mockito.when(mockTSClient.checkDataHasTimeSeries(Mockito.anyString())).thenReturn(true);
+        // Run the initialization method
+        testAgent.initializeTimeSeriesIfNotExist();
+        // Should not have invoked the time series initialization for any mapping
+        Mockito.verify(mockTSClient, Mockito.never())
+                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
     }
 
 }
