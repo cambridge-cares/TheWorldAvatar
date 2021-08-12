@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  *
  */
 class DerivationSparql{
-	public static String derivednamespace = "http://www.theworldavatar.com/ontology/ontoderived/ontoderived.owl#";
+	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
@@ -45,13 +45,15 @@ class DerivationSparql{
 	
 	// classes
 	private static Iri Service = p_agent.iri("Service");
+	private static Iri Operation = p_agent.iri("Operation");
     private static Iri TimePosition = p_time.iri("TimePosition");
-    private static Iri DerivedQuantity = p_derived.iri("DerivedQuantity");
-    private static Iri DerivedQuantityWithTimeSeries = p_derived.iri("DerivedQuantityWithTimeSeries");
+    private static Iri Derivation = p_derived.iri("Derivation");
+    private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
     private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
+	private static Iri hasOperation = p_agent.iri("hasOperation");
 	private static Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
 	private static Iri belongsTo = p_derived.iri("belongsTo");
@@ -87,7 +89,7 @@ class DerivationSparql{
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
-		modify.insert(derived_iri.isA(DerivedQuantity));
+		modify.insert(derived_iri.isA(Derivation));
 		
 		for (String entity : entities) {
 			// ensure that given entity is not part of another derived quantity
@@ -100,9 +102,12 @@ class DerivationSparql{
 		}
 		
 		// link to agent
+		// here it is assumed that an agent only has one operation
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		String operation_iri = derivednamespace + UUID.randomUUID().toString();
 		// add agent url
-		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl, iri(agentURL)));
+		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
+		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
 	    
 	    // link to each input
 	    for (String input : inputs) {
@@ -138,7 +143,7 @@ class DerivationSparql{
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
-		modify.insert(derived_iri.isA(DerivedQuantityWithTimeSeries));
+		modify.insert(derived_iri.isA(DerivationWithTimeSeries));
 		
 		for (String entity : entities) {
 			// ensure that given entity is not part of another derived quantity
@@ -152,8 +157,10 @@ class DerivationSparql{
 		
 		// link to agent
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		String operation_iri = derivednamespace + UUID.randomUUID().toString();
 		// add agent url
-		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl,iri(agentURL)));
+		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
+		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
 	    
 	    // link to each input
 	    for (String input : inputs) {
@@ -255,7 +262,7 @@ class DerivationSparql{
 		
 		Iri derivedQuantityIRI = iri(derivedQuantity);
 		
-		Iri[] predicates = {isDerivedUsing,hasHttpUrl};
+		Iri[] predicates = {isDerivedUsing,hasOperation,hasHttpUrl};
 		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, derivedQuantityIRI, url);
 		
 		query.select(url).where(queryPattern).prefix(p_agent,p_derived);
@@ -592,7 +599,7 @@ class DerivationSparql{
 		SelectQuery query = Queries.SELECT();
 		Variable type = query.var();
 		TriplePattern tp = iri(derived_iri).isA(type);
-		Expression<?> constraint = Expressions.equals(type, DerivedQuantityWithTimeSeries);
+		Expression<?> constraint = Expressions.equals(type, DerivationWithTimeSeries);
 		
 		// this query will return one result if the constraint matches
 		GraphPattern queryPattern = tp.filter(constraint);

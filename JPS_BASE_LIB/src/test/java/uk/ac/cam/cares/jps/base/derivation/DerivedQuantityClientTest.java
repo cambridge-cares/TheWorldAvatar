@@ -74,7 +74,7 @@ public class DerivedQuantityClientTest{
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
-		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivedQuantity", devIndividual.getRDFType().toString()) ;
+		Assert.assertEquals(DerivationSparql.derivednamespace + "Derivation", devIndividual.getRDFType().toString()) ;
 		
 		// check that each entity is connected to the derived instance
 		for (String entity : entities) {
@@ -87,10 +87,10 @@ public class DerivedQuantityClientTest{
 		Assert.assertTrue(testKG.contains(devIndividual,
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
 				testKG.getIndividual(derivedAgentIRI)));
-		Assert.assertTrue(testKG.contains(testKG.getIndividual(derivedAgentIRI), 
-				ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl"),
-				ResourceFactory.createResource(derivedAgentURL)));
-		
+		RDFNode operation = testKG.getIndividual(derivedAgentIRI).getProperty(ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation")).getObject();
+		RDFNode url = testKG.getIndividual(operation.toString()).getProperty(ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl")).getObject();
+        Assert.assertEquals(derivedAgentURL, url.toString());
+        
 		// checks for inputs
 		for (String input : inputs) {
 			Assert.assertTrue(testKG.contains(devIndividual,
@@ -109,7 +109,7 @@ public class DerivedQuantityClientTest{
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
-		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivedQuantityWithTimeSeries", devIndividual.getRDFType().toString()) ;
+		Assert.assertEquals(DerivationSparql.derivednamespace + "DerivationWithTimeSeries", devIndividual.getRDFType().toString()) ;
 		
 		// check that entity is connected to the derived instance
 	    Assert.assertTrue(testKG.contains(testKG.getIndividual(entity1), 
@@ -120,9 +120,9 @@ public class DerivedQuantityClientTest{
 		Assert.assertTrue(testKG.contains(devIndividual,
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace+"isDerivedUsing"),
 				testKG.getIndividual(derivedAgentIRI)));
-		Assert.assertTrue(testKG.contains(testKG.getIndividual(derivedAgentIRI), 
-				ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl"),
-				ResourceFactory.createResource(derivedAgentURL)));
+		RDFNode operation = testKG.getIndividual(derivedAgentIRI).getProperty(ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation")).getObject();
+		RDFNode url = testKG.getIndividual(operation.toString()).getProperty(ResourceFactory.createProperty("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasHttpUrl")).getObject();
+        Assert.assertEquals(derivedAgentURL, url.toString());
 		
 		// checks for inputs
 		for (String input : inputs) {
