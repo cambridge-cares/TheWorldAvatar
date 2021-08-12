@@ -79,7 +79,7 @@
                 <dependency>
                     <groupId>uk.ac.cam.cares.jps</groupId>
                     <artifactId>jps-base-lib</artifactId>
-                    <version>1.3.0</version>
+                    <version>1.4.0-SNAPSHOT</version>
                 </dependency>
 
                 <dependency>
@@ -132,6 +132,14 @@
 			<version>4.5.5</version>
 		</dependency -->
 
+		<!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
+			<version>3.5.7</version>
+			<scope>test</scope>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-arq</artifactId>

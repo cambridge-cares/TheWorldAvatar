@@ -1,11 +1,4 @@
 from setuptools import setup, find_packages
-import os.path
-
-thelibFolder = os.path.dirname(os.path.realpath(__file__))
-requirementPath = os.path.join(thelibFolder,'requirements.txt')
-if os.path.isfile(requirementPath):
-    with open(requirementPath) as f:
-        requirements= f.read().splitlines()
 
 setup(
     # This is the name of your project. The first time you publish this
@@ -15,7 +8,7 @@ setup(
     # $ pip install sampleproject
     #
     name='compchemparser', # Required
-    version='1.0.0', # Required    
+    version='1.0.0', # Required
     # This should be your name or the name of the organization which owns the
     # project.
     author='Daniel Nurkowski and Angiras Menon', # Optional
@@ -30,7 +23,6 @@ setup(
     # Specify which Python versions you support pip install' will check this
     # and refuse to install the project if the version does not match.
     python_requires='>=3.5, <4',
-    install_requires=requirements,
     include_package_data=True,
     # If there are data files included in your packages that need to be
     # installed, specify them here.
@@ -38,7 +30,7 @@ setup(
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # `pip` to create the appropriate form of executable for the target
     # platform.
-    #
+    install_requires= ["docopt", "cclib"],
     # For example, the following would provide a command called `sample` which
     # executes the function `main` from this package when invoked:
     entry_points={  # Optional

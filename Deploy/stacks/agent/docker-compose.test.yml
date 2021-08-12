@@ -1,5 +1,18 @@
 version: "3.8"
 
+services:
+
+  # Chatbot
+  jps-chatbot:
+    ports:
+      - 5001:5000
+
+  # LDF server
+  jps-ldf:
+    ports:
+      - 3001:3000
+
+
 networks:
   default:
     name: test-agent

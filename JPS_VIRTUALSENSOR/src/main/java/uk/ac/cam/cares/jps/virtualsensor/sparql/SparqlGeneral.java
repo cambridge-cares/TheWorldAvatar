@@ -15,7 +15,7 @@ import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.RemoteKnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.virtualsensor.configuration.SparqlAuthentication;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -35,21 +35,21 @@ public class SparqlGeneral {
 	private static Iri hasUnitOfMeasure = iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 	
 	public static void performUpdate(ModifyQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query.getQueryString());
         kbClient.executeUpdate();
     }
 	
 	public static void performUpdate(String query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(endpoint);
         kbClient.setQuery(query);
         kbClient.executeUpdate();
     }
 	
 	public static JSONArray performQuery(SelectQuery query) {
-        RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUser(SparqlAuthentication.getUser());
         kbClient.setPassword(SparqlAuthentication.getPassword());
         kbClient.setQueryEndpoint(endpoint);
@@ -60,7 +60,7 @@ public class SparqlGeneral {
     }
 	
 	public static JSONArray performQuery(String query) {
-		RemoteKnowledgeBaseClient kbClient = new RemoteKnowledgeBaseClient();
+		RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setUser(SparqlAuthentication.getUser());
         kbClient.setPassword(SparqlAuthentication.getPassword());
         kbClient.setQueryEndpoint(endpoint);

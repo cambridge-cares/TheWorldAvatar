@@ -1,13 +1,9 @@
+import compchemparser.helpers.elements_data as eld
 import cclib
 import os
-import sys
 import re
-import compchemparser.helpers.utils as utils
-import compchemparser.helpers.ccutils as ccutils
-import compchemparser.helpers.elements_data as eld
 from itertools import islice
 import json
-
 
 # keys/values uploaded to the kg
 #-------------------------------------------------
@@ -45,10 +41,18 @@ HOMO_MIN_2_ENERGY = 'HOMO-2 energy'
 LUMO_ENERGY = 'LUMO energy'
 LUMO_PLUS_1_ENERGY = 'LUMO+1 energy'
 LUMO_PLUS_2_ENERGY = 'LUMO+2 energy'
-# group 7 (program, run date)
+# group 7 (program, run date, scan specifics)
 PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
 RUN_DATE = 'Run date'
+SCANFLAG = 'ScanFlag'
+SCANTYPE = 'ScanType'
+SCANATOMS = 'ScanAtoms'
+SCANPOINTS = 'Scan Points'
+MODATOMS = 'ModAtoms'
+MODTYPES = 'ModTypes'
+MODCOMMS = 'ModComms'
+
 
 # misc keys, not uploaded to the kg
 # mostly used for inferring other properties
@@ -71,7 +75,7 @@ CCKEYS_DATA = [
             ELECTRONIC_ZPE_ENERGY,HOMO_ENERGY,HOMO_MIN_1_ENERGY ,
             HOMO_MIN_2_ENERGY,LUMO_ENERGY,LUMO_PLUS_1_ENERGY,LUMO_PLUS_2_ENERGY,
             PROGRAM_NAME, PROGRAM_VERSION,
-            RUN_DATE
+            RUN_DATE, SCANFLAG, SCANTYPE, SCANATOMS, SCANPOINTS, MODATOMS, MODTYPES, MODCOMMS
         ]
 
 # collate misc keys
@@ -157,7 +161,7 @@ class CcGaussianParser():
                     if jobs_nr > 1:
                         # check if the found job was successful
                         job_success = get_job_success(buffer)
-                        print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
+                        #print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
                         if job_success:
                             # set temp file name and dump read content to it
                             log_names.append(logFile + '_#' + str(jobs_nr-1))
@@ -200,11 +204,24 @@ class CcGaussianParser():
 
             return log_names
         #---------------------------------------------
-        def split(a, n):
-            #This function splits a list into k parts of approximately equal length.
-            k, m = divmod(len(a), n)
-            return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
+        def data_splitter(data):
+            data_list = [data]
+            if 'ScanFlag' in data:
+                flat_scanpoints = [item for sublist in data['Scan Points'] for item in sublist]
+                no_points = len(flat_scanpoints)
 
+                if no_points > 1 :
+                    data_list = []
+                    for k in range(no_points):
+                        temp_data = data.copy()
+                        temp_data['Geometry'] = data['Geometry'][k]
+                        if 'Electronic energy' in data:
+                            temp_data['Electronic energy'] = data['Electronic energy'][k]
+                        if 'Electronic and ZPE energy' in data:
+                            temp_data['Electronic and ZPE energy'] = data['Electronic and ZPE energy'][k]
+                        temp_data['Scan Points'] = flat_scanpoints[k]
+                        data_list.append(temp_data)
+            return data_list
         #================================================
 
         #================================================
@@ -218,8 +235,10 @@ class CcGaussianParser():
         # loop thorugh each log and parse it
         for log in split_logs:
             parseddata = self.parse_log(log)
-            json_data = json.dumps(parseddata)
-            uploaddata.append(json_data)
+            parseddata = data_splitter(parseddata)
+            for listdata in parseddata:
+                json_data = json.dumps(listdata)
+                uploaddata.append(json_data)
             #dict_data = json.loads(json_data)
             #with open(log.replace('.log','.json'), 'w') as outfile:
                 #json.dump(dict_data, outfile, indent = 4)
@@ -247,18 +266,18 @@ class CcGaussianParser():
         def set_geom_type(data):
             # sets geometry type based on nr of atoms and rot constants in a molecule
             if data[ROT_CONST_NR] is not None and \
-            data[ATOM_TYPES] is not None:            
-            
+            data[ATOM_TYPES] is not None:
+
                 if data[ROT_CONST_NR] == 1:
                     data[GEOM_TYPE] = 'linear'
                 else:
                     data[GEOM_TYPE] = 'nonlinear'
-        # If species has one atom then it generates geometry type as atomic. Fixed by Angiras Menon (am2145@cam.ac.uk).     
+        # If species has one atom then it generates geometry type as atomic. Fixed by Angiras Menon (am2145@cam.ac.uk).
             elif data[ROT_CONST_NR] is None and \
             data[ATOM_TYPES] is not None:
                 if len(parseddata[ATOM_TYPES]) == 1:
                     data[GEOM_TYPE] = 'atomic'
-            
+
         #---------------------------------------------
         def check_charge_spin_mult(data, cur_line, log_lines):
             # tries to extract charge and spin multiplicity from a log file line
@@ -274,7 +293,8 @@ class CcGaussianParser():
             # tries to extract geometry from a log file line
             line = log_lines[cur_line]
             if 'Input orientation:' in line:
-                data[GEOM] = []
+                if data[SCANFLAG] is None:
+                    data[GEOM] = []
                 data[ATOM_TYPES] = []
 
                 cur_line = cur_line + 2
@@ -285,28 +305,32 @@ class CcGaussianParser():
                 line = log_lines[cur_line].strip()
                 while '---' not in line:
                     line = line.split()
-                    data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                    if data[SCANFLAG] is None:
+                        data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
                     el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
                     data[ATOM_TYPES].append(el)
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
-            elif 'Standard orientation:' in line and data[GEOM]==None:
-                data[GEOM] = []
-                data[ATOM_TYPES] = []
+            elif 'Standard orientation:' in line:
+                if data[SCANFLAG] is not None or data[GEOM] is None:
+                    if data[SCANFLAG] is None:
+                        data[GEOM] = []
+                    data[ATOM_TYPES] = []
 
-                cur_line = cur_line + 2
-                line = log_lines[cur_line].strip().split()[4]
-                data[GEOM_UNIT] = line.replace('(','').replace(')','')
+                    cur_line = cur_line + 2
+                    line = log_lines[cur_line].strip().split()[4]
+                    data[GEOM_UNIT] = line.replace('(','').replace(')','')
 
-                cur_line = cur_line + 3
-                line = log_lines[cur_line].strip()
-                while '---' not in line:
-                    line = line.split()
-                    data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
-                    el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
-                    data[ATOM_TYPES].append(el)
-                    cur_line = cur_line + 1
+                    cur_line = cur_line + 3
                     line = log_lines[cur_line].strip()
+                    while '---' not in line:
+                        line = line.split()
+                        if data[SCANFLAG] is None:
+                            data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                        el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
+                        data[ATOM_TYPES].append(el)
+                        cur_line = cur_line + 1
+                        line = log_lines[cur_line].strip()
             return cur_line
         #---------------------------------------------
         def check_elweights(data, cur_line,log_lines):
@@ -395,17 +419,17 @@ class CcGaussianParser():
             while HOMO_RE.search(line):
                 line = line.strip()
                 line = line.split()
-                occupied.append(line[4:]) 
+                occupied.append(line[4:])
                 cur_line += 1
                 if cur_line >= len(log_lines):
                     break
                 line = log_lines[cur_line]
             occupied = sum(occupied, [])
-            if occupied: 
+            if occupied:
                 data[HOMO_ENERGY] = float(occupied[-1])
-                if len(occupied) > 1 : 
+                if len(occupied) > 1 :
                     data[HOMO_MIN_1_ENERGY] = float(occupied[-2])
-                if len(occupied) > 2 : 
+                if len(occupied) > 2 :
                     data[HOMO_MIN_2_ENERGY] = float(occupied[-3])
             return cur_line
         #---------------------------------------------
@@ -416,17 +440,17 @@ class CcGaussianParser():
             while LUMO_RE.search(line):
                 line = line.strip()
                 line = line.split()
-                virtual.append(line[4:]) 
+                virtual.append(line[4:])
                 cur_line += 1
                 if cur_line >= len(log_lines):
                     break
                 line = log_lines[cur_line]
             virtual = sum(virtual, [])
-            if virtual: 
+            if virtual:
                 data[LUMO_ENERGY] = float(virtual[0])
-                if len(virtual) > 1 : 
+                if len(virtual) > 1 :
                     data[LUMO_PLUS_1_ENERGY] = float(virtual[1])
-                if len(virtual) > 2 : 
+                if len(virtual) > 2 :
                     data[LUMO_PLUS_2_ENERGY] = float(virtual[2])
             return cur_line
 
@@ -562,7 +586,7 @@ class CcGaussianParser():
             data[ATOM_COUNTS] = {}
             for (at, ac) in re.findall(ATOMS_RE, data[EMP_FORMULA]):
                 #data[ATOM_COUNTS][at.upper()] = int(ac)
-                #Line added by Nenad Krdzavac (caresssd@hermes.cam.ac.uk). 
+                #Line added by Nenad Krdzavac (caresssd@hermes.cam.ac.uk).
                 #Line above is commented because it generates upper case of atom name. That syntax does not mathc periodic table naming atoms.
                  data[ATOM_COUNTS][at] = int(ac)
 
@@ -616,7 +640,174 @@ class CcGaussianParser():
                         data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
                     data[ATOM_MASSES_UNIT] = 'atomic'
         #================================================
+        def check_modredundant(data, cur_line, log_lines):
+            line = log_lines[cur_line]
+            mod_lines = []
+            mod_comms = []
+            mod_type = []
+            mod_atoms = []
+            if "The following ModRedundant input section has been read:".lower() in line.lower():
+                cur_line +=1
+                line = log_lines[cur_line]
+                while line and not line.isspace():
+                    if 'S' not in line: #We don't want to read scans here.
+                        mod_lines.append(line) #Add the Modredundant lines here.
+                    cur_line += 1
+                    line = log_lines[cur_line]
+                for modline in mod_lines:
+                    if modline.split()[0] == 'B':
+                        mod_type.append('Bond')
+                        mod_atoms.append([modline.split()[1], modline.split()[2]])
+                    elif modline.split()[0] == 'A':
+                        mod_type.append('Angle')
+                        mod_atoms.append([modline.split()[1], modline.split()[2],modline.split()[3]])
+                    elif modline.split()[0] == 'D':
+                        mod_type.append('Dihedral')
+                        mod_atoms.append([modline.split()[1], modline.split()[2],modline.split()[3],modline.split()[4]])
+                    if modline.split()[-1] == 'B':
+                        mod_comms.append('Build')
+                    elif modline.split()[-1] == 'F':
+                        mod_comms.append('Freeze')
+                    if all(len(v) > 0 for v in [mod_atoms, mod_type, mod_comms]):
+                           data[MODATOMS] = mod_atoms
+                           data[MODTYPES] = mod_type
+                           data[MODCOMMS] = mod_comms
+            return cur_line
+        #================================================
+        def check_relaxed_scan_job(data, cur_line, log_lines):
+            if data[SCANFLAG] == 'Relaxed':
+                data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
+                return cur_line
+            elif data[SCANFLAG] != 'Rigid':
+                line = log_lines[cur_line]
+                placeholder_GEOM = None
+                placeholder_energy = None
+                scan_atoms = None
+                scan_type = None
+                if "The following ModRedundant input section has been read:".lower() in line.lower() and data[SCANFLAG] is None:
+                    mod_line = cur_line
+                    cur_line +=1
+                    line = log_lines[cur_line]
+                    while line and not line.isspace():
+                        if 'S' in line:
+                            scan_line = log_lines[cur_line]
+                            scan_type = scan_line.split()[0]
+                            data[SCANFLAG] = 'Relaxed'
+                        cur_line += 1
+                        line = log_lines[cur_line]
+                    if data[SCANFLAG] is None:
+                        cur_line = mod_line
+                if data[SCANFLAG] == 'Relaxed':
+                    data[SCANPOINTS] = self.cclib_data.scanparm
+                    placeholder_GEOM = self.cclib_data.scancoords
+                    placeholder_energy = self.cclib_data.scanenergies
+                if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                    data[SCANFLAG] = None
+                elif data[SCANFLAG]:
+                    data[GEOM] = placeholder_GEOM
+                    data[ELECTRONIC_ENERGY] = placeholder_energy
+                    data[GEOM] = data[GEOM].tolist()
+                    if scan_type == 'B':
+                        data[SCANTYPE] = 'Bond'
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2]]
+                        data[SCANATOMS] = scan_atoms
+                    elif scan_type == 'A':
+                        data[SCANTYPE] = 'Angle'
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3]]
+                        data[SCANATOMS] = scan_atoms
+                    elif scan_type == 'D':
+                        data[SCANTYPE] = 'Dihedral'
+                        scan_atoms = [scan_line.split()[1],scan_line.split()[2],scan_line.split()[3],scan_line.split()[4]]
+                        data[SCANATOMS] = scan_atoms
+            return cur_line
+        #================================================
+        def check_rigid_scan_job(data, cur_line, log_lines):
+            if data[SCANFLAG] == 'Rigid':
+                data[ELECTRONIC_ENERGY] = self.cclib_data.scanenergies
+                return cur_line
+            elif data[SCANFLAG] !='Relaxed':
+                count = 0
+                line = log_lines[cur_line]
+                placeholder_GEOM = None
+                placeholder_energy = None
+                scan_atoms = None
+                scan_type = None
+                zmol = None
+                zvars = None
+                zmat = []
+                if 'Charge =' in line and  'Multiplicity =' in line:
+                    count +=1
+                    cur_line +=1
+                    line = log_lines[cur_line]
+                    while line and not line.isspace():
+                        zmat.append(line)
+                        count +=1
+                        cur_line += 1
+                        line = log_lines[cur_line]
+                zmat = [i.rstrip() for i in zmat]
 
+                if 'Variables' not in '\t'.join(zmat):
+                    zmat = None
+                    cur_line = cur_line - count #If we don't find any zmatrix scan, we will return back to the start.
+                def group(seq, sep):
+                    g = []
+                    for el in seq:
+                        if sep in el:
+                            yield g
+                            g = []
+                        g.append(el)
+                    yield g
+
+                if zmat:
+                    zmol = list(group(zmat, 'Variables'))[0]
+                    zvars = list(group(zmat, 'Variables'))[1]
+                if zvars and 'Scan' in '\t'.join(zvars):
+                        data[SCANFLAG] = 'Rigid'
+                if data[SCANFLAG] == 'Rigid':
+                        data[SCANPOINTS] = self.cclib_data.scanparm
+                        placeholder_GEOM = self.cclib_data.scancoords
+                        placeholder_energy = self.cclib_data.scanenergies
+
+                if all(v is None for v in [data[SCANPOINTS],placeholder_GEOM, placeholder_energy]):
+                    data[SCANFLAG] = None
+                elif data[SCANFLAG]:
+                    data[GEOM] = placeholder_GEOM
+                    data[ELECTRONIC_ENERGY] = placeholder_energy
+                    data[GEOM] = data[GEOM].tolist()
+
+
+                    if zvars and zmol:
+                        for z in zvars:
+                            if 'Scan' in z:
+                                scanvar = z.split()[0]
+                        scan_atoms = []
+                        for k in range(len(zmol)):
+                            if scanvar in zmol[k]:
+                                line_index = k
+                                scan_line = zmol[k].split() #We will split the line that has the scan variable.
+                        scan_atoms.append(str(line_index+1))
+                        for j in range(len(scan_line)):
+                            if scanvar in scan_line[j]:
+                                var_index = j
+                        if var_index == 2:
+                            scan_type = 'B'
+                            scan_atoms.append(scan_line[var_index-1])
+                            if scan_type == 'B':
+                                data[SCANTYPE] = 'Bond'
+                            data[SCANATOMS] = scan_atoms
+                        if var_index == 4:
+                            scan_type = 'A'
+                            scan_atoms.extend([scan_line[var_index-3],scan_line[var_index-1]])
+                            if scan_type == 'A':
+                                data[SCANTYPE] = 'Angle'
+                            data[SCANATOMS] = scan_atoms
+                        if var_index == 6:
+                            scan_type = 'D'
+                            scan_atoms.extend([scan_line[var_index-5],scan_line[var_index-3],scan_line[var_index-1]])
+                            if scan_type == 'D':
+                                data[SCANTYPE] = 'Dihedral'
+                            data[SCANATOMS] = scan_atoms
+            return cur_line
         #================================================
         # parse_log body
         #================================================
@@ -637,6 +828,7 @@ class CcGaussianParser():
         cur_line = 0
         line = log_lines[cur_line]
         while True:
+           # print(line)
             # sometimes I am passing and retaining cur_line nr to functions
             # that do nothing with it and return it as is. I do it so that
             # in the future we may easily do sth with cur_line in these functions
@@ -655,18 +847,19 @@ class CcGaussianParser():
             cur_line = check_TD_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_E0(parsedmisc, cur_line,log_lines)
             cur_line = check_Casscf_MP2_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_relaxed_scan_job(parseddata, cur_line,log_lines)
+            cur_line = check_rigid_scan_job(parseddata, cur_line,log_lines)
+            cur_line = check_modredundant(parseddata, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
             mfooter = FOOTER_RE.match(line)
             if mfooter:
                 footer_line = cur_line
-
             cur_line = cur_line + 1
             if cur_line >= len(log_lines):
                 break
             line = log_lines[cur_line]
-
         # parse the log file footer
         if footer_line > 0:
             parse_footer(parseddata,parsedmisc,footer_line,log_lines)
@@ -674,7 +867,8 @@ class CcGaussianParser():
         # post-process certain results
         set_geom_type(parseddata)
         correct_Casscf_Mp2_method(parseddata, parsedmisc)
-        resolve_energy(parseddata, parsedmisc)
+        if parseddata[SCANFLAG] is None:
+            resolve_energy(parseddata, parsedmisc)
         resolve_atom_masses(parseddata)
 
         # remove data with None values

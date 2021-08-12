@@ -24,6 +24,12 @@ services:
     build:
       target: development
       
+  # Land Use Crop Map
+  land-use:
+    build:
+      target: development
+
+
 # Development network
 networks:
   default:

@@ -57,7 +57,11 @@ services:
   uk-gas-grid:
     build:
       target: production
-
+      
+  # Land Use Crop Map
+  land-use:
+    build:
+      target: production
 
 
 # Production network
