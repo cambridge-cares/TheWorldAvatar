@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -200,11 +201,9 @@ public class AccessAgentCaller{
 		try {
 			uri = new URI(URLDecoder.decode(url,"UTF-8"));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e);
 		}
 		
 		if(uri.getScheme()!=null) {
@@ -225,12 +224,10 @@ public class AccessAgentCaller{
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.KNOWLEDGE_BASE_URL,null,null);
 			
-		} catch (UnsupportedEncodingException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-		} catch (URISyntaxException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			throw new JPSRuntimeException(e);
+		} catch (URISyntaxException e) {
+			throw new JPSRuntimeException(e);
 		}
 		
 		return requestUrl.toString();
