@@ -26,9 +26,6 @@ services:
 
   # Reverse Proxy
   reverse_proxy:
-    # Enable ssl
-    build:
-      target: prod
     # Map http and https to standard ports
     ports:
       - 80:80
@@ -42,26 +39,6 @@ services:
       - type: volume
         source: certbot-challenge
         target: /var/www/certbot
-
-  # Website
-  website:
-    build:
-      target: prod
-      
-  # Power System and SDG Visualisation
-  uk-power-system:
-    build:
-      target: production
-
-  # Gas Grid Visualisation
-  uk-gas-grid:
-    build:
-      target: production
-      
-  # Land Use Crop Map
-  land-use:
-    build:
-      target: production
 
 
 # Production network

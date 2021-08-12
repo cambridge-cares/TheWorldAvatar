@@ -17,7 +17,6 @@ services:
   # Note: This Image mounts a volume so that it can access the SRM Driver and
   #        Intel MPI files stored within the 'srm-driver' Image.
   kinetics-agent:
-    build: "./KineticsAgent"
     ports:
       - 8081:8080
 

@@ -1,21 +1,13 @@
 version: "3.8"
 
-# Services
 services:
 
   # Blazegraph
   blazegraph:
-    build:
-      context: blazegraph
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     container_name: "blazegraph-${MODE}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
-      hash: "${HASH}"
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
     secrets:
@@ -23,34 +15,22 @@ services:
     volumes:
       - blazegraph_data:/data
 
-    # Blazegraph geo
+  # Blazegraph geo
   blazegraph_geo:
-    build:
-      context: blazegraph_geo
-    container_name: "blazegraph_geo-${MODE}"
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
-    labels:
-      authors: "msff2@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
-      hash: "${HASH}"
+    container_name: "blazegraph_geo-${MODE}"
     restart: unless-stopped
     volumes:
       - blazegraph_geo_data:/data
 
   # Postgres
   postgres:
+    image: docker.cmclinnovations.com/postgres:13.3-alpine
     container_name: "postgres-${MODE}"
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-    image: docker.cmclinnovations.com/postgres:13.3-alpine
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Postgres/PostgreSQL with SCRAM-SHA-256 authentication."
-      hash: "${HASH}"
     restart: unless-stopped
     secrets:
       - postgres_password
@@ -59,18 +39,11 @@ services:
 
   # RDF4J
   rdf4j:
-    build:
-      context: rdf4j
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     container_name: "rdf4j-${MODE}"
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
-    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "RDF4J with BASIC authentication for the server and workbench."
-      hash: "${HASH}"
     restart: unless-stopped
     # Add secrets to set BASIC authentication passwords for both the workbench and server
     secrets:
@@ -81,7 +54,7 @@ services:
       - rdf4j_logs:/usr/local/tomcat/logs 
 
 
-# Secrets to supply Blazegraph, Postgres, RDF4J passwords
+# Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
     file: blazegraph/secrets/blazegraph_password  
@@ -93,7 +66,7 @@ secrets:
     file: rdf4j/secrets/rdf4j_user_password
 
 
-# Volumes to handle triplestore data and logging for Blazegraph, RDF4J
+# Volumes to handle triplestore data and logging
 volumes:
   blazegraph_data:
     name: "blazegraph_data"

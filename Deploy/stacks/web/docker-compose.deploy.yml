@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+
+  # Knowledge Graph Website
+  website:
+    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
+    container_name: "website"
+    restart: unless-stopped
+
+  # Reverse Proxy
+  reverse_proxy:
+    image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
+    container_name: "reverse_proxy"
+    restart: always
+    volumes:
+      - type: bind
+        source: /var/log/kg-website-logs
+        target: /var/log/nginx/persistent
+
+  # Power System and SDG Visualisation
+  uk-power-system:
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "uk-power-system"
+    restart: unless-stopped
+    ports:
+      - 3001:80
+
+  # Gas Grid Visualisation
+  uk-gas-grid:
+    image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "uk-gas-grid"
+    restart: unless-stopped
+    ports:
+      - 4001:80
+
+  # Land Use Crop Map
+  land-use:
+    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "land-use"
+    restart: unless-stopped
+    ports:
+      - 4003:80

@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+  # Power System and SDG Visualisation
+  # Use 'development' target in test mode
+  uk-power-system:
+    build:
+      target: development
+
+  # Gas Grid Visualisation
+  # Use 'development' target in test mode
+  uk-gas-grid:
+    build:
+      target: development
+      
+  # Land Use Crop Map
+  # Use 'development' target in test mode
+  land-use:
+    build:
+      target: development
+
+  # Reverse Proxy
+  # Use 'dev' target in test mode
+  reverse_proxy:
+    build:
+      target: dev
+
+  # Knowledge Graph Website
+  # Use 'dev' target in test mode
+  website:
+    build:
+      target: dev

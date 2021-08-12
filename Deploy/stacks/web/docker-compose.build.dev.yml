@@ -1,19 +1,7 @@
 version: "3.8"
 
-# Services
 services:
 
-  # Reverse Proxy
-  reverse_proxy:
-    # Map http to port 81
-    ports:
-      - 81:80
-
-  # Website
-  website:
-    build:
-      target: dev
-      
   # Power System and SDG Visualisation
   uk-power-system:
     build:
@@ -28,9 +16,3 @@ services:
   land-use:
     build:
       target: development
-
-
-# Development network
-networks:
-  default:
-    name: dev-web
