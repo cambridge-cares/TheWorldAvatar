@@ -83,7 +83,8 @@ public class BaseOntologyModelManager {
         } else {
             filePath2= Paths.get(ABSDIR_KB_TEST,"ships",mmsi,"Chimney-1.owl").toString();
         }
-        LOGGER.info("the filepath created= "+filePath2);
+        
+        LOGGER.info("Created file is at: {}", filePath2);
 
         try {
             prepareDirectory(filePath2);

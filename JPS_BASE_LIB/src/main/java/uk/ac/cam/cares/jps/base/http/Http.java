@@ -46,7 +46,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 public class Http {
 
     /**
-     * Logger for error output.
+     * Logger for debug/info/error output.
      */
     private static final Logger LOGGER = LogManager.getLogger(Http.class);
 
