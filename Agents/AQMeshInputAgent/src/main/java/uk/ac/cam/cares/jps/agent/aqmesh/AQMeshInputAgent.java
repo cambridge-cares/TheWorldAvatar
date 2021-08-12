@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
-import org.eclipse.rdf4j.query.algebra.Str;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
@@ -12,6 +11,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -31,6 +32,10 @@ public class AQMeshInputAgent {
     public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
     // The time unit used for all time series maintained by the AQMesh input agent
     public static final String timeUnit = ZonedDateTime.class.getSimpleName();
+    // The JSON key for the timestamp
+    public static final String timestampKey = "reading_datestamp";
+    // The Zone ID of the timestamp (see https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html)
+    public static final ZoneId zoneID = ZoneId.of("UTC+00:00");
 
     /**
      * Standard constructor which reads in JSON key to IRI mappings from the config folder
@@ -142,7 +147,21 @@ public class AQMeshInputAgent {
         if (gasReadings.length() > 0) {
             gasReadingsMap = jsonArrayToMap(gasReadings);
         }
-
+        List<TimeSeries<ZonedDateTime>> timeSeries = convertReadingsToTimeSeries(particleReadingsMap, gasReadingsMap);
+        // Update each time series
+        for (TimeSeries<ZonedDateTime> ts: timeSeries) {
+            // Retrieve current maximum time to avoid duplicate entries
+            ZonedDateTime maxDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+            ZonedDateTime minCurrentTime = ts.getTimes().get(ts.getTimes().size()-1);
+            // If the new data overlaps with existing timestamps, prune the new ones
+            if (minCurrentTime.isBefore(maxDataTime)) {
+                ts = pruneTimeSeries(ts, maxDataTime);
+            }
+            // Only update if there actually is data
+            if (!ts.getTimes().isEmpty()) {
+                tsClient.addTimeSeriesData(ts);
+            }
+        }
     }
 
     /**
@@ -208,6 +227,98 @@ public class AQMeshInputAgent {
             readingsMapTyped.put(key, valuesTyped);
         }
         return readingsMapTyped;
+    }
+
+    /**
+     * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
+     * @param particleReadings The particle readings as map.
+     * @param gasReadings The gas readings as map.
+     * @return A list of time series object (one per mapping) that can be used with the time series client.
+     */
+    private List<TimeSeries<ZonedDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> particleReadings,
+                                                                        Map<String, List<?>> gasReadings)
+            throws  NoSuchElementException {
+        // Extract the timestamps by mapping the convertStringToZonedDateTime on the list items
+        // that are supposed to be string (toString() is necessary as the map contains lists of different types)
+        List<ZonedDateTime> particleTimestamps = particleReadings.get(AQMeshInputAgent.timestampKey).stream()
+                .map(timestamp -> (convertStringToZonedDateTime(timestamp.toString()))).collect(Collectors.toList());
+        List<ZonedDateTime> gasTimestamps = gasReadings.get(AQMeshInputAgent.timestampKey).stream()
+                .map(timestamp -> (convertStringToZonedDateTime(timestamp.toString()))).collect(Collectors.toList());
+        // Construct a time series object for each mapping
+        List<TimeSeries<ZonedDateTime>> timeSeries = new ArrayList<>();
+        for (JSONKeyToIRIMapper mapping: mappings) {
+            // Initialize the list of IRIs
+            List<String> iris = new ArrayList<>();
+            // Initialize the list of list of values
+            List<List<?>> values = new ArrayList<>();
+            // Go through all keys in the mapping
+            boolean useParticleReadings = true;
+            for(String key: mapping.getAllJSONKeys()) {
+                // Add IRI
+                iris.add(mapping.getIRI(key));
+                // Always try the particle readings first (all general information are contained there)
+                if (particleReadings.containsKey(key)) {
+                    values.add(particleReadings.get(key));
+                    useParticleReadings = true;
+                }
+                else if (gasReadings.containsKey(key)) {
+                    values.add(gasReadings.get(key));
+                    useParticleReadings = false;
+                }
+                else {
+                    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
+                }
+            }
+            // Timestamps depend on which readings are used for the mapping
+            List<ZonedDateTime> times = (useParticleReadings) ? particleTimestamps : gasTimestamps;
+            // Creat the time series object and add it to the list
+            TimeSeries<ZonedDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
+            timeSeries.add(currentTimeSeries);
+        }
+
+        return timeSeries;
+    }
+
+    /**
+     * Converts a string into a datetime object with zone information using the zone globally define for the agent.
+     * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
+     * @return The resulting datetime object.
+     */
+    private ZonedDateTime convertStringToZonedDateTime(String timestamp) {
+        // Convert first to a local time
+        LocalDateTime localTime = LocalDateTime.parse(timestamp);
+        // Then add the zone id
+        return ZonedDateTime.of(localTime, AQMeshInputAgent.zoneID);
+    }
+
+    /**
+     * Prunes a times series so that all timestamps and corresponding values start after the threshold.
+     * @param timeSeries The times series tp prune
+     * @param timeThreshold The treshold before which no data should occur
+     * @return The resulting datetime object.
+     */
+    private TimeSeries<ZonedDateTime> pruneTimeSeries(TimeSeries<ZonedDateTime> timeSeries, ZonedDateTime timeThreshold) {
+        // Find the index from which to start
+        List<ZonedDateTime> times = timeSeries.getTimes();
+        int index = 0;
+        while(index < times.size()) {
+            if (times.get(index).isAfter(timeThreshold)) {
+                break;
+            }
+            index++;
+        }
+        List<ZonedDateTime> newTimes = new ArrayList<>();
+        List<List<?>> newValues = new ArrayList<>();
+        // There are timestamps above the threshold
+        if (index != times.size()) {
+            // Prune the times
+            newTimes = new ArrayList<>(times.subList(index, times.size()));
+            // Prune the values
+            for (String iri: timeSeries.getDataIRIs()) {
+                newValues.add(timeSeries.getValues(iri).subList(index, times.size()));
+            }
+        }
+        return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
     }
 
     /**

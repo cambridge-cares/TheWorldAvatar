@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 
 public class AQMeshInputAgentLauncher {
 
+    // TODO: Proper logging for each phase of the main script
     public static void main(String[] args) {
 
         // Ensure that a properties file is provided
@@ -17,7 +18,7 @@ public class AQMeshInputAgentLauncher {
         String propertiesFile = args[0];
 
         // Create the agent
-        AQMeshInputAgent agent = null;
+        AQMeshInputAgent agent;
         try {
             agent = new AQMeshInputAgent(propertiesFile);
         } catch (IOException e) {
@@ -35,15 +36,17 @@ public class AQMeshInputAgentLauncher {
         // Initialize time series'
         agent.initializeTimeSeriesIfNotExist();
 
-        // Create and set the connector to interact with the AQMesh API
-        AQMeshAPIConnector connector = null;
+        // Create the connector to interact with the AQMesh API
+        AQMeshAPIConnector connector;
         try {
             connector = new AQMeshAPIConnector(propertiesFile);
         } catch (IOException e) {
-            throw new JPSRuntimeException("Could not construct the AQMesh API connector needed by the input agent!", e);
+            throw new JPSRuntimeException("Could not construct the AQMesh API connector needed to interact with the API!", e);
         }
         connector.connect();
-        agent.setAPIConnector(connector);
+        // Update the data
+        agent.updateDate(connector);
+
     }
 
 }
