@@ -1,0 +1,43 @@
+
+  {
+    "type": "FeatureCollection",
+    "features": [
+{
+        "type": "Feature",
+        "properties": {
+          "marker-color": "#1E8449",
+          "marker-size": "medium",
+          "marker-symbol": "",
+          "name": "Thetford",
+          "fuel": "Biomass",
+          "capacity": "41.5"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            0.721189,
+            52.448337
+          ]
+        }
+      },
+{
+        "type": "Feature",
+        "properties": {
+          "marker-color": "#13bef2",
+          "marker-size": "medium",
+          "marker-symbol": "",
+          "name": "Upper_Holton_Airfield",
+          "fuel": "Wind",
+          "capacity": "10.0"
+        },
+        "geometry": {
+          "type": "Point",
+          "coordinates": [
+            1.5295843,
+            52.3637483
+          ]
+        }
+      }
+    ]
+  }
+  
