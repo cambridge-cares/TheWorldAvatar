@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.regex.Pattern;
 
 /**
  * Class to retrieve data from the AQMesh API and storing it with connection to The World Avatar (Knowledge Base).
@@ -133,6 +134,43 @@ public class AQMeshInputAgent {
         }
     }
 
+    /**
+     * Returns the class (datatype) corresponding to a JSON key. Note: rules for the mapping are hardcoded in the method.
+     * @param jsonKey The JSON key as string.
+     * @return The corresponding class as Class<?> object.
+     */
+    private Class<?> getClassFromJSONKey(String jsonKey) {
+        // JSON keys for reading and sending intervals end in _p1, _p2 or _p3
+        Pattern intervalPattern = Pattern.compile(".*_p[123]$");
+        // Intervals are integers representing the seconds
+        if (intervalPattern.matcher(jsonKey).matches()) {
+            return Integer.class;
+        }
+        // Battery voltage is a floating point
+        else if (jsonKey.contains("_voltage")) {
+            return Double.class;
+        }
+        // Environment conditions are floating point measures
+        else if (jsonKey.contains("temperature") | jsonKey.contains("pressure") | jsonKey.contains("humidity")) {
+            return Double.class;
+        }
+        // Noise information for gas readings are floating point numbers
+        else if (jsonKey.contains("noise")) {
+            return Double.class;
+        }
+        // Sensor readings and corresponding offset and slope are floating point numbers
+        else if (jsonKey.contains("prescale") | jsonKey.contains("slope") | jsonKey.contains("offset")) {
+            return Double.class;
+        }
+        // Battery low warning and particle modem overlap are boolean
+        else if (jsonKey.equals("battery_low") | jsonKey.equals("particle_modem_overlap")) {
+            return Boolean.class;
+        }
+        // The default datatype is string
+        else {
+            return String.class;
+        }
+    }
 
     private void updateGasReadings() {
         JSONArray gasReadings = connector.getGasReadings();
