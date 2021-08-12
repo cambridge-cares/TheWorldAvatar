@@ -103,7 +103,7 @@ def getInternalEnergyVib(VibTemp,T):
     Uv = 0.0
     if T>0.0:
         for vT in VibTemp:
-            Uv = Uv + vT*(1.0/(np.exp(vT/T)-1.0))
+            Uv = Uv + vT*(0.5+1.0/(np.exp(vT/T)-1.0))
     Uv = Uv*p.R
     return Uv
 

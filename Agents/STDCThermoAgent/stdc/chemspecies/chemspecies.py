@@ -6,6 +6,7 @@ import stdc.errorhandling.exceptions as stdcerr
 import stdc.thermocalculator.sthdcalculator as sthd
 import stdc.utils.nasafitter as nasafitter
 import stdc.utils.nasablockwriter as nasawriter
+import stdc.unitconverter.unitconverter as unitconv
 import textwrap
 
 #======================================================
@@ -15,12 +16,17 @@ import textwrap
 defaultTrange = "298.15,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000"
 defaultNasaFitTemps = "298.15,1000,3000"
 warnings = True
+
+FREQ_CONV = unitconv.convertFrequencyUnitsToSI('CM^-1')
+ROT_CONST_CONV = unitconv.convertEnergyMoleculeUnitsToSI('GHZ')* \
+                 unitconv.convertEnergyMoleculeUnitsToSI('1/M',-1.0)
+MOL_WEIGHT_CONV = unitconv.convertMassUnitsToSI('AMU',)
+ELEC_EN_CONV = unitconv.convertEnergyMoleculeUnitsToSI('HA')
+
 class ChemSpecies:
     def __init__(self,
                  chem_formula,
                  spin_mult,
-                 elec_energy,
-                 zpe_included,
                  mol_weight,
                  sym_number,
                  rot_constants="",
@@ -37,24 +43,34 @@ class ChemSpecies:
         #   properties set based on constructor arguments
         #--------------------------------------------------
         # attribute name                               SI units
-        self.ChemFormula = chem_formula                                 #        
-        self.SpinMult = int(spin_mult)                                  #     [-]
-        self.ElecEn = float(elec_energy)                                #     [J]
-        self.MolWt = float(mol_weight)                                  #     [kg]
-        self.SymNr = int(sym_number)                                    #     [-]
-        self.RotConst = _strInputToList(rot_constants,type=float)       #     [1/m]
-        self.VibFreq = _strInputToList(frequencies,type=float)          #     [1/s (Hz)]
-        self.VibFreqScaleFactor = float(freq_scale_factor)              #     [-]
-        self.ElecLvL = _strInputToListOfLists(elec_levels,type=float)   #     [-,J]
-        self.EnthRef = float(enthalpy_ref)                              #     [J/mol]
-        self.EnthRefTemp = float(enthalpy_ref_temp)                     #     [K]
+        self.ChemFormula = chem_formula                      #        
+        self.SpinMult = int(spin_mult)                       #     [-]
+        self.MolWt = float(mol_weight)*MOL_WEIGHT_CONV       #     [kg] AMU - kg
+        self.SymNr = int(sym_number)                         #     [-]
+        self.RotConst = _strInputToList(
+                            rot_constants,
+                            type=float,
+                            multiplier=ROT_CONST_CONV)       #     [1/m]  GHZ -> 1/m
+        self.VibFreq = _strInputToList(
+                            frequencies,
+                            type=float,
+                            multiplier=FREQ_CONV)            #     [1/s]  1/CM -> 1/s
+        self.VibFreqScaleFactor = float(freq_scale_factor)   #     [-]
+        self.ElecLvL = _strInputToListOfLists(
+                            elec_levels,
+                            types=[int,float],
+                            multipliers=[1.0,ELEC_EN_CONV])  #     [-,J]  HA -> J
+        self.EnthRef = float(enthalpy_ref)                   #     [J/mol]
+        self.EnthRefTemp = float(enthalpy_ref_temp)          #     [K]
         #  Reuquested output temp and press + temp range for extra output
         #--------------------------------------------------
-        self.RequestedTemp = float(temperature)                         #     [K]
-        self.RequestedPressure = float(pressure)                        #     [Pa]
-        self.RequestedTrange = _strInputToList(temperature_range,type=float)  #     [n2 x K]
-        self.RequestedTPPointData = {}                #
-        self.RequestedTrangeData = {}                 #
+        self.RequestedTemp = float(temperature)              #     [K]
+        self.RequestedPressure = float(pressure)             #     [Pa]
+        self.RequestedTrange = _strInputToList(
+                            temperature_range,
+                            type=float)                      #     [n2 x K]
+        self.RequestedTPPointData = {}                       #
+        self.RequestedTrangeData = {}                        #
         #  NASA polynomials fitting - extra output
         #--------------------------------------------------
         self.FitNasa = fit_nasa
@@ -63,7 +79,9 @@ class ChemSpecies:
         self.HighNasaCoeffs = []                    #     [7x-]
         self.NasaComment = 'STHD'                   #
         self.NasaPhase = 'G'                        #
-        self.NasaFitTemps = _strInputToList(fit_nasa_temperatures,type=float)  #     [K,K,K]
+        self.NasaFitTemps = _strInputToList(
+                            fit_nasa_temperatures,
+                            type=float)             #     [K,K,K]
         #   properties set based on other properties
         #--------------------------------------------------
         self.AtomsCounts = utl.chemFormulaToAtomsCounts(chem_formula)  #     [-]
@@ -76,7 +94,7 @@ class ChemSpecies:
         self._applyVibFreqScaleFactor()
         self._setVibTemp()                         #     [K]
         self._setRotTemp()                         #     [K]
-        if not zpe_included: self._addZPE()
+        self._getSpHcorrSTHD()
 
     #======================================================
     #            Methods
@@ -85,16 +103,7 @@ class ChemSpecies:
     def getThermoData(self):
         self._getRequestedTPPointData()
         self._getRequestedTrangeData()
-        if self.fitNasa: self._getNasaPolynomialsData()
-
-    def getZPE(self):
-        ZPE = 0.0
-        for thetaTV in self.VibTemp:
-            if thetaTV > 0.0:
-                ZPE = ZPE + thetaTV/2.0
-        u_fact = utl.convertEnergyMoleculeUnitsToSI('K') # K=>J/mol
-        ZPE = ZPE*u_fact
-        return ZPE
+        if self.FitNasa: self._getNasaPolynomialsData()
 
     def getSpPartFunc(self,T):
         q = sthd.getPartFunc(self.MolWt,self.GeomType,
@@ -173,13 +182,6 @@ class ChemSpecies:
             G = utl.getGibbsEnergy(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
         return G
 
-    def getSpHcorrSTHD(self):
-        Hcorr = 0.0
-        Href=self.EnthRef
-        H1 = sthd.getEnthalpy(self.GeomType,self.VibTemp,self.ElecLvL,self.EnthRefTemp)
-        Hcorr = Href-H1
-        return Hcorr
-
     # Methods to set/get/check other fields
     #---------------------------------
     def _removeZeroRotConst(self):
@@ -193,7 +195,7 @@ class ChemSpecies:
         elif self.AtomsNum == 2:
             self.GeomType = GeomTypes.LINEAR
         elif self.AtomsNum > 2:
-            if len(self.RotConst) == 2:
+            if len(self.RotConst) == 1:
                 self.GeomType = GeomTypes.LINEAR
             elif len(self.RotConst) == 3:
                 self.GeomType = GeomTypes.NONLINEAR
@@ -212,8 +214,8 @@ class ChemSpecies:
                         Error: Vibrational frequencies should not be defined for atomic species."""))
 
         elif self.GeomType == GeomTypes.LINEAR:
-            requiredFreqNum = int(3*self.AtomsNum-6)
-            requiredRotConstNum = 2
+            requiredFreqNum = int(3*self.AtomsNum-5)
+            requiredRotConstNum = 1
             if rotConstNum != requiredRotConstNum:
                 raise stdcerr.InvalidInput(textwrap.dedent(f"""
                         Error: Linear species requires exactly {requiredRotConstNum} non-zero rotational constants,
@@ -223,7 +225,7 @@ class ChemSpecies:
                         Error: Linear species requires exactly {requiredFreqNum} non-zero frequnecies,
                         but {freqNum} were given."""))
         else:
-            requiredFreqNum = int(3*self.AtomsNum-5)
+            requiredFreqNum = int(3*self.AtomsNum-6)
             requiredRotConstNum = 3
             if rotConstNum != requiredRotConstNum:
                 raise stdcerr.InvalidInput(textwrap.dedent(f"""
@@ -250,8 +252,8 @@ class ChemSpecies:
         
     def _setRotTemp(self):
         RotTemp = [] # in K
-        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/M') # 1/m => J
-        u_fact = u_fact * utl.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
+        u_fact = unitconv.convertEnergyMoleculeUnitsToSI('1/M') # 1/m => J
+        u_fact = u_fact * unitconv.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
         for B in self.RotConst:
             if B > 0.0:
                 RotTemp.append(B*u_fact)
@@ -261,8 +263,8 @@ class ChemSpecies:
 
     def _setVibTemp(self):
         VibTemp = [] # in K
-        u_fact = utl.convertEnergyMoleculeUnitsToSI('1/S') # 1/s => J
-        u_fact = u_fact * utl.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
+        u_fact = unitconv.convertEnergyMoleculeUnitsToSI('1/S') # 1/s => J
+        u_fact = u_fact * unitconv.convertEnergyMoleculeUnitsToSI('K', -1.0) # J=>K
         for vib in self.VibFreq:
             if vib > 0.0:
                 VibTemp.append(vib*u_fact)
@@ -270,8 +272,12 @@ class ChemSpecies:
                 raise stdcerr.InvalidInput()
         self.VibTemp= VibTemp
 
-    def _addZPE(self):
-        self.ElecEn = self.ElecEn + self.getZPE()
+    def _getSpHcorrSTHD(self):
+        Hcorr = 0.0
+        Href=self.EnthRef
+        H1 = sthd.getEnthalpy(self.GeomType,self.VibTemp,self.ElecLvL,self.EnthRefTemp)
+        Hcorr = Href-H1
+        self.EnthRefCorr = 0.0 #Hcorr
 
     def _getRequestedTPPointData(self):
         T = self.RequestedTemp
@@ -585,12 +591,16 @@ def getElementsNr(Comp):
     return nEl
 
 
-def _strInputToList(inputStr,type,delim=','):
-     return [type(rc) for rc in inputStr.split(delim)]
+def _strInputToList(inputStr,type,delim=',',multiplier=1.0):
+     return [type(type(rc)*multiplier) for rc in inputStr.split(delim)]
 
-def _strInputToListOfLists(inputStr,type,delim=',',length=2):
+def _strInputToListOfLists(inputStr,types,delim=',',length=2,multipliers=None):
     if inputStr=='':
         return []
+    if multipliers is None:
+        multipliers = [1.0]*length
+    if len(types) == 1:
+        types = [types[0]]*length
     inputStr=inputStr.split(delim)
     if len(inputStr) % length != 0:
         raise stdcerr.InvalidInput()
@@ -599,7 +609,7 @@ def _strInputToListOfLists(inputStr,type,delim=',',length=2):
     innerList = []
     for i, value in enumerate(inputStr):
         if i % length != 0:
-            innerList.append(type(value))
+            innerList.append(types[i](types[i](value)*multipliers[i]))
         else:
             outerList.append(innerList)
             innerList = []

@@ -1,14 +1,16 @@
 ﻿import re
 import stdc.chemspecies.chemspecies as chs
+import stdc.unitconverter.unitconverter as unitconv
 
 def runThermoCalculator(args):
     args = _preprocessArgs(args)
     ChemSpeciesData = chs.ChemSpecies(**args)
+    ChemSpeciesData.getThermoData()
+    print('done')
 
 def _preprocessArgs(args):
     args = _removeNoneArgs(args)
     args =_removeHypens(args)
-    args = _addZpeIncludedFlag(args)
     return args
 
 def _removeNoneArgs(args):
@@ -24,11 +26,3 @@ def _removeHypens(args):
         new_key = re.sub('-', '_', new_key)
         argsWithNoHyphens[new_key] = value
     return argsWithNoHyphens
-
-
-def _addZpeIncludedFlag(args):
-    if 'elecZPE_energy' in args:
-        args['zpe_included'] = True
-    else:
-        args['zpe_included'] = False
-    return args
