@@ -51,6 +51,7 @@ public class InputAgent extends JPSAgent {
     	tsClient.addTimeSeriesData(ts);
 
     	devClient.updateTimestamp(InstancesDatabase.Input);
-		return requestParams;
+    	
+		return new JSONObject().put("status", "Updated <" + InstancesDatabase.Input + ">");
 	}
 }

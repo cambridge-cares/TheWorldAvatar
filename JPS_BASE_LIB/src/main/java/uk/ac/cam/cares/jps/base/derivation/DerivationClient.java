@@ -40,6 +40,7 @@ public class DerivationClient {
      */
     public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
     	String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    	DerivationSparql.addTimeInstance(kbClient, createdDerivation);
     	LOGGER.info("Instantiated derivation <" + createdDerivation + "> with the following properties");
     	LOGGER.info(entities + " belongsTo " + createdDerivation);
     	LOGGER.info(createdDerivation + " isDerivedFrom " + inputsIRI);
@@ -56,6 +57,7 @@ public class DerivationClient {
      */
     public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
     	String createdDerivation = DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
+    	DerivationSparql.addTimeInstance(kbClient, createdDerivation);
     	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + "> with the following properties");
     	LOGGER.info(entities + " belongsTo " + createdDerivation);
     	LOGGER.info(createdDerivation + " isDerivedFrom " + inputsIRI);

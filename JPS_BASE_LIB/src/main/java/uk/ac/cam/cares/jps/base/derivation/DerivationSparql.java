@@ -48,6 +48,7 @@ class DerivationSparql{
     private static Iri TimePosition = p_time.iri("TimePosition");
     private static Iri DerivedQuantity = p_derived.iri("DerivedQuantity");
     private static Iri DerivedQuantityWithTimeSeries = p_derived.iri("DerivedQuantityWithTimeSeries");
+    private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
@@ -56,6 +57,8 @@ class DerivationSparql{
 	private static Iri belongsTo = p_derived.iri("belongsTo");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
+	private static Iri hasTRS = p_time.iri("hasTRS");
+	private static Iri inTimePosition = p_time.iri("inTimePosition");
 	
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
@@ -100,18 +103,6 @@ class DerivationSparql{
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl, iri(agentURL)));
-		
-		// add time stamp instance for the derived quantity
-		long timestamp = 0;
-		String derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		
-		while (checkInstanceExists(kbClient, derivedQuantityTime)) {
-			derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		}
-
-		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
-	    modify.insert(derived_iri.has(hasTime,derivedQuantityTime_iri));
-	    modify.insert(derivedQuantityTime_iri.isA(TimePosition).andHas(numericPosition,timestamp));
 	    
 	    // link to each input
 	    for (String input : inputs) {
@@ -163,18 +154,6 @@ class DerivationSparql{
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasHttpUrl,iri(agentURL)));
-		
-		// add time stamp instance for the derived quantity
-		long timestamp = 0;
-		String derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		
-		while (checkInstanceExists(kbClient, derivedQuantityTime)) {
-			derivedQuantityTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		}
-
-		Iri derivedQuantityTime_iri = iri(derivedQuantityTime);
-	    modify.insert(derived_iri.has(hasTime,derivedQuantityTime_iri));
-	    modify.insert(derivedQuantityTime_iri.isA(TimePosition).andHas(numericPosition,timestamp));
 	    
 	    // link to each input
 	    for (String input : inputs) {
@@ -237,26 +216,27 @@ class DerivationSparql{
     }
 	
 	/**
-	 * add a time stamp instance to your input if it does not exist
-	 * this should be dealt with by a class specifically for input agents
+	 * add a time stamp instance to the input or derivation if it does not exist
+	 * the derivation uses the unix timestamp
 	 * @param kbClient
 	 * @param input
 	 */
-	static void addTimeInstance(StoreClientInterface kbClient, String input) {
+	static void addTimeInstance(StoreClientInterface kbClient, String entity) {
 		ModifyQuery modify = Queries.MODIFY();
 		
-		// add time stamp instance for the derived quantity
-		String inputTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		
-		while (checkInstanceExists(kbClient, inputTime)) {
-			inputTime = derivednamespace + "time" + UUID.randomUUID().toString();
-		}
+		// add time stamp instance for the given entity
+		String time_instant = derivednamespace + "time" + UUID.randomUUID().toString();
+		String time_unix = derivednamespace + "time" + UUID.randomUUID().toString();
 
-		long timestamp = Instant.now().getEpochSecond();
-		Iri inputTime_iri = iri(inputTime);
-	    modify.insert(iri(input).has(hasTime,inputTime_iri));
-	    modify.insert(inputTime_iri.isA(TimePosition).andHas(numericPosition,timestamp));
-	    
+		long timestamp = 0;
+		Iri time_instant_iri = iri(time_instant);
+		Iri time_unix_iri = iri(time_unix);
+		
+		// unix time following the w3c standard
+	    modify.insert(iri(entity).has(hasTime,time_instant_iri));
+	    modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
+	    modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
+	    	    
 	    kbClient.setQuery(modify.prefix(p_time).getQueryString());
 	    kbClient.executeUpdate();
 	}
@@ -490,11 +470,11 @@ class DerivationSparql{
 		// type 1: this is an input with a time stamp directly attached to it
 		// type 2: this is an input that is part of a derived quantity
 		// instances with timestamps directly attached
-		Iri[] predicates = {hasTime,numericPosition};
+		Iri[] predicates = {hasTime,inTimePosition,numericPosition};
 		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, instanceIRI, time).optional();
 
 		// instances that do not have time stamp directly attached, but belongs to a derived instance
-		Iri[] predicates2 = {belongsTo, hasTime, numericPosition};
+		Iri[] predicates2 = {belongsTo, hasTime, inTimePosition, numericPosition};
 		GraphPattern queryPattern2 = getQueryGraphPattern(query, predicates2, null, instanceIRI, time).optional();
 		
 		query.prefix(p_time,p_derived).where(queryPattern, queryPattern2).select(time);
@@ -526,16 +506,19 @@ class DerivationSparql{
 		// obtain time IRI through sub query
 		SubSelect sub = GraphPatterns.select();
 		
-		Variable timeIRI = SparqlBuilder.var("timeIRI");
+		Variable timeIRI = sub.var();
+		Variable unixtimeIRI = SparqlBuilder.var("timeIRI");
 		Variable oldvalue = SparqlBuilder.var("oldvalue");
 		
-		GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasTime,timeIRI), timeIRI.has(numericPosition,oldvalue));
+		GraphPattern queryPattern = GraphPatterns.and(iri(instance).has(hasTime,timeIRI), 
+				timeIRI.has(inTimePosition,unixtimeIRI),
+				unixtimeIRI.has(numericPosition,oldvalue));
 		
 		// triples to add and delete
-		TriplePattern delete_tp = timeIRI.has(numericPosition,oldvalue);
-		TriplePattern insert_tp = timeIRI.has(numericPosition, timestamp);
+		TriplePattern delete_tp = unixtimeIRI.has(numericPosition,oldvalue);
+		TriplePattern insert_tp = unixtimeIRI.has(numericPosition, timestamp);
 		
-		sub.select(timeIRI,oldvalue).where(queryPattern);
+		sub.select(unixtimeIRI,oldvalue).where(queryPattern);
 		
 		ModifyQuery modify = Queries.MODIFY();
 		modify.prefix(p_time).delete(delete_tp).insert(insert_tp).where(sub);

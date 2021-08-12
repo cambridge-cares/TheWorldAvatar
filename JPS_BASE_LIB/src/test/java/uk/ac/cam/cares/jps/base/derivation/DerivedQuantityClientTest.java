@@ -143,7 +143,9 @@ public class DerivedQuantityClientTest{
 		OntModel testKG = mockClient.getKnowledgeBase();
 		RDFNode timeInstance = testKG.getIndividual(input1).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getObject();
 		Assert.assertTrue(timeInstance.isResource());
-		RDFNode timestamp = testKG.getIndividual(timeInstance.toString()).getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getObject();
+		RDFNode timeposition = testKG.getIndividual(timeInstance.toString()).getProperty(ResourceFactory.createProperty(namespace+"inTimePosition")).getObject();
+		Assert.assertTrue(timeposition.isResource());
+		RDFNode timestamp = testKG.getIndividual(timeposition.toString()).getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getObject();
 		Assert.assertTrue(timestamp.isLiteral());
 	}
 	
@@ -153,9 +155,11 @@ public class DerivedQuantityClientTest{
 		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long oldtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
+		.getProperty(ResourceFactory.createProperty(namespace+"inTimePosition")).getResource()
 		.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();
 		devClient.updateTimestamp(devInstance);
 		long newtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace+"inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();
 		Assert.assertTrue(newtime > oldtime);
 	}

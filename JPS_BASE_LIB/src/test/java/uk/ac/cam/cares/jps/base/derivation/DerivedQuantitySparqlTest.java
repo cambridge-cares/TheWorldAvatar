@@ -179,6 +179,7 @@ public class DerivedQuantitySparqlTest {
 		
 		//time stamp of an instance linked to a derived quantity
 		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
+		DerivationSparql.addTimeInstance(mockClient, derivedIRI);
 		
 		for (String entity : entities) {
 			Assert.assertEquals(DerivationSparql.getTimestamp(mockClient, derivedIRI), DerivationSparql.getTimestamp(mockClient, entity));
@@ -189,6 +190,7 @@ public class DerivedQuantitySparqlTest {
 	public void testUpdateTimestamp() {
 		// simply checks new time stamp is more recent
 		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
+		DerivationSparql.addTimeInstance(mockClient, derivedIRI);
 		// the derived instance is initialised with timestamp = 0
 		long oldtime = DerivationSparql.getTimestamp(mockClient, derivedIRI);
 		DerivationSparql.updateTimeStamp(mockClient, derivedIRI);

@@ -59,6 +59,8 @@ public class InitialiseInstances extends JPSAgent{
     	String input = sparqlClient.createInputData();
     	// attach timestamp to input
     	devClient.addTimeInstance(input);
+    	// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
+    	devClient.updateTimestamp(input);
     	createInputTimeSeries(input, tsClient);
     	LOGGER.info("created input " + input);
     	InstancesDatabase.Input = input;
@@ -118,7 +120,17 @@ public class InitialiseInstances extends JPSAgent{
     		throw new JPSRuntimeException(e);
     	}
 
-    	return new JSONObject().put("status", "Initialised instances successfully");
+    	JSONObject response = new JSONObject();
+    	response.put("status", "Initialised instances successfully");
+    	response.put("input", input);
+    	response.put("min value", min_property);
+    	response.put("derivation of min value", derived_minvalue);
+    	response.put("max value", max_property);
+    	response.put("derivation of max value", derived_maxvalue);
+    	response.put("difference", diff_property);
+    	response.put("average", average);
+    	
+    	return response;
     }
 	
     private static void createInputTimeSeries(String input_iri, TimeSeriesClient<Instant> tsClient) {
