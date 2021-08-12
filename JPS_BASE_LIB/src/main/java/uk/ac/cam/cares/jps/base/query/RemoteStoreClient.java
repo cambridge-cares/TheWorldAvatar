@@ -113,6 +113,8 @@ public class RemoteStoreClient implements StoreClientInterface {
 	 */
 	public RemoteStoreClient(String queryEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
+		this.userName = user;
+		this.password = password;
 	}
 	
 	/**
@@ -127,6 +129,8 @@ public class RemoteStoreClient implements StoreClientInterface {
 	public RemoteStoreClient(String queryEndpoint, String updateEndpoint, String user, String password){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
+		this.userName = user;
+		this.password = password;
 	}
 	
 	/**
@@ -144,6 +148,8 @@ public class RemoteStoreClient implements StoreClientInterface {
 		this.query = query;
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
+		this.userName = user;
+		this.password = password;
 	}
 
 	/**
@@ -291,7 +297,7 @@ public class RemoteStoreClient implements StoreClientInterface {
 			System.out.println(getConnectionUrl());
 			conn = DriverManager.getConnection(getConnectionUrl());
 			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-			System.out.println(query);
+//			System.out.println(query);
 			return stmt.executeUpdate(query);
 		} catch (SQLException e) {
 			throw new JPSRuntimeException(e.getMessage(),e);
@@ -358,7 +364,7 @@ public class RemoteStoreClient implements StoreClientInterface {
 			System.out.println(getConnectionUrl());
 			conn = DriverManager.getConnection(getConnectionUrl());
 			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-			System.out.println(query);
+//			System.out.println(query);
 			java.sql.ResultSet rs = stmt.executeQuery(query);
 			results = convert(rs);
 		} catch (SQLException e) {
