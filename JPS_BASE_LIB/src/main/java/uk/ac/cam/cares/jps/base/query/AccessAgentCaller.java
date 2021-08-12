@@ -5,20 +5,13 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
-import org.apache.jena.update.UpdateAction;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class AccessAgentCaller{
 		
@@ -39,16 +32,10 @@ public class AccessAgentCaller{
 		
 		JPSBaseLogger.info(AccessAgentCaller.class, "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
-		
-		if (a != null) {
-			String requestUrl = (String) a[0];
-			JSONObject joparams = (JSONObject) a[1];
-			return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
-		} 
-		
-		// case 1b
-		// this case can only happen if datasetUrl AND targetUrl is null which must not be the case when calling this method
-		throw new JPSRuntimeException("No requestUrl was created");
+	
+		String requestUrl = (String) a[0];
+		JSONObject joparams = (JSONObject) a[1];
+		return Http.execute(Http.put(requestUrl, content, contentType, null, joparams)); 
 	}	
 	
 	/**
@@ -66,15 +53,9 @@ public class AccessAgentCaller{
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
-		if (a != null) {
-			String requestUrl = (String) a[0];
-			JSONObject joparams = (JSONObject) a[1];
-			return Http.execute(Http.get(requestUrl, accept, joparams));
-		} 
-		
-		// case 1b
-		// this case can only happen if datasetUrl AND targetUrl is null which must not be the case when calling this method
-		throw new JPSRuntimeException("No requestUrl was created");
+		String requestUrl = (String) a[0];
+		JSONObject joparams = (JSONObject) a[1];
+		return Http.execute(Http.get(requestUrl, accept, joparams));
 	}
 	
 	/**
@@ -91,10 +72,6 @@ public class AccessAgentCaller{
 		
 		// the following cases have to be distinguished:
 		// 1) no datasetUrl is given, no scenarioUrl in the JPS context
-		// 1a) HTTP GET on target resource allows to perform SPARQL at the server 
-		// 1b) HTTP GET on target resource to download its content but the SPARQL query must be performed at this client
-		//	   (this is the case for most of the resources outside JPS control but also for files residing 
-		//     in /kb or /data within Tomcats ROOT directory)
 		// 2) the datasetUrl is given, no scenarioUrl in the JPS context
 		//	  This means that the target resource is only requested indirectly via the datasetUrl 
 		// 	  as SPARQL endpoint (such that SPARQL is performed at the endpoint)
@@ -105,25 +82,16 @@ public class AccessAgentCaller{
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
-		if (a != null) {
-			System.out.println("a IS NOT NULL!!!");
-			String requestUrl = (String) a[0];
-			JSONObject joparams = (JSONObject) a[1];
-			if (joparams == null) {
-				joparams = new JSONObject();
-			}
-			System.out.println("joparams="+joparams.toString());
-			System.out.println("REQUESTURL="+requestUrl);
-			joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
-			return Http.execute(Http.get(requestUrl, null, joparams));
-		} 
-		
-		// case 1b
-		JPSBaseLogger.info(AccessAgentCaller.class, "SPARQL query is performed locally for targetUrl=" + targetUrl);
-		String localUrl = ScenarioHelper.cutHash(targetUrl);
-		localUrl = ResourcePathConverter.convert(localUrl);
-		ResultSet resultSet = JenaHelper.queryUrl(localUrl, sparqlQuery);
-		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		System.out.println("a IS NOT NULL!!!");
+		String requestUrl = (String) a[0];
+		JSONObject joparams = (JSONObject) a[1];
+		if (joparams == null) {
+			joparams = new JSONObject();
+		}
+		System.out.println("joparams="+joparams.toString());
+		System.out.println("REQUESTURL="+requestUrl);
+		joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
+		return Http.execute(Http.get(requestUrl, null, joparams));
 	}
 	
 
@@ -140,31 +108,19 @@ public class AccessAgentCaller{
 		
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 			
-		if (a != null) {
-			String requestUrl = (String) a[0];
-			JSONObject joparams = (JSONObject) a[1];
-			
-			// According to the W3C standard http://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/
-			// there are two ways to send a SPARQL update string. Both ways use an HTTP POST with
-			// the SPARQL update string in the message body. They are distinguished by the contentType.
-			// However, here we use JSON as content type!
-			JSONObject jobody = new JSONObject();
-			jobody.put(JPSConstants.QUERY_SPARQL_UPDATE, sparqlUpdate);
-			String contentType = MediaType.APPLICATION_JSON.type;
-			
-			Http.execute(Http.post(requestUrl, jobody.toString(), contentType, null, joparams));	
-			return;
-		} 
+		String requestUrl = (String) a[0];
+		JSONObject joparams = (JSONObject) a[1];
 		
-		// case 1b
-		String requestUrl = ScenarioHelper.cutHash(targetUrl);
-//		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl); 
-		requestUrl = ResourcePathConverter.convert(requestUrl);
-		JPSBaseLogger.info(AccessAgentCaller.class, "SPARQL update is performed locally for requestUrl=" + requestUrl);
-		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
-		OntModel model = JenaHelper.createModel(requestUrl);	
-		UpdateAction.execute(request, model);
-		JenaHelper.writeAsFile(model, requestUrl);		
+		// According to the W3C standard http://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/
+		// there are two ways to send a SPARQL update string. Both ways use an HTTP POST with
+		// the SPARQL update string in the message body. They are distinguished by the contentType.
+		// However, here we use JSON as content type!
+		JSONObject jobody = new JSONObject();
+		jobody.put(JPSConstants.QUERY_SPARQL_UPDATE, sparqlUpdate);
+		String contentType = MediaType.APPLICATION_JSON.type;
+		
+		Http.execute(Http.post(requestUrl, jobody.toString(), contentType, null, joparams));	
+		return;	
 	}
 	
 	public static Object[] createRequestUrl(String datasetUrl, String targetUrl) {
