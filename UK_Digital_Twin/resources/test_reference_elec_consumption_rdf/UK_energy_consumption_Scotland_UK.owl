@@ -1,0 +1,1333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:ns4="https://dbpedia.org/ontology/"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Dunbartonshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Dunbartonshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Scotland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10011.1</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Shetland_Islands">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Shetland_Islands"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Shetland_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Shetland_Islands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Angus">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000041</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Dundee_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000042</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Orkney_Islands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">138.06</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Shetland_Islands">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Shetland_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Clackmannanshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Clackmannanshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Perth_and_Kinross">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">393.38</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Dundee_City">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">644.32</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_West_Lothian">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Lothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_West_Lothian"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_West_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_South_Lanarkshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Lanarkshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_South_Lanarkshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_South_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Shetland_Islands">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Shetland_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Scotland">
+    <ns4:areaCode>S92000003</ns4:areaCode>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Fife"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Orkney_Islands"/>
+    <rdf:type rdf:resource="https://dbpedia.org/ontology/Region"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Midlothian"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Dundee_City"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Moray"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Lanarkshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Renfrewshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/West_Dunbartonshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Clackmannanshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Aberdeenshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/West_Lothian"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Lanarkshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Highland"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Ayrshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Angus"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Stirling"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Shetland_Islands"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Inverclyde"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/North_Ayrshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Lothian"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/South_Ayrshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Glasgow_City"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Scottish_Borders"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Dunbartonshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Aberdeen_City"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Argyll_and_Bute"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Dumfries_and_Galloway"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Perth_and_Kinross"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/City_of_Edinburgh"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Falkirk"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/East_Renfrewshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Na_h-Eileanan_Siar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">88.45</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_West_Lothian">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">281.33</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Glasgow_City">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Glasgow_City"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Glasgow_City"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Glasgow_City"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Orkney_Islands">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Orkney_Islands"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Orkney_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Aberdeen_City">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1117.77</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Moray">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000020</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Dunbartonshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">166.93</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Moray">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Moray"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Moray"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Moray"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Fife">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">886.19</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Lothian">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Lothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">429.7</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Lothian">
+    <ns4:areaCode>S12000010</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Scotland">
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Lothian"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Na_h-Eileanan_Siar"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Clackmannanshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Shetland_Islands"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Stirling"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Scotland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Renfrewshire"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999.owl#energyConsumptionIn9999"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Argyll_and_Bute"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Scottish_Borders"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Glasgow_City"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Dunbartonshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Moray"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Aberdeenshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#North_Ayrshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#City_of_Edinburgh"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Dumfries_and_Galloway"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Scotland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Ayrshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Highland"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Perth_and_Kinross"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Orkney_Islands"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#West_Dunbartonshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Fife"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#North_Lanarkshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Angus"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Midlothian"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#South_Lanarkshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Inverclyde"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#South_Ayrshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#West_Lothian"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Aberdeen_City"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Renfrewshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Dundee_City"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Falkirk"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Fife">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">616.96</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Midlothian">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">205.29</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Angus">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Angus"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Angus"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Angus"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">189.05</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Aberdeenshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Aberdeenshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Aberdeenshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Aberdeenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Renfrewshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Renfrewshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Glasgow_City">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Glasgow_City"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Glasgow_City"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Scottish_Borders">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">280.71</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Clackmannanshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">218.21</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Fife">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Fife"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Lothian">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Lothian"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Lothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Perth_and_Kinross">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">741.69</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_North_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_North_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Dunbartonshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Dunbartonshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Perth_and_Kinross">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">348.31</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Dumfries_and_Galloway">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Dumfries_and_Galloway"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Perth_and_Kinross">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000048</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Dundee_City">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Dundee_City"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Dundee_City"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Dundee_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Fife">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1503.15</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Highland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Argyll_and_Bute"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Argyll_and_Bute"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Argyll_and_Bute"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Aberdeen_City">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">389.75</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Fife">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Fife"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Fife"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000017</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_West_Lothian">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">805.68</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Perth_and_Kinross">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Perth_and_Kinross"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Perth_and_Kinross"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Midlothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Midlothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Renfrewshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">283.96</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Glasgow_City">
+    <ns4:areaCode>S12000046</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Glasgow_City">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1711.29</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_North_Ayrshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_North_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_North_Ayrshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">777.59</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Scotland">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24147.51</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Scotland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Scotland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Fife">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000047</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Angus">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Angus"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Stirling">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Stirling"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#South_Lanarkshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Lanarkshire"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_South_Lanarkshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#South_Ayrshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/South_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_South_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Dunbartonshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">176.12</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Clackmannanshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">303.8</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Ayrshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Angus">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Angus"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Angus"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000044</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_South_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">468.58</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Glasgow_City">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">965.16</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_South_Lanarkshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1154.27</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_North_Ayrshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">244.14</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000028</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Inverclyde">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Inverclyde"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Stirling">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stirling"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Stirling"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Stirling"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Clackmannanshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Clackmannanshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Clackmannanshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Dunbartonshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Dunbartonshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Dunbartonshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">156.55</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">73.26</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Midlothian">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Midlothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Midlothian"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Midlothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Shetland_Islands">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">190.71</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Falkirk">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Falkirk"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Aberdeenshire">
+    <ns4:areaCode>S12000034</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">850.08</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">232.57</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Renfrewshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Renfrewshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Scottish_Borders">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">252.58</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Renfrewshire">
+    <ns4:areaCode>S12000038</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Renfrewshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">228.61</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Inverclyde">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Inverclyde"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Inverclyde"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Inverclyde"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Inverclyde">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">301.83</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Clackmannanshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Clackmannanshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Ayrshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Ayrshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">155.35</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Dundee_City">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">360.01</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Dunbartonshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Dunbartonshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_South_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">576.25</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Clackmannanshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Clackmannanshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Clackmannanshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Clackmannanshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Orkney_Islands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">56.31</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Argyll_and_Bute">
+    <ns4:areaCode>S12000035</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Dunbartonshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">189.29</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Fife">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Fife"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Fife"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Fife"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">329.03</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#East_Ayrshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/East_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_East_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_South_Ayrshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">201.98</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_City_of_Edinburgh">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1380.13</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Highland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Highland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_South_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_South_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Lothian">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">524.36</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Moray">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Moray"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Moray"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Falkirk">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000014</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_South_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_South_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Midlothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">344.0</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Midlothian">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Midlothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Midlothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_East_Lothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Renfrewshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Renfrewshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Inverclyde">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Inverclyde"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Inverclyde"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#West_Lothian">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_West_Lothian"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/West_Lothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Lothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">266.6</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Dundee_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Dundee_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Inverclyde">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">166.12</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Midlothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000019</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Na_h-Eileanan_Siar">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Na_h-Eileanan_Siar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Aberdeenshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">678.05</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Moray">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Moray"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Dundee_City">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Dundee_City"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Dundee_City"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Orkney_Islands">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Orkney_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Falkirk">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Falkirk"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Falkirk"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Falkirk"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Falkirk">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">270.22</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Aberdeen_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">728.02</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">506.37</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Orkney_Islands">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Orkney_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Orkney_Islands"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Orkney_Islands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Lothian">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">187.66</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Renfrewshire"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">535.78</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Dundee_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Dundee_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Stirling">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">448.38</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_City_of_Edinburgh">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_City_of_Edinburgh"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_City_of_Edinburgh"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_City_of_Edinburgh"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Renfrewshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Renfrewshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Renfrewshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Renfrewshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Aberdeenshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Aberdeenshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Lanarkshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">578.02</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">240.65</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_West_Dunbartonshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_West_Dunbartonshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Dunbartonshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_West_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Highland"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Highland"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Highland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Angus">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">276.37</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_South_Ayrshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_South_Ayrshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_South_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Scottish_Borders">
+    <ns4:areaCode>S12000026</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Scotland">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Scotland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Scotland"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Scotland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Clackmannanshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">85.59</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Orkney_Islands">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">81.76</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Glasgow_City">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2676.45</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Argyll_and_Bute"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Argyll_and_Bute"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Argyll_and_Bute"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">653.94</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Shetland_Islands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">99.1</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/West_Lothian">
+    <ns4:areaCode>S12000040</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Renfrewshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">726.63</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Aberdeenshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Aberdeenshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Perth_and_Kinross">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Perth_and_Kinross"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Falkirk">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Falkirk"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Falkirk"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">273.81</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Inverclyde">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">135.72</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Perth_and_Kinross">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Perth_and_Kinross"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Perth_and_Kinross"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Perth_and_Kinross"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Aberdeenshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Aberdeenshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Aberdeenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Scotland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14136.42</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Moray">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">185.85</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Dumfries_and_Galloway">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000006</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Aberdeen_City">
+    <ns4:areaCode>S12000033</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Falkirk">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">687.78</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Stirling">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">181.47</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Stirling">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000030</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Aberdeenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">565.59</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Scotland">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Scotland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_North_Lanarkshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_North_Lanarkshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_North_Lanarkshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_North_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_City_of_Edinburgh">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">850.43</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stirling">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">266.92</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Angus">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Angus"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">68.1</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">521.05</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_East_Lothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">287.72</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/West_Dunbartonshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000039</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/South_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000029</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Moray">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">308.05</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Shetland_Islands">
+    <ns4:areaCode>S12000027</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_North_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">669.77</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Argyll_and_Bute">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Argyll_and_Bute"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Glasgow_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Glasgow_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000011</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Aberdeen_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Aberdeen_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Shetland_Islands">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">91.61</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Scottish_Borders">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">533.29</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Dunbartonshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">343.04</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Scottish_Borders">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Scottish_Borders"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Scottish_Borders"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Scottish_Borders"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Stirling">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Stirling"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Stirling"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Perth_and_Kinross">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Perth_and_Kinross"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Stirling">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Stirling"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Shetland_Islands">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Shetland_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Shetland_Islands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Aberdeen_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Aberdeen_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#West_Dunbartonshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_West_Dunbartonshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/West_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Inverclyde">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Inverclyde"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Midlothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">138.71</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Highland"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Highland"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000008</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_North_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">425.63</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Highland">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1571.73</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Orkney_Islands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000023</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_East_Ayrshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_East_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Ayrshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Ayrshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Aberdeen_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Aberdeen_City"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Aberdeen_City"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Aberdeen_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/North_Ayrshire">
+    <ns4:areaCode>S12000021</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#North_Lanarkshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_North_Lanarkshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_North_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_West_Dunbartonshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">331.47</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_West_Lothian">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_West_Lothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_City_of_Edinburgh">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_City_of_Edinburgh"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_South_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_South_Lanarkshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Angus">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">516.91</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Dunbartonshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Renfrewshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Renfrewshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Scottish_Borders">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Scottish_Borders"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Highland">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">917.78</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Scottish_Borders">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Scottish_Borders"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Dundee_City">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">284.32</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/East_Dunbartonshire">
+    <ns4:areaCode>S12000045</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Fife">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Fife"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Angus">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">240.54</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Clackmannanshire">
+    <ns4:areaCode>S12000005</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Aberdeenshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1243.64</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#City_of_Edinburgh">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/City_of_Edinburgh"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_City_of_Edinburgh"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Moray">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Moray"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Scottish_Borders">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Scottish_Borders"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Scottish_Borders"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Falkirk">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">417.56</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#North_Ayrshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/North_Ayrshire"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_North_Ayrshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Renfrewshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">442.67</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Glasgow_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Glasgow_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Inverclyde">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000018</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/City_of_Edinburgh">
+    <ns4:areaCode>S12000036</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_Moray">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">493.9</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Na_h-Eileanan_Siar">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>S12000013</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_East_Lothian">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">475.38</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_West_Dunbartonshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">142.18</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_City_of_Edinburgh">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2230.55</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Falkirk">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Falkirk"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Orkney_Islands">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Orkney_Islands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_West_Dunbartonshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_West_Dunbartonshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_City_of_Edinburgh">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_City_of_Edinburgh"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Total_Electricity_Consumption_of_North_Lanarkshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1313.37</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Aberdeen_City">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Aberdeen_City"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Total_Electricity_Consumption_of_Aberdeen_City"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Na_h-Eileanan_Siar">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Na_h-Eileanan_Siar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_West_Lothian">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_West_Lothian"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Industrial_and_Commercial_Electricity_Consumption_of_Midlothian">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Midlothian"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#Domestic_Electricity_Consumption_of_Dumfries_and_Galloway">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Scotland.owl#value_Domestic_Electricity_Consumption_of_Dumfries_and_Galloway"/>
+  </rdf:Description>
+</rdf:RDF>

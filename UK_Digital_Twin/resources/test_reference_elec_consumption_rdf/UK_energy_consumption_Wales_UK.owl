@@ -1,0 +1,933 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:ns4="https://dbpedia.org/ontology/"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Wales">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wales"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Wales"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Wales"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Caerphilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Caerphilly"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Caerphilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Neath_Port_Talbot">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Neath_Port_Talbot"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Neath_Port_Talbot"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Neath_Port_Talbot"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Pembrokeshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">231.42</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Blaenau_Gwent">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">259.08</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Monmouthshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Monmouthshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Caerphilly">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Caerphilly"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Caerphilly"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Caerphilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cardiff">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cardiff"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wrexham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wrexham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Ceredigion">
+    <ns4:areaCode>W06000008</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Wales">
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Pembrokeshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Denbighshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bridgend"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Carmarthenshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Powys"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Rhondda_Cynon_Taf"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Swansea"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Newport"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Ceredigion"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Isle_of_Anglesey"/>
+    <ns4:areaCode>W92000004</ns4:areaCode>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Wrexham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Conwy"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Vale_of_Glamorgan"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Neath_Port_Talbot"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Monmouthshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Flintshire"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Torfaen"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Caerphilly"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Cardiff"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Gwynedd"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Merthyr_Tydfil"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Blaenau_Gwent"/>
+    <rdf:type rdf:resource="https://dbpedia.org/ontology/Region"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Gwynedd">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Gwynedd"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Gwynedd"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Wales">
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Rhondda_Cynon_Taf"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Gwynedd"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Denbighshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Bridgend"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Pembrokeshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Ceredigion"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Swansea"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Cardiff"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Flintshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Merthyr_Tydfil"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Conwy"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Caerphilly"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Powys"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Wales"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Blaenau_Gwent"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Isle_of_Anglesey"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Torfaen"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Newport"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Vale_of_Glamorgan"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Monmouthshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Wrexham"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Wales"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Carmarthenshire"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Neath_Port_Talbot"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999.owl#energyConsumptionIn9999"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wales">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9891.27</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torfaen">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">273.84</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Vale_of_Glamorgan">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Vale_of_Glamorgan"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Caerphilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000018</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Carmarthenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000010</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Conwy">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">399.01</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Blaenau_Gwent">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Bridgend">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Bridgend"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bridgend"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Newport">
+    <ns4:areaCode>W06000022</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Merthyr_Tydfil">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Merthyr_Tydfil"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Merthyr_Tydfil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Conwy">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Conwy"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Conwy"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Conwy"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gwynedd">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gwynedd"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Vale_of_Glamorgan">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000014</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Cardiff">
+    <ns4:areaCode>W06000015</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Flintshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Flintshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Blaenau_Gwent">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Blaenau_Gwent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Merthyr_Tydfil">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">203.28</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Monmouthshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Monmouthshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Monmouthshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Neath_Port_Talbot">
+    <ns4:areaCode>W06000012</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Torfaen">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">130.15</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Bridgend">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">605.32</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Swansea">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Swansea"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Swansea"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Swansea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Isle_of_Anglesey">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Isle_of_Anglesey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Blaenau_Gwent">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">98.72</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Ceredigion">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">157.67</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Torfaen">
+    <ns4:areaCode>W06000020</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Monmouthshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">238.37</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Blaenau_Gwent">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Newport">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Newport"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Newport"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newport"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Blaenau_Gwent">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">160.36</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Cardiff">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Cardiff"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Cardiff"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Cardiff"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Powys">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">327.69</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Monmouthshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">162.48</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Flintshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Flintshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Flintshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Flintshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Torfaen">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Torfaen"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Torfaen"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Caerphilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Caerphilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Wales">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">4969.48</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Pembrokeshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Pembrokeshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Swansea">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">547.63</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">203.17</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Denbighshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">374.67</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Carmarthenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Carmarthenshire"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Carmarthenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Flintshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">780.66</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Swansea">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Swansea"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Torfaen">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Torfaen"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Torfaen"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torfaen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Cardiff">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1042.27</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Vale_of_Glamorgan"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Merthyr_Tydfil">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Merthyr_Tydfil"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Cardiff">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">510.28</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Merthyr_Tydfil">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">83.05</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Gwynedd">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Gwynedd"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Gwynedd"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Gwynedd"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newport">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">618.77</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bridgend">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">398.61</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Isle_of_Anglesey">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">150.07</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Ceredigion">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Ceredigion"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Ceredigion"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Monmouthshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">400.85</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Powys">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">589.82</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Pembrokeshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Pembrokeshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Pembrokeshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Pembrokeshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Powys">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">262.13</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Gwynedd">
+    <ns4:areaCode>W06000002</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Wrexham">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Wrexham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Wrexham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Neath_Port_Talbot">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Neath_Port_Talbot"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Rhondda_Cynon_Taf">
+    <ns4:areaCode>W06000016</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Conwy">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">198.71</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Conwy">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Conwy"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Conwy"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Monmouthshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Monmouthshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Monmouthshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Monmouthshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Isle_of_Anglesey">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">296.21</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Ceredigion">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">348.94</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Denbighshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Denbighshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Denbighshire"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Denbighshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Powys">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Powys"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Powys"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Powys"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Powys">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Powys"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Swansea">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">358.52</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Swansea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Swansea"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Swansea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Gwynedd">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Gwynedd"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Gwynedd">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">543.89</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Powys">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000023</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Merthyr_Tydfil">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">120.23</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Neath_Port_Talbot">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1169.41</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Denbighshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Denbighshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Caerphilly">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Caerphilly"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Ceredigion">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Ceredigion"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Denbighshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">167.25</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">308.06</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Conwy">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">200.3</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Flintshire">
+    <ns4:areaCode>W06000005</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Ceredigion">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Ceredigion"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Ceredigion"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Ceredigion"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newport">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newport"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Neath_Port_Talbot">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Neath_Port_Talbot"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Cardiff">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Cardiff"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Cardiff"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Pembrokeshire">
+    <ns4:areaCode>W06000009</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Gwynedd">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">289.83</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Isle_of_Anglesey">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">146.14</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Merthyr_Tydfil">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Merthyr_Tydfil"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Merthyr_Tydfil"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Merthyr_Tydfil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Flintshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Flintshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Powys">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Powys"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Pembrokeshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">730.16</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Denbighshire">
+    <ns4:areaCode>W06000004</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Vale_of_Glamorgan">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">511.23</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wrexham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">702.19</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Caerphilly">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">433.09</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Carmarthenshire">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Carmarthenshire"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Carmarthenshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Carmarthenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Torfaen">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Torfaen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Isle_of_Anglesey">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Isle_of_Anglesey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Isle_of_Anglesey"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Isle_of_Anglesey"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Denbighshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Denbighshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Denbighshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Isle_of_Anglesey">
+    <ns4:areaCode>W06000001</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">429.99</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Powys">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Powys"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Powys"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Flintshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1027.36</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Carmarthenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">311.58</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Cardiff">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Cardiff"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Torfaen">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Torfaen"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Neath_Port_Talbot">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">209.08</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Bridgend">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bridgend"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Bridgend"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Bridgend"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Flintshire">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Flintshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Flintshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bridgend">
+    <ns4:areaCode>W06000013</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">767.68</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Wrexham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Wrexham"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Wrexham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wrexham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Conwy">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Conwy"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Newport">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Newport"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Newport"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Caerphilly">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">686.81</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Neath_Port_Talbot">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1378.49</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Newport">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">840.31</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Neath_Port_Talbot">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Neath_Port_Talbot"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Neath_Port_Talbot"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Wales">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">14860.75</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Merthyr_Tydfil">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Merthyr_Tydfil"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Pembrokeshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">961.58</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Wrexham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">213.22</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Bridgend">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Bridgend"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Conwy">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Conwy"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Wrexham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Wrexham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Denbighshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">207.42</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Carmarthenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Carmarthenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Merthyr_Tydfil">
+    <ns4:areaCode>W06000024</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Bridgend">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">206.71</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bridgend">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bridgend"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Monmouthshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Monmouthshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Ceredigion">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Ceredigion"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Pembrokeshire">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Pembrokeshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Pembrokeshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Swansea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000011</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Wrexham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">915.41</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Wales">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Wales"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Conwy">
+    <ns4:areaCode>W06000003</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Isle_of_Anglesey">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Isle_of_Anglesey"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Swansea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">906.15</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Gwynedd">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">254.06</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Carmarthenshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">888.13</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Rhondda_Cynon_Taf">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Rhondda_Cynon_Taf"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Cardiff">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1552.55</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Newport">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">221.54</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Swansea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Swansea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Wrexham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000006</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Flintshire">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">246.7</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Caerphilly">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">253.71</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Newport">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Newport"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Ceredigion">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">191.27</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Blaenau_Gwent">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Blaenau_Gwent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Denbighshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Denbighshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Rhondda_Cynon_Taf"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Monmouthshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000021</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Blaenau_Gwent">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>W06000019</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wales">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wales"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Carmarthenshire">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Carmarthenshire"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Carmarthenshire">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">576.55</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Rhondda_Cynon_Taf">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">337.69</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Domestic_Electricity_Consumption_of_Pembrokeshire">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Domestic_Electricity_Consumption_of_Pembrokeshire"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Isle_of_Anglesey">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Isle_of_Anglesey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#Total_Electricity_Consumption_of_Isle_of_Anglesey"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/Wales.owl#value_Total_Electricity_Consumption_of_Torfaen">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">403.99</ns2:numericalValue>
+  </rdf:Description>
+</rdf:RDF>

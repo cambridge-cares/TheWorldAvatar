@@ -63,7 +63,7 @@ ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consump
 ### Functions ### 
 """ The Energy Consumption DataProperty Instance constructor"""
 def createEnergyConsumptionDataPropertyInstance(version):
-    engconsump = EngConsump.EnergyConsumptionData()   
+    engconsump = EngConsump.EnergyConsumptionData(version)
     elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)   
     uriSplit = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
     root_uri = uriSplit[0]   

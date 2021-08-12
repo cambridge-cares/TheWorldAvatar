@@ -1,0 +1,1453 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:ns4="https://dbpedia.org/ontology/"
+   xmlns:ns5="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Tower_Hamlets">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">417.75</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#London">
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hillingdon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Haringey"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Redbridge"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Croydon"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Enfield"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Islington"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#City_of_London"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Lewisham"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#INNER_LONDON"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Barking_and_Dagenham"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Greenwich"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Waltham_Forest"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Ealing"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Bromley"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Havering"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Kensington_and_Chelsea"/>
+    <ns2:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999.owl#energyConsumptionIn9999"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Westminster"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Tower_Hamlets"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Kingston_upon_Thames"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_London"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Southwark"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Bexley"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Barnet"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hammersmith_and_Fulham"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Richmond_upon_Thames"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/London"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Harrow"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Newham"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hounslow"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#OUTER_LONDON"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Camden"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Wandsworth"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Merton"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Brent"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Lambeth"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hackney"/>
+    <ns2:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Sutton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Barnet">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Barnet"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Barnet"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Barnet"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">968.51</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Redbridge">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">396.5</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Southwark">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Southwark"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Southwark"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Brent">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">760.99</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Greenwich">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Greenwich"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Greenwich"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Greenwich"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Lambeth">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1064.84</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000003</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">370.42</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Wandsworth">
+    <ns4:areaCode>E09000032</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_INNER_LONDON">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_INNER_LONDON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_INNER_LONDON">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5129.09</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hounslow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hounslow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Croydon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Croydon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_City_of_London"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/City_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Harrow">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">567.2</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Lewisham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">698.32</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Sutton">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">322.55</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_London">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12791.22</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Greenwich">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Greenwich"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Lewisham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">287.8</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Richmond_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">313.53</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Harrow">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Harrow"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Harrow"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Harrow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hammersmith_and_Fulham">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Hammersmith_and_Fulham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Barnet">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">497.7</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bexley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bexley"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Camden">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">348.54</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Westminster">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Westminster"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Westminster"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/London">
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Croydon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Barnet"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Kensington_and_Chelsea"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Westminster"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Enfield"/>
+    <ns4:areaCode>E12000007</ns4:areaCode>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/OUTER_LONDON"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Hammersmith_and_Fulham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/INNER_LONDON"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Barking_and_Dagenham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bromley"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Hounslow"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Richmond_upon_Thames"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Tower_Hamlets"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Islington"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Greenwich"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Redbridge"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Brent"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Southwark"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Lambeth"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Harrow"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Havering"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Wandsworth"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Ealing"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Lewisham"/>
+    <rdf:type rdf:resource="https://dbpedia.org/ontology/Region"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Merton"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Waltham_Forest"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Hackney"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Haringey"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Kingston_upon_Thames"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Hillingdon"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Bexley"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Sutton"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/City_of_London"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Newham"/>
+    <ns4:subdivision rdf:resource="http://dbpedia.org/resource/Camden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_INNER_LONDON">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_INNER_LONDON"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_INNER_LONDON"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_INNER_LONDON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">38100.84</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Ealing">
+    <ns4:areaCode>E09000009</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Bromley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">951.03</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Southwark">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1655.07</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Barking_and_Dagenham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">654.59</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Havering">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Havering"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#OUTER_LONDON">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_OUTER_LONDON"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/OUTER_LONDON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Westminster">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Westminster"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1116.35</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Wandsworth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Wandsworth"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Wandsworth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hackney">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Hackney"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hackney"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Barking_and_Dagenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">393.0</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Islington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">315.55</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Westminster">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3632.77</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Redbridge">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Redbridge"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Redbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Redbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Redbridge">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Redbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Waltham_Forest">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">345.85</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_London">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_London"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Havering">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Havering"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Havering"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Newham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1405.33</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sutton">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sutton"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Redbridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">660.92</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Bromley">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Bromley"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bromley"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Westminster">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Westminster"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Westminster"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Westminster"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Bexley">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Bexley"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Richmond_upon_Thames">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Richmond_upon_Thames"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Richmond_upon_Thames"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Richmond_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Enfield">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Enfield"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Enfield"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Havering">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">398.34</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Lambeth">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Lambeth"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Lambeth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Waltham_Forest">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Waltham_Forest"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Waltham_Forest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Ealing">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1362.57</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Westminster">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Westminster"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_INNER_LONDON">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">20894.74</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Croydon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">641.98</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Lambeth">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Lambeth"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Lambeth"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Lambeth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Newham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Newham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Newham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Newham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Newham"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Newham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Tower_Hamlets">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2162.4</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Enfield">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">533.48</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Tower_Hamlets">
+    <ns4:areaCode>E09000030</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Merton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">774.8</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Tower_Hamlets">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2580.15</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_OUTER_LONDON">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">9543.98</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Brent">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Brent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hackney">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hackney"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hackney"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hackney"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hillingdon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hillingdon"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hillingdon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hillingdon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Barking_and_Dagenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Barking_and_Dagenham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Newham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Newham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#INNER_LONDON">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_INNER_LONDON"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/INNER_LONDON"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Haringey">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">766.09</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hackney">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">898.34</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Westminster">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3141.51</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bexley">
+    <ns4:areaCode>E09000004</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Southwark">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Southwark"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Southwark"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Southwark"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Croydon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1220.98</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Lambeth">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">628.57</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Croydon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Croydon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Croydon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Southwark">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Southwark"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Newham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">378.75</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Southwark">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">445.61</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Haringey">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Haringey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Lewisham">
+    <ns4:areaCode>E09000023</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Havering">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">783.22</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Enfield">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Enfield"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Enfield"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Enfield"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_INNER_LONDON">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_INNER_LONDON"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">666.01</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_INNER_LONDON">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15765.65</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Greenwich">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Greenwich"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Greenwich"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Enfield">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Enfield"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Haringey">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Haringey"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Haringey"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Haringey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Tower_Hamlets">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Tower_Hamlets"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Tower_Hamlets"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Tower_Hamlets"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Wandsworth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Wandsworth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Harrow">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">347.65</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Barking_and_Dagenham">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Barking_and_Dagenham"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Barking_and_Dagenham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Barking_and_Dagenham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Bexley">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Bexley"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Bexley"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Barking_and_Dagenham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">261.58</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Richmond_upon_Thames">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">652.31</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Havering">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Havering"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wandsworth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wandsworth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Bexley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Bexley"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bexley"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Bexley"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Kingston_upon_Thames">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Kingston_upon_Thames"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Kingston_upon_Thames"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Kingston_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.19</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Kingston_upon_Thames">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Kingston_upon_Thames"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Kingston_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Sutton">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">680.2</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">952.37</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Haringey">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Haringey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Haringey"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Bexley">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">371.82</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Bromley">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bromley"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Bromley"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Bromley"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Lewisham">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Lewisham"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Lewisham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Brent">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Brent"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Brent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Redbridge">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Redbridge"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Redbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Westminster">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000033</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hounslow">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hounslow"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hounslow"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hounslow"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hounslow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Hounslow"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hounslow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Kensington_and_Chelsea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Kensington_and_Chelsea"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Wandsworth">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Wandsworth"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Wandsworth"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Wandsworth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Brent">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">424.58</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_London"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_London"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Ealing">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Ealing"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Ealing"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Ealing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Kensington_and_Chelsea">
+    <ns4:areaCode>E09000020</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Waltham_Forest">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Waltham_Forest"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_OUTER_LONDON">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_OUTER_LONDON"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_OUTER_LONDON"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_OUTER_LONDON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2044.09</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Lambeth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">436.27</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Lambeth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Lambeth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_City_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hackney">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">343.11</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Enfield">
+    <ns4:areaCode>E09000010</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Southwark">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000028</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Wandsworth">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">507.93</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Lambeth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000022</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Tower_Hamlets">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Tower_Hamlets"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Richmond_upon_Thames">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">338.78</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Ealing">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">893.24</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Ealing">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Ealing"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Ealing"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Richmond_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Richmond_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bexley">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">397.71</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Enfield">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">487.05</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Bexley">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">769.52</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Merton">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Merton"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Merton"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Merton"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Sutton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">357.65</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Hillingdon">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hillingdon"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Hillingdon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Croydon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">578.99</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hounslow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">382.45</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Waltham_Forest">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">678.51</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Bromley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Bromley"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Sutton">
+    <ns4:areaCode>E09000029</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Croydon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000008</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">618.66</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Merton">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Merton"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Merton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Hillingdon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000017</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hillingdon">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">424.9</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Brent">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1185.57</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Enfield">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1020.53</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Greenwich">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">371.93</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hounslow">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1302.31</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Bromley">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">547.35</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Kingston_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000021</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Brent">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Brent"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Brent"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Brent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Camden">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000007</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/INNER_LONDON">
+    <ns4:areaCode>E13000001</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Southwark">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1209.46</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Haringey">
+    <ns4:areaCode>E09000014</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2072.28</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Lambeth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Lambeth"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_London">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">25309.63</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_OUTER_LONDON">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">17206.11</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hounslow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">919.86</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Greenwich">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">825.4</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newham">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1026.58</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_OUTER_LONDON">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_OUTER_LONDON"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hillingdon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hillingdon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Camden">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1696.45</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Havering">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Havering"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Havering"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Havering"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Harrow">
+    <ns4:areaCode>E09000015</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Merton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000024</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Kensington_and_Chelsea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Ealing">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">469.33</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Hackney">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000012</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Barnet"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Waltham_Forest">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">332.66</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/OUTER_LONDON">
+    <ns4:areaCode>E13000002</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Merton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Merton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Wandsworth">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1006.0</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Havering">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000016</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Barking_and_Dagenham">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Barking_and_Dagenham"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Barking_and_Dagenham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Waltham_Forest">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Waltham_Forest"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Waltham_Forest"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Waltham_Forest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Barking_and_Dagenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Barking_and_Dagenham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Greenwich">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000011</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Camden">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1347.91</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hillingdon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hillingdon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Camden">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Camden"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Camden"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Camden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Tower_Hamlets">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Tower_Hamlets"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Tower_Hamlets"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Croydon">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Croydon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Croydon"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Croydon"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Kingston_upon_Thames">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">260.84</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">286.36</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Kingston_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">613.75</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Islington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000019</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Waltham_Forest">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Waltham_Forest"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Merton">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">312.98</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Camden">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Camden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Islington">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Islington"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Islington"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Lewisham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Lewisham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Lewisham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Lewisham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Wandsworth">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">498.07</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Sutton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Sutton"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Sutton"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Sutton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Lewisham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Lewisham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Islington">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Islington"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Islington"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Islington"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Croydon">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Croydon"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Hounslow">
+    <ns4:areaCode>E09000018</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Lewisham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Lewisham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Redbridge">
+    <ns4:areaCode>E09000026</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_City_of_London">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_City_of_London"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_City_of_London"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_City_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Harrow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Harrow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Islington">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">812.21</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hackney">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hackney"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Richmond_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000027</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Kensington_and_Chelsea">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1338.94</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Ealing">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Ealing"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Harrow">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Harrow"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Harrow"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Sutton">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Sutton"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Southwark">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Southwark"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Islington">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1127.77</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Greenwich">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">453.46</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+    <ns1:ConsistsOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Greenwich">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Greenwich"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_City_of_London">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_City_of_London"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Harrow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Harrow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bromley">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">403.68</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Islington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Islington"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Camden">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Camden"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Camden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_OUTER_LONDON">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7662.13</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl">
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Richmond_upon_Thames">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Richmond_upon_Thames"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Barnet"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Barnet"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Total_Electricity_Consumption_of_Hillingdon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1386.35</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Lewisham">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">410.53</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Westminster">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">491.27</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Harrow">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">219.55</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Ealing">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Ealing"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Haringey">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">407.44</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Havering">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">384.89</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Kingston_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Kingston_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Waltham_Forest">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000031</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Redbridge">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">264.42</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Bromley">
+    <ns4:areaCode>E09000006</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hounslow">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hounslow"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Barking_and_Dagenham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000002</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Hammersmith_and_Fulham">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+    <ns4:areaCode>E09000013</ns4:areaCode>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Tower_Hamlets">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Tower_Hamlets"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Enfield">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Enfield"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Merton">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Merton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Merton">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">461.82</ns2:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Kingston_upon_Thames">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">352.91</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_OUTER_LONDON">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_OUTER_LONDON"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Camden">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Camden"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Richmond_upon_Thames">
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Richmond_upon_Thames"/>
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Richmond_upon_Thames"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Newham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Newham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Bromley">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Bromley"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Haringey">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Haringey"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/City_of_London">
+    <ns4:areaCode>E09000001</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Hackney">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Hackney"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Hammersmith_and_Fulham">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hammersmith_and_Fulham"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Haringey">
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">358.65</ns2:numericalValue>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hillingdon">
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">961.45</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Hackney">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <ns2:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GIGAWATT_HOUR"/>
+    <ns2:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">555.23</ns2:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Kingston_upon_Thames">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Kingston_upon_Thames"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Sutton">
+    <ns5:consumes rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Total_Electricity_Consumption_of_Sutton"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem"/>
+    <ns2:hasAddress rdf:resource="http://dbpedia.org/resource/Sutton"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Brent">
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Brent"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Barnet">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Barnet"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Industrial_and_Commercial_Electricity_Consumption_of_Redbridge">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Industrial_and_Commercial_Electricity_Consumption_of_Redbridge"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#Domestic_Electricity_Consumption_of_Islington">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    <ns2:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consumption/energyConsumptionIn9999/London.owl#value_Domestic_Electricity_Consumption_of_Islington"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Newham">
+    <ns4:areaCode>E09000025</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://dbpedia.org/resource/Brent">
+    <ns4:areaCode>E09000005</ns4:areaCode>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea"/>
+  </rdf:Description>
+</rdf:RDF>
