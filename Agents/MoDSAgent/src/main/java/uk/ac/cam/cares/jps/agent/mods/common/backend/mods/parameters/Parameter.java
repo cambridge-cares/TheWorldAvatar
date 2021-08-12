@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.parameters;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -13,11 +13,11 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.cases.CaseS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.cases.SimplifiedCaseS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.files.FileS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.ModelS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.SimplifiedModelS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.cases.CaseS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.cases.SimplifiedCaseS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.files.FileS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models.ModelS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models.SimplifiedModelS;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = { "scaling", "parameterCaseS", "parameterModelS", "parameterFileS" })

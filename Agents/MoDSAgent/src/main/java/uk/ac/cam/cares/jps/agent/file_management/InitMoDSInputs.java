@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
-import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.MoDS;
 
 public class InitMoDSInputs extends MoDSMarshaller implements IInitMoDSInputs {
 	

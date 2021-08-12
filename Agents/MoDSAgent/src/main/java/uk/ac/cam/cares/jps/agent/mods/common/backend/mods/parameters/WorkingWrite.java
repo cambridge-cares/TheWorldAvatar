@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.parameters;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.files.File;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.files.File;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class WorkingWrite extends File {

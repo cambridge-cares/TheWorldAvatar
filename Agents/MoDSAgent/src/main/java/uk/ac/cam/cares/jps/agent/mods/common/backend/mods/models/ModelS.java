@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.models;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models;
 
 import java.util.ArrayList;
 

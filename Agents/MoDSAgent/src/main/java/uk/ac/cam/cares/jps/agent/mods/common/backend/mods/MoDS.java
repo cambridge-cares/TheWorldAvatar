@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,12 +9,12 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.algorithms.AlgorithmS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.cases.CaseS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.files.FileS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.functions.FunctionS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.ModelS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.ParameterS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.algorithms.AlgorithmS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.cases.CaseS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.files.FileS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.functions.FunctionS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models.ModelS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.ParameterS;
 
 @XmlRootElement(name = "mods")
 @XmlType(propOrder = { "global", "algorithmS", "modelS", "caseS", "fileS", "functionS", "parameterS" })

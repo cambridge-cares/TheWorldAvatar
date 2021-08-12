@@ -33,9 +33,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.InitMoDSInputs;
 import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
-import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.MoDS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.functions.Function;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 
 public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {

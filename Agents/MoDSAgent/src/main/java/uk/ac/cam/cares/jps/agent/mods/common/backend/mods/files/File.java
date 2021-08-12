@@ -1,26 +1,28 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.parameters;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.files;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.files.File;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.DetailS;
 
+@XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)
-public class InitialRead extends File {
+public class File {
 	@JsonProperty("name")
 	@XmlAttribute(name="file_name")
-	private String fileName;
-	
-	public String getFileName() {
-		return fileName;
+	private String name;
+
+	public String getName() {
+		return name;
 	}
-	
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
+
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	@JsonProperty("details")

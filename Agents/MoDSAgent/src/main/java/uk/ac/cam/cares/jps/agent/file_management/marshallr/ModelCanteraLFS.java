@@ -26,8 +26,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
-import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.functions.Function;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;

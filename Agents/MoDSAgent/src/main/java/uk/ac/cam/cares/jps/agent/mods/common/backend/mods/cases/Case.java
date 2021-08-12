@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.cases;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.cases;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.ModelS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.SimplifiedModelS;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.DetailS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models.ModelS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.models.SimplifiedModelS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.DetailS;
 
 //@XmlType(propOrder = { "items" })
 @XmlAccessorType(XmlAccessType.FIELD)

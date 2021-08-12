@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.functions;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.functions;
 
 import java.util.LinkedHashMap;
 
@@ -12,7 +12,7 @@ import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.DetailS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.DetailS;
 
 @XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)

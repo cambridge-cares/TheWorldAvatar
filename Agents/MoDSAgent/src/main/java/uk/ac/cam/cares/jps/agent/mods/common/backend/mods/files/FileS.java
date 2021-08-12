@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.files;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.files;
 
 import java.util.ArrayList;
 
@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.InitialRead;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.WorkingRead;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.WorkingWrite;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.InitialRead;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.WorkingRead;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.WorkingWrite;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileS {

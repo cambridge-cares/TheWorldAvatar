@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.file_management.mods.algorithms;
+package uk.ac.cam.cares.jps.agent.mods.common.backend.mods.algorithms;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.DetailS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.DetailS;
 
 @XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)

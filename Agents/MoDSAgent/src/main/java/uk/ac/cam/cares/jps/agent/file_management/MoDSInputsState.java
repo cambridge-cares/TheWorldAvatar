@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.agent.file_management;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.MoDS;
 
 public class MoDSInputsState {
 	public static MoDS mods;

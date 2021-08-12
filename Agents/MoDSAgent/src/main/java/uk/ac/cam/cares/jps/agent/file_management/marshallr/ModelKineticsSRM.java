@@ -25,7 +25,7 @@ import com.cmclinnovations.ontochem.model.exception.OntoException;
 import com.jayway.jsonpath.JsonPath;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
-import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.mods.common.backend.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
