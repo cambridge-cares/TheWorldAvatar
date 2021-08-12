@@ -1,8 +1,9 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
+import org.eclipse.rdf4j.query.algebra.Str;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.utils.JSONKeyToIRIMapper;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
@@ -12,9 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -26,8 +25,6 @@ public class AQMeshInputAgent {
 
     // The time series client to interact with the knowledge graph and data storage
     private TimeSeriesClient<ZonedDateTime> tsClient;
-    // The connector to interact with the AQMesh API
-    private AQMeshAPIConnector connector;
     // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
     private List<JSONKeyToIRIMapper> mappings;
     // The prefix to use when no IRI exists for a JSON key originally
@@ -70,11 +67,27 @@ public class AQMeshInputAgent {
     }
 
     /**
-     * Setter for the AQMesh API connector.
-     * @param connector The AQMesh API connector to use.
+     * Reads the JSON key to IRI mappings from files in the provided folder.
+     * @param mappingFolder The path to the folder in which the mapping files are located.
      */
-    public void setAPIConnector(AQMeshAPIConnector connector) {
-        this.connector = connector;
+    private void readMappings(String mappingFolder) throws IOException {
+        mappings = new ArrayList<>();
+        File folder = new File(mappingFolder);
+        File[] mappingFiles = folder.listFiles();
+        // Make sure the folder exists and contains files
+        if (mappingFiles == null) {
+            throw new IOException("Folder does not exist: " + mappingFolder);
+        }
+        if (mappingFiles.length == 0) {
+            throw new IOException("No files in the folder: " + mappingFolder);
+        }
+        // Create a mapper for each file
+        else {
+            for (File mappingFile: mappingFiles) {
+                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(AQMeshInputAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
+                mappings.add(mapper);
+            }
+        }
     }
 
     /**
@@ -112,37 +125,89 @@ public class AQMeshInputAgent {
         return true;
     }
 
-    private void updateTimeSeries() {
-        try {
-            updateParticleReadings();
-            updateGasReadings();
+    /**
+     * Updates the database with possible new data requested from the API.
+     * @param connector The connector to communicate with the AQMesh API
+     */
+    public void updateDate(AQMeshAPIConnector connector) {
+        // Retrieve readings from the connector
+        JSONArray particleReadings = connector.getParticleReadings();
+        JSONArray gasReadings = connector.getGasReadings();
+        // Transform readings in hashmap containing a list of objects for each JSON key
+        Map<String, List<?>> particleReadingsMap = new HashMap<>();
+        Map<String, List<?>> gasReadingsMap = new HashMap<>();
+        if (particleReadings.length() > 0) {
+            particleReadingsMap = jsonArrayToMap(particleReadings);
         }
-        catch (Exception e) {
+        if (gasReadings.length() > 0) {
+            gasReadingsMap = jsonArrayToMap(gasReadings);
         }
+
     }
 
     /**
-     * Reads the JSON key to IRI mappings from files in the provided folder.
-     * @param mappingFolder The path to the folder in which the mapping files are located.
+     * Transform a JSON Array where each element is a single timestamp with all readings
+     * into a Map, where values per key are gathered into a list.
+     * @param readings The JSON Array to convert
+     * @return The same readings in form of a Map
      */
-    private void readMappings(String mappingFolder) throws IOException {
-        mappings = new ArrayList<>();
-        File folder = new File(mappingFolder);
-        File[] mappingFiles = folder.listFiles();
-        // Make sure the folder exists and contains files
-        if (mappingFiles == null) {
-            throw new IOException("Folder does not exist: " + mappingFolder);
-        }
-        if (mappingFiles.length == 0) {
-            throw new IOException("No files in the folder: " + mappingFolder);
-        }
-        // Create a mapper for each file
-        else {
-            for (File mappingFile: mappingFiles) {
-                JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(AQMeshInputAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
-                mappings.add(mapper);
+    private Map<String, List<?>> jsonArrayToMap(JSONArray readings) {
+        // First save the values as Object //
+        Map<String, List<Object>> readingsMap = new HashMap<>();
+        // Go through the readings in the array one by one
+        for (int i = 0; i < readings.length(); i++) {
+            JSONObject currentEntry = readings.getJSONObject(i);
+            // Iterate through the keys of the entry
+            for (Iterator<String> it = currentEntry.keys(); it.hasNext();) {
+                String key = it.next();
+                // Get the value and add it to the corresponding list
+                Object value = currentEntry.get(key);
+                // Handle cases where the API returned null
+                if (value == JSONObject.NULL) {
+                    // Handling depends on the datatype of the current key
+                    String datatype = getClassFromJSONKey(key).getSimpleName();
+                    // If it is a number use NaN (not a number)
+                    if (datatype.equals(Integer.class.getSimpleName()) | datatype.equals(Double.class.getSimpleName())) {
+                        value = Double.NaN;
+                    }
+                    // Otherwise, use the string NA (not available)
+                    else {
+                        value = "NA";
+                    }
+                }
+                // If the key is not present yet initialize the list
+                if (!readingsMap.containsKey(key)) {
+                    readingsMap.put(key, new ArrayList<>());
+                }
+                readingsMap.get(key).add(value);
             }
         }
+
+        // Convert the values to the proper datatype //
+        Map<String, List<?>> readingsMapTyped = new HashMap<>();
+        for (String key: readingsMap.keySet()) {
+            // Get the class (datatype) corresponding to the key
+            String datatype = getClassFromJSONKey(key).getSimpleName();
+            // Get current list with object type
+            List<Object> valuesUntyped = readingsMap.get(key);
+            List<?> valuesTyped;
+            // Use mapping to cast the values into integer, double, boolean or string
+            // The Number cast is required for org.json datatypes
+            if (datatype.equals(Integer.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).intValue()).collect(Collectors.toList());
+            }
+            else if (datatype.equals(Double.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
+            }
+            else if (datatype.equals(Boolean.class.getSimpleName())) {
+                valuesTyped = valuesUntyped.stream().map(value -> ((Boolean) value)).collect(Collectors.toList());
+            }
+            else {
+                valuesTyped = valuesUntyped.stream().map(Object::toString).collect(Collectors.toList());
+            }
+            readingsMapTyped.put(key, valuesTyped);
+        }
+        return readingsMapTyped;
     }
 
     /**
@@ -181,14 +246,6 @@ public class AQMeshInputAgent {
         else {
             return String.class;
         }
-    }
-
-    private void updateGasReadings() {
-        JSONArray gasReadings = connector.getGasReadings();
-    }
-
-    private void updateParticleReadings() {
-        JSONArray particleReadings = connector.getParticleReadings();
     }
 
 }

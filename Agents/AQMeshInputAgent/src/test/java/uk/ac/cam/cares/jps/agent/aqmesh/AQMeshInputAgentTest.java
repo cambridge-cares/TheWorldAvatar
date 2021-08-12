@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
+import org.json.JSONArray;
+import org.json.JSONTokener;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -8,9 +10,7 @@ import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
@@ -205,4 +205,49 @@ public class AQMeshInputAgentTest {
                 .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
     }
 
+    @Test
+    public void testJsonArrayToMapGasReadings() throws IOException, NoSuchMethodException, InvocationTargetException,
+            IllegalAccessException, URISyntaxException {
+        // Get the example JSON
+        JSONArray gasReadings;
+        String readingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_gas.json"))
+                .toURI()).toString();
+        try (InputStream input = new FileInputStream(readingsFile)) {
+            JSONTokener tokener = new JSONTokener(input);
+            gasReadings = new JSONArray(tokener);
+        }
+        // Make method accessible
+        Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
+        jsonArrayToMap.setAccessible(true);
+        // Transform the readings
+        @SuppressWarnings("unchecked")
+        Map<String, List<?>> readings = (Map<String, List<?>>) jsonArrayToMap.invoke(testAgent, gasReadings);
+        // Check that all keys have a list of the same size as the JSON Array
+        for (String key: readings.keySet()) {
+            Assert.assertEquals(gasReadings.length(), readings.get(key).size());
+        }
+    }
+
+    @Test
+    public void testJsonArrayToMapParticleReadings() throws IOException, NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException, URISyntaxException {
+        // Get the example JSON
+        JSONArray gasReadings;
+        String readingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_particle.json"))
+                .toURI()).toString();
+        try (InputStream input = new FileInputStream(readingsFile)) {
+            JSONTokener tokener = new JSONTokener(input);
+            gasReadings = new JSONArray(tokener);
+        }
+        // Make method accessible
+        Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
+        jsonArrayToMap.setAccessible(true);
+        // Transform the readings
+        @SuppressWarnings("unchecked")
+        Map<String, List<?>> readings = (Map<String, List<?>>) jsonArrayToMap.invoke(testAgent, gasReadings);
+        // Check that all keys have a list of the same size as the JSON Array
+        for (String key: readings.keySet()) {
+            Assert.assertEquals(gasReadings.length(), readings.get(key).size());
+        }
+    }
 }
