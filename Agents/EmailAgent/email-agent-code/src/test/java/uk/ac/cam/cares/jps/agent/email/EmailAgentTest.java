@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -72,7 +73,7 @@ public class EmailAgentTest {
      * to be present. At the time of writing, this is difficult to include in automated testing
      * environments.
      */
-    //@Test
+    @Disabled
     public void sendGoodTestEmail() {
         LOGGER.debug("Running sendGoodTest()...");
 
