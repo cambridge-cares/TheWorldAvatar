@@ -10,8 +10,6 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-
-
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -40,7 +38,7 @@ public class AccessAgentCaller{
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
 		JPSBaseLogger.info(AccessAgentCaller.class, "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
-		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
+		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
 		if (a != null) {
 			String requestUrl = (String) a[0];
@@ -66,7 +64,7 @@ public class AccessAgentCaller{
 		
 		JPSBaseLogger.info(AccessAgentCaller.class, "get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
-		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
+		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
 		if (a != null) {
 			String requestUrl = (String) a[0];
@@ -105,8 +103,7 @@ public class AccessAgentCaller{
 		
 		JPSBaseLogger.info(AccessAgentCaller.class, "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
-		boolean sparqlAbility = hasSparqlAbility(targetUrl);
-		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
+		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
 		if (a != null) {
 			System.out.println("a IS NOT NULL!!!");
@@ -129,61 +126,7 @@ public class AccessAgentCaller{
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
-	public static Object[] createRequestUrl(String datasetUrl, String targetUrl, boolean targetHasSparqlAbility) {
-		
-		// the same cases as described in method query have to be distinguished
-		
-		String scenarioUrl = JPSContext.getScenarioUrl();			
-		String requestUrl = null;
-		
-		if ((datasetUrl != null) && datasetUrl.isEmpty()) {
-			datasetUrl = null;
-		}
-		
-		// case 3 or case 2 or case 1a
-		if ((scenarioUrl != null) || (datasetUrl != null) || targetHasSparqlAbility)  {	
-		
-			JSONObject joparams = null;
-		
-			// case 3
-			if (scenarioUrl != null)  {				
-				// redirect the request to the scenario agent
-				// the scenario agent has to be called even for get / query in combination with copy-on-write since in previous calls
-				// another agent might have updated the file within the same scenario 
-				joparams = new JSONObject();
-				String resource = cutHashFragment(targetUrl);
-				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
-				if (datasetUrl != null) {
-					if (targetUrl == null) {
-						joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
-					} else {
-						joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
-					}
-				}
-				requestUrl = scenarioUrl;
-			// case 2
-			} else if (datasetUrl != null) {
-				joparams = new JSONObject();
-				String resource = cutHashFragment(targetUrl);
-				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
-				requestUrl = datasetUrl;
-			// case 1a
-			} else {
-				requestUrl = cutHashFragment(targetUrl);
-			}
-		
-			//requestUrl = ScenarioHelper.cutHash(requestUrl);
-			requestUrl = ResourcePathConverter.convert(requestUrl);
-		
-			Object[] a = new Object[] {requestUrl, joparams};			
-			return a;
-		} 
-		
-		// case 1b
-		return null;
-	}	
-	
-	
+
 	/**
 	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
 	 * If a scenario url is given in the JPS context, then the SPARQL update is redirected to the scenario url.
@@ -194,10 +137,9 @@ public class AccessAgentCaller{
 	public static void update(String datasetUrl, String targetUrl, String sparqlUpdate) {
 		
 		JPSBaseLogger.info(AccessAgentCaller.class, "update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
-
-		boolean sparqlAbility = hasSparqlAbility(targetUrl);
-		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
 		
+		Object[] a = createRequestUrl(datasetUrl, targetUrl);
+			
 		if (a != null) {
 			String requestUrl = (String) a[0];
 			JSONObject joparams = (JSONObject) a[1];
@@ -216,7 +158,7 @@ public class AccessAgentCaller{
 		
 		// case 1b
 		String requestUrl = ScenarioHelper.cutHash(targetUrl);
-//		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl);
+//		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl); 
 		requestUrl = ResourcePathConverter.convert(requestUrl);
 		JPSBaseLogger.info(AccessAgentCaller.class, "SPARQL update is performed locally for requestUrl=" + requestUrl);
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
@@ -225,12 +167,60 @@ public class AccessAgentCaller{
 		JenaHelper.writeAsFile(model, requestUrl);		
 	}
 	
-	private static boolean hasSparqlAbility(String targetUrl) {
-		if (targetUrl == null) {
-			return false;
+	public static Object[] createRequestUrl(String datasetUrl, String targetUrl) {
+		
+		// the same cases as described in method query have to be distinguished
+		
+		String scenarioUrl = JPSContext.getScenarioUrl();			
+		String requestUrl = null;
+		
+		if ((datasetUrl != null) && datasetUrl.isEmpty()) {
+			datasetUrl = null;
 		}
-		return targetUrl.contains("/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/");
-	}
+				
+		JSONObject joparams = null;
+		
+		//case 3 
+		if (scenarioUrl != null)  {			
+			// redirect the request to the scenario agent
+			// the scenario agent has to be called even for get / query in combination with copy-on-write since in previous calls
+			// another agent might have updated the file within the same scenario 
+			requestUrl = scenarioUrl;
+			
+			joparams = new JSONObject();
+			String resource = cutHashFragment(targetUrl);
+			joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
+			if (datasetUrl != null) {
+				if (targetUrl == null) {
+					joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
+				} else {
+					joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+				}
+			}
+			
+		//case 2
+		}else if(datasetUrl != null) {
+			//request targetUrl indirectly as graph in datasetUrl
+			requestUrl = getBaseWorldUrl(datasetUrl);
+			
+			joparams = new JSONObject();
+			joparams.put(JPSConstants.TARGETIRI, cutHashFragment(datasetUrl));
+			joparams.put(JPSConstants.TARGETGRAPH, cutHashFragment(targetUrl));
+			
+		//case 1
+		}else {
+			//request targetUrl directly
+			requestUrl = getBaseWorldUrl(targetUrl);
+			
+			joparams = new JSONObject();
+			joparams.put(JPSConstants.TARGETIRI, cutHashFragment(targetUrl));
+		}
+	
+		requestUrl = ResourcePathConverter.convert(requestUrl);
+	
+		Object[] a = new Object[] {requestUrl, joparams};			
+		return a;
+	}	
 	
 	/**
 	 * Apache HTTP client applies percentage encoding to any URL.
@@ -266,5 +256,27 @@ public class AccessAgentCaller{
 		}else {
 			return uri.getSchemeSpecificPart();
 		}
+	}
+	
+	//direct request to AccessAgent at jps/kb
+	public static String getBaseWorldUrl(String url) {
+	
+		URI requestUrl = null;
+		try {
+			URI uri = new URI(URLDecoder.decode(url,"UTF-8"));
+			String scheme = uri.getScheme();
+			String authority = uri.getAuthority();
+			
+			requestUrl = new URI(scheme,authority,JPSConstants.KNOWLEDGE_BASE_URL,null,null);
+			
+		} catch (UnsupportedEncodingException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+		}
+		
+		return requestUrl.toString();
 	}
 }

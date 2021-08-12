@@ -612,7 +612,7 @@ public class ScenarioAccessAgent  extends AccessAgent {
 				return null;
 			} else {
 				// case 2: indirect query
-				return KnowledgeBaseClient.cutHashFragment(parameterUrl);
+				return AccessAgentCaller.cutHashFragment(parameterUrl);
 			}
 			
 		} else {
