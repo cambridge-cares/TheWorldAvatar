@@ -98,14 +98,23 @@ public class InitialiseInstances extends JPSAgent{
     	InstancesDatabase.DerivedAverage = derived_average;
     	
     	// check all connections between the derived quantities
-    	// as calculated difference is derived from min time and max time, they get checked too
+    	// as calculated difference is derived from min value and max value, they get checked too
     	// the validate method only traverse down, not up
     	LOGGER.info("Validating " + derived_difference);
     	try {
     		devClient.validateDerivation(derived_difference);
-    		LOGGER.info("Validation success");
+    		LOGGER.info("Validated derived difference successfully");
     	} catch (Exception e) {
-    		LOGGER.error("Validation fail");
+    		LOGGER.error("Validation failure for derived difference" + e.getMessage());
+    		throw new JPSRuntimeException(e);
+    	}
+    	
+    	LOGGER.info("Validating " + derived_average);
+    	try {
+    		devClient.validateDerivation(derived_average);
+    		LOGGER.info("Validated derived average successfully");
+    	} catch (Exception e) {
+    		LOGGER.error("Validation failure for derived average: " + e.getMessage());
     		throw new JPSRuntimeException(e);
     	}
 
