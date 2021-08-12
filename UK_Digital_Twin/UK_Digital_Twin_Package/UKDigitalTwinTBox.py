@@ -51,3 +51,9 @@ class UKDigitalTwinTBox:
     
     """OntoSpecies"""
     ontospecies = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
+    
+    """Bibtex"""
+    bibtex = "https://zeitkunst.org/bibtex/0.2/bibtex.owl#"
+    
+    """OWL"""
+    owl = "http://www.w3.org/2002/07/owl#"

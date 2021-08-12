@@ -389,9 +389,9 @@ if __name__ == '__main__':
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
-    # res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
+    res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
     # print(res)
-    # for r in res:
-    #     print(res[7])
-    testLabel()
+    for r in res:
+        print(res)
+    #testLabel()
 
