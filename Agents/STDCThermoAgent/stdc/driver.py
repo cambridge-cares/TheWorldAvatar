@@ -40,7 +40,7 @@ Options:
 --pressure=<pres>                     Requested pressure in Pascals to
                                       calculate thermodata, [default: 100000.0]
 --fit-nasa                            Flag controlling extra Nasa polynomials
-                                      output.
+                                      output
 """
 
 def main():

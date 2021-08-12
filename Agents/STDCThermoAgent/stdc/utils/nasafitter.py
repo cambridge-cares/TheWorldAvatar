@@ -33,7 +33,7 @@ def fitNASACoeffs(T, Cp, H, S):
     params.add('a5',x0[5])
     params.add('a6',x0[6])
     ydata = np.zeros([3,len(T)])
-    for i,Cpi,Hi,Si in enumerate(zip(Cp, H, S)):
+    for i, (Cpi,Hi,Si) in enumerate(zip(Cp, H, S)):
         ydata[0][i] = Cpi
         ydata[1][i] = Hi
         ydata[2][i] = Si

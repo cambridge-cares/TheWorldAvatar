@@ -36,10 +36,10 @@ class ChemSpecies:
                  temperature="298.15",
                  pressure="1e5",
                  enthalpy_ref_temp="298.15",
-                 enthalpy_ref="0.0",
+                 enthalpy_ref=None,
                  temperature_range=defaultTrange,
                  fit_nasa_temperatures=defaultNasaFitTemps,
-                 fit_nasa=False):
+                 fit_nasa=True):
         #   properties set based on constructor arguments
         #--------------------------------------------------
         # attribute name                               SI units
@@ -60,7 +60,9 @@ class ChemSpecies:
                             elec_levels,
                             types=[int,float],
                             multipliers=[1.0,ELEC_EN_CONV])  #     [-,J]  HA -> J
-        self.EnthRef = float(enthalpy_ref)                   #     [J/mol]
+        self.EnthRef = float(enthalpy_ref) \
+                        if enthalpy_ref is not None \
+                        else enthalpy_ref                    #     [J/mol]
         self.EnthRefTemp = float(enthalpy_ref_temp)          #     [K]
         #  Reuquested output temp and press + temp range for extra output
         #--------------------------------------------------
@@ -273,11 +275,10 @@ class ChemSpecies:
         self.VibTemp= VibTemp
 
     def _getSpHcorrSTHD(self):
-        Hcorr = 0.0
-        Href=self.EnthRef
-        H1 = sthd.getEnthalpy(self.GeomType,self.VibTemp,self.ElecLvL,self.EnthRefTemp)
-        Hcorr = Href-H1
-        self.EnthRefCorr = 0.0 #Hcorr
+        self.EnthRefCorr = 0.0
+        if self.EnthRef is not None:
+            H1 = sthd.getEnthalpy(self.GeomType,self.VibTemp,self.ElecLvL,self.EnthRefTemp)
+            self.EnthRefCorr = self.EnthRef-H1
 
     def _getRequestedTPPointData(self):
         T = self.RequestedTemp
@@ -337,7 +338,12 @@ class ChemSpecies:
                                                     ThermoDataHigh['H'],
                                                     ThermoDataHigh['S'])
 
-        return self._nasaOutToFormattedDict(Tlow,Tmid,Thigh,P,
+        formula = self.ChemFormula
+        composition = []
+        for key, value in self.AtomsCounts.items():
+            composition.append(key)
+            composition.append(value)
+        return self._nasaOutToFormattedDict(formula,composition,P,Tlow,Tmid,Thigh,
                                             NasaLowTCoeffs,NasaHighTCoeffs)
 
     @staticmethod
@@ -355,7 +361,14 @@ class ChemSpecies:
         return FormattedThermoDict
 
     @staticmethod
-    def _nasaOutToFormattedDict(Tlow,Tmid,Thigh,P,NasaLowTCoeffs,NasaHighTCoeffs):
+    def _nasaOutToFormattedDict(formula,
+                                composition,
+                                P,
+                                Tlow,
+                                Tmid,
+                                Thigh,
+                                NasaLowTCoeffs,
+                                NasaHighTCoeffs):
         FormattedThermoDict = {
             'LowTemperature': {'value': Tlow, 'unit': 'K'},
             'MidTemperature': {'value': Tmid, 'unit': 'K'},
@@ -363,8 +376,9 @@ class ChemSpecies:
             'RequestedPressure': {'value': P, 'unit': 'Pa'},
             'LowTemperatureCoefficients': NasaLowTCoeffs,
             'HighTemperatureCoefficients':NasaHighTCoeffs,
-            'NasaChemkinBlock': nasawriter.writeNasaChemkinBlock(Tlow,Tmid,Thigh,P,
-                                            NasaLowTCoeffs,NasaHighTCoeffs)
+            'NasaChemkinBlock': nasawriter.writeNasaChemkinBlock(
+                                    formula,composition,P,Tlow,Tmid,Thigh,
+                                    NasaLowTCoeffs,NasaHighTCoeffs)
         }
         return FormattedThermoDict
 
@@ -377,7 +391,12 @@ class ChemSpecies:
                 'G': self.getSpGibbsEnergySTHD(T)}
 
     def _getSpThermoAtTrangeP(self,Trange,P):
-        S= H= Cp= Cv= U= G= []
+        S= []
+        H= []
+        Cp= []
+        Cv= []
+        U= []
+        G= []
 
         for Ti in Trange:
             ThermoData = self._getSpThermoAtTP(Ti,P)
