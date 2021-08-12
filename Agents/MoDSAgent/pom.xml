@@ -166,7 +166,7 @@
         </dependency>
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>OntoKin</artifactId>
+            <artifactId>CMCLOntoKin</artifactId>
             <version>0.0.1</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
