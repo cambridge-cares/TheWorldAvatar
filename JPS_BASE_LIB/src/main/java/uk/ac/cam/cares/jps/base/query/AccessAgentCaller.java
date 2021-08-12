@@ -25,8 +25,10 @@ public class AccessAgentCaller{
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>
 	 * The method also allows to put non-RDF resources.
 	 * 
-	 * @param targetUrl
+	 * @param datasetUrl triple store
+	 * @param targetUrl the named resource or graph
 	 * @param content
+	 * @param contentType
 	 * @return
 	 */
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
@@ -43,7 +45,7 @@ public class AccessAgentCaller{
 	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
 	 * The method also allows to get non-RDF resources. 
 	 * 
-	 * @param datasetUrl 
+	 * @param datasetUrl triple store
 	 * @param targetUrl the named resource or named graph
 	 * @param accept for RDF resources only, available formats see {@link MediaType}, null allowed
 	 * @return
@@ -64,21 +66,13 @@ public class AccessAgentCaller{
 	 * differences: parameter key and value are serialized as JSON,  
 	 * the parameter key is "sparqlquery" instead of "query"
 	 * 
-	 * @param datasetUrl
-	 * @param targetUrl
+	 * @param datasetUrl triple store
+	 * @param targetUrl the named resource or graph
 	 * @param sparqlQuery
 	 * @return the query result in the W3C Query result JSON format, see https://www.w3.org/TR/sparql11-results-json/
 	 */
 	public static String query(String datasetUrl, String targetUrl, String sparqlQuery) {
-		
-		// the following cases have to be distinguished:
-		// 1) no datasetUrl is given, no scenarioUrl in the JPS context
-		// 2) the datasetUrl is given, no scenarioUrl in the JPS context
-		//	  This means that the target resource is only requested indirectly via the datasetUrl 
-		// 	  as SPARQL endpoint (such that SPARQL is performed at the endpoint)
-		// 3) scnearioUrl in the JPS context
-		// 	  in combination with corresponding cases from 1) and 2)
-		
+				
 		JPSBaseLogger.info(AccessAgentCaller.class, "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
@@ -100,6 +94,7 @@ public class AccessAgentCaller{
 	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
 	 * If a scenario url is given in the JPS context, then the SPARQL update is redirected to the scenario url.
 	 * 
+	 * @param datasetUrl triple store
 	 * @param targetUrl
 	 * @param sparqlUpdate
 	 */
@@ -124,9 +119,23 @@ public class AccessAgentCaller{
 		return;	
 	}
 	
+	/**
+	 * Create the request url and request parameters containing the target resource IRI.
+	 * The request is directed to either the ScenarioAccessAgent via the scenarioUrl or
+	 * the AccessAgent at "jps/kb". 
+	 * @param datasetUrl
+	 * @param targetUrl
+	 * @return
+	 */
 	public static Object[] createRequestUrl(String datasetUrl, String targetUrl) {
 		
-		// the same cases as described in method query have to be distinguished
+		// The following cases have to be distinguished:
+		// 1) no datasetUrl is given, no scenarioUrl in the JPS context
+		//	  the targetUrl is requested directly
+		// 2) the datasetUrl is given, no scenarioUrl in the JPS context
+		//	  the targetUrl may optionally request a graph at the datasetUrl
+		// 3) scnearioUrl in the JPS context
+		// 	  in combination with corresponding cases from 1) and 2)
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
@@ -213,7 +222,11 @@ public class AccessAgentCaller{
 		}
 	}
 	
-	//direct request to AccessAgent at jps/kb
+	/**
+	 * Get the base world Access Agent url.
+	 * @param url
+	 * @return
+	 */
 	public static String getBaseWorldUrl(String url) {
 	
 		URI requestUrl = null;
