@@ -1,0 +1,69 @@
+{
+    "Empirical formula": "C1O2",
+    "Atom counts": {
+        "C": 1,
+        "O": 2
+    },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0,
+        15.99491,
+        15.99491
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "G1",
+    "Basis set": "G1",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -3.555363,
+            -0.513457,
+            0.0
+        ],
+        [
+            -4.734007,
+            -0.521312,
+            0.0
+        ],
+        [
+            -2.37672,
+            -0.505603,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        11.3715891
+    ],
+    "Rotational constants number": 1,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        745.8403,
+        745.8403,
+        1518.4399,
+        2584.9202
+    ],
+    "Frequencies number": 4,
+    "Frequencies unit": "cm^-1",
+    "Electronic and ZPE energy": -188.361076,
+    "HOMO energy": -0.53991,
+    "HOMO-1 energy": -0.53991,
+    "HOMO-2 energy": -0.70477,
+    "LUMO energy": 0.19389,
+    "LUMO+1 energy": 0.19968,
+    "LUMO+2 energy": 0.19968,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 16:47:38 2020",
+    "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/s00009360.owl/Species_7258652483811000",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
+    "EntryUUID": "testID-111-111-111"
+}
