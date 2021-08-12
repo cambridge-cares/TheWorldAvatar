@@ -136,7 +136,7 @@ class DerivationSparql{
 	 * @param inputs
 	 */
 	static String createDerivationWithTimeSeries(StoreClientInterface kbClient, 
-			String entity, String agentIRI, String agentURL, List<String> inputs) {
+			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
@@ -149,13 +149,15 @@ class DerivationSparql{
 		
 		modify.insert(derived_iri.isA(DerivedQuantityWithTimeSeries));
 		
-		if (!hasBelongsTo(kbClient,entity)) {
-			modify.insert(iri(entity).has(belongsTo, derived_iri));
-		} else {
-			LOGGER.error(entity + " is already part of another derivation");
-			throw new JPSRuntimeException(entity + " is already part of another derivation");
+		for (String entity : entities) {
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(kbClient, entity)) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			} else {
+				LOGGER.error(entity + " is already part of another derivation");
+				throw new JPSRuntimeException(entity + " is already part of another derivation");
+			}
 		}
-		
 		
 		// link to agent
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));

@@ -34,6 +34,9 @@ public class UpdateDerivations extends JPSAgent{
 		
 		devClient.updateDerivation(InstancesDatabase.DerivedDifference);
 		devClient.updateDerivation(InstancesDatabase.DerivedAverage);
-		return requestParams;
+		
+		JSONObject response = new JSONObject();
+		response.put("status", "Updated <" + InstancesDatabase.DerivedDifference + "> and <" + InstancesDatabase.DerivedAverage + ">");
+		return response;
 	}
 }

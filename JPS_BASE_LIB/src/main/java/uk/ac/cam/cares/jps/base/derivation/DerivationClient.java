@@ -54,10 +54,10 @@ public class DerivationClient {
      * @param agentURL
      * @param inputsIRI
      */
-    public String createDerivationWithTimeSeries(String entity, String agentIRI, String agentURL, List<String> inputsIRI) {
-    	String createdDerivation = DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entity, agentIRI, agentURL, inputsIRI);
+    public String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
+    	String createdDerivation = DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + "> with the following properties");
-    	LOGGER.info(entity + " belongsTo " + createdDerivation);
+    	LOGGER.info(entities + " belongsTo " + createdDerivation);
     	LOGGER.info(createdDerivation + " isDerivedFrom " + inputsIRI);
     	LOGGER.info(createdDerivation + " isDerivedUsing " + agentIRI + " located at " + agentURL);
     	return createdDerivation;
@@ -280,5 +280,14 @@ public class DerivationClient {
 	    	}
 	    }
 	    return outOfDate;
+	}
+	
+	/**
+	 * returns the derivation instance linked to this entity
+	 * @param entity
+	 * @return
+	 */
+	public String getDerivationOf(String entity) {
+		return DerivationSparql.getDerivedIRI(kbClient, entity);
 	}
 }

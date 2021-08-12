@@ -105,7 +105,7 @@ public class DerivedQuantityClientTest{
 	
 	@Test
 	public void testCreateDerivedQuantityWithTimeSeries() {
-		String createdDerived = devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
+		String createdDerived = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Individual devIndividual = testKG.getIndividual(createdDerived);
 		Assert.assertNotNull(devIndividual);
@@ -132,7 +132,7 @@ public class DerivedQuantityClientTest{
 		}
 		
 		// an instance cannot be part of two derived quantities
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI3, derivedAgentURL3, inputs));
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI3, derivedAgentURL3, inputs));
         Assert.assertTrue(e.getMessage().contains("part of another derivation"));
 	}
 	
@@ -150,7 +150,7 @@ public class DerivedQuantityClientTest{
 	@Test
 	public void testUpdateTimestamp() {
 		String namespace = "http://www.w3.org/2006/time#";
-		String devInstance = devClient.createDerivationWithTimeSeries(entity1, derivedAgentIRI, derivedAgentURL, inputs);
+		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long oldtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
 		.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();

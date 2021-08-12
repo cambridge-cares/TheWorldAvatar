@@ -223,7 +223,7 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testIsDerivedWithTimeSeries() {
 		String derived1 = DerivationSparql.createDerivation(mockClient, Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, Arrays.asList(input1));
-	    String derived2 = DerivationSparql.createDerivationWithTimeSeries(mockClient, entity2, derivedAgentIRI2, derivedAgentURL2, Arrays.asList(input2));
+	    String derived2 = DerivationSparql.createDerivationWithTimeSeries(mockClient, Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(input2));
 	    
 	    Assert.assertFalse(DerivationSparql.isDerivedWithTimeSeries(mockClient, derived1));
 	    Assert.assertTrue(DerivationSparql.isDerivedWithTimeSeries(mockClient, derived2));

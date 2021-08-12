@@ -93,7 +93,7 @@ public class InitialiseInstances extends JPSAgent{
     	InstancesDatabase.DerivedDifference = derived_difference;
     	
     	// average is a derivation with a time series
-    	String derived_average = devClient.createDerivationWithTimeSeries(average, average_agent_iri, average_agent_url, Arrays.asList(input));
+    	String derived_average = devClient.createDerivationWithTimeSeries(Arrays.asList(average), average_agent_iri, average_agent_url, Arrays.asList(input));
     	LOGGER.info("created derivation for average " + derived_average);
     	InstancesDatabase.DerivedAverage = derived_average;
     	
@@ -118,7 +118,7 @@ public class InitialiseInstances extends JPSAgent{
     		throw new JPSRuntimeException(e);
     	}
 
-    	return requestParams;
+    	return new JSONObject().put("status", "Initialised instances successfully");
     }
 	
     private static void createInputTimeSeries(String input_iri, TimeSeriesClient<Instant> tsClient) {
