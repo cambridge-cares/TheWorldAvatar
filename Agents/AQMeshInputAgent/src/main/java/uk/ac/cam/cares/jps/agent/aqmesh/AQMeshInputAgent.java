@@ -74,6 +74,30 @@ public class AQMeshInputAgent {
     }
 
     public void initializeTimeSeriesIfNotExist() {
+        // Iterate through all mappings (each represents one time series)
+        for (JSONKeyToIRIMapper mapping: mappings) {
+            // The IRIs used by the current mapping
+            List<String> iris = mapping.getAllIRIs();
+            // Check whether IRIs have a time series linked and if not initialize the corresponding time series
+            if(timeSeriesExist(iris)) {
+                initializeTimeSeries(iris);
+            }
+        }
+    }
+
+    private boolean timeSeriesExist(List<String> iris) {
+        // If any of the IRIs does not have a time series the time series does not exist
+        for(String iri: iris) {
+            if (!tsClient.checkDataHasTimeSeries(iri)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void initializeTimeSeries(List<String> iris) {
+        // TODO: How to get the datatype for each key/iri? Config file or parsing from JSON?
+        //tsClient.initTimeSeries(iris);
     }
 
     private void updateTimeSeries() {
