@@ -226,28 +226,38 @@ public class AQMeshInputAgentTest {
         for (String key: readings.keySet()) {
             Assert.assertEquals(gasReadings.length(), readings.get(key).size());
         }
+        // Check that all key from the JSON Array have a corresponding entry
+        for (Iterator<String> it = gasReadings.getJSONObject(0).keys(); it.hasNext();) {
+            String key = it.next();
+            Assert.assertTrue(readings.containsKey(key));
+        }
     }
 
     @Test
     public void testJsonArrayToMapParticleReadings() throws IOException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException, URISyntaxException {
         // Get the example JSON
-        JSONArray gasReadings;
+        JSONArray particleReadings;
         String readingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_particle.json"))
                 .toURI()).toString();
         try (InputStream input = new FileInputStream(readingsFile)) {
             JSONTokener tokener = new JSONTokener(input);
-            gasReadings = new JSONArray(tokener);
+            particleReadings = new JSONArray(tokener);
         }
         // Make method accessible
         Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
         jsonArrayToMap.setAccessible(true);
         // Transform the readings
         @SuppressWarnings("unchecked")
-        Map<String, List<?>> readings = (Map<String, List<?>>) jsonArrayToMap.invoke(testAgent, gasReadings);
+        Map<String, List<?>> readings = (Map<String, List<?>>) jsonArrayToMap.invoke(testAgent, particleReadings);
         // Check that all keys have a list of the same size as the JSON Array
         for (String key: readings.keySet()) {
-            Assert.assertEquals(gasReadings.length(), readings.get(key).size());
+            Assert.assertEquals(particleReadings.length(), readings.get(key).size());
+        }
+        // Check that all key from the JSON Array have a corresponding entry
+        for (Iterator<String> it = particleReadings.getJSONObject(0).keys(); it.hasNext();) {
+            String key = it.next();
+            Assert.assertTrue(readings.containsKey(key));
         }
     }
 }
