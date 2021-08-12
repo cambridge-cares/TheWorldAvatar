@@ -74,6 +74,7 @@ public class EmailAgentTest {
      * environments.
      */
     @Disabled
+    @Test
     public void sendGoodTestEmail() {
         LOGGER.debug("Running sendGoodTest()...");
 
