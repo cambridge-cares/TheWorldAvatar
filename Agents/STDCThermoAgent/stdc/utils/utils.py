@@ -1,5 +1,5 @@
 ﻿import numpy as np
-import params as p
+import stdc.utils.params as p
 import re
 
 LENGTH_UNITS = ['M', 'CM', 'MM', 'MICROM', 'NM', 'A', 'A0']
@@ -572,3 +572,67 @@ def getGibbsEnergy(alow,ahigh,Trange,T):
     S = getEntropy(alow,ahigh,Trange,T)
     G = H - T*S
     return G
+
+def chemFormulaToAtomsCounts(chemFormula, atomCounts={}, multiplier=1.0):    
+    atomCounts, chemFormula = _funcGroupsAtomsCounts(chemFormula, atomCounts)
+    atomCounts = _chemFormulaToAtomsCounts(chemFormula, atomCounts, multiplier)
+
+    return atomCounts
+
+def _funcGroupsAtomsCounts(chemFormula, atomCounts):
+    funcGroupCounts = {}
+    funcGroupRegex=f'(\(.*?\)\d*)'
+    funcGroupsMatch = re.findall(funcGroupRegex,chemFormula)
+    if funcGroupsMatch:
+        for funcGroup in sorted(funcGroupsMatch,reverse=True,key=len):
+            chemFormula = chemFormula.replace(funcGroup,'')        
+            countMatch = re.search('\)(\d+)$',funcGroup)
+            if countMatch:
+                count = countMatch.groups()[0]
+                funcGroup = funcGroup.replace(count, '')
+            else:
+                count = '1'
+
+            funcGroup = funcGroup.replace(')','').replace('(','')
+            if funcGroup not in funcGroupCounts:
+                funcGroupCounts[funcGroup] = int(count)
+            else:
+                funcGroupCounts[funcGroup] += int(count)
+
+        for funcGroup, funcGroupCount in funcGroupCounts.items():            
+            atomCounts = _chemFormulaToAtomsCounts(funcGroup, atomCounts, funcGroupCount)
+    return atomCounts, chemFormula
+
+def _chemFormulaToAtomsCounts(chemFormula, atomCounts, multiplier):
+    Elements =['H','HE','LI','BE','B','C','N','O','F','NE','NA','MG','AL',
+               'SI','P','S','CL','AR','K','CA','SC','TI','V','CR','MN',
+               'FE','CO','NI','CU','ZN','GA','GE','AS','SE','BR','KR',
+               'RB','SR','Y','ZR','NB','MO','TC','RU','RH','PD','AG','CD',
+               'IN','SN','SB','TE','IN','XE','CS','BA','LA','CE','PR',
+               'ND','PM','SM','EU','GD','TB','DY','HO','ER','TM','YB',
+               'LU','HF','TA','W','RE','OS','IR','PT','AU','HG','TL',
+               'PB','BI','PO','AT','RN','FR','RA','AC','TH','PA','U',
+               'NP','PU','AM','CM','BK','CF','ES','FM','MD','NO','LR',
+               'RF','DB','SG','BH','HS','MT','DS','RG','CN','NH','FL','MC']
+
+    atomCountsRegex=f'(['+Elements[0]
+    for el in Elements[1:]:
+        atomCountsRegex += f'|'+ el
+    atomCountsRegex += f']\d*)'
+
+    atomCountMatch = re.findall(atomCountsRegex,chemFormula)
+    if atomCountMatch:
+        for atomCount in atomCountMatch:
+            countMatch = re.search('(\d+)$',atomCount)
+            if countMatch:
+                count = int(countMatch.groups()[0])
+                atom = atomCount.replace(countMatch.groups()[0], '')
+            else:
+                count = 1
+                atom = atomCount
+            if atom not in atomCounts:
+                atomCounts[atom] = int(count*multiplier)
+            else:
+                atomCounts[atom] += int(count*multiplier)
+
+    return atomCounts

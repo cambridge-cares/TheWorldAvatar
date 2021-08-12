@@ -1,0 +1,10 @@
+channels:
+  - conda-forge
+dependencies:
+  - pip
+  - pip:
+    - numpy
+    - pytest
+    - lmfit
+    - docopt
+    - -e .
