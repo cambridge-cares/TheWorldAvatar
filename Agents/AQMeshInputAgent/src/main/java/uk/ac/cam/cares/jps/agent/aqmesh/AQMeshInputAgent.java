@@ -131,13 +131,12 @@ public class AQMeshInputAgent {
     }
 
     /**
-     * Updates the database with possible new data requested from the API.
-     * @param connector The connector to communicate with the AQMesh API
+     * Updates the database with new readings.
+     * @param particleReadings The particle readings received from the AQMesh API
+     * @param gasReadings The gas readings received from the AQMesh API
      */
-    public void updateDate(AQMeshAPIConnector connector) {
-        // Retrieve readings from the connector
-        JSONArray particleReadings = connector.getParticleReadings();
-        JSONArray gasReadings = connector.getGasReadings();
+    public void updateDate(JSONArray particleReadings, JSONArray gasReadings) {
+
         // Transform readings in hashmap containing a list of objects for each JSON key
         Map<String, List<?>> particleReadingsMap = new HashMap<>();
         Map<String, List<?>> gasReadingsMap = new HashMap<>();

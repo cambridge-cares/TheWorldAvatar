@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
+import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -44,8 +45,13 @@ public class AQMeshInputAgentLauncher {
             throw new JPSRuntimeException("Could not construct the AQMesh API connector needed to interact with the API!", e);
         }
         connector.connect();
+
+        // Retrieve readings
+        JSONArray particleReadings = connector.getParticleReadings();
+        JSONArray gasReadings = connector.getGasReadings();
+
         // Update the data
-        agent.updateDate(connector);
+        agent.updateDate(particleReadings, gasReadings);
 
     }
 
