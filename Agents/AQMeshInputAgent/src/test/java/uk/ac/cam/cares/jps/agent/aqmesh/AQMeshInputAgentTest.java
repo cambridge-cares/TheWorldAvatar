@@ -204,6 +204,19 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
+    public void testJsonArrayToMapEmptyReadings() throws NoSuchMethodException, InvocationTargetException,
+            IllegalAccessException {
+        JSONArray readings = new JSONArray("[]");
+        // Make method accessible
+        Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
+        jsonArrayToMap.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, List<?>> readingsMap = (Map<String, List<?>>) jsonArrayToMap.invoke(testAgent, readings);
+        // The map should be empty
+        Assert.assertTrue(readingsMap.isEmpty());
+    }
+
+    @Test
     public void testJsonArrayToMapGasReadings() throws IOException, NoSuchMethodException, InvocationTargetException,
             IllegalAccessException, URISyntaxException {
         // Get the example JSON

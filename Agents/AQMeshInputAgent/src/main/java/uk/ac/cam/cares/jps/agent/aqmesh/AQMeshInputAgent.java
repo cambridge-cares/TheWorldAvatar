@@ -135,31 +135,39 @@ public class AQMeshInputAgent {
      * @param particleReadings The particle readings received from the AQMesh API
      * @param gasReadings The gas readings received from the AQMesh API
      */
-    public void updateDate(JSONArray particleReadings, JSONArray gasReadings) {
-
-        // Transform readings in hashmap containing a list of objects for each JSON key
-        Map<String, List<?>> particleReadingsMap = new HashMap<>();
-        Map<String, List<?>> gasReadingsMap = new HashMap<>();
-        if (particleReadings.length() > 0) {
-            particleReadingsMap = jsonArrayToMap(particleReadings);
-        }
-        if (gasReadings.length() > 0) {
-            gasReadingsMap = jsonArrayToMap(gasReadings);
-        }
-        List<TimeSeries<ZonedDateTime>> timeSeries = convertReadingsToTimeSeries(particleReadingsMap, gasReadingsMap);
-        // Update each time series
-        for (TimeSeries<ZonedDateTime> ts: timeSeries) {
-            // Retrieve current maximum time to avoid duplicate entries
-            ZonedDateTime maxDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
-            ZonedDateTime minCurrentTime = ts.getTimes().get(ts.getTimes().size()-1);
-            // If the new data overlaps with existing timestamps, prune the new ones
-            if (minCurrentTime.isBefore(maxDataTime)) {
-                ts = pruneTimeSeries(ts, maxDataTime);
+    public void updateDate(JSONArray particleReadings, JSONArray gasReadings) throws IllegalArgumentException {
+        // Transform readings in hashmap containing a list of objects for each JSON key,
+        // will be empty if the JSON Array is empty
+        Map<String, List<?>> particleReadingsMap = jsonArrayToMap(particleReadings);
+        Map<String, List<?>> gasReadingsMap =jsonArrayToMap(gasReadings);
+        // Only do something if both readings contain data
+        if(!particleReadingsMap.isEmpty() && !gasReadingsMap.isEmpty()) {
+            List<TimeSeries<ZonedDateTime>> timeSeries;
+            try {
+                timeSeries = convertReadingsToTimeSeries(particleReadingsMap, gasReadingsMap);
             }
-            // Only update if there actually is data
-            if (!ts.getTimes().isEmpty()) {
-                tsClient.addTimeSeriesData(ts);
+            // Is a problem as time series objects must be the same every time to ensure proper insert into the database
+            catch (NoSuchElementException e) {
+                throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
             }
+            // Update each time series
+            for (TimeSeries<ZonedDateTime> ts : timeSeries) {
+                // Retrieve current maximum time to avoid duplicate entries
+                ZonedDateTime maxDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                ZonedDateTime minCurrentTime = ts.getTimes().get(ts.getTimes().size() - 1);
+                // If the new data overlaps with existing timestamps, prune the new ones
+                if (minCurrentTime.isBefore(maxDataTime)) {
+                    ts = pruneTimeSeries(ts, maxDataTime);
+                }
+                // Only update if there actually is data
+                if (!ts.getTimes().isEmpty()) {
+                    tsClient.addTimeSeriesData(ts);
+                }
+            }
+        }
+        // Is a problem as time series objects must be the same every time to ensure proper insert into the database
+        else {
+            throw new IllegalArgumentException("Readings can not be empty!");
         }
     }
 
@@ -264,6 +272,7 @@ public class AQMeshInputAgent {
                     values.add(gasReadings.get(key));
                     useParticleReadings = false;
                 }
+                // Will create a problem as length of iris and values do not match when creating the time series
                 else {
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }
@@ -345,7 +354,7 @@ public class AQMeshInputAgent {
             return Double.class;
         }
         // Environment conditions are floating point measures
-        else if (jsonKey.contains("temperature") | jsonKey.contains("pressure") | jsonKey.contains("humidity")) {
+        else if (jsonKey.contains("temperature") || jsonKey.contains("pressure") || jsonKey.contains("humidity")) {
             return Double.class;
         }
         // Noise information for gas readings are floating point numbers
@@ -353,11 +362,11 @@ public class AQMeshInputAgent {
             return Double.class;
         }
         // Sensor readings and corresponding offset and slope are floating point numbers
-        else if (jsonKey.contains("prescale") | jsonKey.contains("slope") | jsonKey.contains("offset")) {
+        else if (jsonKey.contains("prescale") || jsonKey.contains("slope") || jsonKey.contains("offset")) {
             return Double.class;
         }
         // Battery low warning and particle modem overlap are boolean
-        else if (jsonKey.equals("battery_low") | jsonKey.equals("particle_modem_overlap")) {
+        else if (jsonKey.equals("battery_low") || jsonKey.equals("particle_modem_overlap")) {
             return Boolean.class;
         }
         // The default datatype is string
