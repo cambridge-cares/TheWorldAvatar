@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<assembly 
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0  http://maven.apache.org/xsd/assembly-1.0.0.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <!--
+        This file specifies which files and directories should be included within
+        the PRODUCTION artifact before uploading begins.
+    -->
+    
+    <formats>
+        <format>zip</format>
+    </formats>
+
+    <!-- ID of this archive -->
+    <id>java-log-config-prod</id>
+
+    <!-- Don't include the directory itself -->
+    <includeBaseDirectory>false</includeBaseDirectory>
+
+    <files>
+        <file>
+            <source>log4j2.production.xml</source>
+            <destName>log4j2.xml</destName>
+        </file>
+    </files>
+    
+</assembly>

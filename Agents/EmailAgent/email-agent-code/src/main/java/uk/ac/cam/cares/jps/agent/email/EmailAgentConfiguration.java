@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.agent.email;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class handles reading the configuration file for the EmailAgent and provides methods to
@@ -12,6 +14,10 @@ import java.util.Properties;
  */
 public class EmailAgentConfiguration {
 
+    /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailAgentConfiguration.class);
     /**
      * Name of the environment variable pointing to the location of the properties file.
      */
@@ -120,7 +126,7 @@ public class EmailAgentConfiguration {
         properties = new Properties();
 
         String propertyFileLocation = System.getenv(PROPERTIES_ENV);
-        System.out.println("Attempting to read properties file at: " + propertyFileLocation);
+        LOGGER.info("Attempting to read properties file at: " + propertyFileLocation);
 
         try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
@@ -131,14 +137,12 @@ public class EmailAgentConfiguration {
             if (whitelistOn) {
                 String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
 
-                    if (allowedIPs != null) {
-                        System.out.println("INFO: Whitelist enabled, only approving requests from local machine and following IPs...");
-                    for (String allowedIP : allowedIPs) {
-                        System.out.println("   " + allowedIP);
-                    }
-                    }
+                if (allowedIPs != null) {
+                    LOGGER.info("Whitelist enabled, only approving requests from local machine and following IPs...");
+                    LOGGER.info(String.join(", ", allowedIPs));
+                }
             } else {
-                System.out.println("WARN: Whitelist disabled, accepting all requests.");
+                LOGGER.warn("Whitelist disabled, accepting all requests.");
             }
         }
     }

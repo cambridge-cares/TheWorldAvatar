@@ -18,6 +18,13 @@
         <spring-version>3.2.9.RELEASE</spring-version>
     </properties>
     
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    
     <!-- Repository locations to deploy to -->
     <distributionManagement>
         <repository>
@@ -32,6 +39,7 @@
         <finalName>jps-base-lib</finalName>
         
         <plugins>
+            
             <!-- Compile and build to specific Java version -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -81,6 +89,25 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
+                
+                <executions>          
+                    <!-- Skip downloading the runtime Log4J2 config -->
+                    <execution>
+                        <id>download-runtime-log-config</id>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
         </plugins>
     </build>
 
@@ -88,16 +115,12 @@
     <!-- If adding dependencies, please include a comment detailing what they're for -->
     <dependencies>
         
-        <!-- === Provided Dependencies === -->
         <!-- Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
-            <scope>provided</scope>
         </dependency>
 
-        <!-- === Compile Dependencies === -->
         <!-- For constructing SQL queries -->
         <dependency>
             <groupId>org.jooq</groupId>
@@ -178,8 +201,11 @@
         <!-- Logging -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
-            <version>2.11.0</version>
         </dependency>
 
         <!-- Processing JSON content -->
@@ -296,23 +322,19 @@
             <version>3.1.0</version>
         </dependency>
         
-        <!-- === Testing === -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.0</version>
-            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.7.0</version>
+            <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
         
@@ -338,24 +360,24 @@
             <scope>test</scope>
         </dependency>
             
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>testcontainers</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.testcontainers</groupId>
-			<artifactId>junit-jupiter</artifactId>
-			<version>1.15.3</version>
-			<scope>test</scope>
-		</dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>1.15.3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
