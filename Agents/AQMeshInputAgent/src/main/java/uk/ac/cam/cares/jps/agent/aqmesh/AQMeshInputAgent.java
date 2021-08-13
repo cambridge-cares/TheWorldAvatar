@@ -135,11 +135,11 @@ public class AQMeshInputAgent {
      * @param particleReadings The particle readings received from the AQMesh API
      * @param gasReadings The gas readings received from the AQMesh API
      */
-    public void updateDate(JSONArray particleReadings, JSONArray gasReadings) throws IllegalArgumentException {
+    public void updateData(JSONArray particleReadings, JSONArray gasReadings) throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Array is empty
         Map<String, List<?>> particleReadingsMap = jsonArrayToMap(particleReadings);
-        Map<String, List<?>> gasReadingsMap =jsonArrayToMap(gasReadings);
+        Map<String, List<?>> gasReadingsMap = jsonArrayToMap(gasReadings);
         // Only do something if both readings contain data
         if(!particleReadingsMap.isEmpty() && !gasReadingsMap.isEmpty()) {
             List<TimeSeries<ZonedDateTime>> timeSeries;
@@ -153,11 +153,11 @@ public class AQMeshInputAgent {
             // Update each time series
             for (TimeSeries<ZonedDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries
-                ZonedDateTime maxDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
-                ZonedDateTime minCurrentTime = ts.getTimes().get(ts.getTimes().size() - 1);
+                ZonedDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                ZonedDateTime startCurrentTime = ts.getTimes().get(0);
                 // If the new data overlaps with existing timestamps, prune the new ones
-                if (minCurrentTime.isBefore(maxDataTime)) {
-                    ts = pruneTimeSeries(ts, maxDataTime);
+                if (startCurrentTime.isBefore(endDataTime)) {
+                    ts = pruneTimeSeries(ts, endDataTime);
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {

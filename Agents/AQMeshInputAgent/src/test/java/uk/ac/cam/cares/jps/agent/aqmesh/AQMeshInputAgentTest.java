@@ -1,9 +1,11 @@
 package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
@@ -31,6 +33,10 @@ public class AQMeshInputAgentTest {
     // A default list of IRIs
     private final List<String> iris = Arrays.asList("iri1", "iri2", "iri3");
 
+    // Readings used by several tests
+    JSONArray particleReadings;
+    JSONArray gasReadings;
+
     @Before
     public void initializeAgent() throws URISyntaxException, IOException {
         // Create a properties file that points to the example/test mapping folder in the resources //
@@ -42,6 +48,22 @@ public class AQMeshInputAgentTest {
         testAgent = new AQMeshInputAgent(propertiesFile);
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
+    }
+
+    @Before
+    public void readExampleReadingsFromFile() throws URISyntaxException, IOException {
+        String particleReadingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_particle.json"))
+                .toURI()).toString();
+        try (InputStream input = new FileInputStream(particleReadingsFile)) {
+            JSONTokener tokener = new JSONTokener(input);
+            particleReadings = new JSONArray(tokener);
+        }
+        String gasReadingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_gas.json"))
+                .toURI()).toString();
+        try (InputStream input = new FileInputStream(gasReadingsFile)) {
+            JSONTokener tokener = new JSONTokener(input);
+            gasReadings = new JSONArray(tokener);
+        }
     }
 
     @Test
@@ -204,6 +226,109 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
+    public void testUpdateDataExceptions() {
+        // Initialize readings
+        JSONArray particleReadings = new JSONArray("[]");
+        JSONArray gasReadings = new JSONArray("[]");
+
+        // Using empty readings should throw an exception
+        try {
+            testAgent.updateData(particleReadings, gasReadings);
+            Assert.fail();
+        }
+        catch (IllegalArgumentException e) {
+            Assert.assertEquals("Readings can not be empty!", e.getMessage());
+        }
+
+        // Create readings with timestamps and missing keys
+        String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00",
+                "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
+        for(String timestamp: timestamps) {
+            String json = "{ '" + AQMeshInputAgent.timestampKey + "':'" + timestamp + "'}";
+            particleReadings.put(new JSONObject(json));
+            gasReadings.put(new JSONObject(json));
+        }
+        // Should trigger an exception due to missing keys
+        try {
+            testAgent.updateData(particleReadings, gasReadings);
+            Assert.fail();
+        }
+        catch (IllegalArgumentException e) {
+            Assert.assertEquals("Readings can not be converted to proper time series!", e.getMessage());
+            Assert.assertEquals(NoSuchElementException.class, e.getCause().getClass());
+        }
+    }
+
+    @Test
+    public void testUpdateData() {
+        // Set up the mock client
+        // Use a max time that is clearly before any of the example readings
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(ZonedDateTime.parse("1988-07-10T00:50:00+00:00"));
+        // Run the update
+        testAgent.updateData(particleReadings, gasReadings);
+        // Capture the arguments that the add data method was called with
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<TimeSeries<ZonedDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
+        // Ensure that the update was called for each time series
+        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
+        // Ensure that the timeseries objects have the correct structure
+        int numIRIs = 0;
+        for(TimeSeries<ZonedDateTime> ts: timeSeriesArgument.getAllValues()) {
+            // Check that number of timestamps is correct
+            Assert.assertEquals(particleReadings.length(), ts.getTimes().size());
+            numIRIs = numIRIs + ts.getDataIRIs().size();
+        }
+        // Number of unique keys in both readings should match the number of IRIs
+        Set<String> uniqueKeys = new HashSet<>(particleReadings.getJSONObject(0).keySet());
+        uniqueKeys.addAll(gasReadings.getJSONObject(0).keySet());
+        // Timestamp key has no match (therefore -1)
+        Assert.assertEquals(uniqueKeys.size() - 1, numIRIs);
+    }
+
+    @Test
+    public void testUpdateDataPrune() {
+        // Set up the mock client
+        // Use a max time that is overlapping with the readings
+        int numEntriesToKeep = 2;
+        assert particleReadings.length() > numEntriesToKeep + 1;
+        String maxTime = particleReadings.getJSONObject(particleReadings.length() - numEntriesToKeep - 1)
+                .getString(AQMeshInputAgent.timestampKey);
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(ZonedDateTime.parse(maxTime+"+00:00"));
+        // Run the update
+        testAgent.updateData(particleReadings, gasReadings);
+        // Capture the arguments that the add data method was called with
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<TimeSeries<ZonedDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
+        // Ensure that the update was called for each time series
+        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
+        // Ensure that the timeseries objects have the correct structure
+        int numIRIs = 0;
+        for(TimeSeries<ZonedDateTime> ts: timeSeriesArgument.getAllValues()) {
+            // Check that number of timestamps is correct
+            Assert.assertEquals(numEntriesToKeep, ts.getTimes().size());
+            numIRIs = numIRIs + ts.getDataIRIs().size();
+        }
+        // Number of unique keys in both readings should match the number of IRIs
+        Set<String> uniqueKeys = new HashSet<>(particleReadings.getJSONObject(0).keySet());
+        uniqueKeys.addAll(gasReadings.getJSONObject(0).keySet());
+        // Timestamp key has no match (therefore -1)
+        Assert.assertEquals(uniqueKeys.size() - 1, numIRIs);
+    }
+
+    @Test
+    public void testUpdateDataPruneAll() {
+        // Use a max time that is past max time of readings
+        String maxTime = particleReadings.getJSONObject(particleReadings.length() - 1)
+                .getString(AQMeshInputAgent.timestampKey);
+        ZonedDateTime endTime = ZonedDateTime.parse(maxTime+"+00:00");
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(endTime.plusDays(1));
+        // Run the update
+        testAgent.updateData(particleReadings, gasReadings);
+        // Ensure that the update is never called
+        Mockito.verify(mockTSClient, Mockito.never()).addTimeSeriesData(Mockito.any());
+    }
+
+    @Test
     public void testJsonArrayToMapEmptyReadings() throws NoSuchMethodException, InvocationTargetException,
             IllegalAccessException {
         JSONArray readings = new JSONArray("[]");
@@ -217,16 +342,7 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
-    public void testJsonArrayToMapGasReadings() throws IOException, NoSuchMethodException, InvocationTargetException,
-            IllegalAccessException, URISyntaxException {
-        // Get the example JSON
-        JSONArray gasReadings;
-        String readingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_gas.json"))
-                .toURI()).toString();
-        try (InputStream input = new FileInputStream(readingsFile)) {
-            JSONTokener tokener = new JSONTokener(input);
-            gasReadings = new JSONArray(tokener);
-        }
+    public void testJsonArrayToMapGasReadings() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
         Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
         jsonArrayToMap.setAccessible(true);
@@ -237,7 +353,7 @@ public class AQMeshInputAgentTest {
         for (String key: readings.keySet()) {
             Assert.assertEquals(gasReadings.length(), readings.get(key).size());
         }
-        // Check that all key from the JSON Array have a corresponding entry
+        // Check that all keys from the JSON Array have a corresponding entry
         for (Iterator<String> it = gasReadings.getJSONObject(0).keys(); it.hasNext();) {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
@@ -245,16 +361,7 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
-    public void testJsonArrayToMapParticleReadings() throws IOException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException, URISyntaxException {
-        // Get the example JSON
-        JSONArray particleReadings;
-        String readingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_particle.json"))
-                .toURI()).toString();
-        try (InputStream input = new FileInputStream(readingsFile)) {
-            JSONTokener tokener = new JSONTokener(input);
-            particleReadings = new JSONArray(tokener);
-        }
+    public void testJsonArrayToMapParticleReadings() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
         Method jsonArrayToMap = AQMeshInputAgent.class.getDeclaredMethod("jsonArrayToMap", JSONArray.class);
         jsonArrayToMap.setAccessible(true);
@@ -265,7 +372,7 @@ public class AQMeshInputAgentTest {
         for (String key: readings.keySet()) {
             Assert.assertEquals(particleReadings.length(), readings.get(key).size());
         }
-        // Check that all key from the JSON Array have a corresponding entry
+        // Check that all keys from the JSON Array have a corresponding entry
         for (Iterator<String> it = particleReadings.getJSONObject(0).keys(); it.hasNext();) {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
@@ -372,6 +479,8 @@ public class AQMeshInputAgentTest {
                     Assert.assertEquals(gasTimestamps.length, values.size());
                     // Gas readings should be integer
                     Assert.assertEquals(Integer.class, values.get(0).getClass());
+                    // Check values (all keys have the same value list)
+                    Assert.assertEquals(gasReadings.get(gasKeys[0]), values);
                 }
             }
             // Time series corresponds to either general information or particle readings
@@ -384,6 +493,8 @@ public class AQMeshInputAgentTest {
                         Assert.assertEquals(particleTimestamps.length, values.size());
                         // Particle readings should be double
                         Assert.assertEquals(Double.class, values.get(0).getClass());
+                        // Check values (all keys have the same value list)
+                        Assert.assertEquals(particleReadings.get(particleKeys[0]), values);
                     }
                 }
                 // Time series corresponds to general readings
@@ -396,6 +507,8 @@ public class AQMeshInputAgentTest {
                         Assert.assertEquals(particleTimestamps.length, values.size());
                         // General readings should be string
                         Assert.assertEquals(String.class, values.get(0).getClass());
+                        // Check values (all keys have the same value list)
+                        Assert.assertEquals(particleReadings.get(generalKeys[0]), values);
                     }
                 }
             }

@@ -61,7 +61,7 @@ public class AQMeshInputAgentLauncher {
         // If both readings are not empty there is new data
         if(!particleReadings.isEmpty() && !gasReadings.isEmpty()) {
             // Update the data
-            agent.updateDate(particleReadings, gasReadings);
+            agent.updateData(particleReadings, gasReadings);
         }
         // If both are empty no new readings are available
         else if(particleReadings.isEmpty() && gasReadings.isEmpty()) {
