@@ -235,7 +235,7 @@ public class AccessAgentCaller{
 			String scheme = uri.getScheme();
 			String authority = uri.getAuthority();
 			
-			requestUrl = new URI(scheme,authority,JPSConstants.KNOWLEDGE_BASE_URL,null,null);
+			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
 			
 		} catch (UnsupportedEncodingException e) {
 			throw new JPSRuntimeException(e);
