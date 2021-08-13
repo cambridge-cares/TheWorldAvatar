@@ -25,7 +25,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class AQMeshAPIConnectorTest {
 
@@ -55,12 +54,13 @@ public class AQMeshAPIConnectorTest {
     }
 
     @Test
-    public void AQMeshAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, URISyntaxException, IOException {
+    public void AQMeshAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
         // One connector constructed using the username and password directly
         AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password", "url");
         // One connector constructed using a properties file
-        AQMeshAPIConnector connectorFile = new AQMeshAPIConnector(Paths.get(Objects.requireNonNull(getClass().getResource("/aqmesh.properties")).
-                toURI()).toString());
+        String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
+        writePropertyFile(propertiesFile, Arrays.asList("aqmesh.username=username", "aqmesh.password=password", "aqmesh.url=url"));
+        AQMeshAPIConnector connectorFile = new AQMeshAPIConnector(propertiesFile);
 
         // Retrieve private fields for username and password and check that they were set correctly
         Field usernameField = AQMeshAPIConnector.class.getDeclaredField("username");
