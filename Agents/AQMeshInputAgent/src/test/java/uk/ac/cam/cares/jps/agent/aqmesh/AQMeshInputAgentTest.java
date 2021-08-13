@@ -20,7 +20,7 @@ import java.util.*;
 
 public class AQMeshInputAgentTest {
 
-    // Temporary folder to place a properties file (same file for all potential tests)
+    // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
@@ -70,6 +70,17 @@ public class AQMeshInputAgentTest {
     public void testConstructor() throws IOException {
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "aqmesh.properties").toString();
+        // Run constructor on an empty file should give an exception
+        writePropertyFile(propertiesFile, new ArrayList<>());
+        try {
+            new AQMeshInputAgent(propertiesFile);
+            Assert.fail();
+        }
+        catch (InvalidPropertiesFormatException e) {
+            Assert.assertEquals("The properties file does not contain the key aqmesh.mappingfolder " +
+                    "with a path to the folder containing the required JSON key to IRI mappings.", e.getMessage());
+        }
+
         // Create a property file with a mapping folder that does not exist
         String folderName = "no_valid_folder";
         writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + folderName));
