@@ -28,7 +28,7 @@ def _config_logging():
     # Create logs directory
     log_dir = os.path.join(os.path.expanduser("~"), ".jps", "logs")
     if not os.path.isdir(log_dir):
-        os.mkdirs(log_dir)
+        os.makedirs(log_dir)
     
     # Set the logfile to be generated in ~/.jps/logs
     log_fpath = os.path.join(os.path.expanduser("~"), ".jps", "logs", "jps.log")
