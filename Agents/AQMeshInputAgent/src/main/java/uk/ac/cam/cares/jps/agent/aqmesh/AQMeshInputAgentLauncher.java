@@ -10,27 +10,33 @@ import java.time.ZonedDateTime;
 public class AQMeshInputAgentLauncher {
 
     // TODO: Proper logging for each phase of the main script
+    // TODO: Use proper argument parsing
+    /**
+     * Main method that runs through all steps to update the data received from the AQMesh API.
+     * defined in the provided properties file.
+     * @param args The command line arguments. Three properties files should be passed here in order: 1) input agent
+     *             2) time series client 3) API connector.
+     */
     public static void main(String[] args) {
 
-        // Ensure that a properties file is provided
-        if (args.length == 0) {
-            throw new JPSRuntimeException("No properties file provided as command line argument.");
+        // Ensure that there are three properties files
+        if (args.length != 3) {
+            throw new JPSRuntimeException("Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.");
         }
-        String propertiesFile = args[0];
 
         // Create the agent
         AQMeshInputAgent agent;
         try {
-            agent = new AQMeshInputAgent(propertiesFile);
+            agent = new AQMeshInputAgent(args[0]);
         } catch (IOException e) {
             throw new JPSRuntimeException("The AQMesh input agent could not be constructed!", e);
         }
 
         // Create and set the time series client
         try {
-            TimeSeriesClient<ZonedDateTime> tsClient = new TimeSeriesClient<>(ZonedDateTime.class, propertiesFile);
+            TimeSeriesClient<ZonedDateTime> tsClient = new TimeSeriesClient<>(ZonedDateTime.class, args[1]);
             agent.setTsClient(tsClient);
-        } catch (IOException e) {
+        } catch (IOException | JPSRuntimeException e) {
             throw new JPSRuntimeException("Could not construct the time series client needed by the input agent!", e);
         }
 
@@ -40,7 +46,7 @@ public class AQMeshInputAgentLauncher {
         // Create the connector to interact with the AQMesh API
         AQMeshAPIConnector connector;
         try {
-            connector = new AQMeshAPIConnector(propertiesFile);
+            connector = new AQMeshAPIConnector(args[2]);
         } catch (IOException e) {
             throw new JPSRuntimeException("Could not construct the AQMesh API connector needed to interact with the API!", e);
         }
