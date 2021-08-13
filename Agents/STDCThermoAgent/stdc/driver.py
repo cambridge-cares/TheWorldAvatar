@@ -17,7 +17,7 @@ Usage:
     stdc  (--chem-formula=<chemFormula>)
           (--spin-mult=<spinMult>)
           (--mol-weight=<molWeight>)
-          (--sym-number=<symNum>)
+          [--sym-number=<symNum>]
           [--rot-constants=<rotConsts>]
           [--frequencies=<freqs>]
           [--freq-scale-factor=<freqScaleFact>]

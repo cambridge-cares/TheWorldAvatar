@@ -29,7 +29,7 @@ class ChemSpecies:
                  chem_formula,
                  spin_mult,
                  mol_weight,
-                 sym_number,
+                 sym_number="1.0",
                  rot_constants="",
                  frequencies="",
                  freq_scale_factor="1.0",
