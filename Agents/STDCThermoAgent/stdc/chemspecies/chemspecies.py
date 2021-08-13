@@ -6,6 +6,7 @@ import stdc.errorhandling.exceptions as stdcerr
 import stdc.thermocalculator.sthdcalculator as sthd
 import stdc.utils.nasafitter as nasafitter
 import stdc.utils.nasablockwriter as nasawriter
+import stdc.utils.diagnostics as diagn
 import stdc.unitconverter.unitconverter as unitconv
 import textwrap
 
@@ -39,7 +40,13 @@ class ChemSpecies:
                  enthalpy_ref=None,
                  temperature_range=defaultTrange,
                  fit_nasa_temperatures=defaultNasaFitTemps,
-                 fit_nasa=True):
+                 fit_nasa=True,
+                 dev_nasa_high_coeffs=None,
+                 dev_nasa_low_coeffs=None,
+                 dev_nasa_trange=None,
+                 dev_enthref_from_nasa="0",
+                 dev_enthref_nasa_temp="298.15",
+                 dev_output_file=None):
         #   properties set based on constructor arguments
         #--------------------------------------------------
         # attribute name                               SI units
@@ -76,14 +83,34 @@ class ChemSpecies:
         #  NASA polynomials fitting - extra output
         #--------------------------------------------------
         self.FitNasa = fit_nasa
-        self.LowNasaCoeffs = []                     #     [7x-]
+        self.FittedLowNasaCoeffs = []                     #     [7x-]
         self.NasaPolynomialsData = {}               #
-        self.HighNasaCoeffs = []                    #     [7x-]
+        self.FittedHighNasaCoeffs = []                    #     [7x-]
         self.NasaComment = 'STHD'                   #
         self.NasaPhase = 'G'                        #
         self.NasaFitTemps = _strInputToList(
                             fit_nasa_temperatures,
                             type=float)             #     [K,K,K]
+        # developer only inputs
+        #--------------------------------------------------
+        self.DevHighNasaCoeffs= dev_nasa_high_coeffs \
+                                if dev_nasa_high_coeffs is None \
+                                else _strInputToList( \
+                                dev_nasa_high_coeffs, \
+                                type=float)
+        self.DevLowNasaCoeffs= dev_nasa_low_coeffs \
+                                if dev_nasa_low_coeffs is None \
+                                else _strInputToList( \
+                                dev_nasa_low_coeffs, \
+                                type=float)
+        self.DevNasaTemps= dev_nasa_trange \
+                                if dev_nasa_trange is None \
+                                else _strInputToList( \
+                                dev_nasa_trange,
+                                type=float)
+        self.DevEnthRefFromNasa= bool(int(dev_enthref_from_nasa))
+        self.DevEnthRefNasaTemp = float(dev_enthref_nasa_temp)
+        self.DevOutFile= dev_output_file
         #   properties set based on other properties
         #--------------------------------------------------
         self.AtomsCounts = utl.chemFormulaToAtomsCounts(chem_formula)  #     [-]
@@ -96,8 +123,9 @@ class ChemSpecies:
         self._applyVibFreqScaleFactor()
         self._setVibTemp()                         #     [K]
         self._setRotTemp()                         #     [K]
+        if self.DevEnthRefFromNasa:
+            self.EnthRef = self.getSpEnthalpyNASA(self.DevEnthRefNasaTemp,useFittedNasa=False)
         self._getSpHcorrSTHD()
-
     #======================================================
     #            Methods
     #======================================================
@@ -142,47 +170,50 @@ class ChemSpecies:
         G = H-T*S
         return G
 
-    def getSpEntropyNASA(self,T,useFittedNasa=False):
+    def getSpEntropyNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            S = utl.getEntropy(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            S = utl.getEntropy(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            S = utl.getEntropy(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            S = utl.getEntropy(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return S
 
-    def getSpInternalEnergyNASA(self,T,useFittedNasa=False):
+    def getSpInternalEnergyNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            U = utl.getInternalEnergy(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            U = utl.getInternalEnergy(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            U = utl.getInternalEnergy(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            U = utl.getInternalEnergy(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return U
 
-    def getSpHeatCapacityCvNASA(self,T,useFittedNasa=False):
+    def getSpHeatCapacityCvNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            Cv = utl.getHeatCapacityCv(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            Cv = utl.getHeatCapacityCv(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            Cv = utl.getHeatCapacityCv(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            Cv = utl.getHeatCapacityCv(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return Cv
 
-    def getSpHeatCapacityCpNASA(self,T,useFittedNasa=False):
+    def getSpHeatCapacityCpNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            Cp = utl.getHeatCapacityCp(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            Cp = utl.getHeatCapacityCp(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            Cp = utl.getHeatCapacityCp(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            Cp = utl.getHeatCapacityCp(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return Cp
 
-    def getSpEnthalpyNASA(self,T,useFittedNasa=False):
+    def getSpEnthalpyNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            H = utl.getEnthalpy(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            H = utl.getEnthalpy(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            H = utl.getEnthalpy(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            H = utl.getEnthalpy(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return H
 
-    def getSpGibbsEnergyNASA(self,T,useFittedNasa=False):
+    def getSpGibbsEnergyNASA(self,T,useFittedNasa=True):
         if useFittedNasa:
-            G = utl.getGibbsEnergy(self.FitLowNasa,self.FitHighNasa,self.FitTrangeNasa,T)
+            G = utl.getGibbsEnergy(self.FittedLowNasaCoeffs,self.FittedHighNasaCoeffs,self.NasaFitTemps,T)
         else:
-            G = utl.getGibbsEnergy(self.LowNasa,self.HighNasa,self.TrangeNasa,T)
+            G = utl.getGibbsEnergy(self.DevLowNasaCoeffs,self.DevHighNasaCoeffs,self.DevNasaTemps,T)
         return G
+
+    def outputDiagnosticFile(self):
+        diagn.writeThermoDatCsvFile(self)
 
     # Methods to set/get/check other fields
     #---------------------------------
@@ -288,10 +319,10 @@ class ChemSpecies:
         self.RequestedTPPointData = self._thermoOutToFormattedDict(
             T=T,
             P=P,
-            H=ThermoData['H'],
+            H=ThermoData['H']*1e-3,
             S=ThermoData['S'],
-            U=ThermoData['U'],
-            G=ThermoData['G'],
+            U=ThermoData['U']*1e-3,
+            G=ThermoData['G']*1e-3,
             Cp=ThermoData['Cp'],
             Cv=ThermoData['Cv'])
 
@@ -304,10 +335,10 @@ class ChemSpecies:
         self.RequestedTrangeData = self._thermoOutToFormattedDict(
             T=T,
             P=P,
-            H=ThermoData['H'],
+            H=[Hi*1e-3 for Hi in ThermoData['H']],
             S=ThermoData['S'],
-            U=ThermoData['U'],
-            G=ThermoData['G'],
+            U=[Ui*1e-3 for Ui in ThermoData['U']],
+            G=[Gi*1e-3 for Gi in ThermoData['G']],
             Cp=ThermoData['Cp'],
             Cv=ThermoData['Cv'])
     
@@ -343,6 +374,9 @@ class ChemSpecies:
         for key, value in self.AtomsCounts.items():
             composition.append(key)
             composition.append(value)
+
+        self.FittedLowNasaCoeffs = NasaLowTCoeffs
+        self.FittedHighNasaCoeffs = NasaHighTCoeffs
         return self._nasaOutToFormattedDict(formula,composition,P,Tlow,Tmid,Thigh,
                                             NasaLowTCoeffs,NasaHighTCoeffs)
 
@@ -353,10 +387,10 @@ class ChemSpecies:
             'RequestedPressure': {'value': P, 'unit': 'Pa'},
             'Enthalpy': {'value': H, 'unit': 'kJ/mol'},
             'InternalEnergy': {'value': U, 'unit': 'kJ/mol'},
-            'Entropy': {'value': S, 'unit': 'kJ/mol/K'},
+            'Entropy': {'value': S, 'unit': 'J/mol/K'},
             'GibbsEnergy': {'value': G, 'unit': 'kJ/mol'},
-            'HeatCapacityAtConstPressure': {'value': Cp, 'unit': 'kJ/mol/K'},
-            'HeatCapacityAtConstVolume': {'value': Cv, 'unit': 'kJ/mol/K'}
+            'HeatCapacityAtConstPressure': {'value': Cp, 'unit': 'J/mol/K'},
+            'HeatCapacityAtConstVolume': {'value': Cv, 'unit': 'J/mol/K'}
         }
         return FormattedThermoDict
 

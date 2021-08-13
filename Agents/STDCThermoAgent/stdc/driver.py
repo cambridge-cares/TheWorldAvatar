@@ -1,7 +1,16 @@
 ﻿
 import stdc.app as app
 from docopt import docopt, DocoptExit
+import sys
 
+DEV_INPUTS={
+    "--dev-nasa-high-coeffs": None,
+    "--dev-nasa-low-coeffs": None,
+    "--dev-nasa-trange": None,
+    "--dev-output-file": None,
+    "--dev-enthref-from-nasa": "0",
+    "--dev-enthref-nasa-temp": "298.15",
+}
 
 __doc__="""stdc
 Usage:
@@ -43,12 +52,31 @@ Options:
                                       output
 """
 
-def main():
-    try:
-        args = docopt(__doc__)
+
+
+def _get_developer_args():
+    args = sys.argv[1:]
+    dev_indices = []
+    for dev_input in DEV_INPUTS:
+        if dev_input in args:
+            dev_input_ind = args.index(dev_input)
+            DEV_INPUTS[dev_input]= args[dev_input_ind+1]
+            dev_indices.append(dev_input_ind)
+            dev_indices.append(dev_input_ind+1)
+    args = [arg for j, arg in enumerate(args) if j not in dev_indices]
+    return DEV_INPUTS, args
+
+def main():    
+    try:        
+        dev_args, args = _get_developer_args()
+        args = docopt(__doc__, argv=args)
     except DocoptExit:
         raise DocoptExit('Error: stdc called with wrong arguments.')
+    except IndexError:
+        print('Error: Wrong developer inputs.')
+        return
 
+    args = {**args, **dev_args}
     app.runThermoCalculator(args)
     pass
 

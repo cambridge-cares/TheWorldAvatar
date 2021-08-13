@@ -1,5 +1,6 @@
 ﻿import numpy as np
 import lmfit as lmf
+import stdc.utils.params as p
 
 def _nasaResidualFunc(params,x,y):
     a=[]
@@ -33,10 +34,10 @@ def fitNASACoeffs(T, Cp, H, S):
     params.add('a5',x0[5])
     params.add('a6',x0[6])
     ydata = np.zeros([3,len(T)])
-    for i, (Cpi,Hi,Si) in enumerate(zip(Cp, H, S)):
-        ydata[0][i] = Cpi
-        ydata[1][i] = Hi
-        ydata[2][i] = Si
+    for i, (Cpi,Hi,Si,Ti) in enumerate(zip(Cp, H, S, T)):
+        ydata[0][i] = Cpi/p.R
+        ydata[1][i] = Hi/p.R/Ti
+        ydata[2][i] = Si/p.R
     result = lmf.minimize(_nasaResidualFunc, params, args=(T, ydata))
     aa= result.residual
     fitParams = []

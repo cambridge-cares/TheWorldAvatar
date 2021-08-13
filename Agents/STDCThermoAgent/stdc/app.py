@@ -6,6 +6,8 @@ def runThermoCalculator(args):
     args = _preprocessArgs(args)
     ChemSpeciesData = chs.ChemSpecies(**args)
     ChemSpeciesData.getThermoData()
+    if ChemSpeciesData.DevOutFile is not None:
+        ChemSpeciesData.outputDiagnosticFile()
     print('done')
 
 def _preprocessArgs(args):
