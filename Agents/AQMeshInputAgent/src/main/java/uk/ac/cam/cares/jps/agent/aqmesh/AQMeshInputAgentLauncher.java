@@ -5,7 +5,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
 
 public class AQMeshInputAgentLauncher {
 
@@ -34,7 +34,7 @@ public class AQMeshInputAgentLauncher {
 
         // Create and set the time series client
         try {
-            TimeSeriesClient<ZonedDateTime> tsClient = new TimeSeriesClient<>(ZonedDateTime.class, args[1]);
+            TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
             throw new JPSRuntimeException("Could not construct the time series client needed by the input agent!", e);

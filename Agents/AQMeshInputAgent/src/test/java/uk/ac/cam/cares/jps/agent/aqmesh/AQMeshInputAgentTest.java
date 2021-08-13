@@ -15,7 +15,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.time.ZonedDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.*;
 
 public class AQMeshInputAgentTest {
@@ -28,7 +29,7 @@ public class AQMeshInputAgentTest {
     private AQMeshInputAgent testAgent;
     // The mocking instance for the time series client
     @SuppressWarnings("unchecked")
-    private final TimeSeriesClient<ZonedDateTime> mockTSClient = (TimeSeriesClient<ZonedDateTime>) Mockito.mock(TimeSeriesClient.class);
+    private final TimeSeriesClient<OffsetDateTime> mockTSClient = (TimeSeriesClient<OffsetDateTime>) Mockito.mock(TimeSeriesClient.class);
 
     // A default list of IRIs
     private final List<String> iris = Arrays.asList("iri1", "iri2", "iri3");
@@ -274,17 +275,17 @@ public class AQMeshInputAgentTest {
     public void testUpdateData() {
         // Set up the mock client
         // Use a max time that is clearly before any of the example readings
-        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(ZonedDateTime.parse("1988-07-10T00:50:00+00:00"));
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(OffsetDateTime.parse("1988-07-10T00:50:00+00:00"));
         // Run the update
         testAgent.updateData(particleReadings, gasReadings);
         // Capture the arguments that the add data method was called with
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<TimeSeries<ZonedDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
+        ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
         // Ensure that the update was called for each time series
         Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
         // Ensure that the timeseries objects have the correct structure
         int numIRIs = 0;
-        for(TimeSeries<ZonedDateTime> ts: timeSeriesArgument.getAllValues()) {
+        for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
             // Check that number of timestamps is correct
             Assert.assertEquals(particleReadings.length(), ts.getTimes().size());
             numIRIs = numIRIs + ts.getDataIRIs().size();
@@ -304,17 +305,17 @@ public class AQMeshInputAgentTest {
         assert particleReadings.length() > numEntriesToKeep + 1;
         String maxTime = particleReadings.getJSONObject(particleReadings.length() - numEntriesToKeep - 1)
                 .getString(AQMeshInputAgent.timestampKey);
-        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(ZonedDateTime.parse(maxTime+"+00:00"));
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(OffsetDateTime.parse(maxTime+"+00:00"));
         // Run the update
         testAgent.updateData(particleReadings, gasReadings);
         // Capture the arguments that the add data method was called with
         @SuppressWarnings("unchecked")
-        ArgumentCaptor<TimeSeries<ZonedDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
+        ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
         // Ensure that the update was called for each time series
         Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
         // Ensure that the timeseries objects have the correct structure
         int numIRIs = 0;
-        for(TimeSeries<ZonedDateTime> ts: timeSeriesArgument.getAllValues()) {
+        for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
             // Check that number of timestamps is correct
             Assert.assertEquals(numEntriesToKeep, ts.getTimes().size());
             numIRIs = numIRIs + ts.getDataIRIs().size();
@@ -331,7 +332,7 @@ public class AQMeshInputAgentTest {
         // Use a max time that is past max time of readings
         String maxTime = particleReadings.getJSONObject(particleReadings.length() - 1)
                 .getString(AQMeshInputAgent.timestampKey);
-        ZonedDateTime endTime = ZonedDateTime.parse(maxTime+"+00:00");
+        OffsetDateTime endTime = OffsetDateTime.parse(maxTime+"+00:00");
         Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(endTime.plusDays(1));
         // Run the update
         testAgent.updateData(particleReadings, gasReadings);
@@ -527,19 +528,19 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
-    public void testConvertStringToZonedDateTime() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void testConvertStringToOffsetDateTime() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         // Make method accessible
-        Method convertStringToZonedDateTime = AQMeshInputAgent.class.getDeclaredMethod("convertStringToZonedDateTime", String.class);
-        convertStringToZonedDateTime.setAccessible(true);
+        Method convertStringToOffsetDateTime = AQMeshInputAgent.class.getDeclaredMethod("convertStringToOffsetDateTime", String.class);
+        convertStringToOffsetDateTime.setAccessible(true);
         // Test with a valid string
         String timestamp = "2021-07-11T16:15:00";
-        ZonedDateTime time = (ZonedDateTime) convertStringToZonedDateTime.invoke(testAgent, timestamp);
+        OffsetDateTime time = (OffsetDateTime) convertStringToOffsetDateTime.invoke(testAgent, timestamp);
         Assert.assertEquals(2021, time.getYear());
         Assert.assertEquals(7, time.getMonth().getValue());
         Assert.assertEquals(11, time.getDayOfMonth());
         Assert.assertEquals(16, time.getHour());
         Assert.assertEquals(0, time.getOffset().getTotalSeconds());
-        Assert.assertEquals("UTC", time.getZone().getId());
+        Assert.assertEquals(ZoneOffset.UTC, time.getOffset());
     }
 
     @Test
@@ -550,34 +551,34 @@ public class AQMeshInputAgentTest {
         List<String> stringValues = new ArrayList<>();
         String[] timestamps = {"2021-07-11T16:10:00+00:00", "2021-07-11T16:15:00+00:00",
                 "2021-07-11T16:20:00+00:00", "2021-07-11T16:25:00+00:00"};
-        List<ZonedDateTime> times = new ArrayList<>();
+        List<OffsetDateTime> times = new ArrayList<>();
         for (int i = 0; i < timestamps.length; i++) {
-            times.add(ZonedDateTime.parse(timestamps[i]));
+            times.add(OffsetDateTime.parse(timestamps[i]));
             intValues.add(i);
             stringValues.add(String.valueOf(i));
         }
         List<List<?>> values = Arrays.asList(intValues, stringValues);
-        TimeSeries<ZonedDateTime> timeSeries = new TimeSeries<>(times, iris, values);
+        TimeSeries<OffsetDateTime> timeSeries = new TimeSeries<>(times, iris, values);
         // Make method accessible
-        Method pruneTimeSeries = AQMeshInputAgent.class.getDeclaredMethod("pruneTimeSeries", TimeSeries.class, ZonedDateTime.class);
+        Method pruneTimeSeries = AQMeshInputAgent.class.getDeclaredMethod("pruneTimeSeries", TimeSeries.class, OffsetDateTime.class);
         pruneTimeSeries.setAccessible(true);
 
         // Maximum time lies before the smallest time in the time series -> no pruning
-        TimeSeries<?> prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T15:00:00+00:00"));
+        TimeSeries<?> prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2021-07-11T15:00:00+00:00"));
         Assert.assertEquals(times.size(), prunedTimeSeries.getTimes().size());
         for (String iri: iris) {
             Assert.assertEquals(timeSeries.getValues(iri), prunedTimeSeries.getValues(iri));
         }
 
         // Maximum time lies within the time series -> pruning
-        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T16:16:00+00:00"));
+        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2021-07-11T16:16:00+00:00"));
         Assert.assertEquals(2, prunedTimeSeries.getTimes().size());
         for (String iri: iris) {
             Assert.assertEquals(timeSeries.getValues(iri).subList(2, times.size()), prunedTimeSeries.getValues(iri));
         }
 
         // Maximum time lies after time series -> prune all
-        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T16:30:00+00:00"));
+        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, OffsetDateTime.parse("2021-07-11T16:30:00+00:00"));
         Assert.assertEquals(0, prunedTimeSeries.getTimes().size());
         for (String iri: iris) {
             Assert.assertEquals(new ArrayList<>(), prunedTimeSeries.getValues(iri));

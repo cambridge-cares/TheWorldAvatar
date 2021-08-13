@@ -11,9 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -25,17 +23,17 @@ import java.util.stream.Collectors;
 public class AQMeshInputAgent {
 
     // The time series client to interact with the knowledge graph and data storage
-    private TimeSeriesClient<ZonedDateTime> tsClient;
+    private TimeSeriesClient<OffsetDateTime> tsClient;
     // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
     private List<JSONKeyToIRIMapper> mappings;
     // The prefix to use when no IRI exists for a JSON key originally
     public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
     // The time unit used for all time series maintained by the AQMesh input agent
-    public static final String timeUnit = ZonedDateTime.class.getSimpleName();
+    public static final String timeUnit = OffsetDateTime.class.getSimpleName();
     // The JSON key for the timestamp
     public static final String timestampKey = "reading_datestamp";
-    // The Zone ID of the timestamp (see https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html)
-    public static final ZoneId zoneID = ZoneId.of("UTC+00:00");
+    // The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
+    public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
     /**
      * Standard constructor which reads in JSON key to IRI mappings from the config folder
@@ -71,7 +69,7 @@ public class AQMeshInputAgent {
      * Setter for the time series client.
      * @param tsClient The time series client to use.
      */
-    public void setTsClient(TimeSeriesClient<ZonedDateTime> tsClient) {
+    public void setTsClient(TimeSeriesClient<OffsetDateTime> tsClient) {
         this.tsClient = tsClient;
     }
 
@@ -146,7 +144,7 @@ public class AQMeshInputAgent {
         Map<String, List<?>> gasReadingsMap = jsonArrayToMap(gasReadings);
         // Only do something if both readings contain data
         if(!particleReadingsMap.isEmpty() && !gasReadingsMap.isEmpty()) {
-            List<TimeSeries<ZonedDateTime>> timeSeries;
+            List<TimeSeries<OffsetDateTime>> timeSeries;
             try {
                 timeSeries = convertReadingsToTimeSeries(particleReadingsMap, gasReadingsMap);
             }
@@ -155,10 +153,10 @@ public class AQMeshInputAgent {
                 throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
             }
             // Update each time series
-            for (TimeSeries<ZonedDateTime> ts : timeSeries) {
+            for (TimeSeries<OffsetDateTime> ts : timeSeries) {
                 // Retrieve current maximum time to avoid duplicate entries
-                ZonedDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
-                ZonedDateTime startCurrentTime = ts.getTimes().get(0);
+                OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If the new data overlaps with existing timestamps, prune the new ones
                 if (startCurrentTime.isBefore(endDataTime)) {
                     ts = pruneTimeSeries(ts, endDataTime);
@@ -246,17 +244,17 @@ public class AQMeshInputAgent {
      * @param gasReadings The gas readings as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
-    private List<TimeSeries<ZonedDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> particleReadings,
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> particleReadings,
                                                                         Map<String, List<?>> gasReadings)
             throws  NoSuchElementException {
-        // Extract the timestamps by mapping the convertStringToZonedDateTime on the list items
+        // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
-        List<ZonedDateTime> particleTimestamps = particleReadings.get(AQMeshInputAgent.timestampKey).stream()
-                .map(timestamp -> (convertStringToZonedDateTime(timestamp.toString()))).collect(Collectors.toList());
-        List<ZonedDateTime> gasTimestamps = gasReadings.get(AQMeshInputAgent.timestampKey).stream()
-                .map(timestamp -> (convertStringToZonedDateTime(timestamp.toString()))).collect(Collectors.toList());
+        List<OffsetDateTime> particleTimestamps = particleReadings.get(AQMeshInputAgent.timestampKey).stream()
+                .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
+        List<OffsetDateTime> gasTimestamps = gasReadings.get(AQMeshInputAgent.timestampKey).stream()
+                .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
-        List<TimeSeries<ZonedDateTime>> timeSeries = new ArrayList<>();
+        List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
         for (JSONKeyToIRIMapper mapping: mappings) {
             // Initialize the list of IRIs
             List<String> iris = new ArrayList<>();
@@ -282,9 +280,9 @@ public class AQMeshInputAgent {
                 }
             }
             // Timestamps depend on which readings are used for the mapping
-            List<ZonedDateTime> times = (useParticleReadings) ? particleTimestamps : gasTimestamps;
+            List<OffsetDateTime> times = (useParticleReadings) ? particleTimestamps : gasTimestamps;
             // Create the time series object and add it to the list
-            TimeSeries<ZonedDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
+            TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
             timeSeries.add(currentTimeSeries);
         }
 
@@ -296,11 +294,11 @@ public class AQMeshInputAgent {
      * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
      * @return The resulting datetime object.
      */
-    private ZonedDateTime convertStringToZonedDateTime(String timestamp) {
+    private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
         // Convert first to a local time
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
         // Then add the zone id
-        return ZonedDateTime.of(localTime, AQMeshInputAgent.zoneID);
+        return OffsetDateTime.of(localTime, AQMeshInputAgent.ZONE_OFFSET);
     }
 
     /**
@@ -309,9 +307,9 @@ public class AQMeshInputAgent {
      * @param timeThreshold The treshold before which no data should occur
      * @return The resulting datetime object.
      */
-    private TimeSeries<ZonedDateTime> pruneTimeSeries(TimeSeries<ZonedDateTime> timeSeries, ZonedDateTime timeThreshold) {
+    private TimeSeries<OffsetDateTime> pruneTimeSeries(TimeSeries<OffsetDateTime> timeSeries, OffsetDateTime timeThreshold) {
         // Find the index from which to start
-        List<ZonedDateTime> times = timeSeries.getTimes();
+        List<OffsetDateTime> times = timeSeries.getTimes();
         int index = 0;
         while(index < times.size()) {
             if (times.get(index).isAfter(timeThreshold)) {
@@ -320,7 +318,7 @@ public class AQMeshInputAgent {
             index++;
         }
         // Prune timestamps
-        List<ZonedDateTime> newTimes = new ArrayList<>();
+        List<OffsetDateTime> newTimes = new ArrayList<>();
         // There are timestamps above the threshold
         if (index != times.size()) {
             // Prune the times
