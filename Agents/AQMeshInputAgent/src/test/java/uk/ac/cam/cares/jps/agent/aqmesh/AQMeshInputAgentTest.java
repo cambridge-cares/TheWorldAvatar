@@ -8,6 +8,7 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.*;
@@ -275,6 +276,49 @@ public class AQMeshInputAgentTest {
         Assert.assertEquals(16, time.getHour());
         Assert.assertEquals(0, time.getOffset().getTotalSeconds());
         Assert.assertEquals("UTC", time.getZone().getId());
+    }
+
+    @Test
+    public void testPruneTimeSeries() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Initialize time series
+        List<String> iris = Arrays.asList("data_int","data_str");
+        List<Integer> intValues = new ArrayList<>();
+        List<String> stringValues = new ArrayList<>();
+        String[] timestamps = {"2021-07-11T16:10:00+00:00", "2021-07-11T16:15:00+00:00",
+                "2021-07-11T16:20:00+00:00", "2021-07-11T16:25:00+00:00"};
+        List<ZonedDateTime> times = new ArrayList<>();
+        for (int i = 0; i < timestamps.length; i++) {
+            times.add(ZonedDateTime.parse(timestamps[i]));
+            intValues.add(i);
+            stringValues.add(String.valueOf(i));
+        }
+        List<List<?>> values = Arrays.asList(intValues, stringValues);
+        TimeSeries<ZonedDateTime> timeSeries = new TimeSeries<>(times, iris, values);
+        // Make method accessible
+        Method pruneTimeSeries = AQMeshInputAgent.class.getDeclaredMethod("pruneTimeSeries", TimeSeries.class, ZonedDateTime.class);
+        pruneTimeSeries.setAccessible(true);
+
+        // Maximum time lies before the smallest time in the time series -> no pruning
+        TimeSeries<?> prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T15:00:00+00:00"));
+        Assert.assertEquals(times.size(), prunedTimeSeries.getTimes().size());
+        for (String iri: iris) {
+            Assert.assertEquals(timeSeries.getValues(iri), prunedTimeSeries.getValues(iri));
+        }
+
+        // Maximum time lies within the time series -> pruning
+        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T16:16:00+00:00"));
+        Assert.assertEquals(2, prunedTimeSeries.getTimes().size());
+        for (String iri: iris) {
+            Assert.assertEquals(timeSeries.getValues(iri).subList(2, times.size()), prunedTimeSeries.getValues(iri));
+        }
+
+        // Maximum time lies after time series -> prune all
+        prunedTimeSeries = (TimeSeries<?>) pruneTimeSeries.invoke(testAgent, timeSeries, ZonedDateTime.parse("2021-07-11T16:30:00+00:00"));
+        Assert.assertEquals(0, prunedTimeSeries.getTimes().size());
+        for (String iri: iris) {
+            Assert.assertEquals(new ArrayList<>(), prunedTimeSeries.getValues(iri));
+        }
+
     }
 
 }

@@ -307,15 +307,23 @@ public class AQMeshInputAgent {
             }
             index++;
         }
+        // Prune timestamps
         List<ZonedDateTime> newTimes = new ArrayList<>();
-        List<List<?>> newValues = new ArrayList<>();
         // There are timestamps above the threshold
         if (index != times.size()) {
             // Prune the times
             newTimes = new ArrayList<>(times.subList(index, times.size()));
-            // Prune the values
-            for (String iri: timeSeries.getDataIRIs()) {
+        }
+        // Prune data
+        List<List<?>> newValues = new ArrayList<>();
+        // Prune the values
+        for (String iri: timeSeries.getDataIRIs()) {
+            // There are timestamps above the threshold
+            if (index != times.size()) {
                 newValues.add(timeSeries.getValues(iri).subList(index, times.size()));
+            }
+            else {
+                newValues.add(new ArrayList<>());
             }
         }
         return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
