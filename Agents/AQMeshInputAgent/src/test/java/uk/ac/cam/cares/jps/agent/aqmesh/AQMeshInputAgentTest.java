@@ -69,7 +69,7 @@ public class AQMeshInputAgentTest {
     @Test
     public void testConstructor() throws IOException {
         // Filepath for the properties file
-        String propertiesFile = Paths.get(folder.getRoot().toString(), "aqmesh.properties").toString();
+        String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
         // Run constructor on an empty file should give an exception
         writePropertyFile(propertiesFile, new ArrayList<>());
         try {

@@ -18,7 +18,7 @@ import java.util.UUID;
 
 public class JSONKeyToIRIMapperTest {
 
-    // Temporary folder to place a properties file (same file for all potential tests)
+    // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 

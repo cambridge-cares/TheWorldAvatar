@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,7 +28,7 @@ import java.util.List;
 public class AQMeshAPIConnectorTest {
 
 
-    // Temporary folder to place a properties file (same file for all potential tests)
+    // Temporary folder to place a properties file
     @Rule
     public TemporaryFolder folder = new TemporaryFolder();
 
