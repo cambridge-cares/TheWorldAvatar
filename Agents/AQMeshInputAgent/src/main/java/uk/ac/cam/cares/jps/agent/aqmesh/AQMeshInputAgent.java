@@ -233,7 +233,7 @@ public class AQMeshInputAgent {
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
      * @param particleReadings The particle readings as map.
      * @param gasReadings The gas readings as map.
-     * @return A list of time series object (one per mapping) that can be used with the time series client.
+     * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
     private List<TimeSeries<ZonedDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> particleReadings,
                                                                         Map<String, List<?>> gasReadings)
@@ -271,7 +271,7 @@ public class AQMeshInputAgent {
             }
             // Timestamps depend on which readings are used for the mapping
             List<ZonedDateTime> times = (useParticleReadings) ? particleTimestamps : gasTimestamps;
-            // Creat the time series object and add it to the list
+            // Create the time series object and add it to the list
             TimeSeries<ZonedDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
             timeSeries.add(currentTimeSeries);
         }

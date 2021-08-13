@@ -2,10 +2,7 @@ package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
 import org.json.JSONTokener;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -22,8 +19,8 @@ import java.util.*;
 public class AQMeshInputAgentTest {
 
     // Temporary folder to place a properties file (same file for all potential tests)
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     // The default instance used in the tests
     private AQMeshInputAgent testAgent;
@@ -259,6 +256,136 @@ public class AQMeshInputAgentTest {
         for (Iterator<String> it = particleReadings.getJSONObject(0).keys(); it.hasNext();) {
             String key = it.next();
             Assert.assertTrue(readings.containsKey(key));
+        }
+    }
+
+    @Test
+    public void testConvertReadingsToTimeSeries() throws IOException, NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException {
+        // Create an agent with mappings of small size //
+        // Create a folder inside the temporary folder in which the mapping files will be
+        File mappingFolder= folder.newFolder("mappings");
+        // Define three sets of mappings
+        String[] generalKeys = {"key1", "key2", "key3"};
+        String[] gasKeys = {"gkey1", "gkey2", "gkey3", "gkey4"};
+        String[] particleKeys = {"pkey1", "pkey2"};
+        Map<String, String[]> keys = new HashMap<>();
+        keys.put("general", generalKeys);
+        keys.put("gas", gasKeys);
+        keys.put("particle", particleKeys);
+        // Create a file for each mapping
+        for (String mappingName: keys.keySet()) {
+            String filepath = Paths.get(mappingFolder.getCanonicalPath(), mappingName+".properties").toString();
+            try(FileWriter writer = new FileWriter(filepath, false)) {
+                for (String key: keys.get(mappingName)) {
+                    writer.write(key + "=\n");
+                }
+            }
+        }
+        // Create a properties file that points to the created mapping folder
+        String mappingFolderPath = mappingFolder.getCanonicalPath().replace("\\","/");
+        // Filepath for the properties file
+        String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
+        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolderPath));
+        // Create agent
+        AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
+
+        // Create the readings //
+        // Particle readings
+        String[] particleTimestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00",
+                "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
+        Map<String, List<?>> particleReadings = new HashMap<>();
+        particleReadings.put(AQMeshInputAgent.timestampKey, Arrays.asList(particleTimestamps));
+        // Gas readings
+        String[] gasTimestamps = {"2021-07-11T16:20:00", "2021-07-11T16:25:00", "2021-07-11T16:30:00"};
+        Map<String, List<?>> gasReadings = new HashMap<>();
+        gasReadings.put(AQMeshInputAgent.timestampKey, Arrays.asList(gasTimestamps));
+
+        // Make method accessible
+        Method convertReadingsToTimeSeries = AQMeshInputAgent.class.getDeclaredMethod("convertReadingsToTimeSeries", Map.class, Map.class);
+        convertReadingsToTimeSeries.setAccessible(true);
+
+        // Use readings only consisting of times, should give an error as keys are not covered
+        try {
+            convertReadingsToTimeSeries.invoke(agent, particleReadings, gasReadings);
+            Assert.fail();
+        }
+        catch (InvocationTargetException e) {
+            Assert.assertEquals(NoSuchElementException.class, e.getCause().getClass());
+            Assert.assertTrue(e.getCause().getMessage().contains("The key"));
+            Assert.assertTrue(e.getCause().getMessage().contains("is not contained in the readings!"));
+        }
+
+        // Add actual measures to the readings //
+        // Add general information to particle readings
+        for(String key: generalKeys) {
+            List<String> values = new ArrayList<>();
+            for(int i = 0; i < particleTimestamps.length; i++) {
+                values.add(String.valueOf(i));
+            }
+            particleReadings.put(key, values);
+        }
+        // Add particle information to particle readings
+        for(String key: particleKeys) {
+            List<Double> values = new ArrayList<>();
+            for(int i = 0; i < particleTimestamps.length; i++) {
+                values.add((double) i + 0.2);
+            }
+            particleReadings.put(key, values);
+        }
+        // Add gas information to gas readings
+        for(String key: gasKeys) {
+            List<Integer> values = new ArrayList<>();
+            for(int i = 0; i < gasTimestamps.length; i++) {
+                values.add(i);
+            }
+            gasReadings.put(key, values);
+        }
+
+        // Create time series list from the readings
+        List<?> timeSeries = (List<?>) convertReadingsToTimeSeries.invoke(agent, particleReadings, gasReadings);
+        // Check that there is a time series for each mapping
+        Assert.assertEquals(keys.size(), timeSeries.size());
+        // Check content of the time series
+        for(Object obj: timeSeries) {
+            TimeSeries<?> currentTimeSeries = (TimeSeries<?>) obj;
+            // Time series corresponding to gas readings
+            if(currentTimeSeries.getTimes().size() == gasTimestamps.length) {
+                // Number of IRIs should match the number of keys
+                Assert.assertEquals(gasKeys.length, currentTimeSeries.getDataIRIs().size());
+                for(String iri: currentTimeSeries.getDataIRIs()) {
+                    List<?> values = currentTimeSeries.getValues(iri);
+                    // The size of value should match the number of time stamps
+                    Assert.assertEquals(gasTimestamps.length, values.size());
+                    // Gas readings should be integer
+                    Assert.assertEquals(Integer.class, values.get(0).getClass());
+                }
+            }
+            // Time series corresponds to either general information or particle readings
+            if(currentTimeSeries.getTimes().size() == particleTimestamps.length) {
+                // Time series corresponds to particle readings
+                if(currentTimeSeries.getDataIRIs().size() == particleKeys.length) {
+                    for(String iri: currentTimeSeries.getDataIRIs()) {
+                        List<?> values = currentTimeSeries.getValues(iri);
+                        // The size of value should match the number of time stamps
+                        Assert.assertEquals(particleTimestamps.length, values.size());
+                        // Particle readings should be double
+                        Assert.assertEquals(Double.class, values.get(0).getClass());
+                    }
+                }
+                // Time series corresponds to general readings
+                else {
+                    // Number of IRIs should match the number of keys
+                    Assert.assertEquals(generalKeys.length, currentTimeSeries.getDataIRIs().size());
+                    for(String iri: currentTimeSeries.getDataIRIs()) {
+                        List<?> values = currentTimeSeries.getValues(iri);
+                        // The size of value should match the number of time stamps
+                        Assert.assertEquals(particleTimestamps.length, values.size());
+                        // General readings should be string
+                        Assert.assertEquals(String.class, values.get(0).getClass());
+                    }
+                }
+            }
         }
     }
 
