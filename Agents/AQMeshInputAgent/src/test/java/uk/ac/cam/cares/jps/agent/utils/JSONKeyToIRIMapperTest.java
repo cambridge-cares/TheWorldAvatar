@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.utils;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.MockedStatic;
@@ -18,8 +19,8 @@ import java.util.UUID;
 public class JSONKeyToIRIMapperTest {
 
     // Temporary folder to place a properties file (same file for all potential tests)
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private final String prefix = "http://example.com/api";
     private final String[] keys = new String[]{"key1", "key2", "key3"};

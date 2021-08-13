@@ -31,8 +31,8 @@ public class AQMeshAPIConnectorTest {
 
 
     // Temporary folder to place a properties file (same file for all potential tests)
-    @ClassRule
-    public static TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     // Fields used for the mock API calls
     private static final int PORT = 8089;
