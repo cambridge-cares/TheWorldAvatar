@@ -260,4 +260,21 @@ public class AQMeshInputAgentTest {
             Assert.assertTrue(readings.containsKey(key));
         }
     }
+
+    @Test
+    public void testConvertStringToZonedDateTime() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        // Make method accessible
+        Method convertStringToZonedDateTime = AQMeshInputAgent.class.getDeclaredMethod("convertStringToZonedDateTime", String.class);
+        convertStringToZonedDateTime.setAccessible(true);
+        // Test with a valid string
+        String timestamp = "2021-07-11T16:15:00";
+        ZonedDateTime time = (ZonedDateTime) convertStringToZonedDateTime.invoke(testAgent, timestamp);
+        Assert.assertEquals(2021, time.getYear());
+        Assert.assertEquals(7, time.getMonth().getValue());
+        Assert.assertEquals(11, time.getDayOfMonth());
+        Assert.assertEquals(16, time.getHour());
+        Assert.assertEquals(0, time.getOffset().getTotalSeconds());
+        Assert.assertEquals("UTC", time.getZone().getId());
+    }
+
 }
