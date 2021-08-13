@@ -63,6 +63,15 @@ If it is successful, you should receive a HTTP response with the IRIs of the new
 ```json
 {"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f","average":"http://derivation_example#e7966f33-a01d-4ee5-a12e-825a96a10060","derivation of difference":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived9f192ef4-83a7-4c24-b8cf-3f3d9fc7f441","derivation of min value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived66ccb5a6-6b29-43da-a68c-3e8f3f89010c","difference":"http://derivation_example#01a767ee-d048-4a89-b3e1-6def55f3410d","max value":"http://derivation_example#b8b26247-883d-4243-b19b-d9b08d13cd18","derivation of max value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived2e8a4d01-bd19-4811-abdb-dee6b21e102a"}
 ```
+# Updating the derivations
+The derivations in this example can be updated by running the command:
+```
+curl http://localhost:8081/DerivationExample/UpdateDerivations
+```
+On a successful update, you should receive a HTTP response, e.g.:
+```json
+{"status":"Updated derivation of difference <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived2341b3e3-598f-46a1-900d-5506d0906c60> and derivation of average <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derivedd41b0c5d-b442-4a14-b0a0-14ad99c03ecc>"}
+```
 
 # Input
 The input is an instance containing a time series. Upon initialisation, the following triples are created in blazegraph:
