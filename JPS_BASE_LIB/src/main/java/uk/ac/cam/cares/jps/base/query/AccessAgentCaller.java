@@ -224,6 +224,8 @@ public class AccessAgentCaller{
 	
 	/**
 	 * Get the base world Access Agent url.
+	 * The scheme, host and port of the target or dataset url are preserved, while
+	 * the path is changed to the Access Agent Path. 
 	 * @param url
 	 * @return
 	 */
