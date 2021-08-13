@@ -47,12 +47,35 @@ public class AQMeshInputAgentLauncher {
         connector.connect();
 
         // Retrieve readings
-        JSONArray particleReadings = connector.getParticleReadings();
-        JSONArray gasReadings = connector.getGasReadings();
+        JSONArray particleReadings;
+        JSONArray gasReadings;
+        try {
+            particleReadings = connector.getParticleReadings();
+            gasReadings = connector.getGasReadings();
+        }
+        catch (Exception e) {
+            throw new JPSRuntimeException("One or both readings could not be retrieved, this might have created a mismatch" +
+                    "in the pointers if one readings was successful and needs to be fixed!", e);
+        }
 
-        // Update the data
-        agent.updateDate(particleReadings, gasReadings);
-
+        // If both readings are not empty there is new data
+        if(!particleReadings.isEmpty() && !gasReadings.isEmpty()) {
+            // Update the data
+            agent.updateDate(particleReadings, gasReadings);
+        }
+        // If both are empty no new readings are available
+        else if(particleReadings.isEmpty() && gasReadings.isEmpty()) {
+            // TODO: should be logged as info
+            System.out.println("No new readings available.");
+        }
+        // One reading is empty and the other is not. This is likely due to asynchronous access to the readings, which
+        // sets the pointers for each reading separately (should not happen when only using the agent unless there is an API error).
+        // Data should be added to keep the database consistent. The pointer should be reset and
+        // probably manual clean up in the database is required.
+        else {
+            throw new JPSRuntimeException("One of the readings (gas or particle) is empty, that means there is " +
+                    "a mismatch in the pointer for each readings. This should be fixed (and might require a clean up of the database)!");
+        }
     }
 
 }
