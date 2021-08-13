@@ -35,7 +35,7 @@ def _config_logging():
     
     # Configure logging from file
     this_dir = os.path.dirname(os.path.abspath(__file__))
-    log_file = os.path.join(this_dir, "twa_logging.conf")
+    log_file = os.path.join(this_dir, "logging.conf")
     
     logging.config.fileConfig(
         log_file,

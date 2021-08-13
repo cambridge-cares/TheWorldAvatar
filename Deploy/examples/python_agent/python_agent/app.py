@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request
 from .poly_model import PolyModel
-from twautils.log import twa_logging
+from agentlogging
 
 # Create the Flask app object
 app = Flask(__name__)
 
 # Initialise logger
-logger = twa_logging.get_logger("dev")
+logger = agentlogging.get_logger("dev")
 
 # Show an instructional message at the app root
 @app.route('/')

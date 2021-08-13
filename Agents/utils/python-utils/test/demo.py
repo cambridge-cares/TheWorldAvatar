@@ -1,11 +1,11 @@
-import twautils.log
+import agentlogging
 
 def demo():
     """
         Demo the logging functionality.
     """
     print("=== Development Logging ===")
-    dev_logger = twautils.log.get_logger("dev")
+    dev_logger = agentlogging.get_logger("dev")
     dev_logger.debug("This is a DEBUG statement")
     dev_logger.info("This is an INFO statement")
     dev_logger.warning("This is a WARNING statement.")
@@ -13,7 +13,7 @@ def demo():
     dev_logger.critical("This is a CRITICAL statement.")
 
     print("=== Production Logging ===")
-    prod_logger = twautils.log.get_logger("prod")
+    prod_logger = agentlogging.get_logger("prod")
     prod_logger.debug("This is a DEBUG statement")
     prod_logger.info("This is an INFO statement")
     prod_logger.warning("This is a WARNING statement.")
