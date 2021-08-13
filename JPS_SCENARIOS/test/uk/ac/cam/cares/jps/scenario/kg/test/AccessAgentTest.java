@@ -20,7 +20,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,6 +32,7 @@ import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
@@ -102,41 +102,47 @@ public class AccessAgentTest{
 		verify(agent).post(requestParams);
 	}
 	
-	/** test inputValidate() method of KnowledgeBaseAgent
-	 * @throws ParseException 
-	 * @throws JSONException 
-	 * 
-	 */
 	@Test
 	public void testValidateInput() throws JSONException, ParseException {
 		JSONObject jo = new JSONObject()
-				.put(JPSConstants.TARGETIRI,  filePath)
-				.put(JPSConstants.REQUESTURL, "http://www.example.com/jps/kb/test")
+				.put(JPSConstants.TARGETIRI,  "http://www.example.com/target.owl")
+				.put(JPSConstants.REQUESTURL, "http://www.example.com/jps/kb")
 				.put(JPSConstants.METHOD, "GET");
 		
-		AccessAgent jpsa = new AccessAgent();
-		String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
+		// Query present
+		AccessAgent agent = new AccessAgent();
+		String queryString = getQuery();
 		jo.put(JPSConstants.QUERY_SPARQL_QUERY , queryString );
-		assertTrue(jpsa.validateInput(jo));// Query present
+		assertTrue(agent.validateInput(jo));
+		
+		// Update wrong format
 		jo.remove(JPSConstants.QUERY_SPARQL_QUERY );
 		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , queryString);
-		assertFalse(jpsa.validateInput(jo));//Update wrong format
+		assertFalse(agent.validateInput(jo));
+		
+		// Update present
 		jo.remove(JPSConstants.QUERY_SPARQL_UPDATE );
-		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , getUpdateRequest().toString());
-		assertTrue(jpsa.validateInput(jo));// Update present
+		jo.put(JPSConstants.QUERY_SPARQL_UPDATE , getUpdateRequest());
+		assertTrue(agent.validateInput(jo));
+		
+		// No targetIRI
+		jo.remove(JPSConstants.TARGETIRI );
+		assertFalse(agent.validateInput(jo));
 	}
 	
 	@Test
 	public void testGetWithSparqlQuery() {
 
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY,queryString );
 
-		AccessAgent jpsa = new AccessAgent();
-        JSONObject result = jpsa.get(jo);		
+        JSONObject result = agent.get(jo);		
 		JSONArray ja = new JSONArray(result.getString("result")); 
 		jo = ja.getJSONObject(0); 
 		assertEquals("OH",jo.get("o").toString());
@@ -145,16 +151,18 @@ public class AccessAgentTest{
 	@Test(expected = JPSRuntimeException.class)
 	public void testGetWithSparqlUpdate() throws ParseException {
 		
-		String testUpdate = getUpdateRequest().toString();
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
+		String testUpdate = getUpdateRequest();
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 
-		AccessAgent jpsa = new AccessAgent();
         @SuppressWarnings("unused")
-		JSONObject result = jpsa.get(jo);		
+		JSONObject result = agent.get(jo);		
 	}
 	
 	@Test
@@ -166,14 +174,16 @@ public class AccessAgentTest{
 		String testFilePath = folderPath + "/TestGet.nt";
 		FileUtil.writeFileLocally(testFilePath, content); 
 		
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(testFilePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
 			.put(JPSConstants.TARGETIRI, testFilePath)
 			.put(JPSConstants.HEADERS, "application/n-triples");
 		
-		AccessAgent jpsa = new AccessAgent();
-        JSONObject result = jpsa.get(jo);		
+        JSONObject result = agent.get(jo);		
 		String strResult = result.getString("result"); 
 		
 		assertEquals(content, strResult);		
@@ -194,6 +204,9 @@ public class AccessAgentTest{
 		String folderPath = tempFolder.getRoot().toString();
 		String testFilePath = folderPath + "/TestPut.nt"; 
 		
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(testFilePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "PUT")
@@ -201,8 +214,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.CONTENT, content)
 			.put(JPSConstants.CONTENTTYPE, "application/n-triples");
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.put(jo);		
+        agent.put(jo);		
 		
         String strResult = FileUtil.readFileLocally(testFilePath);
 		
@@ -212,6 +224,9 @@ public class AccessAgentTest{
 	@Test(expected = JPSRuntimeException.class)
 	public void testPutWithSparqlUpdate() throws ParseException {
 				
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		String testUpdate = getUpdateRequest().toString();
 		
 		JSONObject jo = new JSONObject();
@@ -220,25 +235,29 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.put(jo);
+        agent.put(jo);
 	}
 	
 	@Test(expected = JPSRuntimeException.class)
 	public void testPutWithSparqlQuery() {
 				
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "PUT")
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.put(jo);								
+		agent.put(jo);								
 	}
 	
 	@Test
 	public void testPost() throws ParseException {
+		
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
 		
 		String testUpdate = getUpdateRequest().toString();
 		
@@ -248,8 +267,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI,  filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE , testUpdate );
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.post(jo);		
+		agent.post(jo);		
         
         FileBasedStoreClient kbClient = new FileBasedStoreClient(filePath);
         JSONArray ja = kbClient.executeQuery(queryString);
@@ -259,33 +277,45 @@ public class AccessAgentTest{
 	
 	@Test(expected = JPSRuntimeException.class)
 	public void testPostWithSparqlQuery() {
-				
+		
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "POST")
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.post(jo);								
+        agent.post(jo);								
 	}
 	
 	@Test(expected = JPSRuntimeException.class)
 	public void testPostWithoutSparqlUpdate() {
 				
+		AccessAgent agent = Mockito.spy(AccessAgent.class);
+		Mockito.doReturn(createStoreClient(filePath)).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "POST")
 			.put(JPSConstants.TARGETIRI, filePath);
 		
-		AccessAgent jpsa = new AccessAgent();
-        jpsa.post(jo);								
+        agent.post(jo);								
 	}	
 	
 	@Test
-	public void testgetShortIRI() {
-		String testUrl = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl";
-		String result = AccessAgent.getShortIRI(testUrl);
+	public void testGetShortIRI() {
+		
+		String testUrl;
+		String result;
+		
+		testUrl = "http://kb/ontokin";
+		result = AccessAgent.getShortIRI(testUrl);
+		assertEquals("http://kb/ontokin",result);
+		
+		testUrl = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl";
+		result = AccessAgent.getShortIRI(testUrl);
 		assertEquals("http://kb/sgp/singapore/SGTemperatureSensor-001.owl",result);
 		
 		testUrl = "http://www.theworldavatar.com/kb/ontokin";
@@ -295,10 +325,16 @@ public class AccessAgentTest{
 		testUrl = "http://localhost:8080/kb/ontokin";
 		result = AccessAgent.getShortIRI(testUrl);
 		assertEquals("http://kb/ontokin",result);
-		
-		testUrl = "http://kb/ontokin";
-		result = AccessAgent.getShortIRI(testUrl);
-		assertEquals("http://kb/ontokin",result);
+	}
+	
+	///////////////////////////////////////////////
+	
+	/**
+	 * Create test store client.
+	 * Could mock this instead.
+	 */
+	private StoreClientInterface createStoreClient(String file) {
+		return new FileBasedStoreClient(file);
 	}
 	
 	/**
@@ -307,7 +343,7 @@ public class AccessAgentTest{
 	 * @return UpdateRequest
 	 * @throws ParseException
 	 */
-	private static UpdateRequest getUpdateRequest() throws ParseException {
+	private static String getUpdateRequest() throws ParseException {
 		
 		//DELETE {?s ?p ?o} 
 		//INSERT {?s ?p \"TEST\" } 
@@ -326,6 +362,14 @@ public class AccessAgentTest{
 			.addDelete("?s", "?p", "?o")
 			.addWhere(where);
 		
-		return builder.buildRequest();
+		return builder.buildRequest().toString();
+	}
+	
+	/**
+	 * Return test SPARQL query
+	 * @return
+	 */
+	private static String getQuery() {
+		return "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	}
 }

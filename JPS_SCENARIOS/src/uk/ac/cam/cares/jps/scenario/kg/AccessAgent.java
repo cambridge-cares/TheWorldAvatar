@@ -75,7 +75,7 @@ public class AccessAgent extends JPSAgent{
 		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
 		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-	    String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
+	    String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
 	    
 	    if(sparqlupdate != null) {
 	    	throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_UPDATE + " is not allowed");
@@ -84,7 +84,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlquery, false);
 			
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), true, false);
+			StoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
 			
 			JSONObject JSONresult = new JSONObject();
 			String result = null;
@@ -92,7 +92,7 @@ public class AccessAgent extends JPSAgent{
 				//query
 				result = kbClient.execute(sparqlquery);
 				JSONresult.put("result",result);
-			}else {		//TODO: defaulting to this could be dangerous for large triple store
+			}else {	
 				//get
 				result = kbClient.get(graphIRI, accept);
 				JSONresult.put("result",result);
@@ -116,7 +116,7 @@ public class AccessAgent extends JPSAgent{
 		String body = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENT);
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);	
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-	    String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
+	    String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
 	    
 	    if(sparqlquery!=null && sparqlupdate!=null) {
 	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
@@ -126,7 +126,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, null, false);
 			
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), false, true);
+			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 			
 			kbClient.insert(graphIRI, body, contentType);
 		} catch (RuntimeException e) {
@@ -152,7 +152,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, sparqlupdate, false);
 			
-			StoreClientInterface kbClient = StoreRouter.getStoreClient(getShortIRI(targetIRI), false, true);
+			StoreClientInterface kbClient = getStoreClient(targetIRI, false, true);
 			
 			if (sparqlupdate!=null) {
 				kbClient.executeUpdate(sparqlupdate);
@@ -163,6 +163,18 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, sparqlupdate, true);
 			throw new JPSRuntimeException(e);
 		}
+	}
+	
+	/**
+	 * Instantiate a store client using StoreRouter
+	 * @param targetIRI
+	 * @param isQuery
+	 * @param isUpdate
+	 * @return
+	 */
+	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
+		String shortIRI = getShortIRI(targetIRI);
+		return StoreRouter.getStoreClient(shortIRI, isQuery, isUpdate);
 	}
 	
 	@Override
@@ -216,7 +228,7 @@ public class AccessAgent extends JPSAgent{
 		String requestUrl = MiscUtil.optNullKey(requestParams, JPSConstants.REQUESTURL);	
 		String contentType = MiscUtil.optNullKey(requestParams, JPSConstants.CONTENTTYPE);
 		String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-		String graphIRI = requestParams.getString(JPSConstants.TARGETGRAPH);
+		String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
 		
 		StringBuffer b = new StringBuffer(method);
 		b.append(" with requestedUrl=").append(requestUrl);
