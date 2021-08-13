@@ -51,95 +51,147 @@ The default port numbers for the containers are:
 | derivationexample | 8081 |
 | blazegraph | 8889 |
 | postgres | 7432 |
-|  |  |
 
-Once the docker stack is up and running, you should be able to access the blazegraph at (http://localhost:8889/blazegraph). If you are using pgAdmin, you can monitor the postgres container by creating a new server that connects to `localhost` with port number `7432`.
+Once the docker stack is up and running, you should be able to access the blazegraph container at (http://localhost:8889/blazegraph). If you are using pgAdmin, you can monitor the postgres container by creating a new server that connects to `localhost` with port number `7432`.
 
-## A derivation instance
-An instance consisting of more than one entity is wrapped around a derivation instance using the `belongsTo` property, in the form of:
-```
-: https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#
-msm : http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#
-time : http://www.w3.org/2006/time#
-<entity1> <:belongsTo> <Derivation>
-<entity2> <:belongsTo> <Derivation>
-```
-There is no limit on the number of entities per derivation instance.
-
-Inputs for a derivation is marked using the `isDerivedFrom` property, there is no limit on the number of inputs:
-```
-<Derivation> <:isDerivedFrom> <input1>
-<Derivation> <:isDerivedFrom> <input2>
-```
-And lastly, each derivation requires an agent attached to it and the agent is marked using the `isDerivedUsing` property:
-```
-<Derivation> <:isDerivedUsing> <Agent>
-<Agent> <msm:hasOperation> <Operation>
-<Operation> <msm:hasHttpUrl> <URL>
-```
-Each agent is assumed to be a servlet and must have a URL. Developers must ensure that the entity calling the `DerivationClient` can access the agent at the URL provided.
-
-Upon initialisation, each derivation has a unix timestamp attached using the W3C standard:
-```
-<Derivation> <time:hasTime> <time>
-<time> <rdf:type> <time:Instant>
-<time> <time:inTimePosition> <unix_time>
-<unix_time> <rdf:type> <time:TimePosition>
-<unix_time> <time:hasTRS> <http://dbpedia.org/resource/Unix_time>
-<unix_time> <time:numericPosition> 123
-```
-Methods are provided in the `DerivationClient` to add and query these instances.
-
-There are two types of derivations
-1. Derivation without time series, initialised using `createDerivation`
-  The instances wrapped around the derivation instance are deleted and replaced each time the agent makes an update.
-
-2. Derivation with time series, initialised using `createDerivationWithTimeSeries`
-  It is assumed that the agents acting on these derivations add row(s) to the table(s), the entities under these derivations are not deleted and replaced.
-
-## Agents
-It is assumed that all agents extend the JPSAgent class, where the inputs and outputs consist a JSON object.
-### Derivation without time series
-The HTTP request made by the DerivationClient will be a JSON object with the `"agent_input"` key, agents should use the public parameter `DerivationClient.AGENT_INPUT_KEY`. Within this JSON object is a JSON array consisting a list of IRIs marked using `isDerivedFrom` for the derivation being updated.
-```
-HTTP request: {"agent_input": [iri_in1, iri_in2, iri_in3, ...]}
-```
-Upon receiving these inputs, the agent is expected to write new instances in the knowledge graph, the IRIs of the new instances should be included in the HTTP response with the `"agent_output"` key, provided by the parameter `DerivationClient.AGENT_OUTPUT_KEY`.
-```
-HTTP response: {"agent_output": [iri_out1, iri_out2, iri_out3, ...]}
-```
-
-## Instances for this example
+# Initialisation
 There are two key demonstrations in this example, the input instance is shared between the two examples. Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
 curl http://localhost:8081/DerivationExample/InitialiseInstances
 ```
+If it is successful, you should receive a HTTP response with the IRIs of the newly created instances, e.g.
+```json
+{"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f","average":"http://derivation_example#e7966f33-a01d-4ee5-a12e-825a96a10060","derivation of difference":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived9f192ef4-83a7-4c24-b8cf-3f3d9fc7f441","derivation of min value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived66ccb5a6-6b29-43da-a68c-3e8f3f89010c","difference":"http://derivation_example#01a767ee-d048-4a89-b3e1-6def55f3410d","max value":"http://derivation_example#b8b26247-883d-4243-b19b-d9b08d13cd18","derivation of max value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived2e8a4d01-bd19-4811-abdb-dee6b21e102a"}
+```
 
-### Input
+# Input
 The input is an instance containing a time series. Upon initialisation, the following triples are created in blazegraph:
 ```
-<Input> <rdf:type> <http://derived_example#InputData>
-<Input> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> <timeseries>
+<input> <rdf:type> <http://derived_example#InputData>
+<input> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> <timeseries>
 <timeseries> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasRDB> "jdbc:postgresql://postgres/postgres"
+<input> <time:hasTime> <timestamp>
+<timestamp> <time:inTimePosition> <unixtime>
+<unixtime> <time:numericPosition> 123
 ```
-This instance is linked to a table in RDB containing a time column and a column with random numbers:
+Note that the `timeseries` instance contains data used by the derivations that depend on this input, and `timestamp` is used to check whether the derivation is out-of-date compared to the input.
+
+This input instance is linked to a table in RDB containing a time column and a column with random numbers:
 | time | column1 |
 | --- | --- |
 | 2021-08-11 13:43:24.282104+00 | 123 |
 | 2021-08-11 13:43:40.778827+00 | 456 |
-|  |  |
 
-### Derivations without time series
-There are three key instances:
-1. Maximum value - This derivation is the maximum value of the input
-2. Minimum value - This derivation is the minimum value of the input
-3. Difference - This is the difference between the maximum and minimum value, i.e. maximum - minimum.
-
-Each of the above instances is an instance with two entities, in this case, &lt;property&gt; and &lt;propertyvalue&gt;:
+This input instance can be updated using an input agent. Each time the agent is called, a random number is added to the table in RDB. In addition, it also updates the unix time stamp of the instance in the triple-store (blazegraph).
 ```
-<property> <rdf:type> <http://derived_example#[PROPERTY]>
-<property> <hasValue> <propertyvalue>
-<propertyvalue> <numericalValue> 123
+curl http://localhost:8081/DerivationExample/InputAgent
+```
+If the update is successful, you should receive a HTTP response, e.g.:
+```json
+{"status":"Updated <http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f>"}
 ```
 
-A derivation instance is created for each of the instances
+# Derivation with time series
+## Average
+This derivation contains averages calculated from the input and stored in a time series table, e.g.
+```
+<average> <rdf:type> <http://derived_example#Average>
+<average> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries> <timeseries>
+<timeseries> <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#hasRDB> "jdbc:postgresql://postgres/postgres"
+```
+| time | column1 |
+| --- | --- |
+| 2021-08-11 13:43:24.282104+00 | average1 |
+| 2021-08-11 13:43:40.778827+00 | average2 |
+
+Derivation of average:
+```
+<average> <:belongsTo> <derived_average>
+<derived_average> <:isDerivedFrom> <input>
+<derived_average> <:isDerivedUsing> <AverageAgent>
+```
+This instance is updated using `AverageAgent`. This agent queries the average value from the input and records the value in the timeseries table.
+
+# Derivations without time series
+This example contains 3 derivations: 
+1. Maximum value: Maximum value in the input time series table
+2. Minimum value: Minimum value in the input time series table
+3. Difference: Difference between the minimum and maximum values
+
+## Maximum value
+The property instance:
+```
+<max> <rdf:type> <http://derived_example#MaxValue>
+<max> <http://derived_example#hasValue> <valueOfMax> 
+<valueOfMax> <http://derived_example#numericalValue> 123
+```
+The derivation instance:
+```
+<derivation_of_max> <:isDerivedFrom> <input>
+<max> <:belongsTo> <derivation_of_max>
+<valueOfMax> <:belongsTo> <derivation_of_max>
+<derivation_of_max> <:isDerivedUsing> <MaxValueAgent>
+```
+The agent for this instance, `MaxValueAgent`, receives HTTP responses in the form of:
+```
+{"agent_input": [input]}
+```
+queries the maximum value from the given input using the TimeSeriesClient, and writes a new instance, e.g.
+```
+<new_max> <rdf:type> <http://derived_example#MaxValue>
+<new_max> <http://derived_example#hasValue> <newMaxValue>
+<newMaxValue> <http://derived_example#numericalValue> 123
+```
+And returns a HTTP response in the form of:
+```json
+{"agent_output": [new_max, newMaxValue]}
+```
+
+## Minimum value
+This instance is almost identical with the maximum value instance, except that it has the rdf:type `<http://derived_example#MinValue>`. 
+The property instance:
+```
+<min> <rdf:type> <http://derived_example#MinValue>
+<min> <http://derived_example#hasValue> <valueOfMin> 
+<valueOfMin> <http://derived_example#numericalValue> 123
+```
+The derivation instance:
+```
+<derivation_of_min> <:isDerivedFrom> <input>
+<min> <:belongsTo> <derivation_of_min>
+<valueOfMin> <:belongsTo> <derivation_of_min>
+<derivation_of_min> <:isDerivedUsing> <MinValueAgent>
+```
+The agent for this derivation, `MinValueAgent`, queries the minimum value from the given input using the TimeSeriesClient, and writes a new instance similarly to the `MaxValueAgent`.
+
+## Difference
+The difference instance is also identical, except that it has the rdf:type `<http://derived_example#Difference>`.
+```
+<diff> <rdf:type> <http://derived_example#Difference>
+<diff> <http://derived_example#hasValue> <valueOfDiff> 
+<valueOfDiff> <http://derived_example#numericalValue> 123
+```
+
+The derivation instance contains two inputs - the minimum value and maximum value instances. 
+```
+<derivation_of_diff> <:isDerivedFrom> <min>
+<derivation_of_diff> <:isDerivedFrom> <max>
+<diff> <:belongsTo> <derivation_of_diff>
+<valueOfDiff> <:belongsTo> <derivation_of_diff>
+<derivation_of_diff> <:isDerivedUsing> <DifferenceAgent>
+```
+The `DifferenceAgent` receives HTTP requests in the form of:
+```json
+{"agent_input": [min,max]}
+```
+It then queries the values using the given IRIs and calculate the difference between the values. The agent creates a new instance
+```
+<new_diff> <rdf:type> <http://derived_example#Difference>
+<new_diff> <http://derived_example#hasValue> <newDiffValue>
+<newDiffValue> <http://derived_example#numericalValue> 123
+```
+and returns a HTTP response in the form of:
+```json
+{"agent_output": [new_diff,newDiffValue]}
+```
+
