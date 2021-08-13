@@ -272,11 +272,9 @@ public class AccessAgent extends JPSAgent{
 						.collect(Collectors.joining("/"));
 			}
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e);
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new JPSRuntimeException(e);
 		}
 		return url;
 	}
