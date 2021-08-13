@@ -1,6 +1,6 @@
 # TheWorldAvatar - Python Utils
 
-This Python package contains a number of common utilities that may be useful to any Python-based project within The World Avatar (TWA) ecosystem. At the time of writing, this project builds an isolated packaged named `twautils` that each user will need to import to use; in the future, this package may be bundled with the Python wrapper for the JPS Base Library so only one dependency is required.
+This Python package contains a number of common utilities that may be useful to any Python-based project within The World Avatar (TWA) ecosystem. At the time of writing, this project builds an isolated package named `twautils` that users can import in their own code. In the future, this package may be bundled with the Python wrapper for the JPS Base Library so that only one dependency is required.
 
 ## Functions
 
