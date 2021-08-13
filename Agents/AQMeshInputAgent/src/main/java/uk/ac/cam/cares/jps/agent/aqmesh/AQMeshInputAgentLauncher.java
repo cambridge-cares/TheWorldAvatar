@@ -61,7 +61,7 @@ public class AQMeshInputAgentLauncher {
         }
         catch (Exception e) {
             throw new JPSRuntimeException("One or both readings could not be retrieved, this might have created a mismatch" +
-                    "in the pointers if one readings was successful and needs to be fixed!", e);
+                    " in the pointers if one readings was successful and needs to be fixed!", e);
         }
 
         // If both readings are not empty there is new data
