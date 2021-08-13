@@ -1,0 +1,42 @@
+{
+    "InChi": "InChI=1S/HO/h1H",
+    "Smiles": "[OH]",
+    "Empirical formula": "H1O1",
+    "Atom types": [
+        "O",
+        "H"
+    ],
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            0.1065
+        ],
+        [
+            0.0,
+            0.0,
+            -0.852
+        ]
+    ],
+    "MolecularWeight": 17.007321,
+    "Formal charge": 0,
+    "GeometryString": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",
+    "BondString": "2 1 1",
+    "AtomsCanonicalPositions": {
+        "0": 0,
+        "1": 1
+    },
+    "PubchemAlternativeLabel": "water",
+    "CAS": "7732-18-5",
+    "PubchemCID": 962,
+    "AtomsList": [
+        "O",
+        "H"
+    ],
+    "AtomsCounts": [
+        1,
+        1
+    ],
+    "EntryUUID": "testID-111-111-111",
+    "EntryIRI": "Species_testID-111-111-111"
+}

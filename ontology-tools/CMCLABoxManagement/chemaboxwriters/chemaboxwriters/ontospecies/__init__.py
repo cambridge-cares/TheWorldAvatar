@@ -1,2 +1,2 @@
-from chemaboxwriters.ontospecies.pipeline import OS_pipeline
+from chemaboxwriters.ontospecies.pipeline import assemble_os_pipeline
 from chemaboxwriters.ontospecies.writeabox import write_abox

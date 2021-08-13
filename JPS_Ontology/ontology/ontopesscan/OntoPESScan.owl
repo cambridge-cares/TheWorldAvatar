@@ -1,0 +1,314 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
+     xmlns:OntoPESScan="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 August 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing potential energy surface scans.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/gc/hasUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://purl.org/gc/hasUnit">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://data.nasa.gov/qudt/owl/LengthUnit"/>
+                    <rdf:Description rdf:about="http://data.nasa.gov/qudt/owl/PlaneAngleUnit"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/gc/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasCalculation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasCalculation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines a relationship between a given ScanPoint and associated calculation results.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasFragment -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasFragment">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the PESScan and a fragment that is a species in OntoSpecies.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanAtom -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanAtom">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the ScanCoordinate and an atom.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinate -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinate">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the PESScan and ScanCoordinate.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the ScanPoint and ScanCoordinateValue.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the ScanCoordinate and ScanPoint .</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#onSpecies -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#onSpecies">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the relationship between the PESScan and species in OntoSpecies.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://purl.org/gc/hasValue -->
+
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/gc/hasValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/gc/</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://data.nasa.gov/qudt/owl/LengthUnit -->
+
+
+    <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/LengthUnit"/>
+    
+
+
+    <!-- http://data.nasa.gov/qudt/owl/PlaneAngleUnit -->
+
+
+    <owl:Class rdf:about="http://data.nasa.gov/qudt/owl/PlaneAngleUnit"/>
+    
+
+
+    <!-- http://purl.org/gc/Atom -->
+
+
+    <owl:Class rdf:about="http://purl.org/gc/Atom">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://purl.org/gc/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GaussianCalculation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GaussianCalculation">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#AngleCoordinate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#AngleCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Three atoms defining an angle coordinate along the potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#DihedralAngleCoordinate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#DihedralAngleCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Four atoms defining a dihedral angle coordinate along the potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#DistanceCoordinate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#DistanceCoordinate">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Two atoms defining a distance coordinate along the potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#PotentialEnergySurfaceScan -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#PotentialEnergySurfaceScan">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasFragment"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinate"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#onSpecies"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A scan of potential energy surface on a molecular system along defined scan coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinate">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanAtom"/>
+                <owl:allValuesFrom rdf:resource="http://purl.org/gc/Atom"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanPoint"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The atoms defining a path along the potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Value of an actual scan coordinate at a given point on a potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanPoint">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasCalculation"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GaussianCalculation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#hasScanCoordinateValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl#ScanCoordinateValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A single point on potential energy surface.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl</rdfs:isDefinedBy>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0) https://github.com/owlcs/owlapi/ -->
+
+

@@ -32,6 +32,4 @@ def getFilesWithExtensions(fileOrDir, fileExtList):
     elif dirExists(fileOrDir):
         for fileExt in fileExtList:
             files+=glob.glob(os.path.join(fileOrDir,'*'+fileExt))
-    else:
-        raise FileNotFoundError('Error: File or directory: "'+fileOrDir+'" does not exists.')
     return files
