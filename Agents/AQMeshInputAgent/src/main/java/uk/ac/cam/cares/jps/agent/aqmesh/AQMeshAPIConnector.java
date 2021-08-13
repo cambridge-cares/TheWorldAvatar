@@ -203,7 +203,7 @@ public class AQMeshAPIConnector {
         try {
             return retrieveReadings(ReadingType.PARTICLE);
         }
-        catch (IOException e) {
+        catch (IOException | JSONException e) {
             throw new JPSRuntimeException("Particle readings could not be retrieved", e);
         }
     }
@@ -216,7 +216,7 @@ public class AQMeshAPIConnector {
         try {
             return retrieveReadings(ReadingType.GAS);
         }
-        catch (IOException e) {
+        catch (IOException | JSONException e) {
             throw new JPSRuntimeException("Gas readings could not be retrieved", e);
         }
     }
