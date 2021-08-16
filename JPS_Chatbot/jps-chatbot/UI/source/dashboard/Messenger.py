@@ -10,8 +10,8 @@ class Messenger:
 
     def __init__(self):
         self.yag = yagmail.SMTP('marie.maintenance.message', 'somerandompasswordformarie')
-        self.default_receivers = ['xz378@cam.ac.uk', 'jimmyzhou.ntu@gmail.com']
-        self.main_developer = ['xz378@cam.ac.uk']
+        self.default_receivers = ['xz378@cam.ac.uk', 'jimmyzhou.ntu@gmail.com','danieln@cmclinnovations.com']
+        self.main_developer = ['xz378@cam.ac.uk', 'danieln@cmclinnovations.com']
 
     def send_test_message(self, receiver):
         self.yag.send(to=receiver, subject='TEST MESSAGE FROM MESSENGER', contents='THIS IS A TEST MESSAGE')

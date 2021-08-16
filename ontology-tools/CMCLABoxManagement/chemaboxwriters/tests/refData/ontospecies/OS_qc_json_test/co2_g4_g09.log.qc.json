@@ -1,0 +1,66 @@
+{
+    "Empirical formula": "C1O2",
+    "Atom counts": {
+        "C": 1,
+        "O": 2
+    },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0,
+        15.99491,
+        15.99491
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "G4",
+    "Basis set": "G4",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -3.555363,
+            -0.513457,
+            0.0
+        ],
+        [
+            -4.71831,
+            -0.521207,
+            0.0
+        ],
+        [
+            -2.392417,
+            -0.505708,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        11.6806294
+    ],
+    "Rotational constants number": 1,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        688.2946,
+        688.2946,
+        1378.6391,
+        2435.3519
+    ],
+    "Frequencies number": 4,
+    "Frequencies unit": "cm^-1",
+    "Electronic and ZPE energy": -188.535266,
+    "HOMO energy": -0.54485,
+    "HOMO-1 energy": -0.54485,
+    "HOMO-2 energy": -0.71483,
+    "LUMO energy": 0.04244,
+    "LUMO+1 energy": 0.05237,
+    "LUMO+2 energy": 0.05237,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Thu Jul 16 13:18:25 2020"
+}

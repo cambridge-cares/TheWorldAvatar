@@ -13,8 +13,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -157,7 +157,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
     }
     
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(JPSHttpServlet.class);
+        logger = LogManager.getLogger(JPSHttpServlet.class);
     } 
 
     /**
