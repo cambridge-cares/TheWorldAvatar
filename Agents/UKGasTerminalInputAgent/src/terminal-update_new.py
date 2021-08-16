@@ -1,7 +1,6 @@
 from tqdm import tqdm
 import time
 import pytz
-from SPARQLWrapper import SPARQLWrapper, POST
 import os
 import datetime
 import uuid
@@ -12,7 +11,6 @@ import csv
 import json
 from configobj import ConfigObj
 import pandas as pd
-
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
 
@@ -403,55 +401,43 @@ def get_flow_data_from_csv():
     return df
 
 
-def add_time_series_data():
+def add_time_series_data(terminalIRI, flow_data):
+    """
+        Adds given gas flow data (DataFrame) to time series of respective terminal.
 
-    # Get the flow data from CSV: 2D array of tiples ([terminal-name, time, flow])
-    data = get_flow_data_from_csv()
-
-    # Create DataFrame
-    df = pd.DataFrame(data, columns=['terminal', 'time', 'flowrate'])
-    # Convert flow from MCM/Day to M^3/S
-    df['flowrate'] = (df['flowrate'].astype(float) * 1000000) / (24*60*60)
-    # Capitalise terminal names (for consistent comparisons)
-    df['terminal'] = df['terminal'].str.upper()
-    # Get unique terminals
-    terminals_with_data = df['terminal'].unique()
+        Arguments:
+            terminalIRI - IRI of gas terminal to which flow data shall be added.
+            flow_data - gas flow data to add to time series (as DataFrame with columns
+                        ['time (utc)', 'flowrate (m3/s)'].
+    """
 
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-    # Get instantiated terminals
-    instantiated_terminals = get_instantiated_terminals(QUERY_ENDPOINT)
-    old_keys = list(instantiated_terminals.keys())
-    for k in old_keys:
-        instantiated_terminals[k.upper()] = instantiated_terminals.pop(k)
+    # Extract data to create Java TimeSeries object
+    measurementIRI = get_measurementIRI(QUERY_ENDPOINT, terminalIRI)
+    times = list(flow_data['time (utc)'].values)
+    flows = list(flow_data['flowrate (m3/s)'].values)
+    # Create Java TimeSeries object
+    timeseries = jpsBaseLib_view.TimeSeries(times, [measurementIRI], [flows])
 
-    # loop through all terminals
-    for t in instantiated_terminals:
+    # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
+    # Retrieve Java class for time entries (Instant) - to get class simply via Java's
+    # ".class" does not work as this command also exists in Python
+    Instant = jpsBaseLib_view.java.time.Instant
+    instant_class = Instant.now().getClass()
 
-        # Extract data
-        terminalIRI = instantiated_terminals[t]
-        measurementIRI = get_measurementIRI(QUERY_ENDPOINT, terminalIRI)
-        times = list(df[df['terminal'] == t]['time'].values)
-        flows = list(df[df['terminal'] == t]['flowrate'].values)
-        # Create Java TimeSeries object
-        TS = jpsBaseLib_view.TimeSeries(times, [measurementIRI], [flows])
-
-        # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
-        # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
-        # ".class" does not work as this command also exists in Python
-        Instant = jpsBaseLib_view.java.time.Instant
-        instant_class = Instant.now().getClass()
-
-        # Initialise time series in both KG and RDB using TimeSeriesClass
-        TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, PROPERTIES_FILE)
-        TSClient.addTimeSeriesData(TS)
+    # Add time series data to existing time series association in KG using TimeSeriesClass
+    TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, PROPERTIES_FILE)
+    TSClient.addTimeSeriesData(timeseries)
 
 
 def update_triple_store():
     """
+        Main function to assimilate gas flow time series data into KG, incl. instantiation
+        of relevant relationships and new gas terminals in case new data becomes available
 
     """
 
@@ -463,70 +449,68 @@ def update_triple_store():
 
     # Get the gas flow data from National Grid csv as DataFrame
     flow_data = get_flow_data_from_csv()
-    # Retrieve all terminals with available gas flow data
+    # Retrieve all terminals with available gas flow data (terminal names are capitalised)
     terminals_with_data = flow_data['terminal'].unique()
 
     # Retrieve all instantiated gas terminals in KG
     terminals = get_instantiated_terminals(QUERY_ENDPOINT)
-    terminals_instantiated = [k.upper() for k in terminals.keys()]
-    terminals_instantiated = terminals_instantiated[:-1]
+    terminals_instantiated = {k.upper():v for k, v in terminals.items()}
 
-    # Potentially instantiate all terminals with available gas flow data which are not yet physically instantiated
-    for t in terminals_with_data:
-        if t not in terminals_instantiated:
-            instantiate_terminal(QUERY_ENDPOINT, UPDATE_ENDPOINT, t.title())
+    # Potentially create new GasTerminal instances for terminals with available gas flow data,
+    # which are not yet instantiated in KG (only create instance to enable data assimilation)
+    new_terminals = False
+    for gt in terminals_with_data:
+        if gt not in terminals_instantiated.keys():
+            instantiate_terminal(QUERY_ENDPOINT, UPDATE_ENDPOINT, gt.title())
+            new_terminals = True
 
+    # Retrieve update of instantiated gas terminals in KG (in case any new terminals were added)
+    if new_terminals:
+        terminals = get_instantiated_terminals(QUERY_ENDPOINT)
+        terminals_instantiated = {k.upper(): v for k, v in terminals.items()}
 
+    # Assimilate gas flow data for instantiated gas terminals
+    for gt in terminals_instantiated:
+        # Potentially instantiate time series association (if not already instantiated)
+        if not check_timeseries_instantiation(QUERY_ENDPOINT, terminals_instantiated[gt]):
+            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals_instantiated[gt])
 
-    for gt in terminals:
+        # Retrieve gas flow time series data for respective terminal from overall DataFrame
+        new_data = flow_data[flow_data['terminal'] == gt][['time (utc)', 'flowrate (m3/s)']]
+        # Add time series data using Java TimeSeriesClient
+        add_time_series_data(terminals_instantiated[gt], new_data)
 
-        # check if associated time series is already instantiated
-        instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
+def continuous_update():
+    while True:
+        start = time.time()
 
-        if not instantiated:
-            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
+        try:
+            update_triple_store()
+        except Exception:
+            print("Encountered exception, will try again in 15 minutes...")
+            print(traceback.format_exc())
 
-        # add data
-        add_time_series_data()
+        end = time.time()
 
-
-
-
-# def continuous_update():
-#     while True:
-#         start = time.time()
-#
-#         try:
-#             update_triple_store()
-#         except Exception:
-#             print("Encountered exception, will try again in 15 minutes...")
-#             print(traceback.format_exc())
-#
-#         end = time.time()
-#
-#         # wait for 12 minutes taking into account time to update queries
-#         for i in tqdm(range(60*12-int((end-start)))):
-#             time.sleep(1)
-#     return
-#
-#
-# def single_update():
-#     update_triple_store()
-#     return
+        # wait for 12 minutes taking into account time to update queries
+        for i in tqdm(range(60*12-int((end-start)))):
+            time.sleep(1)
+    return
 
 
-# # Try to detect (command-line) arguments passed to the script and launch update method
-# if len(sys.argv) <= 1:
-#     single_update()
-# elif sys.argv[1] == '-single':
-#     print('Detected \'-single\' argument, running single update...')
-#     single_update()
-# elif sys.argv[1] == '-continuous':
-#     print('Detected \'-continuous\' argument, running continuous updates...')
-#     continuous_update()
-# else:
-#     single_update()
-
-if __name__ == '__main__':
-
+def single_update():
     update_triple_store()
+    return
+
+
+# Try to detect (command-line) arguments passed to the script and launch update method
+if len(sys.argv) <= 1:
+    single_update()
+elif sys.argv[1] == '-single':
+    print('Detected \'-single\' argument, running single update...')
+    single_update()
+elif sys.argv[1] == '-continuous':
+    print('Detected \'-continuous\' argument, running continuous updates...')
+    continuous_update()
+else:
+    single_update()
