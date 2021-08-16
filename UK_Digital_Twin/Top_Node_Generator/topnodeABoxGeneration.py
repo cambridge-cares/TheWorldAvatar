@@ -159,7 +159,7 @@ def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery,
             nodeList = query_topNode.queryPowerPlantNodeURL(remoteEndPoint, None, localQuery)           
         elif nodeName == "UKEnergyConsumption2017": 
             nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, None, localQuery)    
-        print(nodeList)
+        #print(nodeList)
     elif SleepycatPath != None and localQuery == True:   
         if nodeName == "UKPowerPlant2019": 
             nodeList = list(query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery))
@@ -207,6 +207,7 @@ def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = Non
 
 """####Main function: Create or update the top node owl file####"""
 def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalOWLFile = True):
+    print("******Start creating the top node graph******")
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -244,8 +245,11 @@ def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalO
     g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat, powerPlant_Endpoint)
     g = addFourthLevelNode_gridModel(g)    
     g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    print("EGen added")
     g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    print("EBus added")
     g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+    print("ELine added")
     print('#########TOP NODE GRAPH IS GENERATED#######')
     
     

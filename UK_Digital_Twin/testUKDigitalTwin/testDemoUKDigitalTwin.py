@@ -21,46 +21,46 @@ from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 
 if __name__ == '__main__': 
-    """DUKES_Version = 2019"""
-    DUKES_Version = int(input('Specify DUKES Data Version: '))
-    filePath_PP = str(input('Specify power plant owl files path: '))
-    if filePath_PP == "None":
-        filePath_PP = None
-    addUKPowerPlantTriples('default', DUKES_Version, filePath_PP, True)
+    # """DUKES_Version = 2019"""
+    # DUKES_Version = int(input('Specify DUKES Data Version: '))
+    # filePath_PP = str(input('Specify power plant owl files path: '))
+    # if filePath_PP == "None":
+    #     filePath_PP = None
+    # addUKPowerPlantTriples('default', DUKES_Version, filePath_PP, True)
     
-    """ElectricityConsumption_Version = 2017"""
-    ElectricityConsumption_Version = int(input('Specify Electricity Consumption Data Version: '))
-    filePath_ec = str(input('Specify Electricity Consumption owl files path: '))
-    if filePath_ec == "None":
-        filePath_ec = None
-    addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, filePath_ec, True)
+    # """ElectricityConsumption_Version = 2017"""
+    # ElectricityConsumption_Version = int(input('Specify Electricity Consumption Data Version: '))
+    # filePath_ec = str(input('Specify Electricity Consumption owl files path: '))
+    # if filePath_ec == "None":
+    #     filePath_ec = None
+    # addUKElectricityConsumptionTriples('default', ElectricityConsumption_Version, filePath_ec, True)
     
-    # # When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
-    # UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
-    # UKEnergyConsumption_endpoint = UKec.UKEnergyConsumption().endpoint
+    # # # # When UK power plant and energy consumption KGs being generated and upload to the como server, the lookup table needs to be updated
+    # # # UKPowerPlant_endpoint = UKpp.UKPowerPlant().endpoint
+    # # # UKEnergyConsumption_endpoint = UKec.UKEnergyConsumption().endpoint
     
-    # updateLookUpTable(UKPowerPlant_endpoint['endpoint_iri'], UKPowerPlant_endpoint['queryendpoint_iri'], UKPowerPlant_endpoint['updateendpoint_iri'], UKPowerPlant_endpoint['lable'], True)
-    # updateLookUpTable(UKEnergyConsumption_endpoint['endpoint_iri'], UKEnergyConsumption_endpoint['queryendpoint_iri'], UKEnergyConsumption_endpoint['updateendpoint_iri'], UKEnergyConsumption_endpoint['lable'], True)
+    # # # updateLookUpTable(UKPowerPlant_endpoint['endpoint_iri'], UKPowerPlant_endpoint['queryendpoint_iri'], UKPowerPlant_endpoint['updateendpoint_iri'], UKPowerPlant_endpoint['lable'], True)
+    # # # updateLookUpTable(UKEnergyConsumption_endpoint['endpoint_iri'], UKEnergyConsumption_endpoint['queryendpoint_iri'], UKEnergyConsumption_endpoint['updateendpoint_iri'], UKEnergyConsumption_endpoint['lable'], True)
     
-    # UKGridTopology_endpoint = UK_Topo.UKPowerGridTopology().endpoint
-    # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
+    # # # UKGridTopology_endpoint = UK_Topo.UKPowerGridTopology().endpoint
+    # # # updateLookUpTable(UKGridTopology_endpoint['endpoint_iri'], UKGridTopology_endpoint['queryendpoint_iri'], UKGridTopology_endpoint['updateendpoint_iri'], UKGridTopology_endpoint['lable'], True)
     
-    """Creating the A-box of topology"""
-    filePath_topo = str(input('Specify topology owl files path: '))
-    if filePath_topo == "None":
-        filePath_topo = None
+    # """Creating the A-box of topology"""
+    # filePath_topo = str(input('Specify topology owl files path: '))
+    # if filePath_topo == "None":
+    #     filePath_topo = None
     
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, filePath_topo, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, filePath_topo, True)
-    createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, filePath_topo, True)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, filePath_topo, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, filePath_topo, True)
+    # createTopologyGraph('default', False, 10, 14, None,  None, addEGenNodes, filePath_topo, True)
     
     """Creating the A-box of grid model"""
-    filePath_model = str(input('Specify topology owl files path: '))
+    filePath_model = str(input('Specify model owl files path: '))
     if filePath_model == "None":
         filePath_model = None
     
-    createModel_EGen('default', False, 2019, filePath_model, True)
-    createModel_EBus('default', False, 2019, filePath_model, True)   
+    # createModel_EGen('default', False, 2019, filePath_model, True)
+    # createModel_EBus('default', False, 2019, filePath_model, True)   
     createModel_ELine('default', False, 10, 14, 2019, filePath_model, True) 
     
     """Creating the top node of UK digital twin"""
