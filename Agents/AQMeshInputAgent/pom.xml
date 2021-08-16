@@ -3,7 +3,7 @@
     
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>aq_mesh_input_agent</artifactId>
+    <artifactId>aqmesh_inputAgent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     
@@ -19,8 +19,6 @@
     
     <!-- Build settings -->
     <build>
-        <finalName>AQMesh_InputAgent</finalName>
-         
         <resources>
             <resource>  
                 <directory>${basedir}/logging</directory>
@@ -28,6 +26,7 @@
         </resources>
     
         <plugins>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -37,14 +36,52 @@
                     <target>8</target>
                 </configuration>
             </plugin>
-            
+
+            <!-- Maven plugin for unit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                 <version>2.22.0</version>
             </plugin>
-         
+
+            <!-- Maven plugin to copy dependencies in separate folder within build directory -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}.lib</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- Maven plugin for packaging -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <!-- To use the dependencies copied in separate folder -->
+                            <classpathPrefix>${project.build.finalName}.lib/</classpathPrefix>
+                            <mainClass>uk.ac.cam.cares.jps.agent.aqmesh.AQMeshInputAgentLauncher</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
     
