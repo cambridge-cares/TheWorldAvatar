@@ -68,13 +68,16 @@
                     <outputDirectory>${project.build.directory}</outputDirectory>
                 </configuration>
             </plugin>
-            
-            <!-- Copies all of the .jar dependencies into 'lib' folder in target directory. -->
+                        
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
-                <version>3.1.2</version>
-                <executions>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden/added to here. -->
+                
+                <executions>   
+                    <!-- Copies JAR depenencies into lib directory -->
                     <execution>
                         <id>copy-jar-dependencies</id>
                         <phase>prepare-package</phase>
@@ -87,17 +90,7 @@
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
                     </execution>
-                </executions>
-            </plugin>
-            
-            <!-- Downloads and extracts ZIP archives from Maven repository -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <!-- Version, configuration, and executions should be pulled from the 
-                parent POM unless overridden here. -->
-                
-                <executions>          
+                           
                     <!-- Skip downloading the runtime Log4J2 config -->
                     <execution>
                         <id>download-runtime-log-config</id>
