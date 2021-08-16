@@ -247,6 +247,42 @@ def get_measurementIRI(endpoint, terminalIRI):
         return response[0][var]
 
 
+def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
+    """
+        Instantiates new gas terminal in knowledge graph to enable gas flow data assimilation.
+        (solely creates new GasTerminal instance with respective name, but no further relationships)
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+            terminal_name - name of gas terminal to be instantiated.
+    """
+
+    # Create unique IRI for new gas terminal based on terminal name
+    terminalIRI = PREFIXES['compa'] + terminal_name.replace(' ', '')
+    n = 1
+    # Add number suffix in case pure name based IRI already exists
+    while terminalIRI in get_instantiated_terminals(query_endpoint).values():
+        terminalIRI = PREFIXES['compa'] + terminal_name.replace(' ', '') + str(n)
+        n += 1
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+    # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('rdf', PREFIXES) + \
+            create_sparql_prefix('rdfs', PREFIXES) + \
+            create_sparql_prefix('xsd', PREFIXES) + \
+            '''INSERT DATA { \
+            <%s> rdf:type comp:GasTerminal; \
+                 rdfs:label "%s"^^xsd:string. }'''%(terminalIRI, terminal_name)
+    KGClient.executeUpdate(query)
+
+
 def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
     """
         Instantiates all relevant triples for time series storage in KG and initialises RDB tables for terminal.
@@ -275,8 +311,6 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
             create_sparql_prefix('compa', PREFIXES) + \
             create_sparql_prefix('om', PREFIXES) + \
             create_sparql_prefix('rdf', PREFIXES) + \
-            create_sparql_prefix('ts', PREFIXES) + \
-            create_sparql_prefix('xsd', PREFIXES) + \
             '''INSERT DATA { \
             <%s> comp:hasTaken compa:%s. \
             compa:%s rdf:type comp:IntakenGas. \
@@ -421,23 +455,26 @@ def update_triple_store():
 
     """
 
-    # read properties file
+    # Read properties file
     read_properties_file(PROPERTIES_FILE)
 
-    # set URLs to KG SPARQL endpoints (and update properties file accordingly)
+    # Set URLs to KG SPARQL endpoints (and update properties file accordingly)
     setKGEndpoints(PROPERTIES_FILE)
-
-    # retrieve all instantiated gas terminals in KG
-    terminals = get_instantiated_terminals(QUERY_ENDPOINT)
-    terminals_instantiated = [k.upper() for k in terminals.keys()]
 
     # Get the gas flow data from National Grid csv as DataFrame
     flow_data = get_flow_data_from_csv()
-    # retrieve all terminals with available gas flow data
+    # Retrieve all terminals with available gas flow data
     terminals_with_data = flow_data['terminal'].unique()
 
-    # retrieve all instantiated gas terminals in KG
-    terminals_available = get_instantiated_terminals(QUERY_ENDPOINT)
+    # Retrieve all instantiated gas terminals in KG
+    terminals = get_instantiated_terminals(QUERY_ENDPOINT)
+    terminals_instantiated = [k.upper() for k in terminals.keys()]
+    terminals_instantiated = terminals_instantiated[:-1]
+
+    # Potentially instantiate all terminals with available gas flow data which are not yet physically instantiated
+    for t in terminals_with_data:
+        if t not in terminals_instantiated:
+            instantiate_terminal(QUERY_ENDPOINT, UPDATE_ENDPOINT, t.title())
 
 
 
