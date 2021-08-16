@@ -26,13 +26,12 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
 
 @WebServlet(urlPatterns = {"/kb/*"})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseAgent.class);
+	private static Logger logger = LoggerFactory.getLogger(AccessAgent.class);
 
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
