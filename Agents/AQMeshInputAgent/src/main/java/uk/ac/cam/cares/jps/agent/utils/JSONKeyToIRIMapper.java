@@ -88,6 +88,23 @@ public class JSONKeyToIRIMapper {
     }
 
     /**
+     * Saves the JSON key to IRI mapping to a properties files overwriting any content in the file if it already exists.
+     * @param filepath The path to the properties file.
+     */
+    public void saveToFile(String filepath) throws IOException {
+        File file = new File(filepath);
+        // Will overwrite whatever is in the file already
+        try (OutputStream output = new FileOutputStream(file, false)) {
+            // Create properties
+            Properties prop = new Properties();
+            // Fill properties with the mapping
+            prop.putAll(jsonToIRIMapping);
+            prop.store(output, "Note: URLs might look like this: http\\:// \n" +
+                    "This is to escape the ':' symbol and ensure that the properties can be loaded in properly.");
+        }
+    }
+
+    /**
      * Generates a IRI based on the prefix, JSON key and a random UUID.
      * @param prefix The prefix, usually a combination of namespace and an API identifier.
      * @param jsonKey The JSON key.
@@ -159,5 +176,4 @@ public class JSONKeyToIRIMapper {
         // Every legal (full) IRI contains at least one ':' character to separate the scheme from the rest of the IRI
         return Pattern.compile("\\w+\\S+:\\S+\\w+").matcher(iri).matches();
     }
-
 }

@@ -1,19 +1,17 @@
 package uk.ac.cam.cares.jps.agent.utils;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.UUID;
 
 public class JSONKeyToIRIMapperTest {
@@ -35,7 +33,6 @@ public class JSONKeyToIRIMapperTest {
     public void testConstructorWithPrefixAndMappingFile() throws IOException {
         // Create a mapping file
         String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
-        String[] keys = new String[]{"key1", "key2", "key3"};
         ArrayList<String> mappings = generateMapping(keys, null, "prefix");
         writeMappingFile(filepath, mappings);
         // Create mapper
@@ -154,10 +151,35 @@ public class JSONKeyToIRIMapperTest {
     }
 
     @Test
+    public void testSaveToFile() throws IOException {
+        // Create a mapping file
+        String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
+        ArrayList<String> mappings = generateMapping(keys, null, "prefix");
+        writeMappingFile(filepath, mappings);
+        // Create mapper
+        JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(prefix, filepath);
+        // Create a file in the temporary folder to store the mapping
+        File mappingFile = folder.newFile("test.properties");
+        // Save mappings to file
+        mapper.saveToFile(mappingFile.getCanonicalPath());
+        // Read in the file and check if the mapping is correct
+        try(InputStream input = new FileInputStream(mappingFile.getCanonicalPath())) {
+            Properties prop = new Properties();
+            prop.load(input);
+            for(String mapping: mappings) {
+                String[] key_value = mapping.split("=");
+                // The key should be present in the properties
+                Assert.assertTrue(prop.containsKey(key_value[0]));
+                // The value should have the correct value
+                Assert.assertEquals(key_value[1], prop.getProperty(key_value[0]));
+            }
+        }
+    }
+
+    @Test
     public void testGetAllIRIs() throws IOException {
         // Create a mapping file
         String filepath = Paths.get(folder.getRoot().toString(), "mapping.properties").toString();
-        String[] keys = new String[]{"key1", "key2", "key3"};
         ArrayList<String> mappings = generateMapping(keys, null, "prefix");
         writeMappingFile(filepath, mappings);
         // Initialize mapper
