@@ -255,6 +255,7 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
             update_endpoint - SPARQL Update endpoint for knowledge graph.
             terminal_name - name of gas terminal to be instantiated.
     """
+    print("Instantiate new gas terminal " + terminal_name)
 
     # Create unique IRI for new gas terminal based on terminal name
     terminalIRI = PREFIXES['compa'] + terminal_name.replace(' ', '')
@@ -281,7 +282,7 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
     KGClient.executeUpdate(query)
 
 
-def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
+def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, terminal_name=''):
     """
         Instantiates all relevant triples for time series storage in KG and initialises RDB tables for terminal.
         (raises exception if time series association is already initialised)
@@ -290,7 +291,9 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI):
             query_endpoint - SPARQL Query endpoint for knowledge graph.
             update_endpoint - SPARQL Update endpoint for knowledge graph.
             terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
+            terminal_name - gas terminal name (optional).
     """
+    print("Instantiate time series association for gas terminal " + terminal_name)
 
     # Create UUIDs for IntakenGas, VolumetricFlowRate, and Measure instances
     gas = 'GasAmount_' + str(uuid.uuid4())
@@ -401,7 +404,7 @@ def get_flow_data_from_csv():
     return df
 
 
-def add_time_series_data(terminalIRI, flow_data):
+def add_time_series_data(terminalIRI, flow_data, terminal_name=''):
     """
         Adds given gas flow data (DataFrame) to time series of respective terminal.
 
@@ -409,7 +412,9 @@ def add_time_series_data(terminalIRI, flow_data):
             terminalIRI - IRI of gas terminal to which flow data shall be added.
             flow_data - gas flow data to add to time series (as DataFrame with columns
                         ['time (utc)', 'flowrate (m3/s)'].
+            terminal_name - gas terminal name (optional).
     """
+    print("Add time series data for gas terminal " + terminal_name)
 
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
@@ -456,6 +461,8 @@ def update_triple_store():
     terminals = get_instantiated_terminals(QUERY_ENDPOINT)
     terminals_instantiated = {k.upper():v for k, v in terminals.items()}
 
+    terminals_instantiated.pop('Theddlethorpe Terminal'.upper())
+
     # Potentially create new GasTerminal instances for terminals with available gas flow data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_terminals = False
@@ -473,12 +480,13 @@ def update_triple_store():
     for gt in terminals_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if not check_timeseries_instantiation(QUERY_ENDPOINT, terminals_instantiated[gt]):
-            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals_instantiated[gt])
+            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals_instantiated[gt], gt)
 
         # Retrieve gas flow time series data for respective terminal from overall DataFrame
         new_data = flow_data[flow_data['terminal'] == gt][['time (utc)', 'flowrate (m3/s)']]
         # Add time series data using Java TimeSeriesClient
-        add_time_series_data(terminals_instantiated[gt], new_data)
+        add_time_series_data(terminals_instantiated[gt], new_data, gt)
+
 
 def continuous_update():
     while True:
