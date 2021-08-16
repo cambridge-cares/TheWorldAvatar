@@ -14,6 +14,7 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -127,10 +128,16 @@ public class AQMeshInputAgentTest {
             mappings.add(key + "=");
         }
         writePropertyFile(secondMappingFile, mappings);
+        // Save the size of the files for assertions later
+        long firstMappingFileSize = Files.size(Paths.get(firstMappingFile));
+        long secondMappingFileSize = Files.size(Paths.get(secondMappingFile));
         // Create agent
         AQMeshInputAgent agent = new AQMeshInputAgent(propertiesFile);
         // Assert that the mappings were set
         Assert.assertEquals(2, agent.getNumberOfTimeSeries());
+        // Assert that the mappings were saved back (now bigger file size)
+        Assert.assertTrue(Files.size(Paths.get(firstMappingFile)) > firstMappingFileSize);
+        Assert.assertTrue(Files.size(Paths.get(secondMappingFile)) > secondMappingFileSize);
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {

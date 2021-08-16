@@ -93,6 +93,8 @@ public class AQMeshInputAgent {
             for (File mappingFile: mappingFiles) {
                 JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(AQMeshInputAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
                 mappings.add(mapper);
+                // Save the mappings back to the file to ensure using same IRIs next time
+                mapper.saveToFile(mappingFile.getAbsolutePath());
             }
         }
     }
