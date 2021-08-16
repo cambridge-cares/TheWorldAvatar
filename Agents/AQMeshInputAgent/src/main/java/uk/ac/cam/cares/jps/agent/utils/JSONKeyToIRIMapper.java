@@ -66,6 +66,8 @@ public class JSONKeyToIRIMapper {
                 if (value.isEmpty()) {
                     // Create a random IRI in the format: <Prefix>_<JSONKey>_<UUID>
                     value = generateIRI(this.iriPrefix, key);
+                    // TODO: Should be replaces by logging
+                    System.out.println("No IRI provided for key " + key + ". The IRI was automatically generated: " + value);
                 }
                 // Check that the IRI is valid
                 if (checkIRI(value)) {
