@@ -154,12 +154,15 @@ public class AQMeshInputAgent {
             }
             // Update each time series
             for (TimeSeries<OffsetDateTime> ts : timeSeries) {
-                // Retrieve current maximum time to avoid duplicate entries
+                // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
                 OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
-                // If the new data overlaps with existing timestamps, prune the new ones
-                if (startCurrentTime.isBefore(endDataTime)) {
-                    ts = pruneTimeSeries(ts, endDataTime);
+                // If there is already an maximum time
+                if (endDataTime != null) {
+                    // If the new data overlaps with existing timestamps, prune the new ones
+                    if (startCurrentTime.isBefore(endDataTime)) {
+                        ts = pruneTimeSeries(ts, endDataTime);
+                    }
                 }
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {

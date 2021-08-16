@@ -298,6 +298,32 @@ public class AQMeshInputAgentTest {
     }
 
     @Test
+    public void testUpdateDataNoDataInDatabase() {
+        // Set up the mock client
+        // The max time is null since no data is in the database yet
+        Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(null);
+        // Run the update
+        testAgent.updateData(particleReadings, gasReadings);
+        // Capture the arguments that the add data method was called with
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
+        // Ensure that the update was called for each time series
+        Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
+        // Ensure that the timeseries objects have the correct structure
+        int numIRIs = 0;
+        for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
+            // Check that number of timestamps is correct
+            Assert.assertEquals(particleReadings.length(), ts.getTimes().size());
+            numIRIs = numIRIs + ts.getDataIRIs().size();
+        }
+        // Number of unique keys in both readings should match the number of IRIs
+        Set<String> uniqueKeys = new HashSet<>(particleReadings.getJSONObject(0).keySet());
+        uniqueKeys.addAll(gasReadings.getJSONObject(0).keySet());
+        // Timestamp key has no match (therefore -1)
+        Assert.assertEquals(uniqueKeys.size() - 1, numIRIs);
+    }
+
+    @Test
     public void testUpdateDataPrune() {
         // Set up the mock client
         // Use a max time that is overlapping with the readings
