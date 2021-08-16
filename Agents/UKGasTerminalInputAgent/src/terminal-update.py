@@ -27,7 +27,7 @@ Local deployment requires:
 PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
 
 # Define format of time series time entries: Year-Day-Month T hour:minute:second:millisecond Z
-FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
+FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Define global variables
 global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -235,6 +235,44 @@ def get_measurementIRI(endpoint, terminalIRI):
             create_sparql_prefix('ts', PREFIXES) + \
             'SELECT ?' + var + ' '\
             'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue ?' + var + '. }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    if len(response) == 0:
+        return None
+    else:
+        return response[0][var]
+
+
+def get_time_format(endpoint, terminalIRI):
+    """
+        Retrieves time format of time series entries stored in KG.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+            terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
+
+        Returns:
+            Time series format as string.
+    """
+
+    # Initialise SPARQL query variable
+    var = 'format'
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('comp', PREFIXES) + \
+            create_sparql_prefix('om', PREFIXES) + \
+            create_sparql_prefix('ts', PREFIXES) + \
+            'SELECT ?' + var + ' '\
+            'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue/' \
+                                          'ts:hasTimeSeries/ts:hasTimeUnit ?' + var + '. }'
     response = KGClient.execute(query)
     # Convert JSONArray String back to list
     response = json.loads(response)
@@ -461,8 +499,6 @@ def update_triple_store():
     terminals = get_instantiated_terminals(QUERY_ENDPOINT)
     terminals_instantiated = {k.upper():v for k, v in terminals.items()}
 
-    terminals_instantiated.pop('Theddlethorpe Terminal'.upper())
-
     # Potentially create new GasTerminal instances for terminals with available gas flow data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_terminals = False
@@ -500,6 +536,7 @@ def continuous_update():
 
         end = time.time()
 
+        print('\n')
         # wait for 12 minutes taking into account time to update queries
         for i in tqdm(range(60*12-int((end-start)))):
             time.sleep(1)
