@@ -7,7 +7,7 @@
 
     <!--
         This file specifies which files and directories should be included within
-        the PRODUCTION artifact before uploading begins.
+        the DEVELOPMENT artifact before uploading begins.
     -->
     
     <formats>
@@ -15,14 +15,14 @@
     </formats>
 
     <!-- ID of this archive -->
-    <id>java-log-config-prod</id>
+    <id>java-logging-dev</id>
 
     <!-- Don't include the directory itself -->
     <includeBaseDirectory>false</includeBaseDirectory>
-
+    
     <files>
         <file>
-            <source>log4j2.production.xml</source>
+            <source>log4j2.development.xml</source>
             <destName>log4j2.xml</destName>
         </file>
     </files>

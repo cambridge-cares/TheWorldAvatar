@@ -12,7 +12,7 @@
     -->
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>java-log-configs</artifactId>
+    <artifactId>java-logging-prod</artifactId>
     <packaging>pom</packaging>
 
     <!-- Version of this configuration -->
@@ -33,7 +33,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.1.0</version>
                 <configuration>
-                    <appendAssemblyId>true</appendAssemblyId>
+                    <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
                 <executions>
 
@@ -45,27 +45,12 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>java-log-config-prod</finalName>
+							<finalName>java-logging-prod</finalName>
                             <descriptors>
-                                <descriptor>descriptor.production.xml</descriptor>
+                                <descriptor>descriptor.xml</descriptor>
                             </descriptors>
                         </configuration>
-                    </execution>
-
-                    <!-- Upload the development configuration -->
-                    <execution>
-                        <id>upload-development-configuration</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <finalName>java-log-config-dev</finalName>
-                            <descriptors>
-                                <descriptor>descriptor.development.xml</descriptor>
-                            </descriptors>
-                        </configuration>
-                    </execution>
+                    </execution>                   
                 </executions>
             </plugin>
         </plugins>

@@ -48,7 +48,7 @@
             </activation>
             <properties>
                 <!-- Set property to download development logging config -->
-                <log.classifier>java-log-config-dev</log.classifier>
+                <log.artifact>java-logging-dev</log.artifact>
             </properties>
         </profile>
         
@@ -57,7 +57,7 @@
             <id>prod-profile</id>
             <properties>
                 <!-- Set property to download production logging config -->
-                <log.classifier>java-log-config-prod</log.classifier>
+                <log.artifact>java-logging-prod</log.artifact>
             </properties>
         </profile>
     </profiles>
