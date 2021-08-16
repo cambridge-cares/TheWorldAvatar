@@ -33,6 +33,8 @@ public class AQMeshAPIConnector {
     private String token = "";
     // Location needed for retrieving data
     private String location = "";
+    // Fields that defines the index to use in the asset list, i.e. which pod to use
+    private int podIndex = 0;
     // Static fields for specific paths in the API
     protected static final String AUTHENTICATE_PATH = "Authenticate";
     protected static final String PING_PATH = "serverping";
@@ -66,6 +68,20 @@ public class AQMeshAPIConnector {
         this.username = username;
         this.password = password;
         this.api_url = url;
+    }
+
+    /**
+     * Constructor specifying the pod index (default is 0)
+     * @param username the username to access AQMesh API
+     * @param password the password to access AQMesh API
+     * @param url the  URL of AQMesh API
+     * @param podIndex the pod index to use to assign from which pod to read
+     */
+    public AQMeshAPIConnector(String username, String password, String url, int podIndex) {
+        this.username = username;
+        this.password = password;
+        this.api_url = url;
+        this.podIndex = podIndex;
     }
 
     /**
@@ -175,7 +191,7 @@ public class AQMeshAPIConnector {
                             throw new JSONException("No assets available in returned JSON Array.");
                         }
                         else {
-                            int location = responseBody.getJSONObject(0).getInt(LOCATION_KEY);
+                            int location = responseBody.getJSONObject(podIndex).getInt(LOCATION_KEY);
                             this.location = Integer.toString(location);
                         }
                 }
@@ -256,7 +272,8 @@ public class AQMeshAPIConnector {
     }
 
     /**
-     * Reads the username, password and URL needed to connect to the API from a properties file and saves it in fields
+     * Reads the username, password and URL needed to connect to the API from a properties file and saves it in fields.
+     * Optionally, also reads the pod index which is 0 by default.
      * @param filepath Path to the properties file from which to read the username, password and URL
      */
     private void loadAPIConfigs(String filepath) throws IOException {
@@ -273,7 +290,7 @@ public class AQMeshAPIConnector {
             Properties prop = new Properties();
             prop.load(input);
 
-            // Get username and password from properties file
+            // Get username, password and URL from properties file
             if (prop.containsKey("aqmesh.username")) {
                 this.username = prop.getProperty("aqmesh.username");
             } else {
@@ -288,6 +305,10 @@ public class AQMeshAPIConnector {
                 this.api_url = prop.getProperty("aqmesh.url");
             } else {
                 throw new IOException("Properties file is missing \"aqmesh.url=<aqmesh_url>\"");
+            }
+            // Optionally get pod index from properties file
+            if (prop.containsKey("aqmesh.podIndex")) {
+                this.podIndex = Integer.parseInt(prop.getProperty("aqmesh.podIndex"));
             }
         }
     }

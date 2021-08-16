@@ -44,7 +44,7 @@ public class AQMeshAPIConnectorTest {
 
     @Before
     public void initializeTestConnector() {
-        testConnector = new AQMeshAPIConnector("username", "password", TEST_URL);
+        testConnector = new AQMeshAPIConnector("username", "password", TEST_URL, 1);
     }
 
     @After
@@ -56,6 +56,8 @@ public class AQMeshAPIConnectorTest {
     public void AQMeshAPIConnectorConstructorTest() throws NoSuchFieldException, IllegalAccessException, IOException {
         // One connector constructed using the username and password directly
         AQMeshAPIConnector connector = new AQMeshAPIConnector("username", "password", "url");
+        // One connector constructed using the username and password directly and also set the podIndex
+        AQMeshAPIConnector connectorPod = new AQMeshAPIConnector("username", "password", "url", 1);
         // One connector constructed using a properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "api.properties").toString();
         writePropertyFile(propertiesFile, Arrays.asList("aqmesh.username=username", "aqmesh.password=password", "aqmesh.url=url"));
@@ -65,17 +67,26 @@ public class AQMeshAPIConnectorTest {
         Field usernameField = AQMeshAPIConnector.class.getDeclaredField("username");
         usernameField.setAccessible(true);
         Assert.assertEquals("username", usernameField.get(connector));
+        Assert.assertEquals("username", usernameField.get(connectorPod));
         Assert.assertEquals("username", usernameField.get(connectorFile));
 
         Field passwordField = AQMeshAPIConnector.class.getDeclaredField("password");
         passwordField.setAccessible(true);
         Assert.assertEquals("password", passwordField.get(connector));
+        Assert.assertEquals("password", passwordField.get(connectorPod));
         Assert.assertEquals("password", passwordField.get(connectorFile));
 
         Field urlField = AQMeshAPIConnector.class.getDeclaredField("api_url");
         urlField.setAccessible(true);
         Assert.assertEquals("url", urlField.get(connector));
+        Assert.assertEquals("url", urlField.get(connectorPod));
         Assert.assertEquals("url", urlField.get(connectorFile));
+
+        Field podIndexField = AQMeshAPIConnector.class.getDeclaredField("podIndex");
+        podIndexField.setAccessible(true);
+        Assert.assertEquals(0, podIndexField.get(connector));
+        Assert.assertEquals(1, podIndexField.get(connectorPod));
+        Assert.assertEquals(0, podIndexField.get(connectorFile));
     }
 
     @Test
@@ -155,6 +166,24 @@ public class AQMeshAPIConnectorTest {
         Field urlField = AQMeshAPIConnector.class.getDeclaredField("api_url");
         urlField.setAccessible(true);
         Assert.assertEquals("test_url", urlField.get(testConnector));
+
+        Field podIndexField = AQMeshAPIConnector.class.getDeclaredField("podIndex");
+        podIndexField.setAccessible(true);
+        // Correct value depends on what is set in the @Before initialization method
+        Assert.assertEquals(1, podIndexField.get(testConnector));
+
+        // Test for using a pod index in the properties files
+        writePropertyFile(filepath, Arrays.asList("aqmesh.username=test_user", "aqmesh.password=test_password",
+                "aqmesh.url=test_url", "aqmesh.podIndex=2"));
+        // Try loading RDB configs
+        try {
+            loadAPIConfig.invoke(testConnector, filepath);
+        } catch (Exception e) {
+            Assert.fail(e.getMessage());
+        }
+
+        Assert.assertEquals(2, podIndexField.get(testConnector));
+
     }
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
@@ -310,10 +339,13 @@ public class AQMeshAPIConnectorTest {
             Assert.assertEquals(JSONException.class, e.getCause().getClass());
             Assert.assertTrue(e.getCause().getMessage().contains("No assets available in returned JSON Array."));
         }
-        // API returns proper response
+        // API returns proper response with correct location and index 1
         int location = 12345;
         JSONArray responseBody = new JSONArray();
         JSONObject asset = new JSONObject();
+        asset.put(AQMeshAPIConnector.LOCATION_KEY, 10);
+        responseBody.put(asset);
+        asset = new JSONObject();
         asset.put(AQMeshAPIConnector.LOCATION_KEY, location);
         responseBody.put(asset);
         aqMeshAPIMock.stubFor(get(urlPathEqualTo("/" + AQMeshAPIConnector.ASSETS_PATH))
