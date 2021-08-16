@@ -13,7 +13,7 @@ import json
 from configobj import ConfigObj
 import pandas as pd
 
-# get the jpsBaseLibGW instance from the jpsSingletons module
+# get the jpsBaseLibGateWay instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
 
 """
@@ -28,7 +28,6 @@ Local deployment requires:
 # Define location of properties file (with Triple Store and RDB settings)
 PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
 
-# Define time series properties
 # Define format of time series time entries: Year-Day-Month T hour:minute:second:millisecond Z
 FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
@@ -309,7 +308,8 @@ def get_flow_data_from_csv():
         Gathers instantaneous flow rate data for each terminal from national grid website.
 
         Returns:
-            2D array of gas flow rates (triples [terminalName, time, flow]).
+            DataFrame with gas flow rate data and columns 'terminal', 'time (utc)', 'flowrate (m3/s)'.
+            (all terminal names are capitalised for naming consistency reasons)
     """
 
     # Get current UK timezone to properly convert reported local times into UTC
@@ -348,7 +348,7 @@ def get_flow_data_from_csv():
 
                 # Times from CSV file are in local time
                 dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
-                # is_dst=False is used to determine correct timezone in the ambigous period
+                # is_dst=False is used to determine correct timezone in the ambiguous period
                 # at the end of daylight saving time
                 dateTimeObjUTC = tz.localize(dateTimeObj, False).astimezone(pytz.utc)
                 dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%S.000Z")
@@ -358,7 +358,15 @@ def get_flow_data_from_csv():
 
     print("Finished reading flow data CSV, removing file...")
     os.remove(filename)
-    return data
+
+    # Create DataFrame
+    df = pd.DataFrame(data, columns=['terminal', 'time (utc)', 'flowrate (m3/s)'])
+    # Convert flow from MCM/Day to M^3/S
+    df['flowrate (m3/s)'] = (df['flowrate (m3/s)'].astype(float) * 1000000) / (24 * 60 * 60)
+    # Capitalise terminal names (for consistent comparisons by name)
+    df['terminal'] = df['terminal'].str.upper()
+
+    return df
 
 
 def add_time_series_data():
@@ -408,6 +416,45 @@ def add_time_series_data():
         TSClient.addTimeSeriesData(TS)
 
 
+def update_triple_store():
+    """
+
+    """
+
+    # read properties file
+    read_properties_file(PROPERTIES_FILE)
+
+    # set URLs to KG SPARQL endpoints (and update properties file accordingly)
+    setKGEndpoints(PROPERTIES_FILE)
+
+    # retrieve all instantiated gas terminals in KG
+    terminals = get_instantiated_terminals(QUERY_ENDPOINT)
+    terminals_instantiated = [k.upper() for k in terminals.keys()]
+
+    # Get the gas flow data from National Grid csv as DataFrame
+    flow_data = get_flow_data_from_csv()
+    # retrieve all terminals with available gas flow data
+    terminals_with_data = flow_data['terminal'].unique()
+
+    # retrieve all instantiated gas terminals in KG
+    terminals_available = get_instantiated_terminals(QUERY_ENDPOINT)
+
+
+
+    for gt in terminals:
+
+        # check if associated time series is already instantiated
+        instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
+
+        if not instantiated:
+            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
+
+        # add data
+        add_time_series_data()
+
+
+
+
 # def continuous_update():
 #     while True:
 #         start = time.time()
@@ -445,22 +492,4 @@ def add_time_series_data():
 
 if __name__ == '__main__':
 
-    # read properties file
-    read_properties_file(PROPERTIES_FILE)
-
-    # set URL to KG SPARQL endpoint
-    setKGEndpoints(PROPERTIES_FILE)
-
-    # retrieve all instantiated gas terminals in KG
-    terminals = get_instantiated_terminals(QUERY_ENDPOINT)
-
-    for gt in terminals:
-
-        # check if associated time series is already instantiated
-        instantiated = check_timeseries_instantiation(QUERY_ENDPOINT, terminals[gt])
-
-        if not instantiated:
-            instantiate_timeseries(QUERY_ENDPOINT, UPDATE_ENDPOINT, terminals[gt])
-
-        # add data
-        add_time_series_data()
+    update_triple_store()
