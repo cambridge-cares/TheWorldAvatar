@@ -112,7 +112,7 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetDerivedEntities() {
 		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue(Arrays.asList(DerivationSparql.getDerivedEntities(mockClient, derivedIRI)).containsAll(entities));
+		Assert.assertTrue(DerivationSparql.getDerivedEntities(mockClient, derivedIRI).containsAll(entities));
 	}
 	
 	@Test
@@ -129,13 +129,12 @@ public class DerivedQuantitySparqlTest {
 			testKG.getIndividual(entity).addRDFType(ResourceFactory.createResource(entity + "class"));
 		}
 		
-		String[] entitiesArray = new String[entities.size()];
-		List<List<String>> queryResult = DerivationSparql.getIsDerivedFromEntities(mockClient, entities.toArray(entitiesArray));
+		List<List<String>> queryResult = DerivationSparql.getIsDerivedFromEntities(mockClient, entities);
 		List<String> derivedList = queryResult.get(0);
 		List<String> rdfTypeList = queryResult.get(1);
 		
 		for (int i = 0; i < derivedList.size(); i++) {
-			Assert.assertEquals(entitiesArray[i] + "class", rdfTypeList.get(i));
+			Assert.assertEquals(entities.get(i) + "class", rdfTypeList.get(i));
 			Assert.assertEquals(derivedIRI2, derivedList.get(i));
 		}
 	}
@@ -149,13 +148,13 @@ public class DerivedQuantitySparqlTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		testKG.add(ResourceFactory.createResource(entity1), a, b);
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		DerivationSparql.deleteInstances(mockClient, entity1);
+		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		
 		// only in object
 		testKG.add(b, a, ResourceFactory.createResource(entity1));
 		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		DerivationSparql.deleteInstances(mockClient, entity1);
+		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 		
 		// in both subject and object
@@ -163,7 +162,7 @@ public class DerivedQuantitySparqlTest {
 		testKG.add(b, a, ResourceFactory.createResource(entity1));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		DerivationSparql.deleteInstances(mockClient, entity1);
+		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 	}
@@ -204,13 +203,10 @@ public class DerivedQuantitySparqlTest {
 		
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// returns an empty string if there is no rdf:type
-		Assert.assertEquals("", DerivationSparql.getInstanceClass(mockClient, entity1)[0]);
+		Assert.assertEquals("", DerivationSparql.getInstanceClass(mockClient, Arrays.asList(entity1)).get(0));
 		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(entityclass));
 		
-		Assert.assertEquals(entityclass, DerivationSparql.getInstanceClass(mockClient, entity1)[0]);
-		
-		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(entityclass+"1"));
-		
+		Assert.assertEquals(entityclass, DerivationSparql.getInstanceClass(mockClient, Arrays.asList(entity1)).get(0));		
 	}
 	
 	@Test
@@ -234,12 +230,10 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testAddNewEntitiesToDerived() {
 		String derived = "http://derived";
-		String[] entitiesArray = new String[entities.size()];
-		entities.toArray(entitiesArray);
-		DerivationSparql.addNewEntitiesToDerived(mockClient, derived, entitiesArray);
+		DerivationSparql.addNewEntitiesToDerived(mockClient, derived, entities);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		
-		for (String entity : entitiesArray) {
+		for (String entity : entities) {
 			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derived)));

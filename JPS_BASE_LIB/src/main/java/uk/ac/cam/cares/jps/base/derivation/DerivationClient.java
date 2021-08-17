@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.base.derivation;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
@@ -155,7 +157,7 @@ public class DerivationClient {
 			// getInputs queries for <instance> <isDerivedFrom> ?x
 			if (isOutOfDate(instance,inputs)) {
 				LOGGER.info("Updating <" + instance + ">");
-				LOGGER.debug("<" + instance + "> is out-of-date when compared to [" + Arrays.asList(inputs) + "]");
+				LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
 				// calling agent to create a new instance
 				String agentURL = DerivationSparql.getAgentUrl(kbClient, instance);
 				JSONObject requestParams = new JSONObject();
@@ -170,15 +172,12 @@ public class DerivationClient {
 				// if it is a derived quantity with time series, there will be no changes to the instances
 				if (!DerivationSparql.isDerivedWithTimeSeries(this.kbClient, instance)) {
 					// collect new instances created by agent
-					JSONArray output = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY);
-					String[] newEntities = new String[output.length()];
-					for (int i = 0; i < output.length(); i++) {
-						newEntities[i] = output.getString(i);
-					}
+					List<String> newEntities = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY).toList()
+							.stream().map(iri -> (String) iri).collect(Collectors.toList());
 
 					// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
 					// query for ?x <belongsTo> <instance>
-					String[] entities = DerivationSparql.getDerivedEntities(kbClient, instance);
+					List<String> entities = DerivationSparql.getDerivedEntities(kbClient, instance);
 					
 					// check if any of the old entities is an input for another derived quantity
 					// query ?x <isDerivedFrom> <entity>, <entity> a ?y
@@ -198,7 +197,7 @@ public class DerivationClient {
 						LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
-						String[] classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
+						List<String> classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
 						
 						// look for the entity with the same rdf:type that we need to reconnect
 						List<String> oldDerivedList = derivedAndType.get(0);
@@ -206,11 +205,11 @@ public class DerivationClient {
 				
 						// for each instance in the old derived instance that is connected to another derived instance, reconnect it
 						for (int i = 0; i < oldDerivedList.size(); i++) {
-							LOGGER.debug("Searching within " + newEntities + " with rdf:type " + oldTypeList.get(i));
+							LOGGER.debug("Searching within <" + newEntities + "> with rdf:type <" + oldTypeList.get(i) + ">");
 							// index in the new array with the matching type
 							Integer matchingIndex = null;
-							for (int j = 0; j < classOfNewEntities.length; j++) {
-								if (classOfNewEntities[j].contentEquals(oldTypeList.get(i))) {
+							for (int j = 0; j < classOfNewEntities.size(); j++) {
+								if (classOfNewEntities.get(j).contentEquals(oldTypeList.get(i))) {
 									if (matchingIndex != null) {
 										throw new JPSRuntimeException("Duplicate rdf:type found within output, the DerivationClient does not support this");
 									}
@@ -222,13 +221,13 @@ public class DerivationClient {
 								throw new JPSRuntimeException(reconnectError);
 							}
 						    // reconnect
-							DerivationSparql.reconnectInputToDerived(kbClient, newEntities[matchingIndex], oldDerivedList.get(i));
+							DerivationSparql.reconnectInputToDerived(kbClient, newEntities.get(matchingIndex), oldDerivedList.get(i));
 						}
 					}
 				}
 				// if there are no errors, assume update is successful
 				DerivationSparql.updateTimeStamp(kbClient, instance);
-				LOGGER.info("Updated timestamp of " + instance);
+				LOGGER.info("Updated timestamp of <" + instance + ">");
 			}
 		}
 	}

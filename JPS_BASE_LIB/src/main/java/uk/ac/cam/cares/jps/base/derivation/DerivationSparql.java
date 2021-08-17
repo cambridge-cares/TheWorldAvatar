@@ -370,7 +370,7 @@ class DerivationSparql{
 	 * @param derivedIRI
 	 * @return
 	 */
-	static String[] getDerivedEntities(StoreClientInterface kbClient, String derivedIRI) {
+	static List<String> getDerivedEntities(StoreClientInterface kbClient, String derivedIRI) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "entity";
 		Variable entity = SparqlBuilder.var(queryKey);
@@ -379,9 +379,9 @@ class DerivationSparql{
 		
 		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
 		
-		String[] entities = new String[queryResult.length()];
+		List<String> entities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
-			entities[i] = queryResult.getJSONObject(i).getString(queryKey);
+			entities.add(queryResult.getJSONObject(i).getString(queryKey));
 		}
 		
 		return entities;
@@ -393,7 +393,7 @@ class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	static List<List<String>> getIsDerivedFromEntities(StoreClientInterface kbClient, String... entities) {
+	static List<List<String>> getIsDerivedFromEntities(StoreClientInterface kbClient, List<String> entities) {
 		String derivedkey = "derived";
 		String typeKey = "type";
 		Variable derived = SparqlBuilder.var(derivedkey);
@@ -409,10 +409,10 @@ class DerivationSparql{
 		List<String> derivediri = new ArrayList<>();
 		List<String> typeiri = new ArrayList<>();
 		
-		for (int i = 0; i < entities.length; i++) {
+		for (String entity : entities) {
 			SelectQuery query = Queries.SELECT();
 			
-			GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entities[i])), iri(entities[i]).isA(entityType))
+			GraphPattern queryPattern = GraphPatterns.and(derived.has(isDerivedFrom,iri(entity)), iri(entity).isA(entityType))
 					.filter(Expressions.and(filters)).optional();
 			
 			query.select(derived, entityType).where(queryPattern).prefix(p_derived);
@@ -439,7 +439,7 @@ class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	static void deleteInstances(StoreClientInterface kbClient, String... entities) {
+	static void deleteInstances(StoreClientInterface kbClient, List<String> entities) {
 		for (String entity : entities) {
 			SubSelect sub = GraphPatterns.select();
 			
@@ -543,13 +543,12 @@ class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	static String[] getInstanceClass(StoreClientInterface kbClient, String... instances) {
+	static List<String> getInstanceClass(StoreClientInterface kbClient, List<String> instances) {
 		String queryKey = "class";
 		
-		String[] classOfInstances = new String[instances.length]; 
+		List<String> classOfInstances = new ArrayList<>(instances.size()); 
 
-		
-		for (int i = 0; i < instances.length; i++) {
+		for (int i = 0; i < instances.size(); i++) {
 			SelectQuery query = Queries.SELECT();
 			Variable type = SparqlBuilder.var(queryKey);
 			
@@ -558,7 +557,7 @@ class DerivationSparql{
 			for (int j = 0; j < classesToIgnore.size(); j++) {
 				filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
 			}
-			GraphPattern queryPattern = iri(instances[i]).isA(type).filter(Expressions.and(filters));
+			GraphPattern queryPattern = iri(instances.get(i)).isA(type).filter(Expressions.and(filters));
 			
 			query.select(type).where(queryPattern);
 			kbClient.setQuery(query.getQueryString());
@@ -566,11 +565,11 @@ class DerivationSparql{
 			JSONArray queryResult = kbClient.executeQuery();
 			// not having an rdf:type may be fine, but having more than 1 is an issue
 			if (queryResult.length() > 1) {
-				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instances[i]);
+				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instances.get(i));
 			} else if (queryResult.length() == 1) {
-				classOfInstances[i] = queryResult.getJSONObject(0).getString(queryKey);
+				classOfInstances.add(i, queryResult.getJSONObject(0).getString(queryKey));
 			} else {
-				classOfInstances[i] = "";
+				classOfInstances.add(i, "");
 			}
 		}
 		return classOfInstances;
@@ -620,7 +619,7 @@ class DerivationSparql{
 	 * @param instance
 	 * @param newEntities
 	 */
-	static void addNewEntitiesToDerived(StoreClientInterface storeClient, String instance, String[] newEntities) {
+	static void addNewEntitiesToDerived(StoreClientInterface storeClient, String instance, List<String> newEntities) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		for (String newEntity : newEntities) {

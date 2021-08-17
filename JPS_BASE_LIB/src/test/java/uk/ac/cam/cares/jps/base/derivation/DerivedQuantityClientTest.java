@@ -63,12 +63,6 @@ public class DerivedQuantityClientTest{
     }
 	
 	@Test
-	public void testKeys() {
-		Assert.assertEquals("agent_input", DerivationClient.AGENT_INPUT_KEY);
-		Assert.assertEquals("agent_output", DerivationClient.AGENT_OUTPUT_KEY);
-	}
-	
-	@Test
 	public void testCreateDerivedQuantity() {
 		String createdDerived = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
