@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -9,7 +9,7 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script> 
 	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
 	<script src='power-system.js'></script>
 
@@ -21,6 +21,7 @@
 </head>
 
 <body>
+	<!-- Three sections are defined with ids -->
 	<div id='map'></div>
 	<div id="tiltShift"></div>
 	<div id="controlsParent"></div>
@@ -30,18 +31,20 @@
 
 		// Add map controls
 		document.getElementById("controlsParent").innerHTML = getControls();
+		// The getControls() is invoked from the mapbox-controls.js for returning a controlHTML containing camera, terrain, and layer panels
 
 		// Initial state of side-panel (from side-panel.js)
 		initialiseSidePanel(document.getElementById("map"));
-        resetSidePanel();
+		// Reset side panel (from power-system.js)
+		resetSidePanel();
 
 		// Show loading icon whilst stuff spins up
-        var loadingHTML = `
-            <br><br><br><br><br>
-            <img width='150' src='loading.gif'></img>
-            <br>
-            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-        `;
+		var loadingHTML = `
+				<br><br><br><br><br>
+				<img width='150' src='loading.gif'></img>
+				<br>
+				<span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+			`;
 		appendSidePanelText(loadingHTML);
 
 		// Initialise the MapBox map
@@ -49,7 +52,7 @@
 		var map = new mapboxgl.Map(getDefaultMapOptions());
 
 		// Initialise MapBox popup for mouse-overs
-		var popup =  popup = new mapboxgl.Popup({
+		var popup = popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
 		});
@@ -57,17 +60,17 @@
 		// Change some layer colors depending on selected style
 		var inner_text = '#3E3E3E';
 		var outer_text = '#FFFFFF';
-	
+
 		function terrainCallback(terrainType) {
-			if(terrainType === "light") {
-                inner_text = '#3E3E3E';
-		        outer_text = '#FFFFFF'; 
+			if (terrainType === "light") {
+				inner_text = '#3E3E3E';
+				outer_text = '#FFFFFF';
 			} else {
-                inner_text = '#FFFFFF';
-		        outer_text = '#000000'; 
+				inner_text = '#FFFFFF';
+				outer_text = '#000000';
 			}
 			console.log("INFO: Updated label colors.");
-		}		
+		}
 
 		function cameraCallback() {
 			popup.remove();
@@ -76,7 +79,7 @@
 		}
 
 		function layerCallback(layerID, enabled) {
-			if(layerID == "power" && enabled) {
+			if (layerID == "power" && enabled) {
 				map.setPaintProperty(
 					"plant_locations",
 					"circle-color",
@@ -86,7 +89,7 @@
 				currentLayer = "power";
 				updateLegend("power");
 
-			} else if(layerID == "indicator" && enabled) {
+			} else if (layerID == "indicator" && enabled) {
 				map.setPaintProperty(
 					"plant_locations",
 					"circle-color",
@@ -99,8 +102,8 @@
 		}
 
 		// Setup map with mapbox-controls.js
-		setup(map, cameraCallback, terrainCallback, layerCallback);
-	
+        setup(map, cameraCallback, terrainCallback, layerCallback); // ************the layerCallback needs to be passed two arguments?????
+
 
 		// Add tilt shift effect
 		// Note: I've disabled this for now as the map is becoming unresponsive.
@@ -108,16 +111,16 @@
 		//addTiltShiftSupport();
 
 		// On initial load...
-			map.on("load", function() {
+		map.on("load", function () { // *************what is .on() method????
 			resetSidePanel();
 			updateLegend(currentLayer);
 		});
 
-		map.on('style.load', function() {
+		map.on('style.load', function () {
 			console.log("INFO: New style has been loaded.");
 			refresh();
-			
-			// ============ PLANTS ===========	
+
+			// ============ PLANTS ===========
 			// Add the powerplant data
 			map.addSource('powerplants', {
 				type: 'geojson',
@@ -168,10 +171,10 @@
 			});
 
 			// On mouse enter
-			map.on('mouseenter', 'plant_locations', function (e) {
+			map.on('mouseenter', 'plant_locations', function (e) { //*************what is "e"?
 				map.getCanvas().style.cursor = 'pointer';
 
-				if(map.getZoom() < 7.5) {
+				if (map.getZoom() < 7.5) {
 					var coordinates = e.features[0].geometry.coordinates.slice();
 					var name = e.features[0].properties["name"];
 					name = name.replaceAll("_", " ");
@@ -179,10 +182,10 @@
 					var fuel = e.features[0].properties["fuel"];
 
 					var html = `
-						<b> ` + name + `</b><br>
-						Fuel: ` + fuel + `
-						<br><p>Click for more details.</p>
-					`;
+							<b> ` + name + `</b><br>
+							Fuel: ` + fuel + `
+							<br><p>Click for more details.</p>
+						`;
 					popup.setLngLat(coordinates).setHTML(html).addTo(map);
 				}
 			});
@@ -217,11 +220,11 @@
 			});
 		});
 
-		// Register the power layer 
+		// Register the power layer
 		registerLayer("Power Generation", ["power"], null, (currentLayer == "power"));
 		registerLayer("SDG Indicator", ["indicator"], null, (currentLayer == "indicator"));
 
-		// ============ PLANTS ===========	
+		// ============ PLANTS ===========
 
 		// Build the layer selection tree
 		buildLayerTree("radio");
