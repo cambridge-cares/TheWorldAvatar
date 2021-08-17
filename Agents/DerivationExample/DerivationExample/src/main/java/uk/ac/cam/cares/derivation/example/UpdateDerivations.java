@@ -2,6 +2,8 @@ package uk.ac.cam.cares.derivation.example;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -14,6 +16,7 @@ public class UpdateDerivations extends JPSAgent{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = LogManager.getLogger(UpdateDerivations.class);
 
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -34,6 +37,9 @@ public class UpdateDerivations extends JPSAgent{
 		
 		devClient.updateDerivation(InstancesDatabase.DerivedDifference);
 		devClient.updateDerivation(InstancesDatabase.DerivedAverage);
+		
+		String res_msg = "Updated derivation of difference <" + InstancesDatabase.DerivedDifference + "> and derivation of average <" + InstancesDatabase.DerivedAverage + ">";
+		LOGGER.info(res_msg);
 		
 		JSONObject response = new JSONObject();
 		response.put("status", "Updated derivation of difference <" + InstancesDatabase.DerivedDifference + "> and derivation of average <" + InstancesDatabase.DerivedAverage + ">");

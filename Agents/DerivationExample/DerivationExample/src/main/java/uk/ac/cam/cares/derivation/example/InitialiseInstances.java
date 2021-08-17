@@ -9,8 +9,8 @@ import java.util.Random;
 import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
@@ -41,7 +41,7 @@ public class InitialiseInstances extends JPSAgent{
 	private static String average_agent_iri = SparqlClient.namespace + "average_agent";
  	private static String average_agent_url = baseURL + AverageAgent.URL_AVERAGE;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(InitialiseInstances.class);
+	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
     
 	@Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -62,41 +62,41 @@ public class InitialiseInstances extends JPSAgent{
     	// the timestamp added using addTimeInstance is 0, this will ensure that the input is current
     	devClient.updateTimestamp(input);
     	createInputTimeSeries(input, tsClient);
-    	LOGGER.info("created input " + input);
+    	LOGGER.info("created input <" + input + ">");
     	InstancesDatabase.Input = input;
     	
     	String min_property = sparqlClient.createMinValue();
     	String min_value = sparqlClient.addValueInstance(min_property, 0);
-    	LOGGER.info("created min value " + min_property);
+    	LOGGER.info("created min value <" + min_property + ">");
     	
     	String max_property = sparqlClient.createMaxValue();
     	String max_value = sparqlClient.addValueInstance(max_property, 0);
-    	LOGGER.info("created max value " + max_property);
+    	LOGGER.info("created max value <" + max_property + ">");
     	
     	String diff_property = sparqlClient.createDifference();
     	String diff_value = sparqlClient.addValueInstance(diff_property, 0);
-    	LOGGER.info("created calculated difference " + diff_property);
+    	LOGGER.info("created calculated difference <" + diff_property + ">");
     	
     	String average = sparqlClient.createAverage();
-    	LOGGER.info("created average " + average);
+    	LOGGER.info("created average <" + average + ">");
     	tsClient.initTimeSeries(Arrays.asList(average), Arrays.asList(Double.class), null);
-    	LOGGER.info("initialise a table for average values");
+    	LOGGER.info("initialised a table for average values");
     	InstancesDatabase.Average = average;
     	
     	// create 3 standard derived quantities
     	String derived_minvalue = devClient.createDerivation(Arrays.asList(min_property,min_value), minvalue_agent_iri, minvalue_agent_url, Arrays.asList(input));
-    	LOGGER.info("created derived quantity for min value " + derived_minvalue);
+    	LOGGER.info("created derived quantity for min value <" + derived_minvalue + ">");
     	
     	String derived_maxvalue = devClient.createDerivation(Arrays.asList(max_property,max_value), maxvalue_agent_iri, maxvalue_agent_url, Arrays.asList(input));
-    	LOGGER.info("created derived quantity for max value " + derived_maxvalue);
+    	LOGGER.info("created derived quantity for max value <" + derived_maxvalue + ">");
     	
     	String derived_difference = devClient.createDerivation(Arrays.asList(diff_property,diff_value), difference_agent_iri, difference_agent_url, Arrays.asList(min_property,max_property));
-    	LOGGER.info("created derived quantity for calculated difference " + derived_difference);
+    	LOGGER.info("created derived quantity for calculated difference <" + derived_difference + ">");
     	InstancesDatabase.DerivedDifference = derived_difference;
     	
     	// average is a derivation with a time series
     	String derived_average = devClient.createDerivationWithTimeSeries(Arrays.asList(average), average_agent_iri, average_agent_url, Arrays.asList(input));
-    	LOGGER.info("created derivation for average " + derived_average);
+    	LOGGER.info("created derivation for average <" + derived_average + ">");
     	InstancesDatabase.DerivedAverage = derived_average;
     	
     	// check all connections between the derived quantities
