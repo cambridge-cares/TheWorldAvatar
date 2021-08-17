@@ -486,10 +486,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+from cop_equation import COP
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -513,6 +510,7 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -608,9 +606,9 @@ def return_geo_df(month,uptake,temp_var_type):
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
+    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
@@ -716,8 +714,7 @@ def return_geo_df(month,uptake,temp_var_type):
     return my_geo_df
 
 # define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
-uptake = 0.5 
+temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
 
 
 print('Change of projection completed!')
@@ -746,7 +743,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         ABCDE
         ABCDE
         '''
-    fig = plt.figure(figsize=(11,4))
+    fig = plt.figure(figsize=(11,5))
     axs = fig.subplot_mosaic(mosaic)    
     UK_gdf = gpd.read_file("GBR_adm2.shp")
     UK_gdf = UK_gdf.to_crs("EPSG:3395")
@@ -769,7 +766,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         axs[plot_names[it]].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
         axs[plot_names[it]].set_xlim(([boundary[0]-5E4,boundary[2]]))
 
-        plt.subplots_adjust(left=0.112,right=0.836)
+        plt.subplots_adjust(left=0.075,right=0.836)
         if plot_names[it] == 'E':
             cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
             tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
@@ -778,7 +775,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
                 legend=True,\
                 norm = divnorm,\
                 cax=cax,
-                legend_kwds={'label':'Peak Electrical Power (kWh)'})  
+                legend_kwds={'label':'Monthly Electrical Power Consumption (kWh/month)'})  
             cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
         else:
             tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
@@ -793,9 +790,8 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         axs[plot_names[it]].spines["left"].set_visible(False)
         axs[plot_names[it]].spines["bottom"].set_visible(False)
 
-
-    plt.savefig('figure_output/peak_power_nationwide.png') 
-    plt.savefig('figure_output/peak_power_nationwide.pdf') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/peak_power_nationwide.png') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/peak_power_nationwide.pdf') 
 
     
 

@@ -396,10 +396,7 @@ def query_poly(limit):
 
     return LSOA_shapes
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+from cop_equation import COP
 
 
 
@@ -552,11 +549,11 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
         monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
-
 
 # vector of TOTAL electricity consumption in 2019 by month
 # used to scale yearly LSOA values
@@ -592,9 +589,9 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
+    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 

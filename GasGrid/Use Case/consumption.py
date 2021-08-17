@@ -486,10 +486,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+from cop_equation import COP
 
 
 # vector of TOTAL gas consumption in 2019 by month

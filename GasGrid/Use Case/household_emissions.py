@@ -485,8 +485,9 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
     
 
-
 from cop_equation import COP
+
+
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -510,7 +511,6 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
-from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -599,48 +599,22 @@ def query_poly(limit):
 
 
 
-def return_geo_df(month,uptake,temp_var_type):
+def dataframe_construction(month,uptake,temp_var_type,complete_df):
     month_str = months[month]
     # getting mean min or max tensor
     temp_tensor = results_tensor[t_dict[temp_var_type],:,:] 
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
     # calculating leftover gas 
-    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
+    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
 
 
-    # importing pickle file if testing but querying from KG if not 
-    shapes_filename = 'pickle_files/shapes_array'
-    if testing == True:
-        LSOA_shapes = call_pickle(shapes_filename)
-    else:
-        LSOA_shapes = save_pickle(query_poly,shapes_filename)
-
-    # check if WKT is valid and 
-    # uploading polygons to Shapely to reduce precision to 5 DP (1m)
-    for i in range(len(LSOA_shapes[:,1])):
-        shape = LSOA_shapes[i,1]
-        try:
-            P = shapely.wkt.loads(shape)
-            LSOA_shapes[i,1] = shapely.wkt.dumps(P,rounding_precision=5)
-        # if shape is invalid do chuff all 
-        except TypeError:
-            nothing = 0 
-        # if the shape is just a number (basically meaningless)
-        # add to index of shapes to be deleted
-        if type(LSOA_shapes[i,1]) == int:
-            del_ind = i 
-
-    # get rid of invalid shapes
-    LSOA_shapes = np.delete(LSOA_shapes,del_ind,axis=0)
-
-    # convert to a dictionary
-    LSOA_shapes = dict(LSOA_shapes)
+    
 
     # Create arrays to extract values from the tensors from 
     # Note the tensors were just to organise everything and make 
@@ -658,7 +632,6 @@ def return_geo_df(month,uptake,temp_var_type):
     cop_values            = np.zeros_like(gas_values,dtype='object')
     emissions             = np.zeros_like(gas_values)
     delta_emissions       = np.zeros_like(gas_values)
-    start_emissions       = np.zeros_like(gas_values)
 
     elec_co = 0.233
     gas_co = 0.184
@@ -667,170 +640,92 @@ def return_geo_df(month,uptake,temp_var_type):
     for i in range(len(gas_values)):
         key = unique_LSOA[i] # getting the key for the specific LSOA
         # finding the respective 'shape'
-        shapes_of_interest[i] = LSOA_shapes[key]
         # assigning gas consumption 
-        gas_values[i] = sum(monthly_gas_tensor[i,:])/meters_tensor[i,0]
+        gas_values[i] = monthly_gas_tensor[i,month]/meters_tensor[i,0]
         # assigning elec consumption 
-        elec_values[i] = sum(monthly_elec_tensor[i,:])/meters_tensor[i,0]
+        elec_values[i] = monthly_elec_tensor[i,month]/elec_meters_tensor[i]
         # assigning temperature value
         temp_values[i] = temp_tensor[i,month]
         # assigning additional electricity
-        delta_elec_values[i] = sum(hp_in_tensor[i,:])/meters_tensor[i,0]
+        delta_elec_values[i] = hp_in_tensor[i,month]/meters_tensor[i,0]
         # assigning COP
         cop_values[i] = cop_tensor[i,month]
         # assigning remaining gas values
-        remaining_gas_values[i] = sum(resulting_gas_tensor[i,:])/meters_tensor[i,0]
+        remaining_gas_values[i] = resulting_gas_tensor[i,month]/meters_tensor[i,0]
         # assigning remaining elec values
         remaining_elec_values[i] = elec_values[i]+delta_elec_values[i]
         # assigning remaining fuel poverty values
         poverty_values[i] = fuel_poor_tensor[i]
-        start_emissions[i] = (gas_values[i]*gas_co + elec_values[i]*elec_co)
+
         emissions[i] = (remaining_elec_values[i]*elec_co) + (remaining_gas_values[i]*gas_co)
 
-        delta_emissions[i] = (emissions[i] - start_emissions[i])
+        delta_emissions[i] = -(emissions[i] - (gas_values[i]*gas_co + elec_values[i]*elec_co))
+    elec_per_kwh = 594 / 3600
+    gas_per_kwh  = 514 / 13600
+    new_df = pd.DataFrame({'LSOA':[]})
+    new_df['Gas (kWh)']    = list(np.around(gas_values,decimals=3))
+    new_df['Electricity (kWh)']   = list(np.around(elec_values,decimals=3))
+    new_df['Fuel Cost Gas'] = (gas_values * gas_co) 
+    new_df['Fuel Cost Elec'] = (elec_values * elec_co)
+    new_df['Fuel Cost'] = (gas_values * gas_co) + (elec_values * elec_co)
+    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
+
+    complete_df = complete_df.append(new_df)  
+
+    return complete_df
 
 
 
-    ## CODE FOR PLOTTING *IN* PYTHON
-
-
-    df = pd.DataFrame(unique_LSOA)
-    df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
-    df['geom_str'] = list([str(x) for x in shapes_of_interest])
-    df['Gas']    = list(np.around(gas_values,decimals=3))
-    df['Gas Emissions'] = list(np.around(gas_co * gas_values,decimals=3)) 
-    df['Electricity']   = list(np.around(elec_values,decimals=3))
-    df['Electricity Emissions']   = list(np.around(elec_co * elec_values,decimals=3))
-    df['Total Emissions'] = list(np.around(elec_co * elec_values + gas_co * gas_values,decimals=3))
-    df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
-    df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
-    df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
-    df['LSOA'] = list(unique_LSOA)
-    df['Electricity Change'] = list(delta_elec_values)
-    df['Temperature'] = list(np.around(temp_values,decimals=3))
-    df['COP'] = list(cop_values)
-    df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
-    delta_elec_values = np.array(delta_elec_values)/np.array(elec_values)
-    scaled_delta_elec = (delta_elec_values-np.mean(delta_elec_values))/(np.std(delta_elec_values))
-    scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
-    inequality = scaled_delta_elec - scaled_fuel_pov
-    df['Inequality Index']   = list(np.around(inequality,decimals=3))
-    df['Emissions'] = list(np.round(emissions,decimals=3))
-    df['Change in Emissions'] = list(np.around(delta_emissions,decimals=3))
-    # specifying geodata frame
-
-    my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
-    my_geo_df = my_geo_df.set_crs("EPSG:4326")
-    print('Converting to Mercator projection (better than WGS84 for UK)')
-    my_geo_df = my_geo_df.to_crs("EPSG:3395")
-
-    return my_geo_df
-
-# define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
-
-
-print('Change of projection completed!')
 #plt.rc('text', usetex=True)
 plt.rc('font', family='sans-serif')
 import os
-from matplotlib.colors import ListedColormap
-from matplotlib import cm
 
-top = cm.get_cmap('coolwarm', 128)
+def plot_box(var):
+    # define min mean or max 
+    min  = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
+    mean = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+    max  ='http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' 
+    temp_vars = [min,mean,max]
+    temp_vars_label = ['Minimum Air Temperature','Mean Air Temperature','Maximum Air Temperature']
+    temp_colors = ['tab:blue','k','tab:orange']
+    months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
 
-newcolors = np.vstack((top(np.linspace(0, 1, 128)),
-                       np.flip(top(np.linspace(0, 1, 128)),axis=0)))
+    temp_var_type = temp_vars[0]
 
-newcmp = ListedColormap(newcolors, name='ineq')
+    # define amount of heat pump uptake 
+    uptake = 1
+    df_box = pd.DataFrame({'Gas' : []})
+    complete_df = pd.DataFrame({'Gas' : []})
+    for i in tqdm(range(12)):
+        complete_df = dataframe_construction(i,uptake,temp_var_type,complete_df)
+    flierprops = dict(markerfacecolor='k', markersize=0.05,
+                  linestyle='none', markeredgecolor='k')
 
-vars      = ['Change in Emissions']
-var_names = ['Change in Emissions (kgCO$_2$eq)']
+    fig,axs = plt.subplots(1,1,figsize=(5,3))
+    plt.tight_layout()
+    #ax_box = sb.boxplot(y=complete_df['Fuel Cost'],x=complete_df['Month (2019)'],fliersize=0.05,whis=2,linewidth=1.2,ax=axs,color='w',flierprops=flierprops)
+    sb.lineplot(x=complete_df['Month (2019)'], y=complete_df['Fuel Cost'], data=complete_df.groupby('Fuel Cost', as_index=False).median(),color='k',linewidth=2,ax=axs,label='Total')
+    sb.lineplot(x=complete_df['Month (2019)'], y=complete_df['Fuel Cost Gas'], data=complete_df.groupby('Fuel Cost Gas', as_index=False).median(),color='k',linewidth=2,ax=axs,label='Gas')
+    sb.lineplot(x=complete_df['Month (2019)'], y=complete_df['Fuel Cost Elec'], data=complete_df.groupby('Fuel Cost Elec', as_index=False).median(),color='k',linewidth=2,ax=axs,label='Electricity')
+    axs.lines[1].set_linestyle("dashed")
+    axs.lines[2].set_linestyle("dotted")
+    axs.legend(frameon=False)
+    # for i,box in enumerate(ax_box.artists):
+    #     box.set_edgecolor('black')
+    #     box.set_facecolor('white')
+    #     # iterate over whiskers and median lines
+    #     for j in range(6*i,6*(i+1)):
+    #         ax_box.lines[j].set_color('black')
 
-def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
-    print('Beginning plot...')
-    color_theme = 'coolwarm'
-    my_geo_df = return_geo_df(month,uptake,temp_var_type)
+    med_gas = np.median(complete_df['Fuel Cost'].values)
+    left,right = axs.get_xlim()
+    plt.subplots_adjust(left=0.175)
+    axs.set_xticklabels(months_letter)
+    axs.set_xlabel('')
+    axs.set_ylabel('Emissions \n (kgCO$_2$eq/month/household)')
 
-    # ADD UP EMISSIONS HERE 
-    mosaic = '''
-        A
-        A
-        '''
-    fig = plt.figure(figsize=(11,7))
-    axs = fig.subplot_mosaic(mosaic)    
-    UK_gdf = gpd.read_file("GBR_adm2.shp")
-    UK_gdf = UK_gdf.to_crs("EPSG:3395")
-    UK_gdf.boundary.plot(ax=axs['A'],color='k',linewidth=0.5)
-    boundary = my_geo_df.bounds
-    boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
-    axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
-    axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]]))
-    #plt.subplots_adjust(left=0)
-    cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
-    val_values = my_geo_df[vars[0]].values
-    iqr = st.iqr(val_values)
-    q1,q3 = st.mstats.idealfourths(val_values)
-    bottom = q1-1.5*iqr
-    top = q3 +1.5*iqr
-    divnorm = cl.Normalize(vmin=bottom, vmax=top)
-    axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
-    axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
-    tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
-        antialiased=False,\
-        ax = axs['A'],\
-        legend=True,\
-        norm = divnorm,\
-        cax=cax,
-        legend_kwds={'label':'Change in Emissions (kgCO$_2$eq/year/household)'})  
-    #cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
-    axs['A'].set_xticks([])
-    axs['A'].set_yticks([])
-    axs['A'].spines["top"].set_visible(False)
-    axs['A'].spines["right"].set_visible(False)
-    axs['A'].spines["left"].set_visible(False)
-    axs['A'].spines["bottom"].set_visible(False)
+    plt.savefig('figure_output/household_emissions.png')
+    plt.savefig('figure_output/household_emissions.pdf')
 
-
-
-    # axs[i].set_xlabel('Longitude')
-    # axs[i].set_ylabel('Latitude')
-    order = [4,3,2,1]
-    loc1 = [1,2,2,1]
-    loc2 = [3,3,3,4]
-    names = ['Greater Manchester','North East','London','South West']
-
-    for f in range(4):
-        if f == 0 or f == 1:
-            axins2 = inset_axes(axs['A'], width=4, height=2.5,
-                    bbox_to_anchor=(0.5, 0.3),
-                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
-        else:
-            axins2 = inset_axes(axs['A'], width=4, height=2.5,
-                    bbox_to_anchor=(0.5, 0.5),
-                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
-        plt.subplots_adjust(bottom = 0.225,left=0.07)
-        plt.setp(axins2.get_xticklabels(), visible=False)
-        plt.setp(axins2.get_yticklabels(), visible=False)
-        UK_gdf.boundary.plot(ax=axins2,color='k',linewidth=0.5)
-        axins2.set_xticks([])
-        axins2.set_title(str(names[f]))
-        axins2.set_yticks([])
-        axins2.set_ylim(axs_ybounds[f])
-        axins2.set_xlim(axs_xbounds[f])
-        my_geo_df.plot(column=vars[0],cmap=color_theme,\
-                antialiased=False,\
-                ax = axins2,\
-                norm = divnorm)
-        mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
-    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/change_in_emissions.png') 
-    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/change_in_emissions.pdf') 
-
-    
-
-    
-    return 
-    
-inset = False
-plot_variables(vars,var_names,inset,7,1,temp_var_type)
+var = "COP"
+plot_box(var)

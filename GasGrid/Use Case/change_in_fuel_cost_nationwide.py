@@ -486,10 +486,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+from cop_equation import COP
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -513,6 +510,7 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -608,9 +606,9 @@ def return_geo_df(month,uptake,temp_var_type):
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
+    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
@@ -689,7 +687,7 @@ def return_geo_df(month,uptake,temp_var_type):
         # assigning additional electricity
         delta_elec_values[i] = sum(hp_in_tensor[i,:])/meters_tensor[i,0]
         # assigning COP
-        cop_values[i] = cop_tensor[i,month]
+        cop_values[i] = np.mean(cop_tensor[i,:])
         # assigning remaining gas values
         remaining_gas_values[i] = sum(resulting_gas_tensor[i,:])/meters_tensor[i,0]
 
@@ -699,10 +697,7 @@ def return_geo_df(month,uptake,temp_var_type):
         # assigning remaining fuel poverty values
         poverty_values[i] = fuel_poor_tensor[i]
         start_emissions[i] = (gas_values[i]*gas_co + elec_values[i]*elec_co)
-        emissions[i] = (remaining_elec_values[i]*elec_co) + (remaining_gas_values[i]*gas_co)
-
-        delta_emissions[i] = (emissions[i] - start_emissions[i])
-
+        delta_emissions[i] = (delta_elec_values[i]*elec_co) + (delta_gas_values[i]*gas_co)
         delta_cost[i] = (delta_elec_values[i]*elec_per_kwh) + (delta_gas_values[i]*gas_per_kwh)
 
 
@@ -730,9 +725,10 @@ def return_geo_df(month,uptake,temp_var_type):
     scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
     inequality = scaled_delta_elec - scaled_fuel_pov
     df['Inequality Index']   = list(np.around(inequality,decimals=3))
-    df['Emissions'] = list(np.round(emissions,decimals=3))
     df['Change in Emissions'] = list(np.around(delta_emissions,decimals=3))
     df['Change in Fuel Cost'] = list(delta_cost)
+
+    pd.DataFrame(df['COP']).to_csv('seasonal_cop.csv')
     # specifying geodata frame
 
     my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
@@ -744,7 +740,6 @@ def return_geo_df(month,uptake,temp_var_type):
 
 # define min mean or max 
 temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
-uptake = 0.5 
 
 
 print('Change of projection completed!')
@@ -763,6 +758,9 @@ newcmp = ListedColormap(newcolors, name='ineq')
 
 vars      = ['Change in Fuel Cost']
 var_names = ['Change in Fuel Cost']
+
+
+
 
 def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     print('Beginning plot...')
@@ -790,7 +788,8 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     q1,q3 = st.mstats.idealfourths(val_values)
     bottom = q1-1.5*iqr
     top = q3 +1.5*iqr
-    divnorm = cl.Normalize(vmin=-200, vmax=-60)
+
+    divnorm = cl.Normalize(vmin=bottom, vmax=top)
     axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
     axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
     tl  = my_geo_df.plot(column=vars[0],cmap=color_theme,\
@@ -799,7 +798,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         legend=True,\
         norm = divnorm,\
         cax=cax,
-        legend_kwds={'label':'Change in Fuel Cost (£/year/household)','ticks':[-60,-80,-100,-120,-140,-160,-180,-200]})  
+        legend_kwds={'label':'Change in Fuel Cost (£/year/household)'})  
     #cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
     axs['A'].set_xticks([])
     axs['A'].set_yticks([])
@@ -807,7 +806,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     axs['A'].spines["right"].set_visible(False)
     axs['A'].spines["left"].set_visible(False)
     axs['A'].spines["bottom"].set_visible(False)
-    cax.set_yticklabels(['> -60','-80','-100','-120','-140','-160','-180','< -200'])
+    #ax.set_yticklabels(['> 20','10','0','-10','-20','-30','< -40'])
 
     # axs[i].set_xlabel('Longitude')
     # axs[i].set_ylabel('Latitude')
@@ -839,8 +838,8 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
                 ax = axins2,\
                 norm = divnorm)
         mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
-    plt.savefig('figure_output/change_in_fuel_cost.png') 
-    plt.savefig('figure_output/change_in_fuel_cost.pdf') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/change_in_fuel_cost.png') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/change_in_fuel_cost.pdf') 
 
     
 

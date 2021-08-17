@@ -206,7 +206,7 @@ def region_fuel_pov_query(limit):
         PREFIX ons:     <http://statistics.data.gov.uk/id/statistical-geography/>
         PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
 
-    SELECT ?s (xsd:float(?a)/xsd:float(?b) AS ?result)
+    SELECT ?s (xsd:float(?a)/xsd:float(?b) AS ?result) ?b 
     WHERE
     {       
     ?s rdf:type ons_t:Statistical-Geography;
@@ -460,22 +460,21 @@ for j in tqdm(range(len(elec_meters_results[:,0]))):
 
 # PARSING FUEL POVERTY INTO TENSOR
 # --------------------------------#
-# iterating over meters results query
+# iterating over poverty results query
 for j in tqdm(range(len(fuel_poor_results[:,0]))):
     # try to identify LSOA key
     try:
         fuel_poor_lsoa_ind = lsoa_dict[fuel_poor_results[j,0]]
-        fuel_poor_tensor[fuel_poor_lsoa_ind] = fuel_poor_results[j,1]
+        fuel_poor_tensor[fuel_poor_lsoa_ind] = float(fuel_poor_results[j,2])
     except KeyError:
         print('No fuel poverty data for ',fuel_poor_results[j,0].split('/')[-1])
     
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+
+
+from cop_equation import COP
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -499,6 +498,7 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -538,66 +538,10 @@ def return_geo_df(month,uptake,temp_var_type):
     # caluclating converted gas to electricity via HP
     hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * uptake
+    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
-
-    # Querying Polygons from KG to construct geoJSON
-    def query_poly(limit):
-        '''
-        Querying the KG for all regions gas-usages in 2019 
-        '''
-        if limit == False:
-            limit = str(100000000)
-        limit = str(limit)
-        # clearing terminal
-        os.system('clear')
-        
-
-        query='''
-        PREFIX rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX ons_t:    <http://statistics.data.gov.uk/def/statistical-geography#>
-        PREFIX gsp:     <http://www.opengis.net/ont/geosparql#>
-
-        SELECT ?s ?geom
-        WHERE
-        {       
-        ?s rdf:type ons_t:Statistical-Geography.
-        OPTIONAL{ ?s gsp:hasGeometry ?o.
-                ?o gsp:asWKT ?geom}
-        }
-        '''
-        DEF_NAMESPACE = 'ontogasgrid'
-        LOCAL_KG = "http://localhost:9999/blazegraph"
-        LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-
-        sparql = SPARQLWrapper(LOCAL_KG_SPARQL)
-        sparql.setMethod(POST) # POST query, not GET
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        print('Starting Gas Usage Query...')
-        start = time.time()
-        ret = sparql.query().convert()
-        end = time.time()
-        print('Finished in a time of ',np.round(end-start,3),' seconds')
-
-        # parsing JSON into an array 
-        values = ret['results']['bindings']
-        head = ret['head']['vars']
-        res_array = np.zeros((len(values)+1,len(head)),dtype='object')
-        res_array[0,:] = head
-        i = 1
-        for row in values:
-            j = 0 
-            for val in row.values():
-                res_array[i,j] = val['value']
-                j += 1 
-            i += 1 
-
-        LSOA_shapes = res_array[1:,:]
-
-        return LSOA_shapes
 
 
     # importing pickle file if testing but querying from KG if not 
@@ -642,38 +586,43 @@ def return_geo_df(month,uptake,temp_var_type):
     delta_elec_values     = np.zeros_like(gas_values)
     shapes_of_interest    = np.zeros_like(gas_values,dtype='object')
     cop_values            = np.zeros_like(gas_values,dtype='object')
+    emissions             = np.zeros_like(gas_values)
+    delta_emissions       = np.zeros_like(gas_values)
+    start_emissions       = np.zeros_like(gas_values)
 
-
+    elec_co = 0.233
+    gas_co = 0.184
+    # https://bulb.co.uk/carbon-tracker/
     # going over all the gas values
     for i in range(len(gas_values)):
         key = unique_LSOA[i] # getting the key for the specific LSOA
         # finding the respective 'shape'
         shapes_of_interest[i] = LSOA_shapes[key]
         # assigning gas consumption 
-        gas_values[i] = monthly_gas_tensor[i,month]
+        gas_values[i] = sum(monthly_gas_tensor[i,:])/meters_tensor[i,0]
         # assigning elec consumption 
-        elec_values[i] = monthly_elec_tensor[i,month]
+        elec_values[i] = sum(monthly_elec_tensor[i,:])/meters_tensor[i,0]
         # assigning temperature value
         temp_values[i] = temp_tensor[i,month]
         # assigning additional electricity
-        delta_elec_values[i] = hp_in_tensor[i,month]
+        delta_elec_values[i] = sum(hp_in_tensor[i,:])/meters_tensor[i,0]
         # assigning COP
         cop_values[i] = cop_tensor[i,month]
         # assigning remaining gas values
-        remaining_gas_values[i] = resulting_gas_tensor[i,month]
+        remaining_gas_values[i] = sum(resulting_gas_tensor[i,:])/meters_tensor[i,0]
         # assigning remaining elec values
-        remaining_elec_values[i] = resulting_elec_tensor[i,month]
+        remaining_elec_values[i] = elec_values[i]+delta_elec_values[i]
         # assigning remaining fuel poverty values
         poverty_values[i] = fuel_poor_tensor[i]
+        start_emissions[i] = (gas_values[i]*gas_co + elec_values[i]*elec_co)
+        emissions[i] = (remaining_elec_values[i]*elec_co) + (remaining_gas_values[i]*gas_co)
+
+        delta_emissions[i] = (emissions[i] - start_emissions[i])
 
 
 
     ## CODE FOR PLOTTING *IN* PYTHON
 
-    elec_co = 0.233
-    gas_co = 0.184
-
-    # https://bulb.co.uk/carbon-tracker/
 
     df = pd.DataFrame(unique_LSOA)
     df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
@@ -696,16 +645,14 @@ def return_geo_df(month,uptake,temp_var_type):
     scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
     inequality = scaled_delta_elec - scaled_fuel_pov
     df['Inequality Index']   = list(np.around(inequality,decimals=3))
-    df['Emissions'] = ((np.array(remaining_gas_values)*gas_co)+(np.array(remaining_elec_values)*elec_co)) 
-    df['Change in Emissions'] = df['Emissions'].to_numpy() - (df['Gas'].to_numpy()*gas_co + df['Electricity'].to_numpy()*elec_co) 
-
+    df['Emissions'] = list(np.round(emissions,decimals=3))
+    df['Change in Emissions'] = list(np.around(delta_emissions,decimals=3))
     # specifying geodata frame
 
     my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
     my_geo_df = my_geo_df.set_crs("EPSG:4326")
     print('Converting to Mercator projection (better than WGS84 for UK)')
     my_geo_df = my_geo_df.to_crs("EPSG:3395")
-
     my_geo_df = my_geo_df[my_geo_df['Percentage Fuel Poor'] > 0.001]
     return my_geo_df
 

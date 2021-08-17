@@ -396,11 +396,7 @@ def query_poly(limit):
 
     return LSOA_shapes
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
-
+from cop_equation import COP
 
 
 unique_LSOA = np.unique(all_results[:,0]) # Get unique LSOA keys
@@ -471,8 +467,7 @@ for j in tqdm(range(len(gas_results[:,0]))):
         gas_lsoa_ind = lsoa_dict[gas_results[j,0]]
         gas_tensor[gas_lsoa_ind] = gas_results[j,1]
     except KeyError: # if it doesn't exist...
-        print('No gas data for ',gas_results[j,0].split('/')[-1])
-
+        error = 0 
 
 # PARSING METERS INTO TENSOR
 # --------------------------------#
@@ -483,7 +478,7 @@ for j in tqdm(range(len(meters_results[:,0]))):
         gas_lsoa_ind = lsoa_dict[meters_results[j,0]]
         meters_tensor[gas_lsoa_ind,0] = int(meters_results[j,1])
     except KeyError:
-        print('No gas meter data for ',meters_results[j,0].split('/')[-1])
+        error = 0
     # first is consuming gas meters
     # second is non-consuming 
     if meters_results[j,2] != '-':
@@ -501,8 +496,7 @@ for j in tqdm(range(len(elec_results[:,0]))):
         gas_lsoa_ind = lsoa_dict[elec_results[j,0]]
         elec_tensor[gas_lsoa_ind] = elec_results[j,1]
     except KeyError: # if it doesn't exist...
-        print('No electricity data for ',elec_results[j,0].split('/')[-1])
-
+        error = 0 
 
 # PARSING ELECTRICITY METERS INTO TENSOR
 # --------------------------------#
@@ -513,8 +507,7 @@ for j in tqdm(range(len(elec_meters_results[:,0]))):
         elec_lsoa_ind = lsoa_dict[elec_meters_results[j,0]]
         elec_meters_tensor[elec_lsoa_ind] = int(elec_meters_results[j,1])
     except KeyError:
-        print('No electricity meter data for ',elec_meters_results[j,0].split('/')[-1])
-    
+        error = 0     
 
 # PARSING FUEL POVERTY INTO TENSOR
 # --------------------------------#
@@ -525,8 +518,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
         fuel_poor_lsoa_ind = lsoa_dict[fuel_poor_results[j,0]]
         fuel_poor_tensor[fuel_poor_lsoa_ind] = fuel_poor_results[j,1]
     except KeyError:
-        print('No fuel poverty data for ',fuel_poor_results[j,0].split('/')[-1])
-    
+        error = 0     
     
 
 
@@ -552,6 +544,7 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -584,17 +577,16 @@ for i in range(len(elec_tensor)):
 
 
 
-def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
-    month_str = months[month]
+def dataframe_construction(temp_var_type,uptake):
 
     # getting mean min or max tensor
     temp_tensor = results_tensor[t_dict[temp_var_type],:,:] 
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
+    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
@@ -622,20 +614,10 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     for i in range(len(gas_values)):
         key = unique_LSOA[i] # getting the key for the specific LSOA
         # finding the respective 'shape'
-        # assigning gas consumption 
-        gas_values[i] = monthly_gas_tensor[i,month]
-        # assigning elec consumption 
-        elec_values[i] = monthly_elec_tensor[i,month]
-        # assigning temperature value
-        temp_values[i] = temp_tensor[i,month]
-        # assigning additional electricity
-        delta_elec_values[i] = hp_in_tensor[i,month]
-        # assigning COP
-        cop_values[i] = cop_tensor[i,month]
         # assigning remaining gas values
-        remaining_gas_values[i] = resulting_gas_tensor[i,month]
+        remaining_gas_values[i] = sum(resulting_gas_tensor[i,:])
         # assigning remaining elec values
-        remaining_elec_values[i] = resulting_elec_tensor[i,month]
+        remaining_elec_values[i] = sum(resulting_elec_tensor[i,:])
         # assigning remaining fuel poverty values
         poverty_values[i] = fuel_poor_tensor[i]
 
@@ -657,50 +639,15 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
     # new_df['remaining_elec']   = list(np.around(remaining_elec_values,decimals=3))
     # new_df['month'] = list(np.array([month_str for i in range(len(gas_values))]))
     # df = df.append(new_df)
-
-    new_df = pd.DataFrame({'LSOA':[]})
-    new_df['Gas']    = list(np.around(gas_values,decimals=3))
-    new_df['Electricity']   = list(np.around(elec_values,decimals=3))
-    new_df['Usage']  = list(np.array(['Original' for i in range(len(gas_values))])) 
-    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
-    df_box = df_box.append(new_df)  
-
-    new_df = pd.DataFrame({'LSOA':[]})
-    new_df['Gas']    = list(np.around(remaining_gas_values,decimals=3))
-    new_df['Electricity']   = list(np.around(remaining_elec_values,decimals=3))
-    new_df['Usage']  = list(np.array(['Transition' for i in range(len(gas_values))])) 
-    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
-    df_box = df_box.append(new_df)  
  
     elec_co = 0.233
     gas_co = 0.184
 
     new_df = pd.DataFrame({'LSOA':[]})
-    new_df['Gas']    = list(np.around(gas_values,decimals=3))
-    new_df['Gas Emissions'] = list(np.around(gas_co * gas_values,decimals=3)) 
-    new_df['Electricity']   = list(np.around(elec_values,decimals=3))
-    new_df['Electricity Emissions']   = list(np.around(elec_co * elec_values,decimals=3))
-    new_df['Total Emissions'] = list(np.around(elec_co * elec_values + gas_co * gas_values,decimals=3))
-    new_df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
-    new_df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
-    #new_df['Final Emissions'] = list((new_df['Remaining Gas'].values * gas_co) + (new_df['Remaining Electricity'].values * elec_co))
-    new_df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
-    new_df['LSOA'] = list(unique_LSOA)
-    new_df['Electricity Change'] = list(delta_elec_values)
-    new_df['Temperature'] = list(np.around(temp_values,decimals=3))
-    new_df['COP'] = list(cop_values)
-    new_df['Percentage Fuel Poor'] = list(np.around(100*poverty_values,decimals=3))
-    delta_elec_values = np.array(delta_elec_values)/np.array(elec_values)
-    scaled_delta_elec = (delta_elec_values-np.mean(delta_elec_values))/(np.std(delta_elec_values))
-    scaled_fuel_pov = (poverty_values-np.mean(poverty_values))/(np.std(poverty_values)) 
-    inequality = scaled_delta_elec - scaled_fuel_pov
-    new_df['Inequality Index']   = list(np.around(inequality,decimals=3))
     new_df['Emissions'] = ((np.array(remaining_gas_values)*gas_co)+(np.array(remaining_elec_values)*elec_co)) 
-    new_df['Change in Emissions'] = new_df['Emissions'].to_numpy() - (new_df['Gas'].to_numpy()*gas_co + new_df['Electricity'].to_numpy()*elec_co) 
 
-    complete_df = complete_df.append(new_df)  
 
-    return df_box, complete_df
+    return new_df
 
 
 
@@ -718,7 +665,7 @@ def plot_var_annual_uptake_with_temps():
     temp_colors = ['tab:blue','tab:orange','k']
     styles = ['solid','dashed','dotted']
     months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
-    plt.figure(figsize=(4,3))
+    plt.figure(figsize=(5,3.5))
     plt.xlabel('% Uptake')
     plt.ylabel('Emissions (kgCO$_2$eq/year)')
     uptakes = [0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1]
@@ -726,24 +673,21 @@ def plot_var_annual_uptake_with_temps():
     for u in range(len(uptakes)):
         for j in range(len(temp_vars)):
             temp_var_type = temp_vars[j]
-            # define amount of heat pump uptake 
-            df_box = pd.DataFrame({'Gas' : []})
-            complete_df = pd.DataFrame({'Gas' : []})
-            for i in tqdm(range(12)):
-                df_box, complete_df = dataframe_construction(temp_var_type,uptakes[u],i,df_box,complete_df)
-            co_sum = []
-            for i in range(len(months)):
-                temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
-                co_sum.append(sum(list(temp_df['Emissions'].values)))
+
+            complete_df = dataframe_construction(temp_var_type,uptakes[u])
+
+            co_sum = complete_df['Emissions'].values
             
             results_co[u,j] = sum(co_sum)
             
     plt.plot((np.array(uptakes)*100).astype(int),results_co[:,1],c='k')
     plt.fill_between((np.array(uptakes)*100).astype(int),results_co[:,0],results_co[:,2],color='k',alpha=0.1)
+    print('PERCENTAGE DIFFERENCE WITHIN BOUNDS (CO2): ',((results_co[-1,0]-results_co[-1,2])/results_co[-1,1])*100)
+    print('FINAL VALUE (CO2): ',results_co[-1,1])
     plt.tight_layout()
-    plt.savefig('figure_output/carbon_uptake.pdf')
-    plt.savefig('figure_output/carbon_uptake.png')
-
+    plt.subplots_adjust(left = 0.127)
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/carbon_uptake.png')
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/carbon_uptake.pdf')
 
 
 plot_var_annual_uptake_with_temps()

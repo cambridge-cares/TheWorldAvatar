@@ -1,3 +1,4 @@
+from re import A
 import matplotlib.patches
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from enum import unique
@@ -488,10 +489,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
 
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+from cop_equation import COP
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -515,6 +513,7 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
+from gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
@@ -603,16 +602,15 @@ def query_poly(limit):
 
 
 
-def return_geo_df(month,uptake,temp_var_type):
-    month_str = months[month]
+def return_geo_df(uptake,temp_var_type):
     # getting mean min or max tensor
     temp_tensor = results_tensor[t_dict[temp_var_type],:,:] 
     # calculating COP
     cop_tensor = np.array(list(map(COP, temp_tensor)))      
     # caluclating converted gas to electricity via HP
-    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) 
+    hp_in_tensor = np.divide((uptake*monthly_gas_tensor),cop_tensor) * alpha * nb 
     # calculating leftover gas 
-    resulting_gas_tensor = monthly_gas_tensor  * (1-uptake)
+    resulting_gas_tensor = (alpha * monthly_gas_tensor  * (1-uptake)) + ((1-alpha)*monthly_gas_tensor)
     # calculating resulting electricity 
     resulting_elec_tensor = monthly_elec_tensor + hp_in_tensor
 
@@ -665,7 +663,7 @@ def return_geo_df(month,uptake,temp_var_type):
     delta_emissions       = np.zeros_like(gas_values)
     start_emissions       = np.zeros_like(gas_values)
     delta_cost            = np.zeros_like(gas_values)
-    inequality_index      = np.zeros_like(gas_values)
+    
 
     elec_co = 0.233
     gas_co = 0.184
@@ -683,12 +681,8 @@ def return_geo_df(month,uptake,temp_var_type):
         gas_values[i] = sum(monthly_gas_tensor[i,:])/meters_tensor[i,0]
         # assigning elec consumption 
         elec_values[i] = sum(monthly_elec_tensor[i,:])/meters_tensor[i,0]
-        # assigning temperature value
-        temp_values[i] = temp_tensor[i,month]
         # assigning additional electricity
         delta_elec_values[i] = sum(hp_in_tensor[i,:])/meters_tensor[i,0]
-        # assigning COP
-        cop_values[i] = cop_tensor[i,month]
         # assigning remaining gas values
         remaining_gas_values[i] = sum(resulting_gas_tensor[i,:])/meters_tensor[i,0]
 
@@ -705,15 +699,6 @@ def return_geo_df(month,uptake,temp_var_type):
         delta_cost[i] = (delta_elec_values[i]*elec_per_kwh) + (delta_gas_values[i]*gas_per_kwh)
 
 
-    min_fp = 0
-    max_fp = 30
-    min_dc = -200
-    max_dc = -60
-    for i in range(len(gas_values)):
-        poverty_values[i] = poverty_values[i] * 100
-        a = ((poverty_values[i]-min_fp)/(max_fp-min_fp)) 
-        b = ((2*(delta_cost[i]-min_dc))/(max_dc-min_dc))-1
-        inequality_index[i] = a*b
 
 
     ## CODE FOR PLOTTING *IN* PYTHON
@@ -722,60 +707,104 @@ def return_geo_df(month,uptake,temp_var_type):
     df = pd.DataFrame(unique_LSOA)
     df['geometry'] = gpd.GeoSeries.from_wkt(shapes_of_interest)
     df['geom_str'] = list([str(x) for x in shapes_of_interest])
-    df['Gas']    = list(np.around(gas_values,decimals=3))
-    df['Gas Emissions'] = list(np.around(gas_co * gas_values,decimals=3)) 
-    df['Electricity']   = list(np.around(elec_values,decimals=3))
-    df['Electricity Emissions']   = list(np.around(elec_co * elec_values,decimals=3))
-    df['Total Emissions'] = list(np.around(elec_co * elec_values + gas_co * gas_values,decimals=3))
-    df['Remaining Gas']    = list(np.around(remaining_gas_values,decimals=3))
-    df['Remaining Electricity']   = list(np.around(remaining_elec_values,decimals=3))
-    df['Month (2019)'] = list(np.array([month_str for i in range(len(gas_values))]))
     df['LSOA'] = list(unique_LSOA)
-    df['Electricity Change'] = list(delta_elec_values)
-    df['Temperature'] = list(np.around(temp_values,decimals=3))
-    df['COP'] = list(cop_values)
-    df['Percentage Fuel Poor'] = list(np.around(poverty_values,decimals=3))
-    df['Inequality Index']   = list(np.around(inequality_index,decimals=3))
-    df['Emissions'] = list(np.round(emissions,decimals=3))
-    df['Change in Emissions'] = list(np.around(delta_emissions,decimals=3))
+    df['Percentage Fuel Poor'] = list(np.around(poverty_values*100,decimals=3))
     df['Change in Fuel Cost'] = list(delta_cost)
-    # specifying geodata frame  
-    #df.to_csv('results.csv')
+    df = df[df['Percentage Fuel Poor'] > 0.001]
+
+
+
     
+    change_values = df['Change in Fuel Cost'].values
+    poverty_values = df['Percentage Fuel Poor'].values
+    min_fp = 0
+    max_fp = 20
+
+    bottom = np.percentile(change_values,1)
+    top = np.percentile(change_values,99)
+    print('Calculated values for normalisation of change in cost:')
+    print('Lower value: '+str(bottom))
+    print('Upper value: '+str(top))
+
+    min_dc = bottom
+    max_dc = top
+    inequality_index      = np.zeros(len(change_values))
+    for i in range(len(change_values)):
+        a = ((poverty_values[i]-min_fp)/(max_fp-min_fp)) 
+        b = ((2*(change_values[i]-min_dc))/(max_dc-min_dc))-1
+        inequality_index[i] = a*b
+        inequality_index[i] = inequality_index[i] 
+
+    df['Inequality Index']   = list(np.around(inequality_index,decimals=3))
+
     my_geo_df = gpd.GeoDataFrame(df, geometry='geometry')
-    my_geo_df = my_geo_df[my_geo_df['Percentage Fuel Poor'] > 0.001]
+    
 
     my_geo_df = my_geo_df.set_crs("EPSG:4326")
     print('Converting to Mercator projection (better than WGS84 for UK)')
     my_geo_df = my_geo_df.to_crs("EPSG:3395")
 
-    return my_geo_df
-
-# define min mean or max 
-temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+    return my_geo_df,bottom,top,min_fp,max_fp
 
 
-print('Change of projection completed!')
-#plt.rc('text', usetex=True)
-plt.rc('font', family='sans-serif')
-import os
-from matplotlib.colors import ListedColormap
-from matplotlib import cm
-
-top = cm.get_cmap('coolwarm', 128)
-
-newcolors = np.vstack((top(np.linspace(0, 1, 128)),
-                       np.flip(top(np.linspace(0, 1, 128)),axis=0)))
-
-newcmp = ListedColormap(newcolors, name='ineq')
-
-vars      = ['Inequality Index']
-var_names = ['Inequality Index']
-
-def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
+def plot_variables(vars,uptake,temp_var_type):
     print('Beginning plot...')
     color_theme = 'coolwarm'
-    my_geo_df = return_geo_df(month,uptake,temp_var_type)
+    my_geo_df,bottom,top,min_fp,max_fp = return_geo_df(uptake,temp_var_type)
+
+    l1 = 400
+    l2 = 400
+
+    DC_upper = int(round(top))
+    DC_lower = int(round(bottom))
+    FP_lower = min_fp
+    FP_upper = max_fp
+
+    og_bounds = [min(my_geo_df['Change in Fuel Cost']),max(my_geo_df['Change in Fuel Cost'])]
+    max_og_fp = max(my_geo_df['Percentage Fuel Poor'])
+    FP_OG = np.linspace(0,max_og_fp,l1)
+    DC_OG = np.linspace(og_bounds[0],og_bounds[1],l2)
+    FP,DC = np.meshgrid(FP_OG,DC_OG)
+
+    fp = ((FP_OG - FP_lower)/FP_upper-FP_lower)
+    dc = (2*(DC_OG - DC_lower)/((DC_upper-DC_lower)))-1
+
+
+    GRID = np.zeros((l1,l2))
+    for i in range(l1):
+        for j in range(l2):
+            GRID[i,j] = (fp[i] * dc[j])
+            if GRID[i,j] > 1:
+                GRID[i,j] = 1 
+            if GRID[i,j] < -1:
+                GRID[i,j] = -1
+                 
+
+    GRID = GRID.T
+
+    import matplotlib.pylab as pylab
+    params = {'legend.fontsize': 'large',
+            'figure.figsize': (15, 5),
+            'axes.labelsize': 'large',
+            'axes.titlesize':'large',
+            'xtick.labelsize':'large',
+            'ytick.labelsize':'large'}
+    pylab.rcParams.update(params)
+
+    fig,ax = plt.subplots(figsize=(6,4))
+    plt.subplots_adjust(right=0.95,left=0.15,top=0.93,bottom=0.15)
+    CN = ax.contourf(FP,DC,GRID,512,cmap='coolwarm', norm = cl.Normalize(vmin=-1, vmax=1),antialiased=False)
+    ax.set_xlabel('Fuel Poverty (%)')
+    ax.set_ylabel('Change in Cost (£/year/household)')
+    cax = plt.colorbar(CN,ax=ax,ticks=[-1,-0.5,0,0.5,1],label='Inequality Index (-)')
+    cax.ax.set_yticklabels(['< -1','-0.5','0','0.5','> 1'])
+    plt.scatter(my_geo_df['Percentage Fuel Poor'].values,my_geo_df['Change in Fuel Cost'].values,c='k',alpha=0.3,s=0.8)
+    ax.set_ylim(bottom,top)
+    ax.set_xlim(FP_lower,35)
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric_small.png')
+    ax.set_ylim(og_bounds[0],og_bounds[1])
+    ax.set_xlim(0,max_og_fp)
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric.png')
 
     # ADD UP EMISSIONS HERE 
     mosaic = '''
@@ -793,11 +822,6 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
     axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]+1E4]))
     #plt.subplots_adjust(left=0)
     cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
-    val_values = my_geo_df[vars[0]].values
-    iqr = st.iqr(val_values)
-    q1,q3 = st.mstats.idealfourths(val_values)
-    bottom = q1-1.5*iqr
-    top = q3 +1.5*iqr
     divnorm = cl.Normalize(vmin=-1, vmax=1)
     axs_xbounds = [np.array([-2.815E5,-2E5]),np.array([-2.838E5,-1.05E5]),np.array([-3.35E4,9.4E3]),np.array([-6.5E5,-1.957E5])]
     axs_ybounds = [np.array([7.007E6,7.0652E6]),np.array([7.206E6,7.41E6]),np.array([6.656E6,6.6969E6]),np.array([6.39E6,6.78E6])]
@@ -809,7 +833,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
         cax=cax,
         legend_kwds={'label':'Inequality Index (-)','ticks':[-1,-0.5,0,0.5,1]})  
     cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))   
-    cax.set_yticklabels(['-1','-0.5','0','0.5','1'])
+    cax.set_yticklabels(['< -1','-0.5','0','0.5','> 1'])
     axs['A'].set_xticks([])
     axs['A'].set_yticks([])
     axs['A'].spines["top"].set_visible(False)
@@ -849,13 +873,15 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type):
                 ax = axins2,\
                 norm = divnorm)
         mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
-    plt.savefig('figure_output/inequality_nationwide.png') 
-    plt.savefig('figure_output/inequality_nationwide.pdf') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_nationwide.png') 
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_nationwide.pdf') 
 
     
 
     
     return 
-    
-inset = False
-plot_variables(vars,var_names,inset,7,0.5,temp_var_type)
+
+
+temp_var_type = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
+vars      = ['Inequality Index']   
+plot_variables(vars,1,temp_var_type)

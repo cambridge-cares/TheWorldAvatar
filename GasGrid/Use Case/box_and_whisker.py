@@ -485,11 +485,9 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
     
 
+from cop_equation import COP
 
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
+
 
 
 # vector of TOTAL gas consumption in 2019 by month
@@ -733,7 +731,7 @@ def plot_box(var):
     axs[0].ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
     axs[1].ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
    #axs[0].set_yticks(np.array([0.0,1.0E6,2.0E6,3.0E6,4.0E6]))
-
+    plt.legend()
     plt.savefig('figure_output/box_and_whisker.png')
     plt.savefig('figure_output/box_and_whisker.pdf')
 

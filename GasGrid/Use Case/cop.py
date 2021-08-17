@@ -473,13 +473,7 @@ for j in tqdm(range(len(fuel_poor_results[:,0]))):
     
     
 
-
-# Function to calculate heating COP from outside temperature
-# Assumes a heating temp of 35 degrees C and efficiency of 0.5
-def COP(T_c):
-    return 0.5*((35+273.15)/(35-T_c))
-
-
+from cop_equation import COP
 # vector of TOTAL gas consumption in 2019 by month
 # used to scale yearly LSOA values
 # ASSUMPTION: all LSOAs scale proportionately to yearly demand.
@@ -898,20 +892,16 @@ newcolors = np.vstack((top(np.linspace(0, 1, 128)),
 
 newcmp = ListedColormap(newcolors, name='ineq')
 
-vars      = ['Gas','Electricity']
-var_names = ['Gas Consumption','Electricity Consumption']
 
-def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
+
+def plot_variables(month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
     print('Beginning plot...')
     color_theme = 'coolwarm'
     min_t  = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmin'
     mean_t = 'http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tas'
     max_t  ='http://www.theworldavatar.com/kb/ontogasgrid/climate_abox/tasmax' 
     temp_vars = [mean_t,min_t,max_t]
-    temp_vars_label = ['Mean Air Temperature','Minimum Air Temperature','Maximum Air Temperature']
     temp_var_short = ['Mean','Minimum','Maximum']
-    temp_colors = ['tab:blue','tab:orange','k']
-    styles = ['solid','dashed','dotted']
     mosaic = """
     EEEAAAA
     EEEAAAA
@@ -921,11 +911,12 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
     FFFBBCC
     FFFBBCC
     """
-    fig = plt.figure(figsize=(6,7))
+    fig = plt.figure(figsize=(7.5,7))
     axs = fig.subplot_mosaic(mosaic)    
     #plt.subplots_adjust(left=0)
-    cax = fig.add_axes([0.875, 0.1, 0.03, 0.8])
-    plt.subplots_adjust(right=0.857)
+    cax = fig.add_axes([0.75, 0.1, 0.03, 0.8])
+    cax2 = fig.add_axes([0.875, 0.1, 0.03, 0.8])
+    plt.subplots_adjust(right=0.736,left=0.098)
     keys = ['A','B','C']
     for i in range(len(temp_vars)):
         my_geo_df = return_geo_df(month,uptake,temp_vars[i])
@@ -933,22 +924,29 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
         #divider = make_axes_locatable(axs_full)
         #cax1    = divider.append_axes("right", size="5%", pad=0.05)
         if i == 0: 
-            val_values = my_geo_df["Temperature"].values
+            val_values = my_geo_df["COP"].values
             iqr = st.iqr(val_values)
             q1,q3 = st.mstats.idealfourths(val_values)
             bottom = q1-2.5*iqr
             top = q3 +2.5*iqr
             divnorm = cl.Normalize(vmin=bottom, vmax=top)
         if i == 0:
-            tl  = my_geo_df.plot(column="Temperature",cmap=color_theme,\
+            tl  = my_geo_df.plot(column="COP",cmap=color_theme,\
                 antialiased=False,\
                 ax = axs['A'],\
                 legend=True,\
                 norm = divnorm,\
                 cax=cax,
+                legend_kwds={'label':'Coefficient of Performance (-)'})   
+            tl  = my_geo_df.plot(column="COP",cmap=color_theme,\
+                antialiased=False,\
+                ax = axs['A'],\
+                legend=True,\
+                norm = divnorm,\
+                cax=cax2,
                 legend_kwds={'label':'Air Temperature (°C)'})   
         else:
-            tl  = my_geo_df.plot(column="Temperature",cmap=color_theme,\
+            tl  = my_geo_df.plot(column="COP",cmap=color_theme,\
                 antialiased=False,\
                 ax = axs[keys[i]],\
                 legend=False,\
@@ -966,6 +964,10 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
         axs[keys[i]].spines["left"].set_visible(False)
         axs[keys[i]].spines["bottom"].set_visible(False)
         axs[keys[i]].set_title(temp_var_short[i])
+    from cop_equation import T_from_COP
+    ticks = cax2.get_yticks()
+    temp = np.round(np.array(T_from_COP(ticks)),1).astype(str)
+    cax2.set_yticklabels(temp)
     axs['G'].set_xticks([])
     axs['G'].set_yticks([])
     axs['G'].spines["top"].set_visible(False)
@@ -1021,9 +1023,9 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
 
         axs['E'].set_title('LSOA: '+LSOA1.split('/')[-1])
         axs['F'].set_title('LSOA: '+LSOA2.split('/')[-1])
-        COP_lim_top = 16
-        axs['E'].set_ylim(4,COP_lim_top)
-        axs['F'].set_ylim(4,COP_lim_top)
+        COP_lim_top = 6
+        axs['E'].set_ylim(1,COP_lim_top)
+        axs['F'].set_ylim(1,COP_lim_top)
 
         # axs['E'].plot(np.arange(len(var_val1)),var_val1,c='k',linestyle=styles[j],label=temp_vars_label[j])
         # axs['E'].plot(np.arange(len(var_val2)),var_val2,c='k',linestyle=styles[j],alpha=0.1)
@@ -1038,6 +1040,9 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
 
     axs['E'].plot(np.arange(len(var_val1)),median_store1[:,1],c='k')
     axs['F'].plot(np.arange(len(var_val1)),median_store2[:,1],c='k')
+
+    axs['E'].text(0.5,1.25,'SCOP: '+str(np.round(np.mean(median_store1[:,1]),2)))
+    axs['F'].text(0.5,1.25,'SCOP: '+str(np.round(np.mean(median_store2[:,1]),2)))
     axs['F'].fill_between(np.arange(len(var_val1)),median_store2[:,0],median_store2[:,-1],color='k',alpha=0.1)
     axs['E'].scatter([month for i in range(3)],median_store1[month,:],c='r')
     axs['F'].scatter([month for i in range(3)],median_store2[month,:],c='r')
@@ -1060,7 +1065,7 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
     ax0tr = axs['F'].transData # Axis 0 -> Display
     ax1tr = axs['A'].transData
     ptB = figtr.transform(ax0tr.transform((month,median_store2[month,1])))
-    ptE = figtr.transform(ax1tr.transform((3.1E4,6.768E6)))
+    ptE = figtr.transform(ax1tr.transform((-2.1E3,6.74E6)))
     arrow = matplotlib.patches.FancyArrowPatch(ptB,ptE,transform=fig.transFigure,\
         connectionstyle="arc3,rad=-0.2",arrowstyle='->')
     #axins2.set_xticks(np.arange(len(months)),months_letter)
@@ -1074,4 +1079,4 @@ def plot_variables(vars,var_names,inset,month,uptake,temp_var_type,line_var,LSOA
 LSOA1 = 'http://statistics.data.gov.uk/id/statistical-geography/E01019806'
 LSOA2 = 'http://statistics.data.gov.uk/id/statistical-geography/E01004731'
 inset = True
-plot_variables(vars,var_names,inset,5,1,temp_var_type,'COP',LSOA1,LSOA2)
+plot_variables(2,1,temp_var_type,'COP',LSOA1,LSOA2)
