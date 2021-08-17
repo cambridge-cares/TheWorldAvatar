@@ -8,6 +8,7 @@ services:
       context: ./
     volumes:
       - external_maven_repo:/root/.m2
+      - logs:/root/.jps
     ports:  
       - "8001:8000"
       - "8081:8080" 
@@ -54,4 +55,6 @@ volumes:
     name: "postgres_data"
   external_maven_repo:
     name: "external_maven_repo" 
+  logs:
+    name: "logs"
   
