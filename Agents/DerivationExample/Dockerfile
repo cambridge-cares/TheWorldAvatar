@@ -13,6 +13,8 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/DerivationExample
+# change this line to force maven to rebuild the war file
+RUN echo abcd
 RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -U
 #==================================================================================================
 
