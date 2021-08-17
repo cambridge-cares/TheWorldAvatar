@@ -82,7 +82,7 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetInputs() {
 		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		String[] queriedInputs = DerivationSparql.getInputs(mockClient, derivedIRI);
+		List<String> queriedInputs = DerivationSparql.getInputs(mockClient, derivedIRI);
 		
 		for (String queriedInput : queriedInputs) {
 			Assert.assertTrue(inputs.contains(queriedInput));

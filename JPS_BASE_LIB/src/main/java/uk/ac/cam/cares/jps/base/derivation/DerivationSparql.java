@@ -281,7 +281,7 @@ class DerivationSparql{
 	 * @return
 	 */
 	
-	static String[] getInputs(StoreClientInterface kbClient, String derivedQuantity) {
+	static List<String> getInputs(StoreClientInterface kbClient, String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = iri(derivedQuantity).has(isDerivedFrom,input);
@@ -291,10 +291,10 @@ class DerivationSparql{
 		kbClient.setQuery(query.getQueryString());
 		JSONArray queryResult = kbClient.executeQuery();
 		
-		String[] inputs = new String[queryResult.length()];
+		List<String> inputs = new ArrayList<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
-			inputs[i] = queryResult.getJSONObject(i).getString(queryKey);
+			inputs.add(queryResult.getJSONObject(i).getString(queryKey));
 		}
 		
 		return inputs;
