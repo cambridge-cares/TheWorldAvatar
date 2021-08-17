@@ -24,8 +24,8 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -66,7 +66,7 @@ class DerivationSparql{
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
 	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING),iri(OWL.NAMEDINDIVIDUAL));
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(DerivationSparql.class);
+	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
 	/**
 	 * creates a new instance of derived quantity, grouping the given entities under this instance
@@ -96,8 +96,9 @@ class DerivationSparql{
 			if (!hasBelongsTo(kbClient, entity)) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
 			} else {
-				LOGGER.error(entity + " is already part of another derivation");
-				throw new JPSRuntimeException(entity + " is already part of another derivation");
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
 			}
 		}
 		
@@ -150,8 +151,9 @@ class DerivationSparql{
 			if (!hasBelongsTo(kbClient, entity)) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
 			} else {
-				LOGGER.error(entity + " is already part of another derivation");
-				throw new JPSRuntimeException(entity + " is already part of another derivation");
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
 			}
 		}
 		

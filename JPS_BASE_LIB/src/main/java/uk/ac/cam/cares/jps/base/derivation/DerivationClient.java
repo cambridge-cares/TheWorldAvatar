@@ -46,9 +46,9 @@ public class DerivationClient {
     	String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     	DerivationSparql.addTimeInstance(kbClient, createdDerivation);
     	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
-    	LOGGER.debug(entities + " belongsTo <" + createdDerivation + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom " + inputsIRI);
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing " + agentIRI + " located at " + agentURL);
+    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
     	return createdDerivation;
     }
     
@@ -63,9 +63,9 @@ public class DerivationClient {
     	String createdDerivation = DerivationSparql.createDerivationWithTimeSeries(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     	DerivationSparql.addTimeInstance(kbClient, createdDerivation);
     	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
-    	LOGGER.debug(entities + " belongsTo <" + createdDerivation + ">");
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom " + inputsIRI);
-    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing " + agentIRI + " located at " + agentURL);
+    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
     	return createdDerivation;
     }
     
@@ -99,8 +99,7 @@ public class DerivationClient {
 		try {
 			updateDerivation(derivedIRI, graph);
 		} catch (Exception e) {
-			LOGGER.warn(e.getMessage());
-			System.out.println(e.getMessage());
+			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
 	}
@@ -119,8 +118,7 @@ public class DerivationClient {
 			validateDerivation(derived, graph);
 			return true;
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
-			System.out.println(e.getMessage());
+			LOGGER.warn(e.getMessage());
 		    throw new JPSRuntimeException(e);
 		}
 	}
@@ -156,17 +154,18 @@ public class DerivationClient {
 			// at this point, "instance" is a derived instance for sure, any other instances will not go through this code
 			// getInputs queries for <instance> <isDerivedFrom> ?x
 			if (isOutOfDate(instance,inputs)) {
-				LOGGER.info("<" + instance + "> is out-of-date when compared to [" + Arrays.asList(inputs) + "]");
+				LOGGER.info("Updating <" + instance + ">");
+				LOGGER.debug("<" + instance + "> is out-of-date when compared to [" + Arrays.asList(inputs) + "]");
 				// calling agent to create a new instance
 				String agentURL = DerivationSparql.getAgentUrl(kbClient, instance);
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray(inputs);
 				requestParams.put(AGENT_INPUT_KEY, iris);
 				
-				LOGGER.info("Updating <" + instance + "> using agent at <" + agentURL + "> with http request " + requestParams);
+				LOGGER.debug("Updating <" + instance + "> using agent at <" + agentURL + "> with http request " + requestParams);
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 				
-				LOGGER.info("Obtained http response from agent: " + response);
+				LOGGER.debug("Obtained http response from agent: " + response);
 				
 				// if it is a derived quantity with time series, there will be no changes to the instances
 				if (!DerivationSparql.isDerivedWithTimeSeries(this.kbClient, instance)) {
@@ -189,15 +188,15 @@ public class DerivationClient {
 					
 					// delete old instances
 					DerivationSparql.deleteInstances(kbClient, entities);
-					LOGGER.info("Deleted old instances: " + Arrays.asList(entities));
+					LOGGER.debug("Deleted old instances: " + Arrays.asList(entities));
 					
 					// link new entities to derived instance, adding ?x <belongsTo> <instance>
 					DerivationSparql.addNewEntitiesToDerived(kbClient, instance, newEntities);
-					LOGGER.info("Added new instances " + newEntities + " to the derivation " + instance);
+					LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + instance + ">");
 					
 					if (derivedAndType.get(0).size() > 0) {
-						LOGGER.info("This derivation contains at least one entity which is an input to another derivation");
-						LOGGER.info("Relinking new instance(s) to the derivation by matching their rdf:type");
+						LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
+						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
 						String[] classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
 						
@@ -207,7 +206,7 @@ public class DerivationClient {
 				
 						// for each instance in the old derived instance that is connected to another derived instance, reconnect it
 						for (int i = 0; i < oldDerivedList.size(); i++) {
-							LOGGER.info("Searching within " + newEntities + " with rdf:type " + oldTypeList.get(i));
+							LOGGER.debug("Searching within " + newEntities + " with rdf:type " + oldTypeList.get(i));
 							// index in the new array with the matching type
 							Integer matchingIndex = null;
 							for (int j = 0; j < classOfNewEntities.length; j++) {
