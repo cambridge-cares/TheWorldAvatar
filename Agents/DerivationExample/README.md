@@ -63,6 +63,11 @@ If it is successful, you should receive a HTTP response with the IRIs of the new
 ```json
 {"min value":"http://derivation_example#2b5f97c0-9e90-4eee-8c75-b193a83e2269","derivation of average":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived365dbb1a-89c1-49f4-9e00-546f85feb0c2","input":"http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f","average":"http://derivation_example#e7966f33-a01d-4ee5-a12e-825a96a10060","derivation of difference":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived9f192ef4-83a7-4c24-b8cf-3f3d9fc7f441","derivation of min value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived66ccb5a6-6b29-43da-a68c-3e8f3f89010c","difference":"http://derivation_example#01a767ee-d048-4a89-b3e1-6def55f3410d","max value":"http://derivation_example#b8b26247-883d-4243-b19b-d9b08d13cd18","derivation of max value":"https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived2e8a4d01-bd19-4811-abdb-dee6b21e102a"}
 ```
+If this is not successful, it may be the case that the `derivationexample` container is still loading up, check the console of the container and ensure that the you see a line like this 
+```
+16-Aug-2021 17:03:05.847 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [3196] milliseconds
+```
+
 # Updating the derivations
 The derivations in this example can be updated by running the command:
 ```
