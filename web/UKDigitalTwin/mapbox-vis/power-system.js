@@ -22,7 +22,6 @@ function resetSidePanel() {
 		corresponding to the value of the estimated emissions intensity, or SDG indicator (depending on layer selection).</p>
 	`;
 	setSidePanelText(textHTML);
-}
 
 /**
  * Fired when a plant is selected.
@@ -95,7 +94,7 @@ function updateLegend(type) {
 			<b>Legend:</b><br>
 			<div id="padding" style="height: 6px;"></div>
 			<img width="18px" src="legend-coal.svg"/>Coal<br>
-			<img width="18px" src="legend-coalbiomass.svg"/>Coal & Biomass<br>
+			<img width="18px" src="legend-coalbiomass.svg"/>Biomass<br>
 			<img width="18px" src="legend-hydro.svg"/>Hydro<br>
 			<img width="18px" src="legend-naturalgas.svg"/>Natural Gas<br>
 			<img width="18px" src="legend-nuclear.svg"/>Nuclear<br>

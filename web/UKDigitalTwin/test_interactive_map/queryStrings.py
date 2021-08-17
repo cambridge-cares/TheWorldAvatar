@@ -1,8 +1,10 @@
 ####################################################
 # Original author: Tom Savage (trs3@cam.ac.uk)     #
-# Modified by: Wanni Xie (wx243@cam.ac.uk)         #
-# Last Update Date: 12 August 2021                 #
+# Extended by: Wanni Xie (wx243@cam.ac.uk)         #
+# Last Update Date: 13 August 2021                 #
 ####################################################
+
+"""This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
 
 from SPARQLWrapper import SPARQLWrapper, CSV, JSON
 import json
@@ -10,7 +12,9 @@ from tqdm import tqdm
 import time
 import numpy as np 
 
-def queryPowerPlantForVisualisation(endpoint):
+"""query the COMO RDF4j triple store for the UK power plant data from DUKES"""
+# The endpoint is: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG
+def queryPowerPlantForVisualisation(powerPlantEndpoint):
     
   queryVar = ["?powerPlantIRI", "?numericalValue_x", "?numericalValue_y", "?Primary_Fuel_type", "?Plant_Generation_Technology", "?value_of_Designed_Capacity", "?Owner", "?Year_of_Build"]  
   selectClause = " ".join(queryVar)
@@ -28,6 +32,7 @@ def queryPowerPlantForVisualisation(endpoint):
           PREFIX power_plant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
           
           SELECT DISTINCT %s
+          
           WHERE
           {       
             %s space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
@@ -35,26 +40,26 @@ def queryPowerPlantForVisualisation(endpoint):
             ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate .
             ?x_coordinate ontocape_upper_level_system:hasValue ?GPS_x_coordinate .
             ?y_coordinate ontocape_upper_level_system:hasValue ?GPS_y_coordinate . 
-            ?GPS_x_coordinate ontocape_upper_level_system:numericalValue <%s> . # longitude is east/west
-            ?GPS_y_coordinate ontocape_upper_level_system:numericalValue <%s> . # latitude is north/south
+            ?GPS_x_coordinate ontocape_upper_level_system:numericalValue %s . # longitude is east/west
+            ?GPS_y_coordinate ontocape_upper_level_system:numericalValue %s . # latitude is north/south
         	
-            <%s> ontoecape_technical_system:hasRealizationAspect ?PowerGenerator .
+            %s ontoecape_technical_system:hasRealizationAspect ?PowerGenerator .
             ?PowerGenerator a ontoeip_powerplant:PowerGenerator . 
-            ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel <%s> .
-            ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology <%s> .
+            ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel %s .
+            ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology %s .
             
-            <%s> ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
-            ?v_capa ontocape_upper_level_system:numericalValue <%s> .
+            %s ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
+            ?v_capa ontocape_upper_level_system:numericalValue %s .
         	?v_capa ontocape_upper_level_system:hasUnitOfMeasure ?UnitOfCapacity .
             
-            <%s> ontocape_upper_level_system_v1:isOwnedBy/ontocape_upper_level_system_v1:hasName <%s> .
+            %s ontocape_upper_level_system_v1:isOwnedBy/ontocape_upper_level_system_v1:hasName %s .
             
-            <%s> ontoeip_powerplant:hasYearOfBuilt/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue  <%s> .
+            %s ontoeip_powerplant:hasYearOfBuilt/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .
   
         }""" % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[0], queryVar[3], queryVar[4], queryVar[0], queryVar[5], queryVar[0], queryVar[6], queryVar[0], queryVar[7])
   
   # performing SPARQL query  
-  sparql = SPARQLWrapper(endpoint)
+  sparql = SPARQLWrapper(powerPlantEndpoint)
   sparql.setReturnFormat(JSON) 
   sparql.setQuery(query_UKPowerPlant)
   # print query time consumption
@@ -72,23 +77,28 @@ def queryPowerPlantForVisualisation(endpoint):
   ret_array = np.zeros((num_ret, num_query_var), dtype='object')
   # iterating over results and allocating properties from query
   for i in tqdm(range(num_ret)):
-      power_plant_name = ret[i][queryVar[0]]['value'].split('#')
-      lon = ret[i][queryVar[1]]['value']
-      lat = ret[i][queryVar[2]]['value']
-      fuel = ret[i][queryVar[3]]['value'].split('#')
-      gen_tech = ret[i][queryVar[4]]['value'].split('#')
-      capacity = ret[i][queryVar[5]]['value']
-      owner = ret[i][queryVar[6]]['value']
-      built_year = ret[i][queryVar[7]]['value']
+      power_plant_name = ret[i][queryVar[0].strip("?")]['value'].split('#')
+      lon = ret[i][queryVar[1].strip("?")]['value']
+      lat = ret[i][queryVar[2].strip("?")]['value']
+      fuel = ret[i][queryVar[3].strip("?")]['value'].split('#')
+      gen_tech = ret[i][queryVar[4].strip("?")]['value'].split('#')
+      capacity = ret[i][queryVar[5].strip("?")]['value']
+      owner = ret[i][queryVar[6].strip("?")]['value']
+      built_year = ret[i][queryVar[7].strip("?")]['value']
       ret_array[i,:] = [power_plant_name[1], lon, lat, fuel[1], gen_tech[1], capacity, owner, built_year]
   return ret_array
 
-def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_endpoint, ONS_GEO_Info_endpoint):
+
+
+"""Query the UK electricity consumption data (total, domestic, industrial&conmercial) and its associated geo information, i.e. the boundaries of the places"""
+# electricity_consumption_endpoint: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG
+# ONS_GEO_Info_endpoint: http://statistics.data.gov.uk/sparql.json
+def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_endpoint, ONS_GEO_Info_endpoint, regionOrArea):
     
-  queryVar = ["?Area_LACode", "?Area_id_url", "?Total_Electricity_Consumption", "?Domestic_Electricity_Consumption", "?Industrial_and_Commercial_Electricity_Consumption"]  
+  queryVar = ["?Location", "?Area_LACode", "?Area_id_url", "?Total_Electricity_Consumption", "?Domestic_Electricity_Consumption", "?Industrial_and_Commercial_Electricity_Consumption"]  
   selectClause = " ".join(queryVar)
   
-  query_UKElectricityConsumption = """
+  query_UKElectricityConsumption_region = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
@@ -100,6 +110,8 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     
     WHERE
     {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    ?Area ontocape_upper_level_system:hasAddress %s .
     ?Area ontocape_upper_level_system:hasAddress/db:areaCode %s .
     ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL %s .
      
@@ -112,119 +124,147 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
     ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     }
-    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4])
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
+    
+  query_UKElectricityConsumption_area = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    SELECT DISTINCT %s
+    
+    WHERE
+    {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
+    ?Area ontocape_upper_level_system:hasAddress %s .
+    ?Area ontocape_upper_level_system:hasAddress/db:areaCode %s .
+    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL %s .
+     
+    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue %s .
+
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
+    ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    } LIMIT 2
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
 
   # performing SPARQL query  
   sparql = SPARQLWrapper(electricity_consumption_endpoint)
   sparql.setReturnFormat(JSON) 
-  sparql.setQuery(query_UKElectricityConsumption)
+  if regionOrArea == True:    
+      sparql.setQuery(query_UKElectricityConsumption_region)
+  else:
+      sparql.setQuery(query_UKElectricityConsumption_area)
   # print query time consumption
   start = time.time()
-  print('Querying...')
+  print('Querying UK Electricity Consumption Data...')
   ret = sparql.queryAndConvert()
   end = time.time()
   print('Finished in ',np.round(end-start,2),' seconds')
   # parsing JSON SPARQL results into an array
   ret = ret['results']['bindings']
-  #print(ret) #Unformatted
   num_ret = len(ret)
   num_query_var = len(queryVar) 
   # assigning memory to results array 
   ret_array = np.zeros((num_ret, num_query_var + 1), dtype='object')
   # iterating over results and allocating properties from query
+  counter = 0
+  Num_no_geoInfoAreas = 0
+  No_geoInfoAreas = []
   for i in tqdm(range(num_ret)):
-      Area_LACode = ret[i][queryVar[0].strip("?")]['value']
-      Area_id_url = ret[i][queryVar[1].strip("?")]['value']
-      TotalELecConsumption = ret[i][queryVar[2].strip("?")]['value']
-      DomesticConsumption = ret[i][queryVar[3].strip("?")]['value']
-      Industrial_and_Commercial = ret[i][queryVar[4].strip("?")]['value']
+      print("The area num is:", counter)
+      Location = ret[i][queryVar[0].strip("?")]['value'].split("resource/")[1]
+      Area_LACode = ret[i][queryVar[1].strip("?")]['value']
+      Area_id_url = ret[i][queryVar[2].strip("?")]['value']
+      TotalELecConsumption = ret[i][queryVar[3].strip("?")]['value']
+      DomesticConsumption = ret[i][queryVar[4].strip("?")]['value']
+      Industrial_and_Commercial = ret[i][queryVar[5].strip("?")]['value']
+     
+      print(Location)
+      print("Area_id_url is:", Area_id_url)
       
-      print("Area_id_url",Area_id_url)
-    
+      ##############################################
+      # print("###############Testing#################")
+ 
+      # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E07000201"
+      # # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E09000003" # has two polygons
+      # # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E09000011" # has two multipolygons
+      # print("Testing Area_id_url is: ", Area_id_url)
+      ##############################################
       query_ONS = """
-         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-         PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-         PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-         PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-         PREFIX db: <https://dbpedia.org/ontology/>
-         PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
-         PREFIX ont: <http://www.opengis.net/ont/geosparql#>
-         PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
-         SELECT DISTINCT ?Geo_Info
-         WHERE
-         {
-         <%s> a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
-         <%s> ont:hasGeometry ?geometry . 
-         ?geometry ont_sparql:asWKT ?Geo_Info . 
-         }
-         """ % (Area_id_url, Area_id_url) 
+          PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+          PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+          PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+          PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+          PREFIX db: <https://dbpedia.org/ontology/>
+          PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+          PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+          PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+          SELECT DISTINCT ?Geo_Info 
+          WHERE
+          {
+          <%s> a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+          <%s> ont:hasGeometry ?geometry . 
+          ?geometry ont_sparql:asWKT ?Geo_Info . 
+        
+          }
+          """ % (Area_id_url, Area_id_url) 
+         
       # performing SPARQL query  
       sparql = SPARQLWrapper(ONS_GEO_Info_endpoint)
       sparql.setReturnFormat(JSON) 
       sparql.setQuery(query_ONS)
       geo = sparql.queryAndConvert()
-      geo = geo['results']['bindings'] # extract the elements of the original dict
-      polygon_point = []
-      counter = 0
-      for r in geo:
-         polygon_point_unformatted = str(r["Geo_Info"]['value']).strip("POLYGON").strip("MULTIPOLYGON ").replace(")", "").replace("(", "").split(",")
-        #  print(polygon_point_unformatted)
-         for p in polygon_point_unformatted:
-             point = [float(p.strip(",").strip().split(" ")[0]), float(p.strip(",").strip().split(" ")[1])]
-             # print(counter, point)
-             polygon_point.append(point)
-             counter += 1
-      # print(polygon_point)
-      ret_array[i,:] = [Area_LACode, Area_id_url, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, polygon_point]
-  return ret_array
-
-def queryONSForAreaPolygon(areaIDList, endpoint):  # endpoint: http://statistics.data.gov.uk/sparql
+      # print("The results contains: ", geo)
+      if str(geo['results']['bindings']) == "[]":
+          print(Area_id_url, "does't have the geographical attributes.")
+          Num_no_geoInfoAreas += 1
+          No_geoInfoAreas.append(Area_id_url.split("geography/")[1])
+          continue
+      polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) # extract the elements of the original dict
     
-  queryVar = ["?Area_id_url", "?Geo_Info"]  
-  for var in queryVar:
-    selectClause = var + " "
-    selectClause = selectClause[:-1]
-    
-  query_UKElectricityConsumption = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    SELECT DISTINCT <%s>
-    WHERE
-    {
-    ?Area ontocape_upper_level_system:hasAddress/db:areaCode <%s> .
-    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL <%s> .
+      if "MULTIPOLYGON" in polygon_point_unformatted_string:
+         polygonType = "MultiPolygon"
+         print(polygonType)
+         unformatted_polygon_list = polygon_point_unformatted_string.replace("MULTIPOLYGON", "").strip().split(")), ((") # MULTIPOLYGON referes that in the same polygon there are more than 1 inner polygons
+         polygon_point = [None] * len(unformatted_polygon_list)
+         polygon_point_counter = 0
+         for mp in unformatted_polygon_list: # within one multipolygon there are one outer polygon with several polyons in it
+             mp = mp.replace(")", "").replace("(", "")             
+             mp_point_set_list = mp.split(",")             
+             polygon_point_set = []
+             for p in mp_point_set_list:
+                 point = [float(p.strip().split(" ")[0]), float(p.strip().split(" ")[1])]                 
+                 polygon_point_set.append(point)
+             polygon_point[polygon_point_counter] = polygon_point_set
+             polygon_point_counter += 1
+         
+      elif "POLYGON" in polygon_point_unformatted_string:
+           polygonType = "Polygon"
+           print(polygonType)         
+           unformatted_polygon_list = polygon_point_unformatted_string.replace("POLYGON", "").replace(")", "").replace("(", "").strip().split(",") # POLYGON refers that there are only one polygon out liner         
+           polygon_point = []
+           for mp in unformatted_polygon_list: 
+              point = [float(mp.strip().split(" ")[0]), float(mp.strip().split(" ")[1])]
+              polygon_point.append(point)
+      else:
+           print("The polygon string queried fron ONS is not valid.")
+           return None        
+      ret_array[i,:] = [Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, polygonType, polygon_point]      
+      counter += 1
      
-    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue <%s> .
-    }
-    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2])
-  # performing SPARQL query  
-  sparql = SPARQLWrapper(endpoint)
-  sparql.setReturnFormat(JSON) 
-  sparql.setQuery(query_UKElectricityConsumption)
-  # print query time consumption
-  start = time.time()
-  print('Querying...')
-  ret = sparql.queryAndConvert()
-  end = time.time()
-  print('Finished in ',np.round(end-start,2),' seconds')
-  # parsing JSON SPARQL results into an array
-  ret = ret['results']['bindings']
-  #print(ret) #Unformatted
-  num_ret = len(ret)
-  num_query_var = len(queryVar) 
-  # assigning memory to results array 
-  ret_array = np.zeros((num_ret, num_query_var), dtype='object')
-  # iterating over results and allocating properties from query
-  for i in tqdm(range(num_ret)):
-      Area_LACode = ret[i][queryVar[0]]['value']
-      Area_id_url = ret[i][queryVar[1]]['value']
-      TotalELecConsumption = ret[i][queryVar[2]]['value']
-      ret_array[i,:] = [Area_LACode, Area_id_url, TotalELecConsumption]
-  return ret_array
-
+  print("******************The query results report******************")
+  print("The total number of the areas are: ", counter)
+  print("The number of the areas don't have the geo attibutes are: ", Num_no_geoInfoAreas, " which are listed as follow: ")
+  print(No_geoInfoAreas)
+  return ret_array    
+       
 
 def queryUKSDGIndicatorForVisualisation():
 
@@ -246,8 +286,9 @@ if __name__ == '__main__':
     electricity_consumption_RDF4j_Endpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"
     ONS = "http://statistics.data.gov.uk/sparql"
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
-    res = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS)
-    # testONSEndpoint(ONS)
-    for r in res:
-        print(r)
+    pp = 'https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG'
+    res = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS_json, False)
+    # res = queryPowerPlantForVisualisation(pp)
+    # for r in res:
+    #     print(r)
 
