@@ -36,7 +36,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * @author Kok Foong Lee
  *
  */
-class DerivationSparql{
+public class DerivationSparql{
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));

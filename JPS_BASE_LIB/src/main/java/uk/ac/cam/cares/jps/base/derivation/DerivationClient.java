@@ -82,7 +82,7 @@ public class DerivationClient {
     }
     
     /**
-     * you may want to use this to update an input's timestamp, the DerivedQuantityClient does not deal with inputs directly
+     * you may want to use this to update an input's timestamp, the DerivationClient does not deal with inputs directly
      */
     public void updateTimestamp(String entity) {
     	DerivationSparql.updateTimeStamp(kbClient, entity);
