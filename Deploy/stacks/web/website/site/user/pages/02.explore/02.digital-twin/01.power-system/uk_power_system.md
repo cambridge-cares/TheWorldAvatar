@@ -27,7 +27,7 @@ slug: power-system
 		<table width="100%" height="100%" style="margin: auto;">
 			<tr>
 				<td width="50%" style="text-align: left;">
-					<a href="/explore/digital-twin/land-use">&lt;&lt; Land Use</a>
+					<a href="/explore/digital-twin/flood-map">&lt;&lt; Flood Map</a>
 				</td>
 				<td width="50%" style="text-align: right;">
 					<a href="/explore/digital-twin/gas-grid">Gas Grid &gt;&gt;</a>
