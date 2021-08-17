@@ -140,59 +140,57 @@
             resetSidePanel();
             updateLegend(currentLayer);
 
-            map.addSource('GB_City', {
+            map.addSource('Electricity_Consumption', {
                 type: 'geojson',
-                data: 'geoJSON/GB_City_Boundaries.geojson'
+                data: 'UK_Electricity_Consumption.geojson'
             });
 
-            map.addSource('Northern_Ireland_City', {
-                type: 'geojson',
-                data: 'geoJSON/Northern_Ireland_City_Boundaries.geojson'
-            });
 
             map.addLayer({
-                'id': 'GB_City',
+                'id': 'Electricity_Consumption_fill',
                 'type': 'fill',
-                'source': 'GB_City', // reference the data source
+                'source': 'Electricity_Consumption', // reference the data source
                 'layout': {},
                 'paint': {
+                    // 'fill-color': 'rgba(200, 100, 240, 0.4)',
+                    // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
+                    // 'fill-antialias': false
                     'fill-color': '#0080ff', // blue color fill
                     'fill-opacity': 0.5
                 }
             });
 
             map.addLayer({
-                'id': 'GB_City',
+                'id': 'Electricity_Consumption_line',
                 'type': 'line',
-                'source': 'GB_City',
+                'source': 'Electricity_Consumption', // reference the data source
                 'layout': {},
                 'paint': {
+                    // 'fill-color': 'rgba(200, 100, 240, 0.4)',
+                    // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
+                    // 'fill-antialias': false
                     'line-color': '#9ecae1',
-                    'line-width': 3
+                    'line-width': 2
                 }
             });
 
-            map.addLayer({
-                'id': 'Northern_Ireland_City',
-                'type': 'fill',
-                'source': 'Northern_Ireland_City',
-                'layout': {},
-                'paint': {
-                    'fill-color': '#0080ff',
-                    'fill-opacity': 0.5
-                }
+            map.on('click', 'Electricity_Consumption_fill', function (e) {
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(e.features[0].properties.TotalELecConsumption)
+                    .addTo(map);
             });
 
-            map.addLayer({
-                'id': 'Northern_Ireland_City',
-                'type': 'line',
-                'source': 'Northern_Ireland_City',
-                'layout': {},
-                'paint': {
-                    'line-color': '#9ecae1',
-                    'line-width': 3
-                }
+            // Change the cursor to a pointer when the mouse is over the states layer.
+            map.on('mouseenter', 'Electricity_Consumption_fill', function () {
+                map.getCanvas().style.cursor = 'pointer';
             });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'Electricity_Consumption_fill', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
 
         });
 

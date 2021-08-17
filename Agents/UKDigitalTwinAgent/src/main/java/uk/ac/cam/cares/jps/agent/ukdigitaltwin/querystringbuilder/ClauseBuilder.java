@@ -156,6 +156,46 @@ public class ClauseBuilder implements Prefixes{
 		}			
 	} 
 	
+	/**
+	 * selectClauseAndWhereClauseBuilderWithLabels is designed for creating the selectClause and WhereClause with labeled variables
+	 * 
+	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
+	 * @labeledVariable_labels : a LinkedHashMap maps between labeled variables and its labels. Variables of a same type can have multiple labels.  
+	 * @labeledVariable_classPrefix : a hashmap the variables to the namespace of the variables class.
+	 * @labeledVariable_querySentence : if label is needed in constructing the query body, a label map need to be specified. The key is the variable whose going to be labeled. 
+	 *             The value is the list of label. If no labels are need, it is set to null.
+	 *  
+	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
+	 */
+	
+	public void insertClauseBuilder(String varNameIdentifier, LinkedHashMap<String, List<String>> labeledVariable_labels, 
+			HashMap<String, String> labeledVariable_classPrefix, HashMap<String, List<String>> labeledVariable_querySentence){
+		//case 2: set up selectClause and whereClause with labels											
+		for(String key: labeledVariable_labels.keySet()) {// key is the variable name needs to be labeled
+			List<String> querySentence = labeledVariable_querySentence.get(key);
+			for(String label:labeledVariable_labels.get(key)) {
+				for(int i = -1; i < querySentence.size()-2; i+=2) {// add labels
+					if(i == -1) {
+						List<String> spo = Arrays.asList(this.entityName, querySentence.get(i+1), querySentence.get(i+2) + label);
+						this.whereClause.add(spo);
+					} else {
+						List<String> spo = Arrays.asList(querySentence.get(i)+ label, querySentence.get(i+1), querySentence.get(i+2) + label);
+						this.whereClause.add(spo);					
+					}	
+			    }
+				List<String> labelTriple = Arrays.asList(varNameIdentifier + label, RDFS + ":label", "\"" + label + "\"");
+				this.whereClause.add(labelTriple);
+				List<String> varTypeTriple = Arrays.asList(varNameIdentifier + label, "a",  labeledVariable_classPrefix.get(key) + ":" + key);					
+				this.whereClause.add(varTypeTriple);
+				String selectName = querySentence.get(querySentence.size() - 1) + label;
+				this.selectClause.add(selectName);
+		     }				
+		}			
+	} 
+	
+	
+	
+	
 //	// check query mode: 		
 //			if(!this.queryFlag){
 //				System.out.print("The method is for query only.");
