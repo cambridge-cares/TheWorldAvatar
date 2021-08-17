@@ -4,8 +4,12 @@ import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotatorTestUtil;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 
 public class MetaDataAnnotatorTest {
@@ -15,6 +19,9 @@ public class MetaDataAnnotatorTest {
 		Assert.assertNull(MetaDataAnnotator.getSparqlService());
 	}
 	
+    @Mock
+    public MetaDataAnnotator mockMetaDataAnnotator = Mockito.mock(MetaDataAnnotator.class);
+    
 	@Test
 	public void testGetSparqlInsertFull() {
 		String ExpectedResult = "PREFIX dcterms:<http://purl.org/dc/terms/> \r\nPREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
@@ -24,10 +31,16 @@ public class MetaDataAnnotatorTest {
 				+ "dcterms:creator <testAgent> . \r\n<testTarget> dcterms:date \"testSimulationTime\"^^xsd:dateTime . \r\n<testTarget> "
 				+ "dcterms:isPartOf <testScenario> . \r\n<testTarget> dcterms:subject <topic1> . \r\n<testTarget> "
 				+ "dcterms:subject <topic2> . \r\ntriple1 \r\ntriple2 \r\n} } \r\n";
-			
-		String Result = MetaDataAnnotator.getSparqlInsertFull("testTarget", MediaType.TEXT_CSV, "testCreationTime", "testAgent", 
-				true, "testSimulationTime", "testScenario", Arrays.asList("topic1","topic2"), Arrays.asList("prefix1","prefix2"), Arrays.asList("triple1","triple2"));
-		Assert.assertEquals(Result, ExpectedResult);
+
+		
+        try (MockedStatic<MetaDataAnnotatorTestUtil> mockMetaDataAnnotatorTestUtil = Mockito.mockStatic(MetaDataAnnotatorTestUtil.class)) {
+        	mockMetaDataAnnotatorTestUtil.when(MetaDataAnnotatorTestUtil::getInstanceWrapper).thenReturn(mockMetaDataAnnotator);
+            
+        	String Result = MetaDataAnnotator.getSparqlInsertFull("testTarget", MediaType.TEXT_CSV, "testCreationTime", "testAgent",
+    				true, "testSimulationTime", "testScenario", Arrays.asList("topic1","topic2"), Arrays.asList("prefix1","prefix2"), Arrays.asList("triple1","triple2"));
+
+            Assert.assertEquals(Result, ExpectedResult);
+        }	 
 	}
 	
 	long timeInMillis = 1628150245696L;

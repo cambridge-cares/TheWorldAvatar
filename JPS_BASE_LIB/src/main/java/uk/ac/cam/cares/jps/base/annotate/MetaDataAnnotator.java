@@ -105,8 +105,8 @@ public class MetaDataAnnotator implements Prefixes {
 	 */
 	public static String getSparqlInsertFull(String iriTarget, MediaType mediaType, String creationTime, String iriCreatingAgent, 
 			boolean addJPSContext, String simulationTime, String iriScenario, List<String> topics, List<String> prefixes, List<String> triples) {
-		
-		JPSBaseLogger.info(getInstance(), "annotating target = " + iriTarget + " with media type = " + mediaType 
+
+		JPSBaseLogger.info(MetaDataAnnotatorTestUtil.getInstanceWrapper(), "annotating target = " + iriTarget + " with media type = " + mediaType 
 				+ ", creation time = " + creationTime + ", creatingAgent = " + iriCreatingAgent + ", simulation time = " + simulationTime + ", scenario = " + iriScenario );
 		
 		StringBuffer sparql = new StringBuffer();
