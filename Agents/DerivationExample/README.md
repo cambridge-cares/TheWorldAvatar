@@ -54,7 +54,16 @@ The default port numbers for the containers are:
 
 Once the docker stack is up and running, you should be able to access the blazegraph container at (http://localhost:8889/blazegraph). If you are using pgAdmin, you can monitor the postgres container by creating a new server that connects to `localhost` with port number `7432`.
 
-# Initialisation
+## Test
+To test the docker set up, there are integration tests written for this example - `uk.ac.cam.cares.derivation.example.IntegrationTest`. The tests should pass if the stack is up and running with the default port numbers.
+
+## Logs
+By default, logs are written to `/root/.jps/jps.log` within the docker container. To copy this file into your local directory, run the following command in the terminal
+```
+docker cp derivationexample:root/.jps/ .
+```
+
+## Initialisation
 There are two key demonstrations in this example, the input instance is shared between the two examples. Assuming the stack is up and running, the instances can be initialised by running the following command:
 ```
 curl http://localhost:8081/DerivationExample/InitialiseInstances
@@ -68,7 +77,7 @@ If this is not successful, it may be the case that the `derivationexample` conta
 16-Aug-2021 17:03:05.847 INFO [main] org.apache.catalina.startup.Catalina.start Server startup in [3196] milliseconds
 ```
 
-# Updating the derivations
+## Updating the derivations
 The derivations in this example can be updated by running the command:
 ```
 curl http://localhost:8081/DerivationExample/UpdateDerivations
@@ -78,7 +87,7 @@ On a successful update, you should receive a HTTP response, e.g.:
 {"status":"Updated derivation of difference <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derived2341b3e3-598f-46a1-900d-5506d0906c60> and derivation of average <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derivedd41b0c5d-b442-4a14-b0a0-14ad99c03ecc>"}
 ```
 
-# Input
+## Input
 The input is an instance containing a time series. Upon initialisation, the following triples are created in blazegraph:
 ```
 <input> <rdf:type> <http://derived_example#InputData>
@@ -105,8 +114,8 @@ If the update is successful, you should receive a HTTP response, e.g.:
 {"status":"Updated <http://derivation_example#bdba8ae0-51f5-4447-8d4b-1c4c05f8347f>"}
 ```
 
-# Derivation with time series
-## Average
+## Derivation with time series
+### Average
 This derivation contains averages calculated from the input and stored in a time series table, e.g.
 ```
 <average> <rdf:type> <http://derived_example#Average>
@@ -126,13 +135,13 @@ Derivation of average:
 ```
 This instance is updated using `AverageAgent`. This agent queries the average value from the input and records the value in the timeseries table.
 
-# Derivations without time series
+## Derivations without time series
 This example contains 3 derivations: 
 1. Maximum value: Maximum value in the input time series table
 2. Minimum value: Minimum value in the input time series table
 3. Difference: Difference between the minimum and maximum values
 
-## Maximum value
+### Maximum value
 The property instance:
 ```
 <max> <rdf:type> <http://derived_example#MaxValue>
@@ -161,7 +170,7 @@ And returns a HTTP response in the form of:
 {"agent_output": [new_max, newMaxValue]}
 ```
 
-## Minimum value
+### Minimum value
 This instance is almost identical with the maximum value instance, except that it has the rdf:type `<http://derived_example#MinValue>`. 
 The property instance:
 ```
@@ -178,7 +187,7 @@ The derivation instance:
 ```
 The agent for this derivation, `MinValueAgent`, queries the minimum value from the given input using the TimeSeriesClient, and writes a new instance similarly to the `MaxValueAgent`.
 
-## Difference
+### Difference
 The difference instance is also identical, except that it has the rdf:type `<http://derived_example#Difference>`.
 ```
 <diff> <rdf:type> <http://derived_example#Difference>
