@@ -793,18 +793,18 @@ def plot_variables(vars,uptake,temp_var_type):
 
     fig,ax = plt.subplots(figsize=(6,4))
     plt.subplots_adjust(right=0.95,left=0.15,top=0.93,bottom=0.15)
-    CN = ax.contourf(FP,DC,GRID,512,cmap='coolwarm', norm = cl.Normalize(vmin=-1, vmax=1),antialiased=False)
+    #CN = ax.contourf(FP,DC,GRID,512,cmap='coolwarm', norm = cl.Normalize(vmin=-1, vmax=1),antialiased=False)
     ax.set_xlabel('Fuel Poverty (%)')
     ax.set_ylabel('Change in Cost (£/year/household)')
-    cax = plt.colorbar(CN,ax=ax,ticks=[-1,-0.5,0,0.5,1],label='Inequality Index (-)')
-    cax.ax.set_yticklabels(['< -1','-0.5','0','0.5','> 1'])
+    #cax = plt.colorbar(CN,ax=ax,ticks=[-1,-0.5,0,0.5,1],label='Inequality Index (-)')
+    #cax.ax.set_yticklabels(['< -1','-0.5','0','0.5','> 1'])
     plt.scatter(my_geo_df['Percentage Fuel Poor'].values,my_geo_df['Change in Fuel Cost'].values,c='k',alpha=0.3,s=0.8)
     ax.set_ylim(bottom,top)
     ax.set_xlim(FP_lower,35)
-    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric_small.png')
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric_small_clear.png')
     ax.set_ylim(og_bounds[0],og_bounds[1])
     ax.set_xlim(0,max_og_fp)
-    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric.png')
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/inequality_metric_clear.png')
 
     # ADD UP EMISSIONS HERE 
     mosaic = '''

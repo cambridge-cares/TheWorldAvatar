@@ -11,12 +11,12 @@
 # nb    = 0.8
 
 # REDUCED USAGE FOR HEATING
-alpha = 0.8
-nb    = 0.8
+# alpha = 0.8
+# nb    = 0.8
 
 # BASE CASE
-# alpha = 0.9
-# nb    = 0.8
+alpha = 0.9
+nb    = 0.8
 
 import os 
 
