@@ -90,4 +90,4 @@ Once the derivation instances are initialised using `createDerivation` and `crea
 The update method, `uk.ac.cam.cares.jps.base.derivation.DerivationClient.updateDerivation(String)`, is the core functionality provided by the DerivationClient. The argument should be the IRI of the derivation instance that you want to update, this will ensure all the dependencies of the derivation instance are updated before updating the given derivation.
 
 # Example
-An example demonstrating the functionality of the DerivationClient is provided in `TheWorldAvatar/DerivationExample`.
+An example demonstrating the functionality of the DerivationClient is provided in `TheWorldAvatar/Agents/DerivationExample`.
