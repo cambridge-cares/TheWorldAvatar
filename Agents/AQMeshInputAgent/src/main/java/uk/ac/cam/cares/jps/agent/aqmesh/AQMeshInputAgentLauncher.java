@@ -10,16 +10,24 @@ import java.time.OffsetDateTime;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+/**
+ * Class with a main method that is the entry point of the compiled jar and puts all components together to retrieve
+ * data from the API and write it into the database.
+ * @author Niklas Kasenburg
+ */
 public class AQMeshInputAgentLauncher {
 
     /**
      * Logger for reporting info/errors.
      */
     private static final Logger LOGGER = LogManager.getLogger(AQMeshInputAgentLauncher.class);
-    // Logging / error messages
+    /**
+     * Logging / error messages
+     */
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) API connector.";
     private static final String AGENT_ERROR_MSG = "The AQMesh input agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
+    private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
     private static final String CONNECTOR_ERROR_MSG = "Could not construct the AQMesh API connector needed to interact with the API!";
     private static final String GET_READINGS_ERROR_MSG = "One or both readings could not be retrieved, this might have created a mismatch" +
             " in the pointers if one readings was successful and needs to be fixed!";
@@ -63,7 +71,12 @@ public class AQMeshInputAgentLauncher {
         LOGGER.info("Time series client object initialized.");
 
         // Initialize time series'
-        agent.initializeTimeSeriesIfNotExist();
+        try {
+            agent.initializeTimeSeriesIfNotExist();
+        }
+        catch (JPSRuntimeException e) {
+            LOGGER.error(INITIALIZE_ERROR_MSG,e);
+        }
 
         // Create the connector to interact with the AQMesh API
         AQMeshAPIConnector connector;
@@ -75,7 +88,6 @@ public class AQMeshInputAgentLauncher {
         }
         LOGGER.info("API connector object initialized.");
         connector.connect();
-        LOGGER.info("Connected to AQMesh API.");
 
         // Retrieve readings
         JSONArray particleReadings;
