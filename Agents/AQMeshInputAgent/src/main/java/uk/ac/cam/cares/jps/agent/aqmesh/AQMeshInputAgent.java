@@ -16,23 +16,43 @@ import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 /**
  * Class to retrieve data from the AQMesh API and storing it with connection to The World Avatar (Knowledge Base).
  * @author Niklas Kasenburg
  */
 public class AQMeshInputAgent {
 
-    // The time series client to interact with the knowledge graph and data storage
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AQMeshInputAgentLauncher.class);
+
+    /**
+     * The time series client to interact with the knowledge graph and data storage
+     */
     private TimeSeriesClient<OffsetDateTime> tsClient;
-    // A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
+    /**
+     * A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
+     */
     private List<JSONKeyToIRIMapper> mappings;
-    // The prefix to use when no IRI exists for a JSON key originally
+    /**
+     * The prefix to use when no IRI exists for a JSON key originally
+     */
     public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
-    // The time unit used for all time series maintained by the AQMesh input agent
+    /**
+     * The time unit used for all time series maintained by the AQMesh input agent
+     */
     public static final String timeUnit = OffsetDateTime.class.getSimpleName();
-    // The JSON key for the timestamp
+    /**
+     * The JSON key for the timestamp
+     */
     public static final String timestampKey = "reading_datestamp";
-    // The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
+    /**
+     * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
+     */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
 
     /**
@@ -114,6 +134,7 @@ public class AQMeshInputAgent {
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 tsClient.initTimeSeries(iris, classes, timeUnit);
+                LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(",", iris)));
             }
         }
     }
@@ -169,6 +190,7 @@ public class AQMeshInputAgent {
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
                     tsClient.addTimeSeriesData(ts);
+                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(",", ts.getDataIRIs())));
                 }
             }
         }
@@ -279,7 +301,9 @@ public class AQMeshInputAgent {
                     values.add(gasReadings.get(key));
                     useParticleReadings = false;
                 }
-                // Will create a problem as length of iris and values do not match when creating the time series
+                // Will create a problem as length of iris and values do not match when creating the time series.
+                // Could add an empty list, but the length of the list needs to match length of times. So what values to
+                // fill it with?
                 else {
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }
