@@ -11,6 +11,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,28 +27,52 @@ import java.util.Properties;
  */
 public class AQMeshAPIConnector {
 
-    // Fields to access API
+    /**
+     * Fields to access API
+     */
     private String username;
     private String password;
     private String api_url = "https://apitest.aqmeshdata.net/api/";
-    // Token needed to all API calls (except to retrieve token)
+    /**
+     * Token needed for all API calls (except to retrieve token)
+     */
     private String token = "";
-    // Location needed for retrieving data
+    /**
+     * Location needed for retrieving data
+     */
     private String location = "";
-    // Fields that defines the index to use in the asset list, i.e. which pod to use
+    /**
+     * Defines the index to use in the asset list, i.e. which pod to use
+     */
     private int podIndex = 0;
-    // Static fields for specific paths in the API
+    /**
+     * Specific paths in the API
+     */
     protected static final String AUTHENTICATE_PATH = "Authenticate";
     protected static final String PING_PATH = "serverping";
     protected static final String ASSETS_PATH = "Pods/Assets";
     protected static final String READINGS_PATH = "LocationData/Next";
     protected static final String CELSIUS_MASS_PER_VOLUME = "01";
     protected static final String TPC = "1";
-    // Static fields for specific keys in response bodies
+    /**
+     * Specific keys in response bodies
+     */
     protected static final String TOKEN_KEY = "token";
     protected static final String LOCATION_KEY = "location_number";
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AQMeshInputAgentLauncher.class);
+    /**
+     * Error messages
+     */
+    private static final String CONNECTION_ERROR_MSG = "Unable to connect to AQMesh API!";
+    private static final String GAS_ERROR_MSG ="Gas readings could not be retrieved";
+    private static final String PARTICLE_ERROR_MSG = "Particle readings could not be retrieved";
 
-    // Enum class for allowed reading types
+    /**
+     * Enum class for allowed reading types
+     */
     private enum ReadingType {
         GAS("1"),
         PARTICLE("2");
@@ -99,9 +125,10 @@ public class AQMeshAPIConnector {
         try {
             token = getAccessToken();
             String serverTime = ping();
-            System.out.println("Connection successful at server time " + serverTime + ". Token will be valid for 120 minutes.");
+            LOGGER.info("Connection successful at server time " + serverTime + ". Token will be valid for 120 minutes.");
         } catch (IOException e) {
-            throw  new JPSRuntimeException("Unable to connect to AQMesh API!", e);
+            LOGGER.error(CONNECTION_ERROR_MSG, e);
+            throw  new JPSRuntimeException(CONNECTION_ERROR_MSG, e);
         }
     }
 
@@ -220,7 +247,8 @@ public class AQMeshAPIConnector {
             return retrieveReadings(ReadingType.PARTICLE);
         }
         catch (IOException | JSONException e) {
-            throw new JPSRuntimeException("Particle readings could not be retrieved", e);
+            LOGGER.error(PARTICLE_ERROR_MSG, e);
+            throw new JPSRuntimeException(PARTICLE_ERROR_MSG, e);
         }
     }
 
@@ -233,7 +261,8 @@ public class AQMeshAPIConnector {
             return retrieveReadings(ReadingType.GAS);
         }
         catch (IOException | JSONException e) {
-            throw new JPSRuntimeException("Gas readings could not be retrieved", e);
+            LOGGER.error(GAS_ERROR_MSG, e);
+            throw new JPSRuntimeException(GAS_ERROR_MSG, e);
         }
     }
 
@@ -245,7 +274,7 @@ public class AQMeshAPIConnector {
     private JSONArray retrieveReadings(ReadingType readingType) throws IOException, JSONException {
 
         if (location.equals("")) {
-            System.out.println("No location (pod) set. Will retrieve location number first.");
+            LOGGER.debug("No location (pod) set. Will retrieve location number first.");
             setLocation();
         }
 
