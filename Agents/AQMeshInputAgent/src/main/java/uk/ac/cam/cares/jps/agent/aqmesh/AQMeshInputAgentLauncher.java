@@ -76,6 +76,7 @@ public class AQMeshInputAgentLauncher {
         }
         catch (JPSRuntimeException e) {
             LOGGER.error(INITIALIZE_ERROR_MSG,e);
+            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
         // Create the connector to interact with the AQMesh API
