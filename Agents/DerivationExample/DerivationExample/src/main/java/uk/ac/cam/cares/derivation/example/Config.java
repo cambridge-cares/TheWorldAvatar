@@ -5,8 +5,8 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -21,7 +21,7 @@ public class Config{
 	public static String kguser;
 	public static String kgpassword;
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Config.class);
+	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
 	public static void initProperties() {
 		if (props == null) {

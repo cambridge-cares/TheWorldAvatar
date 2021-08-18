@@ -4,14 +4,16 @@ import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -24,7 +26,7 @@ public class DifferenceAgent extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 
 	// ============================ Static variables ===========================
-    private static final Logger LOGGER = LoggerFactory.getLogger(DifferenceAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
     public static final String URL_Difference = "/DifferenceAgent";
 
     // ================================ Methods ================================
@@ -44,7 +46,6 @@ public class DifferenceAgent extends JPSAgent {
 
         if (validateInput(requestParams,sparqlClient)) {
         	JSONArray inputs = requestParams.getJSONArray(DerivationClient.AGENT_INPUT_KEY);
-        	String[] createdInstances = new String[2];
     		LOGGER.info("Calculating difference");
     		Integer minvalue_input = null; Integer maxvalue_input = null;
 
@@ -59,10 +60,11 @@ public class DifferenceAgent extends JPSAgent {
     		
     		// calculate a new value and create a new instance
     		int difference = maxvalue_input - minvalue_input;
-    		createdInstances[0] = sparqlClient.createDifference();
-    		createdInstances[1] = sparqlClient.addValueInstance(createdInstances[0], difference);
-    		LOGGER.info("created a new calculated difference instance " + createdInstances);
-    		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(Arrays.asList(createdInstances)));
+    		List<String> createdInstances = new ArrayList<>();
+    		createdInstances.add(sparqlClient.createDifference());
+    		createdInstances.add(sparqlClient.addValueInstance(createdInstances.get(0), difference));
+    		LOGGER.info("Created a new calculated difference instance <" + createdInstances.get(0) + ">");
+    		response.put(DerivationClient.AGENT_OUTPUT_KEY, new JSONArray(createdInstances));
 	       }
         
         return response;
@@ -85,6 +87,7 @@ public class DifferenceAgent extends JPSAgent {
 				}
 			}
 		} else {
+			LOGGER.error("Incorrect number of inputs");
 			throw new BadRequestException("Incorrect number of inputs");
 		}
         

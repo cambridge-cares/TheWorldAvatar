@@ -42,7 +42,7 @@ public class UpdateDerivations extends JPSAgent{
 		LOGGER.info(res_msg);
 		
 		JSONObject response = new JSONObject();
-		response.put("status", "Updated derivation of difference <" + InstancesDatabase.DerivedDifference + "> and derivation of average <" + InstancesDatabase.DerivedAverage + ">");
+		response.put("status", res_msg);
 		return response;
 	}
 }
