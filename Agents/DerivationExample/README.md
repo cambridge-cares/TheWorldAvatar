@@ -58,7 +58,7 @@ Once the docker stack is up and running, you should be able to access the blazeg
 To test the docker set up, there are integration tests written for this example - `uk.ac.cam.cares.derivation.example.IntegrationTest`. The tests should pass if the stack is up and running with the default port numbers.
 
 ## Logs
-By default, logs are written to `/root/.jps/jps.log` within the docker container. To copy this file into your local directory, run the following command in the terminal
+By default, logs are written to `/root/.jps/` within the docker container. To copy this file into your local directory, run the following command in the terminal
 ```
 docker cp derivationexample:root/.jps/ .
 ```
