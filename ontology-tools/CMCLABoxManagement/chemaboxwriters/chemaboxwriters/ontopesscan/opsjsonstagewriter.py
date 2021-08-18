@@ -22,14 +22,14 @@ def compchem_opsjson_abox_from_string(data, os_iris, os_atoms_iris, oc_atoms_pos
 
     ndegrees = len(os_atoms_iris.split(','))
     if ndegrees == 2:
-        data_out[SCAN_COORDINATE_TYPE] = 'Distance coordinate'
+        data_out[SCAN_COORDINATE_TYPE] = 'DistanceCoordinate'
         data_out[SCAN_COORDINATE_UNIT] = 'Angstrom'
     else:
         data_out[SCAN_COORDINATE_UNIT] = 'Degree'
         if ndegrees == 3:
-            data_out[SCAN_COORDINATE_TYPE] = 'Angle coordinate'
+            data_out[SCAN_COORDINATE_TYPE] = 'AngleCoordinate'
         else:
-            data_out[SCAN_COORDINATE_TYPE] = 'Dihedral angle coordinate'
+            data_out[SCAN_COORDINATE_TYPE] = 'DihedralAngleCoordinate'
 
     if not calc_id: calc_id = get_random_id()
     data_out[commonv.ENTRY_UUID]= calc_id

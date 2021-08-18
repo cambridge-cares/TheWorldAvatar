@@ -1,6 +1,6 @@
 package uk.ac.cam.cares.jps.scenario.kb.test;
 
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
@@ -22,7 +22,7 @@ public class KnowledgeBaseSwitchClient {
 		if (direct) {
 			kb.put(resourceUrl, content, contentType);
 		} else {
-			KnowledgeBaseClient.put(datasetUrl, resourceUrl, content, contentType);
+			AccessAgentCaller.put(datasetUrl, resourceUrl, content, contentType);
 		}
 	}
 	
@@ -30,7 +30,7 @@ public class KnowledgeBaseSwitchClient {
 		if (direct) {
 			kb.update(resourceUrl, sparql);
 		} else {
-			KnowledgeBaseClient.update(datasetUrl, resourceUrl, sparql);
+			AccessAgentCaller.update(datasetUrl, resourceUrl, sparql);
 		}
 	}
 	
@@ -38,7 +38,7 @@ public class KnowledgeBaseSwitchClient {
 		if (direct) {
 			return kb.get(resourceUrl, accept);
 		} else {
-			return KnowledgeBaseClient.get(datasetUrl, resourceUrl, accept);
+			return AccessAgentCaller.get(datasetUrl, resourceUrl, accept);
 		}
 	}
 	
@@ -46,7 +46,7 @@ public class KnowledgeBaseSwitchClient {
 		if (direct) {
 			return kb.query(resourceUrl, sparql);
 		} else {
-			return KnowledgeBaseClient.query(datasetUrl, resourceUrl, sparql);
+			return AccessAgentCaller.query(datasetUrl, resourceUrl, sparql);
 		}
 	}
 }

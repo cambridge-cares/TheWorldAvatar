@@ -14,7 +14,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
@@ -58,10 +58,10 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	public void testPutAndGetNonRdfFile() {
 		String path = "/jps/dataset/testfilebased/testputandget";
 		String body = UUID.randomUUID().toString();
-		KnowledgeBaseClient.put(null, path, body, null);
+		AccessAgentCaller.put(null, path, body, null);
 
 		String accept = null;
-		String result = KnowledgeBaseClient.get(null, path, accept);
+		String result = AccessAgentCaller.get(null, path, accept);
 		assertEquals(body, result);
 	}
 	
@@ -69,7 +69,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
 		String body = putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_RDF_XML.type;
-		String result = KnowledgeBaseClient.get(null, path, accept);
+		String result = AccessAgentCaller.get(null, path, accept);
 		assertEquals(body,  result);
 	}
 	
@@ -81,7 +81,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.TEXT_TURTLE.type;
-		String result = KnowledgeBaseClient.get(null, path, accept);
+		String result = AccessAgentCaller.get(null, path, accept);
 		assertEquals("@prefix",  result.substring(0,7));
 	}
 	
@@ -89,7 +89,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
 		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_LD_JSON.type;
-		String result = KnowledgeBaseClient.get(null, path, accept);
+		String result = AccessAgentCaller.get(null, path, accept);
 		assertTrue( result.contains("@id"));
 		assertTrue( result.contains("@type"));
 	}
@@ -97,7 +97,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	public void internClientSparqlQueryDirect(String dataset, String target) {
 		putE303LoadRemoteKBCOnly(dataset, target, null);
 		String sparql = "SELECT ?s ?p ?o WHERE { ?s ?p <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerLoad> } ";
-		String result = KnowledgeBaseClient.query(dataset, target, sparql);
+		String result = AccessAgentCaller.query(dataset, target, sparql);
 		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
@@ -119,12 +119,12 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 				"<http://example.com/zzz> dcterms:created \"2019-10-20T13:25:13.857\"^^xsd:dateTime . " + 
 				"}";
 		
-		KnowledgeBaseClient.update(dataset, target, sparqlupdate);
+		AccessAgentCaller.update(dataset, target, sparqlupdate);
 		
 		// assert
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
-		String result = KnowledgeBaseClient.query(dataset, target, sparqlquery);
+		String result = AccessAgentCaller.query(dataset, target, sparqlquery);
 		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
@@ -146,10 +146,10 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 
 		String target = "http://localhost:9090/fancy/path/some.owl";
 		String body = UUID.randomUUID().toString();
-		KnowledgeBaseClient.put(datasetUrl, target, body, null);
+		AccessAgentCaller.put(datasetUrl, target, body, null);
 
 		String accept = null;
-		String result = KnowledgeBaseClient.get(datasetUrl, target, accept);
+		String result = AccessAgentCaller.get(datasetUrl, target, accept);
 		assertEquals(body,result);
 	}
 	

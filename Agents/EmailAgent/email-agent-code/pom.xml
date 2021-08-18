@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     
     <modelVersion>4.0.0</modelVersion>
@@ -13,9 +14,16 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         
-        <org.slf4j-version>1.6.6</org.slf4j-version>
+        <!-- Version of the JPS Base Library to use, can be overridden by child projects. -->
         <jps.base.version>1.4.0-SNAPSHOT</jps.base.version>
     </properties>
+    
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
     
     <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
     <distributionManagement>
@@ -29,16 +37,33 @@
         </repository>
     </distributionManagement>
     
+    <!-- Profiles are used to switch between building for development and production 
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+    <profiles>
+        <!-- This profile should be used for development builds. -->
+        <profile>
+            <id>dev-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Set property to download development logging config -->
+                <log.artifact>java-logging-dev</log.artifact>
+            </properties>
+        </profile>
+        
+        <!-- This profile should be used for production builds. -->
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <!-- Set property to download production logging config -->
+                <log.artifact>java-logging-prod</log.artifact>
+            </properties>
+        </profile>
+    </profiles>
+    
     <!-- Build settings -->
     <build>
-        <finalName>email_agent</finalName>
-         
-        <resources>
-            <resource>  
-                <directory>${basedir}/logging</directory>
-            </resource>
-        </resources>
-    
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -63,32 +88,43 @@
                 <version>2.22.0</version>
             </plugin>
             
+            <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
+            gets copied into the final WAR file's internal WEB-INF directory. -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.2.2</version>
-                <configuration>
-                    <failOnMissingWebXml>true</failOnMissingWebXml>
-                    <webXml>WEB-INF\web.xml</webXml>
-                    <warName>${project.artifactId}##${project.version}</warName>
-                    <outputDirectory>output</outputDirectory>
-                </configuration>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
             </plugin>
-         
+            
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the 
+                parent POM unless overridden here. -->
+            </plugin>
+
         </plugins>
     </build>
     
     <!-- Dependencies -->
     <dependencies>
         
-        <!-- Java servlet API -->
+        <!-- JPS Base Library -->
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>${jps.base.version}</version>
+        </dependency>
+        
+        <!-- Java servlet API, version pulled from parent -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
-            <scope>provided</scope>
         </dependency>
         
+        <!-- Mail handling -->
         <dependency>
             <groupId>com.sun.mail</groupId>
             <artifactId>javax.mail</artifactId>
@@ -102,25 +138,29 @@
             <version>20210307</version>
         </dependency>
         
-        <!-- JPS Base Library -->
+        <!-- Logging, versions pulled from parent -->
         <dependency>
-            <groupId>uk.ac.cam.cares.jps</groupId>
-            <artifactId>jps-base-lib</artifactId>
-            <version>${jps.base.version}</version>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+        </dependency>
+       
         
-        <!-- Testing -->
+        <!-- Testing, versions pulled from parent -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.7.2</version>
-            <scope>test</scope>
         </dependency>
         
         <!-- Used to mock environment variables in testing -->

@@ -1,4 +1,6 @@
 from compchemparser.helpers.utils import readFile, fileExists, getRefName
+class NotSupportedStage(Exception):
+    """Raise for not supported abox processing stages. """
 
 class StageHandler:
     """
@@ -92,9 +94,10 @@ class Pipeline:
     The Pipeline interface declares a method for building the chain of handlers.
     It also declares a method for executing a request.
     """
-    def __init__(self):
+    def __init__(self, supportedStages):
         self.handlers= {}
-        self.writtenFiles=[]
+        self.supportedStages=supportedStages
+        self.writtenFiles = []
 
     def add_handler(self, handler, handlerName):
         self.handlers[handlerName]=handler
@@ -102,6 +105,9 @@ class Pipeline:
 
     def execute(self, inputs, inputType, outPath=None):
         for handler in self.handlers.values():
+            if inputType not in self.supportedStages:
+                requestedStage=inputType.name.lower()
+                raise NotSupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
             inputs, inputType, writtenFiles = handler.run(inputs, inputType, outPath)
             if writtenFiles: self.writtenFiles.extend(writtenFiles)
         return inputs, inputType

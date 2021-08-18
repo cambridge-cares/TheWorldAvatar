@@ -28,7 +28,8 @@ from chemaboxwriters.ontospecies.prefixes import onto_spec, \
                                                  gain_pref, \
                                                  kin_pref, \
                                                  table_pref, \
-                                                 unit_pref
+                                                 unit_pref, \
+                                                 onto_kb
 
 def species_csv_abox_from_string(data):
     data = json.loads(data)
@@ -59,6 +60,8 @@ def species_csv_abox_from_string(data):
     return csvcontent
 
 def write_prelim(spamwriter,out_id,label):
+    spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])
+    spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_kb[:-1],'base','',''])
     spamwriter.writerow([out_id, 'Instance','Species','','',''])
     spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id,'String'])
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
@@ -112,8 +115,9 @@ def write_charge_info(spamwriter,gen_id,out_id,data):
     charge = data[FORMAL_CHARGE]
     spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
     spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
-    spamwriter.writerow([onto_spec + '#value','Data Property','Charge_' + gen_id,'',charge,'String'])
-    spamwriter.writerow([onto_spec + '#units','Data Property','Charge_' + gen_id,'','e','String'])
+    spamwriter.writerow([gain_pref + 'hasValue','Instance','Charge_' + gen_id,'',charge,'String'])
+    spamwriter.writerow(['Charge_' + gen_id,'Instance','Charge_' + gen_id, 
+                        unit_pref + 'unit#AtomicChargeUnit',gain_pref + 'hasUnit','',''])
     spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
 
@@ -133,6 +137,7 @@ def write_molwts(spamwriter,gen_id,out_id,data):
     molwt = data[MOLWT]
     spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
-    spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
-    spamwriter.writerow([onto_spec + '#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
+    spamwriter.writerow([gain_pref + 'hasValue','Instance','MolecularWeight_' + gen_id,'',molwt,'String'])
+    spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance', 
+                          unit_pref + 'unit#Dalton', gain_pref + 'hasUnit','',''])
 

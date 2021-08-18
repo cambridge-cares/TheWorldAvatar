@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -660,12 +660,12 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
 			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
 			// (which is done bz the MetaDataAnnotator)
-			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
+			AccessAgentCaller.update(metadatasetUrl, null, sparql);
 			return;
 		}
 		
 		if (!kb.exists(resourceUrl)) {
-			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			String content = AccessAgentCaller.get(null, resourceUrl, null);
 			kb.put(resourceUrl, content, null);
 		}
 		kb.update(resourceUrl, sparql);
@@ -676,7 +676,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			return kb.get(resourceUrl, accept);
 		} 
 		
-		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
+		String content = AccessAgentCaller.get(externalDatasetUrl, resourceUrl, accept);
 		if (copyOnRead) {
 			kb.put(resourceUrl, content, accept);
 			if (accept != null) {
@@ -697,14 +697,14 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			// will not work with current knowledge base implementation for Fuseki
 			//String datasetUrl = kb.getDatasetUrl();
 			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
-			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
+			return AccessAgentCaller.query(metadatasetUrl, null, sparql);
 		}
 		
 		if (kb.exists(resourceUrl)) {
 			return kb.query(resourceUrl, sparql);
 		} 
 		
-		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+		String content = AccessAgentCaller.get(null, resourceUrl, null);
 		if (copyOnRead) {
 			kb.put(resourceUrl, content, null);
 			return kb.query(resourceUrl, sparql);
