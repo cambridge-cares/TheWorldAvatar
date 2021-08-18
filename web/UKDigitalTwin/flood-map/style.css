@@ -78,3 +78,7 @@ body.effectsOff #tiltShift body.effectsOff #map {
 .legend-right p {
 	float: left;
 }
+
+li.groupCheck:not(.layerGroupCheck) label {
+	margin-left: 5px;
+}

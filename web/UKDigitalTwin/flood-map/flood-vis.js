@@ -13,6 +13,12 @@ const svgTemplate = `
 	</tr>
 `;
 
+const floodFilter = {
+	property: "type",
+	type: "categorical",
+	stops: [["Fluvial / Tidal Models", "#0080ff"], ["Fluvial Models", "#ff0080"], ["Tidal Models", "#80ff00"]]
+};
+
 function addMouseEffects(map, layerName) {
 	// On mouse enter
 	map.on('mouseenter', layerName, function (e) {
@@ -88,7 +94,7 @@ function addLabels(map, layerName, sourceName, innerColor, outerColor, nameField
 			"text-color": innerColor,
 			"text-halo-color": outerColor,
 			"text-halo-width": 0.8,
-			"text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8.5, 0, 12.5, 1]
+			"text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8.5, 0, 10, 1]
 		}
 	});
 }
@@ -101,14 +107,13 @@ function resetSidePanel() {
 	document.getElementById('dateContainer').style.display = "none";
 
 	var titleHTML = `
-		<h2>UK Flood Map</h2>
+		<h2>UK Flood Risk</h2>
 	`;
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
-		<p>The map to the left shows a sample of the flood data within the UK Digital Twin.​</p>
-		<p>Here is some text that explains what's shown within the visualisation as well as a few lines on
-		how to use the controls to change what you're looking at. Blah Blah Blah.​</p>
+		<p>The map to the left uses the UK Digital Twin to identify a number of assets at risk to a possible flood scenario.​</p>
+		<p>Use the layer controls to show/hide different types of assets. Nodes can also be selected to show more detailed information.</p>
 	`;
 	setSidePanelText(textHTML);
 }
@@ -190,12 +195,21 @@ function sortFunction(a, b) {
 function updateLegend(activeLayers) {
 	var html = `<div id="legend" class="w3-sidebar w3-bar-block w3-light-grey w3-card">`;
 	html += `<div class="w3-bar-item legend-title">Legends:</div>`;
+	html += `<button id="flood-button" class="w3-bar-item w3-button tablink" onclick="openLegend(event, 'flood-legend')">Flood</button>`;
 	html += `<button id="power-button" class="w3-bar-item w3-button tablink" onclick="openLegend(event, 'power-legend')">Power</button>`;
 	html += `<button id="gas-button" class="w3-bar-item w3-button tablink" onclick="openLegend(event, 'gas-legend')">Gas</button>`;
 	html += `<button id="crop-button" class="w3-bar-item w3-button tablink" onclick="openLegend(event, 'crop-legend')">Crops</button>`;
 	html += `</div>`;
 
-	console.log(html);
+	var floodDiv = `
+		<div id="flood-legend" class="w3-container legend-right" style="display:none">
+		<div id="padding" style="height: 6px;"></div>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend/flood/fluvial.png"/>Fluvial Models</div>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend/flood/tidal.png"/>Tidal Models</div>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend/flood/fluvial-tidal.png"/>Fluvial/Tidal Models</div>
+		</div>
+	`;
+	html += floodDiv;
 
 	var powerDiv = `
 		<div id="power-legend" class="w3-container legend-right" style="display:none">

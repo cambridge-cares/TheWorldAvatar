@@ -21,6 +21,6 @@ Note that during development, you can also create a "bind mount", mounting a dir
 + To build the image:
   + `docker build --rm --no-cache --target development -t docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 3002:80 --restart always --name "flood-vis" -it docker.cmclinnovations.com/pflood-vis:1.0.0-SNAPSHOT-dev`
+  + `docker run -d -p 3002:80 --restart always -v "$(pwd)":/var/www/html --name "flood-vis" -it docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev`
 + To push the image to the CMCL registry (after logging in):
   + `docker image push docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev`
