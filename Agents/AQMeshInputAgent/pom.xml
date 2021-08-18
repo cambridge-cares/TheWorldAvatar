@@ -49,6 +49,12 @@
             <resource>  
                 <directory>${basedir}/logging</directory>
             </resource>
+            <resource>
+                <directory>${project.build.directory}/${project.build.finalName}.conf</directory>
+                <includes>
+                    <include>**/*.xml</include>
+                </includes>
+            </resource>
         </resources>
     
         <plugins>
@@ -58,8 +64,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
