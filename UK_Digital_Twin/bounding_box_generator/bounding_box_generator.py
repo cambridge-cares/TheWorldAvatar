@@ -45,7 +45,7 @@ def feature_intersection(feature_polygons,feature_points,crs1,crs2):
 
 def coordinate_conversion(file):
 	features,crs = open_features(file)
-	geo_df = gpd.GeoSeries.from_features(features,crs=crs)
+	geo_df = gpd.GeoDataFrame.from_features(features,crs=crs)
 	geo_df = geo_df.to_crs("EPSG:4326")
 	geo_df.to_file(file,driver="GeoJSON")
 	return 
