@@ -13,6 +13,7 @@ FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
 # Output location
 OUTPUT_FOLDER = "/var/www/html/gas-grid"
+OUTPUT_FOLDER = ""
 
 # Maximum batch size for results
 BATCH_SIZE = 50_000
@@ -135,15 +136,16 @@ def outputPipes():
 		# sort pipe order
 		sort_index = np.argsort(pipe[:,2])
 		sorted_pipe = pipe[sort_index,:]
-		# start of geoJSON line 
-		feature_start = """{ "type": "Feature", "properties": {"name": "%s" ,"stroke":"#000000"}, "geometry": { "type": "MultiLineString", "coordinates": [ [""" % name
-		# appending coordinates 
-		for j in range(len(sort_index)):
-				feature_start += "["+sorted_pipe[j,1]+","+sorted_pipe[j,0]+"],"
-		# finishing line 
-		feature_start = feature_start[:-1]
-		feature_start += "]]}},"
-		geojson_file += '\n'+feature_start
+		if len(sorted_pipe) != 1:
+			# start of geoJSON line 
+			feature_start = """{ "type": "Feature", "properties": {"name": "%s" ,"stroke":"#000000"}, "geometry": { "type": "MultiLineString", "coordinates": [ [""" % name
+			# appending coordinates 
+			for j in range(len(sort_index)):
+					feature_start += "["+sorted_pipe[j,1]+","+sorted_pipe[j,0]+"],"
+			# finishing line 
+			feature_start = feature_start[:-1]
+			feature_start += "]]}},"
+			geojson_file += '\n'+feature_start
 
 	# Removing last comma in last line
 	geojson_file = geojson_file[:-1]
