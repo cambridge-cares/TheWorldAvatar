@@ -1,5 +1,9 @@
 package uk.ac.cam.cares.jps.agent.utils;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.aqmesh.AQMeshInputAgentLauncher;
+
 import java.io.*;
 import java.util.*;
 import java.util.regex.Pattern;
@@ -10,12 +14,28 @@ import java.util.regex.Pattern;
  */
 public class JSONKeyToIRIMapper {
 
+    /**
+     * Prefix to use when generating IRIs
+     */
     private String iriPrefix;
-    // Mapping from JSON key to IRI
+    /**
+     * Mapping from JSON key to IRI
+     */
     private final HashMap<String, String> jsonToIRIMapping  = new HashMap<>();
-    // Mapping from IRI to JSON key
+    /**
+     * Mapping from IRI to JSON key
+     */
     private final HashMap<String, String> iriToJSONMapping  = new HashMap<>();
-
+    /**
+     * Logger for reporting info/errors.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AQMeshInputAgentLauncher.class);
+    /**
+     * Logging / error messages
+     */
+    private static final String FILE_NOT_FOUND_MSG = "No properties file found at specified filepath: %s";
+    private static final String DUPLICATE_IRI_MSG = "The IRI %s is already used for the key %s, and can not be used for key %s";
+    private static final String NOT_VALID_URI_MSG = "The value for key %s is not a valid URI: %s";
 
     /**
      * Standard constructor can be used if the mapping to use does not contain keys without value.
@@ -49,7 +69,8 @@ public class JSONKeyToIRIMapper {
         // Check whether properties file exists at specified location
         File file = new File(filepath);
         if (!file.exists()) {
-            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
+            LOGGER.error(String.format(FILE_NOT_FOUND_MSG, filepath));
+            throw new FileNotFoundException(String.format(FILE_NOT_FOUND_MSG, filepath));
         }
         // Read the mapping from the properties file
         // Try-with-resource to ensure closure of input stream
@@ -66,15 +87,15 @@ public class JSONKeyToIRIMapper {
                 if (value.isEmpty()) {
                     // Create a random IRI in the format: <Prefix>_<JSONKey>_<UUID>
                     value = generateIRI(this.iriPrefix, key);
-                    // TODO: Should be replaces by logging
-                    System.out.println("No IRI provided for key " + key + ". The IRI was automatically generated: " + value);
+                    LOGGER.info("No IRI provided for key " + key + ". The IRI was automatically generated: " + value);
                 }
                 // Check that the IRI is valid
                 if (checkIRI(value)) {
                     // Check that the IRI is not already used for another key
                     String oldKey = iriToJSONMapping.get(value);
                     if (oldKey != null) {
-                        throw new IOException("The IRI "+ value + " is already used for the key " + oldKey + ", and can not be used for key " + key);
+                        LOGGER.error(String.format(DUPLICATE_IRI_MSG, value, oldKey, key));
+                        throw new IOException(String.format(DUPLICATE_IRI_MSG, value, oldKey, key));
                     }
                     // Update both maps
                     else {
@@ -83,7 +104,8 @@ public class JSONKeyToIRIMapper {
                     }
                 }
                 else {
-                    throw new IOException("The value for key "+ key + " is not a valid URI: " + value);
+                    LOGGER.error(String.format(NOT_VALID_URI_MSG, key, value));
+                    throw new IOException(String.format(NOT_VALID_URI_MSG, key, value));
                 }
             }
         }
