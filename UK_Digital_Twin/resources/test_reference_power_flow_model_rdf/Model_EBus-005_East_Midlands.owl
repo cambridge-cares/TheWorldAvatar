@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#VmMax_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_VmMax_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMax"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Zone_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Zone"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Zone_EBus-005_East_Midlands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Model_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Submodel"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#VmMin_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Zone_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BusNumber_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Va_EBus-005_East_Midlands"/>
+    <ns1:isExclusivelySubsystemOf rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus.owl#Model_EBus"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Bs_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Gd_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Vm_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#VmMax_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BaseKV_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BusType_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Gs_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Area_EBus-005_East_Midlands"/>
+    <ns2:hasModelVariable rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Pd_EBus-005_East_Midlands"/>
+    <ns1:models rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_VmMin_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Area_EBus-005_East_Midlands">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Area_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Area"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BaseKV_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#baseKV"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BaseKV_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#VmMin_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#VmMin"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_VmMin_EBus-005_East_Midlands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Gs_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Gd_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GdBus"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Gd_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Zone_EBus-005_East_Midlands">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Gs_EBus-005_East_Midlands">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Gs_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Gs"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Bs_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Vm_EBus-005_East_Midlands">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Vm_EBus-005_East_Midlands">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Vm_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vm"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BusNumber_EBus-005_East_Midlands">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BusNumber_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Va_EBus-005_East_Midlands">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Pd_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PdBus"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Pd_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Area_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl">
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#InputVariable_Va_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Va"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Va_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#InputVariable"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#BusType_EBus-005_East_Midlands">
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BusType_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BaseKV_EBus-005_East_Midlands">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">400</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#EBus-005_East_Midlands">
+    <ns1:isModeledBy rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Model_EBus-005_East_Midlands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_VmMax_EBus-005_East_Midlands">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Bs_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Bs"/>
+    <ns1:hasValue rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_Bs_EBus-005_East_Midlands"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#Parameter"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BusNumber_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Pd_EBus-005_East_Midlands">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2354.482</ns1:numericalValue>
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus.owl#Model_EBus">
+    <ns1:isComposedOfSubsystem rdf:resource="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#Model_EBus-005_East_Midlands"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_InputVariable_Gd_EBus-005_East_Midlands">
+    <ns1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</ns1:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EBus-005_East_Midlands.owl#value_BusType_EBus-005_East_Midlands">
+    <ns1:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</ns1:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </rdf:Description>
+</rdf:RDF>
