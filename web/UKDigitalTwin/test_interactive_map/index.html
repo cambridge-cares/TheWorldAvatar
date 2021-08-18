@@ -140,54 +140,85 @@
             resetSidePanel();
             updateLegend(currentLayer);
 
-            map.addSource('Electricity_Consumption', {
+            map.addSource('Electricity_Consumption_region', {
                 type: 'geojson',
-                data: 'UK_Electricity_Consumption.geojson'
+                data: 'UK_Electricity_Consumption_Regions.geojson'
             });
 
+            map.addSource('Electricity_Consumption_area', {
+                type: 'geojson',
+                data: 'UK_Electricity_Consumption_Areas.geojson'
+            });
 
             map.addLayer({
-                'id': 'Electricity_Consumption_fill',
-                'type': 'fill',
-                'source': 'Electricity_Consumption', // reference the data source
+                'id': 'Electricity_Consumption_region_line',
+                'type': 'line',
+                'source': 'Electricity_Consumption_region', // reference the data source
                 'layout': {},
                 'paint': {
                     // 'fill-color': 'rgba(200, 100, 240, 0.4)',
                     // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
                     // 'fill-antialias': false
+                    'line-color': '#2b8cbe',
+                    'line-width': 2
+                }
+            });
+
+            map.addLayer({
+                'id': 'Electricity_Consumption_area_fill',
+                'type': 'fill',
+                'source': 'Electricity_Consumption_area', // reference the data source
+                'layout': {},
+                'paint': {                   
                     'fill-color': '#0080ff', // blue color fill
                     'fill-opacity': 0.5
                 }
             });
 
             map.addLayer({
-                'id': 'Electricity_Consumption_line',
+                'id': 'Electricity_Consumption_area_fill',
                 'type': 'line',
-                'source': 'Electricity_Consumption', // reference the data source
+                'source': 'Electricity_Consumption_area', // reference the data source
                 'layout': {},
                 'paint': {
-                    // 'fill-color': 'rgba(200, 100, 240, 0.4)',
-                    // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
-                    // 'fill-antialias': false
                     'line-color': '#9ecae1',
-                    'line-width': 2
+                    'line-width': 1
                 }
             });
 
-            map.on('click', 'Electricity_Consumption_fill', function (e) {
+            map.on('click', 'Electricity_Consumption_area_fill', function (e) {
                 new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
+                    .setHTML(e.features[0].properties.Location)
                     .setHTML(e.features[0].properties.TotalELecConsumption)
                     .addTo(map);
             });
 
             // Change the cursor to a pointer when the mouse is over the states layer.
-            map.on('mouseenter', 'Electricity_Consumption_fill', function () {
+            map.on('mouseenter', 'Electricity_Consumption_area_fill', function () {
                 map.getCanvas().style.cursor = 'pointer';
             });
 
             // Change it back to a pointer when it leaves.
-            map.on('mouseleave', 'Electricity_Consumption_fill', function () {
+            map.on('mouseleave', 'Electricity_Consumption_area_fill', function () {
+                map.getCanvas().style.cursor = '';
+            });
+
+            map.on('click', 'Electricity_Consumption_region_line', function (e) {
+                new mapboxgl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(e.features[0].properties.Location)
+                    .setHTML(e.features[0].properties.TotalELecConsumption)
+                    .addTo(map);
+            });
+
+            // Change the cursor to a pointer when the mouse is over the states layer.
+            map.on('mouseenter', 'Electricity_Consumption_region_line', function () {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Change it back to a pointer when it leaves.
+            map.on('mouseleave', 'Electricity_Consumption_region_line', function () {
                 map.getCanvas().style.cursor = '';
             });
 

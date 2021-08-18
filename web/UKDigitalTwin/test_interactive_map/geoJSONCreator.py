@@ -1,3 +1,9 @@
+####################################################
+# Author: Wanni Xie (wx243@cam.ac.uk)              #
+# Extended from: Tom Savage (trs3@cam.ac.uk)       #
+# Last Update Date: 18 August 2021                 #
+####################################################
+
 import matplotlib.cm 
 from colourLayers import gen_fuel_col
 
@@ -94,16 +100,10 @@ def elecConsAndGEOInfogeoJSONCreator(ret_elec, class_label):
               "DomesticConsumption": "%s",
               "Industrial_and_Commercial": "%s"
             },
-            "geometry": {
-              "type": "%s",
-              "coordinates": [
-                %s
-              ]
-            }
-          },"""%(ret_elec[i,0], ret_elec[i,1], ret_elec[i,2], ret_elec[i,3], ret_elec[i,4], ret_elec[i,5], ret_elec[i,6])
+            "geometry":  %s             
+          },"""%(ret_elec[i,0], ret_elec[i,1], ret_elec[i,2], ret_elec[i,3], ret_elec[i,4], str(ret_elec[i,5]).replace("\'", "\""))         
           # adding new line 
-          geojson_file += '\n'+feature
-    
+          geojson_file += '\n'+feature   
     # removing last comma as is last line
     geojson_file = geojson_file[:-1]
     # finishing file end 
