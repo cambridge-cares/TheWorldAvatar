@@ -47,6 +47,8 @@ public class AQMeshInputAgentTest {
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
         writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder));
+        // In rare cases there is an error when running the tests in that line due to the fact that the initialization both
+        // reads and writes to the mapping files. Only occurs when different threads run this in parallel.
         testAgent = new AQMeshInputAgent(propertiesFile);
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);

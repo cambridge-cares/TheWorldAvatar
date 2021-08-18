@@ -134,7 +134,7 @@ public class AQMeshInputAgent {
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 tsClient.initTimeSeries(iris, classes, timeUnit);
-                LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(",", iris)));
+                LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             }
         }
     }
@@ -190,7 +190,7 @@ public class AQMeshInputAgent {
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
                     tsClient.addTimeSeriesData(ts);
-                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(",", ts.getDataIRIs())));
+                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 }
             }
         }
