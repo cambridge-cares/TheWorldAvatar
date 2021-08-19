@@ -29,35 +29,8 @@ services:
       authors: "support@cmclinnovations.com"
       builder: "${BUILDER}"
       hash: "${HASH}"
-
-  # JPS Chatbot
-  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
-  jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
-    build:
-      context: "../../../JPS_Chatbot"
-    container_name: "jps-chatbot"
-    restart: unless-stopped
-    labels:
-      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
-      authors: "xz378@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      hash: "${HASH}"
-
-  # JPS LDF Server
-  jps-ldf:
-    image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
-    build:
-      context: "../../../JPS_LDF"
-    container_name: "jps-ldf"
-    restart: unless-stopped
-    labels:
-      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
-      authors: "xz378@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      hash: "${HASH}"
-
-      # Local execution environment for SRM Driver.
+      
+  # Local execution environment for SRM Driver.
   # Note: This Image contains the SRM Driver and Intel MPI files (without
   #       any queueing functionality).
   srm-driver:
