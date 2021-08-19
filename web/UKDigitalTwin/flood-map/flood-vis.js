@@ -29,10 +29,12 @@ function addMouseEffects(map, layerName) {
 			var name = e.features[0].properties["name"];
 			
 			if(name == null || name === "") {
-				var name = e.features[0].properties["Offtake Point (License Name)"];
+				name = e.features[0].properties["Offtake Point (License Name)"];
 			} else if(name.startsWith("http")) {
 				name = crops[name];
 			}
+
+			if(name == null) return;
 			name = name.replaceAll("_", " ");
 
 			var html = `
@@ -51,6 +53,10 @@ function addMouseEffects(map, layerName) {
 
 	// On selection
 	map.on('click', layerName, function (e) {
+
+		console.log("PROPERTIES")
+		console.log(e.features[0].properties);
+
 		var coordinates = e.features[0].geometry.coordinates.slice();
 		selectItem(coordinates, e.features[0].properties);
 
@@ -131,11 +137,17 @@ function selectItem(location, properties) {
 	}
 
 	var name = properties["name"];
+	console.log("NAME IS " + name);
+
 	if(name == null || name === "") {
-		var name = properties["Offtake Point (License Name)"];
+		name = properties["Offtake Point (License Name)"];
 	} else if(name.startsWith("http")) {
+		console.log("looking for crop name");
 		name = crops[name];
+		console.log("crop name is " + name);
 	}
+
+	if(name == null) return;
 	name = name.replaceAll("_", " ");
 
 	// Set title to item name
@@ -282,10 +294,10 @@ function openLegend(evt, dataSet) {
 	}
 	tablinks = document.getElementsByClassName("tablink");
 	for (i = 0; i < x.length; i++) {
-	  tablinks[i].className = tablinks[i].className.replace(" w3-red", ""); 
+	  tablinks[i].className = tablinks[i].className.replace(" w3-blue", ""); 
 	}
 	document.getElementById(dataSet).style.display = "block";
-	evt.currentTarget.className += " w3-red";
+	evt.currentTarget.className += " w3-blue";
 }
 
 

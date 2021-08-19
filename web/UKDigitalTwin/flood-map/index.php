@@ -163,8 +163,8 @@
 		currentLayers.push("flooded_gas_offtake_labels");
 		currentLayers.push("flooded_pipe_icons");
 
-		//registerLayer("Crops", ["flooded_crop_icons"], "At Risk Assets", true);
-		//currentLayers.push("flooded_crop_icons");
+		registerLayer("Crops", ["flooded_crop_icons"], "At Risk Assets", true);
+		currentLayers.push("flooded_crop_icons");
 
 		// Register "All Assets" layers
 		registerLayer("Power Generation", ["all_power_icons", "all_power_labels"], "All Assets", false);
@@ -223,10 +223,10 @@
 				type: 'vector',
 				url: 'mapbox://cmclinnovations.cbyd44fh',
 			});
-			//map.addSource('flooded_crops', {
-			// 	type: 'vector',
-			// 	url: 'mapbox://cmclinnovations.cbyd44fh',
-			// });
+			map.addSource('flooded_crops', {
+				type: 'vector',
+				url: 'mapbox://cmclinnovations.8yd3a9pu',
+			});
 
 			// Add the powerplant data
 			map.addSource('all_power', {
@@ -266,8 +266,10 @@
 
 			// Add the flood data
 			map.addSource('flood', {
-				type: 'geojson',
-				data: 'data/flood/flood.geojson'
+				type: 'vector',
+				url: 'mapbox://cmclinnovations.c94vzz6r',
+				// type: 'geojson',
+				// data: 'data/flood/flood.geojson'
 			});
 			// ============ DATA SOURCES ===========	
 
@@ -340,28 +342,28 @@
 					"circle-color": crop_colors
 				}
 			});
-			// map.addLayer({
-			// 	"id": "flooded_crop_icons",
-			// 	"source": "flooded_crops",
-			// 	"source-layer": "data",
-			// 	"type": "circle",
-			// 	'layout': {
-			// 		'visibility': currentLayers.includes("flooded_crop_icons") ? 'visible' : 'none'
-			// 	},
-			// 	"paint": {
-			// 		"circle-opacity": 0.65,
-			// 		"circle-radius": [
-			// 			"interpolate",
-			// 			["linear"],
-			// 			["zoom"],
-			// 			10,
-			// 			3,
-			// 			20,
-			// 			15
-			// 		],
-			// 		"circle-color": crop_colors
-			// 	}
-			// });
+			map.addLayer({
+				"id": "flooded_crop_icons",
+				"source": "flooded_crops",
+				"source-layer": "flood_crops",
+				"type": "circle",
+				'layout': {
+					'visibility': currentLayers.includes("flooded_crop_icons") ? 'visible' : 'none'
+				},
+				"paint": {
+					"circle-opacity": 0.65,
+					"circle-radius": [
+						"interpolate",
+						["linear"],
+						["zoom"],
+						10,
+						3,
+						20,
+						15
+					],
+					"circle-color": crop_colors
+				}
+			});
 
 			// Powerplant circles
 			map.addLayer({
@@ -474,6 +476,7 @@
 				'id': 'flood_tidal',
 				'type': 'fill',
 				'source': 'flood', 
+				"source-layer": "flood",
 				'layout': {
 					'visibility': currentLayers.includes("flood_tidal") ? 'visible' : 'none'
 				},
@@ -487,6 +490,7 @@
 				'id': 'flood_fluvial',
 				'type': 'fill',
 				'source': 'flood', 
+				"source-layer": "flood",
 				'layout': {
 					'visibility': currentLayers.includes("flood_fluvial") ? 'visible' : 'none'
 				},
@@ -500,6 +504,7 @@
 				'id': 'flood_both',
 				'type': 'fill',
 				'source': 'flood', 
+				"source-layer": "flood",
 				'layout': {
 					'visibility': currentLayers.includes("flood_both") ? 'visible' : 'none'
 				},
@@ -588,7 +593,7 @@
 			addMouseEffects(map, "cambridgeshire_crop_icons");
 			addMouseEffects(map, "norfolk_crop_icons");
 			addMouseEffects(map, "suffolk_crop_icons");
-			//addMouseEffects(map, "flooded_crop_icons");
+			addMouseEffects(map, "flooded_crop_icons");
 			// ============ EVENTS ============
 		});
 
