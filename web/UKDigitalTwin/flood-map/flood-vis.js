@@ -118,8 +118,8 @@ function resetSidePanel() {
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
-		<p>The map to the left uses the UK Digital Twin to identify a number of assets at risk to a possible flood scenario.​</p>
-		<p>Use the layer controls to show/hide different types of assets. Nodes can also be selected to show more detailed information.</p>
+		<p>The map to the left uses the digital twin to identify assets that are at risk from a possible flood scenario.</p>
+		<p>Use the layer controls to show/hide different types of asset. The nodes on the map can be selected to show more detailed information.</p>
 	`;
 	setSidePanelText(textHTML);
 }

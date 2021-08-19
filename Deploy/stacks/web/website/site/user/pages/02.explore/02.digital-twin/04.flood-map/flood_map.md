@@ -11,8 +11,7 @@ slug: flood-map
 	</div>
 	<div class="intro-center">
 		<h2>Flood Risk</h2>
-		<p>The UK Digital Twin supports queries across number of aspects of the UK energy related infrastructure, including the electrical power system, the gas transmission system, and land use.​</p>
-		<p>The Knowledge Graph based architecture of the Digital Twin allows the addressing of cross-domain geospatial questions and analysis of risk scenarios. The map below shows a possible flood scenario in/around King's Lynn and uses the Knowledge Graph to identify assets at risk. To view different types of assets, use the controls on the left, or click on a node to view more information.</p>
+		<p>The UK Digital Twin can be queried to address cross-domain geospatial questions and analysis of risk scenarios. In the example below, the digital twin is used to identify assets that are at risk from flooding in the vicinity of King's Lynn. The flood region is based on the <a href="https://ckan.publishing.service.gov.uk/dataset/flood-map-for-planning-rivers-and-sea-flood-zone-3">Flood Map for Planning (Rivers and Sea) - Flood Zone 3</a>, which is the best estimate of land that in the absence of flood defences has more than a 1 in 100 (1%) of flooding each year from rivers (a fluvial flood) or more than a 1 in 200 (0.5%) or greater chance of flooding each year from the sea (a tidal flood).</p>
 	</div>
 </div>
 
