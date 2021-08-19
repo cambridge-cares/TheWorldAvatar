@@ -7,6 +7,7 @@ services:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     container_name: email-agent
     hostname: email-agent
+    pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - "8099:8080"  
@@ -15,6 +16,7 @@ services:
   gas-grid-agent:
     image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
     container_name: "gas-grid-agent"
+    pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - 4005:80
@@ -24,12 +26,14 @@ services:
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     container_name: "jps-chatbot"
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # JPS LDF Server
   jps-ldf:
     image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
     container_name: "jps-ldf"
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # Local execution environment for SRM Driver.
@@ -41,6 +45,7 @@ services:
     restart: unless-stopped
     hostname: "srm-driver"
     mac_address: "1a:2b:3c:4d:5e:6f"
+    pull_policy: if_not_present
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
@@ -51,6 +56,7 @@ services:
   kinetics-agent:
     image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
     container_name: "kinetics-agent-${MODE}"
+    pull_policy: if_not_present
     restart: unless-stopped
     volumes:
       - driver:/usr/local/srm-driver
@@ -61,6 +67,7 @@ services:
   slurm:
     image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
     container_name: "slurm-${MODE}"
+    pull_policy: if_not_present
     restart: unless-stopped
     privileged: true
     cap_add:

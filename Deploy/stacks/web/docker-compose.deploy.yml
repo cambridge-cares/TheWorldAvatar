@@ -6,12 +6,14 @@ services:
   website:
     image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
     container_name: "website"
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # Reverse Proxy
   reverse_proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
     container_name: "reverse_proxy"
+    pull_policy: if_not_present
     restart: always
     volumes:
       - type: bind
@@ -22,6 +24,7 @@ services:
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "uk-power-system"
+    pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - 3001:80
@@ -30,6 +33,7 @@ services:
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "uk-gas-grid"
+    pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - 4001:80
@@ -38,6 +42,7 @@ services:
   land-use:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "land-use"
+    pull_policy: if_not_present
     restart: unless-stopped
     ports:
       - 4003:80

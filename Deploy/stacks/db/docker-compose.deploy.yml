@@ -8,6 +8,7 @@ services:
     container_name: "blazegraph-${MODE}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
     secrets:
@@ -19,6 +20,7 @@ services:
   blazegraph_geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo-${MODE}"
+    pull_policy: if_not_present
     restart: unless-stopped
     volumes:
       - blazegraph_geo_data:/data
@@ -27,6 +29,7 @@ services:
   postgres:
     image: docker.cmclinnovations.com/postgres:13.3-alpine
     container_name: "postgres-${MODE}"
+    pull_policy: if_not_present
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
@@ -44,6 +47,7 @@ services:
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+    pull_policy: if_not_present
     restart: unless-stopped
     # Add secrets to set BASIC authentication passwords for both the workbench and server
     secrets:
