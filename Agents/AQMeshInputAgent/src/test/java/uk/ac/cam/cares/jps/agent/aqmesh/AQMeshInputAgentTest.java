@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.agent.aqmesh;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.ArgumentCaptor;
@@ -13,7 +12,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.OffsetDateTime;
@@ -34,39 +32,64 @@ public class AQMeshInputAgentTest {
 
     // A default list of IRIs
     private final List<String> iris = Arrays.asList("iri1", "iri2", "iri3");
+    // Default list of JSON keys
+    private final String[] keys = {"key1", "key2" ,"key3"};
+    // Default list of timestamps
+    private final String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00", "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
 
     // Readings used by several tests
     JSONArray particleReadings;
     JSONArray gasReadings;
 
     @Before
-    public void initializeAgent() throws URISyntaxException, IOException {
-        // Create a properties file that points to the example/test mapping folder in the resources //
-        String mappingFolder = Paths.get(Objects.requireNonNull(getClass().getResource("/mappings"))
-                .toURI()).toString().replace("\\","/");
+    public void initializeAgent() throws IOException {
+        // Create a properties file that points to a dummy mapping folder //
+        // Create an empty folder
+        String folderName = "mappings";
+        File mappingFolder = folder.newFolder(folderName);
+        // Add mapping file into the empty folder
+        String mappingFile = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping.properties").toString();
+        ArrayList<String> mappings = new ArrayList<>();
+        for (String key: keys) {
+            mappings.add(key + "=example:prefix/api_" + key);
+        }
+        writePropertyFile(mappingFile, mappings);
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder));
-        // In rare cases there is an error when running the tests in that line due to the fact that the initialization both
-        // reads and writes to the mapping files. Only occurs when different threads run this in parallel.
+        writePropertyFile(propertiesFile, Collections.singletonList("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
+                replace("\\","/")));
+        // Create agent
         testAgent = new AQMeshInputAgent(propertiesFile);
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
     }
 
     @Before
-    public void readExampleReadingsFromFile() throws URISyntaxException, IOException {
-        String particleReadingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_particle.json"))
-                .toURI()).toString();
-        try (InputStream input = new FileInputStream(particleReadingsFile)) {
-            JSONTokener tokener = new JSONTokener(input);
-            particleReadings = new JSONArray(tokener);
-        }
-        String gasReadingsFile = Paths.get(Objects.requireNonNull(getClass().getResource("/example_gas.json"))
-                .toURI()).toString();
-        try (InputStream input = new FileInputStream(gasReadingsFile)) {
-            JSONTokener tokener = new JSONTokener(input);
-            gasReadings = new JSONArray(tokener);
+    public void createExampleReadings() {
+
+        particleReadings = new JSONArray();
+        gasReadings = new JSONArray();
+
+        double value = 0.0;
+        for(String timestamp: timestamps) {
+            JSONObject currentGasMeasures = new JSONObject();
+            JSONObject currentParticleMeasures = new JSONObject();
+            // Put the timestamp in the current reading
+            currentGasMeasures.put(AQMeshInputAgent.timestampKey, timestamp);
+            currentParticleMeasures.put(AQMeshInputAgent.timestampKey, timestamp);
+            // Put values for each key into the current readings
+            for(String key: keys) {
+                // Use the first key for gas and the remaining for particle readings
+                if (key.equals(keys[0])) {
+                    currentGasMeasures.put(key, value);
+                }
+                else {
+                    currentParticleMeasures.put(key, value);
+                }
+            }
+            particleReadings.put(currentParticleMeasures);
+            gasReadings.put(currentGasMeasures);
+            value++;
         }
     }
 
@@ -99,7 +122,7 @@ public class AQMeshInputAgentTest {
         }
 
         // Create an empty folder
-        folderName = "mappings";
+        folderName = "mappings_test";
         File mappingFolder = folder.newFolder(folderName);
         // Create a property file with the empty folder
         folderName = mappingFolder.getCanonicalPath().replace("\\","/");
@@ -262,8 +285,6 @@ public class AQMeshInputAgentTest {
         }
 
         // Create readings with timestamps and missing keys
-        String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00",
-                "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
         for(String timestamp: timestamps) {
             String json = "{ '" + AQMeshInputAgent.timestampKey + "':'" + timestamp + "'}";
             particleReadings.put(new JSONObject(json));
@@ -431,7 +452,7 @@ public class AQMeshInputAgentTest {
             IllegalAccessException, InvocationTargetException {
         // Create an agent with mappings of small size //
         // Create a folder inside the temporary folder in which the mapping files will be
-        File mappingFolder= folder.newFolder("mappings");
+        File mappingFolder= folder.newFolder("mappings_test");
         // Define three sets of mappings
         String[] generalKeys = {"key1", "key2", "key3"};
         String[] gasKeys = {"gkey1", "gkey2", "gkey3", "gkey4"};
