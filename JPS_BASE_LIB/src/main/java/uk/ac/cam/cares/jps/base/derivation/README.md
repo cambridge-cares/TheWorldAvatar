@@ -52,7 +52,7 @@ There are two types of derivations
 
 2. Derivation with time series, initialised using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.createDerivationWithTimeSeries(List<String>, String, String, List<String>)`
   - e.g. createDerivationWithTimeSeries(entities, agentIRI, agentURL, inputs)
-  - It is assumed that the agents acting on these derivations add row(s) to the table(s), the entities under these derivations are not deleted and replaced.
+  - It is assumed that the agents acting on these derivations add row(s) to some table(s), the entities under these derivations are not deleted and replaced.
 
 # Timestamps
 The DerivationClient compares the timestamp of the derivation instance with its input(s) to determine whether it's out-of-date. Each derivation instance is initialised with a timestamp automatically, timestamps for inputs have to be added manually using `uk.ac.cam.cares.jps.base.derivation.DerivationClient.addTimeInstance(String)`.
@@ -70,7 +70,7 @@ Upon receiving these inputs, the agent is expected to write new instances in the
 ```
 
 ## Derivation with time series
-The key difference for derivations with time series is that the DerivationClient does not delete and replace the instances, it only updates the timestamp upon calling the agent. Agents for these derivations should receive HTTP requests in the same manner and update the time series. Unlike derivations without time series, the DerivationClient does not read the HTTP response from these agents. 
+The key difference for derivations with time series is that the DerivationClient does not delete and replace the instances, it only updates the timestamp upon calling the agent. Agents for these derivations should receive HTTP requests in the same manner, perform the necessary calculations, and record the results in a time series table. Unlike derivations without time series, the DerivationClient does not read the HTTP response from these agents.
 
 If there are no thrown exceptions, the DerivationClient will assume that the update is successful and update the timestamp of the derivation instance.
 
