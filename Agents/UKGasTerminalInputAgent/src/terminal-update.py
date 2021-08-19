@@ -424,7 +424,7 @@ def get_flow_data_from_csv():
                 # is_dst=False is used to determine correct timezone in the ambiguous period
                 # at the end of daylight saving time
                 dateTimeObjUTC = tz.localize(dateTimeObj, False).astimezone(pytz.utc)
-                dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+                dateTimeStr = dateTimeObjUTC.strftime("%Y-%m-%dT%H:%M:%SZ")
 
                 flowValue = row[2]
                 data.append([terminalName, dateTimeStr, flowValue])
