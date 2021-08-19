@@ -55,7 +55,7 @@ The default port numbers for the containers are:
 Once the docker stack is up and running, you should be able to access the blazegraph container at (http://localhost:8889/blazegraph). If you are using pgAdmin, you can monitor the postgres container by creating a new server that connects to `localhost` with port number `7432`.
 
 ## Test
-To test the docker set up, there are integration tests written for this example - `uk.ac.cam.cares.derivation.example.IntegrationTest`. The tests should pass if the stack is up and running with the default port numbers. To run the tests, navigate to the folder containing the java project `DerivationExample`, and run the comamand `mvn clean test`.
+To test the docker set up, there are integration tests written for this example - `uk.ac.cam.cares.derivation.example.IntegrationTest`. The tests should pass if the stack is up and running with the default port numbers. To run the tests, navigate to the folder containing the java project `DerivationExample`, and run the command `mvn clean test`.
 
 ## Logs
 By default, logs are written to `/root/.jps/` within the docker container. To copy this file into your local directory, run the following command in the terminal
