@@ -50,8 +50,8 @@ slug: digital-twin
 			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Land Use](land-use)</div>
 		</td>
 		<td width="25%" colspan="1" style="text-align: center;">
-			<div markdown="1">[![Land Use](image://digital-twin/flood-map-thumb.jpg?classes=thumb-image)](flood-map)</div>
-			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Flood Risk](flood-map)</div>
+			<div markdown="1">[![Land Use](image://digital-twin/flood-map-thumb.jpg?classes=thumb-image)](flood-risk)</div>
+			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Flood Risk](flood-risk)</div>
 		</td>
 	</tr>
 </table>

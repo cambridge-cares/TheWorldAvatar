@@ -26,7 +26,7 @@ slug: land-use
 					<a href="/explore/digital-twin/gas-grid">&lt;&lt; Gas Grid</a>
 				</td>
 				<td width="50%" style="text-align: right;">
-					<a href="/explore/digital-twin/flood-map">Flood Risk &gt;&gt;</a>
+					<a href="/explore/digital-twin/flood-risk">Flood Risk &gt;&gt;</a>
 				</td>
 			<tr>
 		</table>

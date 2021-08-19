@@ -113,13 +113,13 @@ function resetSidePanel() {
 	document.getElementById('dateContainer').style.display = "none";
 
 	var titleHTML = `
-		<h2>UK Flood Risk</h2>
+		<h2>Flood Risk</h2>
 	`;
 	setSidePanelTitle(titleHTML);
 
 	var textHTML = `
 		<p>The map to the left uses the digital twin to identify assets that are at risk from a possible flood scenario.</p>
-		<p>Use the layer controls to show/hide different types of asset. The nodes on the map can be selected to show more detailed information.</p>
+		<p>Use the layer controls to show/hide different types of asset. The nodes on the map can be selected to show more detailed information about each asset.</p>
 	`;
 	setSidePanelText(textHTML);
 }
