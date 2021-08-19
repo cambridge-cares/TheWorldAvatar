@@ -32,7 +32,44 @@ services:
       - type: bind
         source: /var/log/kg-website-logs
         target: /var/log/nginx/persistent
-
+  
+  
+  # JPS Chatbot
+  # NOTE - You must set up Vienna credentials before attempting to build this server,
+  #        see the JPS_Chatbot/docker/README.txt file for details.
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-chatbot:
+    image: docker.cmclinnovations.com/jps-chatbot:0e837d
+    build:
+      context: "../../../JPS_Chatbot"
+    container_name: "jps-chatbot"
+    restart: unless-stopped
+    ports:
+      - 5000:5000 
+    labels:
+      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+    
+    
+  # JPS LDF Server
+  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:0e837d
+    build:
+      context: "../../../JPS_LDF"
+    container_name: "jps-ldf"
+    restart: unless-stopped
+    ports:
+      - 3000:3000 
+    labels:
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
+      authors: "xz378@cam.ac.uk, support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+  
+  
   # Power System and SDG Visualisation
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
