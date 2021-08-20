@@ -6,23 +6,20 @@
     <meta charset="utf-8">
 
     <!-- Javascript -->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+    <!--<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>-->
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
     <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
     <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
     <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
     <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
     <script src='power-system.js'></script>
-    <script src='us-states.js'></script>
-    <script src='England_Region_(December_2015)_Boundaries.js'></script>
-    <script src='Walse_Boundaries.js'></script>
-    <script src='Northern_Ireland_Boundery.js'></script>
-    <script src='Scotland_Boundaries.js'></script>
-    <script src='GB_City_Boundaries.js'></script>
-    <script src='Northern_Ireland_City_Boundaries.js'></script>
+    <script src='elect_consump.js'></script>
+
 
 
     <!-- Stylesheets -->
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+    <!--<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />-->
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet'>
     <link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
     <link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
@@ -43,15 +40,30 @@
 </head>
 
 <body>
+
+    <!--<style>
+        .map-overlay {
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            background-color: #fff;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+            position: absolute;
+            width: 25%;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            display: none;
+        }
+    </style>-->
+
     <!-- div is a DOM element -->
     <div id='map'></div>
     <div id="tiltShift"></div>
     <div id="controlsParent"></div>
-    <!--<div id="UKInteractiveMap"></div>-->
+    <!--<div id="map-overlay" class="map-overlay"></div>-->
 
     <script>
 
-        // ###############################################################################################################################################################
         var currentLayer = "power";
 
         // Add map controls
@@ -65,16 +77,18 @@
 
         // Show loading icon whilst stuff spins up
         var loadingHTML = `
-				<br><br><br><br><br>
-				<img width='150' src='loading.gif'></img>
-				<br>
-				<span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-			`;
+                        <br><br><br><br><br>
+                        <img width='150' src='loading.gif'></img>
+                        <br>
+                        <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+                    `;
         appendSidePanelText(loadingHTML);
 
         // Initialise the MapBox map
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
         var map = new mapboxgl.Map(getDefaultMapOptions());
+        
+        //  const overlay = document.getElementById('map-overlay');
 
         // Initialise MapBox popup for mouse-overs
         var popup = popup = new mapboxgl.Popup({
@@ -136,98 +150,197 @@
         //addTiltShiftSupport();
 
         // On initial load...
-        map.on("load", function () { 
+        map.on("load", function () {
             resetSidePanel();
             updateLegend(currentLayer);
 
+        });
+
+        map.on('style.load', function () { // ****************What is 'style.load'?
+            let hoveredStateId = null;
+
+            console.log("INFO: New style has been loaded.");
+            refresh();
+
+            // Add the region boundaries geoJSON source
             map.addSource('Electricity_Consumption_region', {
                 type: 'geojson',
                 data: 'UK_Electricity_Consumption_Regions.geojson'
             });
 
+            // Add the sub areas boundaries geoJSON source
             map.addSource('Electricity_Consumption_area', {
                 type: 'geojson',
                 data: 'UK_Electricity_Consumption_Areas.geojson'
             });
 
+            // Add the layer for visualising the regional boundaries with a mouse hover effect
             map.addLayer({
-                'id': 'Electricity_Consumption_region_line',
+                'id': 'Electricity_Consumption_region_borders',
                 'type': 'line',
-                'source': 'Electricity_Consumption_region', // reference the data source
-                'layout': {},
+                'source': 'Electricity_Consumption_region',
+                'layout': { 'visibility': 'visible' },
                 'paint': {
                     // 'fill-color': 'rgba(200, 100, 240, 0.4)',
                     // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
                     // 'fill-antialias': false
                     'line-color': '#2b8cbe',
+                    'line-width': 4,
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.5
+                    ]
+                }
+            });
+
+            // Add the layer for visualising the filled sub areas with a mouse hover effect
+            map.addLayer({
+                'id': 'Electricity_Consumption_area_fill',
+                'type': 'fill',
+                'source': 'Electricity_Consumption_area',
+                'layout': { 'visibility': 'visible' },
+                'paint': {
+                    'fill-color': '#0080ff', // blue color fill
+                    // 'fill-opacity': 0.5
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        0.5
+                    ]
+                }
+            });
+
+            // Add the layer for visualising the border of sub areas
+            map.addLayer({
+                'id': 'Electricity_Consumption_area_borders',
+                'type': 'line',
+                'source': 'Electricity_Consumption_area', // reference the data source
+                'layout': { 'visibility': 'visible' },
+                'paint': {
+                    'line-color': '#9ecae1',
                     'line-width': 2
                 }
             });
 
-            map.addLayer({
-                'id': 'Electricity_Consumption_area_fill',
-                'type': 'fill',
-                'source': 'Electricity_Consumption_area', // reference the data source
-                'layout': {},
-                'paint': {                   
-                    'fill-color': '#0080ff', // blue color fill
-                    'fill-opacity': 0.5
-                }
-            });
-
-            map.addLayer({
-                'id': 'Electricity_Consumption_area_fill',
-                'type': 'line',
-                'source': 'Electricity_Consumption_area', // reference the data source
-                'layout': {},
-                'paint': {
-                    'line-color': '#9ecae1',
-                    'line-width': 1
-                }
-            });
-
+            // Add the click event for sub areas for showing up the attribute values
             map.on('click', 'Electricity_Consumption_area_fill', function (e) {
+                var Location = e.features[0].properties.Location;
+                var Area_LACode = e.features[0].properties.Area_LACode;
+                var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
+                var DomesticConsumption = e.features[0].properties.DomesticConsumption;
+                var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
+
+                var html = `
+                                    <b> ` + Location + `</b><br>
+                                    LA Code: ` + Area_LACode + `</b><br>
+                                    Total Electricity Consumption: ` + TotalELecConsumption + ` GWh </b><br>
+                                    Domestic Consumption: ` + DomesticConsumption + ` GWh </b><br>
+                                    Industrial and Commercial Consumption: ` + Industrial_and_Commercial + ` GWh </b><br>
+                                `;
+
                 new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
-                    .setHTML(e.features[0].properties.Location)
-                    .setHTML(e.features[0].properties.TotalELecConsumption)
-                    .addTo(map);
+                    .setHTML(html)
+                    .addTo(map)
             });
 
-            // Change the cursor to a pointer when the mouse is over the states layer.
-            map.on('mouseenter', 'Electricity_Consumption_area_fill', function () {
+
+            // When the user moves their mouse over the filled layer, update the
+            // feature state for highlighting the area under the mouse.
+            map.on('mousemove', 'Electricity_Consumption_area_fill', function (e) {
                 map.getCanvas().style.cursor = 'pointer';
+                // console.log("mouse move", e.lngLat);
+                if (e.features.length > 0) {
+                    console.log("features length is larger than 0");
+                    console.log("The hoveredStateId is: ", hoveredStateId)
+                    if (hoveredStateId !== null) {
+                        map.setFeatureState(
+                            { source: 'Electricity_Consumption_area', id: hoveredStateId },
+                            { hover: false }
+                        );
+                    }
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState(
+                        { source: 'Electricity_Consumption_area', id: hoveredStateId },
+                        { hover: true }
+                    );
+                }
             });
 
-            // Change it back to a pointer when it leaves.
+            // When the mouse leaves the filled layer, update the feature state of the
+            // previously hovered feature for removing the highlight effect.
             map.on('mouseleave', 'Electricity_Consumption_area_fill', function () {
                 map.getCanvas().style.cursor = '';
+                if (hoveredStateId !== null) {
+                    map.setFeatureState(
+                        { source: 'Electricity_Consumption_area', id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = null;
             });
 
-            map.on('click', 'Electricity_Consumption_region_line', function (e) {
+            // Add the click event for regional boundaries for showing up the attribute values of the whole region
+            map.on('click', 'Electricity_Consumption_region_borders', function (e) {
+               
+                var Location = e.features[0].properties.Location;
+                var Area_LACode = e.features[0].properties.Area_LACode;
+                var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
+                var DomesticConsumption = e.features[0].properties.DomesticConsumption;
+                var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
+
+                var html = `
+                                    <b> ` + Location + `</b><br>
+                                    LA Code: ` + Area_LACode + `</b><br>
+                                    Total Electricity Consumption: ` + TotalELecConsumption + ` GWh </b><br>
+                                    Domestic Consumption: ` + DomesticConsumption + ` GWh </b><br>
+                                    Industrial and Commercial Consumption: ` + Industrial_and_Commercial + ` GWh </b><br>
+                                `;
+
+
                 new mapboxgl.Popup()
                     .setLngLat(e.lngLat)
-                    .setHTML(e.features[0].properties.Location)
-                    .setHTML(e.features[0].properties.TotalELecConsumption)
-                    .addTo(map);
+                    .setHTML(html)
+                    .addTo(map)
             });
 
-            // Change the cursor to a pointer when the mouse is over the states layer.
-            map.on('mouseenter', 'Electricity_Consumption_region_line', function () {
+            // When the user moves their mouse over the regional boundaries, update the
+            // feature state for highlighting the border the mouse.
+            map.on('mousemove', 'Electricity_Consumption_region_borders', function (e) {
                 map.getCanvas().style.cursor = 'pointer';
+                // setOptions();
+                if (e.features.length > 0) {
+                    if (hoveredStateId !== null) {
+                        map.setFeatureState(
+                            { source: 'Electricity_Consumption_region', id: hoveredStateId },
+                            { hover: false }
+                        );
+                    }
+                    hoveredStateId = e.features[0].id;
+                    map.setFeatureState(
+                        { source: 'Electricity_Consumption_region', id: hoveredStateId },
+                        { hover: true }
+                    );
+                }
             });
 
-            // Change it back to a pointer when it leaves.
-            map.on('mouseleave', 'Electricity_Consumption_region_line', function () {
+            // When the mouse leaves the regional boundaries, update the feature state of the
+            // previously hovered feature for removing the highlight effect.
+            map.on('mouseleave', 'Electricity_Consumption_region_borders', function () {
                 map.getCanvas().style.cursor = '';
+
+                if (hoveredStateId !== null) {
+                    map.setFeatureState(
+                        { source: 'Electricity_Consumption_region', id: hoveredStateId },
+                        { hover: false }
+                    );
+                }
+                hoveredStateId = null;
             });
 
-
-        });
-
-       map.on('style.load', function () {
-            console.log("INFO: New style has been loaded.");
-            refresh();
 
             // ============ PLANTS ===========
             // Add the powerplant data
@@ -291,10 +404,10 @@
                     var fuel = e.features[0].properties["fuel"];
 
                     var html = `
-							<b> ` + name + `</b><br>
-							Fuel: ` + fuel + `
-							<br><p>Click for more details.</p>
-						`;
+                                    <b> ` + name + `</b><br>
+                                    Fuel: ` + fuel + `
+                                    <br><p>Click for more details.</p>
+                                `;
                     popup.setLngLat(coordinates).setHTML(html).addTo(map);
                 }
             });
