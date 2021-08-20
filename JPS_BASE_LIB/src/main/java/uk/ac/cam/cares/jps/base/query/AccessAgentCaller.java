@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import org.json.JSONObject;
 
@@ -11,12 +13,16 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class AccessAgentCaller{
 		
 	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AccessAgentCaller.class);
+
+    /**
 	 * Default constructor
 	 */
 	public AccessAgentCaller() {}	
@@ -33,13 +39,13 @@ public class AccessAgentCaller{
 	 */
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
-		JPSBaseLogger.info(AccessAgentCaller.class, "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+		LOGGER.info("put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
-	
-		String requestUrl = (String) a[0];
-		JSONObject joparams = (JSONObject) a[1];
-		return Http.execute(Http.put(requestUrl, content, contentType, null, joparams)); 
-	}	
+
+        String requestUrl = (String) a[0];
+        JSONObject joparams = (JSONObject) a[1];
+        return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
+	}
 	
 	/**
 	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
@@ -52,43 +58,44 @@ public class AccessAgentCaller{
 	 */
 	public static String get(String datasetUrl, String targetUrl, String accept) {
 		
-		JPSBaseLogger.info(AccessAgentCaller.class, "get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+        LOGGER.info("get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
-		String requestUrl = (String) a[0];
-		JSONObject joparams = (JSONObject) a[1];
-		return Http.execute(Http.get(requestUrl, accept, joparams));
-	}
-	
+        String requestUrl = (String) a[0];
+        JSONObject joparams = (JSONObject) a[1];
+        return Http.execute(Http.get(requestUrl, accept, joparams));
+    }
+
 	/**
 	 * cf. https://www.w3.org/TR/sparql11-protocol/#query-via-get<br>
-	 * differences: parameter key and value are serialized as JSON,  
-	 * the parameter key is "sparqlquery" instead of "query"
+     * differences: parameter key and value are serialized as JSON, the parameter key is
+     * "sparqlquery" instead of "query"
 	 * 
 	 * @param datasetUrl triple store
 	 * @param targetUrl the named resource or graph
 	 * @param sparqlQuery
-	 * @return the query result in the W3C Query result JSON format, see https://www.w3.org/TR/sparql11-results-json/
+     * @return the query result in the W3C Query result JSON format, see
+     * https://www.w3.org/TR/sparql11-results-json/
 	 */
 	public static String query(String datasetUrl, String targetUrl, String sparqlQuery) {
-				
-		JPSBaseLogger.info(AccessAgentCaller.class, "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+
+        LOGGER.info("query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 		
-		System.out.println("a IS NOT NULL!!!");
-		String requestUrl = (String) a[0];
-		JSONObject joparams = (JSONObject) a[1];
-		if (joparams == null) {
-			joparams = new JSONObject();
-		}
-		System.out.println("joparams="+joparams.toString());
-		System.out.println("REQUESTURL="+requestUrl);
-		joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
-		return Http.execute(Http.get(requestUrl, null, joparams));
-	}
-	
+        System.out.println("a IS NOT NULL!!!");
+        String requestUrl = (String) a[0];
+        JSONObject joparams = (JSONObject) a[1];
+        if (joparams == null) {
+            joparams = new JSONObject();
+        }
+        System.out.println("joparams=" + joparams.toString());
+        System.out.println("REQUESTURL=" + requestUrl);
+        joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
+        return Http.execute(Http.get(requestUrl, null, joparams));
+    }
+
 
 	/**
 	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
@@ -100,7 +107,7 @@ public class AccessAgentCaller{
 	 */
 	public static void update(String datasetUrl, String targetUrl, String sparqlUpdate) {
 		
-		JPSBaseLogger.info(AccessAgentCaller.class, "update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+		LOGGER.info("update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 		
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 			
@@ -136,14 +143,13 @@ public class AccessAgentCaller{
 		//	  the targetUrl may optionally request a graph at the datasetUrl
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
-		
 		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
 		
 		if ((datasetUrl != null) && datasetUrl.isEmpty()) {
 			datasetUrl = null;
 		}
-				
+
 		JSONObject joparams = null;
 		
 		//case 3 

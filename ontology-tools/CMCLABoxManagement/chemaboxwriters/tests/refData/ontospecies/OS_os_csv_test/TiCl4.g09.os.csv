@@ -1,0 +1,113 @@
+Source,Type,Target,Relation,Value,Data Type
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Species,,,
+http://purl.org/dc/elements/1.1/identifier,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,String
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Cl4Ti,String
+http://www.w3.org/2004/02/skos/core#altLabel,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Titanium(IV) chloride,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,7550-45-0,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Cl[Ti](Cl)(Cl)Cl,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,InChI=1S/4ClH.Ti/h4*1H;/q;;;;+4/p-4,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,3 2 1 1 2 1 2 4 1 2 5 1,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Cl -2.44155 1.30134 -0.88072 Ti -0.90475 0.14582 0.13755 Cl 0.07915 -1.16904 -1.28966 Cl 0.56107 1.49734 1.00851 Cl -1.81756 -1.04628 1.71222,String
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/Atom,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtom,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,4,Integer
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl,http://purl.org/gc/isElement,,
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateX,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,-2.44155,String
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateY,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,1.30134,String
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateZ,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,-0.88072,String
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://purl.org/gc/Atom,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,http://purl.org/gc/hasAtom,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,,0,Integer
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Ti,http://purl.org/gc/isElement,,
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,http://purl.org/gc/hasAtomCoordinateX,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,,-0.90475,String
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,http://purl.org/gc/hasAtomCoordinateY,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,,0.14582,String
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,http://purl.org/gc/hasAtomCoordinateZ,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,,0.13755,String
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Ti_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/Atom,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtom,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,1,Integer
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl,http://purl.org/gc/isElement,,
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateX,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,0.07915,String
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateY,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,-1.16904,String
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtomCoordinateZ,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,-1.28966,String
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://purl.org/gc/Atom,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,http://purl.org/gc/hasAtom,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,,2,Integer
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl,http://purl.org/gc/isElement,,
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,http://purl.org/gc/hasAtomCoordinateX,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,,0.56107,String
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,http://purl.org/gc/hasAtomCoordinateY,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,,1.49734,String
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,http://purl.org/gc/hasAtomCoordinateZ,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,,1.00851,String
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://purl.org/gc/Atom,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,http://purl.org/gc/hasAtom,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,,3,Integer
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Cl,http://purl.org/gc/isElement,,
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,http://purl.org/gc/hasAtomCoordinateX,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,,-1.81756,String
+AtomCoordinateX_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,http://purl.org/gc/hasAtomCoordinateY,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,,-1.04628,String
+AtomCoordinateY_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://purl.org/gc/FloatValue,,,
+Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,http://purl.org/gc/hasAtomCoordinateZ,,
+http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,,1.71222,String
+AtomCoordinateZ_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
+Charge_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Charge_7a79313e-0a45-4758-9b43-9a937d0a9da3,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Charge_7a79313e-0a45-4758-9b43-9a937d0a9da3,,0,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Charge_7a79313e-0a45-4758-9b43-9a937d0a9da3,,e,String
+MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula,,
+Element_Cl,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
+MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Element_Cl,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,,
+ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_1,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,,,
+MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_1,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber,,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_1,,4,Integer
+ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_1,Instance,Element_Cl,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf,,
+Element_Ti,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
+MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Element_Ti,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElement,,
+ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_2,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,,,
+MolecularFormula_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_2,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasElementNumber,,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_2,,1,Integer
+ElementNumber_7a79313e-0a45-4758-9b43-9a937d0a9da3_2,Instance,Element_Ti,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#indicatesNumberOf,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
+MolecularWeight_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight,,,
+Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,MolecularWeight_7a79313e-0a45-4758-9b43-9a937d0a9da3,http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight,,
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,MolecularWeight_7a79313e-0a45-4758-9b43-9a937d0a9da3,,187.8233575,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,MolecularWeight_7a79313e-0a45-4758-9b43-9a937d0a9da3,,g/mol,String

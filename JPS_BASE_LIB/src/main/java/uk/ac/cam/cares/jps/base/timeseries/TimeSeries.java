@@ -21,9 +21,9 @@ public class TimeSeries<T> {
 
     /**
      * Standard constructor
-     * @param times: list of timestamps
-     * @param dataIRI: list of data IRIs provided as string
-     * @param values: list of list of values containing the data for each data IRI
+     * @param times list of timestamps
+     * @param dataIRI list of data IRIs provided as string
+     * @param values list of list of values containing the data for each data IRI
      */
 	public TimeSeries(List<T> times, List<String> dataIRI, List<List<?>> values) {
         this.times = times;
@@ -55,8 +55,8 @@ public class TimeSeries<T> {
     }
 	
     /**
-     * Various methods to get values in a specific class
-     * @param dataIRI: data IRI provided as string
+     * Retrieve time series values for provided data IRI as Doubles
+     * @param dataIRI data IRI provided as string
      */
     public List<Double> getValuesAsDouble(String dataIRI) {
     	List<?> v = getValues(dataIRI);
@@ -69,6 +69,10 @@ public class TimeSeries<T> {
     	}   	
     }    
     
+    /**
+     * Retrieve time series values for provided data IRI as Integers
+     * @param dataIRI data IRI provided as string
+     */
     public List<Integer> getValuesAsInteger(String dataIRI) {
     	List<?> v = getValues(dataIRI);
     	if (v == null) {
@@ -80,13 +84,17 @@ public class TimeSeries<T> {
     	}  
     }
     
+    /**
+     * Retrieve time series values for provided data IRI as Strings
+     * @param dataIRI data IRI provided as string
+     */
     public List<String> getValuesAsString(String dataIRI) {
     	return values.get(dataIRI).stream().map(Object::toString).collect(Collectors.toList());
     }
     
     /**
      * Method to get values column in whatever form returned from the jooq API (not recommended!)
-     * @param dataIRI: data IRI provided as string
+     * @param dataIRI data IRI provided as string
      */
     public List<?> getValues(String dataIRI) {
     	return values.get(dataIRI);

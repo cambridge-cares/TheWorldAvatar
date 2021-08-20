@@ -14,8 +14,7 @@ services:
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-  
-  
+
   # Reverse Proxy
   reverse_proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
@@ -43,7 +42,6 @@ services:
     image: docker.cmclinnovations.com/jps-chatbot:0e837d
     build:
       context: "../../../JPS_Chatbot"
-      dockerfile: "./docker/Dockerfile"
     container_name: "jps-chatbot"
     restart: unless-stopped
     ports:
@@ -61,7 +59,6 @@ services:
     image: docker.cmclinnovations.com/jps-ldf:0e837d
     build:
       context: "../../../JPS_LDF"
-      dockerfile: "./docker/Dockerfile"
     container_name: "jps-ldf"
     restart: unless-stopped
     ports:
@@ -88,8 +85,7 @@ services:
       authors: " support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-    
-    
+
   # Gas Grid Visualisation
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
@@ -105,8 +101,7 @@ services:
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
-    
-   
+
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}

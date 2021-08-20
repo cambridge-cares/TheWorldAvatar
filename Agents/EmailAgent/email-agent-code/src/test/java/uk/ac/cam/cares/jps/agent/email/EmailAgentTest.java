@@ -6,11 +6,13 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import javax.ws.rs.BadRequestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -19,6 +21,11 @@ import org.junit.jupiter.api.Test;
  * @author Michael Hillman
  */
 public class EmailAgentTest {
+
+    /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailAgentTest.class);
 
     /**
      * Sample request data (should be valid).
@@ -52,7 +59,7 @@ public class EmailAgentTest {
         // Read the properties file (developer expected to provide it at the following location, 
         // it should NOT be committed).
         try {
-            EmailAgentConfiguration.readProperties("./data/email-agent.properties");
+            EmailAgentConfiguration.readProperties("./data/example-properties.txt");
         } catch (IOException ioException) {
             Assertions.fail("Could not read properties file!", ioException);
         }
@@ -62,12 +69,14 @@ public class EmailAgentTest {
      * Using the good sample request file and the properties file (to be provided by the developer),
      * this attempts to send an email using the EmailHandler class.
      *
-     * Note that this test will generate and email and send it if the properties file has been
-     * correctly configured to point towards an SMTP server.
+     * Note: This test has been disabled as it requires a properties file with real SMTP credentials
+     * to be present. At the time of writing, this is difficult to include in automated testing
+     * environments.
      */
+    @Disabled
     @Test
     public void sendGoodTestEmail() {
-        System.out.println("INFO: Running sendGoodTestEmail()...");
+        LOGGER.debug("Running sendGoodTest()...");
 
         // New agent
         EmailAgent agent = new EmailAgent();
@@ -88,7 +97,7 @@ public class EmailAgentTest {
      */
     @Test
     public void sendBadTestEmail() {
-        System.out.println("INFO: Running sendBadTestEmail()...");
+        LOGGER.debug("Running sendBadTestEmail()...");
 
         // New agent
         EmailAgent agent = new EmailAgent();
@@ -107,8 +116,8 @@ public class EmailAgentTest {
      */
     @Test
     public void testPing() {
-        System.out.println("INFO: Running testPing()...");
-
+        LOGGER.debug("Running testPing()...");
+        
         // New agent
         EmailAgent agent = new EmailAgent();
 
@@ -130,11 +139,13 @@ public class EmailAgentTest {
     }
 
     /**
-     * Tests the ability of the InetAddress class to detect local IPs, this is esoteric so
-     * required a quick test.
+     * Tests the ability of the InetAddress class to detect local IPs, this is esoteric so required
+     * a quick test.
      */
     @Test
     public void setInetAddress() {
+        LOGGER.debug("Running setInetAddress()...");
+        
         // Should be reported as local addresses
         String[] localIPs = new String[]{
             "localhost",
@@ -148,10 +159,10 @@ public class EmailAgentTest {
         for (String localIP : localIPs) {
             try {
                 InetAddress address = InetAddress.getByName(localIP);
-                boolean isLocal = address.isLinkLocalAddress() ||
-                        address.isLoopbackAddress() ||
-                        address.isSiteLocalAddress();
-                        
+                boolean isLocal = address.isLinkLocalAddress()
+                        || address.isLoopbackAddress()
+                        || address.isSiteLocalAddress();
+
                 Assertions.assertTrue(isLocal, "Expected IP address '" + localIP + "' to be reported as local!");
             } catch (UnknownHostException exception) {
                 Assertions.fail("Not a valid IP address!", exception);
