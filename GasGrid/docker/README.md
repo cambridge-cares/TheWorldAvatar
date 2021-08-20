@@ -16,8 +16,8 @@ Once the requirements have been addressed, the Image can be build using the foll
 Be aware that the VERSION tag should match the current version of the software (which is listed within the 'version' file). For more information, see the readme in the '/Deploy' directory.
 
 + To build the image:
-  + `docker build --rm --no-cache -t docker.cmclinnovations.com/gas-grid-agent:VERSION -f docker/Dockerfile .`
+  + `docker build --rm --no-cache --target dev -t docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT-dev -f docker/Dockerfile .`
 + To generate a container (i.e. run the image):
-  + `docker run -d -p 4005:80 --restart always --name "gas-grid-agent" -it docker.cmclinnovations.com/gas-grid-agent:VERSION`
+  + `docker run -d -p 4005:80 --restart always --name "gas-grid-agent" -it docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT-dev`
 + To push the image to the CMCL registry (after logging in):
-  + `docker image push docker.cmclinnovations.com/gas-grid-agent:VERSION`
+  + `docker image push docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT-dev`

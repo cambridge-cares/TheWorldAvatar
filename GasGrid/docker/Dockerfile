@@ -47,6 +47,10 @@ COPY docker/start-up.sh /app/start-up.sh
 RUN chmod 755 /app/start-up.sh
 RUN dos2unix /app/start-up.sh
 
+COPY docker/env-test.sh /app/env-test.sh
+RUN chmod 755 /app/env-test.sh
+RUN dos2unix /app/env-test.sh
+
 # Copy in the cron jobs file
 COPY docker/cron-jobs cron-jobs 
 RUN chmod 755 cron-jobs 
@@ -86,7 +90,6 @@ CMD [ "sh", "-c", "rsyslogd && /app/start-up.sh" ]
 #===================================== Development configuration ==================================
 FROM common as dev
 ENV KG_LOCATION="http://kg.cmclinnovations.com:81/blazegraph_geo"
-
 
 #===================================== Production configuration ===================================
 FROM common as prod
