@@ -49,6 +49,7 @@
             <resource>  
                 <directory>${basedir}/logging</directory>
             </resource>
+            <!-- Copies the downloaded default logger config into the compiled classes folder -->
             <resource>
                 <directory>${project.build.directory}/${project.build.finalName}.conf</directory>
                 <includes>
