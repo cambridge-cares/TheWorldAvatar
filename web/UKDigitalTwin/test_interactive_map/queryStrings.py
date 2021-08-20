@@ -129,7 +129,7 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
     ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     
-    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
     ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     }
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
@@ -157,7 +157,7 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
     ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     
-    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
     ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     }
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
@@ -173,8 +173,7 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
   start = time.time()
   print('Querying UK Electricity Consumption Data...')
   ret = sparql.queryAndConvert()
-  end = time.time()
-  print('Finished in ',np.round(end-start,2),' seconds')
+
   # parsing JSON SPARQL results into an array
   ret = ret['results']['bindings']
   num_ret = len(ret)
@@ -185,7 +184,9 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
   counter = 0
   Num_no_geoInfoAreas = 0
   No_geoInfoAreas = []
-     
+  
+  print('Querying UK ONS geometry Data...')  
+  
   for i in tqdm(range(num_ret)):
       Location = ret[i][queryVar[0].strip("?")]['value'].split("resource/")[1]
       Area_LACode = ret[i][queryVar[1].strip("?")]['value']
@@ -229,19 +230,22 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
       sparql.setReturnFormat(JSON) 
       sparql.setQuery(query_ONS)
       geo = sparql.queryAndConvert()
-      # print("The results contains: ", geo)
+      
       if str(geo['results']['bindings']) == "[]":
           print(Area_id_url, "does't have the geographical attributes.")
           Num_no_geoInfoAreas += 1
-          No_geoInfoAreas.append(Area_id_url) #.split("geography/")[1])
+          No_geoInfoAreas.append(Area_id_url)
           continue
-      polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) # extract the elements of the original dict
+      polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) #extract the elements of the original dict
       geojson_string = geojson.dumps(mapping(loads(polygon_point_unformatted_string)))
       geojson_dict = ast.literal_eval(geojson_string) 
       ret_array[i,:] = [Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, geojson_dict]            
       counter += 1
-     
+      
+  end = time.time()
+  
   print("******************The query results report******************")
+  print('Finished in ',np.round(end-start,2),' seconds')  
   print("The total number of the areas are: ", counter)
   print("The number of the areas don't have the geo attibutes are: ", Num_no_geoInfoAreas, " which are listed as follow: ")
   print(No_geoInfoAreas)

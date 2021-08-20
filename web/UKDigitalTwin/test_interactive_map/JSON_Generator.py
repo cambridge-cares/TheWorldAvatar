@@ -1,5 +1,5 @@
 ####################################################
-# Author: Wanni Xie (wx243@cam.ac.uk)         #
+# Author: Wanni Xie (wx243@cam.ac.uk)              #
 # Last Update Date: 18 August 2021                 #
 ####################################################
 
@@ -27,6 +27,6 @@ class_label_elec_region = "UK_Electricity_Consumption_Regions"
 class_label_elec_area = "UK_Electricity_Consumption_Areas"
 
 """Create GEOJSON files"""
-powerPlantgeoJSONCreator(ret_pow, class_label_pp)
+#powerPlantgeoJSONCreator(ret_pow, class_label_pp)
 elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
 elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)

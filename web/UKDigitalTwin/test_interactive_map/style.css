@@ -63,23 +63,3 @@ body.effectsOff #tiltShift body.effectsOff #map {
 #legend p {
 	float: left;
 }
-
-#UKInteractiveMap {
-	height: 180px;
-}
-
-a:link {
-	color: #FF0000;
-}
-
-a:visited {
-	color: #00FF00;
-}
-
-a:hover {
-	color: #FF00FF;
-}
-
-a:active {
-	color: #0000FF;
-}
