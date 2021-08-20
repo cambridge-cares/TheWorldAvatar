@@ -130,6 +130,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
+                            <useUniqueVersions>false</useUniqueVersions>
                             <!-- To use the dependencies copied in separate folder -->
                             <classpathPrefix>${project.build.finalName}.lib/</classpathPrefix>
                             <mainClass>uk.ac.cam.cares.jps.agent.aqmesh.AQMeshInputAgentLauncher</mainClass>
