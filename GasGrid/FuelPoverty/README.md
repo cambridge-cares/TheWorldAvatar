@@ -2,6 +2,14 @@
 
 the ```fuel_poverty_ontology``` folder contains the owl file that defines the ontology linking to ONS statistical regions
 
+The ontology is as follows:
+
+<p align="center">
+  <img src="fuel_poverty_ontology.png" width="350">
+</p>
+
+
+
 the ```data``` folder contains the data required to populate a knowledge graph using this ontology
 
 ```fuel_poverty_population.py``` takes the file in this data folder and associates the contained fuel poverty statistics to each output area.
