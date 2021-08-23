@@ -114,9 +114,12 @@ function resetSidePanel() {
 			`;
 		} else if(type.includes("Electricity_")) {
 			// TODO: Add new legend item here.
+			//html += `
+			//	<b>Electricity Consumption Legend</b>
+			//`;
 			html += `
-				<b>Electricity Consumption Legend</b>
-			`;
+			<img src="legend-electricity_consumption.svg" class="legend-electricity_consumption" width="120" height="533"/>
+		`;
 		}
 		html += `</div>`;
 

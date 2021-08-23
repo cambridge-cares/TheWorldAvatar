@@ -20,6 +20,7 @@
 
 	<!-- Local JS and CSS -->
 	<script src='power-system.js'></script>
+	<script src='elect_consump.js'></script>
 	<link href='style.css' rel='stylesheet' />
 </head>
 

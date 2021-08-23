@@ -1,9 +1,12 @@
 ####################################################
 # Original author: Tom Savage (trs3@cam.ac.uk)     #
 # Extended by: Wanni Xie (wx243@cam.ac.uk)         #
-# Last Update Date: 20 August 2021                 #
+# Last Update Date: 23 August 2021                 #
 ####################################################
 
+"""This module contains the functions enabel the colour effects of the visualisation."""
+
+"""This function is designed to colour the points denoting the power plant in the UK digital twin according to its generator type."""
 def gen_fuel_col(gen_fuel):
   #returns a colour code for each generator fuel type.
   #https://htmlcolorcodes.com/
@@ -34,7 +37,10 @@ def gen_fuel_col(gen_fuel):
     }
   return map_fuel_dict[gen_fuel]
 
+"""This function is used to shed the area with the colour demonstrating the value of the enlectricity consumption"""
 def getChoropleth(consumption):
+# The colour referce codes are found from ColorBrewer: https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3
+# Setting: diverging, 11 points
     if consumption > 2000: 
         return "#a50026"
     elif consumption <= 2000 and consumption > 1800:

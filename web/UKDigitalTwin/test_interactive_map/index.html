@@ -31,12 +31,6 @@
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
             integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
             crossorigin=""></script>
-
-    <style>
-        #UKInteractiveMap {
-            height: 1800px;
-        }
-    </style>
 </head>
 
 <body>
@@ -190,23 +184,6 @@
             // TODO: add to the updateLegend() function in power-system.js to
             //          create a legend (ideally just loading a static image).
             //var hoveredStateId = "null";
-            //var layers = ['0-200 GWh', '200-400 GWh', '400-600', '600-800', '800-1000', '1000-1200', '1200-1400', '1400-1600', '1600-1800', '1800-2000', '2000+ GWh'];
-            //var colors = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#d9ef8b', '#a6d96a', '#66bd63', '#1a9850', '#006837'];
-
-            //for (i = 0; i < layers.length; i++) {
-            //    var layer = layers[i];
-            //    var color = colors[i];
-            //    var item = document.createElement('div');
-            //    var key = document.createElement('span');
-            //    key.className = 'legend-key';
-            //    key.style.backgroundColor = color;
-
-            //    var value = document.createElement('span');
-            //    value.innerHTML = layer;
-            //    item.appendChild(key);
-            //    item.appendChild(value);
-            //    legend.appendChild(item);
-            //}
 
             console.log("INFO: New style has been loaded.");
             refresh();
@@ -260,7 +237,7 @@
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
                         1,
-                        0.5
+                        1
                     ]
                 }
             });
@@ -374,6 +351,7 @@
                 var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
                 var DomesticConsumption = e.features[0].properties.DomesticConsumption;
                 var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
+                Location = Location.replaceAll("_", " ");
 
                 selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial);
             });
@@ -384,7 +362,8 @@
                 // Get the human readable name of the crop
                 var coordinates = e.lngLat;
                 var location = e.features[0].properties["Location"];
-                var total = e.features[0].properties["TotalELecConsumption"];    
+                var total = e.features[0].properties["TotalELecConsumption"];  
+                location = location.replaceAll("_", " ");
                 
                 // Make the text look a little nicer
                 var html = `
