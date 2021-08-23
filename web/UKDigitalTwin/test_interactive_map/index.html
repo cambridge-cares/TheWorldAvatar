@@ -63,35 +63,30 @@
     <!--<div id="map-overlay" class="map-overlay"></div>-->
 
     <script>
-
-        var currentLayer = "power";
-
-        // Add map controls
-        document.getElementById("controlsParent").innerHTML = getControls();
         // The getControls() is invoked from the mapbox-controls.js for returning a controlHTML containing camera, terrain, and layer panels
-
+        document.getElementById("controlsParent").innerHTML = getControls();
+       
         // Initial state of side-panel (from side-panel.js)
         initialiseSidePanel(document.getElementById("map"));
+
         // Reset side panel (from power-system.js)
         resetSidePanel();
 
         // Show loading icon whilst stuff spins up
         var loadingHTML = `
-                        <br><br><br><br><br>
-                        <img width='150' src='loading.gif'></img>
-                        <br>
-                        <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-                    `;
+            <br><br><br><br><br>
+            <img width='150' src='loading.gif'></img>
+            <br>
+            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+        `;
         appendSidePanelText(loadingHTML);
 
         // Initialise the MapBox map
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
         var map = new mapboxgl.Map(getDefaultMapOptions());
-        
-        //  const overlay = document.getElementById('map-overlay');
 
         // Initialise MapBox popup for mouse-overs
-        var popup = popup = new mapboxgl.Popup({
+        var popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: false
         });
@@ -100,6 +95,7 @@
         var inner_text = '#3E3E3E';
         var outer_text = '#FFFFFF';
 
+        // Triggers after terrain change
         function terrainCallback(terrainType) {
             if (terrainType === "light") {
                 inner_text = '#3E3E3E';
@@ -108,67 +104,91 @@
                 inner_text = '#FFFFFF';
                 outer_text = '#000000';
             }
-            console.log("INFO: Updated label colors.");
         }
 
+        // Triggers after camera change
         function cameraCallback() {
             popup.remove();
             resetSidePanel();
-            updateLegend(currentLayer);
         }
 
+        // Hide or show a layer
+        function toggleLayer(layerID, enabled) {
+            map.setLayoutProperty(
+                layerID,
+                "visibility",
+                (enabled ? "visible" : "none")
+            );
+        }
+
+        // Triggers after layer change
         function layerCallback(layerID, enabled) {
-            if (layerID == "power" && enabled) {
-                map.setPaintProperty(
-                    "plant_locations",
-                    "circle-color",
-                    ["get", "marker-color"]
-                );
+            if(enabled && layerID.includes("power_")) {
+                // Show the power layers
+                toggleLayer("power_locations", true);
+                toggleLayer("power_labels", true);
 
-                currentLayer = "power";
-                updateLegend("power");
+                // Hide the SDG layers
+                toggleLayer("sdg_locations", false);
+                toggleLayer("sdg_labels", false);
 
-            } else if (layerID == "indicator" && enabled) {
-                map.setPaintProperty(
-                    "plant_locations",
-                    "circle-color",
-                    ["get", "sdgcolor"]
-                );
-
-                currentLayer = "indicator";
-                updateLegend("indicator");
-            } else if (layerID == "eleCon" && enabled) {
-                console.log("The laycallback funcition is triggered for the layer eleCon");
-                map.setPaintProperty(
-                    "Electricity_Consumption_area_fill",
-                    "fill-color",
-                    ["get", "area-color"]
-                );
-
-                currentLayer = "eleCon";
-                updateLegend("eleCon");
+                // Hide the consumption layers
+                toggleLayer("Electricity_Consumption_region_borders", false);
+                toggleLayer("Electricity_Consumption_area_fill", false);
+                toggleLayer("Electricity_Consumption_area_borders", false);
             }
 
+            if(enabled && layerID.includes("sdg_")) {
+                // Show the SDG layers
+                toggleLayer("sdg_locations", true);
+                toggleLayer("sdg_labels", true);
+
+                // Hide the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // Hide the consumption layers
+                toggleLayer("Electricity_Consumption_region_borders", false);
+                toggleLayer("Electricity_Consumption_area_fill", false);
+                toggleLayer("Electricity_Consumption_area_borders", false);
+            }
+
+            if(enabled && layerID.includes("Electricity_")) {
+                // Show the consumption layers
+                toggleLayer("Electricity_Consumption_region_borders", true);
+                toggleLayer("Electricity_Consumption_area_fill", true);
+                toggleLayer("Electricity_Consumption_area_borders", true);
+
+                // Hide the power layers
+                toggleLayer("power_locations", false);
+                toggleLayer("power_labels", false);
+
+                // Hide the SDG layers
+                toggleLayer("sdg_locations", false);
+                toggleLayer("sdg_labels", false);
+            }
+
+            if(enabled)    updateLegend(layerID);
         }
 
         // Setup map with mapbox-controls.js
-        setup(map, cameraCallback, terrainCallback, layerCallback); // ************the layerCallback needs to be passed two arguments?????
-
-
-        // Add tilt shift effect
-        // Note: I've disabled this for now as the map is becoming unresponsive.
-        // Once we've had time for some optimisation, we can enable it.
-        //addTiltShiftSupport();
+        setup(map, cameraCallback, terrainCallback, layerCallback);
 
         // On initial load...
         map.on("load", function () {
             resetSidePanel();
-            updateLegend(currentLayer);
-
+            updateLegend("power_locations");
         });
 
-        map.on('style.load', function () { // ****************What is 'style.load'?
+        // Triggers whenever the terrain is changed, at this point MapBox
+        // effectively generates a new map so we have to add everything again.
+        map.on('style.load', function () {
 
+            // Variable for area currently under mouse cursor
+            var hoveredStateId = null;
+
+            // TODO: add to the updateLegend() function in power-system.js to
+            //          create a legend (ideally just loading a static image).
             //var hoveredStateId = "null";
             //var layers = ['0-200 GWh', '200-400 GWh', '400-600', '600-800', '800-1000', '1000-1200', '1200-1400', '1400-1600', '1600-1800', '1800-2000', '2000+ GWh'];
             //var colors = ['#a50026', '#d73027', '#f46d43', '#fdae61', '#fee08b', '#ffffbf', '#d9ef8b', '#a6d96a', '#66bd63', '#1a9850', '#006837'];
@@ -191,6 +211,13 @@
             console.log("INFO: New style has been loaded.");
             refresh();
 
+			// ===== SOURCES ====
+			// Add the powerplant data
+			map.addSource('powerplants', {
+                type: 'geojson',
+                data: 'UK_PowerPlants.geojson'
+            });
+
             // Add the region boundaries geoJSON source
             map.addSource('Electricity_Consumption_region', {
                 type: 'geojson',
@@ -202,25 +229,20 @@
                 type: 'geojson',
                 data: 'UK_Electricity_Consumption_Areas.geojson'
             });
+			// ===== SOURCES ====
 
+			// ===== LAYERS =====
             // Add the layer for visualising the regional boundaries with a mouse hover effect
             map.addLayer({
                 'id': 'Electricity_Consumption_region_borders',
                 'type': 'line',
                 'source': 'Electricity_Consumption_region',
-                'layout': { 'visibility': 'visible' },
+                'layout': { 
+                    'visibility': 'none'
+                },
                 'paint': {
-                    // 'fill-color': 'rgba(200, 100, 240, 0.4)',
-                    // 'fill-outline-color': 'rgba(200, 100, 240, 1)',
-                    // 'fill-antialias': false
-                    'line-color': '#2b8cbe',
-                    'line-width': 4,
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        1,
-                        0.5
-                    ]
+                    'line-color': '#9ecae1',
+                    'line-width': 1
                 }
             });
 
@@ -229,12 +251,12 @@
                 'id': 'Electricity_Consumption_area_fill',
                 'type': 'fill',
                 'source': 'Electricity_Consumption_area',
-                'layout': { 'visibility': 'visible' },
+                'layout': { 
+                    'visibility': 'none'
+                 },
                 'paint': {
-                    // 'fill-color': '#0080ff', // blue color fill
                     'fill-color':["get", "area-color"], 
-                    // 'fill-opacity': 0.5
-                    'fill-opacity':[
+                    'fill-opacity': [
                         'case',
                         ['boolean', ['feature-state', 'hover'], false],
                         1,
@@ -248,148 +270,18 @@
                 'id': 'Electricity_Consumption_area_borders',
                 'type': 'line',
                 'source': 'Electricity_Consumption_area', // reference the data source
-                'layout': { 'visibility': 'visible' },
+                'layout': { 
+                    'visibility': 'none' 
+                },
                 'paint': {
                     'line-color': '#9ecae1',
-                    'line-width': 2
+                    'line-width': 1
                 }
             });
 
-            // Add the click event for sub areas for showing up the attribute values
-            map.on('click', 'Electricity_Consumption_area_fill', function (e) {
-                var Location = e.features[0].properties.Location;
-                var Area_LACode = e.features[0].properties.Area_LACode;
-                var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
-                var DomesticConsumption = e.features[0].properties.DomesticConsumption;
-                var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
-
-                //var html = `
-                //                    <b> ` + Location + `</b><br>
-                //                    LA Code: ` + Area_LACode + `</b><br>
-                //                `;
-
-                // new mapboxgl.Popup().setLngLat(e.lngLat).setHTML(html).addTo(map)
-
-                selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial);
-            });
-
-
-            // When the user moves their mouse over the filled layer, update the
-            // feature state for highlighting the area under the mouse.
-            map.on('mouseenter', 'Electricity_Consumption_area_fill', function (e) {
-                map.getCanvas().style.cursor = 'pointer';
-                // console.log("mouse move", e.lngLat);
-                if (e.features.length > 0) {
-                    console.log("features length is larger than 0");
-                    console.log("The hoveredStateId is: ", hoveredStateId)
-                    if (hoveredStateId !== "null") {
-                        map.setFeatureState(
-                            { source: 'Electricity_Consumption_area', id: hoveredStateId },
-                            { hover: false }
-                        );
-                    }
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'Electricity_Consumption_area', id: hoveredStateId },
-                        { hover: true }
-                    );
-                }
-
-                var Location = e.features[0].properties.Location;
-                var Area_LACode = e.features[0].properties.Area_LACode;
-        
-                var html = `
-                                    <b> ` + Location + `</b><br>
-                                    LA Code: ` + Area_LACode + `</b><br>
-                                `;
-                new mapboxgl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(html)
-                    .addTo(map)
-
-            });
-
-            // When the mouse leaves the filled layer, update the feature state of the
-            // previously hovered feature for removing the highlight effect.
-            map.on('mouseleave', 'Electricity_Consumption_area_fill', function () {
-                map.getCanvas().style.cursor = '';
-                if (hoveredStateId !== "null") {
-                    map.setFeatureState(
-                        { source: 'Electricity_Consumption_area', id: hoveredStateId },
-                        { hover: false }
-                    );
-                }
-                hoveredStateId = "null";
-            });
-
-            // Add the click event for regional boundaries for showing up the attribute values of the whole region.
-            map.on('click', 'Electricity_Consumption_region_borders', function (e) {
-               
-                var Location = e.features[0].properties.Location;
-                var Area_LACode = e.features[0].properties.Area_LACode;
-                var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
-                var DomesticConsumption = e.features[0].properties.DomesticConsumption;
-                var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
-
-                var html = `
-                                    <b> ` + Location + `</b><br>
-                                    LA Code: ` + Area_LACode + `</b><br>
-                                `;
-
-
-                new mapboxgl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(html)
-                    .addTo(map)
-
-                selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial);
-            });
-
-            // When the user moves their mouse over the regional boundaries, update the
-            // feature state for highlighting the border the mouse.
-            map.on('mousemove', 'Electricity_Consumption_region_borders', function (e) {
-                map.getCanvas().style.cursor = 'pointer';
-                // setOptions();
-                if (e.features.length > 0) {
-                    if (hoveredStateId !== "null") {
-                        map.setFeatureState(
-                            { source: 'Electricity_Consumption_region', id: hoveredStateId },
-                            { hover: false }
-                        );
-                    }
-                    hoveredStateId = e.features[0].id;
-                    map.setFeatureState(
-                        { source: 'Electricity_Consumption_region', id: hoveredStateId },
-                        { hover: true }
-                    );
-                }
-            });
-
-            // When the mouse leaves the regional boundaries, update the feature state of the
-            // previously hovered feature for removing the highlight effect.
-            map.on('mouseleave', 'Electricity_Consumption_region_borders', function () {
-                map.getCanvas().style.cursor = '';
-
-                if (hoveredStateId !== "null") {
-                    map.setFeatureState(
-                        { source: 'Electricity_Consumption_region', id: hoveredStateId },
-                        { hover: false }
-                    );
-                }
-                hoveredStateId = "null";
-            });
-
-
-            // ============ PLANTS ===========
-            // Add the powerplant data
-            map.addSource('powerplants', {
-                type: 'geojson',
-                data: 'UK_PowerPlants.geojson'
-            });
-
-            // Powerplant icons
+            // Locations for power generation
             map.addLayer({
-                'id': 'plant_locations',
+                'id': 'power_locations',
                 'type': 'circle',
                 'source': 'powerplants',
                 'layout': {
@@ -397,15 +289,15 @@
                 },
                 'paint': {
                     'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-                    'circle-color': (currentLayer == "power") ? ["get", "marker-color"] : ["get", "sdgcolor"],
+                    'circle-color': ["get", "marker-color"],
                     'circle-stroke-width': 1,
                     'circle-stroke-color': inner_text,
                 }
             });
 
-            // Powerplant labels
+            // Labels for power generation
             map.addLayer({
-                id: 'plant_labels',
+                id: 'power_labels',
                 type: 'symbol',
                 source: 'powerplants',
                 layout: {
@@ -430,8 +322,122 @@
                 }
             });
 
+            // Locations for SDG indicators
+            map.addLayer({
+                'id': 'sdg_locations',
+                'type': 'circle',
+                'source': 'powerplants',
+                'layout': {
+                    'visibility': 'none'
+                },
+                'paint': {
+                    'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
+                    'circle-color': ["get", "sdgcolor"],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': inner_text,
+                }
+            });
+
+            // Labels for SDG indicators
+            map.addLayer({
+                id: 'sdg_labels',
+                type: 'symbol',
+                source: 'powerplants',
+                layout: {
+                    'visibility': 'none',
+                    'text-field': ['concat',
+                        ['get', 'name'],
+                        '\n Capacity: ',
+                        ['get', 'capacity'],
+                        ' MW \n Fuel: ',
+                        ['get', 'fuel'],
+                        ' \n | \n | \n | \n | ']
+                    ,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset': [0, -4],
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 0.8,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
+                }
+            });
+			// ===== LAYERS =====
+
+			// ===== MOUSE EVENTS =====
+			// Triggers when an individual area is clicked on.
+            map.on('click', 'Electricity_Consumption_area_fill', function (e) {
+                var Location = e.features[0].properties.Location;
+                var Area_LACode = e.features[0].properties.Area_LACode;
+                var TotalELecConsumption = e.features[0].properties.TotalELecConsumption;
+                var DomesticConsumption = e.features[0].properties.DomesticConsumption;
+                var Industrial_and_Commercial = e.features[0].properties.Industrial_and_Commercial;
+
+                selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial);
+            });
+
+            // Triggers whenever the mouse is moved within the selected layer
+            map.on('mousemove', 'Electricity_Consumption_area_fill', function(e) {
+
+                // Get the human readable name of the crop
+                var coordinates = e.lngLat;
+                var location = e.features[0].properties["Location"];
+                var total = e.features[0].properties["TotalELecConsumption"];    
+                
+                // Make the text look a little nicer
+                var html = `
+                    <b>` + location + `</b><br>
+                    Total Consumption [GWh]: ` + total + `<br><br>
+                    <span style="font-size: 85%;">Click for more details.</span>
+                `;
+                
+                // Populate the popup and set its coordinates based on the feature found.
+                popup.setLngLat(coordinates).setHTML(html).addTo(map);
+
+                // TODO: Enable this when the geojson has a unique, numeric
+                //          "id" property for each feature.
+
+                // if (e.features.length > 0) {
+                    // if (hoveredStateId !== null) {
+                    //     map.setFeatureState(
+                    //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
+                    //         { hover: false }
+                    //     );
+                    // }
+
+                    // hoveredStateId = e.features[0].Location;
+                    // map.setFeatureState(
+                    //     { source: 'Electricity_Consumption_area', Location: hoveredStateId },
+                    //     { hover: true }
+                    // );
+                // }    
+            });
+
+            // Triggers when the mouse enters the entire layer
+            map.on('mouseenter', 'Electricity_Consumption_area_fill', function(e) {
+                map.getCanvas().style.cursor = 'pointer';
+            });
+
+            // Triggers when the mouse leaves the entire layer
+            map.on('mouseleave', 'Electricity_Consumption_area_fill', function(e) {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+
+                // TODO: Enable this when the geojson has a unique, numeric
+                //          "id" property for each feature.
+                // if (hoveredStateId !== null) {
+                //     map.setFeatureState(
+                //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
+                //         { hover: false }
+                //     );
+                // }
+                // hoveredStateId = null;
+            });
+
             // On mouse enter
-            map.on('mouseenter', 'plant_locations', function (e) { //*************what is "e"?
+            map.on('mouseenter', 'power_locations', function (e) { 
                 map.getCanvas().style.cursor = 'pointer';
 
                 if (map.getZoom() < 7.5) {
@@ -442,22 +448,22 @@
                     var fuel = e.features[0].properties["fuel"];
 
                     var html = `
-                                    <b> ` + name + `</b><br>
-                                    Fuel: ` + fuel + `
-                                    <br><p>Click for more details.</p>
-                                `;
+						<b> ` + name + `</b><br>
+						Fuel: ` + fuel + `
+						<br><p>Click for more details.</p>
+					`;
                     popup.setLngLat(coordinates).setHTML(html).addTo(map);
                 }
             });
 
             // On mouse exit
-            map.on('mouseleave', 'plant_locations', function (e) {
+            map.on('mouseleave', 'power_locations', function (e) {
                 map.getCanvas().style.cursor = '';
                 popup.remove();
             });
 
             // On selection
-            map.on('click', 'plant_locations', function (e) {
+            map.on('click', 'power_locations', function (e) {
                 var coordinates = e.features[0].geometry.coordinates.slice();
                 var name = e.features[0].properties["name"];
                 name = name.replaceAll("_", " ");
@@ -467,7 +473,6 @@
                 var indicator = e.features[0].properties["sdg941"];
 
                 selectPlant(name, fuel, capacity, indicator, coordinates);
-                //updateLegend(currentLayer);
 
                 map.flyTo({
                     center: coordinates,
@@ -478,14 +483,67 @@
                     bearing: Math.random() * 90
                 });
             });
+
+            // On mouse enter
+            map.on('mouseenter', 'sdg_locations', function (e) { 
+                map.getCanvas().style.cursor = 'pointer';
+
+                if (map.getZoom() < 7.5) {
+                    var coordinates = e.features[0].geometry.coordinates.slice();
+                    var name = e.features[0].properties["name"];
+                    name = name.replaceAll("_", " ");
+
+                    var fuel = e.features[0].properties["fuel"];
+
+                    var html = `
+						<b> ` + name + `</b><br>
+						Fuel: ` + fuel + `
+						<br><p>Click for more details.</p>
+					`;
+                    popup.setLngLat(coordinates).setHTML(html).addTo(map);
+                }
+            });
+
+            // On mouse exit
+            map.on('mouseleave', 'sdg_locations', function (e) {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            });
+
+            // On selection
+            map.on('click', 'sdg_locations', function (e) {
+                var coordinates = e.features[0].geometry.coordinates.slice();
+                var name = e.features[0].properties["name"];
+                name = name.replaceAll("_", " ");
+
+                var fuel = e.features[0].properties["fuel"];
+                var capacity = e.features[0].properties["capacity"];
+                var indicator = e.features[0].properties["sdg941"];
+
+                selectPlant(name, fuel, capacity, indicator, coordinates);
+
+                map.flyTo({
+                    center: coordinates,
+                    curve: 1.9,
+                    speed: 1.6,
+                    pitch: 75,
+                    zoom: 14,
+                    bearing: Math.random() * 90
+                });
+            });
+			// ===== MOUSE EVENTS =====
         });
 
-        // Register the power layer
-        registerLayer("Power Generation", ["power"], null, (currentLayer == "power"));
-        registerLayer("SDG Indicator", ["indicator"], null, (currentLayer == "indicator"));
-        registerLayer("Electricity Consumption", ["eleCon"], null, (currentLayer == "eleCon"));
+        // Register the layers with the central controls
+        registerLayer("Power Generation", ["power_locations", "power_labels"], null, true);
+        registerLayer("SDG Indicator", ["sdg_locations", "sdg_labels"], null, false);
+        registerLayer("Electricity Consumption", [
+                "Electricity_Consumption_area_fill",
+                "Electricity_Consumption_area_borders",
+                "Electricity_Consumption_region_borders"
+            ],
+            null, false);
 
-        // ============ PLANTS ===========
 
         // Build the layer selection tree
         buildLayerTree("radio");

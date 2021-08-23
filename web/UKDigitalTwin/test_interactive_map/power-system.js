@@ -8,7 +8,7 @@ function resetSidePanel() {
 	document.getElementById('chartContainer').style.display = "none";
 	document.getElementById('metadataContainer').style.display = "none";
 	document.getElementById('tableContainer').style.display = "none";
-	document.getElementById('legendContainer').style.display = "none";
+	//document.getElementById('legendContainer').style.display = "none";
 	document.getElementById('dateContainer').style.display = "none";
 
 	var titleHTML = `
@@ -90,28 +90,33 @@ function resetSidePanel() {
 	function updateLegend(type) {
 		var html = `<div id="legend">`;
 
-		if (type == "power") {
+		if (type.includes("power_")) {
 			html += `
-			<b>Legend:</b><br>
-			<div id="padding" style="height: 6px;"></div>
-			<img width="18px" src="legend-coal.svg"/>Coal<br>
-			<img width="18px" src="legend-coalbiomass.svg"/>Biomass<br>
-			<img width="18px" src="legend-hydro.svg"/>Hydro<br>
-			<img width="18px" src="legend-naturalgas.svg"/>Natural Gas<br>
-			<img width="18px" src="legend-nuclear.svg"/>Nuclear<br>
-			<img width="18px" src="legend-oil.svg"/>Oil<br>
-			<img width="18px" src="legend-pumphydro.svg"/>Pump Hydro<br>
-			<img width="18px" src="legend-solar.svg"/>Solar<br>
-			<img width="18px" src="legend-sourgas.svg"/>Sour Gas<br>
-			<img width="18px" src="legend-waste.svg"/>Waste<br>
-			<img width="18px" src="legend-wastead.svg"/>Waste (Anaerobic Digestion)<br>
-			<img width="18px" src="legend-wastemsw.svg"/>Waste (Municipal Solid Waste)<br>
-			<img width="18px" src="legend-wind.svg"/>Wind<br>
-		`;
-		} else if (type == "indicator") {
+				<b>Legend:</b><br>
+				<div id="padding" style="height: 6px;"></div>
+				<img width="18px" src="legend-coal.svg"/>Coal<br>
+				<img width="18px" src="legend-coalbiomass.svg"/>Biomass<br>
+				<img width="18px" src="legend-hydro.svg"/>Hydro<br>
+				<img width="18px" src="legend-naturalgas.svg"/>Natural Gas<br>
+				<img width="18px" src="legend-nuclear.svg"/>Nuclear<br>
+				<img width="18px" src="legend-oil.svg"/>Oil<br>
+				<img width="18px" src="legend-pumphydro.svg"/>Pump Hydro<br>
+				<img width="18px" src="legend-solar.svg"/>Solar<br>
+				<img width="18px" src="legend-sourgas.svg"/>Sour Gas<br>
+				<img width="18px" src="legend-waste.svg"/>Waste<br>
+				<img width="18px" src="legend-wastead.svg"/>Waste (Anaerobic Digestion)<br>
+				<img width="18px" src="legend-wastemsw.svg"/>Waste (Municipal Solid Waste)<br>
+				<img width="18px" src="legend-wind.svg"/>Wind<br>
+			`;
+		} else if (type.includes("sdg_")) {
 			html += `
-			<img src="legend-sdg.png" class="legend-sdg" width="275px"/>
-		`;
+				<img src="legend-sdg.png" class="legend-sdg" width="275px"/>
+			`;
+		} else if(type.includes("Electricity_")) {
+			// TODO: Add new legend item here.
+			html += `
+				<b>Electricity Consumption Legend</b>
+			`;
 		}
 		html += `</div>`;
 
