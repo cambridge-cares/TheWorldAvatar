@@ -14,9 +14,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.nio.file.Paths;
-import java.util.Objects;
 
 public class AQMeshInputAgentLauncherTest {
 
@@ -69,7 +67,7 @@ public class AQMeshInputAgentLauncherTest {
     }
 
     @Test
-    public void testMainErrorWhenCreatingTSClient() throws URISyntaxException, IOException {
+    public void testMainErrorWhenCreatingTSClient() throws IOException {
         createProperAgentPropertiesFile();
         // Empty properties file for time series client should result in exception
         try {
@@ -205,14 +203,19 @@ public class AQMeshInputAgentLauncherTest {
         }
     }
 
-    private void createProperAgentPropertiesFile() throws URISyntaxException, IOException {
+    private void createProperAgentPropertiesFile() throws IOException {
         // Create a properties file that points to the example/test mapping folder in the resources //
-        String mappingFolder = Paths.get(Objects.requireNonNull(getClass().getResource("/mappings"))
-                .toURI()).toString().replace("\\","/");
+        // Create mappings folder
+        String folderName = "mappings";
+        File mappingFolder = folder.newFolder(folderName);
+        // Create empty file in mappings folder
+        File mappingFile = new File(Paths.get(mappingFolder.getCanonicalPath(), "gas.properties").toString());
+        Assert.assertTrue(mappingFile.createNewFile());
         // Filepath for the properties file
         String propertiesFile = Paths.get(folder.getRoot().toString(), agentPropertiesFilename).toString();
         try (FileWriter writer = new FileWriter(propertiesFile, false)) {
-            writer.write("aqmesh.mappingfolder=" + mappingFolder + "\n");
+            writer.write("aqmesh.mappingfolder=" + mappingFolder.getCanonicalPath().
+                    replace("\\","/") + "\n");
         }
     }
 

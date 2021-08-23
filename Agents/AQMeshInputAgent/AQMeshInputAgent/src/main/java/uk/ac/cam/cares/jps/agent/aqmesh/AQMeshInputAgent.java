@@ -180,7 +180,7 @@ public class AQMeshInputAgent {
                 // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
                 OffsetDateTime endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
-                // If there is already an maximum time
+                // If there is already a maximum time
                 if (endDataTime != null) {
                     // If the new data overlaps with existing timestamps, prune the new ones
                     if (startCurrentTime.isBefore(endDataTime)) {
