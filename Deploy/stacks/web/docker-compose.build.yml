@@ -45,6 +45,7 @@ services:
     build:
         context: "../../../GasGrid/OtherTools/Mapping and Location Tools/mapbox_CMCL"
         dockerfile: "./docker/Dockerfile"
+        target: ${MODE}
     labels:
       description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
@@ -57,6 +58,7 @@ services:
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"
+      target: ${MODE}
     labels:
       description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
       authors: "support@cmclinnovations"
