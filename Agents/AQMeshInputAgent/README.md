@@ -12,17 +12,17 @@ contacted by one of the classes in this package to retrieve data.
 
 ## AQMesh API
 
-We will here briefly describe the AQMesh API. The official documentation can be found here:
-https://www.aqmeshdata.net/api-documentation
-
-But requires login credential to access it.
+We will here briefly describe the AQMesh API. The official documentation can be found [here](https://www.aqmeshdata.net/api-documentation), 
+but requires login credential to access it.
 
 ### Token retrieval
 Before accessing any other endpoint, a token needs to be requested that can be used as authorization to 
 access data and pod / asset information.
 
 The token can be retrieved from the following endpoint using an HTTP POST request:
+```
 https://api.aqmeshdata.net/api/Authenticate
+```
 
 The body of the request needs to contain the credential, i.e. username and password, in form of a JSON object like the 
 following example:
@@ -31,7 +31,9 @@ following example:
 ```
 
 The response should then contain the token in the response body if the request was successful, like shown here:
+
 ![Shows the response body of a successful authorization request.](docs/img/token_example.png "Token example")
+
 The token will be valid for 120 minutes for using it in following requests. To use the token it needs to be added to
 the header of the request (how to exactly do it depends on which software and package is used for making the request):
 ```
@@ -51,16 +53,20 @@ To check whether the server is available and whether the token is correctly set,
 https://api.aqmeshdata.net/api/serverping
 
 When available and the GET request is correct the response body should similar to the following:
+
 ![Shows the response body of a successful ping request.](docs/img/ping_example.png "Ping example")
 
-### Retrieve location (pod) number
+### Retrieve location number
 The AQMesh API allows you to connect multiple pods to the same user. To retrieve new data (readings) from a specific pod,
 it's location number (identifier) is needed. Information about the assets, including the location number, is accessible 
 through the asset endpoint via an HTTP GET request:
-https://api.aqmeshdata.net/api/Authenticate/Pods/Assets
+```
+https://api.aqmeshdata.net/api/Pods/Assets
+```
 
 The response body will contain a JSON Array with an JSON object for each asset (pod) containing information
 about the pod. The following is an example of part of the JSON object for one pod:
+
 ![Shows part of the response body of a successful asset request for one asset.](docs/img/asset_example.png "Asset example")
 
 ### Data retrieval
@@ -84,7 +90,7 @@ The actual endpoint has the following structure and controls what type of data i
 https://api.aqmeshdata.net/api/LocationData/Next/[location]/[Params]/[Units]/[TPC]
 ```
 where `[location]` is the number of the specific pod that can be retrieved from the 
-[asset endpoint](#retrieve-location-(pod)-number), `[Params]` is 1 for gas and 2 for particle readings. The [units] 
+[asset endpoint](#retrieve-location-number), `[Params]` is 1 for gas and 2 for particle readings. The [units] 
 are two digits, the first one controlling the temperature unit (0: Fahrenheit, 1: degree Celsius) and
 the second controlling the sensor unit (0: ppb, 1: micrograms per cubic meter). The `[TPC]` path is only applicable for
 particle readings and defines whether to return TPC (1) in the output or not (0).
@@ -96,11 +102,13 @@ part.
 Readings are returned in the response body in form of a JSON array with one JSON object per timestamp.
 
 The following shows a single JSON object example contained in gas readings with units equal to 01:
+
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_gas_readings_1.png "Gas readings general")
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_gas_readings_2.png "Gas readings sensors")
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_gas_readings_3.png "Gas readings additional sensors")
 
 The following shows a single JSON object example contained in particle readings with units equal to 01 and including the TPC:
+
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_particle_readings_1.png "Particle readings general")
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_particle_readings_2.png "Particle readings sensors")
 
