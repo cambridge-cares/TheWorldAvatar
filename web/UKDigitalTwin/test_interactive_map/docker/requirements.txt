@@ -1,0 +1,7 @@
+SPARQLWrapper==1.8.5
+tqdm==4.62.1
+numpy==1.21.2
+Shapely==1.6.4.post2
+geojson==2.5.0
+matplotlib
+pandas

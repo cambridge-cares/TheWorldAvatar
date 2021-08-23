@@ -1,0 +1,2 @@
+docker build --rm -t docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT -f docker/Dockerfile .
+docker run -d -p 80:80 --restart always --name "power-system-vis" -it docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT
