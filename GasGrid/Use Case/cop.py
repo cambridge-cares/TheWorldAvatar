@@ -938,6 +938,7 @@ def plot_variables(month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
                 norm = divnorm,\
                 cax=cax,
                 legend_kwds={'label':'Coefficient of Performance (-)'})   
+                #legend_kwds={'label':'Coefficient of Performance (-)','orientation': "horizontal"})   
             tl  = my_geo_df.plot(column="COP",cmap=color_theme,\
                 antialiased=False,\
                 ax = axs['A'],\
@@ -945,6 +946,7 @@ def plot_variables(month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
                 norm = divnorm,\
                 cax=cax2,
                 legend_kwds={'label':'Air Temperature (°C)'})   
+                #legend_kwds={'label':'Air Temperature (°C)','orientation': "horizontal"})   
         else:
             tl  = my_geo_df.plot(column="COP",cmap=color_theme,\
                 antialiased=False,\
@@ -999,7 +1001,7 @@ def plot_variables(month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
         temp_var_type = temp_vars[j]
 
         # define amount of heat pump uptake 
-        uptake = 0.5 
+        uptake = 1.0 
         df_box = pd.DataFrame({'Gas' : []})
         complete_df = pd.DataFrame({'Gas' : []})
         for i in tqdm(range(12)):
@@ -1070,6 +1072,7 @@ def plot_variables(month,uptake,temp_var_type,line_var,LSOA1,LSOA2):
         connectionstyle="arc3,rad=-0.2",arrowstyle='->')
     #axins2.set_xticks(np.arange(len(months)),months_letter)
     fig.patches.append(arrow)
+    plt.show()
     plt.savefig('figure_output/cop.pdf') 
     plt.savefig('figure_output/cop.png') 
 
