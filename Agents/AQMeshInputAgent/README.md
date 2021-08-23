@@ -84,7 +84,7 @@ The actual endpoint has the following structure and controls what type of data i
 https://api.aqmeshdata.net/api/LocationData/Next/[location]/[Params]/[Units]/[TPC]
 ```
 where `[location]` is the number of the specific pod that can be retrieved from the 
-[asset endpoint](#Retrieve-location-(pod)-number), `[Params]` is 1 for gas and 2 for particle readings. The [units] 
+[asset endpoint](#retrieve-location-(pod)-number), `[Params]` is 1 for gas and 2 for particle readings. The [units] 
 are two digits, the first one controlling the temperature unit (0: Fahrenheit, 1: degree Celsius) and
 the second controlling the sensor unit (0: ppb, 1: micrograms per cubic meter). The `[TPC]` path is only applicable for
 particle readings and defines whether to return TPC (1) in the output or not (0).
@@ -105,21 +105,104 @@ The following shows a single JSON object example contained in particle readings 
 ![Shows part of the response body of a successful gas readings request.](docs/img/example_particle_readings_2.png "Particle readings sensors")
 
 ## Usage 
+This part of the README describes the usage of the input agent. The modules itself can be packaged into an executable 
+jar that can be executed to run the agent. Since it uses the time-series client which maintains both instances in a 
+knowledge graph, and, a Postgres database to store the data, these will be required to be set-up.  
 
-### Set-up
+The [next section](#requirements) will explain the requirements to run the agent and then both the steps for [running it 
+as jar](#using-the-jar-directly) directly on a machine or in form of a [Docker container](#docker) are described.
 
-#### Requirements
+### Requirements
+Independent on whether the jar is used directly or the agent is run in form of a Docker container using a built image, it
+is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine 
+or need to be accessible from the host machine via a fixed URL.
 
-#### Building the executable jar
+This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README
+to explain the set-up of a knowledge graph triple store or Postgres database.
+
+### Property files
+For running the agent, three property files are required:
+- One property file for the agent itself pointing to the mapping configuration.
+- One property file for the time-series client defining how ot access the database and SPARQL endpoint.
+- One property file for the AQMesh API defining the access credentials and pod to use.
+
+We will quickly look at each one separately.
+
+#### Agent properties
+The agent property file only needs to contain a single line:
+```
+aqmesh.mappingfolder=[mappings_folder]
+```
+where `[mappings_folder]` is the absolute path to a folder containing JSON key to IRI mappings 
+(use '/' as path separator also on Windows). An example property file can be found in the `config` folder under 
+`agent.properties`. See [this section](#mapping-files) for an explanation of the mapping files.
+
+#### Mapping files
+What are the mapping files and why are they required? The mapping files define how data received from the API is connected
+to the knowledge graph (KG). Specifically, each JSON key in the readings (see [API description](#aqmesh-api)) represents a 
+specific measure that needs to be represented by an IRI if it should be saved in the database.
+
+Furthermore, measures can be grouped into one time-series (will result in one time-series instance per group in the KG).
+This should be done so that all measures in one group are recorded at the same time and come from the same readings, 
+e.g. gas readings or particle readings and should not be mixed in between. However, it is possible to break the
+readings down into smaller, logical groups, e.g. general readings and actual measures.
+
+The mapping is achieved in this package by using one property file per group. Each property file contains one line per 
+JSON key that should be linked to an IRI, e.g. like:
+```
+co_slope=http:/example/co_slope
+```
+If the IRI left empty, i.e. because there is no instance that represents the measure yet, it will be automatically 
+created when the agent is run for the first time. Note, that not all JSON keys need to be represented (the data will simply be ignored), but there needs to be a 
+1-1 mapping, i.e. no IRI can be used for multiple JSON keys.
+
+To ensure that the same IRIs are used for each JSON key, the mapping files are saved back after each run (only really 
+necessary when some of them are automatically generated). Note, that if you change any mapping in preceding runs, they 
+will be seen as new time-series, which can result in inconsistencies in both the KG and database.
+
+Examples for the structure of the mapping folder and files can be found in the `mapping` folder within the `config` 
+folder. Here, the keys are grouped into three groups, where the particle readings are split into measures and general 
+information, and for the gas readings general information already contained in the particle readings are ignored (see 
+also the [the example readings](#example-readings)).
+
+### Using the jar directly
+
+#### Built the jar
+To build the jar file of this agent, you need to have [Maven](https://maven.apache.org/) installed. The current version
+of the code was tested with version 3.8.1 running on Windows. In addition, the machine needs to be able to access the 
+CMCL Maven repository for downloading the JPS base lib dependency. Check the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages) 
+for how to set it up. Example Maven settings files are provided in the `.m2` folder.
+
+If everything is set up the executable jar can be built using the following command in a terminal from within the 
+`AQMeshInputAgent` folder (in which the `pom.xml` is located):
+```
+mvn clean package
+```
+
+Maven will run all unit test before packaging. As part of the packaging process, Maven will also download all 
+dependencies in a specific folder in the `target` folder that are required to run the jar, and the logging settings from the
+CMCL repository.
+
+A successful built should result in a `target` folder containing among other files:
+- The jar `aqmesh_inputAgent-[version].jar`
+- A folder containing all the dependencies called `aqmesh_inputAgent-[version].lib`
+- A folder containing the logging configuration `aqmesh_inputAgent-[version].conf`
+
+In all cases `[version]` is the current version number of the package 
+(see also the rules about versioning on the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning)).
+
+#### Run the agent
+
+
+### Docker
 
 #### Building the docker image
+To build the Docker image some set-up is required as all files and credentials that are required to run the agent need 
+to be included in the image. Check out  
+
 ```
 docker build -t test/aqmesh-input-agent -f Dockerfile .
 ```
-
-### Running the agent
-
-#### Directly through the jar
 
 #### Using the docker image
 ```
