@@ -26,10 +26,6 @@ services:
 
   # Reverse Proxy
   reverse_proxy:
-    # Map http and https to standard ports
-    ports:
-      - 80:80
-      - 443:443
     volumes:
       # Add a bind volume (shared with the certbot container) for the letsencrypt config dir
       - type: bind
