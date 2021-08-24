@@ -15,4 +15,4 @@ the ```data``` folder contains the data required to populate a knowledge graph u
 ```fuel_poverty_population.py``` takes the file in this data folder and associates the contained fuel poverty statistics to each output area.
 The program performs SPARQL update queries to a specified endpoint. This is done in batches of areas at a time for various reasons.
 - If I was to improve this I would query for the output areas first as opposed to constructing the IRI based on the LSOA code in the spreadsheet. 
-- I would also not hardcode the date and construct it based on the spreadsheet.
+- I would also not hardcode the start and end dates but construct them based on the spreadsheet.
