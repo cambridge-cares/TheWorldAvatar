@@ -6,7 +6,7 @@ the corresponding database, as well as, instantiating KG instances and connectio
 agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries)
 from the JPS base lib to interact with both the KG and database.
 
-Before explaining the usage of the agent and other parts of the code, we will briefly summarize the AQMesh API that is
+Before explaining the usage of the agent, we will briefly summarize the AQMesh API that is
 contacted by one of the classes in this package to retrieve data.
 
 ## AQMesh API
@@ -234,21 +234,83 @@ In all cases `[version]` is the current version number of the package
 (see also the rules about versioning on the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Versioning)).
 
 #### Run the agent
+Running the agent with the jar requires the jar itself, the dependency folder and the logging configuration folder 
+(see [above](#building-the-jar)) all located in the same root folder. These files/folders can be copied to a new location, 
+i.e. where the property files are located (recommended), or the agent can be run directly from the target folder.
 
+In addition to the files that are created during the built, [property files](#property-files) are required as well. You
+can check the files located in the `config` folder as an example, but **do not** modify them or use them. Instead, copy 
+them to a different location on the machine before modifying. As described [above](#mapping-files), mapping configurations
+are required as well (the location can be set in the agent property file). These mapping files need to be kept persistent, 
+so once the agent is run they should not be modified anymore (see [Mapping files](#mapping-files)). 
+Use the `mapping` folder in the `config` folder as template, but **do not** modify or use them directly. Instead,
+create copies, move them to a new location, e.g `C:\AQMeshAgent\mappings`, and modify them accordingly.
+
+Once the property files and built files are set up, the agent can be run using the following command 
+(run it from within the root where the jar file, dependency folder and configuration folder are located):
+```
+java -jar aqmesh_inputAgent-[version].jar [agent_property_file] [client_property_file] [api_property_file]
+```
+The `[version]` is the current version of the agent package. For the files you can provide absolute or relative 
+(relative to the root folder) paths. 
+
+When running the agent, logging will be shown in the terminal and log files will be created in the home folder under 
+`.jps` (see the [wiki](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Logging) for details on the logging).
+On a successful run, information about the process should be printed to the terminal and the run should terminate without
+errors. Otherwise, error messages will inform about the cause of the error. 
 
 ### Docker
+This section describes how the agent can be dockerized. This can be useful to ensure running the agent with the same
+property files (which will be part of the Docker image), or when setting up a Docker compose with other components like
+the knowledge graph triple store and Postgres database.
 
 #### Building the docker image
-To build the Docker image some set-up is required as all files and credentials that are required to run the agent need 
-to be included in the image. Check out  
+To build the Docker image some set-up is required, as all files and credentials that are required to run the agent need 
+to be included in the image: 
+- Creating the Docker image requires that the agent jar file is built. This requires a Maven set-up with credentials to
+access the CMCL Maven repository (see [Building the jar](#building-the-jar)). Here, we achieve this by providing Maven
+settings in the `.m2` folder with placeholders for the credentials. These placeholders will be filled with the actual
+credentials during the build process read from files in the `credentials` folder (`repo_password.txt` and 
+`repo_username.txt`).
+More information about this can be found in the 
+[example java agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/Deploy/examples/java_agent).
+- To run the agent inside the image, property files are needed (see [Run the agent](#run-the-agent)). These will be
+copied into the Docker image from the `config` folder. Change information like the postgress URL, SPARQL endpoints, API
+URL and pod index before building the image. Note, that you can use `host.docker.internal` (Windows and MAC) or 
+`172.17.0.1` (Linux, not tested) as IP in the URLs if the SPARQL endpoint or Postgres is running on the host machine
+outside the Docker engine (or without using a shared network for the containers). Similar to the Maven credentials,
+there are placeholders for the Postgres and AQMesh API credentials in the property files that are filled during the build
+process (**do not change them!**). The credential files should be named `postgres_credentials.txt` and `api_credentials.txt`
+respectively, and should contain the username in the first line and the password in the second line.
 
+When the credential files are set up and the property files are changed according to the SPARQL endpoint and Postgres 
+set up, the Docker image can be build using the following command (run from the root folder):
 ```
 docker build -t test/aqmesh-input-agent -f Dockerfile .
 ```
+The name/tag of the image can be changed, but be aware to use the same name when running a container (see next 
+[section](#using-the-docker-image)).
+
+The Docker image is built in two stages, one that runs the Maven package command and one that copies the relevant files
+from the first stage and sets the entrypoint to directly run the agent. 
 
 #### Using the docker image
+The Docker image is supposed to be used as one shot container, i.e. run the agent and then remove the container again.
+Which means the container will not be running constantly, but only on demand.
+
+As described [above](#mapping-files), mapping configurations are required to run the agent. In addition, these mapping
+files need to be kept persistent, so they can not exist within the Docker container but must be on the machine running
+the agent/container. Use the `mapping` folder in the `config` folder as template, but **do not** modify or use them directly. Instead,
+create copies, move them to a new location, e.g `C:\AQMeshAgent\mappings`, and modify them accordingly. 
+
+With a built image and the mapping files set-up, the agent can be run in form of a Docker container using the following 
+command:
 ```
-docker run -v ~/mappings:/app/config/mappings --rm test/aqmesh-input-agent
+docker run -v [mapping_folder]:/app/config/mappings --rm test/aqmesh-input-agent
 ```
-## API connector
+Here, `[mapping_folder]` needs to be the **absolute** path to the folder in which you stored the mapping files, e.g. 
+`C:\AQMeshAgent\mappings`. The `-v` argument ensures that the files are kept persistent (do not change the location 
+within the container). The `-rm` argument ensures that the container is removed after the agent is run successfully or
+resulted in errors. The output to the command line will be the same as when running the agent directly from the jar 
+(see [Run the agent](#run-the-agent)).
 
