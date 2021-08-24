@@ -171,7 +171,7 @@ More information can be found in the example property file `api.properties` in t
 
 #### Mapping files
 What are the mapping files and why are they required? The mapping files define how data received from the API is connected
-to the knowledge graph (KG). Specifically, each JSON key in the readings (see [API description](#example-readings)) 
+to the knowledge graph (KG). Specifically, each JSON key in the readings (see [Example readings](#example-readings)) 
 represents a specific measure that needs to be represented by an IRI, if it should be saved in the database.
 
 Furthermore, measures can be grouped into one time-series (will result in one time-series instance per group in the KG).
@@ -242,7 +242,7 @@ In addition to the files that are created during the built, [property files](#pr
 can check the files located in the `config` folder as an example, but **do not** modify them or use them. Instead, copy 
 them to a different location on the machine before modifying. As described [above](#mapping-files), mapping configurations
 are required as well (the location can be set in the agent property file). These mapping files need to be kept persistent, 
-so once the agent is run they should not be modified anymore (see [Mapping files](#mapping-files)). 
+so once the agent is run they should not be modified anymore. 
 Use the `mapping` folder in the `config` folder as template, but **do not** modify or use them directly. Instead,
 create copies, move them to a new location, e.g `C:\AQMeshAgent\mappings`, and modify them accordingly.
 
