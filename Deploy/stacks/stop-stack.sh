@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that stops a stack running in the requested stack
+# Wrapper script for docker-compose that stops a stack running in the specified mode.
 
 # Show a usage statement if the wrong number of arguments were supplied
 if [ "$#" -ne 2 ]; then

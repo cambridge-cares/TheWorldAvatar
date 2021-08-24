@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that starts the requested stack in one of three
-# modes (dev/test/prod).
+# Wrapper script for docker-compose that starts the requested stack in either 'dev' or 'prod' mode.
 #
 # Each stack directory contains a base configuration file and, optionally, mode-specific configuration files.
 # That is:
 #   docker-compose.deploy.yml
 #   docker-compose.deploy.dev.yml (optional)
-#   docker-compose.deploy.test.yml (optional)
 #   docker-compose.deploy.prod.yml (optional)
 
 
@@ -18,7 +16,7 @@ if [ "$#" -lt 2 ]; then
   echo "  $0 [stack_name] [mode] <--force-pull service_list> <additional_args>"
   echo ""
   echo "                stack_name : the stack to start (agent/db/web)"
-  echo "                      mode : configuration mode name (dev/test/prod)"
+  echo "                      mode : configuration mode name (dev/prod)"
   echo " --force-pull service_list : pull images from the registry, even if they exist locally."
   echo "                             'service_list' is a comma-separated list of service names"
   echo "           additional_args : remaining arguments are passed on to 'docker-compose up'"

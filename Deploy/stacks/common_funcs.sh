@@ -24,7 +24,7 @@ is_valid_mode()
 {
   local mode=$1
   case "$mode" in
-    "dev"|"test"|"prod")
+    "dev"|"prod")
       return $TRUE ;;
     *)
       return $FALSE ;;
