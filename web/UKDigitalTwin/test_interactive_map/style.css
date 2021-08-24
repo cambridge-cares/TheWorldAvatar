@@ -45,7 +45,7 @@ body.effectsOff #tiltShift body.effectsOff #map {
 	margin-left: 50px;
 	margin-right: 50px;
 	padding: 10px;
-	border: 1px solid lightgrey;
+	/*border: 1px solid lightgrey;*/
 	line-height: 24px !important;
 }
 #legend img {
@@ -64,6 +64,10 @@ body.effectsOff #tiltShift body.effectsOff #map {
 	float: left;
 }
 
-#UKInteractiveMap {
-	height: 180px;
+#legend .legend-electricity_consumption {
+	text-align: middle;
+	float: none;
+	vertical-align: middle;
+	margin-left: 0px;
+	margin-right: 0px;
 }

@@ -1,16 +1,24 @@
 ####################################################
-# Original author: Tom Savage (trs3@cam.ac.uk)     #
-# Extended by: Wanni Xie (wx243@cam.ac.uk)         #
-# Last Update Date: 13 August 2021                 #
+# Author: Wanni Xie (wx243@cam.ac.uk)              #
+# Extended from: Tom Savage (trs3@cam.ac.uk)       #
+# Last Update Date: 18 August 2021                 #
 ####################################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
 
 from SPARQLWrapper import SPARQLWrapper, CSV, JSON
-import json
 from tqdm import tqdm
 import time
 import numpy as np 
+
+# import shapely
+# from shapely.wkt import dumps, loads
+# from shapely import wkt, geometry
+
+from shapely.wkt import loads
+from shapely.geometry import mapping
+import geojson
+import ast
 
 """query the COMO RDF4j triple store for the UK power plant data from DUKES"""
 # The endpoint is: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG
@@ -121,7 +129,7 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
     ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     
-    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
     ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     }
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
@@ -149,9 +157,9 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
     ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
     ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
     
-    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Industrial_and_Commercial . 
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
     ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
-    } LIMIT 2
+    }
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5])
 
   # performing SPARQL query  
@@ -165,20 +173,21 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
   start = time.time()
   print('Querying UK Electricity Consumption Data...')
   ret = sparql.queryAndConvert()
-  end = time.time()
-  print('Finished in ',np.round(end-start,2),' seconds')
+
   # parsing JSON SPARQL results into an array
   ret = ret['results']['bindings']
   num_ret = len(ret)
   num_query_var = len(queryVar) 
   # assigning memory to results array 
-  ret_array = np.zeros((num_ret, num_query_var + 1), dtype='object')
+  ret_array = np.zeros((num_ret, num_query_var), dtype='object')
   # iterating over results and allocating properties from query
   counter = 0
   Num_no_geoInfoAreas = 0
   No_geoInfoAreas = []
+  
+  print('Querying UK ONS geometry Data...')  
+  
   for i in tqdm(range(num_ret)):
-      print("The area num is:", counter)
       Location = ret[i][queryVar[0].strip("?")]['value'].split("resource/")[1]
       Area_LACode = ret[i][queryVar[1].strip("?")]['value']
       Area_id_url = ret[i][queryVar[2].strip("?")]['value']
@@ -221,45 +230,22 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
       sparql.setReturnFormat(JSON) 
       sparql.setQuery(query_ONS)
       geo = sparql.queryAndConvert()
-      # print("The results contains: ", geo)
+      
       if str(geo['results']['bindings']) == "[]":
           print(Area_id_url, "does't have the geographical attributes.")
           Num_no_geoInfoAreas += 1
-          No_geoInfoAreas.append(Area_id_url.split("geography/")[1])
+          No_geoInfoAreas.append(Area_id_url)
           continue
-      polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) # extract the elements of the original dict
-    
-      if "MULTIPOLYGON" in polygon_point_unformatted_string:
-         polygonType = "MultiPolygon"
-         print(polygonType)
-         unformatted_polygon_list = polygon_point_unformatted_string.replace("MULTIPOLYGON", "").strip().split(")), ((") # MULTIPOLYGON referes that in the same polygon there are more than 1 inner polygons
-         polygon_point = [None] * len(unformatted_polygon_list)
-         polygon_point_counter = 0
-         for mp in unformatted_polygon_list: # within one multipolygon there are one outer polygon with several polyons in it
-             mp = mp.replace(")", "").replace("(", "")             
-             mp_point_set_list = mp.split(",")             
-             polygon_point_set = []
-             for p in mp_point_set_list:
-                 point = [float(p.strip().split(" ")[0]), float(p.strip().split(" ")[1])]                 
-                 polygon_point_set.append(point)
-             polygon_point[polygon_point_counter] = polygon_point_set
-             polygon_point_counter += 1
-         
-      elif "POLYGON" in polygon_point_unformatted_string:
-           polygonType = "Polygon"
-           print(polygonType)         
-           unformatted_polygon_list = polygon_point_unformatted_string.replace("POLYGON", "").replace(")", "").replace("(", "").strip().split(",") # POLYGON refers that there are only one polygon out liner         
-           polygon_point = []
-           for mp in unformatted_polygon_list: 
-              point = [float(mp.strip().split(" ")[0]), float(mp.strip().split(" ")[1])]
-              polygon_point.append(point)
-      else:
-           print("The polygon string queried fron ONS is not valid.")
-           return None        
-      ret_array[i,:] = [Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, polygonType, polygon_point]      
+      polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) #extract the elements of the original dict
+      geojson_string = geojson.dumps(mapping(loads(polygon_point_unformatted_string)))
+      geojson_dict = ast.literal_eval(geojson_string) 
+      ret_array[i,:] = [Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, geojson_dict]            
       counter += 1
-     
+      
+  end = time.time()
+  
   print("******************The query results report******************")
+  print('Finished in ',np.round(end-start,2),' seconds')  
   print("The total number of the areas are: ", counter)
   print("The number of the areas don't have the geo attibutes are: ", Num_no_geoInfoAreas, " which are listed as follow: ")
   print(No_geoInfoAreas)
@@ -288,7 +274,3 @@ if __name__ == '__main__':
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     pp = 'https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG'
     res = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS_json, False)
-    # res = queryPowerPlantForVisualisation(pp)
-    # for r in res:
-    #     print(r)
-

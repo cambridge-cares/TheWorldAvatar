@@ -1,9 +1,12 @@
 ####################################################
 # Original author: Tom Savage (trs3@cam.ac.uk)     #
-# Modified by: Wanni Xie (wx243@cam.ac.uk)         #
-# Last Update Date: 04 August 2021                 #
+# Extended by: Wanni Xie (wx243@cam.ac.uk)         #
+# Last Update Date: 23 August 2021                 #
 ####################################################
 
+"""This module contains the functions enabel the colour effects of the visualisation."""
+
+"""This function is designed to colour the points denoting the power plant in the UK digital twin according to its generator type."""
 def gen_fuel_col(gen_fuel):
   #returns a colour code for each generator fuel type.
   #https://htmlcolorcodes.com/
@@ -33,3 +36,30 @@ def gen_fuel_col(gen_fuel):
         "Waste": "#873600"
     }
   return map_fuel_dict[gen_fuel]
+
+"""This function is used to shed the area with the colour demonstrating the value of the enlectricity consumption"""
+def getChoropleth(consumption):
+# The colour referce codes are found from ColorBrewer: https://colorbrewer2.org/#type=sequential&scheme=BuGn&n=3
+# Setting: diverging, 11 points
+    if consumption > 2000: 
+        return "#a50026"
+    elif consumption <= 2000 and consumption > 1800:
+        return "#d73027"
+    elif consumption <= 1800 and consumption > 1600:
+        return "#f46d43"
+    elif consumption <= 1600 and consumption > 1400:
+        return "#fdae61"
+    elif consumption <= 1400 and consumption > 1200:
+        return "#fee08b"
+    elif consumption <= 1200 and consumption > 1000:
+        return "#ffffbf"
+    elif consumption <= 1000 and consumption > 800:
+        return "#d9ef8b"
+    elif consumption <= 800 and consumption > 600:
+        return "#a6d96a"
+    elif consumption <= 600 and consumption > 400:
+        return "#66bd63"
+    elif consumption <= 400 and consumption > 200:
+        return "#1a9850"
+    elif consumption <= 200:
+        return "#006837"
