@@ -19,6 +19,7 @@ if [ "$#" -lt 2 ]; then
   echo "                      mode : configuration mode name (dev/prod)"
   echo " --force-pull service_list : pull images from the registry, even if they exist locally."
   echo "                             'service_list' is a comma-separated list of service names"
+  echo "                    --test : modify service options (particularly port mappings) according to docker-compose.deploy.test.yml"
   echo "           additional_args : remaining arguments are passed on to 'docker-compose up'"
   echo ""
   echo "e.g. To start the web stack in dev mode:"
@@ -37,14 +38,27 @@ stack="$1"
 mode="$2"
 shift;shift
 
+# Load common helper functions
+if [ -e ./common_funcs.sh ]; then
+  . ./common_funcs.sh
+else
+  echo "Unable to load bash helper functions, make sure you're running this script in Deploy/stacks/"
+  exit 1
+fi
+
 # Process remaining args. Avoiding using getopts here in a vain attempt to keep things shell-agnostic
 additional_up_args=""
 services_to_force_pull=""
+use_test_config=$FALSE
 while test $# -gt 0; do
   case "$1" in
     --force-pull)
       shift
       services_to_force_pull=$1
+      shift
+      ;;
+    --test)
+      use_test_config=$TRUE
       shift
       ;;
     *)
@@ -53,14 +67,6 @@ while test $# -gt 0; do
       ;;
   esac
 done
-
-# Load common helper functions
-if [ -e ./common_funcs.sh ]; then
-  . ./common_funcs.sh
-else
-  echo "Unable to load bash helper functions, make sure you're running this script in Deploy/stacks/"
-  exit 1
-fi
 
 # Validate args
 if ! $(is_valid_stack $stack); then echo "$0: '$stack' is not a valid stack" && exit 2; fi
@@ -71,7 +77,7 @@ if ! $(is_valid_mode $mode); then echo "$0: '$mode' is not a valid mode" && exit
 init_stack_script $stack "Deploying the $stack stack in $mode mode\n\n"
 
 # Get yml filenames
-yml_fnames=$(get_yml_fnames $mode $process)
+yml_fnames=$(get_yml_fnames $mode $process $use_test_config)
 if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
 yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /' -e 's/^/-f /')
 

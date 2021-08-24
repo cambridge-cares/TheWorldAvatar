@@ -137,13 +137,14 @@ exit_on_error()
 get_yml_fnames()
 {
   # Check number of args
-  if [ "$#" -ne 2 ]; then
-    echo "get_yml_fnames: Expected 2 arguments, but $# were passed."
+  if [ "$#" -ne 3 ]; then
+    echo "get_yml_fnames: Expected 3 arguments, but $# were passed."
     exit 1
   fi
 
   local mode=$1
   local process=$2
+  local use_test_config=$3
 
   # Check mode arg is valid
   if ! $(is_valid_mode $mode); then echo "get_yml_fnames: '$mode' is not a valid mode" && exit 11; fi
@@ -153,13 +154,16 @@ get_yml_fnames()
 
   base_yml="docker-compose.$process.yml"
   modespec_yml="docker-compose.$process.$mode.yml"
+  testmodifier_yml="docker-compose.$process.test.yml"
 
   # Compile result
   result="$base_yml"
   if [ -f "$modespec_yml" ]; then
     result="$result $modespec_yml"
   fi
-
+  if [ $use_test_config -eq $TRUE ] && [ -f "$testmodifier_yml" ]; then
+    result="$result $testmodifier_yml"
+  fi
   # Pass the result back via stdout
   echo "$result"
 }
