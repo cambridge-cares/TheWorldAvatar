@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg;
+package uk.ac.cam.cares.jps.accessagent;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;

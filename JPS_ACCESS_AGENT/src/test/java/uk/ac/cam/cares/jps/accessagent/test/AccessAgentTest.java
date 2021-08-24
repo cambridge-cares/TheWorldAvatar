@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg.test;
+package uk.ac.cam.cares.jps.accessagent.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,13 +29,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
+import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
 
@@ -47,10 +46,8 @@ public class AccessAgentTest{
 	
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
-		// Test rdf file
-		String filePathDir = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" ;
-		
-		Path testResourcePath = Paths.get(filePathDir+"/testRDF.rdf");
+		// Test rdf file				
+		Path testResourcePath = Paths.get(this.getClass().getResource("/testRDF.rdf").toURI());
 		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
