@@ -33,5 +33,5 @@ OntoGasGrid/statistical_elec_population/LSOA_domestic_elec_2010_19.xlsx
 Use Case/pickle_files
 Use Case/figure_output
 Use Case/mapbox_current/LSOA.geojson
-Use Case/GBR_adm2.*
+Use Case/GB_shapefile/
 

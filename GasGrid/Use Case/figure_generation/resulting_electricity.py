@@ -396,8 +396,7 @@ def query_poly(limit):
 
     return LSOA_shapes
 
-from cop_equation import COP
-
+from calculation_parameters.cop_equation import COP
 
 
 unique_LSOA = np.unique(all_results[:,0]) # Get unique LSOA keys
@@ -549,11 +548,12 @@ else:
 # preallocating disaggregated monthly gas consumption tensor
 monthly_gas_tensor = np.zeros((len(unique_LSOA),12))
 
-from gas_params import alpha,nb
+from calculation_parameters.gas_params import alpha,nb
 # scaling yearly gas values for each LSOA to monthly values
 for i in range(len(gas_tensor)):
     for j in range(len(months)):
         monthly_gas_tensor[i,j] = gas_tensor[i] * monthly_total_gas_demand[j] / total_uk_demand
+
 
 # vector of TOTAL electricity consumption in 2019 by month
 # used to scale yearly LSOA values
@@ -597,6 +597,7 @@ def dataframe_construction(temp_var_type,uptake,month,df_box,complete_df):
 
 
 
+    
 
     # Create arrays to extract values from the tensors from 
     # Note the tensors were just to organise everything and make 
@@ -714,37 +715,37 @@ def plot_var_month_with_temps(vars):
     styles = ['solid','dashed','dotted']
 
     months_letter = ['J','F','M','A','M','J','J','A','S','O','N','D']
-    plt.figure(figsize=(5,2.5))
+    plt.figure(figsize=(5,3.5))
     plt.xlabel('Month')
     plt.tight_layout()
-    plt.ticklabel_format(axis="y", style="sci", scilimits=(0,0))
-    plt.subplots_adjust(left = 0.076,right=0.967)
-    plt.ylabel('Emissions \n (kgCO$_2$eq/month)')
-    for j in range(len(vars)):
-        temp_var_type = temp_vars[1]
-        var = vars[j]
+    plt.ylabel('Electricity Consumption (kWh/month)')
+    uptakes = [0,0.5,1]
+    for u in range(len(uptakes)):
+        median = np.zeros((len(temp_vars),12))
+        for j in range(len(temp_vars)):
+            temp_var_type = temp_vars[j]
+            var = vars[0]
+            # define amount of heat pump uptake 
+            df_box = pd.DataFrame({'Gas' : []})
+            complete_df = pd.DataFrame({'Gas' : []})
+            for i in tqdm(range(12)):
+                df_box, complete_df = dataframe_construction(temp_var_type,uptakes[u],i,df_box,complete_df)
+            temp_median = []
+            for i in range(len(months)):
+                temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
+                temp_median.append(np.sum(temp_df[var].values,axis=0))
+            median[j,:] = temp_median
+        
+        plt.plot(np.arange(len(median[1,:])),median[1,:],c='k',linestyle=styles[u],label=str(int(uptakes[u]*100))+'% uptake')
+        plt.fill_between(np.arange(len(median[1,:])),median[0,:],median[2,:],color='k',linestyle=styles[u],alpha=0.1)
 
-        # define amount of heat pump uptake 
-        uptake = 0.5 
-        df_box = pd.DataFrame({'Gas' : []})
-        complete_df = pd.DataFrame({'Gas' : []})
-        for i in tqdm(range(12)):
-            df_box, complete_df = dataframe_construction(temp_var_type,uptake,i,df_box,complete_df)
-
-        median = [] 
-        for i in range(len(months)):
-            temp_df = complete_df[complete_df['Month (2019)'] == months[i]]
-            median.append(sum(list(temp_df[var].values)))
-        plt.plot(np.arange(len(median)),median,c='k',linestyle=styles[j],label=vars[j].split('Emissions')[0])
-        #plt.scatter(np.arange(len(median)),median,c='k',s=12)
-    plt.ylim(bottom=0)
-    plt.legend(frameon=False,bbox_to_anchor=(0.6,0.5))
+    plt.legend(frameon=False)
+    plt.subplots_adjust(left = 0.127)
     plt.xticks(np.arange(len(months)),months_letter)
-    plt.subplots_adjust(left = 0.175)
+    plt.ylim(bottom=0)
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/resulting_electricity.png',dpi=200)
+    plt.savefig('figure_output/a_'+str(alpha)+'n_'+str(nb)+'/resulting_electricity.pdf')
 
-    plt.savefig('figure_output/total_emissions.png')
-    plt.savefig('figure_output/total_emissions.pdf')
 
-
-vars = ["Total Emissions","Gas Emissions", "Electricity Emissions"]
+vars = ["Remaining Electricity"]
 plot_var_month_with_temps(vars)

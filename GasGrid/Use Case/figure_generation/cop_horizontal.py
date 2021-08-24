@@ -514,7 +514,7 @@ for j in tqdm(range(len(fuel_poor_results[:, 0]))):
         print("No fuel poverty data for ", fuel_poor_results[j, 0].split("/")[-1])
 
 
-from cop_equation import COP
+from calculation_parameters.cop_equation import COP
 
 # vector of TOTAL gas consumption in 2019 by month
 # used to scale yearly LSOA values
@@ -1064,7 +1064,7 @@ def plot_variables(month, uptake, temp_var_type, line_var, LSOA1, LSOA2):
                 legend=False,
                 norm=divnorm,
             )
-        UK_gdf = gpd.read_file("GBR_adm2.shp")
+        UK_gdf = gpd.read_file("GB_shapefile/GBR_adm2.shp")
         UK_gdf = UK_gdf.to_crs("EPSG:3395")
         UK_gdf.boundary.plot(ax=axs[keys[i]], color="k", linewidth=0.5)
         boundary = my_geo_df.bounds
@@ -1082,7 +1082,7 @@ def plot_variables(month, uptake, temp_var_type, line_var, LSOA1, LSOA2):
         axs[keys[i]].spines["left"].set_visible(False)
         axs[keys[i]].spines["bottom"].set_visible(False)
         axs[keys[i]].set_title(temp_var_short[i])
-    from cop_equation import T_from_COP
+    from calculation_parameters.cop_equation import T_from_COP
 
     ticks = cax2.get_xticks()
     temp = np.round(np.array(T_from_COP(ticks)), 1).astype(str)
@@ -1219,8 +1219,8 @@ def plot_variables(month, uptake, temp_var_type, line_var, LSOA1, LSOA2):
     )
     # axins2.set_xticks(np.arange(len(months)),months_letter)
     fig.patches.append(arrow)
-    plt.savefig("figure_output/cop.pdf")
-    plt.savefig("figure_output/cop.png")
+    plt.savefig("figure_output/cop_h.pdf")
+    plt.savefig("figure_output/cop_h.png",dpi=200)
 
     return
 
