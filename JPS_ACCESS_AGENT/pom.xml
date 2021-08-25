@@ -6,6 +6,13 @@
   <packaging>war</packaging>
   <name>AccessAgent</name>
   
+  <!-- Parent POM -->
+  <parent>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-parent-pom</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  
   <!-- Build settings -->
   <build>
 	  <plugins>
@@ -23,18 +30,30 @@
             <artifactId>maven-surefire-plugin</artifactId>
             <version>2.22.0</version>
         </plugin>
-            
-		<plugin>
-			<groupId>org.apache.maven.plugins</groupId>
-			<artifactId>maven-war-plugin</artifactId>
-			<version>3.2.2</version>
-			<configuration>
+        
+        <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
+        gets copied into the final WAR file's internal WEB-INF directory. -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
+            <configuration>
 				<failOnMissingWebXml>true</failOnMissingWebXml>
 	            <webXml>src\main\webapp\WEB-INF\web.xml</webXml>
                   <warName>${project.artifactId}##${project.version}</warName>
                   <outputDirectory>${tomcatPath}/webapps</outputDirectory>
 			</configuration>
-		</plugin>
+        </plugin>
+        
+        <!-- Downloads and extracts ZIP archives from Maven repository -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
+        </plugin>
+            
 	  </plugins>
   </build>
   
@@ -50,10 +69,21 @@
     <dependency>
 	    <groupId>javax.servlet</groupId>
 	    <artifactId>javax.servlet-api</artifactId>
-	    <version>3.1.0</version>
 	    <scope>provided</scope>
+	     <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
 	</dependency>
 	
+	<!-- Logging, versions pulled from parent POM -->
+     <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-api</artifactId>
+     </dependency>
+     <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+     </dependency>
+    
 	<!-- Testing -->
 	<dependency>
         <groupId>junit</groupId>
