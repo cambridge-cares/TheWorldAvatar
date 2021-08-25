@@ -33,10 +33,11 @@ class TestTopNodeRDF(unittest.TestCase):
         for an_owl_file in owl_files:
             generated_statements = testPowerPlantInfoRDF.read_rdf_model_statements(abs_path_generated_top_node_rdf + os.sep + an_owl_file)
             reference_statements = testPowerPlantInfoRDF.read_rdf_model_statements(abs_path_reference_top_node_rdf + os.sep + an_owl_file)
-            print('Comparing the content of the following two files:\n', abs_path_generated_top_node_rdf + os.sep + an_owl_file,
-                  '\n', abs_path_reference_top_node_rdf + os.sep + an_owl_file)
-            self.assertEqual(generated_statements, reference_statements)
-            print('The files have the same content.')
+            print('Comparing each statement of ', abs_path_reference_top_node_rdf + os.sep + an_owl_file,
+                  ' against ', abs_path_reference_top_node_rdf + os.sep + an_owl_file)
+            for reference_statement in reference_statements:
+                self.assertEqual(generated_statements, reference_statements)
+            print('The compare axioms are identical.')
             print('\n')
 
 if __name__ == '__main__':
