@@ -9,7 +9,7 @@ setup(
     python_requires='>=3.7',
     packages=find_packages(exclude=('tests')),
     long_description=open('README.md').read(),
-    install_requires= ["docopt", "py4jps", "pubchempy"],
+    install_requires= ["docopt", "py4jps", "pubchempy", "entityrdfizer"],
     include_package_data=True,
     entry_points={  # Optional
         'console_scripts': [
