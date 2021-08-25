@@ -314,3 +314,17 @@ within the container). The `-rm` argument ensures that the container is removed 
 resulted in errors. The output to the command line will be the same as when running the agent directly from the jar 
 (see [Run the agent](#run-the-agent)).
 
+## Testing
+If you want to test the agent, either by running the [jar directly](#using-the-jar-directly) or through 
+[using the docker image](#using-the-docker-image) the following might be helpful:
+- Have a SPARQL endpoint and Postgres database running on the test system. Ideally, both the 
+triple store and database should be empty to not interfere with existing data. This could also be achieved
+by using a new namespace and database withing an existing triple store or Postgres instance respectively.
+- Use the test URL of the AQMesh API (`https://apitest.aqmeshdata.net/api/`) to not change the pointer for the actual 
+pod (see [Data retrieval](#data-retrieval)).
+- When testing the behaviour of updating existing data, use the same property and mapping files for consecutive 
+test runs.
+- When running consecutive, independent tests make sure to clean the database (drop the `db_table` 
+and the other created tables) and remove all created triples in the triplestore (all 
+`http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries` objects and their links) between
+tests.
