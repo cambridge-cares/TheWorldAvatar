@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet(urlPatterns = {"/kb/*"})
+@WebServlet(urlPatterns = {"/access"})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
