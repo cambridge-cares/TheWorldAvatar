@@ -8,6 +8,11 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>war</packaging>
     
+	<!-- Note: TheWorldAvatar repository has been configured to execute
+	this project's unit tests whenever a PR to the develop (or master)
+	branch is executed AND files within the email-agent-code directory
+	have changed. -->
+	
     <!-- Project properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -151,7 +156,6 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-web</artifactId>
         </dependency>
-       
         
         <!-- Testing, versions pulled from parent -->
         <dependency>
