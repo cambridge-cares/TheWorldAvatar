@@ -14,10 +14,10 @@ import javax.ws.rs.BadRequestException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -31,8 +31,12 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(AccessAgent.class);
-
+	
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -237,7 +241,7 @@ public class AccessAgent extends JPSAgent{
 		b.append(", targetgraph=").append(graphIRI);
 		if (hasErrorOccured) {
 			b.append(", sparql=" + sparql);
-			logger.error(b.toString());
+			LOGGER.error(b.toString());
 		} else {
 			if (sparql != null) {
 				int i = sparql.toLowerCase().indexOf("select");
@@ -249,7 +253,7 @@ public class AccessAgent extends JPSAgent{
 				}
 			}
 			b.append(", sparql (short)=" + sparql);
-			logger.info(b.toString());
+			LOGGER.info(b.toString());
 		}
 	}
 	
