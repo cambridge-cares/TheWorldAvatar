@@ -1,2 +1,2 @@
-from chemaboxwriters.ontocompchem.pipeline import OC_pipeline
+from chemaboxwriters.ontocompchem.pipeline import assemble_oc_pipeline
 from chemaboxwriters.ontocompchem.writeabox import write_abox

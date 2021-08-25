@@ -22,7 +22,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
@@ -158,7 +158,7 @@ public class KnowledgeBaseAgent extends JPSAgent {
 				return null;
 			} else {
 				// case 2: indirect query
-				return KnowledgeBaseClient.cutHashFragment(parameterUrl);
+				return AccessAgentCaller.cutHashFragment(parameterUrl);
 			}
 			
 		} else {

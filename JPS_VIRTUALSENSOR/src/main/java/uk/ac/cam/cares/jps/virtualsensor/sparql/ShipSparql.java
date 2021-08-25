@@ -90,6 +90,7 @@ public class ShipSparql {
     
     // type 
     static Iri Ship = p_ship.iri("Ship");
+    static Iri ShipCollection = p_ship.iri("ShipCollection");
     
     // relations
     static Iri hasSubsystem = p_system.iri("hasSubsystem");
@@ -121,6 +122,28 @@ public class ShipSparql {
     static Iri hasGISCoordinateSystem = p_space_time_extended.iri("hasGISCoordinateSystem");
     static Iri hasInsideDiameter = p_plant.iri("hasInsideDiameter");
     static Iri hasHeight = p_plant.iri("hasHeight");
+    static Iri hasShip = p_ship.iri("hasShip");
+    static Iri hasTime = p_time.iri("hasTime");
+    static Iri numericPosition = p_time.iri("numericPosition");
+    
+    public static void createShipCollection(String shipCollection, String[] ships) {
+    	Iri shipCollectionIRI = iri(shipCollection);
+    	Iri time_iri = p_ship.iri(shipCollection+"_time");
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	TriplePattern shipCollection_tp = shipCollectionIRI.has(hasTime, time_iri);
+    	TriplePattern time_tp = time_iri.has(numericPosition,0);
+    	
+    	modify.prefix(p_ship,p_time).insert(shipCollection_tp,time_tp);
+    	
+    	for (int i = 0; i < ships.length; i++) {
+    		modify.insert(shipCollectionIRI.has(hasShip, iri(ships[i])));
+    	}
+
+    	SparqlGeneral.performUpdate(modify);
+    }
+    
     /**
      * Creates a ship instance on ship_endpoint, Blazegraph is highly recommended because of its performance
      * @param i
@@ -159,8 +182,6 @@ public class ShipSparql {
         Iri beam_iri = p_ship.iri(ship_name+"_ShipBeam");
         Iri vbeam_iri = p_ship.iri(ship_name+"_vShipBeam");
 
-        Iri time_iri = p_ship.iri(ship_name+"_time");
-
         Iri coordinates_iri = p_ship.iri(ship_name+"_coordinates");
         Iri xcoord = p_ship.iri(ship_name+"_xcoord");
         Iri ycoord = p_ship.iri(ship_name+"_ycoord");
@@ -190,11 +211,11 @@ public class ShipSparql {
 
         TriplePattern speed_tp = speed_iri.isA(p_ship.iri("SpeedOverGround")).andHas(hasValue, vspeed_iri);
         TriplePattern vspeed_tp = vspeed_iri.isA(p_system.iri("ScalarQuantity")).andHas(numericalValue, ss)
-                .andHas(p_system.iri("hasUnitOfMeasure"), unit_knot).andHas(p_time.iri("hasTime"),time_iri);
+                .andHas(p_system.iri("hasUnitOfMeasure"), unit_knot);
 
         TriplePattern course_tp = course_iri.isA(p_ship.iri("CourseOverGround")).andHas(hasValue, vcourse_iri);
         TriplePattern vcourse_tp = vcourse_iri.isA(p_system.iri("ScalarQuantity")).andHas(numericalValue, cu)
-                .andHas(p_system.iri("hasUnitOfMeasure"), unit_degree).andHas(p_time.iri("hasTime"),time_iri);
+                .andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
 
         TriplePattern projected_gp = coordinates_iri.isA(p_space_time_extended.iri("ProjectedCoordinateSystem"))
                 .andHas(hasProjectedCoordinate_x,xcoord)
@@ -203,19 +224,17 @@ public class ShipSparql {
         TriplePattern xcoord_tp = xcoord.isA(p_space_time.iri("AngularCoordinate")).andHas(hasValue,vxcoord);
         TriplePattern ycoord_tp = ycoord.isA(p_space_time.iri("AngularCoordinate")).andHas(hasValue,vycoord);
 
-        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue")).andHas(p_time.iri("hasTime"),time_iri)
+        TriplePattern vxcoord_tp  = vxcoord.isA(p_coordsys.iri("CoordinateValue"))
                 .andHas(numericalValue, lon).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
-        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue")).andHas(p_time.iri("hasTime"),time_iri)
+        TriplePattern vycoord_tp = vycoord.isA(p_coordsys.iri("CoordinateValue"))
                 .andHas(numericalValue, lat).andHas(p_system.iri("hasUnitOfMeasure"), unit_degree);
 
-        TriplePattern time_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inTimePosition"),timestamp);
-
         TriplePattern [] combined_tp = {ship_tp,mmsi_tp,vmmsi_tp,type_tp,vtype_tp,length_tp,vlength_tp,beam_tp,vbeam_tp,
-                speed_tp,vspeed_tp,course_tp,vcourse_tp,time_tp,projected_gp,xcoord_tp,ycoord_tp,vxcoord_tp,vycoord_tp};
+                speed_tp,vspeed_tp,course_tp,vcourse_tp,projected_gp,xcoord_tp,ycoord_tp,vxcoord_tp,vycoord_tp};
 
         InsertChimneyTP(modify,ship_name,chimney_iri);
         
-        Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_time,p_SI_unit,p_plant,p_technical,
+        Prefix [] prefix_list = {p_ship,p_system,p_derived_SI_unit,p_space_time_extended,p_space_time,p_coordsys,p_SI_unit,p_plant,p_technical,
         		p_process,p_topology,p_chemprocess,p_behaviour,p_phase_system,p_geometry,p_material,p_substance,p_chemspecies,p_pseudo};
         
         modify.prefix(prefix_list).insert(combined_tp).where().with(ship_graph);

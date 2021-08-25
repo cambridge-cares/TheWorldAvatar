@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -51,7 +51,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		
 		// get within scenario
 		String scenarioUrl = enableScenario("testScenariosWithKbcput");
-		String content = KnowledgeBaseClient.get(null, targetUrl, null);
+		String content = AccessAgentCaller.get(null, targetUrl, null);
 		assertMarkerInE303Load(content, marker);
 	}
 	
@@ -64,7 +64,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		
 		// get within scenario
 		String scenarioUrl = enableScenario("testScenariosWithKbcput");
-		String content = KnowledgeBaseClient.get(datasetUrl, targetUrl, null);
+		String content = AccessAgentCaller.get(datasetUrl, targetUrl, null);
 		assertMarkerInE303Load(content, marker);
 	}	
 	
@@ -83,7 +83,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		assertFalse(exists);
 		
 		// check that the file as written to the scenario bucjet
-		String content = KnowledgeBaseClient.get(null, targetUrl, null);
+		String content = AccessAgentCaller.get(null, targetUrl, null);
 		assertMarkerInE303Load(content, marker);
 	}
 	
@@ -102,7 +102,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		assertFalse(exists);
 		
 		// check that the file as written to the scenario bucjet
-		String content = KnowledgeBaseClient.get(datasetUrl, targetUrl, null);
+		String content = AccessAgentCaller.get(datasetUrl, targetUrl, null);
 		assertMarkerInE303Load(content, marker);
 	}
 	
@@ -116,7 +116,7 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 		putE303LoadRemoteKBCOnly(null, targetUrl, marker);
 		
 		// assert
-		String content = KnowledgeBaseClient.get(null, targetUrl, null);
+		String content = AccessAgentCaller.get(null, targetUrl, null);
 		assertMarkerInE303Load(content, marker);
 		
 		// update
@@ -127,12 +127,12 @@ public class TestScenariosWithKnowledgeBaseClient extends TestKnowledgeBaseClien
 				"INSERT DATA { " + 
 				"<http://example.com/" + name + "> dcterms:created \"2019-10-20T13:25:13.857\"^^xsd:dateTime . " + 
 				"}";
-		KnowledgeBaseClient.update(null, targetUrl, sparqlupdate);
+		AccessAgentCaller.update(null, targetUrl, sparqlupdate);
 		
 		// query
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";
-		String result = KnowledgeBaseClient.query(null, targetUrl, sparqlquery);
+		String result = AccessAgentCaller.query(null, targetUrl, sparqlquery);
 		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String subject = simplified.getJSONArray("results").getJSONObject(0).getString("s");
