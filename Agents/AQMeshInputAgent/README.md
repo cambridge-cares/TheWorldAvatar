@@ -324,7 +324,7 @@ by using a new namespace and database withing an existing triple store or Postgr
 pod (see [Data retrieval](#data-retrieval)).
 - When testing the behaviour of updating existing data, use the same property and mapping files for consecutive 
 test runs.
-- When running consecutive, independent tests make sure to clean the database (drop the `db_table` 
+- When running consecutive, independent tests make sure to clean the database (drop the `dbTable` 
 and the other created tables) and remove all created triples in the triplestore (all 
 `http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries` objects and their links) between
 tests.
