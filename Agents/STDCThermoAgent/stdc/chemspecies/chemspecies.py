@@ -14,8 +14,8 @@ import textwrap
 #                 Chemical species class
 #======================================================
 # default temperature ranges
-defaultTrange = "298.15,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000"
-defaultNasaFitTemps = "298.15,1000,3000"
+defaultTrange = "298.15,300,400,500,600,700,800,900,1000,1200,1500,1700,2000,2500,3000,3500,4000,4500,5000"
+defaultNasaFitTemps = "298.15,1000,5000"
 warnings = True
 
 FREQ_CONV = unitconv.convertFrequencyUnitsToSI('CM^-1')
@@ -23,19 +23,20 @@ ROT_CONST_CONV = unitconv.convertEnergyMoleculeUnitsToSI('GHZ')* \
                  unitconv.convertEnergyMoleculeUnitsToSI('1/M',-1.0)
 MOL_WEIGHT_CONV = unitconv.convertMassUnitsToSI('AMU',)
 ELEC_EN_CONV = unitconv.convertEnergyMoleculeUnitsToSI('HA')
+LVL_EN_CONV = unitconv.convertEnergyMoleculeUnitsToSI('CM^-1')
 
 class ChemSpecies:
     def __init__(self,
                  chem_formula,
                  spin_mult,
                  mol_weight,
-                 sym_number="1.0",
+                 sym_number="1",
                  rot_constants="",
                  frequencies="",
                  freq_scale_factor="1.0",
                  elec_levels="",
                  temperature="298.15",
-                 pressure="1e5",
+                 pressure="101325.0",
                  enthalpy_ref_temp="298.15",
                  enthalpy_ref=None,
                  temperature_range=defaultTrange,
@@ -50,10 +51,10 @@ class ChemSpecies:
         #   properties set based on constructor arguments
         #--------------------------------------------------
         # attribute name                               SI units
-        self.ChemFormula = chem_formula                      #        
+        self.ChemFormula = chem_formula                      #
         self.SpinMult = int(spin_mult)                       #     [-]
         self.MolWt = float(mol_weight)*MOL_WEIGHT_CONV       #     [kg] AMU - kg
-        self.SymNr = int(sym_number)                         #     [-]
+        self.SymNr = int(float(sym_number))                         #     [-]
         self.RotConst = _strInputToList(
                             rot_constants,
                             type=float,
@@ -65,8 +66,8 @@ class ChemSpecies:
         self.VibFreqScaleFactor = float(freq_scale_factor)   #     [-]
         self.ElecLvL = _strInputToListOfLists(
                             elec_levels,
-                            types=[int,float],
-                            multipliers=[1.0,ELEC_EN_CONV])  #     [-,J]  HA -> J
+                            types=[float,float],
+                            multipliers=[1.0,LVL_EN_CONV])  #     [-,J]  1/cm -> J
         self.EnthRef = float(enthalpy_ref) \
                         if enthalpy_ref is not None \
                         else enthalpy_ref                    #     [J/mol]
@@ -220,9 +221,9 @@ class ChemSpecies:
     def _removeZeroRotConst(self):
         self.RotConst = [aRC for aRC in self.RotConst if aRC > 0.0]
 
-    def _setGeomType(self):   
+    def _setGeomType(self):
         if self.AtomsNum <= 0:
-            raise stdcerr.InvalidInput()     
+            raise stdcerr.InvalidInput()
         elif self.AtomsNum == 1:
             self.GeomType = GeomTypes.ATOMIC
         elif self.AtomsNum == 2:
@@ -282,7 +283,7 @@ class ChemSpecies:
             raise stdcerr.InvalidInput()
         if self.VibFreqScaleFactor != 1.0:
             self.VibFreq = [x*self.VibFreqScaleFactor for x in self.VibFreq]
-        
+
     def _setRotTemp(self):
         RotTemp = [] # in K
         u_fact = unitconv.convertEnergyMoleculeUnitsToSI('1/M') # 1/m => J
@@ -341,24 +342,25 @@ class ChemSpecies:
             G=[Gi*1e-3 for Gi in ThermoData['G']],
             Cp=ThermoData['Cp'],
             Cv=ThermoData['Cv'])
-    
-    def _getNasaPolynomialsData(self):
-        self.NasaPolynomialsData= self._fitNasaPolynomials()
 
-    def _fitNasaPolynomials(self):    
+    def _getNasaPolynomialsData(self):
+        self._fitNasaPolynomials()
+        self.NasaPolynomialsData = self._nasaOutToFormattedDict()
+
+    def _fitNasaPolynomials(self):
         # By default the Trange is subdivided into 20 temperatures
         nT = 20
 
-        P = self.RequestedPressure
+        Pref = self.RequestedPressure
         Tlow = self.NasaFitTemps[0]
         Tmid = self.NasaFitTemps[1]
         Thigh = self.NasaFitTemps[2]
-        
+
         TrangeLow = np.linspace(Tlow,Tmid,nT)
         TrangeHigh = np.linspace(Tmid,Thigh,nT)
 
-        ThermoDataLow = self._getSpThermoAtTrangeP(TrangeLow,P)
-        ThermoDataHigh = self._getSpThermoAtTrangeP(TrangeHigh,P)
+        ThermoDataLow = self._getSpThermoAtTrangeP(TrangeLow,Pref)
+        ThermoDataHigh = self._getSpThermoAtTrangeP(TrangeHigh,Pref)
 
         NasaLowTCoeffs = nasafitter.fitNASACoeffs(TrangeLow,
                                                    ThermoDataLow['Cp'],
@@ -369,16 +371,8 @@ class ChemSpecies:
                                                     ThermoDataHigh['H'],
                                                     ThermoDataHigh['S'])
 
-        formula = self.ChemFormula
-        composition = []
-        for key, value in self.AtomsCounts.items():
-            composition.append(key)
-            composition.append(value)
-
         self.FittedLowNasaCoeffs = NasaLowTCoeffs
         self.FittedHighNasaCoeffs = NasaHighTCoeffs
-        return self._nasaOutToFormattedDict(formula,composition,P,Tlow,Tmid,Thigh,
-                                            NasaLowTCoeffs,NasaHighTCoeffs)
 
     @staticmethod
     def _thermoOutToFormattedDict(T,P,H,S,U,G,Cp,Cv):
@@ -394,25 +388,34 @@ class ChemSpecies:
         }
         return FormattedThermoDict
 
-    @staticmethod
-    def _nasaOutToFormattedDict(formula,
-                                composition,
-                                P,
-                                Tlow,
-                                Tmid,
-                                Thigh,
-                                NasaLowTCoeffs,
-                                NasaHighTCoeffs):
+    def _nasaOutToFormattedDict(self):
+        formula = self.ChemFormula
+        composition = []
+        for key, value in self.AtomsCounts.items():
+            composition.append(key)
+            composition.append(value)
+        Pref = self.RequestedPressure
+        Tlow = self.NasaFitTemps[0]
+        Tmid = self.NasaFitTemps[1]
+        Thigh = self.NasaFitTemps[2]
+        NasaLowTCoeffs = self.FittedLowNasaCoeffs
+        NasaHighTCoeffs = self.FittedHighNasaCoeffs
+        EnthRef = self.EnthRef
+        EnthRefTemp = self.EnthRefTemp
+
         FormattedThermoDict = {
             'LowTemperature': {'value': Tlow, 'unit': 'K'},
             'MidTemperature': {'value': Tmid, 'unit': 'K'},
             'HighTemperature': {'value': Thigh, 'unit': 'K'},
-            'RequestedPressure': {'value': P, 'unit': 'Pa'},
+            'RequestedPressure': {'value': Pref, 'unit': 'Pa'},
+            'EnthalpyRef': {'value': EnthRef, 'unit': 'J/mol'},
+            'EnthalpyRefTemp': {'value': EnthRefTemp, 'unit': 'K'},
             'LowTemperatureCoefficients': NasaLowTCoeffs,
             'HighTemperatureCoefficients':NasaHighTCoeffs,
             'NasaChemkinBlock': nasawriter.writeNasaChemkinBlock(
-                                    formula,composition,P,Tlow,Tmid,Thigh,
-                                    NasaLowTCoeffs,NasaHighTCoeffs)
+                                    formula,composition,Pref,Tlow,Tmid,Thigh,
+                                    NasaLowTCoeffs,NasaHighTCoeffs,
+                                    EnthRef,EnthRefTemp)
         }
         return FormattedThermoDict
 
@@ -645,10 +648,13 @@ def getElementsNr(Comp):
 
 
 def _strInputToList(inputStr,type,delim=',',multiplier=1.0):
-     return [type(type(rc)*multiplier) for rc in inputStr.split(delim)]
+    if inputStr.strip()=="":
+        return []
+    else:
+        return [type(type(rc)*multiplier) for rc in inputStr.split(delim)]
 
 def _strInputToListOfLists(inputStr,types,delim=',',length=2,multipliers=None):
-    if inputStr=='':
+    if inputStr.strip()=='':
         return []
     if multipliers is None:
         multipliers = [1.0]*length
@@ -660,10 +666,12 @@ def _strInputToListOfLists(inputStr,types,delim=',',length=2,multipliers=None):
 
     outerList = []
     innerList = []
-    for i, value in enumerate(inputStr):
-        if i % length != 0:
-            innerList.append(types[i](types[i](value)*multipliers[i]))
-        else:
+    j = 0
+    for value in inputStr:
+        innerList.append(types[j](types[j](value)*multipliers[j]))
+        j+=1
+        if (j+1) % (length+1) == 0:
             outerList.append(innerList)
             innerList = []
+            j = 0
     return outerList
