@@ -2,10 +2,9 @@ version: "3.8"
 
 services:
   java_agent_eg:
-    container_name: java_agent_eg
     image: java_agent_eg:1.0.0
-    build:
-      context: ./
+    build: .
+    container_name: java_agent_eg
     ports:
       - "58085:8080"
 
