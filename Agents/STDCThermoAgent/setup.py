@@ -11,10 +11,10 @@ setup(
     url="",
     python_requires='>=3.5',
     include_package_data=True,
-    install_requires= ['numpy','lmfit','docopt','py4jps', 'flask']
-    #entry_points={
-    #    'console_scripts': [
-    #        'csv2rdf=entityrdfizer.driver:main',
-    #    ],
-    #}
+    install_requires= ['numpy','lmfit','docopt','py4jps', 'flask'],
+    entry_points={
+        'console_scripts': [
+            'stdc=stdc.driver:main',
+        ],
+    }
 )
