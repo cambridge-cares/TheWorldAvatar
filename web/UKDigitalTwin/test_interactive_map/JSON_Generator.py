@@ -1,10 +1,10 @@
 ####################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)              #
-# Last Update Date: 25 August 2021                 #
+# Last Update Date: 26 August 2021                 #
 ####################################################
 
 from GPSLocationChecker import check_GPS_char, GPS_special_chars, check_GPS
-from queryStrings import queryPowerPlantForVisualisation, queryUKElectricityConsumptionAndAssociatedGEOInfo, queryGridModeltForVisualisation_Bus, queryGridModeltForVisualisation_Bus_alt
+from queryStrings import queryPowerPlantForVisualisation, queryUKElectricityConsumptionAndAssociatedGEOInfo, queryGridModeltForVisualisation_Bus
 from geoJSONCreator import powerPlantgeoJSONCreator, elecConsAndGEOInfogeoJSONCreator, busModelJSONCreator
 
 """Endpoints"""
