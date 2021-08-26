@@ -10,8 +10,8 @@ services:
       context: "../"
       dockerfile: "./docker/Dockerfile"
     labels:
-      description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
       authors: "mdhillman@cmclinnovations.com"
+      description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
 
   # Gas Grid Agent
   gas-grid-agent:
@@ -20,9 +20,9 @@ services:
       context: "../../../GasGrid"
       dockerfile: "./docker/Dockerfile"
     labels:
-      description: "Gas Grid Agent."
       authors: "support@cmclinnovations.com"
       builder: "${BUILDER}"
+      description: "Gas Grid Agent."
       hash: "${HASH}"
 
   # JPS Chatbot
@@ -31,9 +31,9 @@ services:
     build:
       context: "../../../JPS_Chatbot"
     labels:
-      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
       authors: "xz378@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
+      description: "Chemistry chatbot, uses NL processing and KGs to answer chemical queries."
       hash: "${HASH}"
 
   # JPS LDF Server
@@ -42,9 +42,9 @@ services:
     build:
       context: "../../../JPS_LDF"
     labels:
-      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
       authors: "xz378@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
+      description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
       hash: "${HASH}"
 
   # Kinetics Agent.
@@ -52,9 +52,9 @@ services:
     image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
     build: "./KineticsAgent"    
     labels:
-       description: "Tomcat server hosting the KineticsAgent service."
        authors: "support@cmclinnovations.com"
        builder: "${BUILDER}"
+       description: "Tomcat server hosting the KineticsAgent service."
        hash: "${HASH}"
 
   # Slurm compute node.
@@ -63,7 +63,7 @@ services:
   slurm:
     image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
     labels:
-       description: "Slurm compute node."
        authors: "support@cmclinnovations.com"
        builder: "${BUILDER}"
+       description: "Slurm compute node."
        hash: "${HASH}"

@@ -22,7 +22,7 @@ services:
     ports:
       - 54000:3000
 
-  # Kinetics Agent.
+  # Kinetics Agent
   kinetics-agent:
     ports:
       - 59081:8080

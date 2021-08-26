@@ -22,7 +22,6 @@ services:
     restart: unless-stopped
 
   # JPS Chatbot
-  # TODO - Once this has a version and has been tagged with it, use that rather than the commit
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     container_name: "jps-chatbot"
@@ -46,10 +45,10 @@ services:
   srm-driver:
     image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
     container_name: "srm-driver-${MODE}"
-    restart: unless-stopped
     hostname: "srm-driver"
     mac_address: "1a:2b:3c:4d:5e:6f"
     pull_policy: if_not_present
+    restart: unless-stopped
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
@@ -72,17 +71,17 @@ services:
   #       services submitting Slurm jobs (such as the KineticsAgent).
   slurm:
     image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
-    container_name: "slurm-${MODE}"
-    pull_policy: if_not_present
-    restart: unless-stopped
-    privileged: true
     cap_add:
       - ALL
+    container_name: "slurm-${MODE}"
+    env_file:
+      - Slurm/slurm-variables.env
+    privileged: true
+    pull_policy: if_not_present
+    restart: unless-stopped
     volumes:
       - driver:/usr/local/srm-driver
       - mpi:/usr/local/intel-mpi
-    env_file:
-      - Slurm/slurm-variables.env
 
 
 volumes:

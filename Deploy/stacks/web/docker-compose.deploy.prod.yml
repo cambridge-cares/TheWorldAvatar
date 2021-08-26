@@ -5,10 +5,10 @@ services:
 
   # Add a Certbot container to handle certificate renewal
   certbot:
-    # After starting, run 'certbot renew' every 12 hours
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
     container_name: "certbot-${MODE}"
+    # After starting, run 'certbot renew' every 12 hours
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: unless-stopped
     volumes:
       # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir

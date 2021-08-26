@@ -2,16 +2,17 @@ version: "3.8"
 
 services:
 
-  # Knowledge Graph Website
-  website:
-    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
+  # Land Use Crop Map
+  land-use:
+    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
     build:
-      context: "./website"
+      context: "./land_use"
+      dockerfile: "./docker/Dockerfile"
       target: ${MODE}
     labels:
-      description: "HTTPD hosted static Grav website containing Knowledge Graph content."
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
+      description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
       hash: "${HASH}"
 
   # Reverse Proxy
@@ -22,21 +23,9 @@ services:
       context: "./reverse_proxy"
       target: ${MODE}
     labels:
-      description: "Nginx configured as a reverse proxy for SSL handling and redirects."
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
-      hash: "${HASH}"
-
-  # Power System and SDG Visualisation
-  uk-power-system:
-    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
-    build:
-        context: "../../../web/UKDigitalTwin/mapbox-vis"
-        dockerfile: "./docker/Dockerfile"
-    labels:
-      description: "MapBox visualisation of Power Plant and SDG data pulled from KG."
-      authors: " support@cmclinnovations"
-      builder: "${BUILDER}"
+      description: "Nginx configured as a reverse proxy for SSL handling and redirects."
       hash: "${HASH}"
 
   # Gas Grid Visualisation
@@ -47,20 +36,31 @@ services:
         dockerfile: "./docker/Dockerfile"
         target: ${MODE}
     labels:
-      description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
       authors: "trs53@cam.ac.uk, support@cmclinnovations"
       builder: "${BUILDER}"
+      description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
       hash: "${HASH}"
 
-  # Land Use Crop Map
-  land-use:
-    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
+  # Power System and SDG Visualisation
+  uk-power-system:
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
     build:
-      context: "./land_use"
-      dockerfile: "./docker/Dockerfile"
+        context: "../../../web/UKDigitalTwin/mapbox-vis"
+        dockerfile: "./docker/Dockerfile"
+    labels:
+      authors: " support@cmclinnovations"
+      builder: "${BUILDER}"
+      description: "MapBox visualisation of Power Plant and SDG data pulled from KG."
+      hash: "${HASH}"
+
+  # Knowledge Graph Website
+  website:
+    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
+    build:
+      context: "./website"
       target: ${MODE}
     labels:
-      description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
+      description: "HTTPD hosted static Grav website containing Knowledge Graph content."
       hash: "${HASH}"

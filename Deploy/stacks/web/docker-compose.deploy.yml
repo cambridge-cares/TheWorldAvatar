@@ -2,10 +2,12 @@ version: "3.8"
 
 services:
 
-  # Knowledge Graph Website
-  website:
-    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
-    container_name: "website"
+  # Land Use Crop Map
+  land-use:
+    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "land-use"
+    ports:
+      - 50082:80
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -23,15 +25,6 @@ services:
         source: /var/log/kg-website-logs
         target: /var/log/nginx/persistent
 
-  # Power System and SDG Visualisation
-  uk-power-system:
-    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
-    container_name: "uk-power-system"
-    ports:
-      - 50083:80
-    pull_policy: if_not_present
-    restart: unless-stopped
-
   # Gas Grid Visualisation
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
@@ -41,11 +34,18 @@ services:
     pull_policy: if_not_present
     restart: unless-stopped
 
-  # Land Use Crop Map
-  land-use:
-    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
-    container_name: "land-use"
+  # Power System and SDG Visualisation
+  uk-power-system:
+    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "uk-power-system"
     ports:
-      - 50082:80
+      - 50083:80
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Knowledge Graph Website
+  website:
+    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
+    container_name: "website"
     pull_policy: if_not_present
     restart: unless-stopped
