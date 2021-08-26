@@ -12,6 +12,9 @@
 # Base image is a lightweight version of Python
 FROM python:3.7.10
 
+# Install OpenJDK-8
+# FROM openjdk:8-jdk-alpine
+
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
@@ -32,6 +35,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 
+# Copy in the files
+WORKDIR /var/www/html
+COPY . .
+
 # Install the required Python libraries
 COPY docker/requirements.txt .
 RUN python -m pip install -r requirements.txt
@@ -40,10 +47,6 @@ RUN python -m pip install -r requirements.txt
 COPY docker/start-up.sh /usr/local/start-up.sh
 RUN chmod 755 /usr/local/start-up.sh
 RUN dos2unix /usr/local/start-up.sh
-
-# Copy in the files
-WORKDIR /var/www/html
-COPY . .
 
 RUN chown -R www-data:www-data /var/www/
 RUN chmod -R 775 /var/www/

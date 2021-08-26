@@ -1,7 +1,7 @@
 ####################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)              #
 # Extended from: Tom Savage (trs3@cam.ac.uk)       #
-# Last Update Date: 25 August 2021                 #
+# Last Update Date: 26 August 2021                 #
 ####################################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
@@ -17,8 +17,9 @@ from shapely.geometry import mapping
 import geojson
 import ast
 
-sys.path.insert(0, '\\TheWorldAvatar\\UK_Digital_Twin\\')
-from UK_Digital_Twin.UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+# sys.path.insert(0, '\\TheWorldAvatar\\UK_Digital_Twin\\')
+# from UK_Digital_Twin.UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+from queryInterface import performQuery, performUpdate, performFederatedQuery
 
 """query the COMO RDF4j triple store for the UK power plant data from DUKES"""
 # The endpoint is: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG
