@@ -119,13 +119,13 @@ The web agent uses the [TheWorldAvatar](https://github.com/cambridge-cares/TheWo
 
 These are:
 
-`/api/thermoagent/calculate?`[ontocompchem_IRI]()`=<oc_IRI>&`[ontospecies_IRI]()`=<os_IRI>&`[temperature]()`=<temperature>&`[pressure]()`=<pressure>`
+/api/thermoagent/calculate?`ontocompchem_IRI=<oc_IRI>`&`ontospecies_IRI=<os_IRI>`&`temperature=<temperature>`&`pressure=<pressure>`
 
 ```bash
-ontocompchem_IRI IRI of the species quantum chemistry data ontocompchem entry
-ontospecies_IRI  IRI of the species ontospecies entry
-temperature      Temperature of interest in Kelvins
-pressure         Pressure of interestin in Pascals
+ontocompchem_IRI=<oc_IRI>   IRI of the species quantum chemistry data ontocompchem entry
+ontospecies_IRI=<os_IRI>    IRI of the species ontospecies entry
+temperature=<temperature>   Temperature of interest in Kelvins [default: 298.15]
+pressure=<temperature>      Pressure of interest in Pascals  [default: 101325.0]
 ```
 
 In order to use the calculator as a web agent, simply start a server with the following app entry point:
