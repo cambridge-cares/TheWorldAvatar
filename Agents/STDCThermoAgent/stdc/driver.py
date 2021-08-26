@@ -78,7 +78,8 @@ def main():
         return
 
     args = {**args, **dev_args}
-    app.runThermoCalculator(args)
+    ThermoData = app.runThermoCalculator(args)
+    print(ThermoData)
 
 if __name__ == "__main__":
    main()
