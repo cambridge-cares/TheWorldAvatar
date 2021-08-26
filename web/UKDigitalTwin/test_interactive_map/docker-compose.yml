@@ -1,0 +1,13 @@
+version: "3.8"
+
+# Configuration file to facilitate testing of the test_interactive_map image using docker-compose.
+
+services:
+  test_interactive_map:
+    container_name: test_interactive_map
+    image: test_interactive_map
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - 80:80

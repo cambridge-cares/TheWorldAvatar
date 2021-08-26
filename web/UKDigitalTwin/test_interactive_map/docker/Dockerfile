@@ -10,15 +10,15 @@
 #########################
 
 # Base image is a lightweight version of Python
-FROM python:3.7.10
-
-# Install OpenJDK-8
-# FROM openjdk:8-jdk-alpine
+FROM python:3.7.11-slim-buster
 
 # Meta data
-LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
+LABEL authors = "wx243@cam.ac.uk, support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Power System Visualisation"
+
+# Install Java
+RUN apt update && apt install -y openjdk-11-jdk-headless
 
 # Install utilities
 RUN apt update && apt-get install -y cron procps nano dos2unix
