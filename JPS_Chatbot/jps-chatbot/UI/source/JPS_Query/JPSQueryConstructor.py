@@ -42,8 +42,10 @@ class JPSQueryConstructor:
         print(JPS_SPARQL_TEMPLATE_PATH)
         with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
-
+        print('============== Config path =============')
+        print(CONFIG_PATH)
         if os.path.isfile(CONFIG_PATH):
+
             with open(CONFIG_PATH) as f:
                 self.config = json.loads(f.read())
         else:

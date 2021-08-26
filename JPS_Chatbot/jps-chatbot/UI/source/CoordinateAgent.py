@@ -9,6 +9,12 @@ from LDA.LDA_classifier import LDAClassifier
 from UI.source.JPS_Query.chatbot_interface import Chatbot
 from UI.source.LogWriter import LogWriter
 from UI.source.dashboard.Messenger import Messenger
+from UI.source.Agent_query.AgentRequestConstructor import AgentRequestConstructor
+
+
+
+from UI.source.PCE_query.PCE_interpreter import OtherInterpreter
+
 
 from rasa.nlu.model import Interpreter
 import os
@@ -41,10 +47,14 @@ class CoordinateAgent:
         self.nlu_model_directory = os.path.join(WIKI_MODELS_DIR, 'nlu')
         self.interpreter = Interpreter.load(self.nlu_model_directory)  # load the wiki nlu models
 
-        # self.agent_nlu_model_directory = os.path.join(AGENT_MODELS_DIR, 'nlu')
-        # self.agent_interpreter = Interpreter.load(self.agent_nlu_model_directory)
+        self.agent_nlu_model_directory = os.path.join(AGENT_MODELS_DIR, 'nlu')
+        self.agent_interpreter = Interpreter.load(self.agent_nlu_model_directory)
+        self.agent_request_constructor = AgentRequestConstructor()
 
         self.jps_interface = Chatbot(socketio)
+
+        self.other_interface = OtherInterpreter()
+
         self.socket = socketio
         self.logwriter = LogWriter()
         self.msg = Messenger()
@@ -52,17 +62,24 @@ class CoordinateAgent:
     # def return_for_more(self, agent_id):
     #     pass
     #
-    # def agent_query(self, question):
-    #     rst = self.agent_interpreter.parse(question)
-    #     # the result will give
-    #     #  - the name of the agent
-    #     #  - the entities
-    #     # TODO: Talk to Daniel about the extra parameters
-    #     # 2. check the requirement of the agent ... any other parameters ?
-    #     # 3.
-    #
-    #     print('========================= agent query =====================')
-    #     pprint(rst)
+    def agent_query(self, question):
+        rst = self.agent_interpreter.parse(question)
+        print('========================= agent query =====================')
+        pprint(rst)
+        response = self.agent_request_constructor.call_agent(rst)
+
+
+        # the result will give
+        #  - the name of the agent
+        #  - the entities
+        # TODO: Talk to Daniel about the extra parameters
+        # 2. check the requirement of the agent ... any other parameters ?
+        # 3.
+
+
+        print('=================== result returned ===================')
+        pprint(response)
+
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
@@ -120,30 +137,41 @@ class CoordinateAgent:
                     pass
 
             else:
-                if ' CH2=CHCHO'.lower() in question.lower():
-                    pass
-                else:
-                    try:
-                        result = self.jps_interface.analyse_questions(question)
-                        self.logwriter.write_to_log(question, 'Result %s \n' % str(result))
+                # TODO: insert the module prepared for pce/dft agent
 
-                        print('RESULT RETURNED BY JPS', result)
-                        if 'result' in result:
-                            result_obj = json.loads(result)
-                            result_list = result_obj['result']
-                            if len(result_list) == 0:
-                                pass
-                            else:
-                                if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
+                if topic == 'others':
+                    rst = self.other_interface.ask_other(question)
+                    print(rst)
+                    if rst is None:
+                        pass
+                    else:
+                        return rst
+
+                else:
+                    if ' CH2=CHCHO'.lower() in question.lower():
+                        pass
+                    else:
+                        try:
+                            result = self.jps_interface.analyse_questions(question)
+                            self.logwriter.write_to_log(question, 'Result %s \n' % str(result))
+
+                            print('RESULT RETURNED BY JPS', result)
+                            if 'result' in result:
+                                result_obj = json.loads(result)
+                                result_list = result_obj['result']
+                                if len(result_list) == 0:
                                     pass
                                 else:
-                                    return result_list
+                                    if 'http://localhost:8080/ldfserver/Empty' in result and len(result_list) == 1:
+                                        pass
+                                    else:
+                                        return result_list
 
-                        else:
+                            else:
+                                pass
+                        except:
+                            print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
                             pass
-                    except:
-                        print('[Error Coordinate Agent: 84]: JPS Interface failed to analyse the question')
-                        pass
 
         # TODO: integrate the fallback mechanism for agents
         # e.g. what is the power conversion efficiency of benzene
@@ -154,7 +182,7 @@ class CoordinateAgent:
         # 2. fallback to the agent channel
         #   a) You need to create the agent instances
         #   b) You need to train the model with the agent instances
-        # self.agent_query(question)
+        self.agent_query(question)
         self.msg.send_failed_message(question)
         return 'Nothing'
 

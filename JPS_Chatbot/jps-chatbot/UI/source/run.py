@@ -80,9 +80,10 @@ def make_query():
             result = coordinate_agent.run(question)
             return json.dumps(result)
         elif question_type == 'google':
-            question = request.args.get('question').strip()
-            r = google_api.run(question)
-            return str(r)
+            # question = request.args.get('question').strip()
+            # r = google_api.run(question)
+            # return str(r)
+            return 'Nothing'
 
         elif question_type == 'wolfram':
             result = wolfram_and_google.get_result_from_wolfram(question)
@@ -97,7 +98,7 @@ def hello_world():
     return render_template('index_dln22.html')
 
 
-google_api = GoogleAPI()
+# google_api = GoogleAPI()
 coordinate_agent = CoordinateAgent(socketio)
 wolfram_and_google = WolframGoogle()
 

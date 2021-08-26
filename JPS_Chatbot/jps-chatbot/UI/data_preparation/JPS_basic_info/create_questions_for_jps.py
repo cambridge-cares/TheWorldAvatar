@@ -269,7 +269,7 @@ with open('ontocompchem_properties') as f:
     ontocompchem_properties = json.loads(f.read())
     f.close()
 
-with open('../Wiki_basic_info/FORMULA_NAME_DICT') as f:
+with open('../Wiki_training_material_generation/FORMULA_NAME_DICT') as f:
     FORMULA_NAME_DICT = json.loads(f.read())
     f.close()
 

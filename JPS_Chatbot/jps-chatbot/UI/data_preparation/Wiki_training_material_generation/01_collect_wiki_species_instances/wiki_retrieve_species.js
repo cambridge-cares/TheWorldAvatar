@@ -1,12 +1,28 @@
+/*
+
+	This javascript code downloads species instances from wikidata ldf endpoint
+
+	It will fire a SPARQL query to find all instances with a SMILES string
+
+	Both the IRI of the species and its SMILES String will be returned.
+
+	This script is implemented on top of the comunica library, which is a Javascript-based client-end of
+
+	LDF servers.
+
+	This script is the beginning point of the training of Marie 1.0
+
+	Developed by Xiaochi Zhou (xz378@cam.ac.uk)
+
+ */
+
 const newEngine = require('@comunica/actor-init-sparql').newEngine;
-
 const myEngine = newEngine();
-
 fs = require('fs');
 
 
 
-
+// P233 is hasSMILES this serves as a filter to find chemical species instances from wikidata *(
 query_smiles = `
 
 SELECT ?species ?SMILES 
@@ -31,7 +47,7 @@ tmp = [];
 			tmp.push(r);
 			console.log(r)
 			counter++
-			if (counter % 1000 == 0){
+			if (counter % 1000 === 0){
 				fs.writeFile('./smiles/SMILE_'+ counter/1000, JSON.stringify(tmp) , function (err) {
 				if (err) return console.log(err);
 				  console.log('Hello World > helloworld.txt');

@@ -1,3 +1,4 @@
+
 const newEngine = require('@comunica/actor-init-sparql').newEngine;
 
 const myEngine = newEngine();
