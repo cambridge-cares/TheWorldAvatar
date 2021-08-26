@@ -3,7 +3,4 @@ channels:
 dependencies:
   - pip
   - pip:
-    - numpy
-    - lmfit
-    - docopt
     - .
