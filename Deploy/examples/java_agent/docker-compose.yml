@@ -7,7 +7,7 @@ services:
     build:
       context: ./
     ports:
-      - "8081:8080"
+      - "58085:8080"
 
     volumes:
       - external_maven_repo:/root/.m2

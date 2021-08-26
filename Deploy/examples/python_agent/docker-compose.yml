@@ -8,4 +8,4 @@ services:
       context: .
       dockerfile: ./Dockerfile
     ports:
-      - 7000:5000
+      - 55002:5000
