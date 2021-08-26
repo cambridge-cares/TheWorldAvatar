@@ -34,7 +34,7 @@ Options:
 --spin-mult=<spinMult>                Spin multiplicity
 --mol-weight=<molWeight>              Molecular weight in au
 --sym-number=<symNum>                 Symmetry number.
---rot-constants=<rotConsts>           Rotational constants in 1/cm. Required 
+--rot-constants=<rotConsts>           Rotational constants in GHz. Required
                                       only for non-atomic species. Input as
                                       comma separated values: e.g. "rot1,rot2,..."
 --frequencies=<freqs>                 Vibrational frequencies in 1/cm. Required only
@@ -44,10 +44,11 @@ Options:
                                       [default: 1.0]
 --elec-levels=<elecLvls>              Electronic levels and their degeneracies,
                                       Example input: "deg1,lvl1,deg2,lvl2,..."
+                                      Levels energies should be in 1/cm
 --temperature=<temp>                  Requested temperature in Kelvins to
                                       calculate thermodata, [default: 298.15]
 --pressure=<pres>                     Requested pressure in Pascals to
-                                      calculate thermodata, [default: 100000.0]
+                                      calculate thermodata, [default: 101325.0]
 --fit-nasa                            Flag controlling extra Nasa polynomials
                                       output
 """
@@ -66,8 +67,8 @@ def _get_developer_args():
     args = [arg for j, arg in enumerate(args) if j not in dev_indices]
     return DEV_INPUTS, args
 
-def main():    
-    try:        
+def main():
+    try:
         dev_args, args = _get_developer_args()
         args = docopt(__doc__, argv=args)
     except DocoptExit:
@@ -78,7 +79,6 @@ def main():
 
     args = {**args, **dev_args}
     app.runThermoCalculator(args)
-    pass
 
 if __name__ == "__main__":
    main()
