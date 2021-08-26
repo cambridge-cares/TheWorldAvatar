@@ -8,7 +8,12 @@ def runThermoCalculator(args):
     ChemSpeciesData.getThermoData()
     if ChemSpeciesData.DevOutFile is not None:
         ChemSpeciesData.outputDiagnosticFile()
-    print('done')
+    ThermoData = {
+        'RequestedTPPointData': ChemSpeciesData.RequestedTPPointData,
+        'RequestedTrangeData': ChemSpeciesData.RequestedTrangeData,
+        'NasaPolynomialsData': ChemSpeciesData.NasaPolynomialsData
+    }
+    return ThermoData
 
 def _preprocessArgs(args):
     args = _removeNoneArgs(args)
