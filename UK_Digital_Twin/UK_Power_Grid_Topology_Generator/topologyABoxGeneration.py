@@ -10,7 +10,7 @@ import owlready2
 # import numpy as np
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE
 import sys
@@ -297,6 +297,11 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
         graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_275kV)))
         graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
         graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("400kV")))
+        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("275kV")))
+        
+        # graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDFS.label, Literal("400kV")))
+        # graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDFS.label, Literal("275kV")))
         
         graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_400kV)))
         graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
@@ -411,7 +416,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
-    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
+    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
     # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
     print('Terminated')

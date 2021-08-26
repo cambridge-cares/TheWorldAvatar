@@ -20,10 +20,10 @@ class UKDigitalTwin:
     OWL = '.owl'
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\"
     
     """Default path of SleepycatStoragePath"""
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     
     """Default remote endpoint"""
     endpoint = EndPointConfigAndBlazegraphRepoLable.UKDigitalTwinKG

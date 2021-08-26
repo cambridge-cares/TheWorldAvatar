@@ -261,7 +261,7 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
     PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    SELECT  ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine
+    SELECT  ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400kV ?Num_OHL_275kV
     WHERE
     {
     ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
@@ -271,26 +271,40 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
     
     ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
     ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
+    
+    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400kV . 
+    ?OHL_400kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?OHL_400kV ontopowsys_PowSysRealization:hasVoltageLevel "400kV" .
+    ?OHL_400kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400kV .    
+
+    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_275kV . 
+    ?OHL_275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?OHL_275kV ontopowsys_PowSysRealization:hasVoltageLevel "275kV" .
+    ?OHL_275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_275kV .       
     }
     """
     
-    queryStr_parallelBranches = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    SELECT  ?ELine ?OHL_400or275kV ?Num_OHL_400or275kV
-    WHERE
-    {
-    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
+    # queryStr_parallelBranches = """
+    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    # PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
+    # PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    # PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    # PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    # SELECT  ?ELine ?Num_OHL_400kV ?Num_OHL_275kV
+    # WHERE
+    # {
+    # ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    # ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
     
-    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
-    ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV .        
-    }
-    """
+    # ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
+    # ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    # ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV .    
+
+    # ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
+    # ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    # ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV .         
+    # }
+    # """
     global qres, qres_
     
     if localQuery == False and topology_Endpoint != None: 
@@ -300,6 +314,8 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
         print('query is done')
         qres = [[ str(r['ELine']), str(r['From_Bus']), str(r['To_Bus']), str(r['Value_Length_ELine'])] for r in res]
         qres_ = [[ str(r['ELine']), str(r['OHL_400or275kV']), str(r['Num_OHL_400or275kV'])] for r in res_] 
+        print(qres_)
+    
          
     elif topology_Sleepycat != None and localQuery == True:  
         eline_cg = ConjunctiveGraph('Sleepycat')
@@ -382,16 +398,16 @@ if __name__ == '__main__':
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     # res = queryRegionalElecConsumption('ukenergyconsumptionkg', None, False)
-    # res = queryELineTopologicalInformation('ukpowergridtopology', None, False)
+    res = queryELineTopologicalInformation('ukpowergridtopology', None, False)
     # print (len(res), res[0])
     
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
-    res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
-    # print(res)
-    for r in res:
-        print(res)
+    # res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
+    print(res)
+    # for r in res:
+    #     print(res)
     #testLabel()
 

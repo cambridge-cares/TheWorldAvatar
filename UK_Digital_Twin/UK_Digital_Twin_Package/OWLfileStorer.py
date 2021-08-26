@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 April 2021        #
+# Last Update Date: 26 August 2021       #
 ##########################################
 
 """This module defines the functions to store the generated owl files"""
@@ -43,7 +43,7 @@ def selectStoragePath():
 def specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile): 
     if OWLFileStoragePath == None and os.path.exists(defaultStoredPath):
         return defaultStoredPath
-    elif os.path.exists(OWLFileStoragePath):
+    elif OWLFileStoragePath != None and os.path.exists(OWLFileStoragePath):
         return OWLFileStoragePath
     elif updateLocalOWLFile == True:
         print("Please provide a valid path for storing the OWL files.")

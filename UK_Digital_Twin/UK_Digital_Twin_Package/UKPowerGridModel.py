@@ -15,8 +15,8 @@ endpoint = EndPointConfigAndBlazegraphRepoLable.UKPowerGridModelKG
 class UKEbusModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\Sleepycat_EBus"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\Sleepycat_EBus"
     
     """EBus Node keys"""
     EBusKey = "EBus-"
@@ -70,8 +70,8 @@ class UKEbusModel:
 class UKElineModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\Sleepycat_ELine"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\Sleepycat_ELine"
      
     """ELine Node keys"""
     ELineKey = "ELine-"
@@ -118,9 +118,9 @@ class UKElineModel:
 class UKEGenModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\"
     # StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\test\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\Sleepycat_EGen"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\Sleepycat_EGen"
     
     """EGen Node keys"""
     EGenKey = "EGen-"
