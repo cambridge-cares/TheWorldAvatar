@@ -12,7 +12,7 @@
 import os, sys
 BASE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, BASE)
-from UK_Digital_Twin_Package.jpsSingletons import jpsBaseLibGW
+from jpsSingletons import jpsBaseLibGW
 
 # create a JVM module view and use it to import the required java classes
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()

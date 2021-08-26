@@ -25,8 +25,8 @@ class UKPowerGridTopology:
     
     CoordinateSystemKey = "CoordinateSystem_"
     
-    LongitudeKey = "y_coordinate_" 
-    LantitudeKey = "x_coordinate_" 
+    LongitudeKey = "x_coordinate_" 
+    LantitudeKey = "y_coordinate_" 
     
     valueKey = "value_"
     NumberOfKey = "Number_of_"

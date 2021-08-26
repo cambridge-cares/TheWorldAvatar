@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 August 2021       #
+# Last Update Date: 25 August 2021       #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -205,9 +205,9 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(busTopoData[2]))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
         graph.add((URIRef(bus_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))       
-        graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
-                   URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
+                   URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator)))
+        graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
                    URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.LantitudeKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
         graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))       
@@ -222,7 +222,7 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                    URIRef(ontocape_SI_units.m.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LantitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                   Literal(float(busTopoData[3].strip('\n')))))
+                   Literal(float(busTopoData[4].strip('\n')))))
             
         graph.add((URIRef(tp_namespace + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasValue.iri),\
                    URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator)))
@@ -230,7 +230,7 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                    URIRef(ontocape_SI_units.m.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                   Literal(float(busTopoData[4].strip('\n')))))        
+                   Literal(float(busTopoData[3].strip('\n')))))        
         counter += 1
     return graph, nodeName
 
@@ -411,7 +411,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph('sleepycat', False, 10, 14, addEBusNodes, None, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
+    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
     print('Terminated')
