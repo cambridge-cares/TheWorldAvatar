@@ -5,7 +5,7 @@
 ####################################################
 
 import matplotlib.cm 
-from colourLayers import gen_fuel_col, getChoropleth
+from colourLayers import gen_fuel_col, getChoropleth, getBusColour
 
 # def SDGgeoJSONCreator():
   # geojson_file = """
@@ -116,5 +116,90 @@ def elecConsAndGEOInfogeoJSONCreator(ret_elec, class_label):
     # saving as geoJSON
     geojson_written = open(class_label+'.geojson','w')
     geojson_written.write(geojson_file)
+    geojson_written.close() 
+    return 
+
+def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar): 
+    bus_gps_para = ret_bus[0]
+    bus_input = ret_bus[1]
+    
+    geojson_file_bus_gps_para = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(bus_gps_para)):
+        
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Data_type": "Bus model parameters",
+              "Bus_num": "%s",
+              "Bus_type": "%s",
+              "para_Gs": "%s",
+              "para_Bs": "%s",
+              "para_area": "%s",
+              "para_basekV": "%s",
+              "para_zone": "%s",
+              "para_Vmax": "%s",
+              "para_Vmin": "%s",
+              "bus-color": %s
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }          
+          },"""%(bus_gps_para[i][0], bus_gps_para[i][3], bus_gps_para[i][4], bus_gps_para[i][5], bus_gps_para[i][6], bus_gps_para[i][7], bus_gps_para[i][8], bus_gps_para[i][9], \
+                     bus_gps_para[i][10], getBusColour(i), bus_gps_para[i][1], bus_gps_para[i][2])         
+          # adding new line 
+          geojson_file_bus_gps_para += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file_bus_gps_para = geojson_file_bus_gps_para[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file_bus_gps_para += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_busPara+'.geojson','w')
+    geojson_written.write(geojson_file_bus_gps_para)
+    geojson_written.close() 
+    
+    # creat the geojson file for 
+    geojson_file_bus_input = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(bus_input)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Data_type": "Bus model input variables",
+              "Bus_num": "%s",
+              "input_Pd": "%s",
+              "input_Gd": "%s",
+              "input_Vm": "%s",
+              "input_Va": "%s"
+            }     
+          },"""%(bus_input[i][0], bus_input[i][1], bus_gps_para[i][2], bus_gps_para[i][3], bus_gps_para[i][4])         
+          geojson_file_bus_input += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file_bus_input = geojson_file_bus_input[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file_bus_input += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_busInputVar+'.geojson','w')
+    geojson_written.write(geojson_file_bus_input)
     geojson_written.close() 
     return 

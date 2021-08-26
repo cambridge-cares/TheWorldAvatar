@@ -1,5 +1,7 @@
 /**
 *	This JS file handles functionality for the Power System visualisation.
+ *	Authors: Michael Hillman (mdhillman@cmclinnovations.com), Wanni Xie (wx243@cam.ac.uk)
+ *	Last Update Date: 25 August 2021
 */
 
 
@@ -80,7 +82,55 @@ function resetSidePanel() {
 
 		// Update text container 
 		setSidePanelText(``);
+}
+
+/**
+	 * Fired when a area or a regional boundaries is selected.
+	 * 
+	 * @param Location - place name
+	 * @param Area_LACode - fuel
+	 * @param TotalELecConsumption - capacity
+	 * @param DomesticConsumption - SDG indicator
+	 * @param Industrial_and_Commercial - coordinates
+	 */
+function selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial) {
+	if (Location == null) {
+		// Do nothing
+		return;
 	}
+
+	// Set title to offtake name
+	setSidePanelTitle(`
+		<h2>` + Location + `</h2>
+	`);
+
+	// Show meta data
+	var metaHTML = `
+		<table width="100%">
+			<tr>
+				<td width="75%">LA Code:</td>
+				<td width="25%" style="text-align: right;">` + Area_LACode + `</td>
+			</tr>
+			<tr>
+				<td width="75%">Total Electricity Consumption:</td>
+				<td width="15%" style="text-align: right;">` + TotalELecConsumption + ` GWh</td>
+			</tr>
+			<tr>
+				<td width="75%">Domestic Consumption:</td>
+				<td width="25%" style="text-align: right;">` + DomesticConsumption + ` GWh</td>
+			</tr>
+			<tr>
+				<td width="65%">Industrial and Commercial Consumption:</td>
+				<td width="35%" style="text-align: right;">` + Industrial_and_Commercial + ` GWh</td>
+			</tr>
+	`;
+
+	metaHTML += "</table>";
+	setSidePanelMeta(metaHTML);
+
+	// Update text container 
+	setSidePanelText(``);
+}
 
 	/**
 	 * Update the legend depending on the current layer.
@@ -113,10 +163,6 @@ function resetSidePanel() {
 				<img src="legend-sdg.png" class="legend-sdg" width="275px"/>
 			`;
 		} else if(type.includes("Electricity_")) {
-			// TODO: Add new legend item here.
-			//html += `
-			//	<b>Electricity Consumption Legend</b>
-			//`;
 			html += `
 			<img src="legend-electricity_consumption.svg" class="legend-electricity_consumption" width="120" height="533"/>
 		`;
