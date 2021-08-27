@@ -1,84 +1,7 @@
-﻿import params as p
+﻿import stdc.utils.params as p
+import stdc.thermocalculator.partitionfunc as pf
+from stdc.utils.geomtypes import GeomTypes
 import numpy as np
-
-#======================================================
-#                 Partition functions
-#======================================================
-
-# determines vibrational partition function reference point
-# globref = 0 - bottome of the well, use it if you want to add ZPE
-#               from somwhere else
-# globref = 1 - first vibrational level, use it if ZPE is already
-#               included in electronic energy
-# globref value can be overwritten when making a function call
-globref = 1
-#------------------------------------------------------
-# Overall Partition function (for a single molecule) q
-#------------------------------------------------------
-def getPartFunc(Mwt,GeomType,SymNr,RotTemp,VibTemp,ElecLvL,T,ref=globref,P=p.Pref):
-    qt = getTransPartFunc(Mwt,T,P)
-    qr = getRotPartFunc(GeomType,SymNr,RotTemp,T)
-    qv = getVibPartFunc(VibTemp,T,ref)
-    qe = getElecPartFunc(ElecLvL,T)
-    q = qt*qr*qv*qe
-    return q
-
-# Translational Contribution qt
-#---------------------------------
-def getTransPartFunc(Mwt,T,P=p.Pref):
-    if T>0.0:
-        L = p.h/np.sqrt(2.0*p.pi*Mwt*p.kB*T)
-        V = p.kB*T/P #this at a single molecule level
-        qt= V/(L*L*L)
-    else:
-        qt = 1.0
-    return qt
-
-# Rotational Contribution qr
-#---------------------------------
-def getRotPartFunc(GeomType,SymNr,RotTemp,T):
-    if T>0.0:
-        if GeomType == 0:
-            qr = 1.0
-        elif GeomType == 1:
-            qr = 1.0/SymNr*T/RotTemp[0]
-        else:
-           qr = 1.0/SymNr*np.sqrt(p.pi*T*T*T/(RotTemp[0]* \
-                RotTemp[1]*RotTemp[2]))
-    else:
-        qr = 1.0
-    return qr
-
-# Vibrational Contribution qv
-#---------------------------------
-def getVibPartFunc(VibTemp,T,ref=globref):
-    # T = 0 K case ?
-    if T>0.0:
-        for vT in VibTemp:
-            if vT>0.0:
-                if ref==0:
-                    # Eref at the bottom of the well.
-                    qv = qv * ( np.exp(-vT/2.0/T)/(1.0- \
-                        np.exp(-vT/T)) )
-                else:
-                    #Eref at the first vibrational level.
-                    qv = qv * 1.0/(1.0-np.exp(-vT/T))
-    else:
-        qv = 1.0
-    return qv
-
-# Electronic Contribution qe
-#---------------------------------
-def getElecPartFunc(ElecLvL,T):
-    qe = 0.0
-    if T>0.0:
-        for lvls in ElecLvL:
-            qe = qe + lvls[0]*np.exp(-lvls[1]/(p.kB*T))
-    else:
-        for lvls in ElecLvL:
-            qe = qe + lvls[0]
-    return qe
-
 
 #======================================================
 #    Thermochemistry via statistical thermodynamics
@@ -99,7 +22,7 @@ def getEntropy(Mwt,GeomType,SymNr,RotTemp,VibTemp,ElecLvL,T,P=p.Pref):
 # translational motion St
 #---------------------------------
 def getEntropyTrans(Mwt,T,P=p.patm):
-    qt = getTransPartFunc(Mwt,T,P)
+    qt = pf.translational_partfunc(Mwt,T,P)
     St = p.R*(np.log(qt)+1.0+1.5)
     return St
 
@@ -107,11 +30,10 @@ def getEntropyTrans(Mwt,T,P=p.patm):
 # rotational motion Sr
 #---------------------------------
 def getEntropyRot(GeomType,SymNr,RotTemp,T):    
-    if GeomType == 0:
-        Sr = 0.0
-    else:
-        qr = getRotPartFunc(GeomType,SymNr,RotTemp,T)
-        if GeomType == 1:
+    Sr = 0.0
+    if GeomType != GeomTypes.ATOMIC:
+        qr = pf.rotational_partfunc(GeomType,SymNr,RotTemp,T)
+        if GeomType == GeomTypes.LINEAR:
             Sr = p.R*(np.log(qr)+1.0)
         else:
             Sr = p.R*(np.log(qr)+1.5)
@@ -134,7 +56,7 @@ def getEntropyVib(VibTemp,T):
 # electronic levels Se
 #---------------------------------
 def getEntropyElec(ElecLvL,T):
-    qe = getElecPartFunc(ElecLvL,T)
+    qe = pf.electronic_partfunc(ElecLvL,T)
     Se = p.R*np.log(qe)
     if T>0.0 and len(ElecLvL)>1:
         sum = 0.0
@@ -148,10 +70,10 @@ def getEntropyElec(ElecLvL,T):
 #------------------------------------------------------
 # Overall internal Energy U
 #------------------------------------------------------
-def getInternalEnergy(GeomType,VibTemp,ElecLvL,T,ref=globref):
+def getInternalEnergy(GeomType,VibTemp,ElecLvL,T):
     Ut = getInternalEnergyTrans(T)
     Ur = getInternalEnergyRot(GeomType,T)
-    Uv = getInternalEnergyVib(VibTemp,T,ref)
+    Uv = getInternalEnergyVib(VibTemp,T)
     Ue = getInternalEnergyElec(ElecLvL,T)
     U = Ut+Ur+Uv+Ue
     return U
@@ -167,27 +89,22 @@ def getInternalEnergyTrans(T):
 # from rotational motion Ur
 #---------------------------------
 def getInternalEnergyRot(GeomType,T):
-    if GeomType == 0:
-        Ur = 0.0
-    elif GeomType == 1:
+    Ur = 0.0
+    if GeomType == GeomTypes.LINEAR:
         Ur = p.R*T
-    else:
+    elif GeomType == GeomTypes.NONLINEAR:
         Ur = 1.5*p.R*T    
     return Ur
 
 # Internal Energy Contribution
 # from vibrational motion Uv
 #---------------------------------
-def getInternalEnergyVib(VibTemp,T,ref=globref):
+def getInternalEnergyVib(VibTemp,T):
     Uv = 0.0
-    ZPEsum = 0.0
     if T>0.0:
         for vT in VibTemp:
-            Uv = Uv + vT*(1.0/(np.exp(vT/T)-1.0))
-    if ref==0:
-        for vT in VibTemp:
-            ZPEsum = ZPEsum + 0.5*vT
-    Uv = (Uv+ZPEsum)*p.R
+            Uv = Uv + vT*(0.5+1.0/(np.exp(vT/T)-1.0))
+    Uv = Uv*p.R
     return Uv
 
 # Internal Energy Contribution
@@ -197,7 +114,7 @@ def getInternalEnergyElec(ElecLvL,T):
     Ue = 0.0
     if T>0.0:
         sum = 0.0
-        qe = getElecPartFunc(ElecLvL,T)
+        qe = pf.electronic_partfunc(ElecLvL,T)
         for lvls in ElecLvL:
             sum = sum + lvls[0]*(lvls[1]/p.kB/T)* \
                 np.exp(-lvls[1]/p.kB/T)
@@ -228,9 +145,9 @@ def getHeatCapacityCvTrans():
 #---------------------------------
 def getHeatCapacityCvRot(GeomType):
     Cvr = 0.0
-    if GeomType == 1:
+    if GeomType == GeomTypes.LINEAR:
         Cvr = p.R
-    elif GeomType == 2:
+    elif GeomType == GeomTypes.NONLINEAR:
         Cvr = 1.5*p.R
     return Cvr
 
@@ -255,7 +172,7 @@ def getHeatCapacityCvElec(ElecLvL,T):
     if T>0.0:
         sum1 = 0.0
         sum2 = 0.0
-        qe = getElecPartFunc(ElecLvL,T)
+        qe = pf.electronic_partfunc(ElecLvL,T)
         for lvls in ElecLvL:
             sum1 = sum1 + lvls[0]*(lvls[1]/p.kB/T)* \
                 np.exp(-lvls[1]/p.kB/T)
@@ -309,10 +226,10 @@ def getHeatCapacityCpElec(ElecLvL,T):
 #------------------------------------------------------
 # Overall Enthalpy H
 #------------------------------------------------------
-def getEnthalpy(GeomType,VibTemp,ElecLvL,T,ref=globref):
+def getEnthalpy(GeomType,VibTemp,ElecLvL,T):
     Ht = getEnthalpyTrans(T)
     Hr = getEnthalpyRot(GeomType,T)
-    Hv = getEnthalpyVib(VibTemp,T,ref)
+    Hv = getEnthalpyVib(VibTemp,T)
     He = getEnthalpyElec(ElecLvL,T)
     H = Ht+Hr+Hv+He
     return H
@@ -336,8 +253,8 @@ def getEnthalpyRot(GeomType,T):
 # Enthalpy Contribution
 # from vibrational motion Hv
 #---------------------------------
-def getEnthalpyVib(VibTemp,T,ref=globref):
-    Hv = getInternalEnergyVib(VibTemp,T,ref)
+def getEnthalpyVib(VibTemp,T):
+    Hv = getInternalEnergyVib(VibTemp,T)
     return Hv
 
 # Enthalpy Contribution
@@ -350,10 +267,10 @@ def getEnthalpyElec(ElecLvL,T):
 #------------------------------------------------------
 # Overall Gibbs Energy G
 #------------------------------------------------------
-def getGibbsEnergy(Mwt,GeomType,SymNr,RotTemp,VibTemp,ElecLvL,T,ref=globref):
+def getGibbsEnergy(Mwt,GeomType,SymNr,RotTemp,VibTemp,ElecLvL,T):
     Gt = getGibbsEnergyTrans(Mwt,T)
     Gr = getGibbsEnergyRot(GeomType,SymNr,RotTemp,T)
-    Gv = getGibbsEnergyVib(VibTemp,T,ref)
+    Gv = getGibbsEnergyVib(VibTemp,T)
     Ge = getGibbsEnergyElec(ElecLvL,T)
     G = Gt+Gr+Gv+Ge
     return G
@@ -379,8 +296,8 @@ def getGibbsEnergyRot(GeomType,SymNr,RotTemp,T):
 # Gibbs Energy Contribution
 # from vibrational motion Gv
 #---------------------------------
-def getGibbsEnergyVib(VibTemp,T,ref=globref):
-    Hv = getEnthalpyVib(VibTemp,T,ref)
+def getGibbsEnergyVib(VibTemp,T):
+    Hv = getEnthalpyVib(VibTemp,T)
     Sv = getEntropyVib(VibTemp,T)
     Gv = Hv-T*Sv
     return Gv
