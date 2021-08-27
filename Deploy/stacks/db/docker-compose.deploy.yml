@@ -9,7 +9,7 @@ services:
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     ports:
-      - 8083:8080
+      - 58082:8080
     pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
@@ -23,7 +23,7 @@ services:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo-${MODE}"
     ports:
-      - 8084:8080
+      - 58083:8080
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
@@ -39,7 +39,7 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
     ports:
-      - 5433:5432
+      - 55432:5432
     restart: unless-stopped
     secrets:
       - postgres_password
@@ -54,7 +54,7 @@ services:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
     ports:
-      - 8085:8080
+      - 58084:8080
     pull_policy: if_not_present
     restart: unless-stopped
     # Add secrets to set BASIC authentication passwords for both the workbench and server

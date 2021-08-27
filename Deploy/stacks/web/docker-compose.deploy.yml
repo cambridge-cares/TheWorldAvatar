@@ -28,7 +28,7 @@ services:
     image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "uk-power-system"
     ports:
-      - 1083:80
+      - 50083:80
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -37,7 +37,7 @@ services:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "uk-gas-grid"
     ports:
-      - 1084:80
+      - 50084:80
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -46,6 +46,6 @@ services:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
     container_name: "land-use"
     ports:
-      - 1082:80
+      - 50082:80
     pull_policy: if_not_present
     restart: unless-stopped
