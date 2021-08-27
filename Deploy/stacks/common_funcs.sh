@@ -1,9 +1,14 @@
-# Useful constants
+# This file contains constants and functions intended for use in the *-stack.sh scripts in Deploy/stacks/
+# It should be sourced, rather than run directly, so is intentionally set as non-executable
+
+
+#======================================= Useful constants =========================================
 LOG_DIVIDER_STR="\n==========================================================================================\n"
 TRUE=0; FALSE=1
 
+#===================================== Standalone functions =======================================
 
-# Standalone functions
+# Print the supplied message, followed by LOG_DIVIDER_STR, then exit with the specified return code
 exit_with_msg()
 {
   local return_code="$1"
@@ -12,6 +17,7 @@ exit_with_msg()
   exit $return_code
 }
 
+# Print the supplied message, then cd to the specified stack directory
 init_stack_script()
 {
   local stack="$1"
@@ -20,6 +26,7 @@ init_stack_script()
   cd "./$stack"
 }
 
+# Check whether the supplied string is a valid 'mode'
 is_valid_mode()
 {
   local mode=$1
@@ -31,6 +38,7 @@ is_valid_mode()
   esac
 }
 
+# Check whether the supplied string is a valid 'process'
 is_valid_process()
 {
   local process=$1
@@ -42,6 +50,7 @@ is_valid_process()
   esac
 }
 
+# Check whether the supplied string is a valid stack name
 is_valid_stack()
 {
   local stack=$1
@@ -53,6 +62,8 @@ is_valid_stack()
   esac
 }
 
+# Extract secrets from the supplied compose files and check that the corresponding file exists
+# If it doesn't, give the user the option to create the file and supply a value
 set_missing_secrets()
 {
   local compose_files=$1
@@ -101,6 +112,7 @@ set_missing_secrets()
   done
 }
 
+# Write a file containing environment variables used when calling docker-compose at build and/or deploy time
 write_env_file()
 {
   local env_filename=$1
@@ -117,14 +129,17 @@ write_env_file()
   printf "Done\n\n"
 }
 
+#===================================== Dependent functions ========================================
+# The following functions depend on one or more of the standalone functions, so need to be declared later
 
-# Functions that depend on one or more of the standalone functions
+# Output an error message if the supplied string isn't a valid mode
 check_mode()
 {
   local mode=$1
-  if ! $(is_valid_mode $mode); then echo "get_yml_fnames: '$mode' is not a valid mode" && exit 11; fi
+  if ! $(is_valid_mode $mode); then echo "'$mode' is not a valid mode" && exit 11; fi
 }
 
+# If the supplied return code is not zero, print a message and exit
 exit_on_error()
 {
   local return_code="$1"
@@ -134,6 +149,9 @@ exit_on_error()
   fi
 }
 
+# Compile a list of docker-compose*.yml files depending on the 'mode' and 'process' being executed, and whether
+# the stack is being run in a test configuration.
+# Mode-specific and test configurations are silently ignored if the corresponding file doesn't exist.
 get_yml_fnames()
 {
   # Check number of args
