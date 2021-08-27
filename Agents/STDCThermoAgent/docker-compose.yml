@@ -1,0 +1,9 @@
+version: "3.8"
+
+services:
+  stdc_agent:
+    container_name: stdc_agent
+    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
+    build: .
+    ports:
+      - "5000:5000"
