@@ -390,12 +390,15 @@ def queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint):
   res_para = json.loads(performFederatedQuery(queryBusModelParameter_federated, topoEndpoint, busModelEndpoint))
   end = time.time()  
   print('Finished querying the Bus patameter in ',np.round(end-start,2),' seconds') 
+  print("The result of the federated query is ")
   for r in res_para:
       for key in r.keys():
           r[key] = (r[key].split('\"^^')[0]).replace('\"','')
            
   qres_para = [[ int(r['Bus_num']), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
                 float(r['para_basekV']), int(r['para_zone']), float(r['para_Vmax']), float(r['para_Vmin'])] for r in res_para ]
+  
+  print(qres_para)
 
   for q in qres_para: 
       if q[3] == 1:

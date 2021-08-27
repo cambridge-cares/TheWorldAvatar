@@ -13,9 +13,6 @@
     <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
     <script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
     <script src='power-system.js'></script>
-    <!--<script src='elect_consump.js'></script>-->
-
-
 
     <!-- Stylesheets -->
     <!--<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />-->
@@ -27,10 +24,6 @@
           crossorigin="" />
     <link href='style.css' rel='stylesheet' />
 
-
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-            crossorigin=""></script>
 </head>
 
 <body>
@@ -137,7 +130,7 @@
                 toggleLayer("Model_EBus", false);
             }
 
-            if(enabled && layerID.includes("Electricity_")) {
+            if (enabled && layerID.includes("Electricity_")) {
                 // Show the consumption layers
                 toggleLayer("Electricity_Consumption_region_borders", true);
                 toggleLayer("Electricity_Consumption_area_fill", true);
@@ -153,6 +146,7 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus", false);
+            }
 
             // TODO: add new layer for visualising the model layer
             if (enabled && layerID.includes("Model_")) {
@@ -191,11 +185,7 @@
         map.on('style.load', function () {
 
             // Variable for area currently under mouse cursor
-            var hoveredStateId = null;
-
-            // TODO: add to the updateLegend() function in power-system.js to
-            //          create a legend (ideally just loading a static image).
-            //var hoveredStateId = "null";
+            // var hoveredStateId = null;
 
             console.log("INFO: New style has been loaded.");
             refresh();
@@ -225,22 +215,20 @@
                 data: 'UK_Grid_Model_Bus_Parameter.geojson'
             });
 
-            // Add the bus model input variables geoJSON source
-            map.addSource('Bus_model_input_variables', {
-                type: 'geojson',
-                data: 'UK_Grid_Model_Bus_InputVar.geojson'
+            // add the bus model input variables geojson source
+            //map.addsource('bus_model_input_variables', {
+            //    type: 'geojson',
+            //    data: 'uk_grid_model_bus_inputvar.geojson'
+            //});
+
+          
+            map.loadImage('/bus.png', (error, image) => {
+                if (error) throw error;
+                // Add the loaded image to the style's sprite with the ID 'kitten'.
+                map.addImage('EBus_icon', image);
             });
 
-            // add an image as the icon of the bus
-            map.addSource('EBus_icon', {
-                type: 'image',
-                url: 'bus.svg'
-            });
-
-            //import EBus from 'bus.svg';
-            //const image = new Image(35, 35);
-            //image.src = EBus;
-            //map.addImage('EBus', image);
+            console.log("The Bus icon pic is already added.")
 
 			// ===== SOURCES ====
 
@@ -248,18 +236,19 @@
             
             // Labels for Electricity Buses 
             map.addLayer({
-                id: 'Model_EBus',
+                id: 'Bus_model_GPS_Parameters',
                 type: 'symbol',
+                // source: 'Bus_model_GPS_Parameters',
                 source: 'Bus_model_GPS_Parameters',
                 layout: {
                     'icon-image': 'EBus_icon',
-                    'icon-size': 0.25,
+                    'icon-size': 0.075,
                     'text-field': ['get', 'Bus_num'],
                     'text-font': [
                         'Open Sans Semibold',
                         'Arial Unicode MS Bold'
                     ],
-                    'text-offset': [0, 1.25],
+                    'text-offset': [0, 1.5],
                     'text-anchor': 'top'
                 }
             });
@@ -577,10 +566,7 @@
                 "Electricity_Consumption_region_borders"
             ],
             null, false);
-        registerLayer("10-Bus Grid Model", [
-            "Model_EBus"
-        ],
-            null, false);
+        registerLayer("10-Bus Grid Model", ["Model_EBus"], null, false);
 
         // Build the layer selection tree
         buildLayerTree("radio");

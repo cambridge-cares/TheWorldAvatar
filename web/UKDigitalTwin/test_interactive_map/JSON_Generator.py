@@ -15,16 +15,15 @@ topoEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid
 busModelEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"
 
 """PowerPlant query"""
-# ret_pow = queryPowerPlantForVisualisation(powerPlant)
-# ret_pow = check_GPS(ret_pow)
+ret_pow = queryPowerPlantForVisualisation(powerPlant)
+ret_pow = check_GPS(ret_pow)
 
 """PowerPlant query"""
-# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, True) # query the region consumption
-# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, False) # query the sub areas consumption
+ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, True) # query the region consumption
+ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, False) # query the sub areas consumption
 
 """Grid model query"""
 ret_grid_model_bus = queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint)
-# ret_grid_model_bus = queryGridModeltForVisualisation_Bus_alt(topoEndpoint, busModelEndpoint)
 
 """Labels"""
 class_label_pp = 'UK_PowerPlants'
@@ -36,7 +35,8 @@ class_label_busInputVar = "UK_Grid_Model_Bus_InputVar"
 
 
 """Create GEOJSON files"""
-# powerPlantgeoJSONCreator(ret_pow, class_label_pp)
-# elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
-# elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)
+powerPlantgeoJSONCreator(ret_pow, class_label_pp)
+elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
+elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)
 busModelJSONCreator(ret_grid_model_bus, class_label_busPara, class_label_busInputVar)
+print("*******************The JSON_Generator.py is finished*******************")

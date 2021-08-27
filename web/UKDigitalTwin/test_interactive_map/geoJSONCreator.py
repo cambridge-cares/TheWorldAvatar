@@ -144,7 +144,7 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
               "para_zone": "%s",
               "para_Vmax": "%s",
               "para_Vmin": "%s",
-              "bus-color": %s
+              "bus-color": "%s"
             },
             "geometry": {
               "type": "Point",
@@ -154,7 +154,7 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
               ]
             }          
           },"""%(bus_gps_para[i][0], bus_gps_para[i][3], bus_gps_para[i][4], bus_gps_para[i][5], bus_gps_para[i][6], bus_gps_para[i][7], bus_gps_para[i][8], bus_gps_para[i][9], \
-                     bus_gps_para[i][10], getBusColour(i), bus_gps_para[i][1], bus_gps_para[i][2])         
+                     bus_gps_para[i][10], getBusColour(i + 1), bus_gps_para[i][1], bus_gps_para[i][2])         
           # adding new line 
           geojson_file_bus_gps_para += '\n'+feature   
     # removing last comma as is last line
