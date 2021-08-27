@@ -50,7 +50,8 @@ env_filename="env.txt"
 write_env_file $env_filename
 
 # Assemble arguments for docker-compose
-compose_opts="$yml_fname_args --env-file $env_filename"
+project_name=$(get_project_name $stack $mode $use_test_config)
+compose_opts="$yml_fname_args --env-file $env_filename -p $project_name"
 
 # Run docker-compose down, passing on any additional args that were supplied to this script
 cmd="docker-compose $compose_opts down"

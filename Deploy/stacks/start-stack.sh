@@ -86,7 +86,8 @@ env_filename="env.txt"
 write_env_file $env_filename
 
 # Assemble arguments for docker-compose
-compose_opts="$yml_fname_args --env-file $env_filename"
+project_name=$(get_project_name $stack $mode $use_test_config)
+compose_opts="$yml_fname_args --env-file $env_filename -p $project_name"
 
 # Examine secret files defined in the config files and set missing values where necessary
 set_missing_secrets $yml_fnames

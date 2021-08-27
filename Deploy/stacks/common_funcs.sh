@@ -17,6 +17,30 @@ exit_with_msg()
   exit $return_code
 }
 
+get_project_name()
+{
+  # Check number of args
+  if [ "$#" -ne 3 ]; then
+    echo "get_project_name: Expected 3 arguments, but $# were passed."
+    exit 1
+  fi
+
+  local stack=$1
+  local mode=$2  
+  local use_test_config=$3
+
+  # Default project name is <stack>-<mode> 
+  local result="$stack-$mode"
+
+  # Append a modifier if running in test configuration
+  if [ $use_test_config -eq $TRUE ]; then
+    result="$result-test"
+  fi
+
+  # Pass the result back via stdout
+  echo "$result"
+}
+
 # Print the supplied message, then cd to the specified stack directory
 init_stack_script()
 {
