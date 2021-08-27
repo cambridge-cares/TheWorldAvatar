@@ -31,6 +31,8 @@ import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -56,6 +58,8 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class FileBasedStoreClient implements StoreClientInterface {
 
+	private static Logger LOGGER = LogManager.getLogger(FileBasedStoreClient.class);
+	
 	private Dataset dataset;
 	private RDFConnection conn;
 	
@@ -168,6 +172,8 @@ public class FileBasedStoreClient implements StoreClientInterface {
 		File f= new File(graph.path);
 		if(f.exists()) {
 			loadGraph(graph);
+		}else {
+			LOGGER.info(filePath+" does not exist. Creating empty FileBasedStoreClient.");
 		}
 
 		if(graph != null) {
@@ -366,14 +372,17 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	 */
 	public void writeToFile(String name, String filePath, Lang langOut) {
 		
+		LOGGER.debug("Writing to file");
+		
 		try (OutputStream out = new FileOutputStream(filePath)){
 
 			//Default graph
 			if(name == null || name.equals("default")) {
 				
-					RDFDataMgr.write(out, dataset.getDefaultModel(), langOut);	
-					out.flush();
-			
+				RDFDataMgr.write(out, dataset.getDefaultModel(), langOut);	
+				out.flush();
+		
+				LOGGER.info("Default graph written to: "+filePath+". Lang: "+langOut.getName());
 			//Named graph
 			}else if(dataset.containsNamedModel(name)) {
 				
@@ -386,6 +395,7 @@ public class FileBasedStoreClient implements StoreClientInterface {
 					RDFDataMgr.write(out, datasetOut, langOut);
 				}
 				out.flush();
+				LOGGER.info("Named graph" +name +" written to: "+filePath+". Lang: "+langOut.getName());
 			}else {
 				throw new JPSRuntimeException("FileBasedKnowledgeBaseClient: " + name + " does not exist.");
 			}
@@ -647,6 +657,8 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	@Override
 	public int executeUpdate(String update) {
 		
+		LOGGER.debug("Performing SPARQL UPDATE.");
+		
 		//Attempt to load files if the dataset is empty.
 		if(isEmpty()) {load();} 
 				
@@ -673,6 +685,8 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	 */
 	@Override
 	public int executeUpdate(UpdateRequest update) {
+		
+		LOGGER.debug("Performing SPARQL UPDATE.");
 		
 		//Attempt to load files if the dataset is empty.
 		//if(isEmpty()) {load();}
@@ -745,6 +759,8 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	 * @return
 	 */
 	private ResultSet performExecuteQuery(String sparql) {
+		
+		LOGGER.debug("Performing SPARQL QUERY.");
 		
 		//Attempt to load files if the dataset is empty.
 		if(isEmpty()) {load();} 
@@ -833,6 +849,8 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	@Override
 	public String get(String resourceUrl, String accept) {
 		
+		LOGGER.debug("Performing GET (CONSTRUCT) from graph="+resourceUrl+", accept="+accept);
+		
 		Var varS = Var.alloc("s");
 		Var varP = Var.alloc("p");
 		Var varO = Var.alloc("o");
@@ -873,23 +891,30 @@ public class FileBasedStoreClient implements StoreClientInterface {
 	@Override
 	public void insert(String graphName, String content, String contentType) {
 		
+		LOGGER.debug("Performing INSERT to graph="+graphName+", contentType="+contentType);
+		
 		Model model = ModelFactory.createDefaultModel();
 		
 		InputStream in = new ByteArrayInputStream(content.getBytes());
+		
         if (contentType == null) {
+        	LOGGER.info("Assuming default content type RDF/XML");
         	//RDF/XML default
         	//base=null, assume all uri are absolute
         	model.read(in, null); 
 		} else {
 			Lang syntax = RDFLanguages.contentTypeToLang(contentType);
+			LOGGER.debug("Content type: "+syntax.getName());
 			model.read(in,null,syntax.getName());
 		}
         
         UpdateBuilder builder = new UpdateBuilder();
         
         if (graphName == null) {
+        	LOGGER.debug("Create insert for default graph");
         	builder.addInsert(model);
         } else {
+        	LOGGER.debug("Create insert for namde graph: "+graphName);
         	String graphURI = "<" + graphName + ">";
         	builder.addInsert(graphURI, model);
         }
