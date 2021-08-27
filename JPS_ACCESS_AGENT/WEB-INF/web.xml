@@ -6,7 +6,7 @@
 		metadata-complete="false" 
 		version="3.1">
 
-	<display-name>access_agent</display-name>
+	<display-name>access-agent</display-name>
 
 	<servlet>
 		<servlet-name>AccessAgentServlet</servlet-name>
