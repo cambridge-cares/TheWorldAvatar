@@ -20,9 +20,11 @@ from chemaboxwriters.ontospecies.osjsonstagewriter import MOLWT, \
                                                           BOND_STRING, \
                                                           ATOMS_CAN_POSITIONS, \
                                                           PUBCHEM_ALT_LABEL, \
+                                                          PUBCHEM_CID, \
                                                           CAS_NUMBER, \
                                                           ATOM_LIST, \
-                                                          ATOM_COUNTS
+                                                          ATOM_COUNTS, \
+                                                          SPIN_MULT
 import chemaboxwriters.common.commonvars as commonv
 from chemaboxwriters.ontospecies.prefixes import onto_spec, \
                                                  gain_pref, \
@@ -73,8 +75,10 @@ def write_identifier_geom(spamwriter,out_id,data):
         spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
+    spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
+    spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
 
 def write_atom_info(spamwriter,gen_id,out_id,data):
     count = 1
