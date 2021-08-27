@@ -4,8 +4,8 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  *
  */
 public class StoreRouter{
-	private static Logger logger = LoggerFactory.getLogger(StoreRouter.class);
+	private static Logger LOGGER = LogManager.getLogger(StoreRouter.class);
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String KB="kb";
@@ -63,7 +63,7 @@ public class StoreRouter{
 	 *    - http://kb/ontocompchem
 	 * b) The target resource IRI for a file based store is expected to end in .owl or .rdf, e.g.:
 	 *    - http://kb/sgp/singapore/SGTemperatureSensor-001.owl
-	 *    
+	 * 
 	 * @param targetResourceIRI the IRI of an RDF/OWL repository/namespace
 	 * @param isQueryOperation true/false
 	 * @param isUpdateOperation true/false. Note: both query and update operations<br>
@@ -76,9 +76,9 @@ public class StoreRouter{
 		StoreClientInterface kbClient = null;
 		if (targetResourceIRI != null && !targetResourceIRI.isEmpty()) {
 			
-			if (storeRouter == null) {
-				storeRouter = new StoreRouter();
-			}
+				if (storeRouter == null) {
+					storeRouter = new StoreRouter();
+				}
 			
 			if (targetResourceIRI.trim().endsWith(OWL_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(RDF_FILE_EXTENSION)) {
 			  
@@ -105,10 +105,10 @@ public class StoreRouter{
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
 				if(queryIRI==null && updateIRI==null){
-					logger.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRI);
+					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRI);
 				}
 				if(isQueryOperation == false && isUpdateOperation == false){
-					logger.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
+					LOGGER.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
 			}
 		}
@@ -209,7 +209,7 @@ public class StoreRouter{
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Created to put the generic part of the SPARQL query commands using the Jena Query Builder.
 	 * 
