@@ -320,6 +320,9 @@ If you want to test the agent, either by running the [jar directly](#using-the-j
 - Have a SPARQL endpoint and Postgres database running on the test system. Ideally, both the 
 triple store and database should be empty to not interfere with existing data. This could also be achieved
 by using a new namespace and database withing an existing triple store or Postgres instance respectively.
+- You will need the credentials for accessing the AQMesh API. They can be found in a shared Dropbox folder 
+(`IRP3 CAPRICORN shared folder\NKASENBURG\KGTimeSeries\AQMesh_API\api_credentials.txt`). Ask a relevant CARES employer
+of how to get access to the folder or credentials.
 - Use the test URL of the AQMesh API (`https://apitest.aqmeshdata.net/api/`) to not change the pointer for the actual 
 pod (see [Data retrieval](#data-retrieval)).
 - When testing the behaviour of updating existing data, use the same property and mapping files for consecutive 
