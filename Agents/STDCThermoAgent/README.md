@@ -119,7 +119,7 @@ Example usage that calculates thermodynamic properties of SiH4 species:
 
 ## Web agent usage
 
-The web agent uses the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project knowledge graph to retrieve most of the species data needed to calculate its thermodynamic properties. Therefore requesting calculation substantially differs from the command line option. Only four inputs are allowed in the agent main route:
+The web agent uses the [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project knowledge graph to retrieve most of the species data needed to calculate its thermodynamic properties. Therefore requesting calculation substantially differs from the command line option. Only four inputs are required in the agent main route:
 
 These are:
 
@@ -129,7 +129,7 @@ These are:
 ontocompchem_IRI=<oc_IRI>   IRI of the species quantum chemistry data ontocompchem entry
 ontospecies_IRI=<os_IRI>    IRI of the species ontospecies entry
 temperature=<temperature>   Temperature of interest in Kelvins [default: 298.15]
-pressure=<temperature>      Pressure of interest in Pascals  [default: 101325.0]
+pressure=<pressure>         Pressure of interest in Pascals  [default: 101325.0]
 ```
 
 In order to use the calculator as a web agent, simply start a server with the following app entry point:
