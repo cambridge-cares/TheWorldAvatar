@@ -170,18 +170,23 @@ get_yml_fnames()
   # Check process arg is valid
   if ! $(is_valid_process $process); then echo "get_yml_fnames: '$process' is not a valid process" && exit 11; fi
 
-  base_yml="docker-compose.$process.yml"
-  modespec_yml="docker-compose.$process.$mode.yml"
-  testmodifier_yml="docker-compose.$process.test.yml"
+  # Include base yml file for this process
+  local result="docker-compose.$process.yml"
 
-  # Compile result
-  result="$base_yml"
+  # Include mode-specific yml file if it exists
+  local modespec_yml="docker-compose.$process.$mode.yml"
   if [ -f "$modespec_yml" ]; then
     result="$result $modespec_yml"
   fi
-  if [ $use_test_config -eq $TRUE ] && [ -f "$testmodifier_yml" ]; then
-    result="$result $testmodifier_yml"
+
+  # Add test options yml if requested and the file exists
+  if [ $use_test_config -eq $TRUE ]; then
+    local testmodifier_yml="docker-compose.$process.test.yml"
+    if [ -f "$testmodifier_yml" ]; then
+      result="$result $testmodifier_yml"
+    fi
   fi
+
   # Pass the result back via stdout
   echo "$result"
 }
