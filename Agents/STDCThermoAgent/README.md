@@ -4,6 +4,10 @@ The `stdc` is a simple calculator of thermodynamic properties of gaseous species
 
 # Installation #
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+## Requirements
+
+- You need Python >3.5 to run the `stdc`. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
+- You also need to install a [Java Runtime Environment version >=8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 
 ## Virtual environment setup
 
