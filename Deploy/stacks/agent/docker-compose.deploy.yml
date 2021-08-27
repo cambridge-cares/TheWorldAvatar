@@ -5,7 +5,7 @@ services:
   # Email Agent
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
-    container_name: email-agent
+    container_name: "email-agent-${MODE}"
     hostname: email-agent
     ports:
       - 58080:8080
@@ -15,7 +15,7 @@ services:
   # Gas Grid Agent
   gas-grid-agent:
     image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
-    container_name: "gas-grid-agent"
+    container_name: "gas-grid-agent-${MODE}"
     ports:
       - 50081:80
     pull_policy: if_not_present
@@ -24,7 +24,7 @@ services:
   # JPS Chatbot
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
-    container_name: "jps-chatbot"
+    container_name: "jps-chatbot-${MODE}"
     ports:
       - 55000:5000
     pull_policy: if_not_present
@@ -33,7 +33,7 @@ services:
   # JPS LDF Server
   jps-ldf:
     image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
-    container_name: "jps-ldf"
+    container_name: "jps-ldf-${MODE}"
     ports:
       - 53000:3000
     pull_policy: if_not_present
