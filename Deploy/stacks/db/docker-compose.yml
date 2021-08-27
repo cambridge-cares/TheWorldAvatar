@@ -92,6 +92,7 @@ secrets:
   rdf4j_user_password:
     file: rdf4j/secrets/rdf4j_user_password
 
+
 # Volumes to handle triplestore data and logging for Blazegraph, RDF4J
 volumes:
   blazegraph_data:

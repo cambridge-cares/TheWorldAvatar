@@ -136,20 +136,21 @@ public class SensorSparql {
         ModifyQuery modify = Queries.MODIFY();
         
         TriplePattern weatherstation_tp = weatherstation_iri.isA(WeatherStation)
-        		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri);
+        		.andHas(p_space_time_extended.iri("hasGISCoordinateSystem"),stationcoordinates_iri)
+        		.andHas(hasTime, time_iri);
 
         InsertCoordinatesTP(modify,stationcoordinates_iri,station_name,xyz_coord);
 
-        // time stamp is shared by all properties, in unix timestamp
-        TriplePattern time_tp = time_iri.isA(p_time.iri("Instant")).andHas(p_time.iri("inTimePosition"),0);
+        // time stamp
+        TriplePattern time_tp = time_iri.isA(p_time.iri("Instant")).andHas(numericPosition,0);
 
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,cloud,unit_percentage,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,precipitation,unit_mm,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,pressure,unit_mbar,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,temperature,unit_celcius,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,humidity,unit_fraction,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,windspeed,unit_ms,time_iri);
-        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,winddirection,unit_degree,time_iri);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,cloud,unit_percentage);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,precipitation,unit_mm);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,pressure,unit_mbar);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,temperature,unit_celcius);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,humidity,unit_fraction);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,windspeed,unit_ms);
+        InsertWeatherSensorTP(modify,weatherstation_iri,p_station,station_name,winddirection,unit_degree);
         
         Prefix [] prefix_list = getPrefix();
         
@@ -157,7 +158,7 @@ public class SensorSparql {
         SparqlGeneral.performUpdate(modify);
     }
 
-    private static void InsertWeatherSensorTP(ModifyQuery modify, Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit, Iri time_iri) {
+    private static void InsertWeatherSensorTP(ModifyQuery modify, Iri station_iri, Prefix station_prefix, String station_name, String data, Iri unit) {
         Iri sensor_iri = station_prefix.iri(station_name+"_sensor"+data);
         Iri data_iri = station_prefix.iri(station_name+"_"+data);
         Iri datavalue_iri = station_prefix.iri(station_name+"_v"+data);
@@ -168,8 +169,7 @@ public class SensorSparql {
         
         TriplePattern datavalue_tp = datavalue_iri.isA(p_system.iri("ScalarValue"))
                 .andHas(p_system.iri("numericalValue"), 0)
-                .andHas(p_system.iri("hasUnitOfMeasure"), unit)
-                .andHas(p_time.iri("hasTime"), time_iri);
+                .andHas(p_system.iri("hasUnitOfMeasure"), unit);
         
         modify.insert(station_tp,sensor_tp,data_tp,datavalue_tp);
     }
@@ -247,25 +247,19 @@ public class SensorSparql {
     }
     
     /**
-     * can be used by both weather and air quality stations
+     * only use for weather stations
      */
     private static void modifyTimeStamp(Iri stationiri,long timestamp, Iri graph) {
     	// all properties share the same timestamp, so we just have to match the pattern for one property
     	SubSelect sub = GraphPatterns.select();
     	Variable time_iri = SparqlBuilder.var("time_iri");
     	Variable oldvalue = SparqlBuilder.var("oldvalue");
-    	Variable sensor_iri = sub.var();
-    	Variable data_iri = sub.var();
-    	Variable datavalue_iri = sub.var();
     	
-    	TriplePattern station_tp = stationiri.has(hasSubsystem,sensor_iri);
-        TriplePattern sensor_tp = sensor_iri.has(observes,data_iri);
-        TriplePattern data_tp = data_iri.has(hasValue, datavalue_iri); 
-        TriplePattern datavalue_tp = datavalue_iri.has(p_time.iri("hasTime"), time_iri);
-        TriplePattern oldtime_tp = time_iri.has(p_time.iri("inTimePosition"), oldvalue);
-        TriplePattern newtime_tp = time_iri.has(p_time.iri("inTimePosition"), timestamp);
+    	TriplePattern station_tp = stationiri.has(hasTime,time_iri);
+        TriplePattern oldtime_tp = time_iri.has(numericPosition, oldvalue);
+        TriplePattern newtime_tp = time_iri.has(numericPosition, timestamp);
         
-        GraphPattern subquerypattern = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp,oldtime_tp);
+        GraphPattern subquerypattern = GraphPatterns.and(station_tp,oldtime_tp);
         sub.select(time_iri,oldvalue).where(subquerypattern).distinct().from(graph);
         
         ModifyQuery modify = Queries.MODIFY();
@@ -364,18 +358,11 @@ public class SensorSparql {
     
     private static GraphPattern getStationTimeGP(SelectQuery query, Iri stationiri, Variable vtime) {
     	Variable time_iri = query.var();
-    	Variable sensor_iri = query.var();
-    	Variable data_iri = query.var();
-    	Variable datavalue_iri = query.var();
     	
-    	TriplePattern station_tp = stationiri.has(hasSubsystem,sensor_iri);
-        TriplePattern sensor_tp = sensor_iri.has(observes,data_iri);
-        // all data properties have the same time stamp, specifying cloud ensures that there's only 1 query result, making it less confusing
-        TriplePattern data_tp = data_iri.has(hasValue, datavalue_iri); 
-        TriplePattern datavalue_tp = datavalue_iri.has(p_time.iri("hasTime"), time_iri);
-        TriplePattern vtime_tp = time_iri.has(p_time.iri("inTimePosition"), vtime);
+    	TriplePattern station_tp = stationiri.has(hasTime,time_iri);
+        TriplePattern vtime_tp = time_iri.has(numericPosition, vtime);
         
-        GraphPattern time_gp = GraphPatterns.and(station_tp,sensor_tp,data_tp,datavalue_tp,vtime_tp);
+        GraphPattern time_gp = GraphPatterns.and(station_tp,vtime_tp);
         return time_gp;
     }
     
@@ -500,7 +487,7 @@ public class SensorSparql {
     }
     
     /** 
-     * last updated time of this sensor
+     * last updated time of this sensor (for air quality station)
      * @param data_iri_string
      */
     

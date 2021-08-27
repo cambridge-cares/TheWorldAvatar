@@ -1,0 +1,6 @@
+email-agent.properties
+nb-configuration.xml
+
+*.war
+*log4j2.xml
+*/target
