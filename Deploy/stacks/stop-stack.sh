@@ -41,7 +41,7 @@ if ! $(is_valid_mode $mode); then echo "$0: '$mode' is not a valid mode" && exit
 init_stack_script $stack "Stopping the $mode-$stack stack\n\n"
 
 # Get yml filenames
-yml_fnames=$(get_yml_fnames $mode $process)
+yml_fnames=$(get_yml_fnames $mode $process $FALSE)
 if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
 yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /' -e 's/^/-f /')
 
