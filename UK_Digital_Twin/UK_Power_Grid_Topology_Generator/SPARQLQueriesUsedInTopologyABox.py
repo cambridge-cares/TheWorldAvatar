@@ -135,11 +135,11 @@ if __name__ == '__main__':
     # sl_topo = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     iri = "http://dbpedia.org/resource/West_Midlands_(county)"  
     # scot_iri = 'http://dbpedia.org/resource/Scotland'
-    res = queryPowerPlantLocatedInSameRegion('ukpowerplantkg', sl_pp, iri, False) 
+    # res = queryPowerPlantLocatedInSameRegion('ukpowerplantkg', sl_pp, iri, False) 
     
-    # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"
-    # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
-    # res = queryBusGPS('ukpowergridtopology', None, FromBus_iri, ToBus_iri, False)
+    FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"
+    ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
+    res = queryBusGPS('ukpowergridtopology', None, FromBus_iri, ToBus_iri, False)
     
     # topologyQueryEndPoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology"
     # energyconsumptionQueryEndPoint = "	https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"

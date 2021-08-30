@@ -249,13 +249,12 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
     while counter <= Num_Eline:
         branchTopoData = branchTopoArray[counter]
         FromBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[0].zfill(3)
-        ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)       
-       
+        ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)              
         # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
         gpsArray = []
         gpsArray = list(query_topo.queryBusGPS(topology_Endpoint, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
         Eline_length = DistanceBasedOnGPDLocation(gpsArray[0])
-              
+        print(Eline_length)      
         # PowerFlow_ELine node uri
         branch_context_locator = uk_topo.PowerFlow_ELineKey + str(counter).zfill(3) 
         branch_node = tp_namespace + branch_context_locator

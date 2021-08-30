@@ -254,7 +254,7 @@ def queryEBusandRegionalDemand(topo_Consumption_SleepycatPath, localQuery, *endP
 # queryStr_busConnectionAndLength: query ELine iri and its From_Bus, To_Bus and the Length_ELine.
 # queryStr_parallelBranches: the number of OHL_400 and 275kV of an ELine
 def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, localQuery):
-    queryStr_busConnectionAndLength = """
+    queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
@@ -284,89 +284,24 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
     }
     """
     
-    # queryStr_parallelBranches = """
-    # PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    # PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
-    # PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    # PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    # PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    # SELECT  ?ELine ?Num_OHL_400kV ?Num_OHL_275kV
-    # WHERE
-    # {
-    # ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    # ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
-    
-    # ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
-    # ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    # ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV .    
-
-    # ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400or275kV . 
-    # ?OHL_400or275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    # ?OHL_400or275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400or275kV .         
-    # }
-    # """
-    global qres, qres_
+    global qres 
     
     if localQuery == False and topology_Endpoint != None: 
         print('remoteQuery')
-        res = json.loads(performQuery(topology_Endpoint, queryStr_busConnectionAndLength))
-        res_ = json.loads(performQuery(topology_Endpoint, queryStr_parallelBranches))
+        res = json.loads(performQuery(topology_Endpoint, queryStr))
         print('query is done')
-        qres = [[ str(r['ELine']), str(r['From_Bus']), str(r['To_Bus']), str(r['Value_Length_ELine'])] for r in res]
-        qres_ = [[ str(r['ELine']), str(r['OHL_400or275kV']), str(r['Num_OHL_400or275kV'])] for r in res_] 
-        print(qres_)
-    
-         
+        qres = [[ str(r['ELine']), int(r['From_Bus'].split('EBus-')[1]), int(r['To_Bus'].split('EBus-')[1]), \
+                 float((r['Value_Length_ELine'].split('\"^^')[0]).replace('\"','')), int((r['Num_OHL_400kV'].split('\"^^')[0]).replace('\"','')),\
+                     int((r['Num_OHL_275kV'].split('\"^^')[0]).replace('\"',''))] for r in res]
     elif topology_Sleepycat != None and localQuery == True:  
         eline_cg = ConjunctiveGraph('Sleepycat')
         sl = eline_cg.open(topology_Sleepycat, create = False)
         if sl == NO_STORE:
             print('Cannot find the UK topology sleepycat store')
             return None
-        qres = list(eline_cg.query(queryStr_busConnectionAndLength))
-        qres_ = list(eline_cg.query(queryStr_parallelBranches))
+        qres = list(eline_cg.query(queryStr))
         eline_cg.close()
-    
-    # Arrange qres
-    ELineTopoInfo = [[ str(r[0]), str(r[1]), str(r[2]), float(r[3]), 0 , 0 ] for r in qres]
-    for el in ELineTopoInfo:
-        el[1] = int(el[1].split('EBus-')[1])
-        el[2] = int(el[2].split('EBus-')[1])
-   #  print(ELineTopoInfo)
-    
-    # Arrange qres_
-    paraBranch  = [[ str(r_[0]), str(r_[1]), int(r_[2]), 0 , 0 ] for r_ in qres_]
-    elineName = []
-    for p in paraBranch:
-        if p[0] in elineName:
-            counter_1 = elineName.index(p[0])
-            counter_2 = paraBranch.index(p) 
-            if counter_2 > counter_1:
-                paraBranch[counter_1][3] = str(paraBranch[counter_2][1])
-                paraBranch[counter_1][4] = int(paraBranch[counter_2][2])
-                del paraBranch[counter_2]
-            else:
-                print('counter_2 should be larger than counter_1')
-                return None
-        else:
-            elineName.append(p[0])
-    
-    paraBranch_Dict = {pb[0] : [] for pb in paraBranch}
-    counter = 0
-    for key in paraBranch_Dict.keys():
-        if (paraBranch[counter][1].split('#OHL_')[1]).startswith('400') and (paraBranch[counter][3].split('#OHL_')[1]).startswith('275'):
-            paraBranch_Dict[key] = [paraBranch[counter][2], paraBranch[counter][4]] 
-        elif (paraBranch[counter][1].split('#OHL_')[1]).startswith('275') and (paraBranch[counter][3].split('#OHL_')[1]).startswith('400'):
-            paraBranch_Dict[key] = [paraBranch[counter][4], paraBranch[counter][2]] 
-    
-    # Append data in paraBranch_Dict to ELineTopoInfo
-    for el in ELineTopoInfo:
-        if el[0] in paraBranch_Dict.keys():
-            el[4], el[5] = paraBranch_Dict[el[0]]
-        else:
-            print ('Key does not match.')
-            return None    
-    return ELineTopoInfo 
+    return qres 
 
 def testLabel():
     qstr = """
@@ -399,14 +334,14 @@ if __name__ == '__main__':
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     # res = queryRegionalElecConsumption('ukenergyconsumptionkg', None, False)
     res = queryELineTopologicalInformation('ukpowergridtopology', None, False)
-    # print (len(res), res[0])
+    print (res)
     
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
     # res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
-    print(res)
+    # print(res)
     # for r in res:
     #     print(res)
     #testLabel()
