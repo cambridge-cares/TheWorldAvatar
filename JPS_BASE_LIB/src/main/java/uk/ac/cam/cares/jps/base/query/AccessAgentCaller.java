@@ -42,6 +42,11 @@ public class AccessAgentCaller{
 		LOGGER.info("put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 		Object[] a = createRequestUrl(datasetUrl, targetUrl);
 
+		//default to RDF-XML
+		if (contentType == null) {
+			contentType = MediaType.APPLICATION_RDF_XML.type;
+		}
+		
         String requestUrl = (String) a[0];
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
