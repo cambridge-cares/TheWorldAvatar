@@ -15,7 +15,8 @@ setup(
         'console_scripts': [
             'ocompchem=chemaboxwriters.ocompchem_driver:start',
             'ospecies=chemaboxwriters.ospecies_driver:start',
-            'opesscan=chemaboxwriters.opesscan_driver:start'
+            'opesscan=chemaboxwriters.opesscan_driver:start',
+			'omops=chemaboxwriters.omops_driver:start'
         ],
     }
 )

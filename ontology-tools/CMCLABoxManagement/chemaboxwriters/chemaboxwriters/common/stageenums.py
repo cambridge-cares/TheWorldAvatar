@@ -6,6 +6,8 @@ aboxStages = Enum('aboxStages',
      'OC_JSON',
      'OS_JSON',
      'OPS_JSON',
+     'OMOPS_INP_JSON',
+     'OMOPS_JSON',
      'CSV',
      'OWL'
     )
