@@ -203,3 +203,70 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
     geojson_written.write(geojson_file_bus_input)
     geojson_written.close() 
     return 
+
+def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, class_label_line, class_label_FromBus): 
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_branchGPS)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[%s, %s], 
+                                [%s, %s]]
+                }            
+          },""" %(ret_branchGPS[i][0], ret_branchGPS[i][1], ret_branchGPS[i][2], ret_branchGPS[i][3], ret_branchGPS[i][4])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_line + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close()
+    
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_branchGPS)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [%s, %s]
+                }            
+          },""" %(ret_branchGPS[i][0], ret_branchGPS[i][1], ret_branchGPS[i][2])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_FromBus + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close() 
+    return 

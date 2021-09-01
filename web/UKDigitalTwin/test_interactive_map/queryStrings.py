@@ -1,7 +1,7 @@
 ####################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)              #
 # Extended from: Tom Savage (trs3@cam.ac.uk)       #
-# Last Update Date: 26 August 2021                 #
+# Last Update Date: 30 August 2021                 #
 ####################################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
@@ -393,13 +393,9 @@ def queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint):
   print("The result of the federated query is ")
   for r in res_para:
       for key in r.keys():
-          r[key] = (r[key].split('\"^^')[0]).replace('\"','')
-           
+          r[key] = (r[key].split('\"^^')[0]).replace('\"','')         
   qres_para = [[ int(r['Bus_num']), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
                 float(r['para_basekV']), int(r['para_zone']), float(r['para_Vmax']), float(r['para_Vmin'])] for r in res_para ]
-  
-  print(qres_para)
-
   for q in qres_para: 
       if q[3] == 1:
           q[3] = "PQ Bus"
@@ -433,12 +429,50 @@ def queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint):
     
 """This function is used for query the branch model parameters and input variables, also there connectivity relationship with buses"""
 # branchModelEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel", lable: "ukpowergridmodel"
-def queryGridModeltForVisualisation_Branch(branchModelEndpoint):
+# topoEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", lable: "ukpowergridtopology"
+def queryGridModeltForVisualisation_Branch(branchModelEndpoint, topoEndpoint):
     
   queryVar = ["?ELine", "?From_Bus", "?To_Bus", "?para_R", "?para_X", "?para_B", "?para_RateA", "?para_RateB", "?para_RateC", "?para_RatioCoefficient", \
                 "?para_Angle", "?para_Status", "?para_AngleMax", "?para_AngleMin"] 
       
+  queryGPS = ["?PowerFlow_ELine", "?FromBus_latitude", "?FromBus_longitude", "?ToBus_latitude", "?ToBus_longitude"]
+      
   selectClause = " ".join(queryVar)
+  selectClause_queryGPS = " ".join(queryGPS)
+  
+  
+  queryFromAndToBusGPSLocation = """
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    SELECT DISTINCT %s
+    WHERE
+    {
+     
+    %s ontocape_network_system:leaves ?EquipmentConnection_FromEBus . 
+    ?EquipmentConnection_FromEBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?EquipmentConnection_FromEBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_FromBus .
+    ?x_coordinate_FromBus  system:hasValue ?GPS_x_coordinate_FromBus .
+    ?y_coordinate_FromBus  system:hasValue ?GPS_y_coordinate_FromBus . 
+    ?GPS_x_coordinate_FromBus  system:numericalValue %s .
+    ?GPS_y_coordinate_FromBus  system:numericalValue %s .
+    
+    %s ontocape_network_system:enters ?EquipmentConnection_ToEBus . 
+    ?EquipmentConnection_ToEBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?EquipmentConnection_ToEBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_ToBus .
+    ?x_coordinate_ToBus  system:hasValue ?GPS_x_coordinate_ToBus .
+    ?y_coordinate_ToBus  system:hasValue ?GPS_y_coordinate_ToBus . 
+    ?GPS_x_coordinate_ToBus  system:numericalValue %s .
+    ?GPS_y_coordinate_ToBus  system:numericalValue %s .
+    }
+    """ % (selectClause_queryGPS, queryGPS[0], queryGPS[1], queryGPS[2], queryGPS[0], queryGPS[3], queryGPS[4])
+  
   
   queryBuranchModelParameter = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -523,7 +557,7 @@ def queryGridModeltForVisualisation_Branch(branchModelEndpoint):
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5], queryVar[6], queryVar[7], \
         queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13])
   
-  # print(queryBuranchModelParameter)
+  # print(queryFromAndToBusGPSLocation)
   # query the Bus model parameters and its GPS location
   
   test = """PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -570,18 +604,20 @@ def queryGridModeltForVisualisation_Branch(branchModelEndpoint):
   start = time.time()
   print('Querying the Branch Model Parameters (model input)...')
   # res_para = json.loads(performQuery(branchModelEndpoint, queryBuranchModelParameter))
-  res_para = json.loads(performQuery(branchModelEndpoint, test))
+  res_GPS = json.loads(performQuery(topoEndpoint, queryFromAndToBusGPSLocation))
   end = time.time()  
   print('Finished querying in ',np.round(end-start,2),' seconds')
   
-  print(res_para)
-  for r in res_para:
-      for key in r.keys():
-          r[key] = (r[key].split('\"^^')[0]).replace('\"','')
-           
-  qres_para = [[ int(r['Bus_num']), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
-                float(r['para_basekV']), int(r['para_zone']), float(r['para_Vmax']), float(r['para_Vmin'])] for r in res_para ]
-  return qres_para
+  # print(res_GPS)
+  # for r in res_GPS:
+  #     for key in r.keys():
+  #         r[key] = (r[key].split('\"^^')[0]).replace('\"','')
+
+  qres_GPS = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), float(r['ToBus_longitude'])] for r in res_GPS ]
+       
+  # qres_para = [[ int(r['Bus_num']), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
+  #               float(r['para_basekV']), int(r['para_zone']), float(r['para_Vmax']), float(r['para_Vmin'])] for r in res_para ]
+  return qres_GPS
 
 def queryUKSDGIndicatorForVisualisation():
 
@@ -609,7 +645,7 @@ if __name__ == '__main__':
     # res = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS_json, False)
     
     # res = queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint)
-    res  = queryGridModeltForVisualisation_Branch("ukpowergridmodel")
+    res  = queryGridModeltForVisualisation_Branch("ukpowergridmodel", "ukpowergridtopology")
     # for r in res:
     #     print(r)
-    print(res)
+    print(type(res))
