@@ -13,7 +13,7 @@
 if [ "$#" -lt 2 ]; then
   echo "============================================================================="
   echo " Usage:"
-  echo "  $0 [stack_name] [mode] <--force-pull service_list> <additional_args>"
+  echo "  $0 [stack_name] [mode] <--force-pull service_list> <--test> <additional_args>"
   echo ""
   echo "                stack_name : the stack to start (agent/db/web)"
   echo "                      mode : configuration mode name (dev/prod)"

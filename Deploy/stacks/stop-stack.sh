@@ -6,10 +6,11 @@
 if [ "$#" -ne 2 ] && [ "$#" -ne 3 ]; then
   echo "============================================================================="
   echo " Usage:"
-  echo "  $0 [stack_name] [mode]"
+  echo "  $0 [stack_name] [mode] <--test>"
   echo ""
-  echo "  stack_name : the stack to start (agent/db/web)"
+  echo "  stack_name : the stack to stop (agent/db/web)"
   echo "        mode : configuration mode name (dev/test/prod)"
+  echo "      --test : Stop the 'test' version of the stack"
   echo ""
   echo "  e.g. To stop the agent stack, running in dev mode:"
   echo "   $0 agent dev"
