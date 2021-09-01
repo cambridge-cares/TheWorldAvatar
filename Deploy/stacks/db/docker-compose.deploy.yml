@@ -5,7 +5,7 @@ services:
   # Blazegraph
   blazegraph:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    container_name: "blazegraph-${MODE}"
+    container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     ports:
@@ -21,7 +21,7 @@ services:
   # Blazegraph geo
   blazegraph_geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
-    container_name: "blazegraph_geo-${MODE}"
+    container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
     ports:
       - 58083:8080
     pull_policy: if_not_present
@@ -32,7 +32,7 @@ services:
   # Postgres
   postgres:
     image: docker.cmclinnovations.com/postgres:13.3-alpine
-    container_name: "postgres-${MODE}"
+    container_name: "postgres${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
@@ -49,7 +49,7 @@ services:
   # RDF4J
   rdf4j:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
-    container_name: "rdf4j-${MODE}"
+    container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password

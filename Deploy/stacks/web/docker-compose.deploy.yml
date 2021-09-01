@@ -5,7 +5,7 @@ services:
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
-    container_name: "land-use-${MODE}"
+    container_name: "land-use${CONTAINER_NAME_SUFFIX}"
     ports:
       - 50082:80
     pull_policy: if_not_present
@@ -14,7 +14,7 @@ services:
   # Reverse Proxy
   reverse_proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
-    container_name: "reverse_proxy-${MODE}"
+    container_name: "reverse_proxy${CONTAINER_NAME_SUFFIX}"
     ports:
       - 80:80
       - 443:443
@@ -28,7 +28,7 @@ services:
   # Gas Grid Visualisation
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
-    container_name: "uk-gas-grid-${MODE}"
+    container_name: "uk-gas-grid${CONTAINER_NAME_SUFFIX}"
     ports:
       - 50084:80
     pull_policy: if_not_present
@@ -37,7 +37,7 @@ services:
   # Power System and SDG Visualisation
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
-    container_name: "uk-power-system-${MODE}"
+    container_name: "uk-power-system${CONTAINER_NAME_SUFFIX}"
     ports:
       - 50083:80
     pull_policy: if_not_present
@@ -46,7 +46,7 @@ services:
   # Knowledge Graph Website
   website:
     image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
-    container_name: "website-${MODE}"
+    container_name: "website${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     restart: unless-stopped
 

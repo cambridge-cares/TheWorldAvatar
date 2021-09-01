@@ -160,12 +160,19 @@ write_env_file()
     network_name="$network_name-test"
   fi
 
+  # Determine container name suffix
+  local container_name_suffix="-$mode"
+  if [ $use_test_config -eq $TRUE ]; then
+    container_name_suffix="$container_name_suffix-test"
+  fi
+  
   echo "Generating environment variables file..."
   local hash="$(git rev-parse --short=6 HEAD)"
   local builder="$(git config user.name)"
   echo "HASH=$hash" >> "$env_filename"
   echo "MODE=$mode" >> "$env_filename"
   echo "BUILDER=$builder" >> "$env_filename"
+  echo "CONTAINER_NAME_SUFFIX=$container_name_suffix" >> "$env_filename"
   echo "NETWORK_NAME=$network_name" >> "$env_filename"
   printf "Done\n\n"
 }
