@@ -21,6 +21,6 @@
 
 	<servlet-mapping>
 		<servlet-name>StatusAgent</servlet-name>
-		<url-pattern>/</url-pattern>
+		<url-pattern>/status_agent</url-pattern>
 	</servlet-mapping>
 </web-app>

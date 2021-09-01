@@ -7,10 +7,10 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
         
-        <script  src="${pageContext.request.contextPath}/index.js" type="text/javascript"></script>
+        <script  src="${pageContext.request.contextPath}/test-summary.js" type="text/javascript"></script>
         <link href="${pageContext.request.contextPath}/style.css" type="text/css" rel="stylesheet">
         
-        <title>StatusAgent Dashboard</title>
+        <title>Test Summary</title>
         
         <%@ page import="uk.ac.cam.cares.jps.agent.status.StatusAgent" %>
         <%@ page import="uk.ac.cam.cares.jps.agent.status.TemplateHandler" %>
@@ -22,7 +22,7 @@
     <body onload="initialise()">
         <div id="preamble">
             <div id="title">
-                <h1>StatusAgent - Dashboard</h1>
+                <h1>Test Summary - Dashboard</h1>
             </div>
             <div id="introduction">
                 <p>
@@ -31,23 +31,6 @@
                     leo. In porttitor dapibus odio, nec venenatis est semper ac.                
                 </p>
             </div>
-        </div>
-        <div class="all-tests-container">
-            <%
-                for (TestType type : TestRegistry.getDefinedTypes()) {
-                    out.print("<div class='test-container'>");
-                    out.print("<div class='test-container-title center-text'>");
-                    out.print("<h3>" + type.toString() + "</h3>");
-                    out.print("</div>");
-                    
-                    Set<TestDefinition> tests = TestRegistry.getDefinedTests(type);
-                    
-                    for(TestDefinition test : tests) {
-                        out.print(TemplateHandler.getTestResultStub(pageContext.getServletContext(), test));
-                    }
-                    out.print("</div>");
-                }
-            %>
         </div>
 
     </body>

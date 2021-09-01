@@ -1,0 +1,89 @@
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0px;
+} 
+
+#preamble {
+  height: 130px;
+  padding: 20px;
+}
+
+.all-tests-container {
+    height: calc(100% - 190px);
+    border: 1px solid blue;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.test-container {
+    width: 400px;
+    border: 1px solid lightgrey;
+    height: 100%;
+}
+
+.test-container-title {
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 10px;
+    height: 50px;
+    width: calc(100% - 80px);
+    text-align: center;
+    border: 1px solid grey;
+    border-width: 0px 0px 1px 0px;
+}
+
+.test-result-stub {
+    height: 75px;
+    background-color: rgb(245, 245, 245);
+    margin: 10px;
+    cursor: pointer;
+}
+
+.test-result-box {
+    width: calc(40% - 20px);
+    height: calc(100% - 20px);
+    float: left;
+    test-align: center;
+    background-color: red;
+    margin: 10px;
+}
+
+.center-text {
+    display: table; 
+}
+.center-text p {
+    text-align:center; 
+    vertical-align: middle;
+    display: table-cell;  
+}
+.center-text h1,h2,h3,h4,h5,h6 {
+    text-align:center; 
+    vertical-align: middle;
+    display: table-cell;  
+}
+
+.test-result-name {
+    width: 60%;
+    height: 100%;
+    float: right;
+    text-align: center;
+}
+
+.success {
+  background-color: #519E8A;
+}
+
+.failure {
+  background-color: #ED4D6E;
+}
+
+.not-yet-run {
+  background-color: #9D8DF1;
+}

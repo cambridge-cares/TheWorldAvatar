@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.status.execute;
 import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.agent.status.define.AvailabilityTestDefinition;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -14,6 +13,11 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Michael Hillman
  */
 public class AvailabilityTestExecutor extends TestExecutor {
+
+    /**
+     *
+     */
+    private static final String QUERY = "SELECT (COUNT(*) AS ?NO_OF_TRIPLES) WHERE { ?x ?y ?z . }";
 
     /**
      * Initialise a new AvailabilityTestDefinition instance with the input test definition.
@@ -31,37 +35,34 @@ public class AvailabilityTestExecutor extends TestExecutor {
     @Override
     public void execute() {
 
-        // Check that the store definition is of the correct type.
-        // This is not ideal, but I couldn't get generics to work with the relfexsive
-        // creation of testExecutor instances in the TestHandler class - Michael
-        AvailabilityTestDefinition concreteDefinition = null;
-        try {
-            concreteDefinition = (AvailabilityTestDefinition) definition;
-        } catch (ClassCastException exception) {
-            LOGGER.error("Stored test definition was not an instance of AvailabilityTestDefinition!", exception);
-            record.setResult(false);
-            return;
-        }
-
         // Generate the test record
-        record = new TestRecord<>(definition);
+        record = new TestRecord();
+        record.setDefinition(definition);
 
         // Mark the test time
         record.markTime();
 
         // Set logging context
-        ThreadContext.put("groupName", definition.getGroup());
+        ThreadContext.put("groupName", definition.getType().toString());
         ThreadContext.put("testName", definition.getName());
         ThreadContext.put("testTime", record.getExecutionTime());
 
+        // Get the endpoint
+        String endpoint = definition.getInput("endpoint");
+        if (endpoint == null || endpoint.isEmpty()) {
+            LOGGER.error("Could not find required 'endpoint' input.");
+            record.setResult(false);
+            return;
+        }
+
         try {
             // Initialise the client
-            RemoteStoreClient kgClient = new RemoteStoreClient(concreteDefinition.getEndpoint());
+            RemoteStoreClient kgClient = new RemoteStoreClient(endpoint);
 
             // Pass credentials (if present)
-            if (concreteDefinition.getUsername() != null && concreteDefinition.getPassword() != null) {
-                kgClient.setUser(concreteDefinition.getUsername());
-                kgClient.setPassword(concreteDefinition.getPassword());
+            if (definition.getUsername() != null && definition.getPassword() != null) {
+                kgClient.setUser(definition.getUsername());
+                kgClient.setPassword(definition.getPassword());
                 LOGGER.info("Using credentials for KG access.");
             } else {
                 LOGGER.info("No credentials set for KG access, skipping.");
@@ -69,7 +70,7 @@ public class AvailabilityTestExecutor extends TestExecutor {
 
             // Run the query
             LOGGER.info("Running query.");
-            JSONArray results = kgClient.executeQuery(AvailabilityTestDefinition.QUERY);
+            JSONArray results = kgClient.executeQuery(QUERY);
             LOGGER.info("Query finished.");
 
             // Parse the result

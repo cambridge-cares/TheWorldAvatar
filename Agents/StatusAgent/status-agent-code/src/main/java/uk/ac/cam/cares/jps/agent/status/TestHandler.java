@@ -8,12 +8,14 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.execute.TestExecutor;
+import uk.ac.cam.cares.jps.agent.status.execute.TestExecutorMap;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecordStore;
+import uk.ac.cam.cares.jps.agent.status.record.TestRecordStoreMarshaller;
 
 /**
- * This class handles setting up the TestExecutor instances to run all registered tests in a serial
- * queue.
+ * This class handles setting up the TestExecutor instances to run all registered tests in a single,
+ * serial queue.
  *
  * @author Michael Hillman
  */
@@ -25,36 +27,55 @@ public class TestHandler {
     private static final Logger LOGGER = LogManager.getLogger(TestHandler.class);
 
     /**
+     * Historical test results.
+     */
+    private final TestRecordStore recordStore;
+
+    /**
      * List of tests to be run.
      */
-    private static List<TestExecutor> PENDING_TESTS = new ArrayList<>();
+    private final List<TestExecutor> pendingTests = new ArrayList<>();
+
+    /**
+     * Initialise a new TestHandler instance.
+     */
+    public TestHandler() {
+        recordStore = TestRecordStoreMarshaller.readRecords();
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public TestRecordStore getRecordStore() {
+        return recordStore;
+    }
 
     /**
      *
      */
-    public static void runTests() {
-        // Use reflection to create the correct TestExecutor for each definition 
-        // and run the test.
+    public void runTests() {
         for (TestDefinition definition : TestRegistry.getDefinedTests()) {
+
             try {
-                // Find the executor clas registered for that definition
-                Class<? extends TestExecutor> executorClass = definition.getExecutorClass();
+                // Find the executor class registered for that definition
+                Class<? extends TestExecutor> executorClass = TestExecutorMap.getExecutorForType(definition.getType());
 
                 // Create an instance of the executor
                 Constructor<? extends TestExecutor> contrusctor = executorClass.getDeclaredConstructor(TestDefinition.class);
                 TestExecutor executor = contrusctor.newInstance(new Object[]{definition});
 
                 // Run the executor
-                String message = "===== Executing '" + definition.getName() + "' test from '" + definition.getGroup() + "' group =====";
+                String message = "===== Executing '" + definition.getName() + "' from '" + definition.getType() + "' tests =====";
                 System.out.println(message);
                 executor.execute();
                 System.out.println(StringUtils.leftPad("", message.length(), "="));
                 System.out.println("");
-
+                
                 // Add the record to the store
                 TestRecord record = executor.getRecord();
                 if (record != null || record.getExecutionTime() != null) {
-                    TestRecordStore.addRecord(record);
+                    recordStore.addRecord(record);
                 }
 
             } catch (Exception exception) {
@@ -63,11 +84,11 @@ public class TestHandler {
         }
 
         // Write the updated TestRecordStore to file
-        TestRecordStore.writeRecords();
+        TestRecordStoreMarshaller.writeRecords(recordStore);
     }
 
     public static void main(String[] args) {
-        runTests();
+        new TestHandler().runTests();
     }
 }
 // End of class.

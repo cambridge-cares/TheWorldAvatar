@@ -48,6 +48,11 @@ public class StatusAgent extends JPSAgent {
      * Is the agent in a valid state.
      */
     private boolean validState = true;
+    
+    /**
+     * TestHandler instance.
+     */
+    public static final TestHandler HANDLER = new TestHandler();
 
     /**
      * Perform required setup.

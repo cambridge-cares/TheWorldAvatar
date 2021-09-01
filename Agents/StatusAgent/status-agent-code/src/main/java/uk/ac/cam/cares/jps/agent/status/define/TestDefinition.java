@@ -1,33 +1,49 @@
 package uk.ac.cam.cares.jps.agent.status.define;
 
-import uk.ac.cam.cares.jps.agent.status.execute.TestExecutor;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * Defines a single type of test within a named group.
  *
  * @author Michael Hillman
  */
-public abstract class TestDefinition {
+public final class TestDefinition {
 
     /**
      * Test name.
      */
-    protected final String name;
+    private final String name;
 
     /**
-     * Group name.
+     *
      */
-    protected final String group;
+    private final TestType type;
+
+    /**
+     * Optional named test inputs.
+     */
+    private final Map<String, String> inputs = new HashMap<>();
+
+    /**
+     *
+     */
+    private String username;
+
+    /**
+     *
+     */
+    private String password;
 
     /**
      * Initialise a new BaseTest instance.
      *
      * @param name test name.
-     * @param group group name.
      */
-    public TestDefinition(String name, String group) {
+    public TestDefinition(String name, TestType type) {
         this.name = name;
-        this.group = group;
+        this.type = type;
     }
 
     /**
@@ -40,20 +56,93 @@ public abstract class TestDefinition {
     }
 
     /**
-     * Return the name of the group the test is in.
      *
-     * @return group name.
+     * @return
      */
-    public String getGroup() {
-        return group;
+    public TestType getType() {
+        return type;
     }
 
     /**
-     * Returns the TextExecutor class that should be used to run definitions of this type.
      *
-     * @return TextExecutor class.
+     * @param name
+     * @param value
      */
-    public abstract Class<? extends TestExecutor> getExecutorClass();
+    public void setInput(String name, String value) {
+        inputs.put(name, value);
+    }
 
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public String getInput(String name) {
+        return inputs.get(name);
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Map<String, String> getInputs() {
+        return inputs;
+    }
+
+    /**
+     *
+     * @param username
+     * @param password
+     */
+    public void setCredentials(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getUsername() {
+        return username;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     *
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof TestDefinition)) return false;
+
+        TestDefinition that = (TestDefinition) obj;
+        if (!Objects.equals(this.name, that.name)) return false;
+        if (!Objects.equals(this.type, that.type)) return false;
+        if (!Objects.equals(this.inputs, that.inputs)) return false;
+        return true;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 43 * hash + Objects.hashCode(this.name);
+        hash = 43 * hash + Objects.hashCode(this.type);
+        hash = 43 * hash + Objects.hashCode(this.inputs);
+        return hash;
+    }
 }
 // End of class.

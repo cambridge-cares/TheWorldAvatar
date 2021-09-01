@@ -68,36 +68,6 @@
                 <version>2.22.0</version>
             </plugin>
             
-            <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
-            gets copied into the final WAR file's internal WEB-INF directory. -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <!-- Version, configuration, and executions should be pulled from the 
-                parent POM unless overridden here. -->
-            </plugin>
-            
-            <plugin>
-                <!-- Copies and moves some files around -->
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <configuration>
-                            <tasks>
-                                <!-- Copy the version file to the base directory -->
-                                <copy file="${basedir}/WEB-INF/log4j2.xml"
-                                      toFile="${basedir}/src/main/resources/log4j2.xml"
-                                      overwrite="true"/>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            
         </plugins>
     </build>
     

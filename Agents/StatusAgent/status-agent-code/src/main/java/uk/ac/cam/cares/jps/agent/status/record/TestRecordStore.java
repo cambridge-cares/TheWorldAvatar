@@ -1,64 +1,59 @@
 package uk.ac.cam.cares.jps.agent.status.record;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 
 /**
  * Stores, reads, and writes historic TestRecord instances.
  *
  * @author Michael Hillman
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class TestRecordStore {
-
-    /**
-     * Logger.
-     */
-    private static final Logger LOGGER = LogManager.getLogger(TestRecordStore.class);
 
     /**
      * List of historical test records.
      */
-    private static final List<TestRecord> RECORDS = new ArrayList<>();
+    @XmlElement
+    private final List<TestRecord> records = new ArrayList<>();
+
+    /**
+     *
+     */
+    public synchronized List<TestRecord> getRecords() {
+        return Collections.unmodifiableList(records);
+    }
 
     /**
      * Add a new record to the store.
      *
      * @param record new record.
      */
-    public static synchronized void addRecord(TestRecord record) {
-        RECORDS.add(record);
+    public synchronized void addRecord(TestRecord record) {
+        records.add(record);
+        Collections.sort(records);
     }
 
     /**
-     * Writes the current store of test records to the disk.
+     * 
+     * @param definition
+     * @return 
      */
-    public static void writeRecords() {
-        JSONArray recordArray = new JSONArray();
-
-        for (TestRecord record : RECORDS) {
-            JSONObject object = new JSONObject();
-
-            object.put("name", record.getDefinition().getName());
-            object.put("group", record.getDefinition().getGroup());
-            object.put("time", record.getExecutionTime());
-            object.put("result", record.getResult());
-
-            recordArray.put(object);
+    public synchronized TestRecord getLatestRecord(TestDefinition definition) {
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).getDefinition().equals(definition)) {
+                return records.get(i);
+            }
         }
-
-        try ( FileWriter writer = new FileWriter("test-record-store.json")) {
-            writer.write(recordArray.toString());
-            writer.flush();
-        } catch (IOException ioException) {
-            LOGGER.error("Could not write 'test-record-store.json' file!", ioException);
-        }
+        return null;
     }
-    
+
 }
 // End of class.
