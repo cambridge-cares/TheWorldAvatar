@@ -83,7 +83,7 @@ yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /' -e 's/^/-f /')
 
 # Write environment variables to file so that docker-compose can pick them up
 env_filename="env.txt"
-write_env_file $env_filename
+write_env_file $env_filename $stack $mode $use_test_config
 
 # Assemble arguments for docker-compose
 project_name=$(get_project_name $stack $mode $use_test_config)

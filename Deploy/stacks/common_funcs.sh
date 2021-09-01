@@ -139,17 +139,34 @@ set_missing_secrets()
 # Write a file containing environment variables used when calling docker-compose at build and/or deploy time
 write_env_file()
 {
+  # Check number of args
+  if [ "$#" -ne 4 ]; then
+    echo "write_env_file: Expected 4 arguments, but $# were passed."
+    exit 1
+  fi
+
   local env_filename=$1
+  local stack=$2
+  local mode=$3  
+  local use_test_config=$4
+
   if [ -e "$env_filename" ]; then
     rm "$env_filename"
   fi
 
+  # Determine network name
+  local network_name="$stack-$mode"
+  if [ $use_test_config -eq $TRUE ]; then
+    network_name="$network_name-test"
+  fi
+
   echo "Generating environment variables file..."
-  hash="$(git rev-parse --short=6 HEAD)"
-  builder="$(git config user.name)"
+  local hash="$(git rev-parse --short=6 HEAD)"
+  local builder="$(git config user.name)"
   echo "HASH=$hash" >> "$env_filename"
   echo "MODE=$mode" >> "$env_filename"
   echo "BUILDER=$builder" >> "$env_filename"
+  echo "NETWORK_NAME=$network_name" >> "$env_filename"
   printf "Done\n\n"
 }
 

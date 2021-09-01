@@ -37,12 +37,6 @@ services:
         target: /var/www/certbot
 
 
-# Production network
-networks:
-  default:
-    name: prod-web
-
-
 # Volumes
 volumes:
   certbot-challenge:

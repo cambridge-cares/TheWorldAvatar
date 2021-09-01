@@ -6,9 +6,3 @@ services:
   # Slurm compute node
   slurm:
     build: "./Slurm"
-
-
-# Networks
-networks:
-  default:
-    name: dev-agent

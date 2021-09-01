@@ -63,7 +63,12 @@ services:
       - rdf4j_user_password
     volumes:
       - rdf4j_data:/var/rdf4j
-      - rdf4j_logs:/usr/local/tomcat/logs 
+      - rdf4j_logs:/usr/local/tomcat/logs
+
+
+networks:
+  default:
+    name: ${NETWORK_NAME}
 
 
 # Secrets used to set runtime passwords

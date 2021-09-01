@@ -84,6 +84,11 @@ services:
       - mpi:/usr/local/intel-mpi
 
 
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+
 volumes:
   driver:
   mpi:

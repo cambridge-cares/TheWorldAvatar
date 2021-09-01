@@ -49,3 +49,8 @@ services:
     container_name: "website-${MODE}"
     pull_policy: if_not_present
     restart: unless-stopped
+
+
+networks:
+  default:
+    name: ${NETWORK_NAME}

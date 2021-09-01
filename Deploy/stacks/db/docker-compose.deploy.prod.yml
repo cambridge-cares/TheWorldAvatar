@@ -1,7 +1,0 @@
-version: "3.8"
-
-
-# Production network
-networks:
-  default:
-    name: prod-db

@@ -32,6 +32,20 @@ else
   exit 1
 fi
 
+# Process remaining args. Avoiding using getopts here in a vain attempt to keep things shell-agnostic
+use_test_config=$FALSE
+while test $# -gt 0; do
+  case "$1" in
+    --test)
+      use_test_config=$TRUE
+      shift
+      ;;
+    *)
+      shift
+      ;;
+  esac
+done
+
 # Validate args
 if ! $(is_valid_stack $stack); then echo "$0: '$stack' is not a valid stack" && exit 2; fi
 if ! $(is_valid_mode $mode); then echo "$0: '$mode' is not a valid mode" && exit 3; fi
@@ -47,7 +61,7 @@ yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /' -e 's/^/-f /')
 
 # Write environment variables to file so that docker-compose can pick them up
 env_filename="env.txt"
-write_env_file $env_filename
+write_env_file $env_filename $stack $mode $use_test_config
 
 # Assemble arguments for docker-compose
 project_name=$(get_project_name $stack $mode $use_test_config)
