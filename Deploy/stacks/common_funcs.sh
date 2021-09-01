@@ -233,6 +233,11 @@ get_yml_fnames()
     if [ -f "$testmodifier_yml" ]; then
       result="$result $testmodifier_yml"
     fi
+  else
+    local livemodifier_yml="docker-compose.$process.live.yml"
+    if [ -f "$livemodifier_yml" ]; then
+      result="$result $livemodifier_yml"
+    fi
   fi
 
   # Pass the result back via stdout

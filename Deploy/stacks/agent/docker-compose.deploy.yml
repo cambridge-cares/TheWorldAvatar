@@ -7,8 +7,6 @@ services:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     container_name: "email-agent${CONTAINER_NAME_SUFFIX}"
     hostname: email-agent
-    ports:
-      - 58080:8080
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -16,8 +14,6 @@ services:
   gas-grid-agent:
     image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
     container_name: "gas-grid-agent${CONTAINER_NAME_SUFFIX}"
-    ports:
-      - 50081:80
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -25,8 +21,6 @@ services:
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     container_name: "jps-chatbot${CONTAINER_NAME_SUFFIX}"
-    ports:
-      - 55000:5000
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -34,8 +28,6 @@ services:
   jps-ldf:
     image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
     container_name: "jps-ldf${CONTAINER_NAME_SUFFIX}"
-    ports:
-      - 53000:3000
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -59,8 +51,6 @@ services:
   kinetics-agent:
     image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
     container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
-    ports:
-      - 58081:8080
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:

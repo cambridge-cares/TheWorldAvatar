@@ -1,0 +1,28 @@
+version: "3.8"
+
+services:
+
+  # Email Agent
+  email-agent:
+    ports:
+      - 58080:8080
+
+  # Gas Grid Agent
+  gas-grid-agent:
+    ports:
+      - 50081:80
+
+  # JPS Chatbot
+  jps-chatbot:
+    ports:
+      - 55000:5000
+
+  # JPS LDF Server
+  jps-ldf:
+    ports:
+      - 53000:3000
+
+  # Kinetics Agent
+  kinetics-agent:
+    ports:
+      - 58081:8080

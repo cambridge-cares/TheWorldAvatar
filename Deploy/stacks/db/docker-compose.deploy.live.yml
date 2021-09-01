@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+
+  # Blazegraph
+  blazegraph:
+    ports:
+      - 58082:8080
+
+  # Blazegraph geo
+  blazegraph_geo:
+    ports:
+      - 58083:8080
+
+  # Postgres
+  postgres:
+    ports:
+      - 55432:5432
+
+  # RDF4J
+  rdf4j:
+    ports:
+      - 58084:8080
