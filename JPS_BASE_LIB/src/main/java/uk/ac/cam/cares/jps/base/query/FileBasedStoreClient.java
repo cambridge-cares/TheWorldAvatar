@@ -173,7 +173,9 @@ public class FileBasedStoreClient implements StoreClientInterface {
 		if(f.exists()) {
 			loadGraph(graph);
 		}else {
-			LOGGER.info(filePath+" does not exist. Creating empty FileBasedStoreClient.");
+			Lang lang = RDFLanguages.filenameToLang(graph.path);
+			graph.lang = lang;	
+			LOGGER.info(filePath+" does not exist. Creating empty FileBasedStoreClient. File language set to: " + lang);
 		}
 
 		if(graph != null) {
