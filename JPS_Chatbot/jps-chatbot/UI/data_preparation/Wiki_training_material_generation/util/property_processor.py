@@ -1,6 +1,6 @@
 import json
 import random
-from pattern.en import pluralize, singularize
+# from pattern.en import pluralize, singularize
 
 import nltk
 

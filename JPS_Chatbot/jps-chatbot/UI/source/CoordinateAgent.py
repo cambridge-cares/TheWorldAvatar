@@ -11,10 +11,7 @@ from UI.source.LogWriter import LogWriter
 from UI.source.dashboard.Messenger import Messenger
 from UI.source.Agent_query.AgentRequestConstructor import AgentRequestConstructor
 
-
-
 from UI.source.PCE_query.PCE_interpreter import OtherInterpreter
-
 
 from rasa.nlu.model import Interpreter
 import os
@@ -68,7 +65,6 @@ class CoordinateAgent:
         pprint(rst)
         response = self.agent_request_constructor.call_agent(rst)
 
-
         # the result will give
         #  - the name of the agent
         #  - the entities
@@ -76,13 +72,11 @@ class CoordinateAgent:
         # 2. check the requirement of the agent ... any other parameters ?
         # 3.
 
-
         print('=================== result returned ===================')
         pprint(response)
 
-
     def remove_stop_words(self, question):
-        stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe']
+        stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe', 'find', 'find me']
         question = question.strip()
         question = question.lower()
         words = question.split(' ')
@@ -113,6 +107,7 @@ class CoordinateAgent:
         print('LDA init')
         topics = self.lda_classifier.classify(question)
         self.logwriter.write_to_log(question, 'Topics identified %s \n' % json.dumps(topics))
+        topics.append('others')
         print('============== topics ==============')
         print(topics)
 

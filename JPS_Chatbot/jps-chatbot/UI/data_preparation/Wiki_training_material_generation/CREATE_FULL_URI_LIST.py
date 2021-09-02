@@ -3,7 +3,7 @@ from os import listdir
 from os.path import isfile, join
 import json
 
-mypath = 'D:\data\smiles'
+mypath = 'E:\data\smiles'
 onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f)) and f.startswith('SMILE_')]
 counter_all = 0
 file_counter = 0

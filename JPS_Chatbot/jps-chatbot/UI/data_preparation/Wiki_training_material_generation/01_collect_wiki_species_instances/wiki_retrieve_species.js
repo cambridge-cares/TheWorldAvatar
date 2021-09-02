@@ -48,7 +48,7 @@ tmp = [];
 			console.log(r)
 			counter++
 			if (counter % 1000 === 0){
-				fs.writeFile('./smiles/SMILE_'+ counter/1000, JSON.stringify(tmp) , function (err) {
+				fs.writeFile('E:/data/smiles/SMILE_'+ counter/1000, JSON.stringify(tmp) , function (err) {
 				if (err) return console.log(err);
 				  console.log('Hello World > helloworld.txt');
 				});

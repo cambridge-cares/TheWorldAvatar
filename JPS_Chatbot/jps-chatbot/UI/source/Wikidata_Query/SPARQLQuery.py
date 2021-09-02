@@ -52,6 +52,10 @@ class SPARQLQuery:
 
     def start_multiple_queries(self, queries, valid_results):
 
+        print('=========================== Queries generated ========================')
+        if len(queries)>= 1:
+            print('The query with highest score is', queries[0])
+
         print('starting a batch quest of ', len(queries), 'for iteration', self.iteration_round)
         self.iteration_round = self.iteration_round + 1
         processes = []

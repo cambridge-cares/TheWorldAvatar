@@ -6,19 +6,20 @@ import random
 import re
 from typing import TextIO
 
-from pattern.en import pluralize, singularize
+# from pattern.en import pluralize, singularize
 import nltk
 
 from util.property_processor import *
 
 
 def pluralize_class(c):
-    if c in PLURALIZE_DICT:
-        pc = PLURALIZE_DICT[c]
-    else:
-        pc = pluralize(c)
-        PLURALIZE_DICT[c] = pc
-    return pc
+    return c
+    # if c in PLURALIZE_DICT:
+    #     pc = PLURALIZE_DICT[c]
+    # else:
+    #     pc = pluralize(c)
+    #     PLURALIZE_DICT[c] = pc
+    # return pc
 
 
 def process_instance_brackets(i):
@@ -185,7 +186,7 @@ def batch_attribute_query_numerical(classes, properties):
 
 def get_instance_labels(ID):
     tmp = []
-    with open('D:/data/instance_info/%s' % ID) as f:
+    with open('C:/data/instance_info/%s' % ID) as f:
         data = json.loads(f.read())['results']['bindings']
         for b in data:
             if 'label' in b:
@@ -208,7 +209,7 @@ def get_instance_labels(ID):
 
 def get_class_labels():
     class_labels = []
-    with open('D:/data/instance_info/%s' % ID) as f:
+    with open('C:/data/instance_info/instance_info/%s' % ID) as f:
         data = json.loads(f.read())['results']['bindings']
         for b in data:
             if 'classLabel' in b:
