@@ -190,13 +190,6 @@ public class AccessAgentTest{
 	public void testPut() {
 		
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";			
-		String contentRDF = "<rdf:RDF\r\n"+
-	    "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-	    "    xmlns:j.0=\"http://www.w3.org/2008/05/skos#\">\r\n"+
-	    "  <rdf:Description rdf:about=\"http://www.theworldavatar.com/kb/species/species.owl#species_10\">\r\n"+
-	    "    <j.0:altLabel>Ar</j.0:altLabel>\r\n"+
-	    "  </rdf:Description>\r\n"+
-	    "</rdf:RDF>\r\n";
 		
 		String folderPath = tempFolder.getRoot().toString();
 		String testFilePath = folderPath + "/TestPut.nt"; 
@@ -215,7 +208,7 @@ public class AccessAgentTest{
 		
         String strResult = FileUtil.readFileLocally(testFilePath);
 		
-		assertEquals(contentRDF, strResult);		
+		assertEquals(content, strResult);		
 	}
 	
 	@Test(expected = JPSRuntimeException.class)
