@@ -1,13 +1,14 @@
-import junit.framework.TestCase;
+import java.io.IOException;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
-import uk.ac.cam.cares.jps.aws.Main;
 
-import java.io.IOException;
+import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.aws.Main;
 
 public class MainTest extends TestCase {
 
@@ -25,13 +26,13 @@ public class MainTest extends TestCase {
     public void testNewMainFields() {
         Main m = new Main();
         assertEquals(1, m.getClass().getDeclaredFields().length);
-        assertEquals(m.PORT, 8082);
+        assertEquals(m.PORT, 8084);
     }
 
     public void testNewMainMethods() throws IOException {
         Main m = new Main();
         String[] args = null;
-        String url = "http://localhost:8082/watcher";
+        String url = "http://localhost:8084/watcher";
         String json400 = "{}";
         String json200 = "{\"watch\":\"../tmp.tst\", \"callback\":\"" + url + "\"}";
         assertEquals(2, m.getClass().getDeclaredMethods().length);

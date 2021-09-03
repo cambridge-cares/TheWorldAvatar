@@ -1,20 +1,25 @@
 package uk.ac.cam.cares.jps.aws;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
+import javax.ws.rs.BadRequestException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.json.JSONObject;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.IOException;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 
 @Path("/watcher")
@@ -44,10 +49,12 @@ public class AsynchronousWatcherService {
             validateInput(json);
             response = watchObject(json);
             rsp = Response.ok().entity(response).build();
+            System.out.println("Response: " + response);
         } catch (BadRequestException e) {
             response.setStatus(STATUS_ERROR);
             response.setPath(e.getLocalizedMessage());
             rsp = Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+            System.out.println("Response: " + response);
         }
 
         return rsp;
@@ -98,6 +105,7 @@ public class AsynchronousWatcherService {
                 HttpPost request = new HttpPost(url);
                 StringEntity entity = new StringEntity(json, ContentType.APPLICATION_JSON);
                 request.setEntity(entity);
+                System.out.println("Calling back " + url + " POST: " + json);
                 httpClient.execute(request);
             } catch (IOException e) {
                 e.printStackTrace();
