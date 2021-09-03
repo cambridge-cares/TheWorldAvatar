@@ -7,14 +7,10 @@ import logging
 import os
 
 def oupload_wrapper(args):
-    fileOrDir = args.pop('<fileOrDir>')
-    config_file = args.pop('--config-file', None)
-    log_file_dir = args.pop('--log_file_dir', os.getcwd())
-    if config_file is not None:
-        args = _read_config_file(config_file)
-    args = _preprocessArgs(args)
+    args =_remove_special_characters(args)
+    args = _add_defaults(args)
 
-    log_file = os.path.join(log_file_dir, args['log_file_name'])
+    log_file = os.path.join(args['log_file_dir'], args['log_file_name'])
     logconfig.config_logging(log_file)
 
     if args['dry_run']:
@@ -22,28 +18,26 @@ def oupload_wrapper(args):
         logging.info(f"## THIS IS A DRY-RUN ##")
         logging.info(f"#######################")
         logging.info(f"")
-    kgupload.upload_to_triple_store(fileOrDir, **args)
-    ftpupload.upload_to_ftp_server(fileOrDir, **args)
 
-def _preprocessArgs(args):
-    #args = _removeNoneArgs(args)
-    args =_removeHypens(args)
+    kgupload.upload_to_triple_store(**args)
+    ftpupload.upload_to_ftp_server(**args)
+
+def _add_defaults(args):
+    if args['log_file_dir'] is None:
+        args['log_file_dir'] = os.getcwd()
+    if args['ftp_mapfile_dir'] is None:
+        fileOrDir = args['fileOrDir']
+        if os.path.isfile(fileOrDir):
+            args['ftp_mapfile_dir'] = os.path.dirname(fileOrDir)
+        else:
+            args['ftp_mapfile_dir'] = fileOrDir
     return args
 
-def _read_config_file(config_file):
-    with open(config_file, 'r') as fp:
-        return json.load(fp)
-
-def _removeNoneArgs(args):
-    filtered = {k: v for k, v in args.items() if v is not None}
-    args.clear()
-    args.update(filtered)
-    return args
-
-def _removeHypens(args):
+def _remove_special_characters(args):
     argsWithNoHyphens = {}
     for key, value in args.items():
         new_key = re.sub('^-+', '', key)
         new_key = re.sub('-', '_', new_key)
+        new_key = re.sub('<|>', '', new_key)
         argsWithNoHyphens[new_key] = value
     return argsWithNoHyphens
