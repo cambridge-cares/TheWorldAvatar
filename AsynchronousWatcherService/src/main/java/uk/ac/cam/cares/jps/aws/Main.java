@@ -21,7 +21,7 @@ public class Main {
         StandardContext ctx = (StandardContext) tomcat.addWebapp("/", new File(webappDirLocation).getAbsolutePath());
 
         Tomcat.addServlet(ctx, ResourceLoader.WATCHER_SERVLET, resourceConfig());
-        ctx.addServletMapping("/*", ResourceLoader.WATCHER_SERVLET);
+        ctx.addServletMappingDecoded("/*", ResourceLoader.WATCHER_SERVLET);
 
         try {
             tomcat.start();
