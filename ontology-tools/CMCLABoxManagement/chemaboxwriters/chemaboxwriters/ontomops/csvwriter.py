@@ -14,7 +14,8 @@ from chemaboxwriters.ontomops.prefixes import onto_spec, \
                                               onto_mops, \
                                               mops_pref, \
                                               rdf_pref, \
-                                              uom_pref    
+                                              uom_pref, \
+                                              unres_pref    
 
 def omops_csv_abox_from_string(data):
     data = json.loads(data)
@@ -81,7 +82,10 @@ def omops_csv_abox_from_string(data):
      uom_pref + 'hasValue','','']) #Link the Measure to the Charge instance. 
     spamwriter.writerow([uom_pref + 'hasNumericalValue','Data Property',uom_pref + 'Measure_Charge_' + gen_id,
     '',data["Mops_Charge"],'String']) #Link the Numerical Value of Charge to the Measure. 
-    #Will need to add in new unit later. 
+    spamwriter.writerow([unres_pref + 'elementary_charge', 'Instance', uom_pref + 'Unit', 
+    '','','']) #Take the elementary charge Unit instance from our extension of the UOM ontology.
+    spamwriter.writerow([uom_pref + 'Measure_Charge_' + gen_id, 'Instance',unres_pref + 'elementary_charge',
+    uom_pref + 'hasUnit','',''])
 
     #Write the Cavity section for the MOPs.
     spamwriter.writerow([mops_pref + 'Cavity_' + gen_id, 'Instance', onto_mops + '#Cavity',
@@ -95,10 +99,13 @@ def omops_csv_abox_from_string(data):
     spamwriter.writerow([uom_pref + 'Measure_Volume_' + gen_id, 'Instance', uom_pref + 'Measure',
      '','','']) #This is the Measure from the Ontology of Units of Measure that we will use for Volume. 
     spamwriter.writerow([mops_pref + 'Volume_' + gen_id, 'Instance',uom_pref + 'Measure_Volume_' + gen_id,
-     uom_pref + 'hasValue','','']) #Link the Measure to the Charge instance. 
+     uom_pref + 'hasValue','','']) #Link the Measure to the Volume instance. 
     spamwriter.writerow([uom_pref + 'hasNumericalValue','Data Property',uom_pref + 'Measure_Volume_'  +gen_id,
-    '',data["Mops_CavityVolume"],'String']) #Link the Numerical Value of Charge to the Measure. 
-    #Will need to add in new unit later. 
+    '',data["Mops_CavityVolume"],'String']) #Link the Numerical Value of Volume to the Measure. 
+    spamwriter.writerow([uom_pref + 'cubicNanometre', 'Instance', uom_pref + 'Unit', 
+    '','','']) #Take the Cubic Nanometre Unit instance from the UOM ontology.
+    spamwriter.writerow([uom_pref + 'Measure_Volume_' + gen_id, 'Instance',uom_pref + 'cubicNanometre',
+    uom_pref + 'hasUnit','',''])
 
     #Write the Assembly Model initialization and shape/symmetry related instances.
     spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', onto_mops + '#AssemblyModel',
