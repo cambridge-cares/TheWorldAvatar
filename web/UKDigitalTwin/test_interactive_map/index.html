@@ -28,6 +28,8 @@
 
 <body>
 
+    <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
+
     <!-- div is a DOM element -->
     <div id='map'></div>
     <div id="tiltShift"></div>
@@ -36,7 +38,7 @@
     <script>
         // The getControls() is invoked from the mapbox-controls.js for returning a controlHTML containing camera, terrain, and layer panels
         document.getElementById("controlsParent").innerHTML = getControls();
-       
+
         // Initial state of side-panel (from side-panel.js)
         initialiseSidePanel(document.getElementById("map"));
 
@@ -45,11 +47,11 @@
 
         // Show loading icon whilst stuff spins up
         var loadingHTML = `
-            <br><br><br><br><br>
-            <img width='150' src='loading.gif'></img>
-            <br>
-            <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-        `;
+                <br><br><br><br><br>
+                <img width='150' src='loading.gif'></img>
+                <br>
+                <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+            `;
         appendSidePanelText(loadingHTML);
 
         // Initialise the MapBox map
@@ -92,21 +94,9 @@
             );
         }
 
-        //// circling the icon animation along the lines 
-        //function animateCircle(line, timeOut) {
-        //    var count = 0;
-        //    window.setInterval(function () {
-        //        count = (count + 1) % 200;
-
-        //        var icons = line.get('icons');
-        //        icons[0].offset = (count / 2) + '%';
-        //        line.set('icons', icons);
-        //    }, timeOut);
-        //}
-
         // Triggered after layer change
         function layerCallback(layerID, enabled) {
-            if(enabled && layerID.includes("power_")) {
+            if (enabled && layerID.includes("power_")) {
                 // Show the power layers
                 toggleLayer("power_locations", true);
                 toggleLayer("power_labels", true);
@@ -122,10 +112,11 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false); 
+                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Animated_Branch_Arrow", false);
             }
 
-            if(enabled && layerID.includes("sdg_")) {
+            if (enabled && layerID.includes("sdg_")) {
                 // Show the SDG layers
                 toggleLayer("sdg_locations", true);
                 toggleLayer("sdg_labels", true);
@@ -141,7 +132,8 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false); 
+                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Animated_Branch_Arrow", false);
             }
 
             if (enabled && layerID.includes("Electricity_")) {
@@ -160,14 +152,16 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false); 
+                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Animated_Branch_Arrow", false);
             }
 
             // TODO: add new layer for visualising the model layer
             if (enabled && layerID.includes("Model_")) {
                 // Show the model layers
                 toggleLayer("Model_EBus_GPSLocation", true);
-                toggleLayer("Model_Branch_GPS_Points", true); 
+                toggleLayer("Model_Branch_GPS_Points", true);
+                toggleLayer("Model_Animated_Branch_Arrow", true);
 
                 // Hide the power layers
                 toggleLayer("power_locations", false);
@@ -184,27 +178,12 @@
 
             }
 
-            if(enabled)    updateLegend(layerID);
+            if (enabled) updateLegend(layerID);
         }
 
         // Setup map with mapbox-controls.js
         setup(map, cameraCallback, terrainCallback, layerCallback);
 
-        var Branch_GPSPoints = null;
-        console.log("The jQuery for getting the geojson file will be triggered.")
-        // jquery for adding the geojson file
-        $.ajax({
-            type: "get",
-            url: "/UK_Grid_Model_Branch_GPSPoints.geojson", 
-            dataType: "geojson",
-            success: function (data) {
-                Branch_GPSPoints = data;
-                console.log(Branch_GPSPoints);
-            },
-            error: function () {
-                alert("Request failed."); 
-            }
-        });
 
         // On initial load...
         map.on("load", function () {
@@ -222,9 +201,9 @@
             console.log("INFO: New style has been loaded.");
             refresh();
 
-			// ===== SOURCES ====
-			// Add the powerplant data
-			map.addSource('powerplants', {
+            // ===== SOURCES ====
+            // Add the powerplant data
+            map.addSource('powerplants', {
                 type: 'geojson',
                 data: 'UK_PowerPlants.geojson'
             });
@@ -253,29 +232,121 @@
                 data: 'UK_Grid_Model_Bus_InputVar.geojson'
             });
 
-            map.addSource('Branch_GPS_Points', { // the GPS location of both fromBus and toBus of a branch
-                type: 'geojson',
-                data: 'UK_Grid_Model_Branch_GPSPoints.geojson'
-            });
+            // jquery for adding the geojson file for creating the animated arrow moving alongside the branch
+            $.ajax({
+                type: "get",
+                url: "/UK_Grid_Model_Branch_GPSPoints.geojson",
+                dataType: "json",
+                success: function (data) {
+                    console.log("querying the branch GPS locations succeeded.");
+                    const steps = 200;
+                    var Branch_GPSPoints = data;
+                    for (i = 0; i < Branch_GPSPoints.features.length; i++) {
+                        var arc = [];
+                        var lineDistance = turf.lineDistance(Branch_GPSPoints.features[i], 'kilometers');
+                        for (let j = 0; j <= lineDistance; j += lineDistance / steps) {
+                            var segment = turf.along(Branch_GPSPoints.features[i], j, 'kilometers');
+                            arc.push(segment.geometry.coordinates);
+                        }
+                        // Update the route with calculated arc coordinates
+                        Branch_GPSPoints.features[i].geometry.coordinates = arc;
+                    }
+                    console.log("Branch_GPSPoints is updated by adding the arcs coordinates.", Branch_GPSPoints);
+                   
 
-            //console.log("*********Branch_GPS_Points is added as a source of map ***************") 
-            //console.log("**********The length of the features in the geojson is ***************", Branch_GPS_Points.features.length) 
+                    map.addSource('Branch_GPSPoints', {
+                        type: 'geojson',
+                        data: Branch_GPSPoints
+                    });
 
-            //for (i = 0; i < Branch_GPSPoints.features.length; i++) {
-            //    var lineDistance = turf.lineDistance(Branch_GPSPoints.features[i], 'kilometers');
-            //}
+                    map.addLayer({
+                        id: 'Model_Branch_GPS_Points',
+                        type: 'line',
+                        source: 'Branch_GPSPoints',
+                        layout: {
+                            "line-miter-limit": 2,
+                            "line-join": "miter"
+                        },
+                        paint: {
+                            "line-color": "#33C9EB",
+                            "line-width": 4
+                        }
+                    });
 
-            //console.log("**********lineDistance are:***************", lineDistance) 
+                    $.ajax({
+                        type: "get",
+                        url: "/UK_Grid_Model_Branch_FromBus_GPSPoints.geojson",
+                        dataType: "json",
+                        success: function (r) {
+                            var Branch_FromBus_GPS_Points = r;
+                            // console.log("Branch_FromBus_GPS_Points are: ", Branch_FromBus_GPS_Points);
+                            map.addSource('Branch_FromBus_GPS_Points', { // the fromBus GPS location of a branch
+                                type: 'geojson',
+                                data: Branch_FromBus_GPS_Points
+                            });
 
+                            // add the animated branch arrow
+                            map.addLayer({
+                                'id': 'Model_Animated_Branch_Arrow',
+                                'type': 'symbol',
+                                'source': 'Branch_FromBus_GPS_Points',
+                                'layout': {
+                                    'icon-image': 'arrow',
+                                    'icon-size': 0.03,
+                                    'icon-rotate': ['get', 'bearing'],
+                                    'icon-rotation-alignment': 'map',
+                                    'icon-allow-overlap': true,
+                                    'icon-ignore-placement': true,
+                                    'visibility': 'visible'
+                                }
+                            });
 
+                            for (i = 0; i <= Branch_GPSPoints.features.length -1 ; i++) {
+                                animate(i, -1, 1);
+                            }
+                            
+                            function animate(featureIdx, cntr, timeOut) {
+                                // Update point geometry to a new position based on counter denoting
+                                // the index to access the arc.
+                                console.log("The featureIdx is: ", featureIdx, "and cntr is: ", cntr);
 
-            map.addSource('Branch_FromBus_GPS_Points', { // the fromBus GPS location of a branch
-                type: 'geojson',
-                data: 'UK_Grid_Model_Branch_FromBus_GPSPoints.geojson'
+                                window.setInterval(function () {
+                                    cntr = (cntr + 1) % steps;
+                                    //if (cntr >= steps) {
+                                    //    cntr = 0;}
+
+                                    Branch_FromBus_GPS_Points.features[featureIdx].geometry.coordinates = Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr];
+
+                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr]),
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr + 1])
+                                        //turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps ? cntr - 1 : cntr]),
+                                        //turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps ? cntr : cntr + 1])
+                                    );
+
+                                    // Update the source with this new data.
+                                    map.getSource('Branch_FromBus_GPS_Points').setData(Branch_FromBus_GPS_Points);
+                                   // cntr = cntr + 1;
+
+                                    // Request the next frame of animation so long the end has not been reached.
+                                    //if (cntr < steps) {
+                                    //    requestAnimationFrame(function () { animate(featureIdx, cntr + 1); });
+                                    //}
+
+                                }, timeOut);
+                            }
+                        }
+                    
+                    });
+
+                },
+                error: function () {
+                    alert("Request failed.");
+                }
             });
 
             map.loadImage('/bus.png', (error, image) => {
-                if (error) throw error;                
+                if (error) throw error;
                 map.addImage('EBus_icon', image);
             });
 
@@ -284,196 +355,169 @@
                 map.addImage('arrow', image);
             });
 
-			// ===== SOURCES ====
+            // ===== SOURCES ====
+        
+
+            // ===== LAYERS =====
+
+            // Labels for Electricity Buses
+            map.addLayer({
+                id: 'Model_EBus_GPSLocation',
+                type: 'symbol',
+                source: 'Bus_model_GPS_Parameters',
+                layout: {
+                    'icon-image': 'EBus_icon',
+                    'icon-size': 0.075,
+                    'text-field': ['get', 'Bus_num'],
+                    'text-font': [
+                        'Open Sans Semibold',
+                        'Arial Unicode MS Bold'
+                    ],
+                    'text-offset': [0, 1.5],
+                    'text-anchor': 'top'
+                }
+            });
+            
+
+            // Add the layer for visualising the regional boundaries with a mouse hover effect
+            map.addLayer({
+                'id': 'Electricity_Consumption_region_borders',
+                'type': 'line',
+                'source': 'Electricity_Consumption_region',
+                'layout': {
+                    'visibility': 'none'
+                },
+                'paint': {
+                    'line-color': '#9ecae1',
+                    'line-width': 1
+                }
+            });
+
+            // Add the layer for visualising the filled sub areas with a mouse hover effect
+            map.addLayer({
+                'id': 'Electricity_Consumption_area_fill',
+                'type': 'fill',
+                'source': 'Electricity_Consumption_area',
+                'layout': {
+                    'visibility': 'none'
+                },
+                'paint': {
+                    'fill-color': ["get", "area-color"],
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        1,
+                        1
+                    ]
+                }
+            });
+
+            // Add the layer for visualising the border of sub areas
+            map.addLayer({
+                'id': 'Electricity_Consumption_area_borders',
+                'type': 'line',
+                'source': 'Electricity_Consumption_area', // reference the data source
+                'layout': {
+                    'visibility': 'none'
+                },
+                'paint': {
+                    'line-color': '#9ecae1',
+                    'line-width': 1
+                }
+            });
+
+            // Locations for power generation
+            map.addLayer({
+                'id': 'power_locations',
+                'type': 'circle',
+                'source': 'powerplants',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
+                    'circle-color': ["get", "marker-color"],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': inner_text,
+                }
+            });
+
+            // Labels for power generation
+            map.addLayer({
+                id: 'power_labels',
+                type: 'symbol',
+                source: 'powerplants',
+                layout: {
+                    'visibility': 'visible',
+                    'text-field': ['concat',
+                        ['get', 'name'],
+                        '\n Capacity: ',
+                        ['get', 'capacity'],
+                        ' MW \n Fuel: ',
+                        ['get', 'fuel'],
+                        ' \n | \n | \n | \n | ']
+                    ,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset': [0, -4],
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 0.8,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
+                }
+            });
+
+            // Locations for SDG indicators
+            map.addLayer({
+                'id': 'sdg_locations',
+                'type': 'circle',
+                'source': 'powerplants',
+                'layout': {
+                    'visibility': 'none'
+                },
+                'paint': {
+                    'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
+                    'circle-color': ["get", "sdgcolor"],
+                    'circle-stroke-width': 1,
+                    'circle-stroke-color': inner_text,
+                }
+            });
+
+            // Labels for SDG indicators
+            map.addLayer({
+                id: 'sdg_labels',
+                type: 'symbol',
+                source: 'powerplants',
+                layout: {
+                    'visibility': 'none',
+                    'text-field': ['concat',
+                        ['get', 'name'],
+                        '\n Capacity: ',
+                        ['get', 'capacity'],
+                        ' MW \n Fuel: ',
+                        ['get', 'fuel'],
+                        ' \n | \n | \n | \n | ']
+                    ,
+                    'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+                    'text-size': 14,
+                    'text-offset': [0, -4],
+                },
+                "paint": {
+                    "text-color": inner_text,
+                    "text-halo-color": outer_text,
+                    "text-halo-width": 0.8,
+                    "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
+                }
+            });
+
         });
 
         // ===== LAYERS =====
 
-        // Labels for Electricity Buses 
-        map.addLayer({
-            id: 'Model_EBus_GPSLocation',
-            type: 'symbol',
-            // source: 'Bus_model_GPS_Parameters',
-            source: 'Bus_model_GPS_Parameters',
-            layout: {
-                'icon-image': 'EBus_icon',
-                'icon-size': 0.075,
-                'text-field': ['get', 'Bus_num'],
-                'text-font': [
-                    'Open Sans Semibold',
-                    'Arial Unicode MS Bold'
-                ],
-                'text-offset': [0, 1.5],
-                'text-anchor': 'top'
-            }
-        });
-
-        map.addLayer({
-            id: 'Model_Branch_GPS_Points',
-            type: 'line',
-            // source: 'Bus_model_GPS_Parameters',
-            source: 'Branch_GPS_Points',
-            layout: {
-                "line-miter-limit": 2,
-                "line-join": "miter"
-            },
-            paint: {
-                "line-color": "#33C9EB",
-                "line-width": 4
-            }
-        });
-
-        map.addLayer({
-            'id': 'arrowId',
-            'type': 'symbol',
-            'source': 'mapSource',
-            'layout': {
-                'symbol-placement': 'line',
-                'symbol-spacing': 1,
-                'icon-allow-overlap': true,
-                // 'icon-ignore-placement': true,
-                'icon-image': 'arrow',
-                'icon-size': 0.045,
-                'visibility': 'visible'
-            }
-        });
-
-        // Add the layer for visualising the regional boundaries with a mouse hover effect
-        map.addLayer({
-            'id': 'Electricity_Consumption_region_borders',
-            'type': 'line',
-            'source': 'Electricity_Consumption_region',
-            'layout': { 
-                'visibility': 'none'
-            },
-            'paint': {
-                'line-color': '#9ecae1',
-                'line-width': 1
-            }
-        });
-
-        // Add the layer for visualising the filled sub areas with a mouse hover effect
-        map.addLayer({
-            'id': 'Electricity_Consumption_area_fill',
-            'type': 'fill',
-            'source': 'Electricity_Consumption_area',
-            'layout': { 
-                'visibility': 'none'
-                },
-            'paint': {
-                'fill-color':["get", "area-color"], 
-                'fill-opacity': [
-                    'case',
-                    ['boolean', ['feature-state', 'hover'], false],
-                    1,
-                    1
-                ]
-            }
-        });
-
-        // Add the layer for visualising the border of sub areas
-        map.addLayer({
-            'id': 'Electricity_Consumption_area_borders',
-            'type': 'line',
-            'source': 'Electricity_Consumption_area', // reference the data source
-            'layout': { 
-                'visibility': 'none' 
-            },
-            'paint': {
-                'line-color': '#9ecae1',
-                'line-width': 1
-            }
-        });
-
-        // Locations for power generation
-        map.addLayer({
-            'id': 'power_locations',
-            'type': 'circle',
-            'source': 'powerplants',
-            'layout': {
-                'visibility': 'visible'
-            },
-            'paint': {
-                'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-                'circle-color': ["get", "marker-color"],
-                'circle-stroke-width': 1,
-                'circle-stroke-color': inner_text,
-            }
-        });
-
-        // Labels for power generation
-        map.addLayer({
-            id: 'power_labels',
-            type: 'symbol',
-            source: 'powerplants',
-            layout: {
-                'visibility': 'visible',
-                'text-field': ['concat',
-                    ['get', 'name'],
-                    '\n Capacity: ',
-                    ['get', 'capacity'],
-                    ' MW \n Fuel: ',
-                    ['get', 'fuel'],
-                    ' \n | \n | \n | \n | ']
-                ,
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 14,
-                'text-offset': [0, -4],
-            },
-            "paint": {
-                "text-color": inner_text,
-                "text-halo-color": outer_text,
-                "text-halo-width": 0.8,
-                "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
-            }
-        });
-
-        // Locations for SDG indicators
-        map.addLayer({
-            'id': 'sdg_locations',
-            'type': 'circle',
-            'source': 'powerplants',
-            'layout': {
-                'visibility': 'none'
-            },
-            'paint': {
-                'circle-radius': ["+", 3, ["*", 0.9, ["ln", ["to-number", ["get", "capacity"]]]]],
-                'circle-color': ["get", "sdgcolor"],
-                'circle-stroke-width': 1,
-                'circle-stroke-color': inner_text,
-            }
-        });
-
-        // Labels for SDG indicators
-        map.addLayer({
-            id: 'sdg_labels',
-            type: 'symbol',
-            source: 'powerplants',
-            layout: {
-                'visibility': 'none',
-                'text-field': ['concat',
-                    ['get', 'name'],
-                    '\n Capacity: ',
-                    ['get', 'capacity'],
-                    ' MW \n Fuel: ',
-                    ['get', 'fuel'],
-                    ' \n | \n | \n | \n | ']
-                ,
-                'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
-                'text-size': 14,
-                'text-offset': [0, -4],
-            },
-            "paint": {
-                "text-color": inner_text,
-                "text-halo-color": outer_text,
-                "text-halo-width": 0.8,
-                "text-opacity": ['interpolate', ['exponential', 2], ['zoom'], 8, 0, 10, 1]
-            }
-        });
-		// ===== LAYERS =====
-
-		// ===== MOUSE EVENTS =====
-		// Triggers when an individual area is clicked on.
+        // ===== MOUSE EVENTS =====
+        // Triggers when an individual area is clicked on.
         map.on('click', 'Electricity_Consumption_area_fill', function (e) {
             var Location = e.features[0].properties.Location;
             var Area_LACode = e.features[0].properties.Area_LACode;
@@ -486,21 +530,21 @@
         });
 
         // Triggers whenever the mouse is moved within the selected layer
-        map.on('mousemove', 'Electricity_Consumption_area_fill', function(e) {
+        map.on('mousemove', 'Electricity_Consumption_area_fill', function (e) {
 
             // Get the human readable name of the crop
             var coordinates = e.lngLat;
             var location = e.features[0].properties["Location"];
-            var total = e.features[0].properties["TotalELecConsumption"];  
+            var total = e.features[0].properties["TotalELecConsumption"];
             location = location.replaceAll("_", " ");
-                
+
             // Make the text look a little nicer
             var html = `
-                <b>` + location + `</b><br>
-                Total Consumption [GWh]: ` + total + `<br><br>
-                <span style="font-size: 85%;">Click for more details.</span>
-            `;
-                
+                    <b>` + location + `</b><br>
+                    Total Consumption [GWh]: ` + total + `<br><br>
+                    <span style="font-size: 85%;">Click for more details.</span>
+                `;
+
             // Populate the popup and set its coordinates based on the feature found.
             popup.setLngLat(coordinates).setHTML(html).addTo(map);
 
@@ -508,28 +552,28 @@
             //          "id" property for each feature.
 
             // if (e.features.length > 0) {
-                // if (hoveredStateId !== null) {
-                //     map.setFeatureState(
-                //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
-                //         { hover: false }
-                //     );
-                // }
+            // if (hoveredStateId !== null) {
+            //     map.setFeatureState(
+            //         { source: 'Electricity_Consumption_area', Location: hoveredStateId },
+            //         { hover: false }
+            //     );
+            // }
 
-                // hoveredStateId = e.features[0].Location;
-                // map.setFeatureState(
-                //     { source: 'Electricity_Consumption_area', Location: hoveredStateId },
-                //     { hover: true }
-                // );
-            // }    
+            // hoveredStateId = e.features[0].Location;
+            // map.setFeatureState(
+            //     { source: 'Electricity_Consumption_area', Location: hoveredStateId },
+            //     { hover: true }
+            // );
+            // }
         });
 
         // Triggers when the mouse enters the entire layer
-        map.on('mouseenter', 'Electricity_Consumption_area_fill', function(e) {
+        map.on('mouseenter', 'Electricity_Consumption_area_fill', function (e) {
             map.getCanvas().style.cursor = 'pointer';
         });
 
         // Triggers when the mouse leaves the entire layer
-        map.on('mouseleave', 'Electricity_Consumption_area_fill', function(e) {
+        map.on('mouseleave', 'Electricity_Consumption_area_fill', function (e) {
             map.getCanvas().style.cursor = '';
             popup.remove();
 
@@ -545,7 +589,7 @@
         });
 
         // On mouse enter
-        map.on('mouseenter', 'power_locations', function (e) { 
+        map.on('mouseenter', 'power_locations', function (e) {
             map.getCanvas().style.cursor = 'pointer';
 
             if (map.getZoom() < 7.5) {
@@ -556,10 +600,10 @@
                 var fuel = e.features[0].properties["fuel"];
 
                 var html = `
-					<b> ` + name + `</b><br>
-					Fuel: ` + fuel + `
-					<br><p>Click for more details.</p>
-				`;
+                        <b> ` + name + `</b><br>
+                        Fuel: ` + fuel + `
+                        <br><p>Click for more details.</p>
+                    `;
                 popup.setLngLat(coordinates).setHTML(html).addTo(map);
             }
         });
@@ -593,7 +637,7 @@
         });
 
         // On mouse enter
-        map.on('mouseenter', 'sdg_locations', function (e) { 
+        map.on('mouseenter', 'sdg_locations', function (e) {
             map.getCanvas().style.cursor = 'pointer';
 
             if (map.getZoom() < 7.5) {
@@ -604,10 +648,10 @@
                 var fuel = e.features[0].properties["fuel"];
 
                 var html = `
-					<b> ` + name + `</b><br>
-					Fuel: ` + fuel + `
-					<br><p>Click for more details.</p>
-				`;
+                        <b> ` + name + `</b><br>
+                        Fuel: ` + fuel + `
+                        <br><p>Click for more details.</p>
+                    `;
                 popup.setLngLat(coordinates).setHTML(html).addTo(map);
             }
         });
@@ -639,17 +683,17 @@
                 bearing: Math.random() * 90
             });
         });
-		// ===== MOUSE EVENTS =====
+        // ===== MOUSE EVENTS =====
         // Register the layers with the central controls
         registerLayer("Power Generation", ["power_locations", "power_labels"], null, true);
         registerLayer("SDG Indicator", ["sdg_locations", "sdg_labels"], null, false);
         registerLayer("Electricity Consumption", [
-                "Electricity_Consumption_area_fill",
-                "Electricity_Consumption_area_borders",
-                "Electricity_Consumption_region_borders"
-            ],
+            "Electricity_Consumption_area_fill",
+            "Electricity_Consumption_area_borders",
+            "Electricity_Consumption_region_borders"
+        ],
             null, false);
-        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation"], null, false);
+        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation", "Model_Animated_Branch_Arrow", "Model_Branch_GPS_Points"], null, false);
 
         // Build the layer selection tree
         buildLayerTree("radio");
