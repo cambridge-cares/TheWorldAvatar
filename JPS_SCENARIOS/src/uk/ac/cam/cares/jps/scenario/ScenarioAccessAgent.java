@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg;
+package uk.ac.cam.cares.jps.scenario;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,10 +35,6 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.scenario.ScenarioLog;
-import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
-import uk.ac.cam.cares.jps.scenario.ScenarioMockManager;
-import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAccessAgent  extends JPSAgent{ 

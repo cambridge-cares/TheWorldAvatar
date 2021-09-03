@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg.test;
+package uk.ac.cam.cares.jps.scenarios.test;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -13,9 +13,9 @@ import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.scenario.ScenarioAccessAgent;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
-import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
-import uk.ac.cam.cares.jps.scenario.kg.ScenarioAccessAgent;
+import uk.ac.cam.cares.jps.scenario.ScenarioStoreClient;
 
 public class ScenarioAccessAgentTest {
 

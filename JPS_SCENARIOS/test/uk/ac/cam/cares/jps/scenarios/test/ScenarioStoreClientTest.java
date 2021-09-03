@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kb.test;
+package uk.ac.cam.cares.jps.scenarios.test;
 
 import static org.junit.Assert.*;
 
@@ -24,7 +24,7 @@ import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.scenario.kb.ScenarioStoreClient;
+import uk.ac.cam.cares.jps.scenario.ScenarioStoreClient;
 
 public class ScenarioStoreClientTest {
 

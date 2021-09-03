@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kb;
+package uk.ac.cam.cares.jps.scenario;
 
 import java.io.File;
 
