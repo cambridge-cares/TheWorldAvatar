@@ -90,8 +90,8 @@ public class CreateFileWatcherTest extends TestCase {
     }
 
     public void testNewCreateFileWatcherRunMethodNotTimedout() throws IOException {
-        File fileIn = new File("./tmp/test.watch");
-        File fileOut = new File("./tmp/test.callback");
+        File fileIn = new File(System.getProperty("java.io.tmpdir") + "tmp/test.watch");
+        File fileOut = new File(System.getProperty("java.io.tmpdir") + "tmp/test.callback");
         new File(fileIn.getParent()).mkdirs();
         CreateFileWatcher cfw = new CreateFileWatcher(fileIn, 60000);
         WatcherCallback cb = () -> {
@@ -111,12 +111,12 @@ public class CreateFileWatcherTest extends TestCase {
         } catch (InterruptedException e) {
             assertTrue(false);
         } finally {
-            assertTrue(fileOut.exists());
+            if (fileIn.getParentFile().isDirectory()) {
+                cfw.suspend();
+                FileUtils.deleteDirectory(fileIn.getParentFile());
+            }
         }
-        if (fileIn.getParentFile().isDirectory()) {
-            cfw.suspend();
-            FileUtils.deleteDirectory(fileIn.getParentFile());
-        }
+
     }
 
     public void testNewCreateFileWatcherRunMethodTimedout() throws IOException {
