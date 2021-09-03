@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg.test;
+package uk.ac.cam.cares.jps.accessagent.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -29,13 +29,12 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.FileBasedStoreClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.scenario.kg.AccessAgent;
+import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
 
@@ -47,10 +46,8 @@ public class AccessAgentTest{
 	
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
-		// Test rdf file
-		String filePathDir = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" ;
-		
-		Path testResourcePath = Paths.get(filePathDir+"/testRDF.rdf");
+		// Test rdf file				
+		Path testResourcePath = Paths.get(this.getClass().getResource("/testRDF.rdf").toURI());
 		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
@@ -193,13 +190,6 @@ public class AccessAgentTest{
 	public void testPut() {
 		
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";			
-		String contentRDF = "<rdf:RDF\r\n"+
-	    "    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-	    "    xmlns:j.0=\"http://www.w3.org/2008/05/skos#\">\r\n"+
-	    "  <rdf:Description rdf:about=\"http://www.theworldavatar.com/kb/species/species.owl#species_10\">\r\n"+
-	    "    <j.0:altLabel>Ar</j.0:altLabel>\r\n"+
-	    "  </rdf:Description>\r\n"+
-	    "</rdf:RDF>\r\n";
 		
 		String folderPath = tempFolder.getRoot().toString();
 		String testFilePath = folderPath + "/TestPut.nt"; 
@@ -218,7 +208,7 @@ public class AccessAgentTest{
 		
         String strResult = FileUtil.readFileLocally(testFilePath);
 		
-		assertEquals(contentRDF, strResult);		
+		assertEquals(content, strResult);		
 	}
 	
 	@Test(expected = JPSRuntimeException.class)

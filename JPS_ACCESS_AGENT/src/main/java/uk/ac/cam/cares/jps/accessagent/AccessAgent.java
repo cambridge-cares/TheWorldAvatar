@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario.kg;
+package uk.ac.cam.cares.jps.accessagent;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -14,10 +14,10 @@ import javax.ws.rs.BadRequestException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -27,12 +27,16 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
-@WebServlet(urlPatterns = {"/kb/*"})
+@WebServlet(urlPatterns = {"/access"})
 public class AccessAgent extends JPSAgent{
 
 	private static final long serialVersionUID = 1L;
-	private static Logger logger = LoggerFactory.getLogger(AccessAgent.class);
-
+	
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AccessAgent.class);
+	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		JSONObject result = processRequestParameters(requestParams,null);
@@ -173,7 +177,13 @@ public class AccessAgent extends JPSAgent{
 	 */
 	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
 		String shortIRI = getShortIRI(targetIRI);
-		return StoreRouter.getStoreClient(shortIRI, isQuery, isUpdate);
+		
+		try {
+			return StoreRouter.getStoreClient(shortIRI, isQuery, isUpdate);
+		}catch (RuntimeException e) {
+			LOGGER.error("Failed to instantiate StoreClient");
+			throw new JPSRuntimeException("Failed to instantiate StoreClient");
+		}	 
 	}
 	
 	@Override
@@ -237,7 +247,7 @@ public class AccessAgent extends JPSAgent{
 		b.append(", targetgraph=").append(graphIRI);
 		if (hasErrorOccured) {
 			b.append(", sparql=" + sparql);
-			logger.error(b.toString());
+			LOGGER.error(b.toString());
 		} else {
 			if (sparql != null) {
 				int i = sparql.toLowerCase().indexOf("select");
@@ -249,7 +259,7 @@ public class AccessAgent extends JPSAgent{
 				}
 			}
 			b.append(", sparql (short)=" + sparql);
-			logger.info(b.toString());
+			LOGGER.info(b.toString());
 		}
 	}
 	
