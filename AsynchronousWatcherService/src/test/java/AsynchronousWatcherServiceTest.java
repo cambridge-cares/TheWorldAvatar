@@ -33,12 +33,12 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceMethods() {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        assertEquals(6, aws.getClass().getDeclaredMethods().length);
+        assertEquals(4, aws.getClass().getDeclaredMethods().length);
     }
 
     public void testNewAsynchronousWatcherServiceReadRequestsMethod() throws IOException, NoSuchMethodException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = "./tmp/test.watch";
+        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
         String badReq = "HTTP 400 Bad Request";
         File watchDir = null;
         try {
@@ -84,7 +84,7 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceWatchObjectMethod() throws IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = "./tmp/test.watch";
+        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
         File watchDir = null;
         try {
             assertNotNull(aws.getClass().getDeclaredMethod("watchObject", String.class));
@@ -127,7 +127,7 @@ public class AsynchronousWatcherServiceTest extends TestCase {
 
     public void testNewAsynchronousWatcherServiceGetPathMethod() throws NoSuchMethodException, IllegalAccessException, IOException, InvocationTargetException {
         AsynchronousWatcherService aws = new AsynchronousWatcherService();
-        String file = "./tmp/test.watch";
+        String file = System.getProperty("java.io.tmpdir") + "/test/test.watch";
         File watchDir = null;
 
         assertNotNull(aws.getClass().getDeclaredMethod("getPath", JSONObject.class));
@@ -165,19 +165,6 @@ public class AsynchronousWatcherServiceTest extends TestCase {
                 FileUtils.deleteDirectory(watchDir);
             }
         }
-    }
-
-    public void testNewAsynchronousWatcherServiceGetCallbackMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        AsynchronousWatcherService aws = new AsynchronousWatcherService();
-
-        assertNotNull(aws.getClass().getDeclaredMethod("getCallback", String.class, String.class));
-        Method getCallback = aws.getClass().getDeclaredMethod("getCallback", String.class, String.class);
-        getCallback.setAccessible(true);
-        String url = "";
-        String json = "";
-
-        Object result = getCallback.invoke(aws, url, json);
-        assertEquals(result.getClass().getInterfaces()[0], WatcherCallback.class);
     }
 
     public void testNewAsynchronousWatcherServiceValidateInputkMethod() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
