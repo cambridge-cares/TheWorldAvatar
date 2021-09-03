@@ -24,34 +24,63 @@ public class TemplateHandler {
 
     /**
      *
-     * @param definition
+     * @param context
+     * @param latestResult
      * @return
      */
-    public static String getTestResultStub(ServletContext context, TestDefinition definition) {
+    public static String getDashboardStub(ServletContext context, TestDefinition definition, TestRecord latestResult) {
         String result = "";
         try {
-            String template = getResourceFileAsString(context, "test-result-stub.html");
+            String template = getResourceFileAsString(context, "test-stub-dashboard.html");
             result = template.replaceAll("NAME", definition.getName());
-
-            // Get the latest result for this test
-            TestRecord latestResult = StatusAgent.HANDLER.getRecordStore().getLatestRecord(definition);
+            result = result.replaceAll("TYPE", definition.getType().toString());
 
             if (latestResult != null) {
                 String success = (latestResult.getResult()) ? "success" : "failure";
                 result = result.replaceAll("RESULT", success);
+                result = result.replaceAll("CLASS", success);
                 result = result.replaceAll("TIME", latestResult.getExecutionTime().replaceAll("_", " "));
             } else {
-                result = result.replaceAll("RESULT", "Not yet executed");
+                result = result.replaceAll("RESULT", "not yet executed");
+                result = result.replaceAll("CLASS", "not-yet-run");
                 result = result.replaceAll("TIME", "n/a");
             }
-
-            System.out.println(result);
             return result;
 
         } catch (Exception exception) {
             LOGGER.error("template error", exception);
         }
+        return result;
+    }
+    
+        /**
+     *
+     * @param context
+     * @param latestResult
+     * @return
+     */
+    public static String getSummaryStub(ServletContext context, TestDefinition definition, TestRecord record) {
+        String result = "";
+        try {
+            String template = getResourceFileAsString(context, "test-stub-summary.html");
+            result = template.replaceAll("NAME", definition.getName());
+            result = result.replaceAll("TYPE", definition.getType().toString());
 
+            if (record != null) {
+                String success = (record.getResult()) ? "success" : "failure";
+                result = result.replaceAll("RESULT", success);
+                result = result.replaceAll("CLASS", success + " summary-stub");
+                result = result.replaceAll("TIME", record.getExecutionTime().replaceAll("_", " "));
+            } else {
+                result = result.replaceAll("RESULT", "not yet executed");
+                result = result.replaceAll("CLASS", "not-yet-run");
+                result = result.replaceAll("TIME", "n/a");
+            }
+            return result;
+
+        } catch (Exception exception) {
+            LOGGER.error("template error", exception);
+        }
         return result;
     }
 
@@ -63,10 +92,10 @@ public class TemplateHandler {
      * @throws IOException if read fails for any reason
      */
     private static String getResourceFileAsString(ServletContext context, String fileName) throws IOException {
-        try (InputStream is = context.getResourceAsStream(fileName)) {
+        try ( InputStream is = context.getResourceAsStream(fileName)) {
             if (is == null) return null;
 
-            try (InputStreamReader isr = new InputStreamReader(is);  BufferedReader reader = new BufferedReader(isr)) {
+            try ( InputStreamReader isr = new InputStreamReader(is);  BufferedReader reader = new BufferedReader(isr)) {
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
             }
         }

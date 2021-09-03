@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.status.execute;
 
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
@@ -34,7 +36,6 @@ public class AvailabilityTestExecutor extends TestExecutor {
      */
     @Override
     public void execute() {
-
         // Generate the test record
         record = new TestRecord();
         record.setDefinition(definition);
@@ -46,6 +47,7 @@ public class AvailabilityTestExecutor extends TestExecutor {
         ThreadContext.put("groupName", definition.getType().toString());
         ThreadContext.put("testName", definition.getName());
         ThreadContext.put("testTime", record.getExecutionTime());
+        ((LoggerContext) LogManager.getContext(false)).reconfigure();
 
         // Get the endpoint
         String endpoint = definition.getInput("endpoint");
@@ -84,11 +86,19 @@ public class AvailabilityTestExecutor extends TestExecutor {
             // Store in record
             record.setResult(triples > 0);
 
+            if (record.getResult()) {
+                LOGGER.info("Test passes successfully.");
+            } else {
+                LOGGER.error("Test has failed.");
+            }
+
         } catch (Exception exception) {
             // Catch everything as the base library throws some strange stuff
             LOGGER.error("Exception occurred during test execution.", exception);
             record.setResult(false);
         }
+
+        ThreadContext.clearAll();
     }
 
 }

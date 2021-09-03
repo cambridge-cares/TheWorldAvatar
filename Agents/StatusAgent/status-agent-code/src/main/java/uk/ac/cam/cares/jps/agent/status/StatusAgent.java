@@ -1,15 +1,23 @@
 package uk.ac.cam.cares.jps.agent.status;
 
+import java.io.IOException;
+import uk.ac.cam.cares.jps.agent.status.process.StatusRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
+import uk.ac.cam.cares.jps.agent.status.process.DashboardRequest;
+import uk.ac.cam.cares.jps.agent.status.process.SubmitRequest;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 /**
@@ -21,18 +29,16 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  * @author Michael Hillman
  */
 @Controller
-@WebServlet(urlPatterns = {StatusAgent.DASHBOARD_URL, StatusAgent.LIST_URL, StatusAgent.SUBMISSION_URL})
+@WebServlet(urlPatterns = {
+    StatusAgent.DASHBOARD_URL,
+    StatusAgent.SUBMISSION_URL
+})
 public class StatusAgent extends JPSAgent {
 
     /**
-     * URL path for status dashboard (webpage).
+     * URL path to view dashboard.
      */
     public static final String DASHBOARD_URL = "/dashboard";
-
-    /**
-     * URL path for list of available tests.
-     */
-    public static final String LIST_URL = "/tests";
 
     /**
      * URL path to trigger/submit a test.
@@ -45,14 +51,14 @@ public class StatusAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(StatusAgent.class);
 
     /**
-     * Is the agent in a valid state.
+     *
      */
-    private boolean validState = true;
-    
+    private static ScheduledExecutorService SCHEDULER;
+
     /**
      * TestHandler instance.
      */
-    public static final TestHandler HANDLER = new TestHandler();
+    private final TestHandler handler = new TestHandler();
 
     /**
      * Perform required setup.
@@ -63,70 +69,74 @@ public class StatusAgent extends JPSAgent {
     public void init() throws ServletException {
         super.init();
 
-        LOGGER.debug("This is a test DEBUG message");
-        LOGGER.info("This is a test INFO message");
-        LOGGER.warn("This is a test WARN message");
-        LOGGER.error("This is a test ERROR message");
-        LOGGER.fatal("This is a test FATAL message");
-        System.out.println("This is a test SYSTEM.OUT message");
-    }
-
-    @Override
-    protected String getResponseBody(HttpServletRequest request) {
-        // TODO: Check if request should have HTML or JSON response
-        
-        return "";
-    }
-
-    @Override
-    protected String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
-        return "";
+        if (SCHEDULER == null) {
+            // Run all test on boot, then run  once per day
+            Runnable runnable = () -> {
+                handler.runAllTests();
+            };
+            SCHEDULER = Executors.newScheduledThreadPool(1);
+            SCHEDULER.scheduleAtFixedRate(
+                    runnable,
+                    0,
+                    1,
+                    TimeUnit.DAYS
+            );
+        }
     }
 
     /**
-     * Processes HTTP requests.
+     * OVERRIDE JPS SHIT
      *
-     * @param requestParams Request parameters in a JSONObject
-     * @param request HTTP Servlet Request
-     *
-     * @return result JSON
+     * @param request
+     * @param response
+     * @throws ServletException
+     * @throws IOException
      */
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("Request received at: " + datetime);
+        LOGGER.info("New request received at: " + datetime);
 
-        // TODO: This should only respond to requests that require a JSON response.
-        return null;
+        String url = request.getRequestURI();
+        url = url.substring(url.lastIndexOf("/"), url.length());
+        if (url.contains("?")) url = url.split("?")[0];
+
+        // Run actions depending on the URL path
+        StatusRequest requestHandler = null;
+
+        switch (url) {
+            // URL pattern to view dashboard
+            case DASHBOARD_URL:
+                LOGGER.info("Passing request to DashboardRequest instance...");
+                requestHandler = new DashboardRequest(request, response, handler);
+                break;
+
+            // URL to submit test
+            case SUBMISSION_URL:
+                LOGGER.info("Passing request to submitRequest instance...");
+                requestHandler = new SubmitRequest(request, response, handler);
+                break;
+        }
+
+        // Process and write result
+        if (requestHandler != null) {
+            try {
+                requestHandler.validateRequest();
+                requestHandler.processRequest();
+
+            } catch (BadRequestException brException) {
+                response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
+            } catch (Exception exception) {
+                LOGGER.error("Unexpected exception thrown!", exception);
+                response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+            }
+        } else {
+            LOGGER.error("Could not find and run the correct StatusRequest handler");
+            response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
+        }
     }
 
-    /**
-     * Validate the input JSON contents.
-     *
-     * @param requestParams Request parameters as a JSONObject
-     * @return validity status
-     *
-     * @throws BadRequestException
-     */
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-//        if (!validState) {
-//            LOGGER.error("EmailAgent is in invalid state, cannot validate inputs.");
-//            return false;
-//        }
-//
-//        // Check that there's a subject
-//        if (requestParams.isNull("subject")) {
-//            throw new BadRequestException("Request does not have required 'subject' field.");
-//        }
-//
-//        // Check that there's a body
-//        if (requestParams.isNull("body")) {
-//            throw new BadRequestException("Request does not have required 'body' field.");
-//        }
-
-        return true;
-    }
 }
 // End of class.

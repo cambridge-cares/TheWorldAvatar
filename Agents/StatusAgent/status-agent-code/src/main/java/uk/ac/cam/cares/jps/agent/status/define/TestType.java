@@ -6,7 +6,7 @@ package uk.ac.cam.cares.jps.agent.status.define;
  */
 public enum TestType {
 
-    AVAILABILITY("basic-availability");
+    AVAILABILITY("AVAILABILITY");
 
     /**
      *
@@ -27,6 +27,20 @@ public enum TestType {
      */
     public String toString() {
         return type;
+    }
+
+    /**
+     * 
+     * @param type
+     * @return 
+     */
+    public static String getFriendlyName(TestType type) {
+        switch (type) {
+            case AVAILABILITY:
+                return "Basic Availability Tests";
+        }
+
+        return "";
     }
 
 }

@@ -86,5 +86,29 @@ public class TestRegistry {
         return types;
     }
 
+    /**
+     *
+     * @param testName
+     * @param testType
+     * @return
+     */
+    public static synchronized TestDefinition getDefinedTest(String testName, String testType) {
+        return getDefinedTest(testName, TestType.valueOf(testType));
+    }
+
+    /**
+     *
+     * @param testName
+     * @param testType
+     * @return
+     */
+    public static synchronized TestDefinition getDefinedTest(String testName, TestType testType) {
+        for (TestDefinition definition : DEFINITIONS) {
+            if (definition.getType().equals(testType) && definition.getName().equals(testName)) {
+                return definition;
+            }
+        }
+        return null;
+    }
 }
 // End of class.

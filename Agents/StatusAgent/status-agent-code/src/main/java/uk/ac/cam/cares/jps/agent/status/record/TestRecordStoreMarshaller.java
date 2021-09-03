@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Iterator;
@@ -119,7 +120,7 @@ public class TestRecordStoreMarshaller {
 
             return store;
 
-        } catch (FileNotFoundException exception) {
+        } catch (FileNotFoundException | NoSuchFileException exception) {
             LOGGER.warn("Could not find existing test records, could be first execution?");
             return new TestRecordStore();
 

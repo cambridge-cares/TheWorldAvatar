@@ -42,9 +42,9 @@ public class TestRecordStore {
     }
 
     /**
-     * 
+     *
      * @param definition
-     * @return 
+     * @return
      */
     public synchronized TestRecord getLatestRecord(TestDefinition definition) {
         for (int i = 0; i < records.size(); i++) {
@@ -53,6 +53,21 @@ public class TestRecordStore {
             }
         }
         return null;
+    }
+
+    /**
+     *
+     * @param definition
+     * @return
+     */
+    public synchronized List<TestRecord> getRecordsForTest(TestDefinition definition) {
+        List<TestRecord> matches = new ArrayList<>();
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).getDefinition().equals(definition)) {
+                matches.add(records.get(i));
+            }
+        }
+        return matches;
     }
 
 }

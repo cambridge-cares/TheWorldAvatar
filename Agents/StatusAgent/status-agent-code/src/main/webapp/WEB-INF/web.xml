@@ -9,9 +9,9 @@
 	<display-name>status_agent</display-name>
 	<description>Simple servlet to run KG availability tests and display results.</description>
 	
-	<welcome-file-list>
+	<!--<welcome-file-list>
 		<welcome-file>index.jsp</welcome-file>
-	</welcome-file-list>
+	</welcome-file-list>-->
 	
 	<servlet>
 		<servlet-name>StatusAgent</servlet-name>

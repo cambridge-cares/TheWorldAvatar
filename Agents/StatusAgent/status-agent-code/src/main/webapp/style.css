@@ -1,33 +1,46 @@
 html,
 body {
-  margin: 0px;
-  padding: 0px;
-  height: 100%;
+    margin: 0px;
+    padding: 0px;
+    height: 100%;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  margin: 0px;
+    margin: 0px;
 } 
 
 #preamble {
-  height: 130px;
-  padding: 20px;
+    height: auto;
+    padding: 20px;
 }
 
 .all-tests-container {
     height: calc(100% - 190px);
+    min-height: 500px;
     border: 1px solid blue;
-    margin-bottom: 20px;
     margin-left: 20px;
     margin-right: 20px;
 }
 
+.all-records-container {
+    height: calc(100% - 300px);
+    min-height: 500px;
+    width: 400px;
+    border: 1px solid blue;
+    margin-left: 20px;
+    margin-right: 20px;
+    float: left;
+}
+
+.record-container,
 .test-container {
     width: 400px;
     border: 1px solid lightgrey;
     height: 100%;
+    overflow-y: scroll;
 }
 
+.record-container-title,
 .test-container-title {
     margin-left: 40px;
     margin-right: 40px;
@@ -51,8 +64,11 @@ h1, h2, h3, h4, h5, h6 {
     height: calc(100% - 20px);
     float: left;
     test-align: center;
-    background-color: red;
     margin: 10px;
+}
+
+.summary-stub {
+    width: calc(100% - 20px);
 }
 
 .center-text {
@@ -77,13 +93,69 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .success {
-  background-color: #519E8A;
+    background-color: #519E8A;
 }
 
 .failure {
-  background-color: #ED4D6E;
+    background-color: #ED4D6E;
 }
 
 .not-yet-run {
-  background-color: #9D8DF1;
+    background-color: #9D8DF1;
+}
+
+.log-container {
+    border: 1px solid red;
+    height: calc(100% - 300px);
+    width: calc(100% - 430px - 40px);
+    min-height: 500px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    float: right;
+
+    overflow-y: scroll; /* Show vertical scrollbar */
+    overflow-x: scroll; /* Show horizontal scrollbar */
+
+    white-space: nowrap;
+}
+.button-container {
+    width: calc(100% - 40px);
+    height: 50px;
+    border: 1px solid green;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-top: 10px; 
+    position: absolute;
+    bottom: 10px;
+}
+
+hr {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    color: lightgrey;
+}
+
+.dashboard-button {
+    height: calc(100% - 10px);
+    width: 200px;
+    margin: 5px;
+    float: left;
+    background-color: rgb(245, 245, 245);
+    cursor: pointer;
+}
+
+.run-test-button {
+    height: calc(100% - 10px);
+    width: 200px;
+    margin: 5px;
+    float: right;
+    background-color: rgb(245, 245, 245);
+    cursor: pointer;
+}
+
+.log-placehold {
+    background-color: rgb(245, 245, 245);
+    color: grey;
+    height: 100%;
+    width: 100%;
 }

@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -120,6 +121,36 @@ public final class TestRecord implements Comparable {
     }
 
     /**
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+        if (!(obj instanceof TestRecord)) return false;
+
+        TestRecord that = (TestRecord) obj;
+        if (!Objects.equals(this.result, that.result)) return false;
+        if (!Objects.equals(this.testTime, that.testTime)) return false;
+        if (!Objects.equals(this.definition, that.definition)) return false;
+        return true;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 67 * hash + Objects.hashCode(this.definition);
+        hash = 67 * hash + Objects.hashCode(this.testTime);
+        hash = 67 * hash + (this.result ? 1 : 0);
+        return hash;
+    }
+
+    /**
      *
      * @param obj
      * @return
@@ -135,7 +166,7 @@ public final class TestRecord implements Comparable {
         try {
             Date thisDate = formatter.parse(this.getExecutionTime());
             Date thatDate = formatter.parse(that.getExecutionTime());
-            return thisDate.compareTo(thatDate);
+            return thatDate.compareTo(thisDate);
         } catch (NullPointerException | ParseException exception) {
             LOGGER.warn("Could not compare TestRecord instances!", exception);
             return 0;
