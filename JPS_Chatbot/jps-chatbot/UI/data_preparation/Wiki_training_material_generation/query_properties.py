@@ -1,5 +1,5 @@
 from util.SPARQL_Query_Wiki import SPARQL_Query_for_Wiki
-import json, re, time, random
+import json, re, time
 
 SPARQL_template = '''
 #All properties with descriptions and aliases and types

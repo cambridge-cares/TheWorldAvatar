@@ -22,7 +22,7 @@ larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above'
 simple_properties = ['RBR JJ NN', 'JJ NN IN NN', 'JJ JJ NN', 'JJ JJ NN NN', 'JJ NN NN', 'JJ NNP', 'JJ NN', 'VBG NN'] + [
     'NN NN', 'NN NN NN']
 PROPERTY_TAG_DICT = {}
-with open('FULL_PROPERTY_TAG_DICT') as f:
+with open('../files/FULL_PROPERTY_TAG_DICT') as f:
     _FULL_PROPERTY_TAG_DICT = json.loads(f.read())
     f.close()
 

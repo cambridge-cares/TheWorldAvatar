@@ -209,7 +209,11 @@ def get_instance_labels(ID):
 
 def get_class_labels():
     class_labels = []
+<<<<<<< Updated upstream:JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/create_questions_for_wiki.py
     with open('C:/data/instance_info/instance_info/%s' % ID) as f:
+=======
+    with open('C:/data/instance_info/%s' % ID) as f:
+>>>>>>> Stashed changes:JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/03_create_training_question/create_questions_for_wiki.py
         data = json.loads(f.read())['results']['bindings']
         for b in data:
             if 'classLabel' in b:
@@ -256,22 +260,22 @@ def get_property_labels(ID):
     return property_labels, quantity_property_labels
 
 
-with open('FULL_PROPERTY_TAG_DICT') as f:
+with open('../../files/FULL_PROPERTY_TAG_DICT') as f:
     FULL_PROPERTY_TAG_DICT = json.loads(f.read())
 
-with open('instance_property_mapping_first_2000') as f:
+with open('../../files/instance_property_mapping_first_2000') as f:
     instance_property_mapping_first_2000 = json.loads(f.read())
 
-with open('instance_property_mapping_random_3000') as f:
+with open('../../files/instance_property_mapping_random_3000') as f:
     instance_property_mapping_random_3000 = json.loads(f.read())
 
-with open('EXTRA_PROPERTIES') as f:
+with open('../../files/EXTRA_PROPERTIES') as f:
     EXTRA_PROPERTIES = json.loads(f.read())
 
-with open('URI_SMILES_DICT') as f:
+with open('../../files/URI_SMILES_DICT') as f:
     URI_SMILES_DICT = json.loads(f.read())
 
-with open('PLURALIZE_DICT') as f:
+with open('../../files/PLURALIZE_DICT') as f:
     PLURALIZE_DICT = json.loads(f.read())
 
 INSTANCE_PROPERTY_DICT = {}
@@ -317,7 +321,7 @@ factor = 5
 total = len(INSTANCE_PROPERTY_DICT.keys())
 RUN_SAMPLE = list(INSTANCE_PROPERTY_DICT.keys())
 # test
-# RUN_SAMPLE = random.sample(RUN_SAMPLE, 1000)
+# RUN_SAMPLE = random.sample(RUN_SAMPLE, 100)
 for ID in RUN_SAMPLE:
     # print(ID)
     counter = counter + 1
@@ -443,10 +447,10 @@ day = dt.day
 with open('test/data/nlu_0%s_0%s_factor_%s.md' % (month, day, factor), 'w', encoding='utf-8') as f:
     f.write(block)
 
-with open('FULL_PROPERTY_TAG_DICT', 'w') as f:
+with open('../../files/FULL_PROPERTY_TAG_DICT', 'w') as f:
     f.write(json.dumps(FULL_PROPERTY_TAG_DICT))
 
-with open('PLURALIZE_DICT', 'w') as f:
+with open('../../files/PLURALIZE_DICT', 'w') as f:
     f.write(json.dumps(PLURALIZE_DICT))
 
 # SMILES

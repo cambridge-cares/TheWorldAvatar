@@ -1,4 +1,0 @@
-{
-"query_quantum_chemistry": ["formal charge", "symmetry number","gaussian files" ,"guassian files", "geometry type", "electronic energy", "spin multiplicity", "vibration frequency"],
-"query_thermodynamic": ["lennard jones well depth","dipole moment", "polarizability"]
-}
