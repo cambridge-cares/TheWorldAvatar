@@ -11,7 +11,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
     try:
         if pipeline is None: pipeline = assemble_omops_pipeline()
         inStage = get_inStage(inpFileType)
-        files = get_stage_files(fileOrDir, inStage, fileExtPrefix='omops')
+        files = get_stage_files(fileOrDir, inStage, fileExtPrefix='omops', qcLogExt='')
 
         if handlerFuncKwargs:
             for handlerName, funcKwargs in handlerFuncKwargs.items():
