@@ -114,9 +114,9 @@ def omops_csv_abox_from_string(data):
     onto_mops + '#hasAssemblyModel','','']) #Connect the MOPs instance to the Assembly Model instance.
     spamwriter.writerow([onto_mops + '#hasSymmetryPointGroup', 'Data Property', mops_pref + 'AssemblyModel_' + gen_id,'',
     data["Mops_Symmetry_Point_Group"],'String']) #Write the Symmetry point group for the MOPs. 
-    spamwriter.writerow([mops_pref + data["Mops_Symmetry_Point_Group"] + '_' + gen_id, 'Instance', onto_mops + '#PolyhedralShape',
+    spamwriter.writerow([mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id, 'Instance', onto_mops + '#' + data["Mops_Polyhedral_Shape"],
     '','','']) #Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
-    spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + data["Mops_Symmetry_Point_Group"] + '_' + gen_id,
+    spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,
     onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
 
     #Write the information about the Chemical and Generic Building units.
@@ -128,7 +128,7 @@ def omops_csv_abox_from_string(data):
         spamwriter.writerow([onto_mops + '#hasCBUFormula','Data Property',mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i),
         '',data["Mops_Chemical_Building_Units"][i]["CBU_Formula"],'']) #CBU Formula
         spamwriter.writerow([mops_pref + data["Mops_Chemical_Building_Units"][i]["BindingDirection"] +"Binding_" + gen_id,
-        'Instance',onto_mops + '#BindingDirection','','','']) #Instantiate the binding direction for the CBU
+        'Instance',onto_mops + '#' +  data["Mops_Chemical_Building_Units"][i]["BindingDirection"] + 'Binding','','','']) #Instantiate the binding direction for the CBU
         spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance',
         mops_pref + data["Mops_Chemical_Building_Units"][i]["BindingDirection"] +"Binding_" + gen_id, onto_mops + '#hasBindingDirection','',''])
         #Connect Binding direction instance to CBU instance. 
@@ -136,7 +136,7 @@ def omops_csv_abox_from_string(data):
         data["Mops_Chemical_Building_Units"][i]["OntoSpecies_IRI"],onto_spec + '#hasUniqueSpecies','','']) #Connect CBU to OntoSpecies entry.
         
         spamwriter.writerow([mops_pref + data["Mops_Chemical_Building_Units"][i]["Binding_Site"] +"Site_" + gen_id,
-        'Instance',onto_mops + '#BindingSite','','','']) #Instantiate the binding site for the CBU. 
+        'Instance',onto_mops + '#' + data["Mops_Chemical_Building_Units"][i]["Binding_Site"] + 'Site','','','']) #Instantiate the binding site for the CBU. 
         spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance',
         mops_pref + data["Mops_Chemical_Building_Units"][i]["Binding_Site"] +"Site_" + gen_id, onto_mops + '#hasBindingSite','',''])
         #Connect Binding site instance to CBU instance. 
