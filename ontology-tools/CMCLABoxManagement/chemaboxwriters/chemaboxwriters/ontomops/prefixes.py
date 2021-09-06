@@ -10,6 +10,7 @@ spec_pref = 'http://www.theworldavatar.com/kb/ontospecies/'
 unit_pref = 'http://data.nasa.gov/qudt/owl/'
 mops_pref = 'http://www.theworldavatar.com/kb/ontomops/'
 uom_pref = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
+unres_pref = 'http://theworldavatar.com/resource/ontouom/'
 
 species_entry_prefix= 'Species_'
-omops_entry_prefix= 'Mops_'
+omops_entry_prefix= 'MetalOrganicPolyhedra_'
