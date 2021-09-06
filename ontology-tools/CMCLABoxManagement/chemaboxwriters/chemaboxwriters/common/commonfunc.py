@@ -13,8 +13,8 @@ def get_inStage(inpFileType):
 
 def get_file_ext(inStage,fileExtPrefix,qcLogExt=None):
     fileExt=[]
-    if qcLogExt is None: qcLogExt=CC_LOG_EXT
     if inStage == aboxStages.QC_LOG:
+        if qcLogExt is None: qcLogExt=CC_LOG_EXT
         fileExt = qcLogExt.split(',')
     elif inStage == aboxStages.CSV or inStage == aboxStages.OWL:
         fileExt = ['.'+fileExtPrefix+'.'+inStage.name.lower()]

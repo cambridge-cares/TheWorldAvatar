@@ -183,7 +183,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
 @pytest.mark.parametrize("inp_file_or_dir, inp_file_type,  \
                           regenerateResult",
 [
-('OM_om_json_test', 'omops_json', False),
+('OM_om_json_test', 'ominp_json', False),
 ]
 )
 def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
@@ -196,7 +196,7 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'OMOPS_INP_JSON_TO_OMOPS_JSON':{'calc_id':'testID-111-111-111'}}
+        'OMINP_JSON_TO_OM_JSON':{'calc_id':'testID-111-111-111'}}
 
     pipeline = write_om_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
