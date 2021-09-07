@@ -2,6 +2,14 @@ version: "3.8"
 
 services:
 
+  # Flood Map
+  flood-map:
+    image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-${MODE}
+    container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    ports:
+      - 3002:80
+    restart: unless-stopped
+
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
