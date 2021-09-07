@@ -118,9 +118,7 @@ public class EmailSender {
 
         try {
             // Make the HTTP request
-            String url = emailAgentURL;
-            url += (emailAgentURL.endsWith("/")) ? "send" : "/send";
-            String result = AgentCaller.executeGetWithURLAndJSON(url, request.toString());
+            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, request.toString());
 
             if (result.contains("200") && result.contains("success")) {
                 // Success
@@ -154,7 +152,7 @@ public class EmailSender {
         String fileName = "EmailSender_" + datetime + ".log";
         Path logFile = Paths.get(fileName);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.toFile()))) {
+        try ( BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.toFile()))) {
             writer.append("Subject: ").append(subject);
             writer.append("\n");
             writer.append("Body:\n");
@@ -174,9 +172,7 @@ public class EmailSender {
     private boolean isReachable() {
         try {
             // Make the HTTP request
-            String url = emailAgentURL;
-            url += (emailAgentURL.endsWith("/")) ? "status" : "/status";
-            String result = AgentCaller.executeGetWithURL(url);
+            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, "{ \"ping\": \"true\" }");
 
             // Check result contents
             if (result.contains("200")) {
@@ -255,7 +251,7 @@ public class EmailSender {
     private String getPublicIP() throws Exception {
         URL url = new URL("http://checkip.amazonaws.com");
 
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
+        try ( BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             return reader.readLine();
         }
     }
