@@ -17,7 +17,7 @@ services:
 
   # Reverse Proxy
   # SSL configuration is included in the 'prod' mode target, but excluded in 'dev' mode
-  reverse_proxy:
+  reverse-proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
     build:
       context: "./reverse_proxy"

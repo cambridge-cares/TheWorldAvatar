@@ -14,7 +14,7 @@ services:
       hash: "${HASH}"
 
   # Blazegraph geo
-  blazegraph_geo:
+  blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     build:
       context: blazegraph_geo

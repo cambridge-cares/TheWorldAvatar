@@ -17,7 +17,7 @@ services:
       - blazegraph_data:/data
 
   # Blazegraph geo
-  blazegraph_geo:
+  blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present

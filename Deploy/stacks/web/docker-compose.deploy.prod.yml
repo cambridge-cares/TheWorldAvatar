@@ -25,7 +25,7 @@ services:
         target: /var/lib/letsencrypt
 
   # Reverse Proxy
-  reverse_proxy:
+  reverse-proxy:
     volumes:
       # Add a bind volume (shared with the certbot container) for the letsencrypt config dir
       - type: bind

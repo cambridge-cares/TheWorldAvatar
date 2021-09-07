@@ -10,7 +10,7 @@ services:
     restart: unless-stopped
 
   # Reverse Proxy
-  reverse_proxy:
+  reverse-proxy:
     image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
     container_name: "reverse_proxy${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present

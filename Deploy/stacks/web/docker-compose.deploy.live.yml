@@ -8,7 +8,7 @@ services:
       - 50082:80
 
  # Reverse Proxy
-  reverse_proxy:
+  reverse-proxy:
     ports:
       - 80:80
       - 443:443
