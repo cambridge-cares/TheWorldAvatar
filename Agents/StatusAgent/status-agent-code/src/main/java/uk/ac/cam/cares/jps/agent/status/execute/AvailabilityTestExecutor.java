@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AvailabilityTestExecutor extends TestExecutor {
 
     /**
-     *
+     * SPARQL string to use for all queries.
      */
     private static final String QUERY = "SELECT (COUNT(*) AS ?NO_OF_TRIPLES) WHERE { ?x ?y ?z . }";
 

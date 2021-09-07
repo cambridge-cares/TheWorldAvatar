@@ -32,3 +32,24 @@ function onStubClick(testStub) {
     summaryURL.searchParams.append("LIMIT", 7);
     window.open(summaryURL.href, "_self").focus();
 }
+
+
+function runTests() {
+    if (confirm("Execute all tests now?")) {
+        let winURL = window.location;
+        let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+
+        $.ajax({
+            url: baseURL + "/submit",
+            type: "GET",
+            dataType: "html",
+            data: {NAME: "ALL", TYPE: "ALL"},
+            success: function (data) {
+                location.reload();
+            },
+            failure: function (data) {
+                alert("Test could not be submitted, please contact the administrator.");
+            }
+        })
+    }
+}

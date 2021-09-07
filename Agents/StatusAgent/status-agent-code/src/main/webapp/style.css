@@ -1,7 +1,6 @@
 html,
 body {
     margin: 0px;
-    padding: 0px;
     height: 100%;
 }
 
@@ -15,9 +14,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .all-tests-container {
-    height: calc(100% - 190px);
+    height: calc(100% - 260px);
     min-height: 500px;
-    border: 1px solid blue;
     margin-left: 20px;
     margin-right: 20px;
 }
@@ -26,7 +24,6 @@ h1, h2, h3, h4, h5, h6 {
     height: calc(100% - 300px);
     min-height: 500px;
     width: 400px;
-    border: 1px solid blue;
     margin-left: 20px;
     margin-right: 20px;
     float: left;
@@ -42,14 +39,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .record-container-title,
 .test-container-title {
+    height: 50px;
+    width: 100%;
+    text-align: center;
+}
+
+.summary-count {
+    height: 20px;
+    margin-top: -10px;
+    width: calc(100% - 80px);
+    border: 1px solid grey;
+    border-width: 0px 0px 1px 0px;
     margin-left: 40px;
     margin-right: 40px;
     margin-bottom: 10px;
-    height: 50px;
-    width: calc(100% - 80px);
-    text-align: center;
-    border: 1px solid grey;
-    border-width: 0px 0px 1px 0px;
+    font-size: 80%;
+    color: grey;
 }
 
 .test-result-stub {
@@ -105,7 +110,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .log-container {
-    border: 1px solid red;
+    border: 1px solid lightgrey;
     height: calc(100% - 300px);
     width: calc(100% - 430px - 40px);
     min-height: 500px;
@@ -121,7 +126,6 @@ h1, h2, h3, h4, h5, h6 {
 .button-container {
     width: calc(100% - 40px);
     height: 50px;
-    border: 1px solid green;
     margin-right: 20px;
     margin-left: 20px;
     margin-top: 10px; 

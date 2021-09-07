@@ -25,7 +25,7 @@ public class TestRecordStore {
     private final List<TestRecord> records = new ArrayList<>();
 
     /**
-     *
+     * Returns the list of records.
      */
     public synchronized List<TestRecord> getRecords() {
         return Collections.unmodifiableList(records);
@@ -42,6 +42,7 @@ public class TestRecordStore {
     }
 
     /**
+     * Returns the latest record for the input test definition.
      *
      * @param definition
      * @return
@@ -56,6 +57,7 @@ public class TestRecordStore {
     }
 
     /**
+     * Returns a list of records for the input test definition.
      *
      * @param definition
      * @return

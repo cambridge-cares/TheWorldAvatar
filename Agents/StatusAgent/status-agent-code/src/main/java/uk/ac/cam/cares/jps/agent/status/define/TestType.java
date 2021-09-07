@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.agent.status.define;
 
 /**
+ * Test type enum
  *
  * @author Michael
  */
 public enum TestType {
 
+    // Basic endpoint checks
     AVAILABILITY("AVAILABILITY");
 
     /**
@@ -30,9 +32,9 @@ public enum TestType {
     }
 
     /**
-     * 
+     *
      * @param type
-     * @return 
+     * @return
      */
     public static String getFriendlyName(TestType type) {
         switch (type) {

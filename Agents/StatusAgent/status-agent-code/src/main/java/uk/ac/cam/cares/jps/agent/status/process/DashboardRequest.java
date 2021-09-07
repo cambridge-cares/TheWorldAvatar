@@ -78,17 +78,47 @@ public class DashboardRequest extends StatusRequest {
 
         // Latest results for each test definition
         Map<TestDefinition, TestRecord> latestRecords = new LinkedHashMap<>();
+
+        Map<TestType, Integer> failureCounts = new LinkedHashMap<>();
+        Map<TestType, Integer> successCounts = new LinkedHashMap<>();
+
         for (TestDefinition definition : TestRegistry.getDefinedTests()) {
 
             // Find latest record for this test.
             TestRecord latestRecord = handler.getRecordStore().getLatestRecord(definition);
             if (latestRecord != null) {
+                
+                // Store the record
                 latestRecords.put(definition, latestRecord);
+
+                // Count failure (if applicable)
+                if (!failureCounts.containsKey(definition.getType())) {
+                    failureCounts.put(definition.getType(), 0);
+                }
+                if (!latestRecord.getResult()) {
+                    failureCounts.put(
+                            definition.getType(),
+                            failureCounts.get(definition.getType()) + 1
+                    );
+                }
+                
+                // Count success (if applicable)
+                if (!successCounts.containsKey(definition.getType())) {
+                    successCounts.put(definition.getType(), 0);
+                }
+                if (latestRecord.getResult()) {
+                    successCounts.put(
+                            definition.getType(),
+                            successCounts.get(definition.getType()) + 1
+                    );
+                }
             } else {
                 LOGGER.warn("Could not find a test record for the '" + definition.getName() + "' test.");
             }
         }
         request.setAttribute("test-results", latestRecords);
+        request.setAttribute("test-failures", failureCounts);
+        request.setAttribute("test-successes", successCounts);
 
         // Forward to the overall dashboard page
         RequestDispatcher rd = request.getRequestDispatcher("dashboard.jsp");
@@ -181,7 +211,7 @@ public class DashboardRequest extends StatusRequest {
             out.println("<span style='padding-left: 15px;'>" + logFile.toString() + "</span>");
             out.println("<br><br><hr><br>");
 
-            try ( BufferedReader reader = new BufferedReader(new FileReader(logFile.toFile()))) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(logFile.toFile()))) {
                 String line = null;
 
                 while ((line = reader.readLine()) != null) {
@@ -201,7 +231,6 @@ public class DashboardRequest extends StatusRequest {
     }
 
     /**
-     *
      * @param line
      * @return
      */

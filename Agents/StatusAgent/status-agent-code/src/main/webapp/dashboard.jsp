@@ -44,6 +44,10 @@
                 // Get the map of latest test results
                 Map<TestDefinition, TestRecord> testResults = (Map<TestDefinition, TestRecord>) request.getAttribute("test-results");
 
+                // Get counts of failures and successes per test type
+                Map<TestType, Integer> failureCounts = (Map<TestType, Integer>) request.getAttribute("test-failures");
+                Map<TestType, Integer> successCounts = (Map<TestType, Integer>) request.getAttribute("test-successes");
+
                 // For each type of test
                 for (Map.Entry<TestType, Set<TestDefinition>> entry : testDefinitions.entrySet()) {
 
@@ -51,6 +55,13 @@
                     out.print("<div class='test-container-title center-text'>");
                     out.print("<h3>" + TestType.getFriendlyName(entry.getKey()) + "</h3>");
                     out.print("</div>");
+
+                    if (failureCounts.containsKey(entry.getKey()) && successCounts.containsKey(entry.getKey())) {
+                        out.print("<div class='summary-count center-text'>");
+                        out.print("<p>Success: " + successCounts.get(entry.getKey()));
+                        out.print(",  Failure: " + failureCounts.get(entry.getKey()) + "</p>");
+                        out.print("</div>");
+                    }
 
                     // For each individual test
                     for (TestDefinition definition : entry.getValue()) {
@@ -60,6 +71,11 @@
                     out.print("</div>");
                 }
             %>
+        </div>
+        <div class="button-container">
+            <div class="run-test-button center-text" onclick="runTests()">
+                <p>Run All Tests Now</p>
+            </div>
         </div>
 
     </body>

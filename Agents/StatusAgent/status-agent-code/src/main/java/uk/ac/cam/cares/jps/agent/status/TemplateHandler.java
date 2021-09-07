@@ -12,8 +12,9 @@ import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 
 /**
+ * Handles reading template HTML files and injecting values.
  *
- * @author Michael
+ * @author Michael Hillman
  */
 public class TemplateHandler {
 
@@ -23,6 +24,7 @@ public class TemplateHandler {
     private static final Logger LOGGER = LogManager.getLogger(TemplateHandler.class);
 
     /**
+     * Read template for test stubs within the main dashboard page.
      *
      * @param context
      * @param latestResult
@@ -52,8 +54,9 @@ public class TemplateHandler {
         }
         return result;
     }
-    
-        /**
+
+    /**
+     * Read template for test stubs within individual test summary pages.
      *
      * @param context
      * @param latestResult
@@ -92,10 +95,10 @@ public class TemplateHandler {
      * @throws IOException if read fails for any reason
      */
     private static String getResourceFileAsString(ServletContext context, String fileName) throws IOException {
-        try ( InputStream is = context.getResourceAsStream(fileName)) {
+        try (InputStream is = context.getResourceAsStream(fileName)) {
             if (is == null) return null;
 
-            try ( InputStreamReader isr = new InputStreamReader(is);  BufferedReader reader = new BufferedReader(isr)) {
+            try (InputStreamReader isr = new InputStreamReader(is); BufferedReader reader = new BufferedReader(isr)) {
                 return reader.lines().collect(Collectors.joining(System.lineSeparator()));
             }
         }

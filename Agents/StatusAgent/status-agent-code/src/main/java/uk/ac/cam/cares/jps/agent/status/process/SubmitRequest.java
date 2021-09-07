@@ -5,7 +5,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.status.TestHandler;
 
@@ -37,8 +36,14 @@ public class SubmitRequest extends StatusRequest {
         String testName = parameters.getString("NAME");
         String testType = parameters.getString("TYPE");
 
-        // Run the test
-        boolean submitted = handler.runTest(testName, testType);
+        boolean submitted = false;
+        if (testName.equals("ALL") || testType == "ALL") {
+            // Run all tests
+            submitted = handler.runAllTests();
+        } else {
+            // Run single test case
+            submitted = handler.runTest(testName, testType);
+        }
 
         if (submitted) {
             response.getWriter().write("<html>Test submitted successfully.</html>");
@@ -46,7 +51,7 @@ public class SubmitRequest extends StatusRequest {
         } else {
             response.getWriter().write("<html>Test could not be submitted!</html>");
             response.setStatus(503);
-            
+
         }
         response.getWriter().close();
         response.setContentType("text/html;charset=UTF-8");

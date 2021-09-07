@@ -1,8 +1,15 @@
 package uk.ac.cam.cares.jps.agent.status;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.define.TestType;
 
@@ -14,6 +21,11 @@ import uk.ac.cam.cares.jps.agent.status.define.TestType;
 public class TestRegistry {
 
     /**
+     * Logger.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(TestRegistry.class);
+
+    /**
      * Tests to be executed.
      */
     private static final Set<TestDefinition> DEFINITIONS = new LinkedHashSet<>();
@@ -21,32 +33,49 @@ public class TestRegistry {
     // Generate definitions of tests to run. In future, these definitions should be read
     // from a file so that tests can be added without having to regenerate Docker images.
     static {
+        readRegistryFile();
+    }
 
-        // =========================================================== //
-        // ===== Availability tests for development KG endpoints ===== //
-        // =========================================================== //
-        TestDefinition dev_ontogasgrid = new TestDefinition("dev/ontogasgrid", TestType.AVAILABILITY);
-        dev_ontogasgrid.setInput("endpoint", "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ontogasgrid/sparql");
-        DEFINITIONS.add(dev_ontogasgrid);
+    /**
+     * Read the JSON file that contains test definitions.
+     */
+    private static void readRegistryFile() {
+        Path registryFile = Paths.get(System.getProperty("user.home"), ".jps", "test-registry.json");
 
-        TestDefinition dev_landuse = new TestDefinition("dev/landuse", TestType.AVAILABILITY);
-        dev_landuse.setInput("endpoint", "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/landuse/sparql");
-        DEFINITIONS.add(dev_landuse);
+        if (Files.exists(registryFile)) {
+            // Read the registry file
+            DEFINITIONS.clear();
 
-        TestDefinition dev_backup = new TestDefinition("dev/ts_backup", TestType.AVAILABILITY);
-        dev_backup.setInput("endpoint", "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ts_backup/sparql");
-        DEFINITIONS.add(dev_backup);
+            try {
+                String jsonContent = Files.readString(registryFile);
+                JSONArray recordArray = new JSONArray(jsonContent);
 
-        // ========================================================== //
-        // ===== Availability tests for production KG endpoints ===== //
-        // ========================================================== //
-        TestDefinition prod_ontogasgrid = new TestDefinition("prod/ontogasgrid", TestType.AVAILABILITY);
-        prod_ontogasgrid.setInput("endpoint", "https://kg.cmclinnovations.com/blazegraph_geo/namespace/ontogasgrid/sparql");
-        DEFINITIONS.add(prod_ontogasgrid);
+                for (int i = 0; i < recordArray.length(); i++) {
+                    JSONObject recordEntry = recordArray.getJSONObject(i);
 
-        TestDefinition prod_landuse = new TestDefinition("prod/landuse", TestType.AVAILABILITY);
-        prod_landuse.setInput("endpoint", "https://kg.cmclinnovations.com/blazegraph_geo/namespace/landuse/sparql");
-        DEFINITIONS.add(prod_landuse);
+                    // Get required info and build definition
+                    String name = recordEntry.getString("name");
+                    TestType type = TestType.valueOf(recordEntry.getString("type"));
+
+                    TestDefinition definition = new TestDefinition(name, type);
+                    DEFINITIONS.add(definition);
+
+                    // Add all optional inputs
+                    JSONObject inputs = recordEntry.getJSONObject("inputs");
+                    if (inputs != null) {
+                        for (String key : inputs.keySet()) {
+                            definition.setInput(key, inputs.get(key).toString());
+                        }
+                    }
+                }
+
+                LOGGER.info("Registry file has been read successfully, " + DEFINITIONS.size() + " tests defined.");
+            } catch (Exception exception) {
+                LOGGER.error("Exception when reading 'test-registry.json' file!", exception);
+            }
+        } else {
+            LOGGER.error("Could not find the 'test-registry.json' file in ~/.jps directory!");
+        }
     }
 
     /**
@@ -59,9 +88,10 @@ public class TestRegistry {
     }
 
     /**
+     * Returns all defined tests of the input type.
      *
-     * @param type
-     * @return
+     * @param type test type.
+     * @return defined tests.
      */
     public static synchronized Set<TestDefinition> getDefinedTests(TestType type) {
         Set<TestDefinition> matches = new LinkedHashSet<>();
@@ -74,8 +104,9 @@ public class TestRegistry {
     }
 
     /**
+     * Returns a set of all defined test types.
      *
-     * @return
+     * @return test types.
      */
     public static synchronized Set<TestType> getDefinedTypes() {
         Set<TestType> types = new LinkedHashSet<>();
@@ -87,20 +118,22 @@ public class TestRegistry {
     }
 
     /**
+     * Returns the defined test.
      *
-     * @param testName
-     * @param testType
-     * @return
+     * @param testName test name.
+     * @param testType test type.
+     * @return defined test.
      */
     public static synchronized TestDefinition getDefinedTest(String testName, String testType) {
         return getDefinedTest(testName, TestType.valueOf(testType));
     }
 
     /**
+     * Returns the defined test.
      *
-     * @param testName
-     * @param testType
-     * @return
+     * @param testName test name.
+     * @param testType test type.
+     * @return defined test.
      */
     public static synchronized TestDefinition getDefinedTest(String testName, TestType testType) {
         for (TestDefinition definition : DEFINITIONS) {

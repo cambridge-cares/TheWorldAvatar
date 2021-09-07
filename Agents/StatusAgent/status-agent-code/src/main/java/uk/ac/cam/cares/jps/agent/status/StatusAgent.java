@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.agent.status.process.DashboardRequest;
 import uk.ac.cam.cares.jps.agent.status.process.SubmitRequest;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.email.EmailSender;
 
 /**
  * The StatusAgent provides a number of availability tests to check that KG endpoints (and other
@@ -51,7 +52,7 @@ public class StatusAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(StatusAgent.class);
 
     /**
-     *
+     * Handles scheduled execution of tests.
      */
     private static ScheduledExecutorService SCHEDULER;
 
@@ -72,7 +73,12 @@ public class StatusAgent extends JPSAgent {
         if (SCHEDULER == null) {
             // Run all test on boot, then run  once per day
             Runnable runnable = () -> {
-                handler.runAllTests();
+                boolean allSuccess = handler.runAllTests();
+                if (!allSuccess) {
+                    sendErrorReport();
+                } else {
+                    LOGGER.info("All scheduled tests have passed.");
+                }
             };
             SCHEDULER = Executors.newScheduledThreadPool(1);
             SCHEDULER.scheduleAtFixedRate(
@@ -85,7 +91,29 @@ public class StatusAgent extends JPSAgent {
     }
 
     /**
-     * OVERRIDE JPS SHIT
+     * Triggers if the scheduled tests result in any failures, send a notification email via the JPS
+     * Base Library's EmailSender class.
+     */
+    private void sendErrorReport() {
+        EmailSender sender = new EmailSender();
+
+        String subject = "StatusAgent - Failures Detected";
+        String body = "This is an automated notification from the StatusAgent servlet. One (or more) of the regularly "
+                + "scheduled tests has reported a failed result.\n\nPlease view the online dashboard for the StatusAgent "
+                + "for more details on which test has failed.";
+
+        try {
+            LOGGER.info("Failure detected in scheduled tests, attemping to send notification...");
+            sender.sendEmail(subject, body);
+            LOGGER.info("...email notification sent.");
+        } catch (Exception exception) {
+            LOGGER.error("Could not send notification via EmailSender class!", exception);
+        }
+    }
+
+    /**
+     * Main servlet method, overrided from JPSAgent as that framework always expects JSON to be
+     * returned.
      *
      * @param request
      * @param response
@@ -93,12 +121,12 @@ public class StatusAgent extends JPSAgent {
      * @throws IOException
      */
     @Override
-
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("New request received at: " + datetime);
 
+        // Get the URL path
         String url = request.getRequestURI();
         url = url.substring(url.lastIndexOf("/"), url.length());
         if (url.contains("?")) url = url.split("?")[0];
@@ -113,7 +141,7 @@ public class StatusAgent extends JPSAgent {
                 requestHandler = new DashboardRequest(request, response, handler);
                 break;
 
-            // URL to submit test
+            // URL to submit test(s) for execution
             case SUBMISSION_URL:
                 LOGGER.info("Passing request to submitRequest instance...");
                 requestHandler = new SubmitRequest(request, response, handler);

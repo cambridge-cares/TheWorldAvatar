@@ -25,7 +25,6 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/status-agent-code
 RUN mvn package
 
-
 # Second stage grabs the WAR and runs Tomcat
 FROM tomcat:9.0 as final
 WORKDIR /app
@@ -33,6 +32,9 @@ WORKDIR /app
 # Copy the built WAR file
 # Note here that if the WAR version changes, you'll need to update this line
 COPY --from=build /root/status-agent-code/output/status_agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+
+# Copy in the test-registry.json file
+COPY ./docker/test-registry.json ~/.jps.test-registry.json
 
 # Expose port 8080
 EXPOSE 8080
