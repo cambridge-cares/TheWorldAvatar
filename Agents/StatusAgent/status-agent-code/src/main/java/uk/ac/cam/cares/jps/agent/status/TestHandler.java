@@ -8,7 +8,6 @@ import org.apache.logging.log4j.core.LoggerContext;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.define.TestType;
 import uk.ac.cam.cares.jps.agent.status.execute.TestExecutor;
-import uk.ac.cam.cares.jps.agent.status.execute.TestExecutorMap;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecordStore;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecordStoreMarshaller;
@@ -94,7 +93,7 @@ public class TestHandler {
     public boolean runTest(TestDefinition definition) {
         try {
             // Find the executor class registered for that definition
-            Class<? extends TestExecutor> executorClass = TestExecutorMap.getExecutorForType(definition.getType());
+            Class<? extends TestExecutor> executorClass = TestUtils.getExecutorForType(definition.getType());
 
             // Create an instance of the executor
             Constructor<? extends TestExecutor> contrusctor = executorClass.getDeclaredConstructor(TestDefinition.class);

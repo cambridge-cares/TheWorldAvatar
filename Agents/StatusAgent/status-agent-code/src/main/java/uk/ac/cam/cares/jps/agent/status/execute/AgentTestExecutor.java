@@ -3,12 +3,9 @@ package uk.ac.cam.cares.jps.agent.status.execute;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.ThreadContext;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
  * Simple test class that checks that an agent is accessible and can return content from the

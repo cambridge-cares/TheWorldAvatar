@@ -33,5 +33,23 @@
 		"inputs": {
 			"endpoint": "https://kg.cmclinnovations.com/blazegraph_geo/namespace/landuse/sparql"
 		}
+	},
+	{
+		"name": "dev/gas-terminals",
+		"type": "QUERY_COUNT",
+		"inputs": {
+			"endpoint": "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ontogasgrid/sparql",
+			"query-file": "gas-terminal-count.sparql",
+			"minimum": "9"
+		}
+	},
+	{
+		"name": "dev/gas-offtakes",
+		"type": "QUERY_COUNT",
+		"inputs": {
+			"endpoint": "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ontogasgrid/sparql",
+			"query-file": "gas-offtake-count.sparql",
+			"minimum": "182"
+		}
 	}
 ]

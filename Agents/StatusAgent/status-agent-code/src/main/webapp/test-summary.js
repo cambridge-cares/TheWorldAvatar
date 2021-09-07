@@ -37,6 +37,29 @@ function initialise() {
     });
 }
 
+function viewFile(queryFile) {
+    let winURL = window.location;
+    let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+    baseURL = baseURL.split("?")[0];
+    console.log(baseURL);
+    console.log(queryFile);
+    
+    $.ajax({
+        url: baseURL,
+        type: "GET",
+        dataType: "html",
+        data: {QUERY_FILE: queryFile},
+        success: function (data) {
+            let logContainer = document.getElementsByClassName("log-container")[0];
+            logContainer.innerHTML = data;
+        },
+        failure: function (data) {
+            let logContainer = document.getElementsByClassName("log-container")[0];
+            logContainer.innerHTML = "An error has occured when contacting the StatusAgent to retrieve this file. Please contact the administrator.";
+        }
+    })
+}
+
 function onStubClick(testStub) {
     let testName = testStub.dataset.test;
     let testType = testStub.dataset.type;

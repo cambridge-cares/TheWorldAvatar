@@ -17,11 +17,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.agent.status.TestHandler;
 import uk.ac.cam.cares.jps.agent.status.TestRegistry;
+import uk.ac.cam.cares.jps.agent.status.TestUtils;
 import uk.ac.cam.cares.jps.agent.status.define.TestDefinition;
 import uk.ac.cam.cares.jps.agent.status.define.TestType;
+import uk.ac.cam.cares.jps.agent.status.execute.QueryStore;
 import uk.ac.cam.cares.jps.agent.status.record.TestRecord;
 
 /**
@@ -49,7 +52,11 @@ public class DashboardRequest extends StatusRequest {
     public void processRequest() throws ServletException, IOException {
         JSONObject parameters = super.parseRequestJSON();
 
-        if (parameters != null && parameters.has("LOG")) {
+        if (parameters != null && parameters.has("QUERY_FILE")) {
+            LOGGER.info("Returning content of stored query file...");
+            processQueryRequest(parameters);
+
+        } else if (parameters != null && parameters.has("LOG")) {
             LOGGER.info("Returning log for a single test result...");
             processLogRequest(parameters);
 
@@ -87,7 +94,7 @@ public class DashboardRequest extends StatusRequest {
             // Find latest record for this test.
             TestRecord latestRecord = handler.getRecordStore().getLatestRecord(definition);
             if (latestRecord != null) {
-                
+
                 // Store the record
                 latestRecords.put(definition, latestRecord);
 
@@ -101,7 +108,7 @@ public class DashboardRequest extends StatusRequest {
                             failureCounts.get(definition.getType()) + 1
                     );
                 }
-                
+
                 // Count success (if applicable)
                 if (!successCounts.containsKey(definition.getType())) {
                     successCounts.put(definition.getType(), 0);
@@ -150,6 +157,9 @@ public class DashboardRequest extends StatusRequest {
             throw new ServletException("Could not find matching TestDefinition instance!");
         }
 
+        // Set description for this test type
+        request.setAttribute("test-description", TestUtils.getDescription(definition.getType()));
+        
         StringBuilder testDetails = new StringBuilder();
         testDetails.append("name: ");
         testDetails.append(definition.getName());
@@ -159,9 +169,12 @@ public class DashboardRequest extends StatusRequest {
         testDetails.append("<br>");
 
         for (Entry<String, String> entry : definition.getInputs().entrySet()) {
-            testDetails.append(entry.getKey() + ": ");
+            testDetails.append(entry.getKey());
+            testDetails.append(": ");
             testDetails.append(entry.getValue());
             testDetails.append("<br>");
+
+            request.setAttribute(entry.getKey(), entry.getValue());
         }
         request.setAttribute("test-details", testDetails.toString());
 
@@ -174,6 +187,34 @@ public class DashboardRequest extends StatusRequest {
         RequestDispatcher rd = request.getRequestDispatcher("test-summary.jsp");
         response.setContentType("text/html;charset=UTF-8");
         rd.forward(request, response);
+    }
+
+    /**
+     *
+     * @param parameters
+     * @throws ServletException
+     * @throws IOException
+     */
+    private void processQueryRequest(JSONObject parameters) throws ServletException, IOException {
+        String queryFile = parameters.getString("QUERY_FILE");
+        String query = QueryStore.readQuery(queryFile);
+        query = StringEscapeUtils.escapeHtml(query);
+        
+        PrintWriter out = response.getWriter();
+        response.setContentType("text/html");
+
+        if (query != null && !query.isEmpty()) {
+            query = query.replaceAll("\\n", "<br>");
+            
+            out.println("Showing content from stored query located at:");
+            out.println("<br>");
+            out.println("<span style='padding-left: 15px;'>~/.jps/queries/" + queryFile + "</span>");
+            out.println("<br><br><hr><br>");
+            out.print(query);
+        } else {
+            out.print("Error, could not find/read query file, contact administrators.");
+        }
+        out.close();
     }
 
     /**
