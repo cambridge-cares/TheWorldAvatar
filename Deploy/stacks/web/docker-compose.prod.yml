@@ -62,8 +62,11 @@ services:
   land-use:
     build:
       target: production
-
-
+      
+  # Flood Map
+  flood-map:
+    build:
+      target: production
 
 
 # Production network

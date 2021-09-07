@@ -15,3 +15,9 @@ Once any requirements have been addressed, the Image can be build using the foll
   + `docker run -d --restart always -v "$(pwd)":/usr/local/tippecanoe --name "tippecanoe" -it docker.cmclinnovations.com/tippecanoe:latest`
 + To push the image to the CMCL registry:
   + `docker image push docker.cmclinnovations.com/tippecanoe:latest`
+  
+  
+## Notes
+
+The following command was used to generate the crop map MBTile files for the land use visualisation:
+`tippecanoe -o output.mbtiles input.geojson`

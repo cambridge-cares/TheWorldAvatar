@@ -11,8 +11,8 @@ import javax.servlet.ServletContextEvent;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -64,20 +64,24 @@ public class BaseChimneyOntologyModelManager extends BaseOntologyModelManager {
     public static final String IRI_KB_BASE = IRI_KB + "base/";
 
     private static ConcurrentHashMap<String, String> speciesMap = new ConcurrentHashMap<>();
-    private static Logger logger = LoggerFactory.getLogger(BaseChimneyOntologyModelManager.class);
 
+     /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(BaseChimneyOntologyModelManager.class);
+    
     public void contextInitialized(ServletContextEvent sce) {
-        logger.info("initializing the local ontology manager");
+        LOGGER.info("initializing the local ontology manager");
         try {
             baseEntityModel = createBaseChimneyModel();
-            logger.info("createbase chimney is successful");
+            LOGGER.info("createbase chimney is successful");
         } catch (IOException e) {
-            logger.error("initializing the local ontology manager failed");
+            LOGGER.error("initializing the local ontology manager failed");
             throw new JPSRuntimeException("Could not create base model for chimney: " + PATH_BASE_CHIMNEY);
         } finally {
             setConcepts();
             setSpecies();
-            logger.info("setspecies is finished" + "species map size= "+ String.valueOf(speciesMap.size()));
+            LOGGER.info("setspecies is finished" + "species map size= "+ String.valueOf(speciesMap.size()));
         }
     }
 

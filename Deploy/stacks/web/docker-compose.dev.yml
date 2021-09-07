@@ -29,7 +29,12 @@ services:
     build:
       target: development
       
-      
+  # Flood Map
+  flood-map:
+    build:
+      target: development
+
+
 # Development network
 networks:
   default:
