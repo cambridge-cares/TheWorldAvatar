@@ -39,5 +39,8 @@ COPY docker/test-registry.json /root/.jps/test-registry.json
 # Expose port 8080
 EXPOSE 8080
 
+# Point to EmailAgent installation
+ENV EMAIL_AGENT_URL="http://kg.cmclinnovations.com:81/agent/email/email"
+
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

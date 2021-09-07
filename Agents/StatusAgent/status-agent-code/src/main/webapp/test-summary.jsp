@@ -8,8 +8,8 @@
         <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-        <script src="${pageContext.request.contextPath}/test-summary.js" type="text/javascript"></script>
-        <link href="${pageContext.request.contextPath}/style.css" type="text/css" rel="stylesheet">
+        <script src='./test-summary.js' type='text/javascript'></script>
+        <link href='./style.css' type='text/css' rel='stylesheet'>
 
         <title>Summary:</title>
 
@@ -66,7 +66,7 @@
             <div class="dashboard-button center-text" onclick="toDashboard()"><p>< Back to Dashboard</p></div>
             <div class="run-test-button center-text" onclick="runTest(this)" 
                  data-test="<% out.print(request.getAttribute("test-name")); %>"
-                 data-type="<% out.print(request.getAttribute("test-type")); %>">
+                 data-type="<% out.print(request.getAttribute("test-type"));%>">
                 <p>Run Test Now</p>
             </div>
         </div>

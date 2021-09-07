@@ -24,9 +24,9 @@ function onStubClick(testStub) {
     let testType = testStub.dataset.type;
 
     let winURL = window.location;
-    let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+    let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
     
-    let summaryURL = new URL(baseURL + "/dashboard");
+    let summaryURL = new URL(baseURL);
     summaryURL.searchParams.append("NAME", testName);
     summaryURL.searchParams.append("TYPE", testType);
     summaryURL.searchParams.append("LIMIT", 7);
@@ -37,7 +37,8 @@ function onStubClick(testStub) {
 function runTests() {
     if (confirm("Execute all tests now?")) {
         let winURL = window.location;
-        let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+        let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+        baseURL = baseURL.replace("/dashboard", "");
 
         $.ajax({
             url: baseURL + "/submit",

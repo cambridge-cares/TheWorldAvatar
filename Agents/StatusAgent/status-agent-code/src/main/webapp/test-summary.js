@@ -43,10 +43,10 @@ function onStubClick(testStub) {
     let testTime = testStub.dataset.time;
 
     let winURL = window.location;
-    let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+    let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
 
     $.ajax({
-        url: baseURL + "/dashboard",
+        url: baseURL,
         type: "GET",
         dataType: "html",
         data: {NAME: testName, TYPE: testType, TIME: testTime, LOG: "true"},
@@ -63,16 +63,17 @@ function onStubClick(testStub) {
 
 function toDashboard() {
     let winURL = window.location;
-    let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+    let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
 
-    let summaryURL = new URL(baseURL + "/dashboard");
+    let summaryURL = new URL(baseURL);
     window.open(summaryURL.href, "_self").focus();
 }
 
 function runTest(div) {
     if (confirm("Execute this test now?")) {
         let winURL = window.location;
-        let baseURL = winURL.protocol + "//" + winURL.host + "/" + winURL.pathname.split('/')[1];
+        let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+        baseURL = baseURL.replaceAll("/dashboard", "");
 
         let testName = div.dataset.test;
         let testType = div.dataset.type;
