@@ -79,7 +79,7 @@ init_stack_script $stack "Deploying the $stack stack in $mode mode\n\n"
 # Get yml filenames
 yml_fnames=$(get_yml_fnames $mode $process $use_test_config)
 if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
-yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /' -e 's/^/-f /')
+yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /g' -e 's/^/-f /')
 
 # Write environment variables to file so that docker-compose can pick them up
 env_filename="env.txt"
