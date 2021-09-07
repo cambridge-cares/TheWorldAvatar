@@ -74,7 +74,7 @@ services:
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
     build:
-        context: "../../../web/UKDigitalTwin/mapbox-vis"
+        context: "../../../web/UKDigitalTwin/power-system/mapbox-vis"
         dockerfile: "./docker/Dockerfile"
     container_name: "uk-power-system"
     restart: unless-stopped
@@ -114,6 +114,23 @@ services:
       - 4003:80
     labels:
       description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
+      authors: "support@cmclinnovations"
+      builder: "${BUILDER}"
+      hash: "${HASH}"
+      
+  
+  # Flood Map
+  flood-map:
+    image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-${MODE}
+    build:
+        context: "../../../web/UKDigitalTwin/flood-map"
+        dockerfile: "./docker/Dockerfile"
+    container_name: "flood-map"
+    restart: unless-stopped
+    ports:
+      - 3002:80
+    labels:
+      description: "HTTPD hosted mapbox visualisation of Flood Map visualisation."
       authors: "support@cmclinnovations"
       builder: "${BUILDER}"
       hash: "${HASH}"
