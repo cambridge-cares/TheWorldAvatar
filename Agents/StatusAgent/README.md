@@ -7,7 +7,7 @@ Once running in a central location, this agent (and it's associated webpage) wil
 
 ## Accessing the Status Agent
 
-To access the Status Agent's webpage, simply visit the `/dashboard` URL of the server the agent is running on. 
+To access the Status Agent's webpage, simply visit the `/dashboard` URL of the server the agent is running on. For the exact URL, please contact the CMCL administrators. 
 
 ## Building the Image
 The `docker` folder contains the required files to build a Docker Image for the StatusAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>, Owen Parry <oparry@cmclinnovations.com>).
@@ -31,7 +31,7 @@ The `repo_username.txt` file should contain your GitHub username, and the `repo_
 ### Docker Commands
 Once the requirements have been addressed, the Image can be built using the following methods. Note that once this code has been merged to the develop branch, it should be built as part of one of the existing Docker stacks.
 
-Be aware that the VERSION tag should match the current version of the software (which is listed within the `pom.xml` file). For more information on versioning, refer to the Wiki.
+Be aware that the VERSION tag listed in the compose file should match the current version of the software (which is listed within the `pom.xml` file). For more information on versioning, refer to the Wiki.
 
 + To pull the Image:
   + `docker-compose -f ./docker/docker-compose.yml pull`
@@ -39,5 +39,3 @@ Be aware that the VERSION tag should match the current version of the software (
   + `docker-compose -f ./docker/docker-compose.yml build --force-rm`
 + To generate a Container (i.e. run the Image):
   + `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
-
-For experienced Docker developers, a bash script has been provided (`quick-build.sh`) that allows all stages of the build to be cached and used to speed up future builds.
