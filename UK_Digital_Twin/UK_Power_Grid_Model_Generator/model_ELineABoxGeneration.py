@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 August 2021       #
+# Last Update Date: 06 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
@@ -26,6 +26,7 @@ import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologicalInformationPropertyInstance
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -50,6 +51,10 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 
 """Remote Endpoint lable"""
 topology_Endpoint = uk_topo.endpoint['lable']
+
+"""Blazegraph UK digital tiwn"""
+endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
@@ -114,8 +119,9 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
     else:
         print('Store is IOMemery')
         
-    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(topology_Endpoint, topoAndConsumpPath_Sleepycat, localQuery))
-   
+    # ELineTopoInfo = list(query_model.queryELineTopologicalInformation(topology_Endpoint, topoAndConsumpPath_Sleepycat, localQuery))
+    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(endpoint_label, topoAndConsumpPath_Sleepycat, localQuery))
+    
     if ELineTopoInfo == None:
         print('ELineTopoInfo is empty')
         return None
@@ -230,5 +236,5 @@ def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine)
     return ELine_Model
 
 if __name__ == '__main__':    
-    createModel_ELine('default', False, 10, 14, 2019, None, True)       
+    createModel_ELine('default', False, 10, 14, 2019, None, False)       
     print('Terminated')

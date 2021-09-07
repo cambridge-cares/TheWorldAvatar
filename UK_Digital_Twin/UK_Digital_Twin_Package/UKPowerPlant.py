@@ -5,7 +5,7 @@
 
 """This module declare the properties of generating UK Power Plant A-boxes OWL files"""
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 
 class UKPowerPlant:
     
@@ -16,7 +16,7 @@ class UKPowerPlant:
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"
     
     """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLable.UKPowerPlantKG
+    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerPlantKG
     
     """Conjunctive graph identifier"""
     identifier_powerPlantConjunctiveGraph = "http://www.theworldavatar.com/kb/ConjunctiveGraph/UKPowerPlant"

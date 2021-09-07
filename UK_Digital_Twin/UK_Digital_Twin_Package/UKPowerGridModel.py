@@ -5,12 +5,12 @@
 
 """This module declare the properties of generating UK power grid model A-boxes"""
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 
 valueKey = "value_"
 
 """Default remote endpoint"""
-endpoint = EndPointConfigAndBlazegraphRepoLable.UKPowerGridModelKG
+endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
 
 class UKEbusModel:
     

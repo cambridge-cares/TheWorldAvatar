@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 August 2021       #
+# Last Update Date: 06 Sept 2021         #
 ##########################################
 
 """This module is designed to generate the top node of UK digital twin."""
@@ -26,6 +26,7 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 import Top_Node_Generator.SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -109,6 +110,10 @@ energyConsumption_Endpoint = ukcon.endpoint['lable']
 topology_Endpoint = uk_topo.endpoint['lable']
 gridModel_Endpoint = UK_PG.endpoint['lable']
 
+"""Blazegraph UK digital tiwn"""
+endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
+
 """UK digital twin top node Conjunctive graph identifier"""
 ukdt_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin"
 
@@ -156,15 +161,14 @@ def addThirdLevelNode(graph):
 def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):
     if localQuery == False and remoteEndPoint != None:
         if nodeName == "UKPowerPlant2019": 
-            nodeList = query_topNode.queryPowerPlantNodeURL(remoteEndPoint, None, localQuery)           
+            nodeList = query_topNode.queryPowerPlantNodeURL(endpoint_label, None, localQuery)        
         elif nodeName == "UKEnergyConsumption2017": 
-            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, None, localQuery)    
-        #print(nodeList)
+            nodeList = query_topNode.queryUKEnergyConsumptionNodeURL(endpoint_label, None, localQuery) 
     elif SleepycatPath != None and localQuery == True:   
         if nodeName == "UKPowerPlant2019": 
-            nodeList = list(query_topNode.queryPowerPlantNodeURL(remoteEndPoint, SleepycatPath, localQuery))
+            nodeList = list(query_topNode.queryPowerPlantNodeURL(endpoint_label, SleepycatPath, localQuery))
         elif nodeName == "UKEnergyConsumption2017": 
-            nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryUKEnergyConsumptionNodeURL(endpoint_label, SleepycatPath, localQuery)) 
     for node in nodeList:
         if SleepycatPath != None and localQuery == True:  
             node = node[0]
@@ -184,18 +188,18 @@ def addFourthLevelNode_gridModel(graph):
 def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):     
    if localQuery == False:
         if nodeName == "EGen": 
-            nodeList = query_topNode.queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery)            
+            nodeList = query_topNode.queryEGenNodeURL(endpoint_label, SleepycatPath, localQuery)            
         elif nodeName == "EBus": 
-            nodeList = query_topNode.queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery)
+            nodeList = query_topNode.queryEBusNodeURL(endpoint_label, SleepycatPath, localQuery)
         elif nodeName == "ELine": 
-            nodeList = query_topNode.queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery)
+            nodeList = query_topNode.queryELineNodeURL(endpoint_label, SleepycatPath, localQuery)
    elif SleepycatPath != None and localQuery == True:   
         if nodeName == "EGen": 
-            nodeList = list(query_topNode.queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery))
+            nodeList = list(query_topNode.queryEGenNodeURL(endpoint_label, SleepycatPath, localQuery))
         elif nodeName == "EBus": 
-            nodeList = list(query_topNode.queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryEBusNodeURL(endpoint_label, SleepycatPath, localQuery))       
         elif nodeName == "ELine": 
-            nodeList = list(query_topNode.queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery))       
+            nodeList = list(query_topNode.queryELineNodeURL(endpoint_label, SleepycatPath, localQuery))       
    for node in nodeList:
        if SleepycatPath != None and localQuery == True:  
             node = node[0]
@@ -266,5 +270,5 @@ def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalO
     return
 
 if __name__ == '__main__':
-   generateTopNodeGraph('default', False, None, True)
+   generateTopNodeGraph('default', False, None, False)
    

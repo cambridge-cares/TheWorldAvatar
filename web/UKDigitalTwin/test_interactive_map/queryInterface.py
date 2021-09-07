@@ -23,7 +23,8 @@ def performQuery(kb, query, isQuery = True, isUpdate = False):
     # perform an example sparqle query, see the jps-base-lib docs for further details
     KGRouter = jpsBaseLib_view.KGRouter
     KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+ str(kb), isQuery, isUpdate)
-    if type(KGClient) == 'NoneType':       
+    #print(type(KGClient))
+    if str(type(KGClient)) == "NoneType":       
         print('KGClient in the query interfaced has not been created successfully. Please check if the endpoint is already added into the lookup table of Blazegraph.')
     response = KGClient.executeQuery((query))
     return str(response)
@@ -45,7 +46,7 @@ def performFederatedQuery(query, *queryendpoints):
         return None
     endpoints = []
     for ed in queryendpoints:
-        endpoints.append(str(ed))       
+        endpoints.append(str(ed))  
     response = RemoteKnowledgeBaseClient.executeFederatedQuery(endpoints, query)
     return str(response)
 
@@ -66,7 +67,7 @@ if __name__ == '__main__':
     
     }
     """ 
-    res = performFederatedQuery(queryStr, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
+    res = performFederatedQuery(queryStr, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")   
     print(res)
     
     

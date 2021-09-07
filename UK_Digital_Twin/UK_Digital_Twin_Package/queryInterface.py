@@ -38,14 +38,14 @@ def performUpdate(kb, query, isQuery = True, isUpdate = True):
     return str(response)
 
 def performFederatedQuery(query, *queryendpoints):
-    # perform an example sparqle query, see the jps-base-lib docs for further details
+    # perform an example sparqle query, see the jps-base-lib docs for further details   
     RemoteKnowledgeBaseClient = jpsBaseLib_view.RemoteKnowledgeBaseClient()
     if len(queryendpoints) == 0:
         print('Please specify the remote query endpoints.')
-        return None
+        return None    
     endpoints = []
-    for ed in queryendpoints:
-        endpoints.append(str(ed))       
+    for ed in queryendpoints:        
+        endpoints.append(str(ed))  
     response = RemoteKnowledgeBaseClient.executeFederatedQuery(endpoints, query)
     return str(response)
 

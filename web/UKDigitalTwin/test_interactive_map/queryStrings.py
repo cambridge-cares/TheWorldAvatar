@@ -1,8 +1,7 @@
-####################################################
-# Author: Wanni Xie (wx243@cam.ac.uk)              #
-# Extended from: Tom Savage (trs3@cam.ac.uk)       #
-# Last Update Date: 30 August 2021                 #
-####################################################
+##############################################
+# Author: Wanni Xie (wx243@cam.ac.uk)        #
+# Last Update Date: 06 Sept 2021             #
+##############################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
 
@@ -16,13 +15,11 @@ from shapely.wkt import loads
 from shapely.geometry import mapping
 import geojson
 import ast
-
-# sys.path.insert(0, '\\TheWorldAvatar\\UK_Digital_Twin\\')
-# from UK_Digital_Twin.UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
 from queryInterface import performQuery, performUpdate, performFederatedQuery
 
 """query the COMO RDF4j triple store for the UK power plant data from DUKES"""
 # The endpoint is: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG
+# the endpoint label used in the blazegraph is "ukdigitaltwin"
 def queryPowerPlantForVisualisation(powerPlantEndpoint):
     
   queryVar = ["?powerPlantIRI", "?numericalValue_x", "?numericalValue_y", "?Primary_Fuel_type", "?Plant_Generation_Technology", "?value_of_Designed_Capacity", "?Owner", "?Year_of_Build"]  
@@ -67,34 +64,20 @@ def queryPowerPlantForVisualisation(powerPlantEndpoint):
   
         }""" % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[0], queryVar[3], queryVar[4], queryVar[0], queryVar[5], queryVar[0], queryVar[6], queryVar[0], queryVar[7])
   
-  # performing SPARQL query  
-  sparql = SPARQLWrapper(powerPlantEndpoint)
-  sparql.setReturnFormat(JSON) 
-  sparql.setQuery(query_UKPowerPlant)
-  # print query time consumption
   start = time.time()
   print('Querying...')
-  ret = sparql.queryAndConvert()
+  ret = json.loads(performQuery(powerPlantEndpoint, query_UKPowerPlant))
   end = time.time()
   print('Finished in ',np.round(end-start,2),' seconds')
-  # parsing JSON SPARQL results into an array
-  ret = ret['results']['bindings']
-  #print(ret) #Unformatted
-  num_ret = len(ret)
-  num_query_var = len(queryVar) 
-  # assigning memory to results array 
-  ret_array = np.zeros((num_ret, num_query_var), dtype='object')
-  # iterating over results and allocating properties from query
-  for i in tqdm(range(num_ret)):
-      power_plant_name = ret[i][queryVar[0].strip("?")]['value'].split('#')
-      lon = ret[i][queryVar[1].strip("?")]['value']
-      lat = ret[i][queryVar[2].strip("?")]['value']
-      fuel = ret[i][queryVar[3].strip("?")]['value'].split('#')
-      gen_tech = ret[i][queryVar[4].strip("?")]['value'].split('#')
-      capacity = ret[i][queryVar[5].strip("?")]['value']
-      owner = ret[i][queryVar[6].strip("?")]['value']
-      built_year = ret[i][queryVar[7].strip("?")]['value']
-      ret_array[i,:] = [power_plant_name[1], lon, lat, fuel[1], gen_tech[1], capacity, owner, built_year]
+  
+  for r in ret:
+      for key in r.keys():
+          if '\"^^' in  r[key] :
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','')    
+  
+  ret_array = [[ str(r['powerPlantIRI'].split('#')[1]), float(r['numericalValue_x']), float(r['numericalValue_y']), str(r['Primary_Fuel_type'].split('#')[1]), \
+                 str(r['Plant_Generation_Technology'].split('#')[1]), float(r['value_of_Designed_Capacity']), str(r['Owner']), int(r['Year_of_Build'])] for r in ret ]
+  
   return ret_array
 
 
@@ -251,6 +234,246 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_en
   print("The number of the areas don't have the geo attibutes are: ", Num_no_geoInfoAreas, " which are listed as follow: ")
   print(No_geoInfoAreas)
   return ret_array 
+
+"""Query the UK electricity consumption data (total, domestic, industrial&conmercial) and its associated geo information, i.e. the boundaries of the places"""
+# electricity_consumption_endpoint: https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG
+# ONS_GEO_Info_endpoint: http://statistics.data.gov.uk/sparql.json
+def queryUKElectricityConsumptionAndAssociatedGEOInfo_test(regionOrArea, ukdigitaltwin, ONS):
+    
+  queryVar = ["?Location", "?Area_LACode", "?Area_id_url", "?Total_Electricity_Consumption", "?Domestic_Electricity_Consumption", "?Industrial_and_Commercial_Electricity_Consumption", "?Geo_Info"]  
+  selectClause = " ".join(queryVar)
+  
+  Area_id_url = "<http://statistics.data.gov.uk/id/statistical-geography/E09000011>"
+  queryVar[2] = Area_id_url
+  
+  query_UKElectricityConsumption_region = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT %s
+    
+    WHERE
+    {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    ?Area ontocape_upper_level_system:hasAddress %s .
+    ?Area ontocape_upper_level_system:hasAddress/db:areaCode %s .
+    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL %s .
+     
+    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue %s .
+
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
+    ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    
+    OPTIONAL { %s a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    %s ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT %s . }  
+    
+    } 
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5], queryVar[2], queryVar[2], queryVar[6])
+  
+  query_region = """
+    
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?Location ?Area_LACode ?Area_id_url ?Total_Electricity_Consumption ?Domestic_Electricity_Consumption ?Industrial_and_Commercial_Electricity_Consumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
+    
+    WHERE
+    {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    ?Area ontocape_upper_level_system:hasAddress ?Location .
+    ?Area ontocape_upper_level_system:hasAddress/db:areaCode ?Area_LACode .
+    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url .
+     
+    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?Total_Electricity_Consumption .
+
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Domestic_Electricity_Consumption . 
+    
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
+    ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Industrial_and_Commercial_Electricity_Consumption . 
+    
+    OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area_id_url ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT ?Geo_Info . }      
+    
+    } GROUP BY ?Location ?Area_LACode ?Area_id_url ?Total_Electricity_Consumption ?Domestic_Electricity_Consumption ?Industrial_and_Commercial_Electricity_Consumption
+
+    """ 
+    
+  query_UKElectricityConsumption_area = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    SELECT DISTINCT %s
+    
+    WHERE
+    {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
+    ?Area ontocape_upper_level_system:hasAddress %s .
+    ?Area ontocape_upper_level_system:hasAddress/db:areaCode %s .
+    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL %s .
+     
+    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue %s .
+
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
+    ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s . 
+    
+    OPTIONAL { %s a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    %s ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT %s . }      
+    
+    }
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5], queryVar[2], queryVar[2], queryVar[6])
+  
+  counter = 0
+  Num_no_geoInfoAreas = 0
+  No_geoInfoAreas = []
+  
+  # print(query_UKElectricityConsumption_region)
+  
+  start = time.time()
+  print('Federated Querying ONS and UK Digital Twin...')
+
+  if regionOrArea == True:    
+      ret = json.loads(performFederatedQuery(query_region, ukdigitaltwin, ONS))    
+  else:
+      ret = json.loads(performFederatedQuery(query_UKElectricityConsumption_area, ukdigitaltwin, ONS))    
+      
+  print(len(ret)) 
+  end = time.time()
+  print("******************The query results report******************")
+  print('Finished in ',np.round(end-start,2),' seconds')  
+      
+  for r in ret:
+      for key in r.keys():
+          if '\"^^' in  r[key] :
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+            
+  # polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) #extract the elements of the original dict
+  # geojson_string = geojson.dumps(mapping(loads(polygon_point_unformatted_string)))
+  # geojson_dict = ast.literal_eval(geojson_string) 
+
+  ret_array = [[ str(r['Location'].split("resource/")[1]), str(r['Area_LACode']), float(r['Total_Electricity_Consumption']), float(r['Domestic_Electricity_Consumption']), \
+                 float(r['Industrial_and_Commercial_Electricity_Consumption']), str(r['Geo_Info'])] for r in ret ]
+      
+  for r in ret_array:
+      print(r[5], len(r[5]))
+      if "***" in r[5]:
+          r[5] = r[5].split("***")[0]
+      geojson_string = geojson.dumps(mapping(loads(r[5][0])))
+      r[5] = ast.literal_eval(geojson_string) 
+      
+  # print(ret_array)    
+  
+  
+  for r in ret_array:
+       geojson_string = geojson.dumps(mapping(loads(r[5])))
+       r[5] = ast.literal_eval(geojson_string) 
+      
+      
+  # parsing JSON SPARQL results into an array
+  ret = ret['results']['bindings']
+  num_ret = len(ret)
+  num_query_var = len(queryVar) 
+  # assigning memory to results array 
+  ret_array = np.zeros((num_ret, num_query_var), dtype='object')
+  # iterating over results and allocating properties from query
+  counter = 0
+  Num_no_geoInfoAreas = 0
+  No_geoInfoAreas = []
+  
+  print('Querying UK ONS geometry Data...')  
+  
+  for i in tqdm(range(num_ret)):
+      Location = ret[i][queryVar[0].strip("?")]['value'].split("resource/")[1]
+      Area_LACode = ret[i][queryVar[1].strip("?")]['value']
+      Area_id_url = ret[i][queryVar[2].strip("?")]['value']
+      TotalELecConsumption = ret[i][queryVar[3].strip("?")]['value']
+      DomesticConsumption = ret[i][queryVar[4].strip("?")]['value']
+      Industrial_and_Commercial = ret[i][queryVar[5].strip("?")]['value']
+     
+      print(Location)
+      print("Area_id_url is:", Area_id_url)
+      
+      ##############################################
+      # print("###############Testing#################")
+ 
+      # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E07000201"
+      # # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E09000003" # has two polygons
+      # # Area_id_url = "http://statistics.data.gov.uk/id/statistical-geography/E09000011" # has two multipolygons
+      # print("Testing Area_id_url is: ", Area_id_url)
+      ##############################################
+      query_ONS = """
+           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+           PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+           PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+           PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+           PREFIX db: <https://dbpedia.org/ontology/>
+           PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+           PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+           PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+           SELECT DISTINCT ?Geo_Info 
+           WHERE
+           {
+           <http://statistics.data.gov.uk/id/statistical-geography/E07000204> a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+           <http://statistics.data.gov.uk/id/statistical-geography/E07000204> ont:hasGeometry ?geometry . 
+           ?geometry ont_sparql:asWKT ?Geo_Info . 
+        
+           }
+           """ # % (Area_id_url, Area_id_url) 
+         
+  #     # performing SPARQL query  
+  #     sparql = SPARQLWrapper(ONS_GEO_Info_endpoint)
+  #     sparql.setReturnFormat(JSON) 
+  #     sparql.setQuery(query_ONS)
+  #     geo = sparql.queryAndConvert()
+      
+  #     if str(geo['results']['bindings']) == "[]":
+  #         print(Area_id_url, "does't have the geographical attributes.")
+  #         Num_no_geoInfoAreas += 1
+  #         No_geoInfoAreas.append(Area_id_url)
+  #         continue
+  #     polygon_point_unformatted_string =str(geo['results']['bindings'][0]["Geo_Info"]['value']) #extract the elements of the original dict
+  #     geojson_string = geojson.dumps(mapping(loads(polygon_point_unformatted_string)))
+  #     geojson_dict = ast.literal_eval(geojson_string) 
+  #     ret_array[i,:] = [Location, Area_LACode, TotalELecConsumption, DomesticConsumption, Industrial_and_Commercial, geojson_dict]            
+  #     counter += 1
+      
+  # end = time.time()
+  
+  # print("******************The query results report******************")
+  # print('Finished in ',np.round(end-start,2),' seconds')  
+  # print("The total number of the areas are: ", counter)
+  # print("The number of the areas don't have the geo attibutes are: ", Num_no_geoInfoAreas, " which are listed as follow: ")
+  # print(No_geoInfoAreas)
+  return ret_array 
+
 
 """This function is used for query the bus model parameters and input variables from the grid model endpoint and query the location of the bus from the grid topology endpoint"""
 # topoEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology"
@@ -637,15 +860,133 @@ def queryUKSDGIndicatorForVisualisation():
 
 if __name__ == '__main__': 
     electricity_consumption_RDF4j_Endpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"
-    ONS = "http://statistics.data.gov.uk/sparql"
+    # ONS = "http://statistics.data.gov.uk/sparql"
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     pp = 'https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG'
     topoEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology"
-    busModelEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"
-    # res = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS_json, False)
+    busModelEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"    
+    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
+    endpoint_label = "ukdigitaltwin"
+   
+    
+    
+    query_ONS = """
+           PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+           PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+           PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+           PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+           PREFIX db: <https://dbpedia.org/ontology/>
+           PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+           PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+           PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+           SELECT DISTINCT ?areaURL ?Geo_Info 
+           WHERE
+           {               
+           ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL ?areaURL .    
+               
+           OPTIONAL {?areaURL a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+            ?areaURL ont:hasGeometry ?geometry . 
+            ?geometry ont_sparql:asWKT ?Geo_Info .} 
+        
+           } LIMIT 3
+           """
+           
+    query_ons_ukdigitaltwin = """
+    
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?Location ?Area_LACode ?Area_id_url ?Total_Electricity_Consumption ?Domestic_Electricity_Consumption ?Industrial_and_Commercial_Electricity_Consumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
+    
+    WHERE
+    {
+    ?Area ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    ?Area ontocape_upper_level_system:hasAddress ?Location .
+    ?Area ontocape_upper_level_system:hasAddress/db:areaCode ?Area_LACode .
+    ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url .
+     
+    ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?Total_Electricity_Consumption .
+
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Domestic_Electricity_Consumption . 
+    
+    ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
+    ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Industrial_and_Commercial_Electricity_Consumption . 
+    
+    OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area_id_url ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT ?Geo_Info . }      
+    
+    } GROUP BY ?Location ?Area_LACode ?Area_id_url ?Total_Electricity_Consumption ?Domestic_Electricity_Consumption ?Industrial_and_Commercial_Electricity_Consumption
+
+    """
+    
+    test_polygon_num = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX mathematical_relation: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#>
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?Location ?Area_LACode ?Total_Electricity_Consumption ?Domestic_Electricity_Consumption ?Industrial_and_Commercial_Electricity_Consumption 
+    SELECT ?geometry (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
+    
+    WHERE
+    {
+    # ?Area ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    # ?Area ontocape_upper_level_system:hasAddress ?Location .
+    # ?Area ontocape_upper_level_system:hasAddress/db:areaCode ?Area_LACode .
+    # ?Area ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url .
+     
+    # ?Area ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    # ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?Total_Electricity_Consumption .
+
+    # ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfDemesticElectricityConsumption ?Domestic . 
+    # ?Domestic ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Domestic_Electricity_Consumption . 
+    
+    # ?Area ontoeip_system_function:consumes/mathematical_relation:ConsistsOfIndustrialAndCommercialConsumption ?Industrial_and_Commercial . 
+    # ?Industrial_and_Commercial ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Industrial_and_Commercial_Electricity_Consumption . 
+    
+    <http://statistics.data.gov.uk/id/statistical-geography/E09000011> a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    <http://statistics.data.gov.uk/id/statistical-geography/E09000011> ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT ?Geo_Info .
+    
+    }  GROUP BY ?geometry
+    """
+    
+    # res = queryPowerPlantForVisualisation(endpoint_label)
+    # res = queryUKElectricityConsumptionAndAssociatedGEOInfo_test(True, ukdigitaltwinendpoint, ONS_json)
+    
+    # res = performFederatedQuery(test_polygon_num, ukdigitaltwinendpoint, ONS_json )
+    res = json.loads(performFederatedQuery(query_ons_ukdigitaltwin, ukdigitaltwinendpoint, ONS_json ))
+    # print(res)
+    # print(res[0]["geometry"], res[0]["Geo_InfoList"])
+    # print(len(res))
+    # n = res[0]["Geo_InfoList"].count("MULTIPOLYGON")
+    # print("The num of geo", n)
+    
+    # res[0]["Geo_InfoList"] = res[0]["Geo_InfoList"].split("***")[0]
+    # # num = len(res[0]["Geo_InfoList"])
+    # n = res[0]["Geo_InfoList"].count("MULTIPOLYGON")
+    # print("The num of geo", n)
+    
+    print(len(res))
+    
+    
+    # print(len(res[0]["Geo_Info"]))
     
     # res = queryGridModeltForVisualisation_Bus(topoEndpoint, busModelEndpoint)
-    res  = queryGridModeltForVisualisation_Branch("ukpowergridmodel", "ukpowergridtopology")
+    # res  = queryGridModeltForVisualisation_Branch("ukpowergridmodel", "ukpowergridtopology")
     # for r in res:
     #     print(r)
-    print(type(res))
+    # print(res)

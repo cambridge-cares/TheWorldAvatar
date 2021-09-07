@@ -5,10 +5,10 @@
 
 """This module defines the function used to update the Lookup table in the Blazegraph"""
 import json
-from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from queryInterface import performQuery, performUpdate
+import EndPointConfigAndBlazegraphRepoLabel
 
-lookupTableLable = EndPointConfigAndBlazegraphRepoLable.lookupTable['lable']
+lookupTableLable = EndPointConfigAndBlazegraphRepoLabel.lookupTable['lable']
 
 """updateLookUpTable Function can operate as a updater with three modes, adding new repo information, deleting the existing ones or modify the lookup table, e.g. replacing the lable name, etc."""
 # The default mode is adding/inserting.
@@ -46,7 +46,7 @@ def updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label
                     """ % (endpoint_iri, queryendpoint_iri, endpoint_iri, updateendpoint_iri, endpoint_iri, endpoint_iri, label)
             
             performUpdate(lookupTableLable, update_repo_info)      
-            print('The new repository information has been updated in the lookup table in Blazegraph.')   
+            print('The new repository information is added in the lookup table in Blazegraph.')   
             return 
         elif len(repo_endpoint_iri) == 0 and isDelete == True:
             # running in a delete mode
@@ -92,9 +92,11 @@ def deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateen
    
         
 if __name__ == '__main__': 
-    endpoint_iri = "http://www.theworldavatar.com/kb/ontokgrouter/ukpowergridmodel"
-    queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"
-    updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel/statements"
-    label = "ukpowergridmodel"
+    endpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    queryendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    updateendpoint_iri = "http://statistics.data.gov.uk/sparql.json"
+    # queryendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin"
+    # updateendpoint_iri = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"
+    label = "ons"
     # deleteLookUpTable_withoutResources(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label)
-    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True, False)
+    updateLookUpTable(endpoint_iri, queryendpoint_iri, updateendpoint_iri, label, True,False)

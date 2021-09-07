@@ -1,7 +1,7 @@
-####################################################
-# Author: Wanni Xie (wx243@cam.ac.uk)              #
-# Last Update Date: 31 August 2021                 #
-####################################################
+##############################################
+# Author: Wanni Xie (wx243@cam.ac.uk)        #
+# Last Update Date: 06 Sept 2021             #
+##############################################
 
 from GPSLocationChecker import check_GPS_char, GPS_special_chars, check_GPS
 from queryStrings import queryPowerPlantForVisualisation, queryUKElectricityConsumptionAndAssociatedGEOInfo, queryGridModeltForVisualisation_Bus, queryGridModeltForVisualisation_Branch

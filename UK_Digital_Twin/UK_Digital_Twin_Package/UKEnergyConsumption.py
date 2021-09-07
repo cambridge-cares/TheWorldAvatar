@@ -5,7 +5,7 @@
 
 """This module declare the properties of generating UK Energy Consumption A-boxes"""
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 
 class UKEnergyConsumption:
     
@@ -16,7 +16,7 @@ class UKEnergyConsumption:
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     
     """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLable.UKEnergyConsumptionKG
+    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKEnergyConsumptionKG
     
     """Node keys"""
     TotalConsumptionKey = "Total_Electricity_Consumption_of_"

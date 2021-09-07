@@ -9,7 +9,7 @@
 # i. e. the data in Level 3 KG is processed based on the raw data from Level 1 and 3 
 # Level 1 KG are powerPlant, energyConsumption; Level 2 KG contains gridTopology; Level 3 KG includes powerGridModel.
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 
 class UKDigitalTwin:
     
@@ -26,7 +26,7 @@ class UKDigitalTwin:
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     
     """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLable.UKDigitalTwinKG
+    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKDigitalTwinKG
     
     """ Node Names """
     baseURL = "http://www.theworldavatar.com/kb" 

@@ -5,7 +5,7 @@
 
 """This module declare the properties of generating UK power grid topology A-boxes"""
 
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel
 
 class UKPowerGridTopology:
     
@@ -16,7 +16,7 @@ class UKPowerGridTopology:
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     
     """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLable.UKGridTopologylKG
+    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKGridTopologylKG
     
     """Bus Node keys"""
     EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"

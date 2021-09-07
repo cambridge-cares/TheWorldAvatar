@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 August 2021       #
+# Last Update Date: 06 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -24,6 +24,7 @@ from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
 """Notation used in URI construction"""
@@ -51,8 +52,12 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 ukec = UKec.UKEnergyConsumption()
 
 """Remote Endpoint lable and queryendpoint_iri"""
-topology_ferderated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
-energyConsumption_ferderated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
+topology_federated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
+energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
+
+"""Blazegraph UK digital tiwn"""
+endpoint_label = endpointList.ukdigitaltwin['lable'] # remote query
+endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
@@ -116,7 +121,7 @@ def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath
         topoAndConsumpPath_Sleepycat = None
         print('Store is IOMemery')
         
-    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat, localQuery, topology_ferderated_query_Endpoint, energyConsumption_ferderated_query_Endpoint))
+    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat, localQuery, endpoint_url))
     EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
     
     if EBus == None:
@@ -236,5 +241,5 @@ def initialiseEBusModelVar(EBus_Model, EBus):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, None, True)       
+    createModel_EBus('default', False, 2019, None, False)       
     print('Terminated')

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 August 2021       #
+# Last Update Date: 06 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -27,6 +27,7 @@ from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPDLocation
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
 
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
 
@@ -68,11 +69,15 @@ defaultStoredPath = uk_topo.StoreGeneratedOWLs
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 
-"""Remote Endpoint lable"""
-powerPlant_Endpoint = ukpp.endpoint['lable']
-topology_Endpoint = uk_topo.endpoint['lable']
-topology_federated_query_ep = uk_topo.endpoint['queryendpoint_iri']
-energyConsumption_federated_query_ep = ukec.endpoint['queryendpoint_iri']
+# """Remote Endpoint lable"""
+# powerPlant_Endpoint = ukpp.endpoint['lable']
+# topology_Endpoint = uk_topo.endpoint['lable']
+# topology_federated_query_ep = uk_topo.endpoint['queryendpoint_iri']
+# energyConsumption_federated_query_ep = ukec.endpoint['queryendpoint_iri']
+
+"""Blazegraph UK digital tiwn"""
+endpoint_label = endpointList.ukdigitaltwin['lable']
+endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Root_node and root_uri"""
 root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
@@ -252,7 +257,7 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
         ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)              
         # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
         gpsArray = []
-        gpsArray = list(query_topo.queryBusGPS(topology_Endpoint, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
+        gpsArray = list(query_topo.queryBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
         Eline_length = DistanceBasedOnGPDLocation(gpsArray[0])
         print(Eline_length)      
         # PowerFlow_ELine node uri
@@ -325,12 +330,12 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
         print('The bus model factor data header is not matched, please check the data file')
         return None
     
-    res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph, localQuery, topology_federated_query_ep, energyConsumption_federated_query_ep))
+    res_BusLocatedRegion= list(query_topo.queryBusLocation(ConjunctiveGraph, localQuery, endpoint_url))
     print('#########START addEGenNodes##############')
     for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
-        bus_location[1] = str(bus_location[1]).replace('http:', 'https:')
+        # bus_location[1] = str(bus_location[1]).replace('http:', 'https:')
         print(bus_location[1])     
-        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(powerPlant_Endpoint, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))        
+        res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(endpoint_label, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))  
         local_counter = 1
         while local_counter <= len(res_powerplant):
             for pg in res_powerplant: # pg[0]: powerGenerator, pg[1]: PrimaryFuel; pg[2]: GenerationTechnology
@@ -365,9 +370,7 @@ def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery):
                     graph = AddCostAttributes(graph, counter, 7, modelFactorArrays)
                 
                 counter += 1               
-                local_counter += 1
-        # print('Counter is ', counter)
-        # print('Local counter is ', local_counter)           
+                local_counter += 1     
     return graph, nodeName   
 
 def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
@@ -416,6 +419,6 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
 
 if __name__ == '__main__':    
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
-    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
+    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, False)
+    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, False)
     print('Terminated')
