@@ -7,16 +7,7 @@ Once running in a central location, this agent (and it's associated webpage) wil
 
 ## Accessing the Status Agent
 
-To access the Status Agent's webpage, simply visit the `/status` URL of the server the agent is running on. 
-
-The following URLs are also made available via HTTP requests:
-
-* `/status/list-tests`: Provides a list of all available tests.
-* `/status/test=TESTNAME`: Execute the test with the input name.
-
-## Adding new tests
-
-TODO
+To access the Status Agent's webpage, simply visit the `/dashboard` URL of the server the agent is running on. 
 
 ## Building the Image
 The `docker` folder contains the required files to build a Docker Image for the StatusAgent service; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>, Owen Parry <oparry@cmclinnovations.com>).

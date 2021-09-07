@@ -6,16 +6,33 @@ services:
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     build:
-      context: "../"
+      context: "../../../Agents/EmailAgent"
       dockerfile: "./docker/Dockerfile"
     container_name: email-agent
     hostname: email-agent
     restart: unless-stopped
     ports:
-      - "8099:8080"  
+      - "8088:8080"  
     labels:
       description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
       authors: "mdhillman@cmclinnovations.com"
+      
+  # Status Agent
+  status-agent:
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/StatusAgent"
+      dockerfile: "./docker/Dockerfile"
+    container_name: status-agent
+    hostname: status-agent
+    restart: unless-stopped
+    ports:
+      - "8087:8080"  
+    labels:
+      description: "Simple servlet to run KG availability tests and display results."
+      authors: "mdhillman@cmclinnovations.com"
+    volumes:
+      - status-agent:/root/.jps
 
   # Gas Grid Agent
   gas-grid-agent:
@@ -89,3 +106,4 @@ services:
 volumes:
   driver:
   mpi:
+  status-agent:
