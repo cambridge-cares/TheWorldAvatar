@@ -2,6 +2,11 @@ version: "3.8"
 
 services:
 
+  # Flood Map
+  flood-map:
+    ports:
+      - 50085:80
+
   # Land Use Crop Map
   land-use:
     ports:
