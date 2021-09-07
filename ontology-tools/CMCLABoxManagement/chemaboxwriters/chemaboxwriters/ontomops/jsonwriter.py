@@ -3,7 +3,7 @@ from chemaboxwriters.common.randomidgenerator import get_random_id
 import chemaboxwriters.common.commonvars as commonv
 from chemaboxwriters.ontomops.prefixes import omops_entry_prefix
 
-def omops_json_abox_from_string(data, calc_id=""):
+def om_jsonwriter(data, calc_id=""):
     data = json.loads(data)
 
     if not calc_id:

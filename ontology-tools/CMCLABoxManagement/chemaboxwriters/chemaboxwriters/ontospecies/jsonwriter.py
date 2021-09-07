@@ -31,7 +31,7 @@ PUBCHEM_CID='PubchemCID'
 ATOM_LIST='AtomsList'
 ATOM_COUNTS='AtomsCounts'
 
-def compchem_osjson_abox_from_string(data, calc_id=""):
+def os_jsonwriter(data, calc_id=""):
     data = json.loads(data)
 
     data_out = {}

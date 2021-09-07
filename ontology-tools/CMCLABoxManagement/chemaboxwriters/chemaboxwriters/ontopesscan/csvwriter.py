@@ -8,14 +8,14 @@ from  chemaboxwriters.ontopesscan.prefixes import spec_pref, \
                                                   unit_pref, \
                                                   onto_spec, \
                                                   onto_comp, \
-                                                  onto_pes 
-from chemaboxwriters.ontopesscan.opsjsonstagewriter import SCAN_COORDINATE_ATOMS_IRIS, \
-                                                           SCAN_COORDINATE_TYPE, \
-                                                           SCAN_COORDINATE_UNIT, \
-                                                           SCAN_COORDINATE_VALUE, \
-                                                           SCAN_POINTS_JOBS                                             
-                                                          
-def pesscan_csv_abox_from_string(data):
+                                                  onto_pes
+from chemaboxwriters.ontopesscan.jsonwriter import SCAN_COORDINATE_ATOMS_IRIS, \
+                                                   SCAN_COORDINATE_TYPE, \
+                                                   SCAN_COORDINATE_UNIT, \
+                                                   SCAN_COORDINATE_VALUE, \
+                                                   SCAN_POINTS_JOBS
+
+def ops_csvwriter(data):
     data = json.loads(data)
     spec_IRI=data[commonv.SPECIES_IRI]
     calc_id = data[commonv.ENTRY_UUID]
@@ -67,18 +67,18 @@ def write_scanpoints(spamwriter,entryIRI,calc_id,data):
         spamwriter.writerow([data[SCAN_POINTS_JOBS][k],'Instance',onto_comp + '#' + gauss_type,'','',''])
         spamwriter.writerow([pes_pref + 'ScanPoint_' + calc_id + '_' + str(k+1),'Instance',
                                 data[SCAN_POINTS_JOBS][k],onto_pes + '#hasCalculation','',''])
-        
+
         spamwriter.writerow([pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),'Instance',onto_pes + '#ScanCoordinateValue',
                                 '','',''])
         spamwriter.writerow([pes_pref + 'ScanPoint_' + calc_id + '_' + str(k+1),'Instance',
                                 pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),
                                 onto_pes + '#hasScanCoordinateValue','',''])
         spamwriter.writerow([gain_pref + 'hasValue','Data Property',pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),
-                                '',data[SCAN_COORDINATE_VALUE][k],'String'])  
+                                '',data[SCAN_COORDINATE_VALUE][k],'String'])
         if data[SCAN_COORDINATE_UNIT] == 'Angstrom':
             spamwriter.writerow([pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),'Instance',
                                     unit_pref + 'unit#Angstrom',gain_pref + 'hasUnit','',''])
-        
+
         elif data[SCAN_COORDINATE_UNIT] == 'Degrees':
             spamwriter.writerow([pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),'Instance',
                                     unit_pref + 'unit#DegreeAngle',gain_pref + 'hasUnit','',''])

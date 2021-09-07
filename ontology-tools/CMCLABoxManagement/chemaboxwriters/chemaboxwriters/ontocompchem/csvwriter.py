@@ -23,7 +23,7 @@ formula_clean_re = re.compile('(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)')
 
 end_suf = '.owl' #We are writing owl files
 
-def compchem_csv_abox_from_string(data):
+def oc_csvwriter(data):
     data = json.loads(data)
     spec_IRI=data[commonv.SPECIES_IRI]
     calc_id = data[commonv.ENTRY_UUID]
@@ -69,7 +69,7 @@ def formula_clean(formula):
     return clean_form
 
 def write_initial(spamwriter,jobIRI, calc_id,spec_IRI):
-    #This is all the initialization part of the ABox        
+    #This is all the initialization part of the ABox
     spamwriter.writerow(['ABoxOntoCompChem','Ontology',onto_pref,'http://www.w3.org/2002/07/owl#imports','',''])
     spamwriter.writerow(['ABoxOntoCompChem','Ontology',comp_pref[:-1],'base','',''])
     spamwriter.writerow([jobIRI, 'Instance',onto_pref + '#G09','','',''])

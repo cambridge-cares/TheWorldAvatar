@@ -1,7 +1,4 @@
-from chemaboxwriters.kgoperations.querytemplates import get_species_iri
-from chemutils.obabelutils import obConvert
 from chemutils.mathutils import getXYZPointsDistance
-from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.randomidgenerator import get_random_id
 import json
 import numpy as np
@@ -14,7 +11,7 @@ SCAN_COORDINATE_UNIT='ScanCoordinateUnit'
 SCAN_COORDINATE_VALUE='ScanCoordinateValue'
 SCAN_POINTS_JOBS='ScanPointsJobs'
 
-def compchem_opsjson_abox_from_string(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
+def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
     data_out ={}
     data_out[commonv.SPECIES_IRI] = os_iris.split(',')
     data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(',')
