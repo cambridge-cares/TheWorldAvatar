@@ -1,0 +1,175 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"
+         xmlns="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"
+         xmlns:term="http://purl.org/dc/terms/">
+
+<owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl">
+  <owl:versionIRI rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"/>
+  <term:creator rdf:resource="http://identifiers.kmi.open.ac.uk/people/carlos-pedrinaci"/>
+  <term:creator rdf:resource="http://jacek.cz/#me"/>
+  <term:creator rdf:resource="http://kmi.open.ac.uk"/>
+  <term:creator rdf:resource="http://kmi.open.ac.uk/people/member/luca-panziera"/>
+  <rdfs:label xml:lang="en">Minimal Service Model</rdfs:label>
+  <owl:versionInfo>1.3</owl:versionInfo>
+  <term:created rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</term:created>
+  <term:description xml:lang="en">This is a simple ontology that provides the core vocabulary for capturing service properties</term:description>
+  <term:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2010-03-10</term:issued>
+  <term:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2011-12-03</term:modified>
+  <term:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2012-03-14</term:modified>
+  <term:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-05-03</term:modified>
+  <term:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2013-11-21</term:modified>
+  <term:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2014-09-03</term:modified>
+</owl:Ontology>
+
+<owl:ObjectProperty rdf:about="#hasFault">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="#MessageContent"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasInput">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="#MessageContent"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasInputFault">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="#MessageContent"/>
+  <rdfs:subPropertyOf rdf:resource="#hasFault"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasMandatoryPart">
+  <rdfs:subPropertyOf rdf:resource="#hasPart"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasPart">
+  <rdfs:subPropertyOf rdf:resource="#hasPartTransitive"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasMemoryRequirement">
+  <rdfs:domain rdf:resource="#Service"/>
+  <rdfs:range rdf:resource="http://cookingbigdata.com/linkeddata/ccinstances/#ram"/>
+  <rdfs:comment>This property links to the node describing the Memory requirement for running this agent</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasObjectValue">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasOperation">
+  <rdfs:domain rdf:resource="#Service"/>
+  <rdfs:range rdf:resource="#Operation"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasOptionalPart">
+  <rdfs:subPropertyOf rdf:resource="#hasPart"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasOutput">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="#MessageContent"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasOutputFault">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="#MessageContent"/>
+  <rdfs:subPropertyOf rdf:resource="#hasFault"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasPartTransitive">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="#MessagePart"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasUnit">
+  <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <rdfs:comment>This property links to the unit of a quantity</rdfs:comment>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#hasQualifier">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="#MessagePart"/>
+</owl:ObjectProperty>
+
+<owl:DatatypeProperty rdf:about="#hasDataValue">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasHttpUrl">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasName">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasNumberOfCore">
+  <rdfs:domain rdf:resource="#Service"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+  <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+  <rdfs:comment>This property indicates the number of CPU cores the service requires</rdfs:comment>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasType">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#isArray">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasNerLabel">
+  <rdfs:domain rdf:resource="#MessagePart"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:DatatypeProperty rdf:about="#hasQuestionTemplates">
+  <rdfs:domain rdf:resource="#Operation"/>
+  <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+</owl:DatatypeProperty>
+
+<owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/created"/>
+
+<owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/creator"/>
+
+<owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/description"/>
+
+<owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/issued"/>
+
+<owl:AnnotationProperty rdf:about="http://purl.org/dc/terms/modified"/>
+
+<owl:Class rdf:about="#Operation"/>
+
+<owl:Class rdf:about="#MessageContent">
+  <rdfs:subClassOf rdf:resource="#MessagePart"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Service"/>
+
+<owl:Class rdf:about="http://cookingbigdata.com/linkeddata/ccinstances/#ram">
+  <rdfs:comment>Random-access memory</rdfs:comment>
+</owl:Class>
+
+<owl:Class rdf:about="#MessagePart"/>
+
+<owl:Class rdf:about="#Gigabyte">
+  <rdfs:comment>This concept describes the mutiple of the unit byte for digital information, which is 10^9 bytes.</rdfs:comment>
+</owl:Class>
+
+<rdf:Description rdf:about="#isGroundedIn">
+  <rdfs:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl"/>
+  <rdfs:label xml:lang="en">is grounded in</rdfs:label>
+</rdf:Description>
+
+
+</rdf:RDF>

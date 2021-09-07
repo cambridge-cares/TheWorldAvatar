@@ -8,8 +8,6 @@ node wiki_retrieve_species.js # get the URI and SMILES of species
 python CREATE_FULL_URI_LIST.python
 
 
-
-
 echo 'start to retrieve species from wiki'
 pause
 

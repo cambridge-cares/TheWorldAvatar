@@ -1,5 +1,4 @@
 import json
-import math
 import random
 import re
 import os
@@ -63,6 +62,33 @@ def process_equations(equation):
                                                                                random.choice([' add_sign ', ' and ']))
 
     return equation, random_species, half_equation, reactants_string, products_string
+
+
+def query_pce():
+    name = 'query_pce_agent'
+    questions = []
+    with open(os.path.join(TRAINING_FILES_DIR, 'PCE_SMILES_LIST')) as f:
+        PCE_SMILES_LIST = json.loads(f.read())
+        f.close()
+    properties = ['pce', 'power conversion efficiency']
+    template_1 = '[%s](attribute) OPV with SMILES [%s](species)'
+    template_2 = '[%s](attribute) of [%s](species)'
+    templates = [template_1, template_2]
+    for pce_smiles in PCE_SMILES_LIST:
+        template = random.choice(templates)
+        attribute = random.choice(properties)
+        question = template % (attribute, pce_smiles)
+        questions.append(question)
+
+    block = '\n ## intent:%s\n' % name + '\n - ' + '\n - '.join(questions)
+    return block
+
+
+
+def query_thermocalculation():
+    name = 'query_thermo_agent'
+    questions = []
+
 
 
 # 'what is the reaction rate of xx + xx '
@@ -275,11 +301,8 @@ with open(get_file_folder_dir('ontocompchem_properties')) as f:
     ontocompchem_properties = json.loads(f.read())
     f.close()
 
-<<<<<<< Updated upstream
-with open('../Wiki_training_material_generation/FORMULA_NAME_DICT') as f:
-=======
+
 with open(get_file_folder_dir('FORMULA_NAME_DICT')) as f:
->>>>>>> Stashed changes
     FORMULA_NAME_DICT = json.loads(f.read())
     f.close()
 
@@ -292,7 +315,7 @@ ontokin_species = json.loads(ontokin_species_and_equations['species'])
 ontokin_equations = json.loads(ontokin_species_and_equations['equations'])
 
 full_block = query_thermodynamic() + '\n' + query_quantum_chemistry() + '\n' + query_reaction_property() + '\n' \
-             + select_mechanism_by_reaction() + '\n' + select_reaction_by_species()
+             + select_mechanism_by_reaction() + '\n' + select_reaction_by_species() + '\n' + query_pce()
 full_block = full_block.lower()
 
 _RE_COMBINE_WHITESPACE = re.compile(r"[ ]+")

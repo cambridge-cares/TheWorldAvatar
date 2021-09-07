@@ -4,6 +4,7 @@ intents:
   - query_reaction_property
   - query_quantum_chemistry
   - query_thermodynamic
+  - query_pce
 
 entities:
   - to
