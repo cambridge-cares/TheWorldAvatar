@@ -36,6 +36,7 @@ http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-1
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#hasSymmetryPointGroup,Data Property,http://www.theworldavatar.com/kb/ontomops/AssemblyModel_testID-111-111-111,,Td,String
 http://www.theworldavatar.com/kb/ontomops/Tetrahedron_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#Tetrahedron,,,
 http://www.theworldavatar.com/kb/ontomops/AssemblyModel_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontomops/Tetrahedron_testID-111-111-111,http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#hasPolyhedralShape,,
+http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#hasSymbol,Data Property,http://www.theworldavatar.com/kb/ontomops/Tetrahedron_testID-111-111-111,,Tetrahedron,String
 http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,Instance,http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#ChemicalBuildingUnit,,,
 http://www.theworldavatar.com/kb/ontomops/MetalOrganicPolyhedra_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#hasChemicalBuildingUnit,,
 http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl#hasCBUFormula,Data Property,http://www.theworldavatar.com/kb/ontomops/ChemicalBuildingUnit_testID-111-111-111_0,,Some_formula,
