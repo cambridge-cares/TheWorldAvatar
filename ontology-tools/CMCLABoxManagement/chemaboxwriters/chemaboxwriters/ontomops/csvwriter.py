@@ -118,6 +118,8 @@ def om_csvwriter(data):
     '','','']) #Initialize an instance of Polyhedral Shape that is the given shape from the JSON file.
     spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,
     onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
+    spamwriter.writerow([onto_mops + '#hasSymbol','Data Property',mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,''
+    ,data["Mops_Polyhedral_Shape_Symbol"],'String'])
 
     #Write the information about the Chemical and Generic Building units.
     for i in range(len(data["Mops_Chemical_Building_Units"])): #We will loop through all the building units in the JSON.
