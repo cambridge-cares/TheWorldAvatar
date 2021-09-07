@@ -19,6 +19,16 @@ class OntoAgentGenerator:
                 domain = [self.ontoagent.MessagePart]
                 range = [str]
 
+            class hasQuestionTemplates(DataProperty):
+                domain = [self.ontoagent.Operation]
+                range = [str]
+
+            class hasQualifier(ObjectProperty):
+                domain = [self.ontoagent.MessagePart]
+                range = [self.ontoagent.MessagePart]
+
+
+
         # check the integrity of the core classes and attributes
         pprint(self.ontoagent.Service)
         pprint(self.ontoagent.Operation)  # http://www.theworldavatar.com/kb/agents/Service__DFT.owl#
@@ -32,6 +42,11 @@ class OntoAgentGenerator:
         pprint(self.ontoagent.hasType)
         pprint(self.ontoagent.hasOperation)
         pprint(self.ontoagent.hasMandatoryPart)
+        pprint(self.ontoagent.hasNerLabel)
+        pprint(self.ontoagent.hasQuestionTemplates)
+        pprint(self.ontoagent.hasQualifier)
+
+        self.ontoagent.save('OntoAgent.owl', format='rdfxml')
 
     # create the node id with hash
     def generate_id(self, mode, extra_info=''):
@@ -70,6 +85,8 @@ class OntoAgentGenerator:
         # 8. connect MessagePart to MessageContent
         message_content.hasMandatoryPart.append(message_part)
 
+
+
     def create_instance(self, agent_object):
         # 1. create service
         service = self.ontoagent.Service(self.generate_id('Service'), namespace=self.this_agent)
@@ -91,28 +108,33 @@ class OntoAgentGenerator:
         for output in outputs:
             self.attach_input_output(operation, output, 'output')
 
-#
-# if __name__ == '__main__':
-#     agent = {
-#         "http_url": "http://somewhereincmcl.com/pce",
-#         "outputs": [
-#             {
-#                 "data_name": "power conversion efficiency",
-#                 "data_type": "http://fake_concept_for_power_conversion_efficiency",
-#                 "is_array": False,
-#                 "ner_label": "attribute"
-#             }
-#         ],
-#         "inputs": [
-#             {
-#                 "data_name": "species",
-#                 "data_type": "http://fake_concept_for_species",
-#                 "is_array": False,
-#                 "ner_label": "species"
-#             }
-#         ]
-#     }
-#
-#     og = OntoAgentGenerator('PCE_Agent')
-#     og.create_instance(agent)
-#     og.this_agent.save('test', format='rdfxml')
+        question_templates = agent_object['question_templates']
+        # add questions templates to operation node
+        operation.hasQuestionTemplates = question_templates
+
+
+if __name__ == '__main__':
+    agent = {
+        "question_templates": ['[%s](attribute) OPF with donor [%s](species)', '[%s](attribute) of [%s](species)'],
+        "http_url": "http://somewhereincmcl.com/pce",
+        "outputs": [
+            {
+                "data_name": "power conversion efficiency",
+                "data_type": "http://fake_concept_for_power_conversion_efficiency",
+                "is_array": False,
+                "ner_label": "attribute"
+            }
+        ],
+        "inputs": [
+            {
+                "data_name": "species",
+                "data_type": "http://fake_concept_for_species",
+                "is_array": False,
+                "ner_label": "species"
+            }
+        ]
+    }
+
+    og = OntoAgentGenerator('PCE_Agent')
+    og.create_instance(agent)
+    og.this_agent.save('test', format='rdfxml')

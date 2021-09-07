@@ -11,8 +11,8 @@ import sys
 import warnings
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-from UI.source.JPS_Query.locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
-from UI.source.JPS_Query.search_interface import SearchInterface
+from .locations import JPS_SPARQL_TEMPLATE_PATH, RASA_JPS_MODELS_DIR
+from .search_interface import SearchInterface
 
 
 class JPSQuestionClassifier:

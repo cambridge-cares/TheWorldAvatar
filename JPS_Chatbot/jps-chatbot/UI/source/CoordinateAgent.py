@@ -1,23 +1,21 @@
 import json
 from pprint import pprint
 
-from UI.source.Wikidata_Query.Interpretation_parser import InterpretationParser
-from UI.source.Wikidata_Query.SearchEngine import SearchEngine
-from UI.source.Wikidata_Query.SPARQLConstructor import SPARQLConstructor
-from UI.source.Wikidata_Query.SPARQLQuery import SPARQLQuery
+from Wikidata_Query.Interpretation_parser import InterpretationParser
+from Wikidata_Query.SearchEngine import SearchEngine
+from Wikidata_Query.SPARQLConstructor import SPARQLConstructor
+from Wikidata_Query.SPARQLQuery import SPARQLQuery
 from LDA.LDA_classifier import LDAClassifier
-from UI.source.JPS_Query.chatbot_interface import Chatbot
-from UI.source.LogWriter import LogWriter
-from UI.source.dashboard.Messenger import Messenger
-from UI.source.Agent_query.AgentRequestConstructor import AgentRequestConstructor
-
-from UI.source.PCE_query.PCE_interpreter import OtherInterpreter
+from JPS_Query.chatbot_interface import Chatbot
+from dashboard.LogWriter import LogWriter
+from dashboard.Messenger import Messenger
+from Agent_query.AgentRequestConstructor import AgentRequestConstructor
 
 from rasa.nlu.model import Interpreter
 import os
 import tarfile
 
-from UI.source.location import WIKI_MODELS_DIR, AGENT_MODELS_DIR
+from location import WIKI_MODELS_DIR, AGENT_MODELS_DIR
 
 
 # 0. get the topic model result, choose which direction it goes
@@ -49,9 +47,6 @@ class CoordinateAgent:
         self.agent_request_constructor = AgentRequestConstructor()
 
         self.jps_interface = Chatbot(socketio)
-
-        self.other_interface = OtherInterpreter()
-
         self.socket = socketio
         self.logwriter = LogWriter()
         self.msg = Messenger()

@@ -4,7 +4,7 @@ import urllib
 from pprint import pprint
 
 import rdflib
-from UI.source.location import AGENT_OWL_DIR
+from .location import AGENT_OWL_DIR
 
 class AgentRequestConstructor:
     def __init__(self):

@@ -1,6 +1,9 @@
-from UI.source.Agent_query.ontoagent_generator import OntoAgentGenerator
+from .ontoagent_generator import OntoAgentGenerator
 
 agent = {
+    "question_templates":
+        ['[%s](attribute) OPF with donor [%s](species)',
+         '[%s](attribute) of [%s](species)'],
     "http_url": "http://somewhereincmcl.com/pce",
     "outputs": [
         {
@@ -16,10 +19,9 @@ agent = {
             "data_type": "http://fake_concept_for_species",
             "is_array": False,
             "ner_label": "species"
-        },
+        }
     ]
 }
-
 # inchi (I) PCE (O)
 
 # 1. (inchi smiles) SMILES PCE #
