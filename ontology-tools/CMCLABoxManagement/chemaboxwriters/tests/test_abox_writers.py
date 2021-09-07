@@ -79,7 +79,7 @@ def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
 ]
 )
 def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -95,7 +95,8 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='oc',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='oc',fileExts=fileExts)
 
     print('========================================================')
     print()
@@ -112,7 +113,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -129,7 +130,8 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult,regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='os',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='os',fileExts=fileExts)
 
     print('========================================================')
     print()
@@ -145,7 +147,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -173,7 +175,8 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='ops',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='ops',fileExts=fileExts)
 
     print('========================================================')
     print()
@@ -187,7 +190,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -204,7 +207,8 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult,regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='om',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='om',fileExts=fileExts)
 
     print('========================================================')
     print()
