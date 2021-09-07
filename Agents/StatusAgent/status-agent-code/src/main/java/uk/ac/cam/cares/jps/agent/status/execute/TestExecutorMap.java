@@ -17,10 +17,11 @@ public class TestExecutorMap {
     private static final Map<TestType, Class<? extends TestExecutor>> MAP = new HashMap<>();
 
     /**
-     * Static initialier
+     * Static initializer
      */
     static {
         MAP.put(TestType.AVAILABILITY, AvailabilityTestExecutor.class);
+        MAP.put(TestType.AGENT, AgentTestExecutor.class);
     }
 
     /**

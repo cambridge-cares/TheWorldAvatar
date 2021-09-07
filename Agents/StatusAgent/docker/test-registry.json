@@ -33,5 +33,12 @@
 		"inputs": {
 			"endpoint": "https://kg.cmclinnovations.com/blazegraph_geo/namespace/landuse/sparql"
 		}
+	},
+	{
+		"name": "dev/email-agent",
+		"type": "AGENT",
+		"inputs": {
+			"url": "http://kg.cmclinnovations.com:81/agent/email"
+		}
 	}
 ]

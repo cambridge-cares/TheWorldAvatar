@@ -8,7 +8,9 @@ package uk.ac.cam.cares.jps.agent.status.define;
 public enum TestType {
 
     // Basic endpoint checks
-    AVAILABILITY("AVAILABILITY");
+    AVAILABILITY("AVAILABILITY"),
+    // Basic agent availability
+    AGENT("AGENT");
 
     /**
      *

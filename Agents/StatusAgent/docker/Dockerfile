@@ -34,7 +34,7 @@ WORKDIR /app
 COPY --from=build /root/status-agent-code/output/status_agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Copy in the test-registry.json file
-COPY ./docker/test-registry.json ~/.jps.test-registry.json
+COPY docker/test-registry.json /root/.jps/test-registry.json
 
 # Expose port 8080
 EXPOSE 8080

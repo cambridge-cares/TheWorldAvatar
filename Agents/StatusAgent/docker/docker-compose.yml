@@ -17,7 +17,13 @@ services:
     hostname: status-agent
     restart: unless-stopped
     ports:
-      - "8098:8080"  
+      - "8087:8080"  
     labels:
       description: "Simple servlet to run KG availability tests and display results."
       authors: "mdhillman@cmclinnovations.com"
+    volumes:
+      - status-agent:/root/.jps
+      
+# Volumes
+volumes:
+  status-agent:
