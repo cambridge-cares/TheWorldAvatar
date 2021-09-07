@@ -8,10 +8,10 @@ services:
       - 50082:80
 
  # Reverse Proxy
- reverse_proxy:
-   ports:
-     - 80:80
-     - 443:443
+  reverse_proxy:
+    ports:
+      - 80:80
+      - 443:443
 
   # Gas Grid Visualisation
   uk-gas-grid:
