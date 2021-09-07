@@ -26,4 +26,4 @@ def oc_jsonwriter(data, calc_id=""):
     data[commonv.ENTRY_IRI] = comp_pref+jobType+'_'+calc_id
     data[commonv.ENTRY_UUID] = calc_id
 
-    return json.dumps(data)
+    return [json.dumps(data)]

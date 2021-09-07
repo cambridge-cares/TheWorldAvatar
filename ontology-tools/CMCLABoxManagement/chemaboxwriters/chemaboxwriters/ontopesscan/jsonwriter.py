@@ -47,4 +47,4 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
     data_out[SCAN_COORDINATE_VALUE]=scanCoordinateValue
     data_out[SCAN_POINTS_JOBS]=ontoCompChemJobs
 
-    return json.dumps(data_out)
+    return [json.dumps(data_out)]

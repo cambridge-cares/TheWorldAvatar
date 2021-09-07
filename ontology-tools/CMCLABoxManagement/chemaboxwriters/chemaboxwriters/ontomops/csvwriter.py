@@ -196,4 +196,4 @@ def om_csvwriter(data):
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
-    return csvcontent
+    return [csvcontent]

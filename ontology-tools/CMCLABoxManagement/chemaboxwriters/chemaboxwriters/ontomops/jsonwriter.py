@@ -12,4 +12,4 @@ def om_jsonwriter(data, calc_id=""):
     data[commonv.ENTRY_UUID] = calc_id
     data[commonv.ENTRY_IRI] = omops_entry_prefix+calc_id
 
-    return json.dumps(data)
+    return [json.dumps(data)]

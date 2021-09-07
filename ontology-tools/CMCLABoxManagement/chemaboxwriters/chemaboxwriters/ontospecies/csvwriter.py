@@ -59,7 +59,7 @@ def os_csvwriter(data):
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
-    return csvcontent
+    return [csvcontent]
 
 def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])

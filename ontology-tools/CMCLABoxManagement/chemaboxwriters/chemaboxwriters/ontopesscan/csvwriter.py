@@ -33,7 +33,7 @@ def ops_csvwriter(data):
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
-    return csvcontent
+    return [csvcontent]
 
 
 def write_initial(spamwriter,entryIRI,spec_IRI):

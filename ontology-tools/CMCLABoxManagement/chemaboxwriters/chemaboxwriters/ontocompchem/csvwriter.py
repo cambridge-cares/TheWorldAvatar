@@ -53,7 +53,7 @@ def oc_csvwriter(data):
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
-    return csvcontent
+    return [csvcontent]
 
 def dict_to_list(d):
     dictlist = []

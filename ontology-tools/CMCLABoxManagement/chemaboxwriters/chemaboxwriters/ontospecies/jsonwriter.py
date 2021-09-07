@@ -91,7 +91,7 @@ def os_jsonwriter(data, calc_id=""):
     data_out[commonv.ENTRY_UUID] = calc_id
     data_out[commonv.ENTRY_IRI] = species_entry_prefix+calc_id
 
-    return json.dumps(data_out)
+    return [json.dumps(data_out)]
 
 def get_substructure_cas(synonyms):
     cas_rns = []
