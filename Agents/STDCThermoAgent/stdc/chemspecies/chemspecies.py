@@ -4,6 +4,7 @@ import stdc.utils.params as p
 from stdc.utils.geomtypes import GeomTypes
 import stdc.errorhandling.exceptions as stdcerr
 import stdc.thermocalculator.sthdcalculator as sthd
+import stdc.thermocalculator.partitionfunc as partf
 import stdc.utils.nasafitter as nasafitter
 import stdc.utils.nasablockwriter as nasawriter
 import stdc.utils.diagnostics as diagn
@@ -136,9 +137,9 @@ class ChemSpecies:
         self._getRequestedTrangeData()
         if self.FitNasa: self._getNasaPolynomialsData()
 
-    def getSpPartFunc(self,T):
-        q = sthd.getPartFunc(self.MolWt,self.GeomType,
-           self.SymNr,self.RotTemp,self.VibTemp,self.ElecLvL,T)
+    def getSpPartFunc(self,T,P=p.Pref):
+        q = partf.molecular_partfunc(self.MolWt,self.GeomType,
+           self.SymNr,self.RotTemp,self.VibTemp,self.ElecLvL,T,P)
         return q
 
     def getSpEntropySTHD(self,T,P=p.Pref,Sref=0.0):
@@ -165,8 +166,8 @@ class ChemSpecies:
         U = H-p.R*T
         return U
 
-    def getSpGibbsEnergySTHD(self,T):
-        S = self.getSpEntropySTHD(T)
+    def getSpGibbsEnergySTHD(self,T,P=p.Pref):
+        S = self.getSpEntropySTHD(T,P)
         H = self.getSpEnthalpySTHD(T)
         G = H-T*S
         return G
@@ -425,7 +426,7 @@ class ChemSpecies:
                 'Cp': self.getSpHeatCapacityCpSTHD(T),
                 'Cv': self.getSpHeatCapacityCvSTHD(T),
                 'U': self.getSpInternalEnergySTHD(T),
-                'G': self.getSpGibbsEnergySTHD(T)}
+                'G': self.getSpGibbsEnergySTHD(T,P)}
 
     def _getSpThermoAtTrangeP(self,Trange,P):
         S= []
@@ -470,182 +471,6 @@ class ChemSpecies:
 #======================================================
 #            Utility functions
 #======================================================
-def getDefaultProps():
-    # Returns default properties of a chemical species
-    defaultProps = {}
-    defaultProps['Name']=""
-    defaultProps['Formula']=""
-    defaultProps['Comp']=[]
-    defaultProps['MolWt']=0.0
-    defaultProps['ElMolWt']=[]
-    defaultProps['VibFreq']=[]
-    defaultProps['VibScale']=1.0
-    defaultProps['SymNr']=1.0
-    defaultProps['Geom']=[]
-    defaultProps['GeomType']=2
-    defaultProps['Imom']=[]
-    defaultProps['ElecEn']=0.0
-    defaultProps['ZPE']=0.0
-    defaultProps['SpinMult']=1.0
-    defaultProps['ElecLvL']=[]
-    defaultProps['LowNasa']=[]
-    defaultProps['HighNasa']=[]
-    defaultProps['TrangeNasa']=[]
-    defaultProps['EnthRefSource']='#None'
-    defaultProps['EnthRefTemp']=298.15
-    defaultProps['EnthRef']=0.0
-    defaultProps['FitLowNasa']=[]
-    defaultProps['FitHighNasa']=[]
-    defaultProps['FitTrangeNasa']=TfitNasa
-    defaultProps['ToutCsv']=ToutCsv
-    defaultProps['MetaData']={}
-    return defaultProps
-
-def checkDataConsistency(dict):
-    if warnings:
-        currentFreqNr = len(dict['VibFreq'])
-        requiredFreqNr1 = int(3*getElementsNr(dict['Comp'])-5)
-        requiredFreqNr2 = int(3*getElementsNr(dict['Comp'])-6)
-        # Check nr of frequencies
-        if dict['GeomType']==0 and currentFreqNr>0:
-            print('Warning: Frequencies should not be defined for atomic species: '+ dict['Name'])
-        if dict['GeomType']==1:
-            if currentFreqNr < requiredFreqNr1:
-                print('Warning: Species ' + dict['Name'] + ' has too few frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr1))
-            elif currentFreqNr > requiredFreqNr1:
-                print('Warning: Species ' + dict['Name'] + ' has too many frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr1))
-        if dict['GeomType']==2:
-            if currentFreqNr < requiredFreqNr2:
-                print('Warning: Species ' + dict['Name'] + ' has too few frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr2))
-            elif currentFreqNr > requiredFreqNr2:
-                print('Warning: Species ' + dict['Name'] + ' has too many frequencies: ' + str(currentFreqNr) + '/' + str(requiredFreqNr2))
-
-def CreateChemSpecFromDict(dict):
-    # Get defaults
-    def_dict = getDefaultProps()
-
-    # Update dict with any missing keys
-    for key, value in def_dict.items():
-        if key not in dict:
-            dict[key] = value
-
-    # checkDataConsistency(dict)
-    # Create species
-    rSpec = ChemSpecies(aName=dict['Name'],aFormula=dict['Formula'],aComp=dict['Comp'],
-            aMolWt=dict['MolWt'],aElMolWt=dict['ElMolWt'],aVibFreq=dict['VibFreq'],
-            aVibScale=dict['VibScale'],aSymNr=dict['SymNr'],aGeom=dict['Geom'],
-            aGeomType=dict['GeomType'],aImom=dict['Imom'],aElecEn=dict['ElecEn'],
-            aZPE=dict['ZPE'],aSpinMult=dict['SpinMult'],aElecLvL=dict['ElecLvL'],
-            aLowNasa=dict['LowNasa'],aHighNasa=dict['HighNasa'],aTrangeNasa=dict['TrangeNasa'],
-            aEnthRefSource=dict['EnthRefSource'],aEnthRefTemp=dict['EnthRefTemp'],
-            aEnthRef=dict['EnthRef'],aFitLowNasa=dict['FitLowNasa'],aFitHighNasa=dict['FitHighNasa'],
-            aFitTrangeNasa=dict['FitTrangeNasa'],aToutCsv=dict['ToutCsv'],aMetaData=dict['MetaData'])
-    return rSpec
-
-
-def GetThermoData(T,Spec,unit,inclNasa=True,inclFitNasa=True,inclSthdNasaDiff=True,inclFitNasaNasaDiff=True,
-                  inclSthdNasaFitNasaDiff = True):
-    ncols = 6
-    dataitems = ['S', 'H', 'Cp', 'Cv', 'U', 'G']
-    dataunits = ['Entropy', 'Energy', 'HeatCap', 'HeatCap', 'Energy', 'Energy']
-    DataHeaders = ['T ' + unit['Temperature'][0]]
-    for i,item in enumerate(dataitems):
-        DataHeaders.append(item + ' sthd ' + unit[dataunits[i]][0])
-
-    if inclNasa:
-        for i,item in enumerate(dataitems):
-            DataHeaders.append(item + ' nasa ' + unit[dataunits[i]][0])
-
-    if inclFitNasa:
-        for i,item in enumerate(dataitems):
-            DataHeaders.append(item + ' fitnasa ' + unit[dataunits[i]][0])
-
-    if inclSthdNasaDiff and inclNasa:
-        for i,item in enumerate(dataitems):
-            DataHeaders.append(item + ' abs sthd nasa diff ' + unit[dataunits[i]][0])
-
-    if inclFitNasaNasaDiff and inclFitNasa:
-        for i,item in enumerate(dataitems):
-            DataHeaders.append(item + ' abs fitnasa nasa diff ' + unit[dataunits[i]][0])
-
-    if inclSthdNasaFitNasaDiff and inclFitNasa:
-        for i,item in enumerate(dataitems):
-            DataHeaders.append(item + ' abs sthd fitnasa diff ' + unit[dataunits[i]][0])
-
-
-    Data = np.zeros([len(T),len(DataHeaders)])
-    for i,Ti in enumerate(T):
-        nc = 6
-        Data[i][0] = Ti*unit['Temperature'][1]+unit['Temperature'][2]
-        Data[i][1] = Spec.getSpEntropySTHD(Ti)*unit['Entropy'][1]+unit['Entropy'][2]
-        Data[i][2] = Spec.getSpEnthalpySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
-        Data[i][3] = Spec.getSpHeatCapacityCpSTHD(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
-        Data[i][4] = Spec.getSpHeatCapacityCvSTHD(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
-        Data[i][5] = Spec.getSpInternalEnergySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
-        Data[i][6] = Spec.getSpGibbsEnergySTHD(Ti)*unit['Energy'][1]+unit['Energy'][2]
-
-        if inclNasa:
-            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti)*unit['Entropy'][1]+unit['Entropy'][2]
-            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
-            Data[i][nc+3]  = Spec.getSpHeatCapacityCpNASA(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
-            Data[i][nc+4]  = Spec.getSpHeatCapacityCvNASA(Ti)*unit['HeatCap'][1]+unit['HeatCap'][2]
-            Data[i][nc+5]  = Spec.getSpInternalEnergyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
-            Data[i][nc+6]  = Spec.getSpGibbsEnergyNASA(Ti)*unit['Energy'][1]+unit['Energy'][2]
-            nc = nc + 6
-
-        if inclFitNasa:
-            Data[i][nc+1] = Spec.getSpEntropyNASA(Ti,inclFitNasa)*unit['Entropy'][1]+unit['Entropy'][2]
-            Data[i][nc+2] = Spec.getSpEnthalpyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
-            Data[i][nc+3] = Spec.getSpHeatCapacityCpNASA(Ti,inclFitNasa)*unit['HeatCap'][1]+unit['HeatCap'][2]
-            Data[i][nc+4] = Spec.getSpHeatCapacityCvNASA(Ti,inclFitNasa)*unit['HeatCap'][1]+unit['HeatCap'][2]
-            Data[i][nc+5] = Spec.getSpInternalEnergyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
-            Data[i][nc+6] = Spec.getSpGibbsEnergyNASA(Ti,inclFitNasa)*unit['Energy'][1]+unit['Energy'][2]
-            nc = nc + 6
-
-        if inclSthdNasaDiff and inclNasa:
-            Data[i][nc+1] = abs(Data[i][1]-Data[i][7])
-            Data[i][nc+2] = abs(Data[i][2]-Data[i][8])
-            Data[i][nc+3] = abs(Data[i][3]-Data[i][9])
-            Data[i][nc+4] = abs(Data[i][4]-Data[i][10])
-            Data[i][nc+5] = abs(Data[i][5]-Data[i][11])
-            Data[i][nc+6] = abs(Data[i][6]-Data[i][12])
-            nc = nc + 6
-
-        if inclFitNasaNasaDiff and inclFitNasa and inclNasa:
-            Data[i][nc+1] = abs(Data[i][13]-Data[i][7])
-            Data[i][nc+2] = abs(Data[i][14]-Data[i][8])
-            Data[i][nc+3] = abs(Data[i][15]-Data[i][9])
-            Data[i][nc+4] = abs(Data[i][16]-Data[i][10])
-            Data[i][nc+5] = abs(Data[i][17]-Data[i][11])
-            Data[i][nc+6] = abs(Data[i][18]-Data[i][12])
-            nc = nc + 6
-
-        if inclSthdNasaFitNasaDiff and inclFitNasa:
-            shift = 0
-            if inclNasa: shift = 6
-            Data[i][nc+1] = abs(Data[i][1]-Data[i][7+shift])
-            Data[i][nc+2] = abs(Data[i][2]-Data[i][8+shift])
-            Data[i][nc+3] = abs(Data[i][3]-Data[i][9+shift])
-            Data[i][nc+4] = abs(Data[i][4]-Data[i][10+shift])
-            Data[i][nc+5] = abs(Data[i][5]-Data[i][11+shift])
-            Data[i][nc+6] = abs(Data[i][6]-Data[i][12+shift])
-
-    return Data,DataHeaders
-
-def getSpByNameFromList(SpList,aName):
-    rsp = SpList[0]
-    for sp in SpList:
-        if sp.Name == aName:
-            rsp = sp
-            break
-    return rsp
-
-def getElementsNr(Comp):
-    nEl = 0
-    for i in range(1,len(Comp),2):
-        nEl = nEl + int(Comp[i])
-    return nEl
-
 
 def _strInputToList(inputStr,type,delim=',',multiplier=1.0):
     if inputStr.strip()=="":
