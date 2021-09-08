@@ -30,18 +30,10 @@ public class TestRegistry {
      */
     private static final Set<TestDefinition> DEFINITIONS = new LinkedHashSet<>();
 
-    // Generate definitions of tests to run. In future, these definitions should be read
-    // from a file so that tests can be added without having to regenerate Docker images.
-    static {
-        readRegistryFile();
-    }
-
     /**
      * Read the JSON file that contains test definitions.
      */
-    private static void readRegistryFile() {
-        Path registryFile = Paths.get(System.getProperty("user.home"), ".jps", "test-registry.json");
-
+    public static void readRegistryFile(Path registryFile) {
         if (Files.exists(registryFile)) {
             // Read the registry file
             DEFINITIONS.clear();

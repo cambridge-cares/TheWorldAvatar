@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.status;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import uk.ac.cam.cares.jps.agent.status.process.StatusRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,6 +73,11 @@ public class StatusAgent extends JPSAgent {
         super.init();
 
         if (SCHEDULER == null) {
+            
+            // Read the test registry
+            Path registryFile = Paths.get(System.getProperty("user.home"), ".jps", "test-registry.json");
+            TestRegistry.readRegistryFile(registryFile);
+            
             // Run all test on boot, then run  once per day
             Runnable runnable = () -> {
                 boolean allSuccess = handler.runAllTests();

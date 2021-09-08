@@ -75,7 +75,7 @@ public class TestRecordStoreMarshaller {
             recordArray.put(object);
         }
 
-        try ( FileWriter writer = new FileWriter(RECORD_FILE.toFile())) {
+        try (FileWriter writer = new FileWriter(RECORD_FILE.toFile())) {
             writer.write(recordArray.toString());
             writer.flush();
         } catch (IOException ioException) {
@@ -85,13 +85,26 @@ public class TestRecordStoreMarshaller {
 
     /**
      * Reads the serialised record store into memory.
+     *
+     * @return
      */
     public static TestRecordStore readRecords() {
         if (RECORD_FILE == null) determineFileLocation();
+        return readRecords(RECORD_FILE);
+    }
 
+    /**
+     * Reads the serialised record store into memory.
+     *
+     * @param file
+     *
+     * @return
+     */
+    public static TestRecordStore readRecords(Path file) {
         TestRecordStore store = new TestRecordStore();
+
         try {
-            String jsonContent = Files.readString(RECORD_FILE);
+            String jsonContent = Files.readString(file);
             JSONArray recordArray = new JSONArray(jsonContent);
 
             for (int i = 0; i < recordArray.length(); i++) {
