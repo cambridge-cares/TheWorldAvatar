@@ -1,5 +1,7 @@
-from .ontoagent_generator import OntoAgentGenerator
+import os
 
+from ontoagent_generator import OntoAgentGenerator
+from location import FILE_DIR
 agent = {
     "question_templates":
         ['[%s](attribute) OPF with donor [%s](species)',
@@ -35,4 +37,4 @@ agent = {
 
 og = OntoAgentGenerator('PCE_Agent')
 og.create_instance(agent)
-og.this_agent.save('PCE_Agent.owl', format='rdfxml')
+og.this_agent.save(os.path.join(FILE_DIR, 'PCE_Agent.owl'), format='rdfxml')

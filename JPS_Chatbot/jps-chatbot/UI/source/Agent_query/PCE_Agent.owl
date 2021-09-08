@@ -19,8 +19,8 @@
   <MSM.:hasInput rdf:resource="#MessageContent_c5aa5fff93d40c35e52164e7a18a82c85f79a77a"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_b0d80eccbebfe6412937df59fbbd988332230b41"/>
   <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://somewhereincmcl.com/pce</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">[%s](attribute) OPF with donor [%s](species)</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">[%s](attribute) of [%s](species)</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">[%s](attribute) OPF with donor [%s](species)</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
 <MSM.:MessageContent rdf:about="#MessageContent_c5aa5fff93d40c35e52164e7a18a82c85f79a77a">

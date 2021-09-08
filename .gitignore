@@ -90,3 +90,7 @@ nlu.md
 /JPS_LDF/components/LDF_SERVER_JAVA/Server/WebContent/config.json
 JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/component_6_EmbeddingIntentClassifier.entity_tag_specs.json
 JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_NAME_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ontocompchem_corpus
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ontokin_corpus
+JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/03_create_training_question/test/data/rank_query_list_block
+JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/04_create_training_question/test/data/rank_query_list_block

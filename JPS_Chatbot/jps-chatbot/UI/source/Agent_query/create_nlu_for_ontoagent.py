@@ -4,9 +4,17 @@
 
 # e.g. what is the [power conversion efficiency](output) of [smile string](input)
 import json
+import os
 from pprint import pprint
 from random import sample
 from query_agent_properties import get_agent_attributes
+from location import FILE_DIR
+
+
+def create_thermo_caculation_questions():
+    agent_attributes = get_agent_attributes('Thermo_Agent.owl')
+    pprint(agent_attributes)
+    # 1. iterate through all the outputs
 
 
 def sample_instances(_type):
@@ -16,7 +24,7 @@ def sample_instances(_type):
 
 # TODO: OntoChemExp (347)
 def get_species(number=500):
-    with open('../../data_preparation/Wiki_training_material_generation/instance_property_mapping_first_2000') as f:
+    with open(os.path.join(FILE_DIR, 'instance_property_mapping_first_2000')) as f:
         mapping = json.loads(f.read())
         instances = mapping.keys()
         return sample(instances, number)
@@ -25,12 +33,14 @@ def get_species(number=500):
 def get_smiles(id_list):
     base_url = 'http://www.wikidata.org/entity/'
     rst = []
-    with open('../../data_preparation/Wiki_training_material_generation/URI_SMILES_DICT') as f:
+    with open(os.path.join(FILE_DIR, 'URI_SMILES_DICT')) as f:
         URI_SMILES_DICT = json.loads(f.read())
         for id in id_list:
-            SMILE = URI_SMILES_DICT[base_url + id]
-            SMILE = SMILE.replace('[', 'lb').replace(']', 'rb')
-            rst.append(SMILE)
+            new_id = base_url + id
+            if new_id in URI_SMILES_DICT:
+                SMILE = URI_SMILES_DICT[new_id]
+                SMILE = SMILE.replace('[', 'lb').replace(']', 'rb')
+                rst.append(SMILE)
     print(rst)
     return rst
 
@@ -61,7 +71,8 @@ def create_question():
     return block
 
 
-blk = create_question()
-with open('./training/data/nlu.md', 'w') as f:
-    f.write(blk)
-    f.close()
+create_thermo_caculation_questions()
+# blk = create_question()
+# with open('./training/data/nlu.md', 'w') as f:
+#     f.write(blk)
+#     f.close()
