@@ -5,7 +5,7 @@ services:
 
   # Flood Map
   flood-map:
-    image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
     build:
         context: "../../../web/UKDigitalTwin/flood-map"
         dockerfile: "./docker/Dockerfile"
@@ -18,7 +18,7 @@ services:
 
   # Land Use Crop Map
   land-use:
-    image: docker.cmclinnovations.com/land-use-vis:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/land-use-vis-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"
@@ -32,7 +32,7 @@ services:
   # Reverse Proxy
   # SSL configuration is included in the 'prod' mode target, but excluded in 'dev' mode
   reverse-proxy:
-    image: docker.cmclinnovations.com/reverse_proxy:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/reverse_proxy-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./reverse_proxy"
       target: ${MODE}
@@ -44,7 +44,7 @@ services:
 
   # Gas Grid Visualisation
   uk-gas-grid:
-    image: docker.cmclinnovations.com/gas-grid-vis:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/gas-grid-vis-${MODE}:1.0.0-SNAPSHOT
     build:
         context: "../../../GasGrid/OtherTools/Mapping and Location Tools/mapbox_CMCL"
         dockerfile: "./docker/Dockerfile"
@@ -57,7 +57,7 @@ services:
 
   # Power System and SDG Visualisation
   uk-power-system:
-    image: docker.cmclinnovations.com/power-system-vis:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/power-system-vis-${MODE}:1.0.0-SNAPSHOT
     build:
         context: "../../../web/UKDigitalTwin/power-system/mapbox-vis"
         dockerfile: "./docker/Dockerfile"
@@ -69,7 +69,7 @@ services:
 
   # Knowledge Graph Website
   website:
-    image: docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-${MODE}
+    image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./website"
       target: ${MODE}
