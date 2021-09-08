@@ -5,12 +5,12 @@ services:
   # Flood Map
   flood-map:
     ports:
-      - 50085:80
+      - 40085:80
 
   # Land Use Crop Map
   land-use:
     ports:
-      - 50082:80
+      - 40082:80
 
  # Reverse Proxy
   reverse-proxy:
@@ -21,9 +21,9 @@ services:
   # Gas Grid Visualisation
   uk-gas-grid:
     ports:
-      - 50084:80
+      - 40084:80
 
   # Power System and SDG Visualisation
   uk-power-system:
     ports:
-      - 50083:80
+      - 40083:80

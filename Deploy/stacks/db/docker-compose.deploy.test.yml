@@ -5,19 +5,19 @@ services:
   # Blazegraph
   blazegraph:
     ports:
-      - 59082:8080
+      - 49082:8080
 
   # Blazegraph geo
   blazegraph-geo:
     ports:
-      - 59083:8080
+      - 49083:8080
 
   # Postgres
   postgres:
     ports:
-      - 56432:5432
+      - 46432:5432
 
   # RDF4J
   rdf4j:
     ports:
-      - 59084:8080
+      - 49084:8080
