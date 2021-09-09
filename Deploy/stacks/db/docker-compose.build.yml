@@ -1,4 +1,13 @@
+# This configuration file should include all docker-compose options required to *build images* for
+# services in the 'db' stack.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'build/*',
+# 'labels/authors' and 'labels/description' nodes.
+# =================================================================================================
+
 version: "3.8"
+
 
 services:
 

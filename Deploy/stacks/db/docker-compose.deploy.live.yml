@@ -1,4 +1,15 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack WITHOUT the '--test' flag (i.e. in normal running).
+# Its counterpart is docker-compose.test.yml.
+#
+# The expectation is that this file will contain 'ports' nodes for any services that need to map a
+# host port, but other options may be valid too - please consult CMCL admins for more details.
+# For guidance in setting an appropriate port number, please see the instructions at
+# https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker:-Stacks#instructions-1
+# =================================================================================================
+
 version: "3.8"
+
 
 services:
 

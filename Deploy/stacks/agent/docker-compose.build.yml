@@ -1,3 +1,11 @@
+# This configuration file should include all docker-compose options required to *build images* for
+# services in the 'agent' stack.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'build/*',
+# 'labels/authors' and 'labels/description' nodes.
+# =================================================================================================
+
 version: "3.8"
 
 
@@ -11,7 +19,9 @@ services:
       dockerfile: "./docker/Dockerfile"
     labels:
       authors: "mdhillman@cmclinnovations.com"
+      builder: "${BUILDER}"
       description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
+      hash: "${HASH}"
 
   # Gas Grid Agent
   gas-grid-agent:
