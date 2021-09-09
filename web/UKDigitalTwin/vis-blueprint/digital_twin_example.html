@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Digital Twin Example</title>
+	<meta charset="utf-8">
+
+	<!-- External JS and CSS -->
+	<!-- Needs to be declared BEFORE other libraries -->
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+
+	<!-- Remote CMCL JS files for DEVELOPMENT -->
+	<!-- Needs to be declared BEFORE local libraries -->
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+
+	<!-- Remote CMCL CSS files for DEVELOPMENT -->
+	<!-- 
+		<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
+		<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
+	-->
+
+	<!-- Local JS and CSS -->
+	
+	<link href='digital_twin_style.css' rel='stylesheet' />
+
+	<script src='digital_twin_controller.js'></script>
+	<script src='digital_twin_module.js'></script>
+</head>
+
+<body>
+	<!-- Element the MapBox map will be added to -->
+	<div id='map'></div>
+	
+	<!-- Element the map controls will be added to -->
+	<div id="controlsParent"></div>
+
+	<!-- JS to run on page load -->
+	<script type="module">
+		// Module imports
+		import { CambridgeshireStationModule } from "./example/cambridgeshire_stations.js";
+		import { CambridgeshireOrchardsModule } from "./example/cambridgeshire_orchards.js";
+
+		// Initialise a controller
+		let controller = new DigitalTwinController();
+
+		// Create the map
+		let map = controller.createMap(
+			"map", 
+			"pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA",
+			[0.15282, 52.32136],
+			8.5
+		);
+		
+		// Add modules to the controller
+		let stationModule = new CambridgeshireStationModule();
+		controller.addModule(stationModule);
+
+		let orchardModule = new CambridgeshireOrchardsModule();
+		controller.addModule(orchardModule);
+
+		// Fire on MapBox style change
+		map.on('style.load', function() {
+			console.log("INFO: A new style has been loaded.");
+
+			// Load all modules
+			controller.loadModules();
+		});
+		
+
+	</script>
+
+</body>
+
+</html>
