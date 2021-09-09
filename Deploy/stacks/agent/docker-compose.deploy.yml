@@ -31,20 +31,6 @@ services:
     pull_policy: if_not_present
     restart: unless-stopped
 
-  # Local execution environment for SRM Driver.
-  # Note: This Image contains the SRM Driver and Intel MPI files (without
-  #       any queueing functionality).
-  srm-driver:
-    image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
-    container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
-    hostname: "srm-driver"
-    mac_address: "1a:2b:3c:4d:5e:6f"
-    pull_policy: if_not_present
-    restart: unless-stopped
-    volumes:
-      - driver:/usr/local/srm-driver
-      - mpi:/usr/local/intel-mpi
-
   # Kinetics Agent.
   # Note: This Image mounts a volume so that it can access the SRM Driver and
   #       Intel MPI files stored within the 'srm-driver' Image.
@@ -71,6 +57,20 @@ services:
     env_file:
       - Slurm/slurm-variables.env
     privileged: true
+    pull_policy: if_not_present
+    restart: unless-stopped
+    volumes:
+      - driver:/usr/local/srm-driver
+      - mpi:/usr/local/intel-mpi
+
+  # Local execution environment for SRM Driver.
+  # Note: This Image contains the SRM Driver and Intel MPI files (without
+  #       any queueing functionality).
+  srm-driver:
+    image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
+    container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
+    hostname: "srm-driver"
+    mac_address: "1a:2b:3c:4d:5e:6f"
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
