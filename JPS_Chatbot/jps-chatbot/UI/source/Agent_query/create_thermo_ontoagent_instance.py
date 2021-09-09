@@ -5,12 +5,27 @@ import os
 
 agent = {
     "question_templates":
-        ['[%s](attribute) of (species)'],
+        ['<attribute> of <species>', '<attribute> of <species> at <qualifier>',
+         '<attribute> of <species> at <qualifier> and <qualifier>'],
     "http_url": "http://somewhereincmcl.com/thermal",
     "outputs": [
         {
-            "data_name": "HeatCapacityAtConstPressure",
+            "data_name": "HeatCapacity",
             "data_type": "http://fake_concept_for_heat_capacity",
+            "is_array": True,
+            "ner_label": "attribute",
+            "has_qualifier": ["temperature"]
+        },
+        {
+            "data_name": "HeatCapacityAtConstVolume",
+            "data_type": "http://fake_concept_for_heat_capacity_at_constant_volume",
+            "is_array": False,
+            "ner_label": "attribute",
+            "has_qualifier": ["temperature"]
+        },
+        {
+            "data_name": "HeatCapacityAtConstPressure",
+            "data_type": "http://fake_concept_for_heat_capacity_at_constant_pressure",
             "is_array": False,
             "ner_label": "attribute",
             "has_qualifier": ["temperature"]
@@ -27,7 +42,7 @@ agent = {
             "data_type": "http://fake_concept_for_enthalpy",
             "is_array": False,
             "ner_label": "attribute",
-            "has_qualifier": ["temperature", "pressure"]
+            "has_qualifier": ["temperature"]
         },        {
             "data_name": "entropy",
             "data_type": "http://fake_concept_for_entropy",

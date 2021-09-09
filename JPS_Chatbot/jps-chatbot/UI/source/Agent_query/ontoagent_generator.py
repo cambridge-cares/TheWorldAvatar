@@ -131,6 +131,7 @@ class OntoAgentGenerator:
         operation.hasQuestionTemplates = question_templates
 
 
+
 if __name__ == '__main__':
     agent = {
         "question_templates": ['[%s](attribute) OPF with donor [%s](species)', '[%s](attribute) of [%s](species)'],
