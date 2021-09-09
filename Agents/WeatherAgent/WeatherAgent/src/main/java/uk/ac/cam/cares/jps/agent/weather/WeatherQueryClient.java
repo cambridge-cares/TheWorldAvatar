@@ -33,10 +33,10 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 class WeatherQueryClient {
 	// prefix
-	private static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
-    private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
-    private static Prefix p_ontosensor = SparqlBuilder.prefix("sensor",iri("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"));
-    private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
+	static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
+    static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
+    static Prefix p_ontosensor = SparqlBuilder.prefix("sensor",iri("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"));
+    static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
     private static Prefix p_derived_SI_unit = SparqlBuilder.prefix("derived_SI_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"));
     private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
     private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
@@ -55,10 +55,10 @@ class WeatherQueryClient {
     static Iri OutsideWindDirection = p_ontosensor.iri("OutsideWindDirection");
     
     // properties
-    private static Iri hasCoordinates = p_station.iri("hasCoordinates");
-    private static Iri hasSubsystem = p_system.iri("hasSubsytem");
-    private static Iri observes = p_ontosensor.iri("observes");
-    private static Iri hasValue = p_system.iri("hasValue");
+    static Iri hasCoordinates = p_station.iri("hasCoordinates");
+    static Iri hasSubsystem = p_system.iri("hasSubsytem");
+    static Iri observes = p_ontosensor.iri("observes");
+    static Iri hasValue = p_system.iri("hasValue");
     private static Iri hasUnitOfMeasure = p_system.iri("hasUnitOfMeasure");
     private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
@@ -211,66 +211,61 @@ class WeatherQueryClient {
     	tsClient.deleteTimeSeries(timeseriesIRI);
     }
     
-    /**
-     * updates weather station with the latest data if last updated more than 1 hour ago
-     * @param station_iri
-     */
-    void updateStation(String station_iri) {
-    	// first check the last updated time stamp (stored using w3c standard)
+    long getLastUpdateTime(String station_iri) {
     	// construct query
     	SelectQuery query = Queries.SELECT();
     	Variable timestamp = query.var();
     	Iri[] time_predicates = {hasTime,inTimePosition,numericPosition};
     	GraphPattern queryPattern = getQueryGraphPattern(query,time_predicates,iri(station_iri),timestamp);
     	query.select(timestamp).where(queryPattern).prefix(p_time);
-    	
-    	// send query to triple-store
     	long lastupdate = storeClient.executeQuery(query.getQueryString()).getJSONObject(0).getLong(timestamp.getQueryString().substring(1));
-    	
-    	// compare with current time, only make API call if data is 1 hour old
-    	long currenttime = Instant.now().getEpochSecond();
-    	if ((currenttime-lastupdate) > 3600) {
-    		// now get the latlon coordinates of this station
-    		
-    		// build coordinate query
-    		SelectQuery query2 = Queries.SELECT();
-    		Variable coord = query2.var();
-    		query2.select(coord).where(iri(station_iri).has(hasCoordinates,coord)).prefix(p_station);
-    		
-    		// submit coordinate query
-    		String coordinates = storeClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(coord.getQueryString().substring(1));
-    		String[] latlon = coordinates.split("#");
-    		
-    		// the key for this map is the weather class, value is the corresponding value
-    		Map<Iri,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
-    		Iterator<Iri> weatherClasses = newWeatherData.keySet().iterator();
-    	    
-    		// to construct time series object
-    		List<String> datavalue_list = new ArrayList<>();
-    		List<List<?>> value_list = new ArrayList<>();
-    		
-    		// we need to find the data value for the corresponding weather class
-    		while (weatherClasses.hasNext()) {
-    			Iri weatherClass = weatherClasses.next();
-    			SelectQuery query3 = Queries.SELECT();
-    			Variable data = query3.var();
-    			Variable datavalue = query3.var();
-    			
-    			query3.select(datavalue).where(data.isA(weatherClass).andHas(hasValue,datavalue)).prefix(p_ontosensor,p_system);
-    			
-    			datavalue_list.add(storeClient.executeQuery(query3.getQueryString()).getJSONObject(0).getString(datavalue.getQueryString().substring(1)));
-    			double numericalValue = newWeatherData.get(weatherClass);
-    			value_list.add(Arrays.asList(numericalValue));
-    		}
-    		
-    		// append new values to time series table
-    		TimeSeries<Long> ts = new TimeSeries<Long>(Arrays.asList(currenttime), datavalue_list, value_list);
-    		tsClient.addTimeSeriesData(ts);
-    		
-    		// update last updated timestamp
-    		DerivationClient dClient = new DerivationClient(storeClient);
-    		dClient.updateTimestamp(station_iri);
-    	}
+    	return lastupdate;
+    }
+    
+    /**
+     * updates weather station with the latest data
+     * @param station_iri
+     */
+    void updateStation(String station_iri) {
+		// get the coordinates of this station
+		// build coordinate query
+		SelectQuery query2 = Queries.SELECT();
+		Variable coord = query2.var();
+		query2.select(coord).where(iri(station_iri).has(hasCoordinates,coord)).prefix(p_station);
+		
+		// submit coordinate query
+		String coordinates = storeClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(coord.getQueryString().substring(1));
+		String[] latlon = coordinates.split("#");
+		
+		// the key for this map is the weather class, value is the corresponding value
+		Map<Iri,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
+		Iterator<Iri> weatherClasses = newWeatherData.keySet().iterator();
+	    
+		// to construct time series object
+		List<String> datavalue_list = new ArrayList<>();
+		List<List<?>> value_list = new ArrayList<>();
+		
+		// we need to find the data value for the corresponding weather class
+		while (weatherClasses.hasNext()) {
+			Iri weatherClass = weatherClasses.next();
+			SelectQuery query3 = Queries.SELECT();
+			Variable data = query3.var();
+			Variable datavalue = query3.var();
+			
+			query3.select(datavalue).where(data.isA(weatherClass).andHas(hasValue,datavalue)).prefix(p_ontosensor,p_system);
+			
+			datavalue_list.add(storeClient.executeQuery(query3.getQueryString()).getJSONObject(0).getString(datavalue.getQueryString().substring(1)));
+			double numericalValue = newWeatherData.get(weatherClass);
+			value_list.add(Arrays.asList(numericalValue));
+		}
+		
+		// append new values to time series table
+		TimeSeries<Long> ts = new TimeSeries<Long>(Arrays.asList(Instant.now().getEpochSecond()), datavalue_list, value_list);
+		tsClient.addTimeSeriesData(ts);
+		
+		// update last updated timestamp
+		DerivationClient dClient = new DerivationClient(storeClient);
+		dClient.updateTimestamp(station_iri);
     }
 
     /**
@@ -391,7 +386,7 @@ class WeatherQueryClient {
      * @param LastNode
      * @return
      */
-    private GraphPattern getQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri FirstNode, Variable LastNode) {
+    GraphPattern getQueryGraphPattern (SelectQuery Query, Iri[] Predicates, Iri FirstNode, Variable LastNode) {
         GraphPattern CombinedGP = null;
     	
     	Variable[] Variables = new Variable[Predicates.length];

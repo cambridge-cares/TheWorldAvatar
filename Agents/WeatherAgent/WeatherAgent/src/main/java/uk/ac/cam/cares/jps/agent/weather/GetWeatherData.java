@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.weather;
 
 import java.net.URI;
+import java.time.Instant;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -65,7 +66,16 @@ public class GetWeatherData extends JPSAgent{
 			String station = requestParams.getString("station");
 			
 			//updates station if it's more than 1 hour old
-			weatherClient.updateStation(station);
+			long currenttime = Instant.now().getEpochSecond();
+			long lastupdate = weatherClient.getLastUpdateTime(station);
+			if ((currenttime-lastupdate) > 3600) {
+				// this will ensure the servlet will always return a response even if the API call fails
+				try {
+					weatherClient.updateStation(station);
+				} catch (Exception e) {
+					LOGGER.error("API weather update failed, returned values are not up-to-date.");
+				}
+			}
 			
 	        String path = request.getServletPath();
 	        TimeSeries<Long> ts; // time series object containing weather data
