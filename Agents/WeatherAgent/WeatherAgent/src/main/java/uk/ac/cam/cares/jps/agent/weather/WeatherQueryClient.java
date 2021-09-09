@@ -101,9 +101,15 @@ class WeatherQueryClient {
     		+ "	%s\r\n"
     		+ "}";
     		
+    // constructor 1
     WeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
     	this.storeClient = storeClient;
     	this.tsClient = tsClient;
+    }
+    
+    // constructor 2 for situations when time series is not needed
+    WeatherQueryClient(StoreClientInterface storeClient) {
+    	this.storeClient = storeClient;
     }
     
     /**
@@ -293,11 +299,11 @@ class WeatherQueryClient {
     }
     
 	/**
-	 * returns the entire historical weather data
+	 * returns the historical weather data up to number of hours before current time
 	 * @param station_iri
 	 * @return
 	 */
-	TimeSeries<Long> getAllWeatherData(String station_iri) {
+	TimeSeries<Long> getHistoricalWeatherData(String station_iri, int hour) {
 		// first query the data IRIs
     	SelectQuery query = Queries.SELECT();
     	
@@ -312,7 +318,9 @@ class WeatherQueryClient {
     	List<String> datalist = storeClient.executeQuery(query.getQueryString()).toList().stream()
 				.map(datavalueiri -> ((HashMap<String,String>) datavalueiri).get(datavalue.getQueryString().substring(1))).collect(Collectors.toList());
     	
-    	TimeSeries<Long> ts = tsClient.getTimeSeries(datalist);
+    	long latestTime = tsClient.getMaxTime(datalist.get(0));
+    	long queryEarliestTime = Instant.now().getEpochSecond() - hour * 3600;
+    	TimeSeries<Long> ts = tsClient.getTimeSeriesWithinBounds(datalist, queryEarliestTime, latestTime);
     	
     	return ts;
 	}

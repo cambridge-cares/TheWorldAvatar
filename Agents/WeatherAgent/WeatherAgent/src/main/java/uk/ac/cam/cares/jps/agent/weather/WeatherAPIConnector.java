@@ -9,16 +9,19 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 class WeatherAPIConnector {
-	
+	 static final Logger LOGGER = LogManager.getLogger(WeatherAPIConnector.class);
 	/**
 	 * obtain current weather data given the set of coordinates (EPSG:4326)
-	 * @param xy
+	 * @param lat
+	 * @param lon
 	 * @return
 	 */
 	static Map<Iri,Double> getWeatherDataFromOpenWeather(double lat, double lon) {
@@ -47,7 +50,7 @@ class WeatherAPIConnector {
 				}
 			}
 
-			// collect result into a Map			
+			// collect results into a Map			
 			Map<Iri,Double> resultMap = new HashMap<>();
 			resultMap.put(WeatherQueryClient.OutsideAirPrecipitation, precipitation);
 			resultMap.put(WeatherQueryClient.OutsideAirPressure, apiresult.getJSONObject("main").getDouble("pressure"));
@@ -61,6 +64,7 @@ class WeatherAPIConnector {
 			
             return resultMap;
         } catch (Exception e) {
+        	LOGGER.error(e.getMessage());
             throw new JPSRuntimeException(e.getMessage(), e);
         }
 	}
