@@ -47,24 +47,24 @@ services:
       description: "Linked Fragment server used in conjunction with the JPS Chatbot Image."
       hash: "${HASH}"
 
-  # Kinetics Agent.
-  kinetics-agent:
-    image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
-    build: "./KineticsAgent"    
-    labels:
-       authors: "support@cmclinnovations.com"
-       builder: "${BUILDER}"
-       description: "Tomcat server hosting the KineticsAgent service."
-       hash: "${HASH}"
+  # # Kinetics Agent.
+  # kinetics-agent:
+  #   image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
+  #   build: "./KineticsAgent"    
+  #   labels:
+  #      authors: "support@cmclinnovations.com"
+  #      builder: "${BUILDER}"
+  #      description: "Tomcat server hosting the KineticsAgent service."
+  #      hash: "${HASH}"
 
-  # Slurm compute node.
-  # Note: This Image exists as a generic job queue/executor for any other
-  #       services submitting Slurm jobs (such as the KineticsAgent).
-  slurm:
-    image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
-    build: "./Slurm"
-    labels:
-       authors: "support@cmclinnovations.com"
-       builder: "${BUILDER}"
-       description: "Slurm compute node."
-       hash: "${HASH}"
+  # # Slurm compute node.
+  # # Note: This Image exists as a generic job queue/executor for any other
+  # #       services submitting Slurm jobs (such as the KineticsAgent).
+  # slurm:
+  #   image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
+  #   build: "./Slurm"
+  #   labels:
+  #      authors: "support@cmclinnovations.com"
+  #      builder: "${BUILDER}"
+  #      description: "Slurm compute node."
+  #      hash: "${HASH}"

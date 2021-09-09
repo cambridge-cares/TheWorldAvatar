@@ -31,51 +31,51 @@ services:
     pull_policy: if_not_present
     restart: unless-stopped
 
-  # Kinetics Agent.
-  # Note: This Image mounts a volume so that it can access the SRM Driver and
-  #       Intel MPI files stored within the 'srm-driver' Image.
-  kinetics-agent:
-    image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
-    container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
-    depends_on:
-      - "srm-driver"
-    pull_policy: if_not_present
-    restart: unless-stopped
-    volumes:
-      - driver:/usr/local/srm-driver
+  # # Kinetics Agent.
+  # # Note: This Image mounts a volume so that it can access the SRM Driver and
+  # #       Intel MPI files stored within the 'srm-driver' Image.
+  # kinetics-agent:
+  #   image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
+  #   container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
+  #   depends_on:
+  #     - "srm-driver"
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
 
-  # Slurm compute node.
-  # Note: This Image exists as a generic job queue/executor for any other
-  #       services submitting Slurm jobs (such as the KineticsAgent).
-  slurm:
-    image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
-    cap_add:
-      - ALL
-    container_name: "slurm${CONTAINER_NAME_SUFFIX}"
-    depends_on:
-      - "srm-driver"
-    env_file:
-      - Slurm/slurm-variables.env
-    privileged: true
-    pull_policy: if_not_present
-    restart: unless-stopped
-    volumes:
-      - driver:/usr/local/srm-driver
-      - mpi:/usr/local/intel-mpi
+  # # Slurm compute node.
+  # # Note: This Image exists as a generic job queue/executor for any other
+  # #       services submitting Slurm jobs (such as the KineticsAgent).
+  # slurm:
+  #   image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
+  #   cap_add:
+  #     - ALL
+  #   container_name: "slurm${CONTAINER_NAME_SUFFIX}"
+  #   depends_on:
+  #     - "srm-driver"
+  #   env_file:
+  #     - Slurm/slurm-variables.env
+  #   privileged: true
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
+  #     - mpi:/usr/local/intel-mpi
 
   # Local execution environment for SRM Driver.
   # Note: This Image contains the SRM Driver and Intel MPI files (without
   #       any queueing functionality).
-  srm-driver:
-    image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
-    container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
-    hostname: "srm-driver"
-    mac_address: "1a:2b:3c:4d:5e:6f"
-    pull_policy: if_not_present
-    restart: unless-stopped
-    volumes:
-      - driver:/usr/local/srm-driver
-      - mpi:/usr/local/intel-mpi
+  # srm-driver:
+  #   image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
+  #   container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
+  #   hostname: "srm-driver"
+  #   mac_address: "1a:2b:3c:4d:5e:6f"
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
+  #     - mpi:/usr/local/intel-mpi
 
 
 networks:
