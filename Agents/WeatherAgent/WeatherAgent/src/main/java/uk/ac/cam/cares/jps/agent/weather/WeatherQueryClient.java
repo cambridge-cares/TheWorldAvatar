@@ -33,17 +33,17 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 class WeatherQueryClient {
 	// prefix
-	private static Prefix p_geoliteral = SparqlBuilder.prefix(iri("http://www.bigdata.com/rdf/geospatial/literals/v1#"));
 	private static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
     private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
     private static Prefix p_ontosensor = SparqlBuilder.prefix("sensor",iri("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#"));
     private static Prefix p_system = SparqlBuilder.prefix("system",iri("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"));
     private static Prefix p_derived_SI_unit = SparqlBuilder.prefix("derived_SI_unit",iri("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"));
     private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+    private static Prefix p_geo = SparqlBuilder.prefix("geo",iri("http://www.bigdata.com/rdf/geospatial#"));
     
     // classes
     private static Iri WeatherStation = p_station.iri("WeatherStation");
-    private static Iri latlon = p_geoliteral.iri("lat-lon");
+    private static Iri lat_lon = iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon");
     private static Iri MeasuringInstrument = iri("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument");
     private static Iri ScalarValue = p_system.iri("ScalarValue");
     static Iri OutsideAirCloudCover = p_ontosensor.iri("OutsideAirCloudCover");
@@ -92,6 +92,15 @@ class WeatherQueryClient {
     StoreClientInterface storeClient;
     TimeSeriesClient<Long> tsClient;
 	
+    // SERVICE keyword is not supported by query builder
+    private static String geospatialQueryTemplate = "PREFIX geo: <http://www.bigdata.com/rdf/geospatial#>\r\n"
+    		+ "PREFIX station: <%s>\r\n"
+    		+ "\r\n"
+    		+ "SELECT * WHERE {\r\n"
+    		+ "    SERVICE geo:search \r\n"
+    		+ "	%s\r\n"
+    		+ "}";
+    		
     WeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Long> tsClient) {
     	this.storeClient = storeClient;
     	this.tsClient = tsClient;
@@ -99,17 +108,17 @@ class WeatherQueryClient {
     
     /**
      * create a new station at the given coordinates, must be EPSG:4326
-     * @param x
-     * @param y
+     * @param lat
+     * @param lon
      * @return
      */
-    String createStation(double x, double y) {
+    String createStation(String latlon) {
     	ModifyQuery modify = Queries.MODIFY();
     	String station_name = "weatherstation_" + UUID.randomUUID();
     	Iri station = p_station.iri(station_name);
     	
     	// coordinates
-    	StringLiteral coordinatesLiteral = Rdf.literalOfType(String.valueOf(y)+"#"+String.valueOf(y), latlon);
+    	StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, lat_lon);
     	modify.insert(station.isA(WeatherStation).andHas(hasCoordinates,coordinatesLiteral));
     	
     	List<String> datalist_for_timeseries = new ArrayList<>();
@@ -133,7 +142,7 @@ class WeatherQueryClient {
     		modify.insert(datavalue_iri.isA(ScalarValue).andHas(hasUnitOfMeasure,unitMap.get(weatherClass)));
     	}
     	
-    	modify.prefix(p_geoliteral,p_station,p_system,p_ontosensor,p_derived_SI_unit);
+    	modify.prefix(p_station,p_system,p_ontosensor,p_derived_SI_unit);
     	
     	// insert triples in the triple-store
     	storeClient.executeUpdate(modify.getQueryString());
@@ -226,10 +235,9 @@ class WeatherQueryClient {
     		String coordinates = storeClient.executeQuery(query2.getQueryString()).getJSONObject(0).getString(coord.getQueryString().substring(1));
     		String[] latlon = coordinates.split("#");
     		
-    		// the key for this map is the weather class, value is corresponding value
+    		// the key for this map is the weather class, value is the corresponding value
     		Map<Iri,Double> newWeatherData = WeatherAPIConnector.getWeatherDataFromOpenWeather(Double.parseDouble(latlon[0]), Double.parseDouble(latlon[1]));
     		Iterator<Iri> weatherClasses = newWeatherData.keySet().iterator();
-    		newWeatherData.keySet().stream();
     	    
     		// to construct time series object
     		List<String> datavalue_list = new ArrayList<>();
@@ -307,6 +315,64 @@ class WeatherQueryClient {
     	TimeSeries<Long> ts = tsClient.getTimeSeries(datalist);
     	
     	return ts;
+	}
+
+	/**
+	 * Returns list of stations that are located within the given radius (in km)
+	 * centre needs to be in the format "<lat>#<lon>", e.g. "50.1#1.0"
+	 * query string is partially hardcoded (geospatialQueryTemplate)
+	 * @param latlon
+	 * @param radius (in km)
+	 */
+	List<String> getStationsInCircle(String centre, double radius) {
+		String varKey = "station";
+		Variable station = SparqlBuilder.var(varKey);
+		
+		// construct query triples using blazegraph's magic predicates
+		GraphPattern queryPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inCircle")
+				.andHas(p_geo.iri("searchDatatype"),lat_lon)
+				.andHas(p_geo.iri("predicate"), hasCoordinates)
+				.andHas(p_geo.iri("spatialCircleCenter"), centre)
+				.andHas(p_geo.iri("spatialCircleRadius"), radius));
+		
+		TriplePattern matchRdfType = station.isA(WeatherStation);
+		
+		String query = String.format(geospatialQueryTemplate, ontostation, queryPattern.getQueryString() + matchRdfType.getQueryString());
+		
+		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
+				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
+				.collect(Collectors.toList());
+		
+		return queryResult;
+	}
+	
+	/**
+	 * Returns list of stations that are located within the given bounds
+	 * both southwest and northeast need to be in the format "<lat>#<lon>", e.g. "50.1#1.0"
+	 * query string is partially hardcoded (geospatialQueryTemplate)
+	 * @param southwest
+	 * @param northeast
+	 */
+	List<String> getStationsInRectangle(String southwest, String northeast) {
+		String varKey = "station";
+		Variable station = SparqlBuilder.var(varKey);
+		
+		// construct query triples using blazegraph's magic predicates
+		GraphPattern queryPattern = GraphPatterns.and(station.has(p_geo.iri("search"), "inRectangle")
+				.andHas(p_geo.iri("searchDatatype"),lat_lon)
+				.andHas(p_geo.iri("predicate"), hasCoordinates)
+				.andHas(p_geo.iri("spatialRectangleSouthWest"), southwest)
+				.andHas(p_geo.iri("spatialRectangleNorthEast"), northeast));
+		
+		TriplePattern matchRdfType = station.isA(WeatherStation);
+		
+		String query = String.format(geospatialQueryTemplate, ontostation, queryPattern.getQueryString() + matchRdfType.getQueryString());
+		
+		List<String> queryResult = storeClient.executeQuery(query).toList().stream()
+				.map(station_iri -> ((HashMap<String,String>) station_iri).get(varKey))
+				.collect(Collectors.toList());
+		
+		return queryResult;
 	}
 	
     /**
