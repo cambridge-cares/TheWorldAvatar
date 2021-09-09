@@ -42,7 +42,8 @@ while test $# -gt 0; do
       shift
       ;;
     *)
-      shift
+      echo "$0: '$1' is not a valid argument"
+      exit 4
       ;;
   esac
 done
