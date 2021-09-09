@@ -51,6 +51,8 @@ services:
   kinetics-agent:
     image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
     container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
+    depends_on:
+      - "srm-driver"
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
@@ -64,6 +66,8 @@ services:
     cap_add:
       - ALL
     container_name: "slurm${CONTAINER_NAME_SUFFIX}"
+    depends_on:
+      - "srm-driver"
     env_file:
       - Slurm/slurm-variables.env
     privileged: true
