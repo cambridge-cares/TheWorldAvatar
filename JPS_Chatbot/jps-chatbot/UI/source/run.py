@@ -88,7 +88,7 @@ def make_query():
 
 @app.route('/')
 def hello_world():
-    return render_template('index_dln22.html')
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)
