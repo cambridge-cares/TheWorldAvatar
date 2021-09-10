@@ -63,13 +63,15 @@ class DigitalTwinController {
 	}
 
 	/**
-	 * Loads all modules that have been added.
+	 * Loads all modules that have been added, making the map ready for display.
 	 */
 	loadModules() {
 		this._modules.forEach(dtModule => {
 			dtModule.addSources();
 			dtModule.addLayers();
 		});
+
+		this._mapControls.buildTree(this._modules);
 	}
 
 }

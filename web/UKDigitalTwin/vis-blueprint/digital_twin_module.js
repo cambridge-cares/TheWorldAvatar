@@ -15,18 +15,13 @@ class DigitalTwinModule {
 	// Dictionary for layers as grouped in controls
 	_layerGroups = {};
 
-	// Are multiple layers defined in this module allowed to be shown at once?
-	_viewMultiple = true;
-
 	/**
 	 * Initialise a new DigitalTwinModule instance.
 	 * 
 	 * @param {String} name module name.
-	 * @param {boolean} viewMultiple are multiple layers defined in this module allowed to be shown at once?
 	 */
 	constructor(name, viewMultiple) {
 		this._name = name;
-		this._viewMultiple = viewMultiple;
 	}
 
 	/**
@@ -37,10 +32,10 @@ class DigitalTwinModule {
 	}
 
 	/**
-	 * Returns the view multiple state of the module.
+	 * 
 	 */
-	get viewMultiple() {
-		return this._viewMultiple;
+	get layerGroups() {
+		return this._layerGroups;
 	}
 
 	/**
@@ -58,16 +53,28 @@ class DigitalTwinModule {
 	 * @param {String} name user facing name for group. 
 	 * @param {String[]} layerNames array of MapBox layer names.
 	 * @param {boolean} should this group be enabled by default?
+	 * @param {String} heading optional heading to nest layer group under
 	 */
-	registerLayerGroup(name, layerNames, enabled) {
-		let layerGroup = this._layerGroups[name];
-
-		if(layerGroup == null) {
-			this._layerGroups[name] = {
-				"layers": layerNames,
-				"visible": enabled
-			}
+	registerLayerGroup(name, layerNames, enabled, heading="") {
+		let headingGroup = this._layerGroups[heading];
+		if(headingGroup == null) {
+			headingGroup = {};
 		}
+
+		let layerGroup = headingGroup[name];
+		if(layerGroup == null) {
+			layerGroup = {
+				"name": name,
+				"enabled": enabled,
+				"layers": []
+			};
+		}
+
+		let newLayerNames = layerGroup["layers"].concat(layerNames);
+		layerGroup["layers"] = newLayerNames;
+
+		headingGroup[name] = layerGroup;
+		this._layerGroups[heading] = headingGroup;
 	}	
 
 	/**

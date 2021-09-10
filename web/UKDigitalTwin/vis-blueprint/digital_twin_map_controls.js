@@ -36,6 +36,9 @@ class MapControls {
 	// MapBox map
 	_map;
 
+	// Layer headers to enforce radio groups
+	_radioHeaders = [];
+
 	/**
 	 * Initialise a new MapControls instance.
 	 * 
@@ -51,7 +54,16 @@ class MapControls {
 	 * Return HTML for controls.
 	 */
 	get controlHTML() {
-		return this_.controlHTML;
+		return this._controlHTML;
+	}
+
+	/**
+	 * Any layers under the input heading will be forced to use RadioButton controls.
+	 * 
+	 * @param {String} heading heading name 
+	 */
+	addRadioHeading(heading) {
+		this._radioHeaders.push(heading);
 	}
 
 	/**
@@ -70,5 +82,53 @@ class MapControls {
 		} catch(err) {
 			console.log("WARN: Could not toggle '" + layerName + "', it may have no initial 'visibility' layout property?");
 		}
+	}
+
+	/**
+	 * Combines the registered layer groups from all modules into single tree like data structure.
+	 * 
+	 * @param {DigitalTwinModule[]} modules modules loaded in DigitalTwinController
+	 */
+	buildTree(modules) {
+		// Final tree structure
+		let entries = {};
+
+		modules.forEach(mod => {
+	
+			for(let [heading, groups] of Object.entries(mod.layerGroups)) {
+				let headingEntry = entries[heading];
+				if(headingEntry == null) {
+					headingEntry = {};
+				} 
+				
+				for(let [name, values] of Object.entries(groups)) {
+					let groupEntry = headingEntry[name];
+					if(groupEntry == null) {
+						groupEntry = {
+							"name": name,
+							"enabled": values["enabled"],
+							"layers": []
+						};
+					}
+
+					let newLayers = groupEntry["layers"].concat(values["layers"]);
+					groupEntry["layers"] = newLayers;
+					headingEntry[name] = groupEntry;
+				}
+				entries[heading] = headingEntry;
+			};
+		});
+
+		// Now use that structure to render the tree
+		this.#renderTree(entries);
+	}
+
+	/**
+	 * Render tree for HTML view.
+	 * 
+	 * @param {Object<String, Object>} treeData tree data structure
+	 */
+	#renderTree(treeData) {
+		var htmlString = `<p>Layers:</p><ul class="checktree">`;
 	}
 }

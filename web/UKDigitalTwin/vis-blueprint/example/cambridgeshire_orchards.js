@@ -41,6 +41,9 @@ export class CambridgeshireOrchardsModule extends DigitalTwinModule {
 			}
 		});
 		console.log("INFO: 'orchard-locations' layer has been added.");
+
+		// Register as a single layer group
+		this.registerLayerGroup("Orchards", ["orchard-locations"], true);
 	}
 
 	/**
