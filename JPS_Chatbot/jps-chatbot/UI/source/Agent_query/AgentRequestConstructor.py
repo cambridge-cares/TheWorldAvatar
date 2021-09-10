@@ -4,7 +4,7 @@ import urllib
 from pprint import pprint
 
 import rdflib
-from .location import AGENT_OWL_DIR
+from .location import AGENT_OWL_DIR, FILE_DIR
 
 class AgentRequestConstructor:
     def __init__(self):
@@ -84,9 +84,16 @@ class AgentRequestConstructor:
         # construct the input map for making the request
         return {'input_map': input_map, 'url': url}
 
+    # # this function is
+    # def hot_patch_for_thermo_agent(self, species):
+    #     #
+
     def get_agent_request_attributes(self, agent_name):
         g = rdflib.Graph()
-        agent_dir = os.path.join(AGENT_OWL_DIR, agent_name)
+        agent_dir = os.path.join(FILE_DIR, agent_name + '.owl')
+        print('=============================')
+        print('agent dir', agent_dir)
+
         g.parse(agent_dir)
         agent_url = ''
         get_input_query = """

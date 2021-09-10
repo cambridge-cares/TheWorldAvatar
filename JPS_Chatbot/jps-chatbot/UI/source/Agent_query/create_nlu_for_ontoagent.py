@@ -56,13 +56,14 @@ def create_labelled_questions(inputs_for_creating_questions):
     # 1. Go through the outputs first
     #       2. Go through the templates
     output_labels = inputs_for_creating_questions['output_labels']
-    output_ner_labels = inputs_for_creating_questions['output_ner_labels']
+    output_ner_label = inputs_for_creating_questions['output_ner_labels']
     templates = inputs_for_creating_questions['question_templates']
     qualifier_names = inputs_for_creating_questions['qualifier_names']
     qualifier_ner_labels = inputs_for_creating_questions['qualifier_ner_labels']
 
     tmp_templates = []
-    for output_label, output_ner_label in zip(output_labels, output_ner_labels):
+
+    for output_label in output_labels:
         for template in templates:
             # replace the placeholder with the nlp label of the output
             placeholder = '<%s>' % output_ner_label
@@ -71,7 +72,7 @@ def create_labelled_questions(inputs_for_creating_questions):
                 template = template.replace(placeholder, value)
                 tmp_templates.append(template)
     templates = tmp_templates
-
+    print(templates)
     input_data_types = inputs_for_creating_questions['input_data_types']
     input_ner_labels = inputs_for_creating_questions['input_ner_labels']
 
@@ -83,27 +84,32 @@ def create_labelled_questions(inputs_for_creating_questions):
         for input_instance in instances:
             for template in templates:
                 question = template
+                if input_placeholder in template:
+                    input_value = '[%s](%s)' % (input_instance, input_ner_label)
+                    question = question.replace(input_placeholder, input_value, 1)
+                    if len(qualifier_ner_labels) == 0:
+                        if '<qualifier>' not in question:
+                            questions.append(' - ' + question + '\n')
+
                 for qualifier_name, qualifier_ner_label in zip(qualifier_names, qualifier_ner_labels):
                     qualifier_placeholder = '<%s>' % qualifier_ner_label
                     # 1. fill in the inputs value (species instances)
-                    if input_placeholder in template:
-                        input_value = '[%s](%s)' % (input_instance, input_ner_label)
-                        question = question.replace(input_placeholder, input_value, 1)
                     if qualifier_placeholder in question:
                         qualifier_content = generate_numerical_for_qualifiers(qualifier_name)
                         qualifier_value = '[%s](%s)' % (qualifier_content, qualifier_ner_label)
                         question = question.replace(qualifier_placeholder, qualifier_value, 1)
                         if '<qualifier>' not in question:
                             questions.append(' - ' + question + '\n')
-                            print(question)
+
+
 
     return questions
 
 
-def create_thermo_caculation_questions():
+def create_questions_from_agent(agent_name):
+    questions = []
     apq = AgentPropertyQuery()
-    agent_attributes = apq.get_agent_attributes('Thermo_Agent.owl')
-    pprint(agent_attributes)
+    agent_attributes = apq.get_agent_attributes(agent_name)
     # 1. iterate through all the outputs
     agent_outputs = agent_attributes['outputs']
     agent_inputs = agent_attributes['inputs']
@@ -112,6 +118,9 @@ def create_thermo_caculation_questions():
     input_ner_labels = []
     input_types = []
 
+    output_ner_labels_list = []
+    output_nlp_labels_list = []
+
     for agent_input in agent_inputs:
         data_ner_label = agent_input['ner_label']
         data_type = agent_input['data_type']
@@ -119,9 +128,13 @@ def create_thermo_caculation_questions():
         input_types.append(data_type)
 
     for output in agent_outputs:
+        print(output)
         data_ner_label = output['ner_label']
         data_nlp_label = output['data_nlp_label']
         qualifier_name = output['qualifier_name']
+
+        output_ner_labels_list.append(data_ner_label)
+        output_nlp_labels_list.append(data_nlp_label)
 
         # query the qualifiers
         if ',' in qualifier_name:
@@ -131,24 +144,26 @@ def create_thermo_caculation_questions():
         qualifier_names = []
         qualifier_ner_labels = []
         for qualifier_uri in qualifier_name_list:
-            qualifier_dict = apq.get_agent_qualifiers('Thermo_Agent.owl', qualifier_uri)
-            name = qualifier_dict['name']
-            ner_label = qualifier_dict['ner_label']
-            qualifier_names.append(name)
+            qualifier_dict = apq.get_agent_qualifiers(agent_name, qualifier_uri)
+            if qualifier_dict is None:
+                pass
+            else:
+                name = qualifier_dict['name']
+                ner_label = qualifier_dict['ner_label']
+                qualifier_names.append(name)
+                qualifier_ner_labels.append(ner_label)
 
-            qualifier_ner_labels.append(ner_label)
-        input_for_creating_question = {'output_labels': data_nlp_label, 'output_ner_labels': [data_ner_label],
+        input_for_creating_question = {'output_labels': data_nlp_label, 'output_ner_labels': data_ner_label,
                                        'qualifier_names': qualifier_names, 'qualifier_ner_labels': qualifier_ner_labels,
                                        'question_templates': question_templates, 'input_ner_labels': input_ner_labels,
                                        'input_data_types': input_types}
 
-        questions = create_labelled_questions(input_for_creating_question)
-        print('total number of questions', len(questions))
+        questions = questions + create_labelled_questions(input_for_creating_question)
+    questions_blk = ''.join(questions)
+    block = '''## intent: %s\n %s ''' % (agent_name.replace('.owl', ''), questions_blk)
 
-        questions_blk = ''.join(questions)
-        block = '''## intent: Thermo_Agent\n %s ''' % questions_blk
+    return block
 
-        return block
 
 def generate_numerical_for_qualifiers(qualifier):
     qualifier_unit_dict = {'temperature': ['kelvin', 'celsius', 'fahrenheit', 'K', 'C', 'F'],
@@ -187,35 +202,36 @@ def get_smiles(id_list):
     return rst
 
 
-def create_question():
-    apq = AgentPropertyQuery()
-    template_attribute_species = '- [%s](attribute) [%s](species)\n'
-    template_dict = {'attribute species': template_attribute_species}
-    agent_attributes = apq.get_agent_attributes('PCE_Agent.owl')
-    pprint(agent_attributes)
-    # get attributes of the agents
-    agent_id = agent_attributes['agent_id']
-    ner_labels = agent_attributes['ner_labels']
-    template = template_dict[ner_labels]
+# def create_question():
+#     apq = AgentPropertyQuery()
+#     template_attribute_species = '- [%s](attribute) [%s](species)\n'
+#     template_dict = {'attribute species': template_attribute_species}
+#     agent_attributes = apq.get_agent_attributes('PCE_Agent.owl')
+#     pprint(agent_attributes)
+#     # get attributes of the agents
+#     agent_id = agent_attributes['agent_id']
+#     ner_labels = agent_attributes['ner_labels']
+#     template = template_dict[ner_labels]
+#
+#     block = '## intent: %s \n ' % agent_id + '%s \n \n ' + '''
+# ## intent: weather_agent
+#    - [temperature](attribute) in [cambridge](city)
+#     '''
+#     SMILES = get_smiles(get_species())
+#     attributes = ['power conversion efficiency', 'pce']
+#     questions_text = ''
+#     for SMILE in SMILES:
+#         for attribute in attributes:
+#             q = template % (attribute, SMILE)
+#             questions_text = questions_text + q
+#     block = block % questions_text
+#     return block
 
-    block = '## intent: %s \n ' % agent_id + '%s \n \n ' + '''
-## intent: weather_agent
-   - [temperature](attribute) in [cambridge](city)
-    '''
-    SMILES = get_smiles(get_species())
-    attributes = ['power conversion efficiency', 'pce']
-    questions_text = ''
-    for SMILE in SMILES:
-        for attribute in attributes:
-            q = template % (attribute, SMILE)
-            questions_text = questions_text + q
-    block = block % questions_text
-    return block
 
-
-blk_1 = create_thermo_caculation_questions()
-# blk_2 = create_question()
+blk_1 = create_questions_from_agent('Thermo_Agent.owl')
+blk_2 = create_questions_from_agent('PCE_Agent.owl')
 
 with open('./training/data/nlu.md', 'wb') as f:
     f.write(blk_1.encode('utf-8'))
+    f.write(blk_2.encode('utf-8'))
     f.close()

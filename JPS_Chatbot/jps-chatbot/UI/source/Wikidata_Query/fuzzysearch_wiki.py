@@ -15,6 +15,10 @@ def find_nearest_match(entity_value, entity_type):
     URI = [u.replace('http://www.wikidata.org/entity/', '') for u in rst[0]]
     print('find_nearest_match - 16', URI)
     score = rst[1]
+    # TODO: increase the threshold
+    if score < 75:
+        return None
+    print('the score is', score)
     candidate = rst[2]
     return URI, candidate
 

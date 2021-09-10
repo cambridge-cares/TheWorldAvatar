@@ -1,4 +1,5 @@
 import json
+from json import JSONDecodeError
 from pprint import pprint
 
 from Wikidata_Query.Interpretation_parser import InterpretationParser
@@ -50,25 +51,40 @@ class CoordinateAgent:
         self.socket = socketio
         self.logwriter = LogWriter()
         self.msg = Messenger()
+        with open('agent_query_log', 'w') as f:
+            f.write('')
+            f.close()
 
     # def return_for_more(self, agent_id):
     #     pass
     #
     def agent_query(self, question):
         rst = self.agent_interpreter.parse(question)
+        with open('agent_query_log') as f:
+            try:
+                agent_query_log = json.loads(f.read())
+                f.close()
+            except JSONDecodeError:
+                agent_query_log = {}
+
+        agent_query_log[question.strip()] = rst
+        with open('agent_query_log', 'w') as f:
+            f.write(json.dumps(agent_query_log))
+            f.close()
         print('========================= agent query =====================')
         pprint(rst)
-        response = self.agent_request_constructor.call_agent(rst)
-
+        try:
+            response = self.agent_request_constructor.call_agent(rst)
+            return response
+        except:
+            print(Exception)
+            return  None
         # the result will give
         #  - the name of the agent
         #  - the entities
         # TODO: Talk to Daniel about the extra parameters
         # 2. check the requirement of the agent ... any other parameters ?
         # 3.
-
-        print('=================== result returned ===================')
-        pprint(response)
 
     def remove_stop_words(self, question):
         stopwords = ['the', 'an', 'a', 'is', 'what', 'are', 'of', 'describe', 'find', 'find me']
@@ -102,7 +118,7 @@ class CoordinateAgent:
         print('LDA init')
         topics = self.lda_classifier.classify(question)
         self.logwriter.write_to_log(question, 'Topics identified %s \n' % json.dumps(topics))
-        topics.append('others')
+        # topics.append('others')
         print('============== topics ==============')
         print(topics)
 
@@ -212,8 +228,16 @@ class CoordinateAgent:
 
 if __name__ == '__main__':
     ca = CoordinateAgent(None)
-
-    ca.run('  show me the vibration frequency of H2O2')
+    thermo_agent_questions = ['what is the gibbs energy of H2O2',
+                              'what is the inner energy of methane at 100 K',
+                              'plot the heat capacity of CO2',
+                              'heat capacity of c1cccc1 at 1 atm',
+                              'heat capacity of c1cccc1 at room temperature',
+                              'find the entropy of benzene at 100000 Pa',
+                              'what is the enthalpy of InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3 at 1522.1 Pa and 123245 K']
+    for t_a_q in thermo_agent_questions:
+        ca.run(t_a_q)
+    # ca.run('  show me the vibration frequency of H2O2')
     # ca.run('what reactions produce NO2 + O2')
     # ca.run('find all the fatty acids with molecular weight more than 100')
     # ca.run('the kindling point of C2HBrClF3')

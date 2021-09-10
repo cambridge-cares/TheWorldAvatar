@@ -15,8 +15,28 @@ class AgentPropertyQuery:
                               'http://fake_concept_for_heat_capacity_at_constant_pressure': [
                                   'heat capacity at constant pressure'],
                               'http://fake_concept_for_heat_capacity_at_constant_volume': [
-                                  'heat capacity at constant volume']
-                              }
+                                  'heat capacity at constant volume'],
+                              'http://fake_concept_for_power_conversion_efficiency': ['pce',
+                                                                                      'power conversion efficiency']}
+
+    def test_query(self, query, agent_name):
+        '''
+                    PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+            SELECT DISTINCT ?type ?name ?isArray ?nerLabel
+               WHERE {
+                  ?operation msm:hasOutput ?MessageContent .
+                  ?MessageContent msm:hasMandatoryPart ?MessagePart .
+                  ?MessagePart msm:hasType ?type ;
+                               msm:hasName ?name ;
+                               msm:isArray ?isArray ;
+                               msm:hasNerLabel ?nerLabel .
+
+               } GROUP BY ?type ?name ?isArray ?nerLabel
+        '''
+
+        g = rdflib.Graph()
+        g.parse(os.path.join(FILE_DIR, agent_name))
+        rst = g.query(query)
 
     def get_agent_qualifiers(self, agent_name, node_uri):
         g = rdflib.Graph()
@@ -31,12 +51,13 @@ class AgentPropertyQuery:
         }
         '''
         qualifier_rst = g.query(get_qualifier_query % node_uri)
+        if len(qualifier_rst) == 0:
+            return None
         for row in qualifier_rst:
             name = row['name'].value
             ner_label = row['nerLabel'].value
 
         return {'name': name, 'ner_label': ner_label}
-
 
     def get_agent_attributes(self, agent_name='PCE_Agent.owl'):
         ner_labels = []
@@ -67,6 +88,20 @@ class AgentPropertyQuery:
             templates.append(template)
         templates = list(set(templates))
 
+        get_output_query_with_out_qualifier = '''
+            PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+            SELECT DISTINCT ?type ?name ?isArray ?nerLabel 
+               WHERE {
+                  ?operation msm:hasOutput ?MessageContent . 
+                  ?MessageContent msm:hasMandatoryPart ?MessagePart . 
+                  ?MessagePart msm:hasType ?type ;
+                               msm:hasName ?name ; 
+                               msm:isArray ?isArray ;
+                               msm:hasNerLabel ?nerLabel .
+    
+               } GROUP BY ?type ?name ?isArray ?nerLabel 
+        '''
+
         get_output_query = """
             PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
             SELECT DISTINCT ?type ?name ?isArray ?nerLabel 
@@ -79,24 +114,43 @@ class AgentPropertyQuery:
                                msm:isArray ?isArray ;
                                msm:hasNerLabel ?nerLabel ;
                                msm:hasQualifier ?qualifier_name_candidates . 
-                               
-                                
-               } GROUP BY ?type ?name ?isArray ?nerLabel ?qualifier_name 
+              
+               } GROUP BY ?type ?name ?isArray ?nerLabel ?qualifier_name
             """
-        output_rst = g.query(get_output_query)
+
+        qualifier_test_query = '''
+            PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+            SELECT DISTINCT ?qualifier
+               WHERE {
+                  ?operation msm:hasOutput ?MessageContent . 
+                  ?MessageContent msm:hasMandatoryPart ?MessagePart . 
+                  ?MessagePart msm:hasQualifier ?qualifier . 
+               }  
+        '''
+        qualifier_test = g.query(qualifier_test_query)
+        if len(qualifier_test) == 0:
+            output_rst = g.query(get_output_query_with_out_qualifier)
+        else:
+            output_rst = g.query(get_output_query)
 
         outputs = []
         for row in output_rst:
             data_type = row['type'].value
             if data_type in self.label_mapping:
                 data_nlp_label = self.label_mapping[data_type]
+                ner_label = row['nerLabel'].value
+                ner_labels.append(ner_label)
+
             else:
                 data_nlp_label = []
             data_name = row['name'].value
             is_array = row['isArray'].value
-            ner_label = row['nerLabel'].value
-            qualifier_name = str(row['qualifier_name'])
-            ner_labels.append(ner_label)
+            try:
+                qualifier_name = str(row['qualifier_name'])
+            except(KeyError):
+                qualifier_name = []
+
+
             o = {'data_type': data_type, 'data_name': data_name, 'is_array': is_array, 'ner_label': ner_label,
                  'qualifier_name': qualifier_name, 'data_nlp_label': data_nlp_label}
             outputs.append(o)
@@ -133,7 +187,28 @@ class AgentPropertyQuery:
         return rst
 
 
+
 if __name__ == '__main__':
     apq = AgentPropertyQuery()
+    rst = apq.get_agent_attributes('PCE_Agent.owl')
+    print(json.dumps(rst, indent=4))
+    print('=======================================\n\n\n\n\n')
     rst = apq.get_agent_attributes('Thermo_Agent.owl')
     print(json.dumps(rst, indent=4))
+    # test_q = '''
+    #             PREFIX msm: <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+    #         SELECT DISTINCT ?type ?name ?isArray ?nerLabel
+    #            WHERE {
+    #               ?operation msm:hasOutput ?MessageContent .
+    #               ?MessageContent msm:hasMandatoryPart ?MessagePart .
+    #               ?MessagePart msm:hasType ?type ;
+    #                            msm:hasName ?name ;
+    #                            msm:isArray ?isArray ;
+    #                            msm:hasNerLabel ?nerLabel .
+    #
+    #            } GROUP BY ?type ?name ?isArray ?nerLabel
+    # '''
+    # apq.test_query(test_q, 'PCE_Agent.owl')
+
+    # rst = apq.get_agent_attributes('Thermo_Agent.owl')
+    # print(json.dumps(rst, indent=4))

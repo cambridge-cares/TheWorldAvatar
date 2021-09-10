@@ -92,6 +92,7 @@ class OntoAgentGenerator:
                     qualifier_object = self.qualifiers_dict[qualifier_name]
                     qualifier_message_part = self.create_a_message_part(qualifier_object)
                     qualifiers_list.append(qualifier_message_part)
+
             message_part.hasQualifier = qualifiers_list
 
     def get_qualifiers(self, agent_object):

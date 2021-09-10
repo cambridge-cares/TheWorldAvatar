@@ -4,15 +4,17 @@ from ontoagent_generator import OntoAgentGenerator
 from location import FILE_DIR
 agent = {
     "question_templates":
-        ['[%s](attribute) OPF with donor [%s](species)',
-         '[%s](attribute) of [%s](species)'],
+        ['<attribute> OPF with donor <species>',
+         '<attribute> of <species>'],
     "http_url": "http://somewhereincmcl.com/pce",
     "outputs": [
         {
-            "data_name": "power conversion efficiency",
+            "data_name": "pce",
             "data_type": "http://fake_concept_for_power_conversion_efficiency",
             "is_array": False,
-            "ner_label": "attribute"
+            "ner_label": "attribute",
+            "has_qualifier": ['None']
+
         }
     ],
     "inputs": [
