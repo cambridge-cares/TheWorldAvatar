@@ -8,26 +8,22 @@ from queryStrings import queryPowerPlantForVisualisation, queryUKElectricityCons
 from geoJSONCreator import powerPlantgeoJSONCreator, elecConsAndGEOInfogeoJSONCreator, busModelJSONCreator, BranchAndBusConnectionGPSLocationJSONCreator
 
 """Endpoints"""
-powerPlant = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG"
-electricity_consumption_RDF4j_Endpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"
 ONS = "http://statistics.data.gov.uk/sparql.json"
-topoEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology"
-topoEndpointLabel = "ukpowergridtopology"
-gridModelEndpoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridModel"
-gridModelEndpointLabel = "ukpowergridmodel"
+ukdigitaltwin_label = "ukdigitaltwin"
+ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
 
 
 # """PowerPlant query"""
-# ret_pow = queryPowerPlantForVisualisation(powerPlant)
+# ret_pow = queryPowerPlantForVisualisation(ukdigitaltwin_label)
 # ret_pow = check_GPS(ret_pow)
 
-# """PowerPlant query"""
-# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, True) # query the region consumption
-# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(electricity_consumption_RDF4j_Endpoint, ONS, False) # query the sub areas consumption
+# """Electricity consumption query"""
+# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, True) # query the region consumption
+# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, False) # query the sub areas consumption
 
 # """Grid model query"""
-# ret_grid_model_bus = queryGridModeltForVisualisation_Bus(topoEndpoint, gridModelEndpoint)
-ret_grid_model_branchGPSPoints = queryGridModeltForVisualisation_Branch(gridModelEndpointLabel, topoEndpointLabel)
+# ret_grid_model_bus = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+# ret_grid_model_branchGPSPoints, ret_grid_model_branchPara = queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
 
 """Labels"""
 class_label_pp = 'UK_PowerPlants'
@@ -35,8 +31,9 @@ class_label_elec_region = "UK_Electricity_Consumption_Regions"
 class_label_elec_area = "UK_Electricity_Consumption_Areas"
 class_label_busPara = "UK_Grid_Model_Bus_Parameter"
 class_label_busInputVar = "UK_Grid_Model_Bus_InputVar"
-class_label_line = "UK_Grid_Model_Branch_GPSPoints"
+class_label_lineGPS = "UK_Grid_Model_Branch_GPSPoints"
 class_label_FromBus = "UK_Grid_Model_Branch_FromBus_GPSPoints"
+class_label_linePara = "UK_Grid_Model_Branch_Parameters"
 
 
 """Create GEOJSON files"""
@@ -44,5 +41,5 @@ class_label_FromBus = "UK_Grid_Model_Branch_FromBus_GPSPoints"
 # elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
 # elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)
 # busModelJSONCreator(ret_grid_model_bus, class_label_busPara, class_label_busInputVar)
-BranchAndBusConnectionGPSLocationJSONCreator(ret_grid_model_branchGPSPoints, class_label_line, class_label_FromBus) 
+# BranchAndBusConnectionGPSLocationJSONCreator(ret_grid_model_branchGPSPoints, ret_grid_model_branchPara, class_label_lineGPS, class_label_FromBus, class_label_linePara) 
 print("*******************The JSON_Generator.py is finished*******************")

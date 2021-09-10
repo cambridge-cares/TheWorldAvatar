@@ -14,6 +14,7 @@
     <!--<script src="https://cdn.bootcss.com/Turf.js/5.1.6/turf.min.js"></script>-->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src='power-system.js'></script>
+    <script src='selectBus.js'></script>
 
     <!-- Stylesheets -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet'>
@@ -46,13 +47,13 @@
         resetSidePanel();
 
         // Show loading icon whilst stuff spins up
-        var loadingHTML = `
-                <br><br><br><br><br>
-                <img width='150' src='loading.gif'></img>
-                <br>
-                <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-            `;
-        appendSidePanelText(loadingHTML);
+        //var loadingHTML = `
+        //        <br><br><br><br><br>
+        //        <img width='150' src='loading.gif'></img>
+        //        <br>
+        //        <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+        //    `;
+        //appendSidePanelText(loadingHTML);
 
         // Initialise the MapBox map
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
@@ -232,6 +233,7 @@
                 data: 'UK_Grid_Model_Bus_InputVar.geojson'
             });
 
+            var counter = 0;
             // jquery for adding the geojson file for creating the animated arrow moving alongside the branch
             $.ajax({
                 type: "get",
@@ -246,6 +248,7 @@
                         var lineDistance = turf.lineDistance(Branch_GPSPoints.features[i], 'kilometers');
                         for (let j = 0; j <= lineDistance; j += lineDistance / steps) {
                             var segment = turf.along(Branch_GPSPoints.features[i], j, 'kilometers');
+                            // console.log("*******Branch_GPSPoints.features[i] are: ", segment)
                             arc.push(segment.geometry.coordinates);
                         }
                         // Update the route with calculated arc coordinates
@@ -303,6 +306,8 @@
 
                             for (i = 0; i <= Branch_GPSPoints.features.length -1 ; i++) {
                                 animate(i, -1, 1);
+                                counter += 1;
+                                console.log("The counter is: ", counter);
                             }
                             
                             function animate(featureIdx, cntr, timeOut) {
@@ -312,21 +317,16 @@
 
                                 window.setInterval(function () {
                                     cntr = (cntr + 1) % steps;
-                                    //if (cntr >= steps) {
-                                    //    cntr = 0;}
-
+                                   
                                     Branch_FromBus_GPS_Points.features[featureIdx].geometry.coordinates = Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr];
 
-                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr]),
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr + 1])
-                                        //turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps ? cntr - 1 : cntr]),
-                                        //turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps ? cntr : cntr + 1])
+                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(                                 
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps-1 ? cntr - 1 : cntr]),
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps-1 ? cntr : cntr + 1])
                                     );
 
                                     // Update the source with this new data.
                                     map.getSource('Branch_FromBus_GPS_Points').setData(Branch_FromBus_GPS_Points);
-                                   // cntr = cntr + 1;
 
                                     // Request the next frame of animation so long the end has not been reached.
                                     //if (cntr < steps) {
@@ -518,6 +518,50 @@
 
         // ===== MOUSE EVENTS =====
         // Triggers when an individual area is clicked on.
+
+        map.on('click', 'Model_EBus_GPSLocation', function (e) {
+            console.log("The click event is triggered")
+            var Bus_num = e.features[0].properties.Bus_num;
+            var Bus_type = e.features[0].properties.Bus_type;
+            var para_Gs = e.features[0].properties.para_Gs;
+            var para_Bs = e.features[0].properties.DomesticConsumption;
+            var para_area = e.features[0].properties.para_area;
+            var para_basekV = e.features[0].properties.para_basekV;
+            var para_zone = e.features[0].properties.para_zone;
+            var para_Vmax = e.features[0].properties.para_Vmax;
+            var para_Vmin = e.features[0].properties.para_Vmin;
+          
+            selectBus(Bus_num, Bus_type, para_Gs, para_Bs, para_area, para_basekV, para_zone, para_Vmax, para_Vmin);
+        });
+
+        map.on('mousemove', 'Model_EBus_GPSLocation', function (e) {
+
+            // Get the human readable name of the crop
+            var coordinates = e.lngLat;
+            var Bus_num = e.features[0].properties["Bus_num"];
+
+            // Make the text look a little nicer
+            var html = `
+                    <b> Bus ` + Bus_num + `</b><br>
+                    <span style="font-size: 85%;">Click for more details.</span>
+                `;
+
+            // Populate the popup and set its coordinates based on the feature found.
+            popup.setLngLat(coordinates).setHTML(html).addTo(map);
+
+        });
+
+        // Triggers when the mouse enters the entire layer
+        map.on('mouseenter', 'Model_EBus_GPSLocation', function (e) {
+            map.getCanvas().style.cursor = 'pointer';
+        });
+
+        // Triggers when the mouse leaves the entire layer
+        map.on('mouseleave', 'Model_EBus_GPSLocation', function (e) {
+            map.getCanvas().style.cursor = '';
+            popup.remove();
+        });
+
         map.on('click', 'Electricity_Consumption_area_fill', function (e) {
             var Location = e.features[0].properties.Location;
             var Area_LACode = e.features[0].properties.Area_LACode;

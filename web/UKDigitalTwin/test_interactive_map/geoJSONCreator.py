@@ -187,8 +187,15 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
               "input_Gd": "%s",
               "input_Vm": "%s",
               "input_Va": "%s"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
             }     
-          },"""%(bus_input[i][0], bus_input[i][1], bus_gps_para[i][2], bus_gps_para[i][3], bus_gps_para[i][4])         
+          },"""%(bus_input[i][0], bus_input[i][1], bus_gps_para[i][2], bus_gps_para[i][3], bus_gps_para[i][4], bus_gps_para[i][1], bus_gps_para[i][2])         
           geojson_file_bus_input += '\n'+feature   
     # removing last comma as is last line
     geojson_file_bus_input = geojson_file_bus_input[:-1]
@@ -199,12 +206,12 @@ def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar):
       """
     geojson_file_bus_input += end_geojson
     # saving as geoJSON
-    geojson_written = open(class_label_busInputVar+'.geojson','w')
+    geojson_written = open(class_label_busInputVar + '.geojson','w')
     geojson_written.write(geojson_file_bus_input)
     geojson_written.close() 
     return 
 
-def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, class_label_line, class_label_FromBus): 
+def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, ret_branchPara, class_label_lineGPS, class_label_FromBus, class_label_linePara): 
     geojson_file = """
       {
         "type": "FeatureCollection",
@@ -215,14 +222,29 @@ def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, class_label_line
           feature = """{
             "type": "Feature",
             "properties": {
-              "Name": "%s"
+              "Name": "%s",
+              "From_Bus": %s,
+              "To_Bus": %s,
+              "para_R":  %s,
+              "para_X":  %s,
+              "para_B":  %s,
+              "para_RateA":  %s,
+              "para_RateB":  %s,
+              "para_RateC":  %s, 
+              "para_RatioCoefficient":  %s, 
+              "para_Angle":  %s, 
+              "para_Status":  %s,
+              "para_AngleMax":  %s,
+              "para_AngleMin":  %s       
             },
             "geometry": {
                 "type": "LineString",
                 "coordinates": [[%s, %s], 
                                 [%s, %s]]
                 }            
-          },""" %(ret_branchGPS[i][0], ret_branchGPS[i][1], ret_branchGPS[i][2], ret_branchGPS[i][3], ret_branchGPS[i][4])         
+          },""" %(ret_branchPara[i][0], ret_branchPara[i][1], ret_branchPara[i][2], ret_branchPara[i][3], ret_branchPara[i][4], ret_branchPara[i][5], \
+                  ret_branchPara[i][6], ret_branchPara[i][7], ret_branchPara[i][8], ret_branchPara[i][9], ret_branchPara[i][10], ret_branchPara[i][11], \
+                  ret_branchPara[i][12], ret_branchPara[i][13], ret_branchGPS[i][1], ret_branchGPS[i][2], ret_branchGPS[i][3], ret_branchGPS[i][4])         
           # adding new line 
           geojson_file += '\n'+feature   
     # removing last comma as is last line
@@ -234,7 +256,7 @@ def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, class_label_line
       """
     geojson_file += end_geojson
     # saving as geoJSON
-    geojson_written = open(class_label_line + '.geojson','w')
+    geojson_written = open(class_label_lineGPS + '.geojson','w')
     geojson_written.write(geojson_file)
     geojson_written.close()
     
@@ -267,6 +289,49 @@ def BranchAndBusConnectionGPSLocationJSONCreator(ret_branchGPS, class_label_line
     geojson_file += end_geojson
     # saving as geoJSON
     geojson_written = open(class_label_FromBus + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close() 
+    
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_branchPara)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s",
+              "From_Bus": %s,
+              "To_Bus": %s,
+              "para_R":  %s,
+              "para_X":  %s,
+              "para_B":  %s,
+              "para_RateA":  %s,
+              "para_RateB":  %s,
+              "para_RateC":  %s, 
+              "para_RatioCoefficient":  %s, 
+              "para_Angle":  %s, 
+              "para_Status":  %s,
+              "para_AngleMax":  %s,
+              "para_AngleMin":  %s             
+            }
+          },""" %(ret_branchPara[i][0], ret_branchPara[i][1], ret_branchPara[i][2], ret_branchPara[i][3], ret_branchPara[i][4], ret_branchPara[i][5], \
+                  ret_branchPara[i][6], ret_branchPara[i][7], ret_branchPara[i][8], ret_branchPara[i][9], ret_branchPara[i][10], ret_branchPara[i][11], \
+                  ret_branchPara[i][12], ret_branchPara[i][13])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_linePara + '.geojson','w')
     geojson_written.write(geojson_file)
     geojson_written.close() 
     return 
