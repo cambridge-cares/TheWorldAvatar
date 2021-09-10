@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,5 +55,34 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
         }
         return true;
     }
-
+    
+    /**
+     * Execute a <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a> on the target resource 
+     * in the Knowledge Graph by calling the AccessAgent.
+     * @param targetResourceID	target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param sparqlQuery		SPARQL query string
+     * @return 	the query result in the W3C Query result JSON format, 
+     * see <a href="https://www.w3.org/TR/sparql11-results-json/">Query Results JSON Format</a>
+     */
+    public String query(String targetResourceID, String sparqlQuery) {
+    	//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
+    	return AccessAgentCaller.query(null, targetResourceID, sparqlQuery);
+    }
+    
+    /**
+     * Execute a <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a> on the target resource 
+     * in the Knowledge Graph by calling the AccessAgent. 
+     * @param targetResourceID	the target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param sparqlUpdate		SPARQL update string
+     */
+    public void update(String targetResourceID, String sparqlUpdate) {
+    	//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
+    	AccessAgentCaller.update(null, targetResourceID, sparqlUpdate);
+    }
 }
