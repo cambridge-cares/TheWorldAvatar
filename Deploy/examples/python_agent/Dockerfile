@@ -3,6 +3,9 @@
 # Base image is a lightweight version of Python
 FROM python:3.8-slim-buster
 
+# Install required software
+RUN apt update && apt install -y git
+
 # Expose the port on which our server will run
 EXPOSE 5000
 
