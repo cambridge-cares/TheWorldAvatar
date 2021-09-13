@@ -1,5 +1,5 @@
 onto_spec = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
-onto_mops = 'http://www.theworldavatar.com/ontology/ontomops/OntoMOPS.owl'
+onto_mops = 'http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl'
 
 
 rdf_pref = 'http://www.w3.org/2000/01/rdf-schema'
