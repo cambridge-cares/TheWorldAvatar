@@ -35,6 +35,10 @@ public class TimeSeriesSparqlTest {
 
     private MockKnowledgeBaseClient mockClient;
     private TimeSeriesSparql sparqlClient;
+    
+	// Initialise correct namespaces to use for ontology and knowledge base
+	private final String ns_ontology = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#";
+	private final String ns_kb = "http://www.theworldavatar.com/kb/ontotimeseries/";
 
     // Initialise IRIs for 2 times series: 1 with 3 associated data series and 1 with only 1 associated data series
     private final String tsIRI1 = "http://tsIRI1";
@@ -220,8 +224,8 @@ public class TimeSeriesSparqlTest {
     @Test
     public void testNamespaces() {
         // Test the value of the public namespaces for the ontology and the knowledge base
-        Assert.assertEquals("http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#", TimeSeriesSparql.ns_ontology);
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontotimeseries/", TimeSeriesSparql.ns_kb);        
+        Assert.assertEquals(ns_ontology, TimeSeriesSparql.ns_ontology);
+        Assert.assertEquals(ns_kb, TimeSeriesSparql.ns_kb);        
     }
     
     @Test
@@ -230,13 +234,13 @@ public class TimeSeriesSparqlTest {
         Field p_onto = TimeSeriesSparql.class.getDeclaredField("prefix_ontology");
         p_onto.setAccessible(true);
         Prefix onto = (Prefix) p_onto.get(null);
-        Assert.assertEquals("PREFIX ts: <http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#>", 
+        Assert.assertEquals("PREFIX ts: <" + ns_ontology + ">", 
         					onto.getQueryString());
     	// Retrieve the value of the private static field 'prefix_kb' of the client
         Field p_kb = TimeSeriesSparql.class.getDeclaredField("prefix_kb");
         p_kb.setAccessible(true);
         Prefix kb = (Prefix) p_kb.get(null);
-        Assert.assertEquals("PREFIX kb: <http://www.theworldavatar.com/kb/ontotimeseries/>", 
+        Assert.assertEquals("PREFIX kb: <" + ns_kb + ">", 
         					kb.getQueryString());      
     }
     
