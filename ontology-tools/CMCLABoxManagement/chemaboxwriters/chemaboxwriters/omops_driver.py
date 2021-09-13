@@ -10,7 +10,7 @@ Usage:
 Options:
 --inp-file-type=<type>  Types of the allowed input files
                         to the omops abox writer:
-                         - omops input json file           [default: omops_inp_json]
+                         - omops input json file           [default: ominp_json]
                          - omops processed json file       [omops_json]
                          - omops meta csv                  [csv]
 --out-dir=<dir>         Output directory to write the
