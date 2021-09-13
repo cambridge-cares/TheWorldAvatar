@@ -39,6 +39,9 @@ class MapControls {
 	// Layer headers to enforce radio groups
 	_radioHeaders = [];
 
+	// Tree data
+	_treeData;
+
 	/**
 	 * Initialise a new MapControls instance.
 	 * 
@@ -91,12 +94,12 @@ class MapControls {
 	 */
 	buildTree(modules) {
 		// Final tree structure
-		let entries = {};
+		this._treeData = {};
 
 		modules.forEach(mod => {
 	
 			for(let [heading, groups] of Object.entries(mod.layerGroups)) {
-				let headingEntry = entries[heading];
+				let headingEntry = this._treeData[heading];
 				if(headingEntry == null) {
 					headingEntry = {};
 				} 
@@ -115,12 +118,9 @@ class MapControls {
 					groupEntry["layers"] = newLayers;
 					headingEntry[name] = groupEntry;
 				}
-				entries[heading] = headingEntry;
-			};
+				this._treeData[heading] = headingEntry;
+			}
 		});
-
-		// Now use that structure to render the tree
-		this.#renderTree(entries);
 	}
 
 	/**
@@ -128,7 +128,119 @@ class MapControls {
 	 * 
 	 * @param {Object<String, Object>} treeData tree data structure
 	 */
-	#renderTree(treeData) {
+	renderTree() {
 		var htmlString = `<p>Layers:</p><ul class="checktree">`;
+		htmlString += "<ul class='groupList'>"	
+
+		for(let [heading, values1] of Object.entries(this._treeData)) {
+			if(heading != "") {
+				htmlString += "<li>";
+				htmlString += "<input type='checkbox' onclick='globalController.onGroupChange(this);' id='" + heading + "'>";
+				htmlString += "<label for='" + heading + "'>" + heading + "</label>";
+				htmlString += "</li>";
+			}
+				
+			if(heading == "") {
+				htmlString += "<ul class='layerList listNoIndent'>";
+			} else {
+				htmlString += "<ul class='layerList'>";
+			}
+			
+			for(let [name, values2] of Object.entries(values1)) {
+
+				if(heading == "") {
+					htmlString += "<li class='listNoIndent'>";
+				} else {
+					htmlString += "<li>";
+				}
+
+
+				let checked = this._treeData[heading][name]["enabled"];
+				if(checked) {
+					htmlString += "<input type='checkbox' onclick='globalController.onLayerChange(this);' id='" + name + "' checked>";
+				} else {
+					htmlString += "<input type='checkbox' onclick='globalController.onLayerChange(this);' id='" + name + "'>";
+				}
+			
+				htmlString += "<label for='" + name + "'>" + name + "</label>";
+				htmlString += "</li>";
+			}
+			htmlString += "</ul>"
+		}
+		htmlString += "</ul>";
+
+		// Add to the document
+		document.getElementById("layerContainer").innerHTML = htmlString;
+	}
+
+	/**
+	 * Fires when a group checkbox within the layer control is selected.
+	 * 
+	 * @param control - event source 
+	 */
+	onGroupChange(control) {
+		// Update the selection state of layers in this group
+		let groupName = control.id;
+		let groupLayers = this._treeData[groupName];
+
+		for(let [name, values] of Object.entries(groupLayers)) {
+			let layerIDs = values["layers"];
+			values["enabled"] = control.checked;
+
+			layerIDs.forEach((layerID) => {
+				this.#toggleLayer(layerID, control.checked);
+			});
+		}
+	}
+
+	/**
+	 * Fires when a layer checkbox is selected.
+	 * 
+	 * @param checkbox - event source 
+	 */
+	onLayerChange(control) {
+		let layerName = control.id;
+
+		for(let [group, values] of Object.entries(this._treeData)) {
+			
+			let layerEntry = values[layerName];
+			if(layerEntry != null) {
+				let layerIDs = layerEntry["layers"];
+				layerEntry["enabled"] = control.checked;
+
+				layerIDs.forEach(layerID => {
+					this.#toggleLayer(layerID, control.checked);
+				});
+			}
+		}
+
+		console.log("onLayerChange()");
+		this.#flarb();
+	}
+
+	#flarb(layerName) {
+		for(let [group, values1] of Object.entries(this._treeData)) {
+			if(layerName != null && values1[layerName] == null) continue;
+			let total = 0;
+			let checked = 0;
+
+			for(let [layer, values2] of Object.entries(values1)) {
+				if(values2["enabled"]) {
+					checked++;
+				}
+				total++;
+			}
+			
+			let groupCheck = document.getElementById(group);
+			console.log(groupCheck);
+
+			if(total == checked) {
+				groupCheck.checked = true;
+				console.log(group + " should now be true!");
+			} else {
+				groupCheck.checked = false;
+				console.log(group + " should now be false!");
+			}
+		}
 	}
 }

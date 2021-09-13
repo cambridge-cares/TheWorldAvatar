@@ -63,8 +63,9 @@ export class CambridgeshireStationModule extends DigitalTwinModule {
 		});
 		console.log("INFO: 'station-labels' layer has been added.");	
 
-		// Register as a single layer group
-		this.registerLayerGroup("Train Stations", ["station-locations", "station-labels"], true);
+		// Register each MapBox layer separately under a single heading
+		this.registerLayerGroup("Station Locations", ["station-locations"], true, "Train Stations");
+		this.registerLayerGroup("Station Names", ["station-labels"], true, "Train Stations");
 	}
 
 	/**

@@ -71,7 +71,28 @@ class DigitalTwinController {
 			dtModule.addLayers();
 		});
 
+		// Add map controls to the document
 		this._mapControls.buildTree(this._modules);
+		document.getElementById("controlsParent").innerHTML = this._mapControls.controlHTML;
+		this._mapControls.renderTree();
+	}
+
+	/**
+	 * Fires when a group checkbox within the layer control is selected.
+	 * 
+	 * @param control - event source 
+	 */
+	 onGroupChange(control) {
+		this._mapControls.onGroupChange(control);
+	}
+
+	/**
+	 * Fires when a layer checkbox is selected.
+	 * 
+	 * @param control - event source 
+	 */
+	onLayerChange(control) {
+		this._mapControls.onLayerChange(control);
 	}
 
 }

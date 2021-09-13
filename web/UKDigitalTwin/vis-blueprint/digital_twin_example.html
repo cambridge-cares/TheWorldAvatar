@@ -13,9 +13,11 @@
 
 	<!-- Remote CMCL JS files for DEVELOPMENT -->
 	<!-- Needs to be declared BEFORE local libraries -->
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/checktree.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
-	<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+	
+	<!--
+		<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
+		<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
+	-->
 
 	<!-- Remote CMCL CSS files for DEVELOPMENT -->
 	<!-- 
@@ -38,17 +40,22 @@
 	<!-- Element the map controls will be added to -->
 	<div id="controlsParent"></div>
 
-	<!-- JS to run on page load -->
+	<!-- Non-module JS block, variable in here are global-->
+	<script>
+		let globalController = null;
+	</script>
+
+	<!-- Module JS blcok, variables are local (i.e. cannot access from HTML) -->
 	<script type="module">
 		// Module imports
 		import { CambridgeshireStationModule } from "./example/cambridgeshire_stations.js";
 		import { CambridgeshireOrchardsModule } from "./example/cambridgeshire_orchards.js";
 
-		// Initialise a controller
-		let controller = new DigitalTwinController();
+		// Initialise a controller (store as global variable)
+		globalController = new DigitalTwinController();
 
 		// Create the map
-		let map = controller.createMap(
+		let map = globalController.createMap(
 			"map", 
 			"pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA",
 			[0.15282, 52.32136],
@@ -57,20 +64,18 @@
 		
 		// Add modules to the controller
 		let stationModule = new CambridgeshireStationModule();
-		controller.addModule(stationModule);
+		globalController.addModule(stationModule);
 
 		let orchardModule = new CambridgeshireOrchardsModule();
-		controller.addModule(orchardModule);
+		globalController.addModule(orchardModule);
 
 		// Fire on MapBox style change
 		map.on('style.load', function() {
 			console.log("INFO: A new style has been loaded.");
 
 			// Load all modules
-			controller.loadModules();
+			globalController.loadModules();
 		});
-		
-
 	</script>
 
 </body>
