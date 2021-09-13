@@ -112,6 +112,7 @@ public class TestHandler {
             
             if (record != null && record.getExecutionTime() != null) {
                 recordStore.addRecord(record);
+                LOGGER.info("There are now " + recordStore.getRecords().size() + " test records.");
                 
                 // Write the updated TestRecordStore to file
                 TestRecordStoreMarshaller.writeRecords(recordStore);

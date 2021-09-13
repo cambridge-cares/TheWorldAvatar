@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    This Log4J2 configuration should be used in DEVELOPMENT and debugging
+    environments and logs with a minimum level of DEBUG.
+-->    
+<Configuration name="Status Agent Configuration" status="WARN" >
+    <Appenders>
+        
+        <!-- Logs to a file, archiving that log if it hits the size limit -->
+        <Routing name="RoutingFile">
+            <Routes pattern="$${ctx:testName}">
+                
+                <!-- Route to a location for a specific test execution -->
+                <Route>
+                    <File name="ExecutionLog" 
+                          fileName="$user.home}/.jps/logs/$${ctx:groupName}/$${ctx:testName}/$${ctx:testTime}.log">
+                        
+                        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n"/>
+                    </File>
+                </Route>
+                
+                <!-- Overall log file -->
+                <Route key="$${ctx:testName}">
+                    <File name="StatusAgentLog" 
+                          fileName="$user.home}/.jps/logs/status-agent.log">
+                        
+                        <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n"/>
+                    </File>
+                </Route>
+            </Routes>
+        </Routing>
+
+        <!-- Logs to standard out -->
+        <Console
+            name="Console"
+            target="SYSTEM_OUT">
+            
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss.SSS} (%c{1})[%t] %p - %m%n"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <!-- Sets the minimum logging level and adds appenders -->
+        <Root level="DEBUG">
+            <AppenderRef ref="RollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Root>
+    </Loggers>
+</Configuration>

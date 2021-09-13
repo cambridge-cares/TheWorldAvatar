@@ -80,6 +80,8 @@ public class StatusAgent extends JPSAgent {
             
             // Run all test on boot, then run  once per day
             Runnable runnable = () -> {
+                LOGGER.info("Running scheduled tests...");
+                
                 boolean allSuccess = handler.runAllTests();
                 if (!allSuccess) {
                     sendErrorReport();
@@ -91,8 +93,8 @@ public class StatusAgent extends JPSAgent {
             SCHEDULER.scheduleAtFixedRate(
                     runnable,
                     0,
-                    1,
-                    TimeUnit.DAYS
+                    15,
+                    TimeUnit.MINUTES
             );
         }
     }

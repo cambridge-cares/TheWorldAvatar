@@ -78,6 +78,8 @@ public class TestRecordStoreMarshaller {
         try (FileWriter writer = new FileWriter(RECORD_FILE.toFile())) {
             writer.write(recordArray.toString());
             writer.flush();
+            
+            LOGGER.info("Test records file has been updated!");
         } catch (IOException ioException) {
             LOGGER.error("Could not write 'test-record-store.json' file!", ioException);
         }
