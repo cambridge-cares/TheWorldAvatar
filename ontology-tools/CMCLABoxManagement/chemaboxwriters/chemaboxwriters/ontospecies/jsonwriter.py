@@ -7,7 +7,8 @@ from compchemparser.parsers.ccgaussian_parser import ATOM_MASSES, \
                                                      ATOM_TYPES, \
                                                      ATOM_MASSES, \
                                                      EMP_FORMULA, \
-                                                     GEOM
+                                                     GEOM, \
+                                                     SPIN_MULT
 from compchemparser.helpers.elements_data import get_molwt_from_atom_types
 import pubchempy as pcp
 from collections import Counter
@@ -30,7 +31,7 @@ PUBCHEM_CID='PubchemCID'
 ATOM_LIST='AtomsList'
 ATOM_COUNTS='AtomsCounts'
 
-def compchem_osjson_abox_from_string(data, calc_id=""):
+def os_jsonwriter(data, calc_id=""):
     data = json.loads(data)
 
     data_out = {}
@@ -42,6 +43,7 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
     data_out[EMP_FORMULA] = data[EMP_FORMULA]
     data_out[ATOM_TYPES] = data[ATOM_TYPES]
     data_out[GEOM] = data[GEOM]
+    data_out[SPIN_MULT] = data[SPIN_MULT]
 
     if ATOM_MASSES not in data.keys():
         data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
@@ -89,7 +91,7 @@ def compchem_osjson_abox_from_string(data, calc_id=""):
     data_out[commonv.ENTRY_UUID] = calc_id
     data_out[commonv.ENTRY_IRI] = species_entry_prefix+calc_id
 
-    return json.dumps(data_out)
+    return [json.dumps(data_out)]
 
 def get_substructure_cas(synonyms):
     cas_rns = []

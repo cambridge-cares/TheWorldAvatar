@@ -9,7 +9,7 @@ from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, \
                                                      PROGRAM_VERSION
 
 
-def compchem_ocjson_abox_from_string(data, calc_id=""):
+def oc_jsonwriter(data, calc_id=""):
     data = json.loads(data)
     xyz = get_xyz_from_parsed_json(data)
     inchi = obConvert(xyz, 'xyz','inchi')
@@ -26,4 +26,4 @@ def compchem_ocjson_abox_from_string(data, calc_id=""):
     data[commonv.ENTRY_IRI] = comp_pref+jobType+'_'+calc_id
     data[commonv.ENTRY_UUID] = calc_id
 
-    return json.dumps(data)
+    return [json.dumps(data)]

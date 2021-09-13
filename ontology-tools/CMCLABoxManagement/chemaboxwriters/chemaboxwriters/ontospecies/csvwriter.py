@@ -9,20 +9,22 @@ import json
 import csv
 
 from io import StringIO
-from chemaboxwriters.ontocompchem.csvstagewriter import formula_clean
+from chemaboxwriters.ontocompchem.csvwriter import formula_clean
 from compchemparser.parsers.ccgaussian_parser import ATOM_TYPES, \
                                                      FORMAL_CHARGE, \
                                                      EMP_FORMULA
-from chemaboxwriters.ontospecies.osjsonstagewriter import MOLWT, \
-                                                          INCHI, \
-                                                          SMILES, \
-                                                          GEOM_STRING, \
-                                                          BOND_STRING, \
-                                                          ATOMS_CAN_POSITIONS, \
-                                                          PUBCHEM_ALT_LABEL, \
-                                                          CAS_NUMBER, \
-                                                          ATOM_LIST, \
-                                                          ATOM_COUNTS
+from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
+                                                   INCHI, \
+                                                   SMILES, \
+                                                   GEOM_STRING, \
+                                                   BOND_STRING, \
+                                                   ATOMS_CAN_POSITIONS, \
+                                                   PUBCHEM_ALT_LABEL, \
+                                                   PUBCHEM_CID, \
+                                                   CAS_NUMBER, \
+                                                   ATOM_LIST, \
+                                                   ATOM_COUNTS, \
+                                                   SPIN_MULT
 import chemaboxwriters.common.commonvars as commonv
 from chemaboxwriters.ontospecies.prefixes import onto_spec, \
                                                  gain_pref, \
@@ -31,7 +33,7 @@ from chemaboxwriters.ontospecies.prefixes import onto_spec, \
                                                  unit_pref, \
                                                  onto_kb
 
-def species_csv_abox_from_string(data):
+def os_csvwriter(data):
     data = json.loads(data)
     gen_id = data[commonv.ENTRY_UUID]
 
@@ -57,7 +59,7 @@ def species_csv_abox_from_string(data):
 
     csvcontent = csvfile.getvalue()
     csvfile.close()
-    return csvcontent
+    return [csvcontent]
 
 def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])
@@ -73,8 +75,10 @@ def write_identifier_geom(spamwriter,out_id,data):
         spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
+    spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
+    spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
 
 def write_atom_info(spamwriter,gen_id,out_id,data):
     count = 1
@@ -116,7 +120,7 @@ def write_charge_info(spamwriter,gen_id,out_id,data):
     spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
     spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
     spamwriter.writerow([gain_pref + 'hasValue','Instance','Charge_' + gen_id,'',charge,'String'])
-    spamwriter.writerow(['Charge_' + gen_id,'Instance','Charge_' + gen_id, 
+    spamwriter.writerow(['Charge_' + gen_id,'Instance','Charge_' + gen_id,
                         unit_pref + 'unit#AtomicChargeUnit',gain_pref + 'hasUnit','',''])
     spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
@@ -138,6 +142,6 @@ def write_molwts(spamwriter,gen_id,out_id,data):
     spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
     spamwriter.writerow([gain_pref + 'hasValue','Instance','MolecularWeight_' + gen_id,'',molwt,'String'])
-    spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance', 
+    spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance',
                           unit_pref + 'unit#Dalton', gain_pref + 'hasUnit','',''])
 
