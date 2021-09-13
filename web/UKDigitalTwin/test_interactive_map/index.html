@@ -32,7 +32,7 @@
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
 
     <!-- div is a DOM element -->
-    <div id='map'></div>
+    <div id='map'></div> <!-- container of map -->
     <div id="tiltShift"></div>
     <div id="controlsParent"></div>
 
@@ -241,7 +241,7 @@
                 dataType: "json",
                 success: function (data) {
                     console.log("querying the branch GPS locations succeeded.");
-                    const steps = 200;
+                    const steps = 100;
                     var Branch_GPSPoints = data;
                     for (i = 0; i < Branch_GPSPoints.features.length; i++) {
                         var arc = [];
@@ -255,7 +255,7 @@
                         Branch_GPSPoints.features[i].geometry.coordinates = arc;
                     }
                     console.log("Branch_GPSPoints is updated by adding the arcs coordinates.", Branch_GPSPoints);
-                   
+
 
                     map.addSource('Branch_GPSPoints', {
                         type: 'geojson',
@@ -304,12 +304,29 @@
                                 }
                             });
 
-                            for (i = 0; i <= Branch_GPSPoints.features.length -1 ; i++) {
-                                animate(i, -1, 1);
+                            for (i = 0; i <= Branch_GPSPoints.features.length - 1; i++) {
+                                animate(i, -1, 16);
                                 counter += 1;
-                                console.log("The counter is: ", counter);
+                                console.log("the counter is: ", counter);
                             }
-                            
+
+                            //animate(0, -1, 10);
+                            //animate(1, -1, 10);
+                            //animate(2, -1, 10);
+                            //animate(3, -1, 10);
+                            //animate(4, -1, 10);
+                            //animate(5, -1, 10);
+                            //animate(6, -1, 10);
+                            //animate(7, -1, 10);
+                            //animate(8, -1, 10);
+                            //animate(9, -1, 10);
+                            //animate(10, -1, 10);
+                            //animate(11, -1, 10);
+                            //animate(12, -1, 10);
+                            //animate(13, -1, 10);
+
+
+
                             function animate(featureIdx, cntr, timeOut) {
                                 // Update point geometry to a new position based on counter denoting
                                 // the index to access the arc.
@@ -317,12 +334,12 @@
 
                                 window.setInterval(function () {
                                     cntr = (cntr + 1) % steps;
-                                   
+
                                     Branch_FromBus_GPS_Points.features[featureIdx].geometry.coordinates = Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr];
 
-                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(                                 
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps-1 ? cntr - 1 : cntr]),
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps-1 ? cntr : cntr + 1])
+                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps - 1 ? cntr - 1 : cntr]),
+                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps - 1 ? cntr : cntr + 1])
                                     );
 
                                     // Update the source with this new data.
@@ -336,7 +353,7 @@
                                 }, timeOut);
                             }
                         }
-                    
+
                     });
 
                 },
@@ -356,7 +373,7 @@
             });
 
             // ===== SOURCES ====
-        
+
 
             // ===== LAYERS =====
 
@@ -377,7 +394,7 @@
                     'text-anchor': 'top'
                 }
             });
-            
+
 
             // Add the layer for visualising the regional boundaries with a mouse hover effect
             map.addLayer({
@@ -530,7 +547,7 @@
             var para_zone = e.features[0].properties.para_zone;
             var para_Vmax = e.features[0].properties.para_Vmax;
             var para_Vmin = e.features[0].properties.para_Vmin;
-          
+
             selectBus(Bus_num, Bus_type, para_Gs, para_Bs, para_area, para_basekV, para_zone, para_Vmax, para_Vmin);
         });
 
@@ -542,9 +559,9 @@
 
             // Make the text look a little nicer
             var html = `
-                    <b> Bus ` + Bus_num + `</b><br>
-                    <span style="font-size: 85%;">Click for more details.</span>
-                `;
+                            <b> Bus ` + Bus_num + `</b><br>
+                            <span style="font-size: 85%;">Click for more details.</span>
+                        `;
 
             // Populate the popup and set its coordinates based on the feature found.
             popup.setLngLat(coordinates).setHTML(html).addTo(map);
@@ -584,10 +601,10 @@
 
             // Make the text look a little nicer
             var html = `
-                    <b>` + location + `</b><br>
-                    Total Consumption [GWh]: ` + total + `<br><br>
-                    <span style="font-size: 85%;">Click for more details.</span>
-                `;
+                            <b>` + location + `</b><br>
+                            Total Consumption [GWh]: ` + total + `<br><br>
+                            <span style="font-size: 85%;">Click for more details.</span>
+                        `;
 
             // Populate the popup and set its coordinates based on the feature found.
             popup.setLngLat(coordinates).setHTML(html).addTo(map);
@@ -644,10 +661,10 @@
                 var fuel = e.features[0].properties["fuel"];
 
                 var html = `
-                        <b> ` + name + `</b><br>
-                        Fuel: ` + fuel + `
-                        <br><p>Click for more details.</p>
-                    `;
+                                <b> ` + name + `</b><br>
+                                Fuel: ` + fuel + `
+                                <br><p>Click for more details.</p>
+                            `;
                 popup.setLngLat(coordinates).setHTML(html).addTo(map);
             }
         });
@@ -692,10 +709,10 @@
                 var fuel = e.features[0].properties["fuel"];
 
                 var html = `
-                        <b> ` + name + `</b><br>
-                        Fuel: ` + fuel + `
-                        <br><p>Click for more details.</p>
-                    `;
+                                <b> ` + name + `</b><br>
+                                Fuel: ` + fuel + `
+                                <br><p>Click for more details.</p>
+                            `;
                 popup.setLngLat(coordinates).setHTML(html).addTo(map);
             }
         });

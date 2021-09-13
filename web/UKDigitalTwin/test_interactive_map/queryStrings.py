@@ -379,15 +379,12 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
 # ukdigitaltwin_label = "ukdigitaltwin"
 def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
   
-  queryGPS = ["?PowerFlow_ELine", "?FromBus_latitude", "?FromBus_longitude", "?ToBus_latitude", "?ToBus_longitude"]
-  
-  queryVar = ["?ELine", "?From_Bus", "?To_Bus", "?para_R", "?para_X", "?para_B", "?para_RateA", "?para_RateB", "?para_RateC", "?para_RatioCoefficient", \
-                "?para_Angle", "?para_Status", "?para_AngleMax", "?para_AngleMin"] 
+  queryVar = ["?PowerFlow_ELine", "?FromBus_latitude", "?FromBus_longitude", "?ToBus_latitude", "?ToBus_longitude", "?From_Bus", "?To_Bus", "?para_R", "?para_X", "?para_B", "?para_RateA", "?para_RateB", "?para_RateC", "?para_RatioCoefficient", \
+                "?para_Angle", "?para_Status", "?para_AngleMin", "?para_AngleMax"] 
       
-  selectClause_queryGPS = " ".join(queryGPS)    
   selectClause = " ".join(queryVar)
     
-  queryFromAndToBusGPSLocation = """
+  queryBranch = """
     PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
@@ -487,10 +484,10 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
     ?angmax rdf:type mathematical_model:Parameter . 
     ?angmax ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .
     }
-    """ % (selectClause_queryGPS, queryGPS[0], queryGPS[1], queryGPS[2], queryGPS[0], queryGPS[3], queryGPS[4], queryGPS[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5], queryVar[6], queryVar[7], \
-        queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13])
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[0], queryVar[3], queryVar[4], queryVar[0], queryVar[5], queryVar[6], queryVar[7], \
+        queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13], queryVar[14], queryVar[15], queryVar[16], queryVar[17], )
   
-  
+  print(queryBranch)
   queryBuranchModelParameter = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
@@ -576,23 +573,23 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
 
   start = time.time()
   print('Querying the Branch GPS information ...')
-  res_GPS = json.loads(performQuery(ukdigitaltwin_label, queryFromAndToBusGPSLocation))
+  res = json.loads(performQuery(ukdigitaltwin_label, queryBranch))
   end = time.time()  
   print('Finished querying in ',np.round(end-start,2),' seconds')
   
-  start = time.time()
-  print('Querying the Branch parameters (model inputs) ...')
-  res_para = json.loads(performQuery(ukdigitaltwin_label, queryBuranchModelParameter))
-  end = time.time()  
-  print('Finished querying in ',np.round(end-start,2),' seconds')
+  # start = time.time()
+  # print('Querying the Branch parameters (model inputs) ...')
+  # res_para = json.loads(performQuery(ukdigitaltwin_label, queryBuranchModelParameter))
+  # end = time.time()  
+  # print('Finished querying in ',np.round(end-start,2),' seconds')
  
-  qres_GPS = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), float(r['ToBus_longitude'])] for r in res_GPS ]
+  qres = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), float(r['ToBus_longitude'])] for r in res ]
      
-  qres_para = [[ str(r['ELine'].split('#')[1]), int(r['From_Bus']), int(r['To_Bus']), float(format(float(r['para_R']), ".7f")), float(format(float(r['para_X']), ".5f")), \
-                float(format(float(r['para_B']), ".5f")), float(format(float(r['para_RateA']), ".5f")), float(r['para_RateB']), float(r['para_RateC']), float(r['para_RatioCoefficient']), \
-                float(r['para_Angle']), int(r['para_Status']), float(r['para_AngleMax']), float(r['para_AngleMin'])] for r in res_para ]
-  print(qres_GPS, qres_para)
-  return qres_GPS, qres_para
+  # qres_para = [[ str(r['ELine'].split('#')[1]), int(r['From_Bus']), int(r['To_Bus']), float(format(float(r['para_R']), ".7f")), float(format(float(r['para_X']), ".5f")), \
+  #               float(format(float(r['para_B']), ".5f")), float(format(float(r['para_RateA']), ".5f")), float(r['para_RateB']), float(r['para_RateC']), float(r['para_RatioCoefficient']), \
+  #               float(r['para_Angle']), int(r['para_Status']), float(r['para_AngleMax']), float(r['para_AngleMin'])] for r in res_para ]
+  print(qres)
+  return qres
 
 def queryUKSDGIndicatorForVisualisation():
 
