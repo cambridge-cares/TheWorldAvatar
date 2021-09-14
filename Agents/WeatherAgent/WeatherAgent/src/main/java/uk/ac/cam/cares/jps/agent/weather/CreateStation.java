@@ -26,6 +26,8 @@ public class CreateStation extends JPSAgent {
 
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(CreateStation.class);
+    
+    private WeatherQueryClient weatherClient = null;
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
@@ -38,7 +40,11 @@ public class CreateStation extends JPSAgent {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
     		TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
     		
-    		WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient);
+    		// replaced with mock client in the junit tests
+    		if (weatherClient == null ) {
+    			weatherClient = new WeatherQueryClient(storeClient, tsClient);
+    		}
+    		
     		String station = weatherClient.createStation(latlon);
     		response.put("station", station);
     		LOGGER.info("Created weather station <" + station + "> at the given coordinates: " + latlon);
@@ -57,6 +63,16 @@ public class CreateStation extends JPSAgent {
         	LOGGER.error(e.getMessage());
         	throw new BadRequestException(e);
         }
+    }
+    
+    /**
+     * this setter is created purely for the purpose of junit testing where 
+     * the weather client is replaced with a mock client that does not 
+     * connect to the weather API
+     * @param weatherClient
+     */
+    void setWeatherQueryClient(WeatherQueryClient weatherClient) {
+    	this.weatherClient = weatherClient;
     }
 
 }

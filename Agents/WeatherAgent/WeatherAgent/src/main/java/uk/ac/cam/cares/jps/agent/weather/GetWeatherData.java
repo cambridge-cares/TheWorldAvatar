@@ -5,6 +5,7 @@ import java.time.Instant;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,13 +48,17 @@ public class GetWeatherData extends JPSAgent{
 	static final String urlPatternHistory = "/GetWeatherData/history";
 	// only return the latest data in the table
 	static final String urlPatternLatest = "/GetWeatherData/latest";
+	
 	// for logging
 	private static final Logger LOGGER = LogManager.getLogger(GetWeatherData.class);
+	
+	private WeatherQueryClient weatherClient = null;
+	
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
     	JSONObject response = null;
     	
-    	if (validateInput(requestParams)) {
+    	if (validateInput(requestParams, request)) {
 	    	// will only read the file if it's null
 	    	Config.initProperties();
 	    	
@@ -61,7 +66,10 @@ public class GetWeatherData extends JPSAgent{
 			RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 			TimeSeriesClient<Long> tsClient = new TimeSeriesClient<Long>(storeClient, Long.class, Config.dburl, Config.dbuser, Config.dbpassword);
 			
-			WeatherQueryClient weatherClient = new WeatherQueryClient(storeClient, tsClient); 
+			// replaced with mock client in the junit tests
+			if (weatherClient == null ) {
+    			weatherClient = new WeatherQueryClient(storeClient, tsClient);
+    		}
 	    	
 			String station = requestParams.getString("station");
 			
@@ -78,7 +86,7 @@ public class GetWeatherData extends JPSAgent{
 			}
 			
 	        String path = request.getServletPath();
-	        TimeSeries<Long> ts; // time series object containing weather data
+	        TimeSeries<Long> ts = null; // time series object containing weather data
 	        switch (path) {
 	        	case urlPatternHistory:
 	        		ts = weatherClient.getHistoricalWeatherData(station, requestParams.getInt("hour"));
@@ -86,26 +94,42 @@ public class GetWeatherData extends JPSAgent{
 	        	case urlPatternLatest:
 	        		ts = weatherClient.getLatestWeatherData(station);
 	        		break;
-	        	default:
-	        		String err_msg = "Invalid servlet path";
-	        		LOGGER.error(err_msg);
-	        		throw new JPSRuntimeException(err_msg);
 	        }
+	        // serialise time series object into json
 	        response = new JSONObject(new Gson().toJson(ts));
     	}
     	
 		return response;
     }
     
-    @Override
-    public boolean validateInput(JSONObject requestParams) {
+    public boolean validateInput(JSONObject requestParams, HttpServletRequest request) {
+    	String path = request.getServletPath();
     	try {
-    		new URI(requestParams.getString("station"));
-    		return true;
+    		switch (path) {
+	        	case urlPatternHistory:
+	        		new URI(requestParams.getString("station"));
+	        		return true;
+	        	case urlPatternLatest: // has an extra input required
+	        		new URI(requestParams.getString("station"));
+	        		requestParams.getInt("hour");
+	        		return true;
+	        	default:
+	        		String err_msg = "Invalid servlet path";
+	        		LOGGER.error(err_msg);
+	        		throw new JPSRuntimeException(err_msg);
+	        }
     	} catch (Exception e) {
-    		String err_msg = "Invalid input";
-    		LOGGER.error(err_msg);
-    		throw new JPSRuntimeException(err_msg);
+    		throw new BadRequestException(e);
     	}
+    }
+    
+    /**
+     * this setter is created purely for the purpose of junit testing where 
+     * the weather client is replaced with a mock client that does not 
+     * connect to the weather API
+     * @param weatherClient
+     */
+    void setWeatherQueryClient(WeatherQueryClient weatherClient) {
+    	this.weatherClient = weatherClient;
     }
 }
