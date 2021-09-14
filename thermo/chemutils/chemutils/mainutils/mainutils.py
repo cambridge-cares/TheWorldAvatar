@@ -3,6 +3,7 @@ from chemutils.xyzutils import xyzToAtomsPositions, \
                                xyzMatchWithBondAdjustment, \
                                xyzReorderOnAtomsMatch
 from chemutils.ioutils import verbosityBasedOutput
+from chemutils.xyzutils import xyzToGaussianInput
 
 def xyzToAtomsPositionsWrapper(xyzFileOrStr, silent=False, outFile=None):
     """
@@ -102,3 +103,11 @@ def xyzReorderToxyzFlexBond(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, ref
         xyzTargetStr = xyzReorderOnAtomsMatch(xyzTargetFileOrStr, match)
         verbosityBasedOutput(xyzTargetStr, silent, outFile)
     return xyzTargetStr
+
+def xyzToGaussianInputWrapper(out_dir, job_route, charge, spin_multiplicity, memory, \
+                              num_cpus, outFile, silent):
+    pass
+    #for
+    #output = xyzToGaussianInput(xyz_file_path, job_route, charge, spin_multiplicity, memory, \
+    #                          num_cpus)
+    #verbosityBasedOutput(output, silent, outFile)

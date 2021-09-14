@@ -1,3 +1,4 @@
 from chemutils.mainutils.mainutils import xyzToAtomsPositionsWrapper, \
                                           xyzReorderToxyz, \
-                                          xyzReorderToxyzFlexBond
+                                          xyzReorderToxyzFlexBond, \
+                                          xyzToGaussianInputWrapper
