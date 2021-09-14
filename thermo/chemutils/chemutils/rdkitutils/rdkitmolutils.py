@@ -303,3 +303,40 @@ def getRdkitMolBondLength(rdkitMol, atomId1, atomId2):
     """Returns an xyz atom position given atom's id."""
     conf = rdkitMol.GetConformer()
     return rdkit.Chem.rdMolTransforms.GetBondLength(conf, atomId1, atomId2)
+
+def getRdkitMolOptConformers(mol, retNumConfs=1, numConfs=10, maxIters=1000, mmffVariant="MMFF94"):
+    conformers = []
+
+    mwh = rdkit.Chem.AddHs(mol)
+    # generate multiple conformers at once, this runs ETKDG numConfs times
+    conf_nums = rdkit.AllChem.EmbedMultipleConfs(mwh, numConfs=numConfs)
+
+    # optimise conformers and calculate the forcefield energy
+    # energies is now a list of tuples
+    # each tuple has the form (int, float), where int should
+    # be zero if the calculation converged
+    # the float is the energy is units of kcal/mol (assumed)
+    energies = rdkit.AllChem.MMFFOptimizeMoleculeConfs(mwh, maxIters=maxIters,
+                                                       mmffVariant=mmffVariant)
+    energies = sorted(energies, key=lambda tup: tup[1])
+
+    conf_inchis = set()
+    for i, (converged, energy) in enumerate(energies):
+        if converged==1: continue
+
+        conf_molBlock = rdkit.Chem.MolToMolBlock(mwh, confId=i)
+        conf_mol = rdkit.Chem.MolFromMolBlock(conf_molBlock)
+        conf_inchi = rdkit.Chem.inchi.MolToInchi(conf_mol)
+        if conf_inchis and conf_inchi not in conf_inchis:
+            print(f'Warning: Conformer {i} and parent molecule inchis are different!')
+        else:
+            conf_inchis.add(conf_inchi)
+        conformers.append((energy, conf_inchi, conf_molBlock))
+
+    return conformers[:retNumConfs]
+
+def getRdkitMolOptConformersFromInchi(inchi, retNumConfs=10, numConfs=100,
+                        maxIters=1000, mmffVariant="MMFF94"):
+    mol = rdkit.Chem.inchi.MolFromInchi(inchi)
+    return getRdkitMolOptConformers(mol, retNumConfs=retNumConfs, numConfs=numConfs,
+                                    maxIters=maxIters, mmffVariant=mmffVariant)
