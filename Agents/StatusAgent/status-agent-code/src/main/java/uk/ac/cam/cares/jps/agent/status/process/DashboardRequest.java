@@ -180,6 +180,8 @@ public class DashboardRequest extends StatusRequest {
 
         // Get the last recordLimit executions of this test
         List<TestRecord> records = handler.getRecordStore().getRecordsForTest(definition);
+        LOGGER.info("Found " + records.size() + " records for this test.");
+                
         if (records.size() > recordLimit) records = records.subList(0, recordLimit);
         request.setAttribute("test-records", records);
 

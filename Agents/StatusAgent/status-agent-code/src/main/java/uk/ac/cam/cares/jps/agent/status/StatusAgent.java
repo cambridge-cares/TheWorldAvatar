@@ -93,8 +93,8 @@ public class StatusAgent extends JPSAgent {
             SCHEDULER.scheduleAtFixedRate(
                     runnable,
                     0,
-                    15,
-                    TimeUnit.MINUTES
+                    1,
+                    TimeUnit.DAYS
             );
         }
     }
