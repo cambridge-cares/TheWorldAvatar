@@ -8,8 +8,10 @@ http://www.w3.org/2004/02/skos/core#altLabel,Data Property,Species_testID-111-11
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,Species_testID-111-111-111,,1333-74-0,String
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,Species_testID-111-111-111,,[H],String
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,Species_testID-111-111-111,,InChI=1S/H,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#pubChemCID,Data Property,Species_testID-111-111-111,,783,String
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,Species_testID-111-111-111,,,String
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,Species_testID-111-111-111,,H -1.38032 -0.85577 0.0,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#spinMultiplicity,Data Property,Species_testID-111-111-111,,2,String
 Atom_testID-111-111-111_H_1,Instance,http://purl.org/gc/Atom,,,
 Species_testID-111-111-111,Instance,Atom_testID-111-111-111_H_1,http://purl.org/gc/hasAtom,,
 http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_testID-111-111-111_H_1,,0,Integer

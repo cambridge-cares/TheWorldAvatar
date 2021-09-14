@@ -49,7 +49,7 @@ def write_abox(fileOrDir, inpFileType, OPS_pipeline=None,
                     if fileExists(file_): outBaseName=os.path.basename(file_)
                     else: outBaseName='file'
                 outPath = os.path.join(outDir,outBaseName)
-                OPS_pipeline.execute(file_, inStage, outPath)
+                OPS_pipeline.execute([file_], inStage, outPath)
 
         OPS_pipeline.writtenFiles+=OC_pipeline.writtenFiles
 

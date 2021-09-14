@@ -1,5 +1,12 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
@@ -7,6 +14,7 @@ import org.json.JSONObject;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
@@ -21,6 +29,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class StoreRouter{
 	private static Logger LOGGER = LogManager.getLogger(StoreRouter.class);
+	public static final String FILE="file://";
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String KB="kb";
@@ -49,6 +58,7 @@ public class StoreRouter{
 	public static final String TARGET_RESOURCE = "TargetResource";
 	public static final String OWL_FILE_EXTENSION = ".owl";
 	public static final String RDF_FILE_EXTENSION = ".rdf";
+	public static final String NTRIPLES_FILE_EXTENSION = ".nt";
 	
 	static StoreRouter storeRouter = null;
 	
@@ -80,11 +90,12 @@ public class StoreRouter{
 					storeRouter = new StoreRouter();
 				}
 			
-			if (targetResourceIRI.trim().endsWith(OWL_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(RDF_FILE_EXTENSION)) {
+			if (targetResourceIRI.trim().endsWith(OWL_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(RDF_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(NTRIPLES_FILE_EXTENSION)) {
 			  
 				String rootPath = storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL);
 				
-				String filePath =  targetResourceIRI.replace(HTTP, rootPath + BACKSLASH);
+				String filePath =  cutFileScheme(targetResourceIRI.replace(HTTP, rootPath + BACKSLASH));
+				LOGGER.debug("file path: "+filePath);
 				
 				kbClient = new FileBasedStoreClient(filePath);	
 			}else{
@@ -113,6 +124,25 @@ public class StoreRouter{
 			}
 		}
 		return kbClient;
+	}
+	
+	/**
+	 * Cut "file://" from the file url
+	 * @param filePath
+	 * @return
+	 */
+	private static String cutFileScheme(String filePath) {
+
+		if(filePath.startsWith(FILE)) {
+			try {
+				URI uri = new URI(URLDecoder.decode(filePath,"UTF-8"));
+				return uri.getPath();
+			} catch (UnsupportedEncodingException | URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return filePath;
 	}
 	
 	/**

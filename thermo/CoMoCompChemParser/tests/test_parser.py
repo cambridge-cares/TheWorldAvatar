@@ -80,7 +80,8 @@ parser = CcGaussianParser()
 ('scans\\multilogscans\\rigid','ethane_3_rigid.log', 1, False)
 ]
 )
-def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllResults=False):
+def test_parser(testType, testLog, outputSize, regenerateResults,
+                clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST TYPE: ', testType)
     print('TEST LOG: ', testLog)
@@ -101,8 +102,8 @@ def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllR
             jobDataFilePath = os.path.join(testPath, jobDataFileName)
             refDataFilePath=jobDataFilePath+'_ref'
 
-            #if os.path.isfile(jobDataFilePath): os.remove(jobDataFilePath)
-            #writeDictToJson(jobDataFilePath, jobDataDict)
+            if os.path.isfile(jobDataFilePath): os.remove(jobDataFilePath)
+            writeDictToJson(jobDataFilePath, jobDataDict)
 
             if regenerateResults or regenerateAllResults:
                 # dump just parsed data as the ref data
@@ -115,6 +116,9 @@ def test_parser(testType, testLog, outputSize, regenerateResults, regenerateAllR
             for key in jobDataDict.keys():
                 assert key in refDataDict.keys()
                 assert jobDataDict[key] == refDataDict[key]
+
+            if clean_tests:
+                 os.remove(jobDataFilePath)
 
         print('========================================================')
         print()
