@@ -114,7 +114,7 @@
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
                 toggleLayer("Model_Branch_GPS_Points", false);
-                toggleLayer("Model_Animated_Branch_Arrow", false);
+                toggleLayer("Model_Branch_Arrow", false);
             }
 
             if (enabled && layerID.includes("sdg_")) {
@@ -134,7 +134,7 @@
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
                 toggleLayer("Model_Branch_GPS_Points", false);
-                toggleLayer("Model_Animated_Branch_Arrow", false);
+                toggleLayer("Model_Branch_Arrow", false);
             }
 
             if (enabled && layerID.includes("Electricity_")) {
@@ -154,7 +154,7 @@
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
                 toggleLayer("Model_Branch_GPS_Points", false);
-                toggleLayer("Model_Animated_Branch_Arrow", false);
+                toggleLayer("Model_Branch_Arrow", false);
             }
 
             // TODO: add new layer for visualising the model layer
@@ -162,7 +162,7 @@
                 // Show the model layers
                 toggleLayer("Model_EBus_GPSLocation", true);
                 toggleLayer("Model_Branch_GPS_Points", true);
-                toggleLayer("Model_Animated_Branch_Arrow", true);
+                toggleLayer("Model_Branch_Arrow", true);
 
                 // Hide the power layers
                 toggleLayer("power_locations", false);
@@ -233,30 +233,14 @@
                 data: 'UK_Grid_Model_Bus_InputVar.geojson'
             });
 
-            var counter = 0;
             // jquery for adding the geojson file for creating the animated arrow moving alongside the branch
             $.ajax({
                 type: "get",
                 url: "/UK_Grid_Model_Branch_GPSPoints.geojson",
                 dataType: "json",
                 success: function (data) {
-                    console.log("querying the branch GPS locations succeeded.");
-                    const steps = 100;
+                    console.log("querying the branch GPS locations succeeded.");                    
                     var Branch_GPSPoints = data;
-                    for (i = 0; i < Branch_GPSPoints.features.length; i++) {
-                        var arc = [];
-                        var lineDistance = turf.lineDistance(Branch_GPSPoints.features[i], 'kilometers');
-                        for (let j = 0; j <= lineDistance; j += lineDistance / steps) {
-                            var segment = turf.along(Branch_GPSPoints.features[i], j, 'kilometers');
-                            // console.log("*******Branch_GPSPoints.features[i] are: ", segment)
-                            arc.push(segment.geometry.coordinates);
-                        }
-                        // Update the route with calculated arc coordinates
-                        Branch_GPSPoints.features[i].geometry.coordinates = arc;
-                    }
-                    console.log("Branch_GPSPoints is updated by adding the arcs coordinates.", Branch_GPSPoints);
-
-
                     map.addSource('Branch_GPSPoints', {
                         type: 'geojson',
                         data: Branch_GPSPoints
@@ -276,85 +260,25 @@
                         }
                     });
 
-                    $.ajax({
-                        type: "get",
-                        url: "/UK_Grid_Model_Branch_FromBus_GPSPoints.geojson",
-                        dataType: "json",
-                        success: function (r) {
-                            var Branch_FromBus_GPS_Points = r;
-                            // console.log("Branch_FromBus_GPS_Points are: ", Branch_FromBus_GPS_Points);
-                            map.addSource('Branch_FromBus_GPS_Points', { // the fromBus GPS location of a branch
-                                type: 'geojson',
-                                data: Branch_FromBus_GPS_Points
-                            });
-
-                            // add the animated branch arrow
-                            map.addLayer({
-                                'id': 'Model_Animated_Branch_Arrow',
-                                'type': 'symbol',
-                                'source': 'Branch_FromBus_GPS_Points',
-                                'layout': {
-                                    'icon-image': 'arrow',
-                                    'icon-size': 0.03,
-                                    'icon-rotate': ['get', 'bearing'],
-                                    'icon-rotation-alignment': 'map',
-                                    'icon-allow-overlap': true,
-                                    'icon-ignore-placement': true,
-                                    'visibility': 'visible'
-                                }
-                            });
-
-                            for (i = 0; i <= Branch_GPSPoints.features.length - 1; i++) {
-                                animate(i, -1, 16);
-                                counter += 1;
-                                console.log("the counter is: ", counter);
-                            }
-
-                            //animate(0, -1, 10);
-                            //animate(1, -1, 10);
-                            //animate(2, -1, 10);
-                            //animate(3, -1, 10);
-                            //animate(4, -1, 10);
-                            //animate(5, -1, 10);
-                            //animate(6, -1, 10);
-                            //animate(7, -1, 10);
-                            //animate(8, -1, 10);
-                            //animate(9, -1, 10);
-                            //animate(10, -1, 10);
-                            //animate(11, -1, 10);
-                            //animate(12, -1, 10);
-                            //animate(13, -1, 10);
-
-
-
-                            function animate(featureIdx, cntr, timeOut) {
-                                // Update point geometry to a new position based on counter denoting
-                                // the index to access the arc.
-                                console.log("The featureIdx is: ", featureIdx, "and cntr is: ", cntr);
-
-                                window.setInterval(function () {
-                                    cntr = (cntr + 1) % steps;
-
-                                    Branch_FromBus_GPS_Points.features[featureIdx].geometry.coordinates = Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr];
-
-                                    Branch_FromBus_GPS_Points.features[featureIdx].properties.bearing = turf.bearing(
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps - 1 ? cntr - 1 : cntr]),
-                                        turf.point(Branch_GPSPoints.features[featureIdx].geometry.coordinates[cntr >= steps - 1 ? cntr : cntr + 1])
-                                    );
-
-                                    // Update the source with this new data.
-                                    map.getSource('Branch_FromBus_GPS_Points').setData(Branch_FromBus_GPS_Points);
-
-                                    // Request the next frame of animation so long the end has not been reached.
-                                    //if (cntr < steps) {
-                                    //    requestAnimationFrame(function () { animate(featureIdx, cntr + 1); });
-                                    //}
-
-                                }, timeOut);
-                            }
+                    map.addLayer({
+                        'id': 'Model_Branch_Arrow',
+                        'type': 'symbol',
+                        'source': 'Branch_GPSPoints',
+                        'layout': {
+                            'symbol-placement': 'line',
+                            'symbol-spacing': 1.5,
+                            // 'icon-image': 'arrow',
+                            'icon-image': 'right_arrow',
+                            'icon-size': 0.05,
+                            // 'icon-rotate': ['get', 'bearing'],
+                            'icon-rotation-alignment': 'map',
+                            'icon-allow-overlap': true,
+                            'icon-ignore-placement': true,
+                            'visibility': 'visible'
                         }
-
                     });
+
+                    console.log("The arrow layer is added");
 
                 },
                 error: function () {
@@ -370,6 +294,11 @@
             map.loadImage('/arrow.png', (error, image) => {
                 if (error) throw error;
                 map.addImage('arrow', image);
+            });
+
+            map.loadImage('/right_arrow.png', (error, image) => {
+                if (error) throw error;
+                map.addImage('right_arrow', image);
             });
 
             // ===== SOURCES ====
@@ -754,7 +683,7 @@
             "Electricity_Consumption_region_borders"
         ],
             null, false);
-        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation", "Model_Animated_Branch_Arrow", "Model_Branch_GPS_Points"], null, false);
+        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation", "Model_Branch_Arrow", "Model_Branch_GPS_Points"], null, false);
 
         // Build the layer selection tree
         buildLayerTree("radio");
