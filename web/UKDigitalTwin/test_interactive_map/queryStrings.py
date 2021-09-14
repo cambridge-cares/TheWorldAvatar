@@ -208,10 +208,11 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwin, ONS, region
 # ukdigitaltwin_label = "ukdigitaltwin"
 def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     
-  queryVar_1 = ["?Bus_num", "?numericalValue_x", "?numericalValue_y", "?Bus_type", "?para_Gs", "?para_Bs", "?para_area", "?para_basekV", \
+  queryVar_1 = ["?Bus_num", "?Located_City", "?numericalValue_x", "?numericalValue_y", "?Bus_type", "?para_Gs", "?para_Bs", "?para_area", "?para_basekV", \
                 "?para_zone", "?para_Vmax", "?para_Vmin"] 
       
   queryVar_2 = ["?Bus_num", "?input_Pd", "?input_Gd", "?input_Vm", "?input_Va"] 
+  
       
   selectClause_1 = " ".join(queryVar_1)
   selectClause_2 = " ".join(queryVar_2)
@@ -228,7 +229,11 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     SELECT DISTINCT %s
     WHERE
     {
-    ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .   
+    ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .  
+    
+    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress %s .
+    %s rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
+    
     ?EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_Bus .    
     ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_Bus .
     ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_Bus .
@@ -287,10 +292,10 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     ?vminvar ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .
  
     }
-    """ % (selectClause_1, queryVar_1[1], queryVar_1[2], queryVar_1[0], queryVar_1[3], queryVar_1[4], queryVar_1[5], queryVar_1[6], queryVar_1[7], \
-        queryVar_1[8], queryVar_1[9], queryVar_1[10])
+    """ % (selectClause_1, queryVar_1[1], queryVar_1[1], queryVar_1[2], queryVar_1[3], queryVar_1[0], queryVar_1[4], queryVar_1[5], queryVar_1[6], queryVar_1[7], \
+        queryVar_1[8], queryVar_1[9], queryVar_1[10], queryVar_1[11])
    
-    
+  #TODO: discard  
   queryBusModelInput = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
@@ -332,7 +337,7 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     
     }
     """% (selectClause_2, queryVar_2[0], queryVar_2[1], queryVar_2[2], queryVar_2[3], queryVar_2[4])
-
+          
   start = time.time()
   print('Querying the Bus Model Parameters...')
   res_para = json.loads(performQuery(ukdigitaltwin_label, queryBusModelParameter))
@@ -341,7 +346,7 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
   for r in res_para:
       for key in r.keys():
           r[key] = (r[key].split('\"^^')[0]).replace('\"','')         
-  qres_para = [[ int(r['Bus_num']), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
+  qres_para = [[ int(r['Bus_num']), str(r["Located_City"]), float(r['numericalValue_x']), float(r['numericalValue_y']), int(r['Bus_type']), float(r['para_Gs']), float(r['para_Bs']), int(r['para_area']), \
                 float(r['para_basekV']), int(r['para_zone']), float(r['para_Vmax']), float(r['para_Vmin'])] for r in res_para ]
   for q in qres_para: 
       if q[3] == 1:
@@ -372,6 +377,60 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
   elif len(res_input) == 0:
       print("The query of the bus model varibles is failed.")
       return None
+  
+
+"""This function is designed for query the geo information of the bus located regions"""
+def queryBusLocatedRegionGeoInfo(ukdigitaltwin, ONS):
+  query_BusLocatedRegion = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>    
+    PREFIX db: <https://dbpedia.org/ontology/>
+    PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?EquipmentConnection_EBus # (GROUP_CONCAT(?Geo_Info; SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE
+    {
+    ?EquipmentConnection_EBus a ontopowsys_PowSysFunction:PowerEquipmentConnection . 
+    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
+    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url . }
+    
+    # OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    # ?Area_id_url ont:hasGeometry ?geometry . 
+    # ?geometry ont_sparql:asWKT ?Geo_Info . }   
+    
+    # } GROUP BY ?EquipmentConnection_EBus   
+    """
+    
+  print(query_BusLocatedRegion)  
+  start = time.time()
+  print("Federated Querying ONS and bus location...") 
+  ret = json.loads(performFederatedQuery(query_BusLocatedRegion, ukdigitaltwin, ONS))            
+  end = time.time()
+  print("Query is done.")
+  print('Finished querying Bus Located Region in ',np.round(end-start,2),' seconds')
+  
+  counter = 0
+  Num_no_geoInfoAreas = 0
+  No_geoInfoAreas = []
+  ret_array = np.zeros((len(ret), 2), dtype='object')
+      
+  for i in tqdm(range(len(ret))):
+      print(counter, ":", ret[i]["Area_id_url"])
+      if len(ret[i]["Geo_InfoList"]) == 0:
+          print(ret[i]["Area_id_url"], "does't have the geographical attributes.")
+          Num_no_geoInfoAreas += 1
+          No_geoInfoAreas.append(ret[i]["Area_id_url"])
+          continue
+      if "***" in ret[i]['Geo_InfoList']:
+        ret[i]['Geo_InfoList'] = ret[i]['Geo_InfoList'].split("***")[0]
+      geojson_string = geojson.dumps(mapping(loads(ret[i]['Geo_InfoList'])))
+      ret[i]['Geo_InfoList'] = ast.literal_eval(geojson_string)  
+      ret_array[i,:] =[ int(ret[i]['EquipmentConnection_EBus'].split("EBus-")[1]), ret[i]['Geo_InfoList']] 
+      counter += 1
+  return ret_array
+    
 
 """This function is used for query the branch model parameters and input variables, also there connectivity relationship with buses"""
 # ukdigitaltwin_label = "ukdigitaltwin"
@@ -503,7 +562,7 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
 
   return qres
 
-"""This function is used for query the branch model parameters and input variables, also there connectivity relationship with buses"""
+"""This function is used for query the generator model parameters and input variables, also there connectivity relationship with buses"""
 # ukdigitaltwin_label = "ukdigitaltwin"
 def queryGridModeltForVisualisation_Generator(ukdigitaltwin_label):
   
@@ -657,6 +716,7 @@ if __name__ == '__main__':
     # res = queryPowerPlantForVisualisation(ukdigitaltwin_label)
     # res = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS_json, False)   
     # queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
-    queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
-    # print(res)
+    # queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
+    res = queryBusLocatedRegionGeoInfo(ukdigitaltwinendpoint, ONS_json)
+    print(res)
     # print(len(res[0]))
