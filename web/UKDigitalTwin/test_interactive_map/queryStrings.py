@@ -1,6 +1,6 @@
 ##############################################
 # Author: Wanni Xie (wx243@cam.ac.uk)        #
-# Last Update Date: 09 Sept 2021             #
+# Last Update Date: 14 Sept 2021             #
 ##############################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
@@ -373,8 +373,6 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
       print("The query of the bus model varibles is failed.")
       return None
 
-
-# TODO: Modeify the query string    
 """This function is used for query the branch model parameters and input variables, also there connectivity relationship with buses"""
 # ukdigitaltwin_label = "ukdigitaltwin"
 def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
@@ -390,7 +388,11 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>   
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>   
+    PREFIX mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX ontopowsys_PowerSystemModel: <http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>
     SELECT DISTINCT %s
     WHERE
     {
@@ -417,7 +419,7 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
     
     %s ontoecape_technical_system:isRealizedBy ?ELine . 
     ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?ELine ontocape_upper_level_system:isModeledBy ?Model_ELine . 
+    ?ELine ontocape_upper_level_system:isModeledBy ?Model_Eline . 
     
     ?Model_Eline mathematical_model:hasModelVariable ?FromBusNumber . 
     ?FromBusNumber rdf:type ontopowsys_PowerSystemModel:BusFrom . 
@@ -486,21 +488,68 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
     }
     """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[0], queryVar[3], queryVar[4], queryVar[0], queryVar[5], queryVar[6], queryVar[7], \
         queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13], queryVar[14], queryVar[15], queryVar[16], queryVar[17], )
+ 
+  start = time.time()
+  print('Querying the Branch GPS information ...')
+  res = json.loads(performQuery(ukdigitaltwin_label, queryBranch))
+  end = time.time()  
+  print('Finished querying in ',np.round(end-start,2),' seconds')
+        
+  qres = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), \
+           float(r['ToBus_longitude']),  int(r['From_Bus']), int(r['To_Bus']), float(format(float(r['para_R']), ".7f")), float(format(float(r['para_X']), ".5f")), \
+           float(format(float(r['para_B']), ".5f")), float(format(float(r['para_RateA']), ".5f")), float(r['para_RateB']), float(r['para_RateC']), float(r['para_RatioCoefficient']), float(r['para_Angle']), int(r['para_Status']), float(r['para_AngleMax']), float(r['para_AngleMin'])] for r in res ]
+
+  print("The length of the query result is", len(qres), ". The length should be same as the number of the branches in the model.")
+
+  return qres
+
+"""This function is used for query the branch model parameters and input variables, also there connectivity relationship with buses"""
+# ukdigitaltwin_label = "ukdigitaltwin"
+def queryGridModeltForVisualisation_Generator(ukdigitaltwin_label):
   
-  print(queryBranch)
-  queryBuranchModelParameter = """
+  queryVar = ["?PowerFlow_ELine", "?FromBus_latitude", "?FromBus_longitude", "?ToBus_latitude", "?ToBus_longitude", "?From_Bus", "?To_Bus", "?para_R", "?para_X", "?para_B", "?para_RateA", "?para_RateB", "?para_RateC", "?para_RatioCoefficient", \
+                "?para_Angle", "?para_Status", "?para_AngleMin", "?para_AngleMax"] 
+      
+  selectClause = " ".join(queryVar)
+    
+  queryBranch = """
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>   
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>   
     PREFIX mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
     PREFIX ontopowsys_PowerSystemModel: <http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>
-    PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
     SELECT DISTINCT %s
     WHERE
     {
-    %s ontocape_upper_level_system:isModeledBy ?Model_Eline . 
+     
+    %s ontocape_network_system:leaves ?EquipmentConnection_FromEBus . 
+    ?EquipmentConnection_FromEBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?EquipmentConnection_FromEBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_FromBus .
+    ?x_coordinate_FromBus  system:hasValue ?GPS_x_coordinate_FromBus .
+    ?y_coordinate_FromBus  system:hasValue ?GPS_y_coordinate_FromBus . 
+    ?GPS_x_coordinate_FromBus  system:numericalValue %s .
+    ?GPS_y_coordinate_FromBus  system:numericalValue %s .
+    
+    %s ontocape_network_system:enters ?EquipmentConnection_ToEBus . 
+    ?EquipmentConnection_ToEBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?EquipmentConnection_ToEBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_ToBus .
+    ?x_coordinate_ToBus  system:hasValue ?GPS_x_coordinate_ToBus .
+    ?y_coordinate_ToBus  system:hasValue ?GPS_y_coordinate_ToBus . 
+    ?GPS_x_coordinate_ToBus  system:numericalValue %s .
+    ?GPS_y_coordinate_ToBus  system:numericalValue %s .
+    
+    %s ontoecape_technical_system:isRealizedBy ?ELine . 
+    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?ELine ontocape_upper_level_system:isModeledBy ?Model_Eline . 
     
     ?Model_Eline mathematical_model:hasModelVariable ?FromBusNumber . 
     ?FromBusNumber rdf:type ontopowsys_PowerSystemModel:BusFrom . 
@@ -566,29 +615,22 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
     ?angmax rdf:type ontopowsys_PowerSystemModel:AngleMax . 
     ?angmax rdf:type mathematical_model:Parameter . 
     ?angmax ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .
-    
     }
-    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[3], queryVar[4], queryVar[5], queryVar[6], queryVar[7], \
-        queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13])
-
+    """ % (selectClause, queryVar[0], queryVar[1], queryVar[2], queryVar[0], queryVar[3], queryVar[4], queryVar[0], queryVar[5], queryVar[6], queryVar[7], \
+        queryVar[8], queryVar[9], queryVar[10], queryVar[11], queryVar[12], queryVar[13], queryVar[14], queryVar[15], queryVar[16], queryVar[17], )
+ 
   start = time.time()
   print('Querying the Branch GPS information ...')
   res = json.loads(performQuery(ukdigitaltwin_label, queryBranch))
   end = time.time()  
   print('Finished querying in ',np.round(end-start,2),' seconds')
-  
-  # start = time.time()
-  # print('Querying the Branch parameters (model inputs) ...')
-  # res_para = json.loads(performQuery(ukdigitaltwin_label, queryBuranchModelParameter))
-  # end = time.time()  
-  # print('Finished querying in ',np.round(end-start,2),' seconds')
- 
-  qres = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), float(r['ToBus_longitude'])] for r in res ]
-     
-  # qres_para = [[ str(r['ELine'].split('#')[1]), int(r['From_Bus']), int(r['To_Bus']), float(format(float(r['para_R']), ".7f")), float(format(float(r['para_X']), ".5f")), \
-  #               float(format(float(r['para_B']), ".5f")), float(format(float(r['para_RateA']), ".5f")), float(r['para_RateB']), float(r['para_RateC']), float(r['para_RatioCoefficient']), \
-  #               float(r['para_Angle']), int(r['para_Status']), float(r['para_AngleMax']), float(r['para_AngleMin'])] for r in res_para ]
-  print(qres)
+        
+  qres = [[ str(r['PowerFlow_ELine'].split('PowerFlow_')[1]), float(r['FromBus_latitude']), float(r['FromBus_longitude']), float(r['ToBus_latitude']), \
+           float(r['ToBus_longitude']),  int(r['From_Bus']), int(r['To_Bus']), float(format(float(r['para_R']), ".7f")), float(format(float(r['para_X']), ".5f")), \
+           float(format(float(r['para_B']), ".5f")), float(format(float(r['para_RateA']), ".5f")), float(r['para_RateB']), float(r['para_RateC']), float(r['para_RatioCoefficient']), float(r['para_Angle']), int(r['para_Status']), float(r['para_AngleMax']), float(r['para_AngleMin'])] for r in res ]
+
+  print("The length of the query result is", len(qres), ". The length should be same as the number of the branches in the model.")
+
   return qres
 
 def queryUKSDGIndicatorForVisualisation():

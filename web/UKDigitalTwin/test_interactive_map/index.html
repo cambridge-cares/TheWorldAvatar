@@ -14,7 +14,6 @@
     <!--<script src="https://cdn.bootcss.com/Turf.js/5.1.6/turf.min.js"></script>-->
     <script src="https://unpkg.com/@turf/turf@6/turf.min.js"></script>
     <script src='power-system.js'></script>
-    <script src='selectBus.js'></script>
 
     <!-- Stylesheets -->
     <link href='https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css' rel='stylesheet'>
@@ -47,13 +46,13 @@
         resetSidePanel();
 
         // Show loading icon whilst stuff spins up
-        //var loadingHTML = `
-        //        <br><br><br><br><br>
-        //        <img width='150' src='loading.gif'></img>
-        //        <br>
-        //        <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
-        //    `;
-        //appendSidePanelText(loadingHTML);
+        var loadingHTML = `
+                <br><br><br><br><br>
+                <img width='150' src='loading.gif'></img>
+                <br>
+                <span style='color: grey; font-style: italic;'>Loading data, please wait...</span>
+            `;
+        appendSidePanelText(loadingHTML);
 
         // Initialise the MapBox map
         mapboxgl.accessToken = 'pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA';
@@ -113,7 +112,7 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Branch", false);
                 toggleLayer("Model_Branch_Arrow", false);
             }
 
@@ -133,7 +132,7 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Branch", false);
                 toggleLayer("Model_Branch_Arrow", false);
             }
 
@@ -153,7 +152,7 @@
 
                 //Hide the model layers
                 toggleLayer("Model_EBus_GPSLocation", false);
-                toggleLayer("Model_Branch_GPS_Points", false);
+                toggleLayer("Model_Branch", false);
                 toggleLayer("Model_Branch_Arrow", false);
             }
 
@@ -161,7 +160,7 @@
             if (enabled && layerID.includes("Model_")) {
                 // Show the model layers
                 toggleLayer("Model_EBus_GPSLocation", true);
-                toggleLayer("Model_Branch_GPS_Points", true);
+                toggleLayer("Model_Branch", true);
                 toggleLayer("Model_Branch_Arrow", true);
 
                 // Hide the power layers
@@ -236,7 +235,7 @@
             // jquery for adding the geojson file for creating the animated arrow moving alongside the branch
             $.ajax({
                 type: "get",
-                url: "/UK_Grid_Model_Branch_GPSPoints.geojson",
+                url: "/UK_Grid_Model_Branch.geojson",
                 dataType: "json",
                 success: function (data) {
                     console.log("querying the branch GPS locations succeeded.");                    
@@ -247,7 +246,7 @@
                     });
 
                     map.addLayer({
-                        id: 'Model_Branch_GPS_Points',
+                        id: 'Model_Branch',
                         type: 'line',
                         source: 'Branch_GPSPoints',
                         layout: {
@@ -278,8 +277,58 @@
                         }
                     });
 
-                    console.log("The arrow layer is added");
+                    map.on('click', 'Model_Branch', function (e) {
+                        console.log("########The click event on branch is triggered")
+                        var Name = e.features[0].properties.Name;
+                        var From_Bus = e.features[0].properties.From_Bus;
+                        var To_Bus = e.features[0].properties.To_Bus;
+                        var para_R = e.features[0].properties.para_R;
+                        var para_X = e.features[0].properties.para_X;
+                        var para_B = e.features[0].properties.para_B;
+                        var para_RateA = e.features[0].properties.para_RateA;
+                        var para_RateB = e.features[0].properties.para_RateB;
+                        var para_RateC = e.features[0].properties.para_RateC;
+                        var para_RatioCoefficient = e.features[0].properties.para_RatioCoefficient;
+                        var para_Angle = e.features[0].properties.para_Angle;
+                        var para_Status = e.features[0].properties.para_Status;
+                        var para_AngleMax = e.features[0].properties.para_AngleMax;
+                        var para_AngleMin = e.features[0].properties.para_AngleMin;
+                        Name = Name.replaceAll("-", " ");
 
+                        selectBranch(Name, From_Bus, To_Bus, para_R, para_X, para_B, para_RateA, para_RateB, para_RateC, para_RatioCoefficient, para_Angle, para_Status, para_AngleMax, para_AngleMin);
+                    });
+
+                    map.on('mousemove', 'Model_Branch', function (e) {
+
+                        // Get the human readable name of the crop
+                        // var coordinates = e.features[0].geometry.coordinates.slice();
+                        var coordinates = e.lngLat;
+                        var Name = e.features[0].properties["Name"];
+                        Name = Name.replaceAll("-", " ");
+
+                        // Make the text look a little nicer
+                        var html = `
+                            <b>` + Name + `</b><br>
+                            <span style="font-size: 85%;">Click for more details.</span>
+                        `;
+
+                        // Populate the popup and set its coordinates based on the feature found.
+                        popup.setLngLat(coordinates).setHTML(html).addTo(map);
+
+                    });
+
+                    // Triggers when the mouse enters the entire layer
+                    map.on('mouseenter', 'Model_Branch', function (e) {
+                        map.getCanvas().style.cursor = 'pointer';
+                    });
+
+                    // Triggers when the mouse leaves the entire layer
+                    map.on('mouseleave', 'Model_Branch', function (e) {
+                        map.getCanvas().style.cursor = '';
+                        popup.remove();
+                    });
+
+                   
                 },
                 error: function () {
                     alert("Request failed.");
@@ -683,7 +732,7 @@
             "Electricity_Consumption_region_borders"
         ],
             null, false);
-        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation", "Model_Branch_Arrow", "Model_Branch_GPS_Points"], null, false);
+        registerLayer("10-Bus Grid Model", ["Model_EBus_GPSLocation", "Model_Branch_Arrow", "Model_Branch"], null, false);
 
         // Build the layer selection tree
         buildLayerTree("radio");

@@ -133,68 +133,140 @@ function selectArea(Location, Area_LACode, TotalELecConsumption, DomesticConsump
 }
 
 /**
-	 * Fired when a bus is selected.
-	 * 
-	 * @param Location - place name
-	 * @param Area_LACode - fuel
-	 * @param TotalELecConsumption - capacity
-	 * @param DomesticConsumption - SDG indicator
-	 * @param Industrial_and_Commercial - coordinates
+	 * Fired when a bus is clicked
 	 */
-//	function selectBus(Bus_num, Bus_type, para_Gs, para_Bs, para_area, para_basekV, para_zone, para_Vmax, para_Vmin) {
-//		if (Bus_num == null) {
-//			// Do nothing
-//			return;
-//		}
+function selectBus(Bus_num, Bus_type, para_Gs, para_Bs, para_area, para_basekV, para_zone, para_Vmax, para_Vmin) {
+	if (Bus_num == null) {
+		// Do nothing
+		return;
+	}
 
-//		// Set title to offtake name
-//		setSidePanelTitle(`
-//			<h2>` + Bus_num + `</h2>
-//		`);
+	// Set title to offtake name
+	setSidePanelTitle(`
+			<h2> Bus ` + Bus_num + `</h2>
+		`);
 
-//		// Show meta data
-//		var metaHTML = `
-//			<table width="100%">
-//				<tr>
-//					<td width="75%">Bus type:</td>
-//					<td width="25%" style="text-align: right;">` + Bus_type + `</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Gs (shunt conductance):</td>
-//					<td width="15%" style="text-align: right;">` + para_Gs + ` MW</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Bs (shunt susceptance):</td>
-//					<td width="25%" style="text-align: right;">` + para_Bs + ` MVAr</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Bus Area (area number):</td>
-//					<td width="25%" style="text-align: right;">` + para_area + ` </td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Base kV (base voltage):</td>
-//					<td width="25%" style="text-align: right;">` + para_basekV + ` kV</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Zone (loss zone):</td>
-//					<td width="25%" style="text-align: right;">` + para_zone + ` kV</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Vmax (maximum voltage magnitude):</td>
-//					<td width="25%" style="text-align: right;">` + para_Vmax + ` p.u.</td>
-//				</tr>
-//				<tr>
-//					<td width="75%">Vmin (minimum voltage magnitude):</td>
-//					<td width="25%" style="text-align: right;">` + para_Vmin + ` p.u.</td>
-//				</tr>
-//		`;
+	// Show meta data
+	var metaHTML = `
+			<table width="100%">
+				<tr>
+					<td width="75%">Bus type:</td>
+					<td width="25%" style="text-align: right;">` + Bus_type + `</td>
+				</tr>
+				<tr>
+					<td width="75%">Gs (shunt conductance):</td>
+					<td width="15%" style="text-align: right;">` + para_Gs + ` MW</td>
+				</tr>
+				<tr>
+					<td width="75%">Bs (shunt susceptance):</td>
+					<td width="25%" style="text-align: right;">` + para_Bs + ` MVAr</td>
+				</tr>
+				<tr>
+					<td width="75%">Bus Area (area number):</td>
+					<td width="25%" style="text-align: right;">` + para_area + ` </td>
+				</tr>
+				<tr>
+					<td width="75%">Base kV (base voltage):</td>
+					<td width="25%" style="text-align: right;">` + para_basekV + ` kV</td>
+				</tr>
+				<tr>
+					<td width="75%">Zone (loss zone):</td>
+					<td width="25%" style="text-align: right;">` + para_zone + ` kV</td>
+				</tr>
+				<tr>
+					<td width="75%">Vmax (maximum voltage magnitude):</td>
+					<td width="25%" style="text-align: right;">` + para_Vmax + ` p.u.</td>
+				</tr>
+				<tr>
+					<td width="75%">Vmin (minimum voltage magnitude):</td>
+					<td width="25%" style="text-align: right;">` + para_Vmin + ` p.u.</td>
+				</tr>
+		`;
 
-//		metaHTML += "</table>";
-//		setSidePanelMeta(metaHTML);
+	metaHTML += "</table>";
+	setSidePanelMeta(metaHTML);
 
-//		// Update text container 
-//		setSidePanelText(``);
-//}
+	// Update text container 
+	setSidePanelText(``);
+}
+
+/**
+	 * Fired when a branch is clicked
+	 */
+function selectBranch(Name, From_Bus, To_Bus, para_R, para_X, para_B, para_RateA, para_RateB, para_RateC, para_RatioCoefficient, para_Angle, para_Status, para_AngleMax, para_AngleMin) {
+	if (Name == null) {
+		// Do nothing
+		return;
+	}
+
+	// Set title to offtake name
+	setSidePanelTitle(`
+			<h2> ` + Name + `</h2>
+		`);
+
+	// Show meta data
+	var metaHTML = `
+			<table width="100%">
+				<tr>
+					<td width="75%">From Bus:</td>
+					<td width="25%" style="text-align: right;"> Bus ` + From_Bus + `</td>
+				</tr>
+				<tr>
+					<td width="75%">To Bus:</td>
+					<td width="15%" style="text-align: right;"> Bus ` + To_Bus + `</td>
+				</tr>
+				<tr>
+					<td width="55%">R (resistance):</td>
+					<td width="45%" style="text-align: right;">` + para_R + ` p.u.</td>
+				</tr>
+				<tr>
+					<td width="55%">X (reactance):</td>
+					<td width="45%" style="text-align: right;">` + para_X + ` p.u.</td>
+				</tr>
+				<tr>
+					<td width="70%">B (total line charging susceptance):</td>
+					<td width="30%" style="text-align: right;">` + para_B + ` p.u.</td>
+				</tr>
+				<tr>
+					<td width="55%">Rate A (long term rating):</td>
+					<td width="45%" style="text-align: right;">` + para_RateA + ` MVA</td>
+				</tr>
+				<tr>
+					<td width="75%">Rate B (short term rating):</td>
+					<td width="25%" style="text-align: right;">` + para_RateB + ` MVA</td>
+				</tr>
+				<tr>
+					<td width="75%">Rate C (emergency rating):</td>
+					<td width="25%" style="text-align: right;">` + para_RateC + ` MVA</td>
+				</tr>
+				<tr>
+					<td width="80%">Ratio Coefficient (transformer off nominal turns ratio):</td>
+					<td width="20%" style="text-align: right;">` + para_RatioCoefficient + `</td>
+				</tr>
+				<tr>
+					<td width="80%">Angle (transformer phase shift angle):</td>
+					<td width="20%" style="text-align: right;">` + para_Angle + ` degrees</td>
+				</tr>
+				<tr>
+					<td width="75%">Status (initial branch status):</td>
+					<td width="25%" style="text-align: right;">` + para_Status + `</td>
+				</tr>
+				<tr>
+					<td width="80%">Angle Min (minimum angle difference):</td>
+					<td width="20%" style="text-align: right;">` + para_AngleMin + ` degrees</td>
+				</tr>
+				<tr>
+					<td width="80%">Angle Max (maximum angle difference):</td>
+					<td width="20%" style="text-align: right;">` + para_AngleMax + ` degrees</td>
+				</tr>
+		`;
+
+	metaHTML += "</table>";
+	setSidePanelMeta(metaHTML);
+
+	// Update text container 
+	setSidePanelText(``);
+}
 
 
 	/**
