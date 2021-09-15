@@ -55,7 +55,7 @@ class DigitalTwinModule {
 	 * @param {boolean} should this group be enabled by default?
 	 * @param {String} heading optional heading to nest layer group under
 	 */
-	registerLayerGroup(name, layerNames, enabled, heading="") {
+	registerLayerGroup(name, layerNames, enabled, heading="null") {
 		let headingGroup = this._layerGroups[heading];
 		if(headingGroup == null) {
 			headingGroup = {};
@@ -92,9 +92,72 @@ class DigitalTwinModule {
 	}
 
 	/**
+	 * 
+	 * @param {*} layerName 
+	 * @param {*} mouseMove 
+	 * @param {*} mouseEnter 
+	 * @param {*} mouseExit 
+	 * @param {*} mouseClick 
+	 */
+	addMouseEffects(layerName, mouseMove, mouseEnter, mouseExit, mouseClick) {
+		if(mouseMove) {
+			this._map.on("mousemove", layerName, (e) => {
+				if(e.features != null && e.features.length > 0) {
+					// Pass to logic in concrete module
+					this.onMouseMove(layerName, e.features[0]);
+				}
+			});
+		}
+
+		if(mouseEnter) {
+			this._map.on("mouseenter", layerName, (e) => {
+				if(e.features != null && e.features.length > 0) {
+					// Pass to logic in concrete module
+					this.onMouseEnter(manager.popup, layerName, e.features[0]);
+				}
+			});
+		}
+
+		if(mouseExit) {
+			this._map.on("mouseleave", layerName, () => {
+				// Pass to logic in concrete module
+				this.onMouseExit(manager.popup, layerName);
+			});
+		}
+		console.log("INFO: Added mouse effects for '" + layerName + "' layer.");
+	}
+
+	/**
+	 * @param {*} layerName 
+	 * @param {*} feature 
+	 */
+	onMouseMove(layerName, feature) {
+		// Needs to be implemented in your concrete module class.
+	}
+
+	/**
+	 * 
+	 * @param {*} popup 
+	 * @param {*} layerName 
+	 * @param {*} feature 
+	 */
+	onMouseEnter(popup, layerName, feature) {
+		// Needs to be implemented in your concrete module class.
+	}
+
+	/**
+	 * 
+	 * @param {*} popup 
+	 * @param {*} layerName 
+	 */
+	onMouseExit(popup, layerName) {
+		// Needs to be implemented in your concrete module class.
+	}
+
+	/**
 	 * Generate and return HTML content for display in the legend.
 	 */
-	getLegendContent() {
+	 getLegendContent() {
 		throw new Error("The 'getLegendContent()' method must be implemented in a concrete subclass!");
 	}
 

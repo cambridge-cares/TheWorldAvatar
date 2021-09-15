@@ -3,10 +3,13 @@
  * 
  * @author Michael Hillman
  */
-class DigitalTwinController {
+class DigitalTwinManager {
 
 	// MapBox map
 	_map;
+
+	// MapBox popup
+	_popup;
 
 	// List of modules
 	_modules = [];
@@ -14,6 +17,13 @@ class DigitalTwinController {
 	// MapContols instance
 	_mapControls;
 
+	/**
+	 * 
+	 */
+	get popup() {
+		return this._popup;
+	}
+	
 	/**
 	 * Create a new MapBox map instance.
 	 * 
@@ -39,11 +49,26 @@ class DigitalTwinController {
 		mapboxgl.accessToken = apiKey;
 		this._map = new mapboxgl.Map(defaultOptions);
 
+		// Create popup
+		this._popup = new mapboxgl.Popup({
+			closeButton: false,
+			closeOnClick: false
+		});
+			
 		// Initialise map controls
-		this._mapControls = new MapControls(this._map, defaultCenter, defaultZoom);
-
+		this._mapControls = new DigitalTwinControls(this._map, defaultCenter, defaultZoom);
 		console.log("INFO: Map object has been initialised.");
 		return this._map;
+	}
+
+	/**
+	 * Tells the MapControls object that layers under the input heading should
+	 * use radio buttons rather than checkboxes.
+	 * 
+	 * @param {String} heading group name. 
+	 */
+	switchToRadio(heading) {
+		this._mapControls.addRadioHeading(heading);
 	}
 
 	/**
@@ -93,6 +118,14 @@ class DigitalTwinController {
 	 */
 	onLayerChange(control) {
 		this._mapControls.onLayerChange(control);
+	}
+
+	changeTerrain(mode) {
+		this._mapControls.changeTerrain(mode);
+	}
+
+	changeCamera(mode) {
+		this._mapControls.changeCamera(mode);
 	}
 
 }

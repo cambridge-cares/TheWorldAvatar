@@ -28,9 +28,9 @@
 	<!-- Local JS and CSS -->
 	
 	<link href='digital_twin_style.css' rel='stylesheet' />
-	<script src='digital_twin_controller.js'></script>
+	<script src='digital_twin_manager.js'></script>
 	<script src='digital_twin_module.js'></script>
-	<script src='digital_twin_map_controls.js'></script>
+	<script src='digital_twin_controls.js'></script>
 </head>
 
 <body>
@@ -42,39 +42,43 @@
 
 	<!-- Non-module JS block, variable in here are global-->
 	<script>
-		let globalController = null;
+		let manager = null;
 	</script>
 
 	<!-- Module JS blcok, variables are local (i.e. cannot access from HTML) -->
 	<script type="module">
 		// Module imports
-		import { CambridgeshireStationModule } from "./example/cambridgeshire_stations.js";
-		import { CambridgeshireOrchardsModule } from "./example/cambridgeshire_orchards.js";
+		import { CambridgeshirePointsModule } from "./example/cambridgeshire-points.js";
+		import { CambridgeshireRegionModule } from "./example/cambridgeshire-regions.js";
 
 		// Initialise a controller (store as global variable)
-		globalController = new DigitalTwinController();
+		manager = new DigitalTwinManager();
 
 		// Create the map
-		let map = globalController.createMap(
+		let map = manager.createMap(
 			"map", 
 			"pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA",
 			[0.15282, 52.32136],
-			8.5
+			9
 		);
 		
 		// Add modules to the controller
-		let stationModule = new CambridgeshireStationModule();
-		globalController.addModule(stationModule);
+		let cambPointsModule = new CambridgeshirePointsModule();
+		manager.addModule(cambPointsModule);
 
-		let orchardModule = new CambridgeshireOrchardsModule();
-		globalController.addModule(orchardModule);
+		let cambRegionModule = new CambridgeshireRegionModule();
+		manager.addModule(cambRegionModule);
+
+		// Signify that the "Regions" heading should use radio buttons to ensure
+		// that only a single one of it's layers can be visible at once.
+		manager.switchToRadio("Regions");
 
 		// Fire on MapBox style change
 		map.on('style.load', function() {
 			console.log("INFO: A new style has been loaded.");
 
 			// Load all modules
-			globalController.loadModules();
+			manager.loadModules();
 		});
 	</script>
 
