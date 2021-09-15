@@ -37,3 +37,8 @@ services:
   # kinetics-agent:
   #   ports:
   #     - 49081:8080
+
+  # OSCML Agent
+  oscml-agent:
+    ports:
+      - 46001:5000
