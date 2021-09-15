@@ -389,21 +389,19 @@ def queryBusLocatedRegionGeoInfo(ukdigitaltwin, ONS):
     PREFIX bibtex: <http://purl.org/net/nknouf/ns/bibtex#>
     PREFIX ont: <http://www.opengis.net/ont/geosparql#>
     PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
-    SELECT DISTINCT ?EquipmentConnection_EBus # (GROUP_CONCAT(?Geo_Info; SEPARATOR = '***') AS ?Geo_InfoList)
+    SELECT DISTINCT ?EquipmentConnection_EBus ?Area_id_url ?Geo_Info
     WHERE
     {
     ?EquipmentConnection_EBus a ontopowsys_PowSysFunction:PowerEquipmentConnection . 
     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
-    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url . }
+    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress/bibtex:hasURL ?Area_id_url .
     
-    # OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
-    # ?Area_id_url ont:hasGeometry ?geometry . 
-    # ?geometry ont_sparql:asWKT ?Geo_Info . }   
-    
-    # } GROUP BY ?EquipmentConnection_EBus   
+    OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area_id_url ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT ?Geo_Info . }      
+    }  
     """
     
-  print(query_BusLocatedRegion)  
   start = time.time()
   print("Federated Querying ONS and bus location...") 
   ret = json.loads(performFederatedQuery(query_BusLocatedRegion, ukdigitaltwin, ONS))            
@@ -411,23 +409,28 @@ def queryBusLocatedRegionGeoInfo(ukdigitaltwin, ONS):
   print("Query is done.")
   print('Finished querying Bus Located Region in ',np.round(end-start,2),' seconds')
   
+  for r in ret:
+      for key in r.keys():
+          if '\"^^' in  r[key] :
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','')            
+  
   counter = 0
   Num_no_geoInfoAreas = 0
   No_geoInfoAreas = []
   ret_array = np.zeros((len(ret), 2), dtype='object')
       
   for i in tqdm(range(len(ret))):
-      print(counter, ":", ret[i]["Area_id_url"])
-      if len(ret[i]["Geo_InfoList"]) == 0:
+      print(counter, ' ', ret[i]["Area_id_url"])
+      # print(ret[i]['Geo_Info'])
+      if len(ret[i]["Geo_Info"]) == 0:
           print(ret[i]["Area_id_url"], "does't have the geographical attributes.")
           Num_no_geoInfoAreas += 1
           No_geoInfoAreas.append(ret[i]["Area_id_url"])
           continue
-      if "***" in ret[i]['Geo_InfoList']:
-        ret[i]['Geo_InfoList'] = ret[i]['Geo_InfoList'].split("***")[0]
-      geojson_string = geojson.dumps(mapping(loads(ret[i]['Geo_InfoList'])))
-      ret[i]['Geo_InfoList'] = ast.literal_eval(geojson_string)  
-      ret_array[i,:] =[ int(ret[i]['EquipmentConnection_EBus'].split("EBus-")[1]), ret[i]['Geo_InfoList']] 
+     
+      geojson_string = geojson.dumps(mapping(loads(ret[i]['Geo_Info'])))
+      ret[i]['Geo_Info'] = ast.literal_eval(geojson_string)  
+      ret_array[i,:] =[ int(ret[i]['EquipmentConnection_EBus'].split("EBus-")[1]), ret[i]['Geo_Info']] 
       counter += 1
   return ret_array
     
