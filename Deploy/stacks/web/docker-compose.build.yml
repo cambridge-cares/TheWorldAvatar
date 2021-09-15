@@ -15,14 +15,14 @@ services:
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
     build:
-        context: "../../../web/UKDigitalTwin/flood-map"
-        dockerfile: "./docker/Dockerfile"
-        target: ${MODE}
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "HTTPD hosted mapbox visualisation of Flood Map visualisation."
-      hash: "${HASH}"
+      context: "../../../web/UKDigitalTwin/flood-map"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "HTTPD hosted mapbox visualisation of Flood Map visualisation."
+        hash: "${HASH}"
+      target: ${MODE}
 
   # Land Use Crop Map
   land-use:
@@ -30,12 +30,12 @@ services:
     build:
       context: "./land_use"
       dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
+        hash: "${HASH}"
       target: ${MODE}
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "HTTPD hosted mapbox visualisation of Crop Use map using remote data uploaded to MapBox studio."
-      hash: "${HASH}"
 
   # Reverse Proxy
   # SSL configuration is included in the 'prod' mode target, but excluded in 'dev' mode
@@ -43,46 +43,46 @@ services:
     image: docker.cmclinnovations.com/reverse_proxy-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./reverse_proxy"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Nginx configured as a reverse proxy for SSL handling and redirects."
+        hash: "${HASH}"
       target: ${MODE}
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Nginx configured as a reverse proxy for SSL handling and redirects."
-      hash: "${HASH}"
 
   # Gas Grid Visualisation
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis-${MODE}:1.0.0-SNAPSHOT
     build:
-        context: "../../../GasGrid/OtherTools/Mapping and Location Tools/mapbox_CMCL"
-        dockerfile: "./docker/Dockerfile"
-        target: ${MODE}
-    labels:
-      authors: "trs53@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
-      hash: "${HASH}"
+      context: "../../../GasGrid/OtherTools/Mapping and Location Tools/mapbox_CMCL"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: "trs53@cam.ac.uk, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "MapBox visualisation of Gas Grid data downloaded from gas-grid-agent container."
+        hash: "${HASH}"
+      target: ${MODE}
 
   # Power System and SDG Visualisation
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis-${MODE}:1.0.0-SNAPSHOT
     build:
-        context: "../../../web/UKDigitalTwin/power-system/mapbox-vis"
-        dockerfile: "./docker/Dockerfile"
-    labels:
-      authors: " support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "MapBox visualisation of Power Plant and SDG data pulled from KG."
-      hash: "${HASH}"
+      context: "../../../web/UKDigitalTwin/power-system/mapbox-vis"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        authors: " support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "MapBox visualisation of Power Plant and SDG data pulled from KG."
+        hash: "${HASH}"
 
   # Knowledge Graph Website
   website:
     image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "./website"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "HTTPD hosted static Grav website containing Knowledge Graph content."
+        hash: "${HASH}"
       target: ${MODE}
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "HTTPD hosted static Grav website containing Knowledge Graph content."
-      hash: "${HASH}"

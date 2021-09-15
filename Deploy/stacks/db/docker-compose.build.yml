@@ -16,30 +16,30 @@ services:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     build:
       context: blazegraph
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
-      hash: "${HASH}"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
+        hash: "${HASH}"
 
   # Blazegraph geo
   blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     build:
       context: blazegraph_geo
-    labels:
-      authors: "msff2@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
-      hash: "${HASH}"
+      labels:
+        authors: "msff2@cam.ac.uk, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
+        hash: "${HASH}"
 
   # RDF4J
   rdf4j:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     build:
       context: rdf4j
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "RDF4J with BASIC authentication for the server and workbench."
-      hash: "${HASH}"
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "RDF4J with BASIC authentication for the server and workbench."
+        hash: "${HASH}"
