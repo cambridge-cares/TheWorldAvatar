@@ -734,5 +734,6 @@
     "LUMO+2 energy": -0.08811,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
-    "Run date": "Wed Dec 6 05:34:18 2017"
+    "Run date": "Wed Dec 6 05:34:18 2017",
+    "Log file name": "1b.log"
 }

@@ -1,6 +1,5 @@
 from chemaboxwriters.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from chemaboxwriters.kgoperations.querykg import querykg
-import json
 
 def spec_inchi_query(inchi_string):
     query = """
@@ -19,8 +18,8 @@ def spec_inchi_query(inchi_string):
 
 def get_species_iri(inchi):
     #Query OntoSpecies to find Species IRI that corresponds to a given InChI.
+    target = None
     results  = querykg(SPARQL_ENDPOINTS['ontospecies'], spec_inchi_query(inchi)) #query_endpoint(endpoint, spec_inchi_query(inchi))
-    results = json.loads(results)
     if results:
         if 'speciesIRI' in results[0].keys():
             target = results[0]['speciesIRI']

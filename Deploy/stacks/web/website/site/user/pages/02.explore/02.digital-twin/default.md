@@ -37,17 +37,21 @@ slug: digital-twin
 		</td>
 	</tr>
 	<tr height="275px">
-		<td width="33%" colspan="1" style="text-align: center;">
+		<td width="25%" colspan="1" style="text-align: center;">
 			<div markdown="1">[![Power System](image://digital-twin/power-system-thumb.jpg?classes=thumb-image)](power-system)</div>
 			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Power System](power-system)</div>
 		</td>
-		<td width="33%" colspan="1" style="text-align: center;">
+		<td width="25%" colspan="1" style="text-align: center;">
 			<div markdown="1">[![Gas Grid](image://digital-twin/gas-grid-thumb.jpg?classes=thumb-image)](gas-grid)</div>
 			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Gas Grid](gas-grid)</div>
 		</td>
-		<td width="33%" colspan="1" style="text-align: center;">
+		<td width="25%" colspan="1" style="text-align: center;">
 			<div markdown="1">[![Land Use](image://digital-twin/land-use-thumb.jpg?classes=thumb-image)](land-use)</div>
 			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Land Use](land-use)</div>
+		</td>
+		<td width="25%" colspan="1" style="text-align: center;">
+			<div markdown="1">[![Land Use](image://digital-twin/flood-map-thumb.jpg?classes=thumb-image)](flood-risk)</div>
+			<div class="grey-link" style="padding-top: 8px; font-weight: 500;" markdown="1">[Flood Risk](flood-risk)</div>
 		</td>
 	</tr>
 </table>

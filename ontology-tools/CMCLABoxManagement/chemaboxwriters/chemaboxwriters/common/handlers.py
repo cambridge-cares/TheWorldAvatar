@@ -1,8 +1,8 @@
 from chemaboxwriters.common.base import StageHandler
-from compchemparser.app import parseLog
 from compchemparser.helpers.utils import jsonStringToFile
 from chemaboxwriters.common.stageenums import aboxStages
-from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_csv_string_into_rdf
+from compchemparser.app import parseLog
+from chemaboxwriters.common.commonfunc import csv2rdf_wrapper
 from chemutils.ioutils import writeFile
 
 
@@ -13,7 +13,7 @@ QC_LOG_TO_QC_JSON = StageHandler(handlerFunc=parseLog,
                        fileWriter=jsonStringToFile,
                        fileExt='.qc.json')
 
-CSV_TO_OWL = StageHandler(handlerFunc=convert_csv_string_into_rdf,
+CSV_TO_OWL = StageHandler(handlerFunc=csv2rdf_wrapper,
                     inStage=aboxStages.CSV,
                     outStage=aboxStages.OWL,
                     fileWriter= writeFile,
