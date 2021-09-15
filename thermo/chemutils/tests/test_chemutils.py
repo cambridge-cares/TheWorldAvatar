@@ -1,10 +1,6 @@
 import os
-from chemutils.xyzutils import xyzMatch, \
-                               xyzReshuffle, \
-                               xyzReorderOnAtomsMatch, \
-                               xyzToAtomsPositions
-from chemutils.ioutils import readFile, writeFile, \
-                              removeBlankTrailingLines
+import chemutils.xyzutils.xyztools as xyztools
+import chemutils.ioutils.ioutils as ioutils
 import pytest
 import json
 
@@ -41,11 +37,11 @@ def test_match_xyzToxyz(testFilesDir, testFileName):
     print('TEST LOG: ', testFileName)
     testPath = os.path.join(THIS_DIR, testFilesDir)
     refFile = os.path.join(testPath, testFileName)
-    refXYZ = removeBlankTrailingLines(readFile(refFile))
+    refXYZ = ioutils.removeBlankTrailingLines(ioutils.readFile(refFile))
     for i in range(10):
-        tarXYZ = xyzReshuffle(refXYZ, seed=i)
-        match = xyzMatch(tarXYZ,refXYZ)
-        tarXYZ = xyzReorderOnAtomsMatch(tarXYZ, match)
+        tarXYZ = xyztools.xyzReshuffle(refXYZ, seed=i)
+        match = xyztools.xyzMatch(tarXYZ,refXYZ)
+        tarXYZ = xyztools.xyzReorderOnAtomsMatch(tarXYZ, match)
         assert tarXYZ == refXYZ
     print('========================================================')
 
@@ -73,14 +69,14 @@ def test_xyzToAtomsPositions(testFilesDir, testFileName, regenerateResults):
     testPath = os.path.join(THIS_DIR, testFilesDir)
     testFile = os.path.join(testPath, testFileName)
     refFile = testFile + '_atomPosRef.json'
-    testXYZ = removeBlankTrailingLines(readFile(testFile))
+    testXYZ = ioutils.removeBlankTrailingLines(ioutils.readFile(testFile))
 
-    testAtomsPos = json.dumps(xyzToAtomsPositions(xyzFileOrStr=testXYZ))
+    testAtomsPos = json.dumps(xyztools.xyzToAtomsPositions(xyzFileOrStr=testXYZ))
     if regenerateResults:
         # dump just parsed data as the ref data
-        writeFile(refFile,testAtomsPos)
+        ioutils.writeFile(refFile,testAtomsPos)
 
-    refAtomsPos = readFile(refFile)
+    refAtomsPos = ioutils.readFile(refFile)
     assert testAtomsPos == refAtomsPos
     print('========================================================')
 

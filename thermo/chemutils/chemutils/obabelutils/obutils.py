@@ -1,4 +1,4 @@
-from openbabel import pybel
+import openbabel.pybel as pybel
 
 def obGetMolBonds(xyzString):
     mol = pybel.readstring("xyz",xyzString)

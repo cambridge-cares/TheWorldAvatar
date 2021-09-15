@@ -3,7 +3,7 @@ import rdkit.Chem
 import rdkit.Chem.rdMolAlign
 import rdkit.Chem.rdMolTransforms
 import numpy as np
-from chemutils.mathutils import getXYZPointsDistance
+import chemutils.mathutils.linalg as linalg
 import copy
 
 
@@ -141,7 +141,7 @@ def rdkitFilterAlignMatchesByDist(matches, rmsds, targetRdkitMol, refRdkitMol):
             for tarAtomId, refAtomId in enumerate(match):
                 targetAtomPos = getRdkitAtomXYZbyId(targetRdkitMol,tarAtomId)
                 refAtomPos = getRdkitAtomXYZbyId(refRdkitMol,refAtomId)
-                dist = getXYZPointsDistance(targetAtomPos,refAtomPos)
+                dist = linalg.getXYZPointsDistance(targetAtomPos,refAtomPos)
                 atomsAbsDistSum = atomsAbsDistSum + dist
             if atomsAbsDistSum < atomsAbsDistSumBest:
                 atomsAbsDistSumBest = atomsAbsDistSum

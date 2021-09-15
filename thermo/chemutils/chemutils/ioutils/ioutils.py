@@ -2,11 +2,11 @@ import os
 import glob
 
 def readFile(path, *args, **kwargs):
-    with open (os.path.abspath(path),'r', *args, **kwargs) as myfile:
+    with open (os.path.abspath(path), 'r', *args, **kwargs) as myfile:
         data=myfile.read()
     return data
 
-def writeFile(path,data, *args, **kwargs):
+def writeFile(path, data, *args, **kwargs):
     with open (os.path.abspath(path), 'w', *args, **kwargs) as myfile:
         myfile.write(data)
 
@@ -33,3 +33,6 @@ def getFilesWithExtensions(fileOrDir, fileExtList):
         for fileExt in fileExtList:
             files+=glob.glob(os.path.join(fileOrDir,'*'+fileExt))
     return files
+
+def getFileBaseName(filePath):
+    return os.path.splitext(filePath)[0]

@@ -1,41 +1,43 @@
-from chemutils.mainutils import xyzReorderToxyz, \
-                                xyzToAtomsPositionsWrapper, \
-                                xyzToGaussianInputWrapper
-from chemutils.obabelutils import obConvertWrapper
+import chemutils.mainutils.mainutils as mainutils
 from docopt import docopt, DocoptExit
+import re
 
 doc = """chemutils
 Usage:
-    chemutils atomspos <xyzFileOrStr> [--outFile=<out-file-path>
-                                       --silent]
-    chemutils convert <moleculeFileOrStr> <from> <to> [--convOptions=<conv_opt>
-                                                       --outFile=<out-file-path>
-                                                       --silent]
-    chemutils xyz2xyz <xyzTargetFileOrStr> <xyzRefFileOrStr> [--outFile=<out-file-path>
-                                                    --silent]
-    chemutils xyz2ginp  <xyzFileOrDir>
-             		    [--job_route=<jroute>]
- 		                [--charge=<charge>]
- 	                    [--spin_multiplicity=<spinmult>]
-                        [--memory=<mem>]
- 		                [--num_cpus=<ncpus>]
-                        [--out-dir=<outdir>]
-                        [--silent]
-Options
---convOptions          OpenBabe; conversion options
---job_route            Gaussian job route [default: B3LYP/6-311+G(d,p) Opt Freq]
---charge               Molecule's charge in atomic units [default: 0]
---spin_multiplicity    Molecule's spin multiplicity [default: 1]
---memory               Memory to be used for the gaussian job, in GB  [default: 32]
---num_cpus             Number of cpus to be used for the gaussian job  [default: 16]
---out-file-path        Output file path for the generated Gaussian
---out-dir              Output file path for the generated Gaussian
-                       input file.
---silent               Silent mode.
+    chemutils atomspos <xyzFileOrDir>
+                       [--out-dir=<outdir>]
+                       [--file-extension=<filext>]
+    chemutils convert <moleculeFileOrDir> <convertFrom> <convertTo>
+                      [--conv-options=<convopts>]
+                      [--out-dir=<outdir>]
+                      [--file-extension=<filext>]
+    chemutils xyz2xyz <xyzTargetFile> <xyzRefFile>
+                      [--out-dir=<outdir>]
+                      [--file-extension=<filext>]
+    chemutils xyz2ginp <xyzFileOrDir>
+                       [--charge=<charge>]
+                       [--spin-mult=<spinmult>]
+                       [--job-route=<jobroute>]
+                       [--memory=<mem>]
+                       [--num-cpus=<ncpus>]
+                       [--out-dir=<outdir>]
+                       [--file-extension=<filext>]
+
+Options:
+--conv-options=<convopts>     OpenBabel conversion options
+--job-route=<jobroute>        Gaussian job route [default: B3LYP/6-311+G(d,p) Opt Freq]
+--charge=<charge>             Molecule's charge in atomic units [default: 0]
+--spin-mult=<spinmult>        Molecule's spin multiplicity [default: 1]
+--memory=<mem>                Memory to be used for the gaussian job, in GB  [default: 32]
+--num-cpus=<ncpus>            Number of cpus to be used for the gaussian job  [default: 16]
+--out-dir=<outdir>            Output file path for the generated Gaussian.
+--file-extension=<filext>     Input file extension.
 """
 #    chemutils xyz2xyzFlexBond <xyzTargetFileOrStr> <xyzRefFileOrStr>
 #                                                   <refAtomId1>
 #                                                   <refAtomId2>
+
+
 
 def start():
     try:
@@ -44,24 +46,37 @@ def start():
         raise DocoptExit('Error: chemutils called with wrong arguments.')
 
     if args["atomspos"]:
-        output = xyzToAtomsPositionsWrapper(xyzFileOrStr=args['<xyzFileOrStr>'], \
-                            silent=args['--silent'], outFile=args['--outFile'])
+        output = mainutils.xyzToAtomsPositionsWrapper(
+                    xyzFileOrDir=args['<xyzFileOrDir>'], \
+                    outDir=args['--out-dir'], \
+                    fileExt=args['--file-extension'], \
+                )
     elif args["convert"]:
-        output = obConvertWrapper(inputMol=args['<moleculeFileOrStr>'], inputMolFormat=args['<from>'], \
-            outputMolFormat=args['<to>'], convOptions=args['--convOptions'], outFile=args['--outFile'], \
-            silent=args['--silent'])
+        output = mainutils.obConvertWrapper(
+                    inputFileOrDir=args['<moleculeFileOrDir>'],
+                    convertFrom=args['<convertFrom>'], \
+                    convertTo=args['<convertTo>'], \
+                    convOptions=args['--conv-options'],
+                    outDir=args['--out-dir'], \
+                    fileExt=args['--file-extension'], \
+                )
+
     elif args["xyz2ginp"]:
-        output = xyzToGaussianInputWrapper(xyzFileOrDir=args['<xyzFileOrDir>'], \
-             		    job_route= args['--job_route'], \
+        output = mainutils.xyzToGaussianInputWrapper(xyzFileOrDir=args['<xyzFileOrDir>'], \
+             		    jobRoute= args['--job-route'], \
  		                charge= args['--charge'], \
- 	                    spin_multiplicity = args['--spin_multiplicity'], \
+ 	                    spinMult = args['--spin-mult'], \
                         memory= args['--memory'], \
- 		                num_cpus= args['--num_cpus'], \
-                        out_dir= args['--out-dir'], \
-                        silent= args['--silent'])
-    else:
-        output = xyzReorderToxyz(args['<xyzTargetFileOrStr>'], args['<xyzRefFileOrStr>'], \
-                                   outFile=args['--outFile'])
+ 		                numCpus= args['--num-cpus'], \
+                        outDir= args['--out-dir'], \
+                        fileExt=args['--file-extension'], \
+                )
+    elif args["xyz2xyz"]:
+        output = mainutils.xyzReorderToxyz(
+                        xyzTargetFile= args['<xyzTargetFile>'], \
+                        xyzRefFile= args['<xyzRefFile>'], \
+                        outDir= args['--out-dir'], \
+                )
     #else:
     #    output = xyzReorderToxyzFlexBond(args['<xyzTargetFileOrStr>'], args['<xyzRefFileOrStr>'], \
     #                               args['<refAtomId1>'], args['<refAtomId2>'])

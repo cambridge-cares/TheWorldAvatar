@@ -10,5 +10,10 @@ setup(
     packages=find_packages(exclude=('tests')),
     long_description=open('README.md').read(),
     install_requires=["docopt"],
-    include_package_data=True
+    include_package_data=True,
+    entry_points={  # Optional
+        'console_scripts': [
+            'chemutils=chemutils.main:start'
+        ],
+    }
 )
