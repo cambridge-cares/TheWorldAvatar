@@ -5,7 +5,7 @@ import chemutils.ioutils.ioutils as ioutils
 import chemutils.obabelutils.obconverter as obconverter
 import os
 
-def xyzToAtomsPositionsWrapper(xyzFileOrDir, outDir=None, fileExt=None):
+def xyzToAtomsPositionsWrapper(xyzFileOrDir, outDir=None, fileExt=None, noOutFile=False):
     """
     Wrapper for the xyzToAtomsPositions function.
     Returns atom positions (order) given a molecule9s) in an xyz format.
@@ -28,6 +28,8 @@ def xyzToAtomsPositionsWrapper(xyzFileOrDir, outDir=None, fileExt=None):
         directory to write the results into
     fileExt : str, optional, default = xyz
         extension of the input files
+    noOutFile : bool, optional, default False
+        suppresses writing any output files
 
     Returns:
     ----------
@@ -46,10 +48,11 @@ def xyzToAtomsPositionsWrapper(xyzFileOrDir, outDir=None, fileExt=None):
         _atomsPositions = xyztools.xyzToAtomsPositions(xyz_file)
 
         filebasename = ioutils.getFileBaseName(xyz_file)
-        outPath = os.path.join(outDir,filebasename+'atomspositions.csv')
-        ioutils.writeFile(path=outPath,
-                          data=','.join([str(v) for v in _atomsPositions.values()]),
-                          newline='')
+        if not noOutFile:
+            outPath = os.path.join(outDir,filebasename+'atomspositions.csv')
+            ioutils.writeFile(path=outPath,
+                 data=','.join([str(v) for v in _atomsPositions.values()]),
+                 newline='')
 
         atomsPositions.append((filebasename,_atomsPositions))
 
@@ -57,7 +60,7 @@ def xyzToAtomsPositionsWrapper(xyzFileOrDir, outDir=None, fileExt=None):
     return atomsPositions
 
 def obConvertWrapper(inputFileOrDir, convertFrom, convertTo, convOptions=None,
-                     outDir=None, fileExt=None):
+                     outDir=None, fileExt=None, noOutFile=False):
 
     """
     Wrapper for the obConver function from open babel.
@@ -78,6 +81,8 @@ def obConvertWrapper(inputFileOrDir, convertFrom, convertTo, convOptions=None,
         directory to write the results into
     fileExt : str, optional, default = xyz
         extension of the input files
+    noOutFile : bool, optional, default False
+        suppresses writing any output files
 
     Returns:
     ----------
@@ -97,8 +102,9 @@ def obConvertWrapper(inputFileOrDir, convertFrom, convertTo, convOptions=None,
         _convertedMol = obconverter.obConvert(xyz_file, convertFrom, convertTo, convOptions)
 
         filebasename = ioutils.getFileBaseName(xyz_file)
-        outPath = os.path.join(outDir,filebasename+'.'+convertTo)
-        ioutils.writeFile(path=outPath, data=_convertedMol, newline='')
+        if not noOutFile:
+            outPath = os.path.join(outDir,filebasename+'.'+convertTo)
+            ioutils.writeFile(path=outPath, data=_convertedMol, newline='')
 
         convertedMols.append((filebasename,_convertedMol))
 
@@ -106,7 +112,7 @@ def obConvertWrapper(inputFileOrDir, convertFrom, convertTo, convOptions=None,
     return convertedMols
 
 
-def xyzReorderToxyz(xyzTargetFile, xyzRefFile, outDir=None):
+def xyzReorderToxyz(xyzTargetFile, xyzRefFile, outDir=None, noOutFile=False):
     """
     Matches atom indices from one xyz molecule to the other.
     Molecules must have the same topology (the same inchis).
@@ -121,6 +127,8 @@ def xyzReorderToxyz(xyzTargetFile, xyzRefFile, outDir=None):
         reference molecule file path in xyz format
     outDir : str, optional, default = cwd
         directory to write the results into
+    noOutFile : bool, optional, default False
+        suppresses writing any output files
 
     Returns:
     ----------
@@ -143,8 +151,9 @@ def xyzReorderToxyz(xyzTargetFile, xyzRefFile, outDir=None):
     filebasename = ioutils.getFileBaseName(xyzTargetFile)
 
     print(f'Reordered {filebasename} file: \n{xyzTargetReordered}')
-    outPath = os.path.join(outDir,filebasename+'_reordered.xyz')
-    ioutils.writeFile(path=outPath, data=xyzTargetReordered, newline='')
+    if not noOutFile:
+        outPath = os.path.join(outDir,filebasename+'_reordered.xyz')
+        ioutils.writeFile(path=outPath, data=xyzTargetReordered, newline='')
     return xyzTargetReordered
 
 def xyzReorderToxyzFlexBond(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, refAtomId2, silent=False, outFile=None):
@@ -180,7 +189,7 @@ def xyzReorderToxyzFlexBond(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, ref
     return xyzTargetStr
 
 def xyzToGaussianInputWrapper(xyzFileOrDir, jobRoute, charge, spinMult, memory, \
-                              numCpus, outDir, fileExt):
+                              numCpus, outDir, fileExt, noOutFile=False):
 
     if fileExt is None: fileExt='.xyz'
     if outDir is None: outDir= os.getcwd()
@@ -193,8 +202,34 @@ def xyzToGaussianInputWrapper(xyzFileOrDir, jobRoute, charge, spinMult, memory, 
         _ginput = xyzconverters.xyzToGaussianInput(xyz_file, jobRoute, charge, spinMult, memory,numCpus)
 
         filebasename = ioutils.getFileBaseName(xyz_file)
-        outPath = os.path.join(outDir,xyz_file+'.gau')
-        ioutils.writeFile(path=outPath, data=_ginput, newline='')
+
+        if not noOutFile:
+            outPath = os.path.join(outDir,xyz_file+'.gau')
+            ioutils.writeFile(path=outPath, data=_ginput, newline='')
 
         ginputs.append((filebasename,_ginput))
     return ginputs
+
+def getConformersXYZWrapper(moleculeFileOrDir, inputFormat, retNumConfs,
+                            genNumConfs, maxIters, mmffVariant, outDir,
+                            fileExt, noOutFile=False):
+
+    if fileExt is None: fileExt=''
+    if outDir is None: outDir= os.getcwd()
+
+    xyz_files = ioutils.getFilesWithExtensions(moleculeFileOrDir, fileExt)
+    if not xyz_files: return
+
+    all_conformers = []
+    for xyz_file in xyz_files:
+        conformers = xyztools.getConformersXYZ(xyz_file, inputFormat, retNumConfs,
+                            genNumConfs, maxIters, mmffVariant)
+
+        filebasename = ioutils.getFileBaseName(xyz_file)
+        all_conformers = [(filebasename, conformers)]
+        for i, (energy, confXYZ) in enumerate(conformers):
+            print(f'Conformer {i}, energy: {energy}, geometry: \n {confXYZ}')
+            if not noOutFile:
+                outPath = os.path.join(outDir,filebasename+'_conformer_'+str(i)+'.xyz')
+                ioutils.writeFile(path=outPath, data=confXYZ, newline='')
+    return all_conformers

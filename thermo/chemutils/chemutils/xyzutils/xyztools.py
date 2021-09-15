@@ -334,3 +334,27 @@ def xyzMatchWithBondAdjustment(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, 
             bestBondLength = newBondLength
 
     match= xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr)
+
+
+def getConformersXYZ(moleculeFileOrStr, inputFormat, retNumConfs, genNumConfs,
+                      maxIters=1000, mmffVariant="MMFF94"):
+
+    if ioutils.fileExists(moleculeFileOrStr): inputMol= ioutils.readFile(moleculeFileOrStr)
+
+    if inputFormat=='xyz':
+        mol = xyzconverters.xyzToMolToRdkitMol(inputMol)
+    elif inputFormat=='mol':
+        mol = rdkitconverters.molBlockToRdkitMol(inputMol)
+    elif inputFormat=='pdb':
+        mol = rdkitconverters.pdbBlockToRdkitMol(inputMol)
+    else:
+        inchi = obconverter.obConvert(inputMol=moleculeFileOrStr,inputMolFormat=inputFormat,
+                            outputMolFormat='inchi')
+        mol = rdkitconverters.inchiToRdkitMol(inchi)
+
+    conformers = rdkitmolutils.getRdkitMolOptConformers(mol,
+                        retNumConfs=retNumConfs, numConfs=genNumConfs,
+                        maxIters=maxIters, mmffVariant=mmffVariant)
+
+    return [(en, obconverter.obConvert(molBlock,'mol','xyz'))
+                  for (en, molBlock) in conformers]

@@ -22,12 +22,12 @@ def inchiToRdkitMol(inchi, *args, **kwargs):
 def rdkitMolToInchi(rdkitMol, *args, **kwargs):
     return rdkit.Chem.inchi.MolToInchi(rdkitMol, *args, **kwargs)
 
-def rdkitMolToXYZ(rdkitMol):
+def rdkitMolToXYZ(rdkitMol, confId=0):
     xyz = []
     xyz.append(str(rdkitMol.GetNumAtoms()))
     xyz.append("")
     for atom in rdkitMol.GetAtoms():
-        atompos = rdkitmolutils.getRdkitAtomXYZbyId(rdkitMol, atom.GetIdx())
+        atompos = rdkitmolutils.getRdkitAtomXYZbyId(rdkitMol, atom.GetIdx(), confId)
         xyzLine = f"{atom.GetSymbol()} {str(atompos[0])} {str(atompos[1])} {str(atompos[2])}"
         xyz.append(xyzLine)
     return "\n".join(xyz)

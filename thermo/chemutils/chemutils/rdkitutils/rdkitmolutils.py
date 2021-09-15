@@ -2,6 +2,7 @@ import rdkit
 import rdkit.Chem
 import rdkit.Chem.rdMolAlign
 import rdkit.Chem.rdMolTransforms
+import rdkit.Chem.AllChem
 import numpy as np
 import chemutils.mathutils.linalg as linalg
 import copy
@@ -220,9 +221,9 @@ def rdkitMolToMolFrags(rdkitMol, *args, **kwargs):
 #        m12.AddBond(closestAtoms[0],closestAtoms[1],order=rdkit.Chem.rdchem.BondType.SINGLE)
 #    return rdkitMolToInchi(m12)
 
-def getRdkitAtomXYZbyId(rdkitMol,atomId):
+def getRdkitAtomXYZbyId(rdkitMol,atomId, confId=0):
     """Returns an xyz atom position given atom's id."""
-    conf = rdkitMol.GetConformer()
+    conf = rdkitMol.GetConformer(confId)
     return np.array(list(conf.GetAtomPosition(atomId)))
 
 def getRdkitHeavyAtomsIds(rdkitMol):
@@ -309,14 +310,14 @@ def getRdkitMolOptConformers(mol, retNumConfs=1, numConfs=10, maxIters=1000, mmf
 
     mwh = rdkit.Chem.AddHs(mol)
     # generate multiple conformers at once, this runs ETKDG numConfs times
-    conf_nums = rdkit.AllChem.EmbedMultipleConfs(mwh, numConfs=numConfs)
+    conf_nums = rdkit.Chem.AllChem.EmbedMultipleConfs(mwh, numConfs=numConfs)
 
     # optimise conformers and calculate the forcefield energy
     # energies is now a list of tuples
     # each tuple has the form (int, float), where int should
     # be zero if the calculation converged
     # the float is the energy is units of kcal/mol (assumed)
-    energies = rdkit.AllChem.MMFFOptimizeMoleculeConfs(mwh, maxIters=maxIters,
+    energies = rdkit.Chem.AllChem.MMFFOptimizeMoleculeConfs(mwh, maxIters=maxIters,
                                                        mmffVariant=mmffVariant)
     energies = sorted(energies, key=lambda tup: tup[1])
 
@@ -331,12 +332,8 @@ def getRdkitMolOptConformers(mol, retNumConfs=1, numConfs=10, maxIters=1000, mmf
             print(f'Warning: Conformer {i} and parent molecule inchis are different!')
         else:
             conf_inchis.add(conf_inchi)
-        conformers.append((energy, conf_inchi, conf_molBlock))
+        conformers.append((energy, conf_molBlock))
+
+    if retNumConfs > len(conformers): retNumConfs = len(conformers)
 
     return conformers[:retNumConfs]
-
-def getRdkitMolOptConformersFromInchi(inchi, retNumConfs=10, numConfs=100,
-                        maxIters=1000, mmffVariant="MMFF94"):
-    mol = rdkit.Chem.inchi.MolFromInchi(inchi)
-    return getRdkitMolOptConformers(mol, retNumConfs=retNumConfs, numConfs=numConfs,
-                                    maxIters=maxIters, mmffVariant=mmffVariant)
