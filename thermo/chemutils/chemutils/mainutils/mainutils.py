@@ -217,18 +217,21 @@ def getConformersXYZWrapper(moleculeFileOrDir, inputFormat, retNumConfs,
     if fileExt is None: fileExt=''
     if outDir is None: outDir= os.getcwd()
 
-    xyz_files = ioutils.getFilesWithExtensions(moleculeFileOrDir, fileExt)
-    if not xyz_files: return
+    mol_files = ioutils.getFilesWithExtensions(moleculeFileOrDir, fileExt)
+    if not mol_files: return
 
     all_conformers = []
-    for xyz_file in xyz_files:
-        conformers = xyztools.getConformersXYZ(xyz_file, inputFormat, retNumConfs,
+    for mol_file in mol_files:
+        conformers = xyztools.getConformersXYZ(mol_file, inputFormat, retNumConfs,
                             genNumConfs, maxIters, mmffVariant)
 
-        filebasename = ioutils.getFileBaseName(xyz_file)
+        filebasename = ioutils.getFileBaseName(mol_file)
         all_conformers = [(filebasename, conformers)]
         for i, (energy, confXYZ) in enumerate(conformers):
-            print(f'Conformer {i}, energy: {energy}, geometry: \n {confXYZ}')
+            confXYZ = confXYZ.split('\n')
+            confXYZ[1] = f'{mmffVariant} energy: {energy}'
+            confXYZ = '\n'.join(confXYZ)
+            print(f'Conformer {i}, geometry: \n {confXYZ}')
             if not noOutFile:
                 outPath = os.path.join(outDir,filebasename+'_conformer_'+str(i)+'.xyz')
                 ioutils.writeFile(path=outPath, data=confXYZ, newline='')
