@@ -26,7 +26,7 @@ Local deployment requires:
 # Define location of properties file (with Triple Store and RDB settings)
 PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
 
-# Define format of time series time entries: Year-Day-Month T hour:minute:second:millisecond Z
+# Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Define global variables
@@ -39,7 +39,7 @@ PREFIXES = {
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'http://www.theworldavatar.com/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
 }
 
