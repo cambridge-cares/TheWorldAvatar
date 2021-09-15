@@ -59,7 +59,6 @@ public class CreateStation extends JPSAgent {
         	Double.parseDouble(latlon[0]); Double.parseDouble(latlon[1]);
         	return true;
         } catch (Exception e) {
-        	LOGGER.error("Invalid input for WeatherAgent/CreateStation");
         	LOGGER.error(e.getMessage());
         	throw new BadRequestException(e);
         }

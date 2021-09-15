@@ -108,10 +108,10 @@ public class GetWeatherData extends JPSAgent{
     		switch (path) {
 	        	case urlPatternHistory:
 	        		new URI(requestParams.getString("station"));
+	        		requestParams.getInt("hour");
 	        		return true;
 	        	case urlPatternLatest: // has an extra input required
 	        		new URI(requestParams.getString("station"));
-	        		requestParams.getInt("hour");
 	        		return true;
 	        	default:
 	        		String err_msg = "Invalid servlet path";
@@ -119,6 +119,7 @@ public class GetWeatherData extends JPSAgent{
 	        		throw new JPSRuntimeException(err_msg);
 	        }
     	} catch (Exception e) {
+    		LOGGER.error(e.getMessage());
     		throw new BadRequestException(e);
     	}
     }

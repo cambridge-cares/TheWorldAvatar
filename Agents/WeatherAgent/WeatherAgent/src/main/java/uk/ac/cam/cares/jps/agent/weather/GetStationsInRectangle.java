@@ -63,9 +63,8 @@ public class GetStationsInRectangle extends JPSAgent{
 			Double.parseDouble(northeast[1]);
 			return true;
 		} catch (Exception e) {
-			String errmsg = "Invalid input for GetStationsInRectangle";
-			LOGGER.error(errmsg);
-			throw new BadRequestException(errmsg,e);
+			LOGGER.error(e.getMessage());
+			throw new BadRequestException(e);
 		}
 	}
 }

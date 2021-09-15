@@ -5,6 +5,8 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -24,9 +26,8 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 @WebServlet(urlPatterns = {"/GetStationsInCircle"})
 public class GetStationsInCircle extends JPSAgent{
 
-	/**
-	 * 
-	 */
+	// Logger for reporting info/errors
+    private static final Logger LOGGER = LogManager.getLogger(GetStationsInCircle.class);
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -58,8 +59,8 @@ public class GetStationsInCircle extends JPSAgent{
 			requestParams.getDouble("radius");
 			return true;
 		} catch (Exception e)  {
-			String errmsg = "Invalid input for GetStationsInCircle";
-			throw new BadRequestException(errmsg,e);
+			LOGGER.error(e.getMessage());
+			throw new BadRequestException(e);
 		}
 	}
 }
