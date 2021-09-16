@@ -13,7 +13,6 @@ FALLBACK_KG = "http://localhost:9999/blazegraph/"
 
 # Output location
 OUTPUT_FOLDER = "/var/www/html/gas-grid"
-OUTPUT_FOLDER = ""
 
 # Maximum batch size for results
 BATCH_SIZE = 50_000
