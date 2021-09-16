@@ -209,6 +209,10 @@ class WeatherQueryClient {
 
     	// then delete all time series data in one go
     	tsClient.deleteTimeSeries(timeseriesIRI);
+    	
+    	// finally remove time stamp added using the derivation client
+    	DerivationClient dClient = new DerivationClient(storeClient);
+    	dClient.removeTimeInstance(station_iri);
     }
     
     long getLastUpdateTime(String station_iri) {
