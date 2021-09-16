@@ -9,7 +9,7 @@
     Author: support<@>cmclinnovations.com
 """
 
-import os 
+import os
 import sys
 import shutil
 from datetime import datetime as dt
@@ -21,18 +21,18 @@ from jpsSingletons import jpsBaseLibGW
 import kg_utils as kg
 
 
-def get_gasflow_history(callbackSuccess, callbackFailure):
+def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     """
         Submits the input query to the KG asynchronously (so a timeout can be added).
         Once the request is complete, one of the input callback functions
         will be called.
         
         Arguments:
-            namespace         - KG namespace
+            duration        - KG namespace
             callbackSuccess - function to call on success
             callbackFailure - function to call on failure
     """
-    
+
     # Read properties file (to retrieve namespace and fallback_kg)
     kg.read_properties_file(kg.PROPERTIES_FILE)
 
@@ -54,9 +54,9 @@ def get_gasflow_history(callbackSuccess, callbackFailure):
     # Initialise timestamps for gas flow time series retrieval durations
     now = dt.utcnow()
     print("INFO: Submitting TimeSeriesClient SPARQL queries at", now.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    start_1d = now - td(hours=24 * 1)
-    start_2d = now - td(hours=24 * 2)
-    start_7d = now - td(hours=24 * 7)
+    start_1 = now - td(hours=1*duration)
+    start_2 = now - td(hours=2*duration)
+    start_7 = now - td(hours=7*duration)
 
     # Initialise dictionary for all retrieved time series objects
     timeseries_dict = {}
@@ -70,21 +70,21 @@ def get_gasflow_history(callbackSuccess, callbackFailure):
 
         # Retrieve instantaneous gas flow time series history
         try:
-            # Get results for last 24 hours
+            # Get results for last "duration" hours (e.g. 24h)
             timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                            Instant.ofEpochSecond(round(start_1d.timestamp())),
+                                                            Instant.ofEpochSecond(round(start_1.timestamp())),
                                                             Instant.ofEpochSecond(round(now.timestamp())))
             if not timeseries.getTimes():
-                # Try last 48h if nothing available for last 24h
-                print("WARNING: No results in last 24 hours, trying last 48h ...")
+                # Try last "2 x duration" hours if nothing available for last "duration" hours (e.g. 48h)
+                print("WARNING: No results in last %i h, trying last %i h ..." %(duration, 2*duration))
                 timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                                Instant.ofEpochSecond(round(start_2d.timestamp())),
+                                                                Instant.ofEpochSecond(round(start_2.timestamp())),
                                                                 Instant.ofEpochSecond(round(now.timestamp())))
                 if not timeseries.getTimes():
-                    # Last resort, try entire last week
-                    print("WARNING: No results in last 48 hours, trying last week...")
+                    # Last resort, try last "7 x duration" hours (e.g. last week)
+                    print("WARNING: No results in last %i h, trying last %i h ..." %(2*duration, 7*duration))
                     timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                                    Instant.ofEpochSecond(round(start_7d.timestamp())),
+                                                                    Instant.ofEpochSecond(round(start_7.timestamp())),
                                                                     Instant.ofEpochSecond(round(now.timestamp())))
             # populate timeseries dictionary - format:
             # terminal name: [terminal IRI, measurement IRI, Java time series object]
@@ -92,7 +92,7 @@ def get_gasflow_history(callbackSuccess, callbackFailure):
 
         except Exception as error:
             callbackFailure(error)
-        
+
     callbackSuccess(timeseries_dict)
 
 
@@ -135,13 +135,13 @@ def onSuccess(timeseries):
     now = dt.now()
     filename = "flow-data-" + now.strftime("%Y-%m-%d") + ".json"
     filepath = os.path.join(kg.OUTPUT_DIR, filename)
-    
+
     try:
         print("INFO: Writing data to file at", filepath)
         with open(filepath, "w") as file:
             file.write(res_final)
             file.close()
-            
+
         # Also make copy to flow-data-latest.json (so we don't have to write a dynamic wget call to download it later).
         latestCopy = os.path.join(kg.OUTPUT_DIR, "flow-data-latest.json")
         shutil.copy(filepath, latestCopy)
@@ -151,7 +151,7 @@ def onSuccess(timeseries):
 
     except Exception:
         print("WARNING: Could not write data to file, will try local output...")
-        
+
         try:
             with open(filename, "w") as file:
                 file.write(res_final)
@@ -159,10 +159,10 @@ def onSuccess(timeseries):
             print("INFO: Data written to file at ./" + filename)
 
             print("SUCCESS: Script completed.")
-            
+
         except Exception:
             print("ERROR: Could not write out data file!")
-        
+
 
 def onFailure(error):
     """
@@ -181,7 +181,10 @@ def main():
         Main function.
     """
     print("\n")
-    get_gasflow_history(onSuccess, onFailure)
+
+    # Duration of latest historical data to retrieve (in h)
+    duration = 24
+    get_gasflow_history(duration, onSuccess, onFailure)
 
 
 # Entry point, calls main function
