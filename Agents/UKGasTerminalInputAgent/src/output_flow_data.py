@@ -1,12 +1,10 @@
 """
-    This script queries the KG for the last day of flow data for
-    every terminal and offtake, this data is then written to a
-    local JSON file.
+    This script queries the KG for the last day (or any other specified duration) of flow data for every terminal,
+    this data is then written to a local JSON file.
     
-    It comprises part of the Gas Grid Agent tool and should be 
-    executed daily via crontab.
+    It comprises part of the Gas Grid Agent tool and should be executed daily via crontab.
     
-    Author: support<@>cmclinnovations.com
+    Authors: support<@>cmclinnovations.com, mh807<@>cam.ac.uk
 """
 
 import os
@@ -23,12 +21,11 @@ import kg_utils as kg
 
 def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     """
-        Submits the input query to the KG asynchronously (so a timeout can be added).
-        Once the request is complete, one of the input callback functions
-        will be called.
+        Retrieves gas flow time series data for all instantiated Gas Terminals in the KG.
+        Once the request is complete, one of the input callback functions will be called.
         
         Arguments:
-            duration        - KG namespace
+            duration        - number of hours for which latest data shall be retrieved (in h)
             callbackSuccess - function to call on success
             callbackFailure - function to call on failure
     """
@@ -96,35 +93,36 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     callbackSuccess(timeseries_dict)
 
 
-def onSuccess(timeseries):
+def onSuccess(timeseries_data):
     """
-        Runs when data is successfully returned by the query.
+        Runs when timeseries data is successfully returned by the get_gasflow_history function.
         
         Arguments:
-            data - resulting data from KG
+            timeseries_data - dictionary of time series data in the format:
+                              terminal name: [terminal IRI, measurement IRI, Java time series object]
     """
 
     print("INFO: All SPARQL queries successful, time series received.")
-    print("INFO: Number of time series is", len(timeseries))
+    print("INFO: Number of time series is", len(timeseries_data))
 
     # Initialise (JSON) results String
     res = ''
 
     # Loop through all time series/gas terminals
-    for ts in timeseries:
+    for ts in timeseries_data:
         # Retrieve gas flow values and align format
-        num_vals = timeseries[ts][2].getValues(timeseries[ts][1])
+        num_vals = timeseries_data[ts][2].getValues(timeseries_data[ts][1])
         num_vals = [round(float(val), 3) for val in num_vals]
 
         # Retrieve times as list of Java Instant objects and format as Strings in "2021-06-04T02:58:00.000Z" format
-        times_instant = timeseries[ts][2].getTimes()
+        times_instant = timeseries_data[ts][2].getTimes()
         times_unix = [t.getEpochSecond() for t in times_instant]
         times_string = [dt.utcfromtimestamp(t).strftime("%Y-%m-%dT%H:%M:%S.000Z") for t in times_unix]
 
         # Loop through all time entries
         for entry in range(len(times_string)):
-            # Append results and align format as required for (later) visualisation
-            res += '{"s": "' + timeseries[ts][0] + '", "UTC": "' + times_string[entry] + '", "num_val": "' \
+            # Append results String in format as required for (later) visualisation
+            res += '{"s": "' + timeseries_data[ts][0] + '", "UTC": "' + times_string[entry] + '", "num_val": "' \
                    + str(num_vals[entry]) + '", "label": "' + ts + '"}, '
 
     # Adjust final (JSON) results String (removing trailing white spaces, last comma, and add [])
@@ -166,7 +164,7 @@ def onSuccess(timeseries):
 
 def onFailure(error):
     """
-        Runs when query results in a failure/exception.
+        Runs when get_gasflow_history function results in a failure/exception.
         
         Arguments:
             error - thrown error
