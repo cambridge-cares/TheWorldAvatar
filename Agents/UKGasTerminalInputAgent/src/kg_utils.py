@@ -14,7 +14,7 @@ from jpsSingletons import jpsBaseLibGW
 PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
 
 # Initialise global variables to be read from properties file
-global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
+global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -40,7 +40,7 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global FALLBACK_KG, NAMESPACE
+    global FALLBACK_KG, NAMESPACE, OUTPUT_DIR
 
     # Read properties file
     props = ConfigObj(filepath)
@@ -60,6 +60,14 @@ def read_properties_file(filepath):
         raise KeyError('Key "namespace" is missing in properties file: ' + filepath)
     if NAMESPACE == '':
         raise KeyError('No "namespace" value has been provided in properties file: ' + filepath)
+
+    # Extract output directory for JSON file containing retrieved time series data from KG
+    try:
+        OUTPUT_DIR = props['output.directory']
+    except KeyError:
+        raise KeyError('Key "output.directory" is missing in properties file: ' + filepath)
+    if OUTPUT_DIR == '':
+        raise KeyError('No "output.directory" value has been provided in properties file: ' + filepath)
 
 
 def setKGEndpoints(filepath):

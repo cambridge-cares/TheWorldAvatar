@@ -11,7 +11,6 @@
 
 import os 
 import sys
-import json
 import shutil
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -20,9 +19,6 @@ from datetime import timedelta as td
 from jpsSingletons import jpsBaseLibGW
 # get settings and functions from kg_utils module
 import kg_utils as kg
-
-# Output directory for JSON files
-OUTPUT_DIR = "/var/www/html/gas-grid"
 
 
 def get_gasflow_history(callbackSuccess, callbackFailure):
@@ -138,7 +134,7 @@ def onSuccess(timeseries):
     # Write to a dated file
     now = dt.now()
     filename = "flow-data-" + now.strftime("%Y-%m-%d") + ".json"
-    filepath = os.path.join(OUTPUT_DIR, filename)
+    filepath = os.path.join(kg.OUTPUT_DIR, filename)
     
     try:
         print("INFO: Writing data to file at", filepath)
@@ -147,7 +143,7 @@ def onSuccess(timeseries):
             file.close()
             
         # Also make copy to flow-data-latest.json (so we don't have to write a dynamic wget call to download it later).
-        latestCopy = os.path.join(OUTPUT_DIR, "flow-data-latest.json")
+        latestCopy = os.path.join(kg.OUTPUT_DIR, "flow-data-latest.json")
         shutil.copy(filepath, latestCopy)
         print("INFO: Data also written to file at", latestCopy)
 
