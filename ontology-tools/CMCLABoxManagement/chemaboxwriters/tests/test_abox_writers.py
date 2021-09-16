@@ -4,7 +4,7 @@ from chemaboxwriters.ontopesscan.writeabox import write_abox as write_ops_abox
 from chemaboxwriters.ontomops.writeabox import write_abox as write_om_abox
 from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.commonfunc import get_file_ext, get_inStage
-from chemutils.ioutils import readFile, fileExists
+from chemutils.ioutils.ioutils import readFile, fileExists
 import pytest
 import shutil
 import re

@@ -1,5 +1,6 @@
-from chemutils.obabelutils import obConvert, obGetMolBonds
-from chemutils.xyzutils import xyzToAtomsPositions
+from chemutils.obabelutils.obconverter import obConvert 
+from chemutils.obabelutils.obutils import obGetMolBonds
+from chemutils.xyzutils.xyztools import xyzToAtomsPositions
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.randomidgenerator import get_random_id
 from compchemparser.parsers.ccgaussian_parser import ATOM_MASSES, \

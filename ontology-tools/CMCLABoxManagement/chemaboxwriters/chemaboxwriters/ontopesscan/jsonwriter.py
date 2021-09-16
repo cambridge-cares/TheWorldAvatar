@@ -1,4 +1,4 @@
-from chemutils.mathutils import getXYZPointsDistance
+from chemutils.mathutils.linalg import getXYZPointsDistance
 from chemaboxwriters.common.randomidgenerator import get_random_id
 import json
 import numpy as np

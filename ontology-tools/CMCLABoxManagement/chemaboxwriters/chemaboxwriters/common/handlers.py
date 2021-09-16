@@ -3,7 +3,7 @@ from compchemparser.helpers.utils import jsonStringToFile
 from chemaboxwriters.common.stageenums import aboxStages
 from compchemparser.app import parseLog
 from chemaboxwriters.common.commonfunc import csv2rdf_wrapper
-from chemutils.ioutils import writeFile
+import chemutils.ioutils.ioutils as ioutils
 
 
 QC_LOG_TO_QC_JSON = StageHandler(handlerFunc=parseLog,
@@ -16,5 +16,5 @@ QC_LOG_TO_QC_JSON = StageHandler(handlerFunc=parseLog,
 CSV_TO_OWL = StageHandler(handlerFunc=csv2rdf_wrapper,
                     inStage=aboxStages.CSV,
                     outStage=aboxStages.OWL,
-                    fileWriter= writeFile,
+                    fileWriter= ioutils.writeFile,
                     fileWriterKwargs={'newline':''})
