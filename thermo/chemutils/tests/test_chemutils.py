@@ -87,41 +87,35 @@ def test_xyzToAtomsPositions(testFilesDir, testFileName,
     print('========================================================')
 
 
-@pytest.mark.parametrize("args, exp_file_output",
+@pytest.mark.parametrize("command, args, exp_file_output",
 [
-    (['genconfs',
-    'c2h6.xyz',
-    '--input-format', 'xyz'],
+    ('genconfs',
+        ['c2h6.xyz','--input-format', 'xyz'],
     'c2h6.xyz_conformer_0.xyz'
     ),
-    (['genconfs',
-    'ethanol.xyz',
-    '--input-format', 'xyz'],
+    ('genconfs',
+        ['ethanol.xyz','--input-format', 'xyz'],
     'ethanol.xyz_conformer_0.xyz'
     ),
-    (['genconfs',
-    'cholesterol.inchi',
-    '--input-format', 'inchi',
-    '--gen-num-confs', '10'],
+    ('genconfs',
+        ['cholesterol.inchi', '--input-format', 'inchi',
+         '--gen-num-confs', '10'],
     'cholesterol.inchi_conformer_0.xyz'
     ),
-    (['atomspos',
-    'c2h6.xyz',
-    '--no-file-output'],
+    ('atomspos',
+        ['c2h6.xyz', '--no-file-output'],
     None
     ),
-    (['convert',
-    'c2h6.xyz',
-    'xyz',
-    'inchi',
-    '--no-file-outputs'],
+    ('convert',
+        ['c2h6.xyz', 'xyz', 'inchi','--no-file-output'],
     None
     )
 ]
 )
-def test_cli(args,exp_file_output,monkeypatch):
-    args[1] = os.path.join(THIS_DIR,'xyzFileSamples', args[1])
-    args.insert(0, 'test_'+args[0])
+def test_cli(command, args, exp_file_output, monkeypatch):
+    args[0] = os.path.join(THIS_DIR,'xyzFileSamples', args[0])
+    args.insert(0, 'test_'+command)
+    args.insert(1, command)
     monkeypatch.setattr("sys.argv", args)
     try:
         chemutils.main.start()
