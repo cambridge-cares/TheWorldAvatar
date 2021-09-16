@@ -1,0 +1,4 @@
+{
+	"subject": "Test email sent as part of JUnit tests.",
+	"body": "This email was triggered as part of the EmailAgent's unit tests and can be used to assess if the linked email account is correctly processing SMTP requests. Once received and verified, this email can be deleted."
+}

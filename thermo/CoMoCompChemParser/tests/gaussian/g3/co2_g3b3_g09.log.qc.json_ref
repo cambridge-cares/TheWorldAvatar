@@ -1,0 +1,67 @@
+{
+    "Empirical formula": "C1O2",
+    "Atom counts": {
+        "C": 1,
+        "O": 2
+    },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0,
+        15.99491,
+        15.99491
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "G3B3",
+    "Basis set": "G3B3",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -3.555363,
+            -0.513457,
+            0.0
+        ],
+        [
+            -4.72463,
+            -0.521249,
+            0.0
+        ],
+        [
+            -2.386098,
+            -0.505666,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        11.5547171
+    ],
+    "Rotational constants number": 1,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        640.4475,
+        640.4475,
+        1371.4478,
+        2435.1968
+    ],
+    "Frequencies number": 4,
+    "Frequencies unit": "cm^-1",
+    "Electronic and ZPE energy": -188.504347,
+    "HOMO energy": -0.54546,
+    "HOMO-1 energy": -0.54546,
+    "HOMO-2 energy": -0.71334,
+    "LUMO energy": 0.05593,
+    "LUMO+1 energy": 0.09586,
+    "LUMO+2 energy": 0.09586,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 17:15:17 2020",
+    "Log file name": "co2_g3b3_g09.log"
+}

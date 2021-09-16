@@ -9,6 +9,12 @@ services:
     ports:
       - 82:80
 
+  # Website
+  # Target affects which container ID is set for Google Tag Manager - use dev ID for testing
+  website:
+    build:
+      target: dev
+
 
 # Test network
 networks:

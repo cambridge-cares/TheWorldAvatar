@@ -5,7 +5,7 @@
  * Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
 
-#controlContainer {
+ #controlContainer {
 	width: 200px;
 	height: 300px;
 
@@ -43,6 +43,7 @@
 	border-radius: 8px;
 	margin-bottom: 10px;
 	padding: 10px;
+	line-height: 14pt;
 }
 #cameraContainer:hover {
 	background-color: rgba(0, 0, 0, 0.6);
@@ -52,11 +53,51 @@
 	background-color: rgba(0, 0, 0, 0.4);
 	border-radius: 8px;
 	padding: 10px;
+	margin-bottom: 10px;
 }
 #terrainContainer:hover {
 	background-color: rgba(0, 0, 0, 0.6);
 }
 
+#layerContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	padding: 10px;
+}
+#layerContainer:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
 #tiltShift {
 	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 2;
+	pointer-events: none;
+}
+
+body.effectsOff #tiltShift body.effectsOff #map {
+	filter: none !important;
+	-webkit-filter: none !important;
+}
+
+#layerContainer ul, li {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px;
+}
+
+.groupCheck {
+	padding: 0px;
+}
+
+.layerCheckGroup {
+	padding-left: 15px;
+}
+
+.layerCheckNoGroup {
+	padding-left: 0px;
 }

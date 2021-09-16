@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+dependencies:
+  - openbabel
+  - rdkit
+  - pip
+  - pip:
+    - pytest
+    - -e .

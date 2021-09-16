@@ -15,10 +15,10 @@ Please note the caveats below before continuing:
 	
 
 To build the image:
-	docker build --rm -t docker.cmclinnovations.com/website:1.0.0-SNAPSHOT .
+	docker build --rm --target dev -t docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-dev .
 	
 To run the image and generate a container:
-	docker run -d --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website:1.0.0-SNAPSHOT
+	docker run -d --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-dev
 
 
 ===== Development ======

@@ -359,11 +359,21 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param range
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLDataProperty(String propertyName, String domain, String range) throws TBoxManagementException {
+	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws TBoxManagementException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			addDomain(dataProperty, domain);
 			addRange(dataProperty, range);
+			OWLDataProperty parentProperty = null;
+			if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
+				// Creates the target property.
+				parentProperty = createDataProperty(targetName);
+				if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubDataPropertyOfAxiom(dataProperty, parentProperty)));
+				} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentDataPropertiesAxiom(dataProperty, parentProperty)));				
+				}
+			}
 	}
 	
 	
@@ -377,11 +387,23 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param quantifier
 	 * @throws TBoxManagementException
 	 */
-	public void createOWLObjectProperty(String propertyName, String domain, String range, String quantifier) throws TBoxManagementException {
+	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws TBoxManagementException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
 		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
+		OWLObjectProperty parentProperty = null;
+		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
+			// Creates the target property.
+			parentProperty = createObjectProperty(targetName);
+			if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubObjectPropertyOfAxiom(objectProperty, parentProperty)));
+			} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentObjectPropertiesAxiom(objectProperty, parentProperty)));				
+			} else if(relation.equalsIgnoreCase(appConfigOntoKin.getInverseOfRelation())){
+			manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLInverseObjectPropertiesAxiom(objectProperty, parentProperty)));
+			}
+		}
 	}
 	
 	/**

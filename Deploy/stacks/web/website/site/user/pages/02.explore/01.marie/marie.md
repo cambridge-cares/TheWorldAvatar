@@ -33,19 +33,6 @@ slug: marie
 	<div id="chatbot-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Google Knowledge Graph</u></b>
-	<div id="google-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Wolfram Alpha</u></b>
-	<div id="wolfram-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
-	<br/>
 </div>
 
 ### Example Questions
@@ -125,7 +112,7 @@ slug: marie
 	<ul>
 		<li><div class="sample-question">Molecular weight of ch4</div></li>
 		<li><div class="sample-question">Chemical structure of benzene</div></li>
-		<li><div class="sample-question">Standard enthalpy of formation of methane</div></li>
+		<!--<li><div class="sample-question">Standard enthalpy of formation of methane</div></li>-->
 		<li><div class="sample-question">What is the conjugate base of ethanedionic acid</div></li>
 	</ul>
 </div>

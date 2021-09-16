@@ -10,7 +10,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
@@ -19,7 +19,7 @@ public class MetaDataQuery implements Prefixes {
 	public static String query(String sparql, String metadataSetUrl) {
 		if (metadataSetUrl.isEmpty()) {
 			metadataSetUrl = MetaDataAnnotator.getMetadataSetUrl();
-			return KnowledgeBaseClient.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
+			return AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
 		}
 		//return KnowledgeBaseClient.query(metadataSetUrl, null, sparql);
 		String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
@@ -31,7 +31,7 @@ public class MetaDataQuery implements Prefixes {
 	public static String query(String sparql) {
 		//SparqlOverHttpService sparqlService =  MetaDataAnnotator.getSparqlService();
 		//return sparqlService.executeGet(sparql);
-		return KnowledgeBaseClient.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
+		return AccessAgentCaller.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
 	}
 	
 	public static String getSparqlQueryResources(MediaType mediaType, String fromCreationTime, String toCreationTime, 
