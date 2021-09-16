@@ -38,7 +38,7 @@ def initialiseGateway():
 
 	jpsBaseLibView = jpsBaseLibGW.createModuleView()
 	jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-	return jpsBaseLibView.RemoteKnowledgeBaseClient(getKGLocation("ontogasgrid"), getKGLocation("ontogasgrid"))
+	return jpsBaseLibView.RemoteStoreClient(getKGLocation("ontogasgrid"), getKGLocation("ontogasgrid"))
 
 		
 def getKGLocation(namespace):
