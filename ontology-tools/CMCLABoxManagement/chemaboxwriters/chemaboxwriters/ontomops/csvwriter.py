@@ -54,6 +54,8 @@ def om_csvwriter(data):
     '','','']) #Initialize the Provenance object for the MOPs.
     spamwriter.writerow([mops_pref +  mops_id,'Instance',mops_pref + 'Provenance_' + gen_id,
     onto_mops + '#hasProvenance','','']) # Connect the Provenance to the MOPs instance.
+    spamwriter.writerow([onto_mops + '#hasReferenceDOI','Data Property',mops_pref + 'Provenance_' + gen_id,
+    '',data["Mops_Reference_DOI"],'String'])
 
     #Write the Molecular Weight section for the MOPs.
     spamwriter.writerow([mops_pref + 'MolecularWeight_' + gen_id, 'Instance', onto_spec + '#MolecularWeight',
