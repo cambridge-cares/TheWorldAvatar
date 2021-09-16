@@ -33,21 +33,24 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
-
 public class Http {
 
+    /**
+     * Logger for debug/info/error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(Http.class);
+
     private static final String JSON_PARAMETER_KEY = "query";
-    private static Logger logger = LoggerFactory.getLogger(Http.class);
     private static String hostPort = null;
 
     private static synchronized String getHostPort() {
@@ -56,7 +59,7 @@ public class Http {
         }
         return hostPort;
     }
-  
+
     /**
      * General method to get bare URI builder for a given resource name.
      *
@@ -105,9 +108,9 @@ public class Http {
     }
 
     /**
-     * Returns the JSONObject for the serialized JSON document of parameter with key "query". If there no such key,
-     * then a JSONObject is created of the form { "key1": "value1", "key2": "value2", ... }. for the url query component
-     * ?key1=value1&key2=value2&...
+     * Returns the JSONObject for the serialized JSON document of parameter with key "query". If
+     * there no such key, then a JSONObject is created of the form { "key1": "value1", "key2":
+     * "value2", ... }. for the url query component ?key1=value1&key2=value2&...
      *
      * @param request
      * @return
@@ -144,8 +147,8 @@ public class Http {
     }
 
     public static String getRequestBody(final HttpServletRequest req) {
-    	
-    	// the following code will not preserve line endings
+
+        // the following code will not preserve line endings
 //        final StringBuilder builder = new StringBuilder();
 //        try (final BufferedReader reader = req.getReader()) {
 //            String line;
@@ -156,14 +159,13 @@ public class Http {
 //        } catch (final Exception e) {
 //            return null;
 //        }
-    	
-    	// to preserve line endings, use this code
-		try {
-			InputStream inputStream = req.getInputStream();
-			return FileUtil.inputStreamToString(inputStream);
-		} catch (IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}	
+        // to preserve line endings, use this code
+        try {
+            InputStream inputStream = req.getInputStream();
+            return FileUtil.inputStreamToString(inputStream);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
     }
 
     public static void printToResponse(Object body, HttpServletResponse resp) {
@@ -180,13 +182,13 @@ public class Http {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
-    
+
     private static String toString(Object object) {
         if (object instanceof String) {
             return (String) object;
         } else if (object instanceof JSONObject) {
-        	return ((JSONObject) object).toString();
-        } 
+            return ((JSONObject) object).toString();
+        }
         return new Gson().toJson(object);
     }
 
@@ -202,136 +204,136 @@ public class Http {
         List<NameValuePair> pair = URLEncodedUtils.parse("query=" + s, charset);
         return pair.get(0).getValue();
     }
-    
+
     public static URI createURIFlex(String urlOrPathOrKey, Object... params) throws URISyntaxException {
-    	URI result = null;
-    	
-    	String url = null;
+        URI result = null;
+
+        String url = null;
         if (urlOrPathOrKey.startsWith("http")) {
-        	url = urlOrPathOrKey;
+            url = urlOrPathOrKey;
         } else if (urlOrPathOrKey.startsWith("\\") || urlOrPathOrKey.startsWith("/")) {
-        	URIBuilder builder = getUriBuilderForPath(urlOrPathOrKey);
-        	url = builder.build().toString();
-    	} else {
-    		url = KeyValueManager.get(urlOrPathOrKey);
-        }
-        
-        if (params.length == 0) {
-        	result = createURI(url);
-        } else if (params.length == 1) {
-        	if (params[0] == null) {
-        		result = createURI(url);
-        	} else {
-        		String paramAsString = toString(params[0]);
-        		result = createURI(url, JSON_PARAMETER_KEY, paramAsString);
-        	}
+            URIBuilder builder = getUriBuilderForPath(urlOrPathOrKey);
+            url = builder.build().toString();
         } else {
-        	
-        	String[] paramsAsString = new String[params.length];
-        	for (int i=0; i<params.length; i++) {
-        		paramsAsString[i] = params[i].toString();
-        	}
-        	result = createURI(url, paramsAsString);
-        }  
-        
+            url = KeyValueManager.get(urlOrPathOrKey);
+        }
+
+        if (params.length == 0) {
+            result = createURI(url);
+        } else if (params.length == 1) {
+            if (params[0] == null) {
+                result = createURI(url);
+            } else {
+                String paramAsString = toString(params[0]);
+                result = createURI(url, JSON_PARAMETER_KEY, paramAsString);
+            }
+        } else {
+
+            String[] paramsAsString = new String[params.length];
+            for (int i = 0; i < params.length; i++) {
+                paramsAsString[i] = params[i].toString();
+            }
+            result = createURI(url, paramsAsString);
+        }
+
         return result;
     }
-    
+
     public static String execute(HttpRequestBase request) {
-    	CloseableHttpClient httpClient = null;
-    	CloseableHttpResponse response = null;
-    	try {                     
-    		logger.info("request = " + request);
+        CloseableHttpClient httpClient = null;
+        CloseableHttpResponse response = null;
+        try {
+            LOGGER.info("request = " + request);
             httpClient = HttpClientBuilder.create().build();
             response = httpClient.execute(request);
 
             String body = null;
             HttpEntity rsp_entity = response.getEntity();
             if (rsp_entity != null) {
-            	body = EntityUtils.toString(rsp_entity, "UTF-8");
-            } 
-            	
+                body = EntityUtils.toString(rsp_entity, "UTF-8");
+            }
+
             String code = "" + response.getStatusLine().getStatusCode();
 
             if (code.startsWith("2")) {
-            	return body;
+                return body;
             } else {
-            	String message = "response with status = " + code;
+                String message = "response with status = " + code;
                 message += "\noriginal request = " + request;
                 message += "\n" + body;
-                logger.error(message);
+                LOGGER.error(message);
                 throw new JPSRuntimeException(message);
             }
         } catch (IOException e) {
-        	e.printStackTrace();
+            e.printStackTrace();
             throw new JPSRuntimeException(e.getMessage(), e);
-	    } finally {
-	    	try {
-	    		if (httpClient != null) {
-	    			httpClient.close();
-	    		}
-	    		if (response != null) {
-	    			response.close();
-	    		}
-	    	} catch (IOException e) {
-	    		e.printStackTrace();
-	            logger.error(e.getMessage(), e);
-	        }
-	    }
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+                if (response != null) {
+                    response.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
+            }
+        }
     }
-    
+
     public static HttpGet get(String urlOrPathOrKey, String accept, Object... params) {
-    	try {
-	        URI uri = createURIFlex(urlOrPathOrKey, params);
-	        HttpGet request = new HttpGet(uri);
-	        if (accept != null) {
-	        	request.setHeader(HttpHeaders.ACCEPT, accept);
-	        }
-	        return request;
-    	} catch(URISyntaxException e) {
-	    	throw new JPSRuntimeException(e.getMessage(), e);
-	    }
+        try {
+            URI uri = createURIFlex(urlOrPathOrKey, params);
+            HttpGet request = new HttpGet(uri);
+            if (accept != null) {
+                request.setHeader(HttpHeaders.ACCEPT, accept);
+            }
+            return request;
+        } catch (URISyntaxException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
     }
-    
+
     public static HttpPut put(String urlOrPathOrKey, Object body, String contentType, String accept, Object... params) {
-    	return (HttpPut) putOrPost(new HttpPut(), urlOrPathOrKey, body, contentType, accept, params);
+        return (HttpPut) putOrPost(new HttpPut(), urlOrPathOrKey, body, contentType, accept, params);
     }
-   
-    public static HttpPost post(String urlOrPathOrKey, Object body,  String contentType, String accept, Object... params) {
-    	//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/rdf+xml;charset=UTF-8");
-    	return (HttpPost) putOrPost(new HttpPost(), urlOrPathOrKey, body, contentType, accept, params);
+
+    public static HttpPost post(String urlOrPathOrKey, Object body, String contentType, String accept, Object... params) {
+        //request.setHeader(HttpHeaders.CONTENT_TYPE, "application/rdf+xml;charset=UTF-8");
+        return (HttpPost) putOrPost(new HttpPost(), urlOrPathOrKey, body, contentType, accept, params);
     }
-    
+
     public static HttpDelete delete(String urlOrPathOrKey, Object... params) {
-    	try {
-	        URI uri = createURIFlex(urlOrPathOrKey, params);
-	        HttpDelete request = new HttpDelete(uri);
-	        return request;
-    	} catch(URISyntaxException e) {
-	    	throw new JPSRuntimeException(e.getMessage(), e);
-	    }
+        try {
+            URI uri = createURIFlex(urlOrPathOrKey, params);
+            HttpDelete request = new HttpDelete(uri);
+            return request;
+        } catch (URISyntaxException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
     }
-    
-    private static HttpEntityEnclosingRequestBase putOrPost( HttpEntityEnclosingRequestBase request, 
-    		String urlOrPathOrKey, Object body, String contentType, String accept, Object... params) {
-    	try {
-	        URI uri = createURIFlex(urlOrPathOrKey, params);
-	        request.setURI(uri);
-	        if (body != null) {
-	        	String bodyAsString = toString(body);
-	        	StringEntity entity = new StringEntity(bodyAsString);
-	        	request.setEntity(entity);
-	        }
-	        if (contentType != null) {
-	        	request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
-	        }
-	        if (accept != null) {
-	        	request.setHeader(HttpHeaders.ACCEPT, accept);
-	        }
-	        
-	        return request;
-    	} catch(UnsupportedEncodingException | URISyntaxException e) {
-	    	throw new JPSRuntimeException(e.getMessage(), e);
-	    }
+
+    private static HttpEntityEnclosingRequestBase putOrPost(HttpEntityEnclosingRequestBase request,
+            String urlOrPathOrKey, Object body, String contentType, String accept, Object... params) {
+        try {
+            URI uri = createURIFlex(urlOrPathOrKey, params);
+            request.setURI(uri);
+            if (body != null) {
+                String bodyAsString = toString(body);
+                StringEntity entity = new StringEntity(bodyAsString);
+                request.setEntity(entity);
+            }
+            if (contentType != null) {
+                request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
+            }
+            if (accept != null) {
+                request.setHeader(HttpHeaders.ACCEPT, accept);
+            }
+
+            return request;
+        } catch (UnsupportedEncodingException | URISyntaxException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
     }
 }

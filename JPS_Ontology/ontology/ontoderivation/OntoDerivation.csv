@@ -1,0 +1,9 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Derivation,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+DerivationWithTimeSeries,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+isDerivedFrom,Object Property,,,Derivation,http://www.w3.org/2002/07/owl#Thing,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+isDerivedFrom,Object Property,,,DerivationWithTimeSeries,http://www.w3.org/2002/07/owl#Thing,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+isDerivedUsing,Object Property,,,Derivation,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+isDerivedUsing,Object Property,,,DerivationWithTimeSeries,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Derivation,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,DerivationWithTimeSeries,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl

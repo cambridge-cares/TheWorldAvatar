@@ -15,18 +15,18 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * Renaming Tool
  * 
- * This tool renames IRIs and literals from target to replacement in the supplied KnowledgeBaseClient.
+ * This tool renames IRIs and literals from target to replacement in the supplied StoreClient.
  * Where the target and replacement are IRIs use the method renameIRI(...). 
  * Where the target and replacement are strings/substrings use the method renameString(...).
  * In the case of renameString a match string can also be supplied. In this case, the tool will   
  * select triples containing both match and target, and replace the target with the replacement string.
  * Renaming is by default performed over multiple steps, updating a sub-set of triples in the 
- * KnowledgeBaseClient every step. This feature can be turned off using setSingleUpdate(...) and 
+ * StoreClient every step. This feature can be turned off using setSingleUpdate(...) and 
  * the number of triples updated every step can be set through setUpdateSize(...).
  * An optional filter expression can be applied through setFilter(...).
  * NOTE: If the KB is a remote triple store (rather than quad store) then "setTripleStore()" 
@@ -144,7 +144,7 @@ public class RenamingTool {
 	 * 
 	 * @param kbClient
 	 */
-	public void renameString(KnowledgeBaseClientInterface kbClient) {
+	public void renameString(StoreClientInterface kbClient) {
 		renameString(kbClient, null);
 	}
 	
@@ -152,10 +152,10 @@ public class RenamingTool {
 	 * Replace a target string in all URIs or literals also containing the match string 
 	 * (if different/specified) in a named graph.
 	 * 
-	 * @param KnowledgeBaseClient
+	 * @param StoreClient
 	 * @param graph
 	 */
-	public void renameString(KnowledgeBaseClientInterface kbClient, String graph) {		
+	public void renameString(StoreClientInterface kbClient, String graph) {		
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -178,19 +178,19 @@ public class RenamingTool {
 	/**
 	 * Replaces a target IRI with the replacement IRI in the default graph.
 	 * 
-	 * @param KnowledgeBaseClient
+	 * @param StoreClient
 	 */
-	public void renameIRI(KnowledgeBaseClientInterface kbClient) {
+	public void renameIRI(StoreClientInterface kbClient) {
 		renameIRI(kbClient, null);
 	}
 	
 	/**
 	 * Replaces a target IRI with the replacement IRI in a named graph.
 	 * 
-	 * @param kbClient KnowledgeBaseClient
+	 * @param kbClient StoreClient
 	 * @param graph
 	 */
-	public void renameIRI(KnowledgeBaseClientInterface kbClient, String graph) {
+	public void renameIRI(StoreClientInterface kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -210,7 +210,7 @@ public class RenamingTool {
 	 * @param whereFilter
 	 * @param whereUpdate
 	 */
-	private void performRename(KnowledgeBaseClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
+	private void performRename(StoreClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
 		
 		if(splitUpdate == true) {
 			

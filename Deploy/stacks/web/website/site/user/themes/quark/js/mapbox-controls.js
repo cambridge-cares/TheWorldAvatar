@@ -15,11 +15,9 @@ const controlHTML = `
 	<div id="controlContainer">
 		<div id="cameraContainer">
 			<p>Camera:</p>
-			<input type="radio" name="camera" id="bird" onclick="changeCamera('bird')" checked>
-			<label for="bird">Bird's Eye</label>
+			<a href="#" onclick="changeCamera('bird')">Bird's Eye</a>
 			<br>
-			<input type="radio" name="camera" id="pitch" onclick="changeCamera('pitch')">
-			<label for="pitch">Pitched</label>
+			<a href="#" onclick="changeCamera('pitch')">Pitched</a>
 		</div>
 		<div id="terrainContainer">
 			<p>Terrain:</p>
@@ -32,11 +30,14 @@ const controlHTML = `
 			<input type="radio" name="terrain" id="satellite-streets" onclick="changeTerrain('satellite-streets')">
 			<label for="satellite-streets">Satellite (with Streets)</label>
 		</div>
+		<div id="layerContainer">
+			<p>Layers:</p>
+		</div>
 	</div>
 `;
 
 // Default parameters for the Bird's Eye camera
-const defaultBird = {
+var defaultBird = {
 	curve: 1.9,
 	speed: 1.6,
 	zoom: 5,
@@ -46,7 +47,7 @@ const defaultBird = {
 };
 
 // Default parameters for the Pitched camera
-const defaultPitch = {
+var defaultPitch = {
 	curve: 1.9,
 	speed: 1.6,
 	zoom: 7,
@@ -57,7 +58,7 @@ const defaultPitch = {
 
 // Default options that should be used when initialising
 // a new MapBox map instance
-const defaultOptions = {
+var defaultOptions = {
 	container: "map",
 	style: "mapbox://styles/mapbox/light-v10?optimize=true",
 	center: [-2, 54.5],
@@ -72,13 +73,45 @@ const tiltShiftMaxBlur = 3;
 // Cached MapBox map instance
 var map = null;
 
-// Optional call back to fire after camera change
+// Call back to fire after camera change
 var cameraCallback = null;
 
-// Optional call back to fire after terrain change
+// Call back to fire after terrain change
 var terrainCallback = null;
 
-var doneOnce = false;
+// Call back to fire after layer toggle
+var layerCallback = null;
+
+// Ditionary of registered layer names to IDs
+var registeredLayers = {};
+
+/**
+* Overrides the default settings for the bird camera option.
+*
+* @param newDefaults - new default options for bird camera
+*/
+function overrideDefaultBird(newDefaults) {
+	defaultBird = newDefaults;
+}
+
+/**
+* Overrides the default settings for the pitch camera option.
+*
+* @param newDefaults - new default options for pitch camera
+*/
+function overrideDefaultPitch(newDefaults) {
+	defaultPitch = newDefaults;
+}
+
+/**
+* Overrides the default mapbox settings for the map.
+*
+* @param newDefaults - new default options for map
+*/
+function overrideDefaultMap(newDefaults) {
+	defaultOptions = newDefaults;
+}
+
 
 /**
  * Map options to be used for new maps.
@@ -103,16 +136,35 @@ function getControls() {
  * Initialises the map controls with default view and terrain (Bird's Eye and Light).
  * 
  * @param myMap - MapBox map instance
- * @param myCameraCallback - optional call back to fire after camera change
- * @param myTerrainCallback - optional call back to fire after terrain change
+ * @param myCameraCallback - callback to fire after camera change
+ * @param myTerrainCallback - callback to fire after terrain change
+ * @param myLayerCallback - callback to fire after layer change, will be called with
+ * 							layerID and selection state arguments (if null is passed a default will be used)
  */
-function setup(myMap, myCameraCallback, myTerrainCallback) {
+function setup(myMap, myCameraCallback, myTerrainCallback, myLayerCallback) {
 	map = myMap;
 	cameraCallback = myCameraCallback;
 	terrainCallback = myTerrainCallback;
+	layerCallback = myLayerCallback;
 
 	// Enable MapBox's own controls
 	map.addControl(new mapboxgl.NavigationControl());
+
+	if(layerCallback == null) {
+		console.log("INFO: No layer callback passed, using default implementation.");
+
+		layerCallback = function(layerID, selectionState) {
+			try {
+				map.setLayoutProperty(
+					layerID,
+					"visibility",
+					(selectionState ? "visible" : "none")
+				);
+			} catch(err) {
+				console.log("ERROR: Could not toggle '" + layerID + "', it may have no initial 'visibility' layout property?");
+			}
+		}
+	}
 }
 
 /**
@@ -148,12 +200,144 @@ function refresh() {
 }
 
 /**
+ * 
+ * @param layerName - unique user facing layer name
+ * @param layerIDs - array of layerIDs
+ * @param groupName - optional name to group layer under
+ * @param selected - default selection state
+ */
+function registerLayer(layerName, layerIDs, groupName, selected) {
+	if(typeof(map) === "undefined" || map == null) {
+		throw new Error("MapBox instance has not been set, run initialise() function!");
+	}
+
+	if(groupName == null) {
+		groupName = "null";
+	}
+
+	// Register the group
+	if(!(groupName in registeredLayers)) {
+		registeredLayers[groupName] = {};
+	}
+
+	// Register the layers
+	var layers = registeredLayers[groupName];
+	layers[layerName] =  {
+		"ids": layerIDs,
+		"selected": selected
+	};
+}
+
+/**
+ * Build the checkbox tree for selectable groups and layers.
+ * 
+ * @param type - type of tree ("radio", "checkbox")
+ */
+function buildLayerTree(type) {
+	var htmlString = `<p>Layers:</p><ul class="checktree">`;
+
+	for(groupName in registeredLayers) {
+		
+		// Build HTML string for layer selections
+		var groupLayers = registeredLayers[groupName];
+		var selectedLayers = 0;
+		var layerHTML = "";
+
+		if(Object.keys(groupLayers).length > 0) {
+			layerHTML += "<ul>";
+
+			for(layerName in groupLayers) {
+				if(groupName == "null") {
+					layerHTML += `<li class="layerCheckNoGroup">`;
+				} else {
+					layerHTML += `<li class="layerCheckGroup">`;
+				}
+
+				if(groupLayers[layerName]["selected"]) {
+					selectedLayers += 1;
+					layerHTML += `<input type="` + type + `" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `" checked>`;
+				} else {
+					layerHTML += `<input type="` + type + `" onclick="onLayerChange(this);" name="` + groupName + `" id="` + layerName + `">`;
+				}
+
+				layerHTML += `
+					<label for="` + layerName + `">` + layerName + `</label>
+					</li>
+				`;		
+			}
+			layerHTML += "</ul>";
+		}
+
+		// Build HTML string for group selection (unless null)
+		var groupHTML = "";
+
+		if(groupName != "null") {
+			groupHTML += `<li class="groupCheck">`;
+
+			if(selectedLayers == Object.keys(groupLayers).length) {
+				groupHTML += `<input type="` + type + `" onclick="onGroupChange(this);" id="` + groupName + `" checked>`;
+			} else {
+				groupHTML += `<input type="` + type + `" onclick="onGroupChange(this);" id="` + groupName + `">`;
+			}
+			groupHTML += `<label for="` + groupName + `">` + groupName + `</label>`;
+		}
+
+		// Bring it all together
+		htmlString += groupHTML;
+		htmlString += layerHTML;
+		htmlString += "</li>";
+	}
+
+	htmlString += "</ul>";
+	document.getElementById("layerContainer").innerHTML = htmlString;
+}
+
+/**
+ * Fires when a group checkbox within the layer control is selected.
+ * 
+ * @param checkbox - event source 
+ */
+function onGroupChange(checkbox) {
+	// Update the selection state of layers in this group
+	var layers = registeredLayers[checkbox.id];
+
+	for(layerName in layers) {
+		layers[layerName]["selected"] = checkbox.checked;
+		var ids = layers[layerName]["ids"];
+
+		ids.forEach((layerID) => {
+			console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[layerName]["selected"]);
+			layerCallback(layerID, checkbox.checked);
+		});
+	}
+}
+
+/**
+ * Fires when a layer checkbox is selected.
+ * 
+ * @param checkbox - event source 
+ */
+function onLayerChange(checkbox) {
+	var layers =  registeredLayers[checkbox.name];
+	layers[checkbox.id]["selected"] = checkbox.checked;
+	var ids = layers[checkbox.id]["ids"];
+
+	ids.forEach((layerID) => {
+		console.log("INFO: Layer '" + layerID + "' now has visibility state: " + layers[checkbox.id]["selected"]);
+		layerCallback(layerID, checkbox.checked);
+	});
+}
+
+/**
  * Adds support for the Tilt Shift feature.
  * 
  * Note that this WILL override any existing functions tied to the 
  * map.on('move') event that MapBox provides.
  */
 function addTiltShiftSupport() {
+	if(typeof(map) === "undefined" || map == null) {
+		throw new Error("MapBox instance has not been set, run initialise() function!");
+	}
 
 	// Check for the tiltShift div.
 	var tiltShiftDiv = document.getElementById("tiltShift");

@@ -42,24 +42,28 @@ public interface ITBoxGeneration {
 	 */
 	public void generateClass(String className, String targetName, String relation) throws IOException, TBoxManagementException;
 	/**
-	 * Generates an ontology data property.
+	 * Generates an ontological data property.
 	 * 
 	 * @param propertyName
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateDataProperty(String propertyName, String domain, String range) throws IOException, TBoxManagementException;
+	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, TBoxManagementException;
 	/**
-	 * Generates an ontology object property.
+	 * Generates an ontological object property.
 	 * 
 	 * @param propertyName
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateObjectProperty(String propertyName, String domain, String range, String quantifier) throws IOException, TBoxManagementException;
+	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, TBoxManagementException;
 }

@@ -31,6 +31,16 @@ var botURL = "/marie/request/";
 var resultsRow = document.getElementById("results-row");
 resultsRow.style.display = "none";
 
+// Currently asking a question?
+var asking = 0;
+
+// Add ENTER detection on search field
+document.getElementById("input-field").addEventListener("keyup", function(event) {
+	if(event.keyCode === 13) {
+		askQuestion();
+	}
+});
+
 // Add auto-complete for species names in the search box
 $('#input-field').autocomplete({
 	source: species,
@@ -99,12 +109,6 @@ function resetResults() {
 	
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
-
-	let googleResults = document.getElementById("google-results");
-	googleResults.innerHTML = html;
-
-	let wolframResults = document.getElementById("wolfram-results");
-	wolframResults.innerHTML = html;
 }
 
 
@@ -112,6 +116,11 @@ function resetResults() {
  Send the current question to the chatbot.
  */
 function askQuestion() {
+	if(asking > 0) {
+		// No concurrent questions
+		return;
+	}
+	
 	resetResults();
 	let spinner = imageDir + "spinner.svg";
 	
@@ -132,20 +141,16 @@ function askQuestion() {
 		return;
 	}
 
+	
 	// Build the URL for the question
 	question = question.replace('	', ' ');
 	question = question.replace(/[/+]/g, 'add_sign');
 
 	var promises = [];
-
+	
+	asking = 1;
 	// Make the request for the world avatar
 	makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
-
-	// Make the request for google
-	makeRequest(question, "google", "html", processGoogleResults, promises);
-
-	// Make the request for wolfram
-	makeRequest(question, "wolfram", "html", processWolframResults, promises);
 
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
@@ -178,12 +183,14 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		timeout: (1000 * 60),
 		success: function (data) {
 			successFunction(data);
+			asking--;
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr.status);
 			console.log(thrownError);
 
 			successFunction(null);
+			asking--;
 		}
 	}));
 }
@@ -224,43 +231,6 @@ function processChatbotResults(rawResults) {
 	// Find the div container to add results to
 	let resultsContainer = document.getElementById("chatbot-results");
 	resultsContainer.innerHTML = chatbotResults;
-}
-
-
-/*
- Process the results from a Google Knowledge Graph request.
-*/
-function processGoogleResults(rawResults) {
-	// Parse the results
-	var googleResults = null;
-
-	if (rawResults == null || rawResults == "" || rawResults.includes("failed")) {
-		googleResults = "<span style=\"color: red;padding-left: 15px;\">The Google Knowledge Graph failed to provide an answer.</span>";
-	} else {
-		googleResults = rawResults;
-	}
-
-	// Find the div container to add results to
-	let resultsContainer = document.getElementById("google-results");
-	resultsContainer.innerHTML = googleResults;
-}
-
-/*
- Process the results from a Wolfram Alpha request.
-*/
-function processWolframResults(rawResults) {
-	// Parse the results
-	var wolframResults = null;
-
-	if (rawResults == null || rawResults == "" || rawResults.includes("failed")) {
-		wolframResults = "<span style=\"color: red;padding-left: 15px;\">Wolfram Alpha failed to provide an answer.</span>";
-	} else {
-		wolframResults = rawResults;
-	}
-
-	// Find the div container to add results to
-	let resultsContainer = document.getElementById("wolfram-results");
-	resultsContainer.innerHTML = wolframResults;
 }
 
 /*
