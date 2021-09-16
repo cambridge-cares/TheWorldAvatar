@@ -109,6 +109,10 @@ def test_xyzToAtomsPositions(testFilesDir, testFileName,
     ('convert',
         ['c2h6.xyz', 'xyz', 'inchi','--no-file-output'],
     None
+    ),
+    ('xyz2ginp',
+        ['c2h6.xyz'],
+    'c2h6.xyz.gau'
     )
 ]
 )
