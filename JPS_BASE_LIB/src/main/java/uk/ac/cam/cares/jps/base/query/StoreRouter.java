@@ -5,7 +5,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.Arrays;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -33,8 +33,8 @@ public class StoreRouter{
 	public static final String HTTP="http://";
 	public static final String HTTPS="https://";
 	public static final String KB="kb";
-	public static final String BACKSLASH="/";
-	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(BACKSLASH);
+	public static final String SLASH="/";
+	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(SLASH);
 	public static final String EMPTY = "";
 	private static final String STOREROUTER_ENDPOINT = "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql";
 	public static final String RDFS_PREFIX = "rdfs";
@@ -56,55 +56,65 @@ public class StoreRouter{
 	public static final String COLON = ":";
 	public static final String QUESTION_MARK = "?";
 	public static final String TARGET_RESOURCE = "TargetResource";
-	public static final String OWL_FILE_EXTENSION = ".owl";
-	public static final String RDF_FILE_EXTENSION = ".rdf";
-	public static final String NTRIPLES_FILE_EXTENSION = ".nt";
+	
+	/**
+	 * List of file extensions for file based resources
+	 * ".owl",".rdf",".nt"
+	 */
+	public static final List<String> fileExtensions = Arrays.asList(".owl",".rdf",".nt"); //File extensions
 	
 	static StoreRouter storeRouter = null;
 	
 	/**
-	 * Based on a target resource IRI or path provided as the input, it returns the<br>
-	 * corresponding StoreClient. For query and/or update operations, it<br>
-	 * supports two types of resources: a) a repository/namespace and b) an ontology<br>
-	 * file. Some examples of these resources are provided below:<br>
-	 * a) Example repositories/namespaces are:<br>
-	 *    - http://kb/ontokin
-	 *    - http://kb/ontospecies
-	 *    - http://kb/ontocompchem
-	 * b) The target resource IRI for a file based store is expected to end in .owl or .rdf, e.g.:
-	 *    - http://kb/sgp/singapore/SGTemperatureSensor-001.owl
+	 * Returns a StoreClientInterface object based on a target resource ID
+	 * provided as the input. For query and/or update operations, it
+	 * supports two types of resources: <br> a) a repository/namespace and <br>
+	 * b) an ontology/rdf file. <br> Some examples of these resources are provided below:<br>
+	 * a) Example repositories/namespaces are (both IRI and namespace are accepted):<br>
+	 *    - "http://theworldavatar.com/kb/ontokin" or "ontokin"<br>
+	 *    - "http://theworldavatar.com/kb/ontospecies" or "ontospecies"<br>
+	 *    - "http://theworldavatar.com/kb/ontocompchem" or "ontocompchem"<br>
+	 * b) The target resource ID for a file based store is expected to end in .owl, .rdf, .nt.
+	 * 	  Both a full IRI or just the path component are accepted. The path component must match 
+	 *    the relative path of the file from Tomcat ROOT on Claudius. E.g.:<br>
+	 *    - "http://theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl"
+	 *      or "kb/sgp/singapore/SGTemperatureSensor-001.owl"
 	 * 
-	 * @param targetResourceIRI the IRI of an RDF/OWL repository/namespace
+	 * @param targetResourceID the IRI, namespace or path of an RDF/OWL repository/namespace
 	 * @param isQueryOperation true/false
-	 * @param isUpdateOperation true/false. Note: both query and update operations<br>
-	 *  can be true at the same time.
-	 * @return
+	 * @param isUpdateOperation true/false. 
+	 * Note: both query and update operations can be true at the same time.
+	 * @return StoreClient
 	 */
-	public static StoreClientInterface getStoreClient(String targetResourceIRI, boolean isQueryOperation, boolean isUpdateOperation) {
+	public static StoreClientInterface getStoreClient(String targetResourceID, boolean isQueryOperation, boolean isUpdateOperation) {
+		
 		String queryIRI = null;
 		String updateIRI = null;
 		StoreClientInterface kbClient = null;
-		if (targetResourceIRI != null && !targetResourceIRI.isEmpty()) {
+		
+		if (targetResourceID != null && !targetResourceID.isEmpty()) {
 			
-				if (storeRouter == null) {
-					storeRouter = new StoreRouter();
-				}
-			
-			if (targetResourceIRI.trim().endsWith(OWL_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(RDF_FILE_EXTENSION) || targetResourceIRI.trim().endsWith(NTRIPLES_FILE_EXTENSION)) {
+			if (storeRouter == null) {
+				storeRouter = new StoreRouter();
+			}
+		
+			if (isFileBased(targetResourceID)) {
 			  
-				String rootPath = storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL);
-				
-				String filePath =  cutFileScheme(targetResourceIRI.replace(HTTP, rootPath + BACKSLASH));
+				String relativePath = getPathComponent(targetResourceID);
+				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
+				String filePath =  joinPaths(rootPath, relativePath);
 				LOGGER.debug("file path: "+filePath);
 				
 				kbClient = new FileBasedStoreClient(filePath);	
 			}else{
 				
+				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
+				
 				if (isQueryOperation) {
-					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceIRI.replace(HTTP_KB_PREFIX, EMPTY));
+					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
 				}
 				if (isUpdateOperation) {
-					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceIRI.replace(HTTP_KB_PREFIX, EMPTY));
+					updateIRI = storeRouter.getUpdateIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
 				}
 				if (queryIRI != null && !queryIRI.isEmpty()) {
 					kbClient = new RemoteStoreClient(queryIRI);
@@ -116,7 +126,7 @@ public class StoreRouter{
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
 				if(queryIRI==null && updateIRI==null){
-					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceIRI);
+					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceID+", label:"+targetResourceLabel);
 				}
 				if(isQueryOperation == false && isUpdateOperation == false){
 					LOGGER.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
@@ -127,22 +137,54 @@ public class StoreRouter{
 	}
 	
 	/**
-	 * Cut "file://" from the file url
-	 * @param filePath
+	 * Returns true if the resource is a file. 
+	 * Checks if the targetResourceID ends with a listed file extension {@link #fileExtensions}
+	 * @param targetResourceID
 	 * @return
 	 */
-	private static String cutFileScheme(String filePath) {
-
-		if(filePath.startsWith(FILE)) {
-			try {
-				URI uri = new URI(URLDecoder.decode(filePath,"UTF-8"));
-				return uri.getPath();
-			} catch (UnsupportedEncodingException | URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	public static boolean isFileBased(String targetResourceID) {
+		return fileExtensions.stream().anyMatch(targetResourceID.trim()::endsWith);		
+	}
+	
+	/**
+	 * Get the namespace ("label") from the target resource ID for a remote store, 
+	 * this will be matched against the label in ontokgrouter.
+	 * @param targetResourceID
+	 * @return
+	 */
+	public static String getLabelFromTargetResourceID(String targetResourceID) {
+		return targetResourceID.substring(targetResourceID.lastIndexOf(SLASH)+1).trim();
+	}
+	
+	/**
+	 * Get path component from IRI
+	 * @param iri: a valid iri
+	 * @return
+	 */
+	public static String getPathComponent(String iri) {
+		String path = null;
+		try {
+			URI uri = new URI(URLDecoder.decode(iri.trim(),"UTF-8"));
+			path = uri.getPath();
+		} catch (UnsupportedEncodingException | URISyntaxException e) {
+			throw new JPSRuntimeException(e);
 		}
-		return filePath;
+		return path;
+	}
+	
+	/**
+	 * Join two path components 
+	 * @param path1
+	 * @param path2
+	 * @return path1/path2
+	 */
+	public static String joinPaths(String path1, String path2) {
+		//add a slash if path2 does not begin with one
+		if(!path2.startsWith(SLASH)) {	
+			return path1.trim()+SLASH+path2.trim();
+		}else {
+			return path1.trim() + path2.trim();		
+		}
 	}
 	
 	/**
