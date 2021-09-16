@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 August 2021       #
+# Last Update Date: 16 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -10,7 +10,7 @@ import owlready2
 import numpy as np
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, XSD
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -48,6 +48,8 @@ defaultPath_Sleepycat = ukec.SleepycatStoragePath
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
 ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+ontoecape_space_and_time        = owlready2.get_ontology(t_box.ontoecape_space_and_time).load()
+ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
 ontoeip_system_function         = owlready2.get_ontology(t_box.ontoeip_system_function).load()
 bibtex         = owlready2.get_ontology(t_box.bibtex).load()
 # owl         = owlready2.get_ontology(t_box.owl).load()
@@ -65,10 +67,10 @@ ukec_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_energy_consump
 ### Functions ### 
 """ The Energy Consumption DataProperty Instance constructor"""
 def createEnergyConsumptionDataPropertyInstance(version):
-    engconsump = EngConsump.EnergyConsumptionData()   
-    elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)   
+    engconsump = EngConsump.EnergyConsumptionData(version)   
+    elecConDataArrays = readFile(engconsump.ElectricityConsumptionData)      
     uriSplit = UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION).split('.owl') 
-    root_uri = uriSplit[0]   
+    root_uri = uriSplit[0] #namespace   
     fileNum = len(elecConDataArrays)  # substruct the first header line 
     
     return engconsump, elecConDataArrays, root_uri, fileNum
@@ -106,11 +108,33 @@ def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, *co
         # Add rdf.type
         graph.add((URIRef(ec_root_node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri)))
         
-        # Add total consumption and value
+        # Add total consumption nodes
         index_total = elecConDataArrays[0].index('Total\n')
         graph.add((URIRef(ec_root_node), URIRef(ontoeip_system_function.consumes.iri), URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0])))
         graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarQuantity.iri)))
         
+        # Specify the time period of the current data and its start time 
+        graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), URIRef(t_box.ontocape_derived_SI_units + 'hasTimePeriod'), \
+                   URIRef(ec_namespace + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]))) # T-box undefined
+        graph.add((URIRef(ec_namespace + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, \
+                   URIRef(ontoecape_space_and_time.TimePeriod.iri))) 
+        graph.add((URIRef(ec_namespace + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri), \
+                   URIRef(ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))
+        graph.add((URIRef(ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+        graph.add((URIRef(ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
+                    URIRef(ontocape_derived_SI_units.YEAR.iri)))
+        graph.add((URIRef(ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.numericalValue.iri),\
+                    Literal(1)))  
+        graph.add((URIRef(ec_namespace + ukec.valueKey + ukec.TimePeriodKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontoecape_space_and_time.hasStartingTime.iri),\
+                    URIRef(ec_namespace + ukec.StartTimeKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))   
+        graph.add((URIRef(ec_namespace + ukec.StartTimeKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, \
+                   URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
+        graph.add((URIRef(ec_namespace + ukec.StartTimeKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
+                URIRef(t_box.ontocape_derived_SI_units+ 'UTC')))
+        graph.add((URIRef(ec_namespace + ukec.StartTimeKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.numericalValue.iri),\
+                    Literal(engconsump.startTime_NHH, datatype = XSD.dateTime)))  
+            
+        # Add total consumption value
         graph.add((URIRef(ec_namespace + ukec.TotalConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri),\
                 URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0])))
         graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.TotalConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
@@ -138,7 +162,7 @@ def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, *co
                     Literal(float(elecConData[index_domestic].strip('\n')))))
             
         graph.add((URIRef(ec_namespace + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasValue.iri),\
-                URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))
+                URIRef(ec_namespace + ukec.valueKey + ukec.IndustrialAndCommercialConsumptionKey + elecConData[0])))
         graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
         graph.add((URIRef(ec_namespace + ukec.valueKey +ukec.IndustrialAndCommercialConsumptionKey + elecConData[0]), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                     URIRef(t_box.ontocape_derived_SI_units + 'GIGAWATT_HOUR'))) # T-box undefined
@@ -191,6 +215,9 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
     
     engconsump, elecConDataArrays, root_uri, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
+    # print(elecConDataArrays)
+    #print(type(elecConDataArrays))
+    # print("The element of the list is of type of: ", type(elecConDataArrays[1]))
     
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:
@@ -207,8 +234,10 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
         region = engconsump.GovernmentOfficeRegions[counter_region]
         print('The region is: ' + str(region))
         # find the index of region in the data file
-        _elecConDataArrays = np.array(elecConDataArrays)
-        index_targetRegion = np.argwhere(_elecConDataArrays == region)[0][0]        
+        _elecConDataArrays = np.array(elecConDataArrays, dtype = object)
+        # print(_elecConDataArrays, type(_elecConDataArrays))
+        index_targetRegion = np.argwhere(_elecConDataArrays == region)[0][0]  
+        # print(index_targetRegion)
         regional_base_uri = root_uri + SLASH + region + OWL # the name of the named graph, will be applied as the identifier in method Graph(), without '#' 
         
         # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
@@ -226,9 +255,9 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
         if updateLocalOWLFile == True:
              # Store/update the generated owl files      
             if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' 'UK_energy_consumption_' + region + '_UK' + OWL
+                filepath_ = filepath + '\\' 'UK_energy_consumption_' + region + '_UK_' + str(version) + OWL
             else:
-                filepath_ = filepath + 'UK_energy_consumption_' + region + '_UK' + OWL
+                filepath_ = filepath + 'UK_energy_consumption_' + region + '_UK_' + str(version) + OWL
             storeGeneratedOWLs(graph, filepath_)
             
         print('counter_region is: ')
@@ -243,5 +272,5 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
 
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
-    addUKElectricityConsumptionTriples('default', 2017, path, True)
+    addUKElectricityConsumptionTriples('default', 2019, None, True)
     print('terminated')

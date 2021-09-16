@@ -65,7 +65,7 @@ def powerPlantgeoJSONCreator(ret_pow, class_label):
                 %s
               ]
             }
-          },"""%(gen_fuel_col(ret_pow[i, 3]), ret_pow[i,0], ret_pow[i,3], ret_pow[i,4], ret_pow[i,5], ret_pow[i,6], ret_pow[i,7], ret_pow[i,1], ret_pow[i,2])
+          },"""%(gen_fuel_col(ret_pow[i][3]), ret_pow[i][0], ret_pow[i][3], ret_pow[i][4], ret_pow[i][5], ret_pow[i][6], ret_pow[i][7], ret_pow[i][1], ret_pow[i][2])
           # adding new line 
           geojson_file += '\n'+feature
     
@@ -120,6 +120,10 @@ def elecConsAndGEOInfogeoJSONCreator(ret_elec, class_label):
     return 
 
 def busModelJSONCreator(ret_bus, class_label_busPara, class_label_busInputVar): 
+    if ret_bus == None:
+        print("The bus query result is none. Please check the query result of the buses.")
+        return None
+        
     bus_gps_para = ret_bus[0]
     bus_input = ret_bus[1]
     

@@ -27,7 +27,7 @@ from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPDLocation
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
 
@@ -207,7 +207,7 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[1]))) # region, rdf.type is t_box.dbo + 'Region'
         if busTopoData[5].strip('\n') != 'None': 
            graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[5].strip('\n').strip('&')))) # Agrregated bus node
-        graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(busTopoData[2]))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
+        graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[2]))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
         graph.add((URIRef(bus_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))       
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
@@ -418,7 +418,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, False)
+    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, False)
     # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, False)
     print('Terminated')

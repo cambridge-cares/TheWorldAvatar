@@ -75,7 +75,7 @@ def queryPowerPlantForVisualisation(ukdigitaltwin_label):
           if '\"^^' in  r[key] :
             r[key] = (r[key].split('\"^^')[0]).replace('\"','')    
   
-  ret_array = [[ str(r['powerPlantIRI'].split('#')[1]), float(r['numericalValue_x']), float(r['numericalValue_y']), str(r['Primary_Fuel_type'].split('#')[1]), \
+  ret_array = [[ str(r['powerPlantIRI'].split('#')[1]), str(r['numericalValue_x']), str(r['numericalValue_y']), str(r['Primary_Fuel_type'].split('#')[1]), \
                  str(r['Plant_Generation_Technology'].split('#')[1]), float(r['value_of_Designed_Capacity']), str(r['Owner']), int(r['Year_of_Build'])] for r in ret ]
   
   return ret_array
@@ -295,7 +295,7 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     """ % (selectClause_1, queryVar_1[1], queryVar_1[1], queryVar_1[2], queryVar_1[3], queryVar_1[0], queryVar_1[4], queryVar_1[5], queryVar_1[6], queryVar_1[7], \
         queryVar_1[8], queryVar_1[9], queryVar_1[10], queryVar_1[11])
    
-  #TODO: discard  
+  #TODO: to be discard  
   queryBusModelInput = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
@@ -337,10 +337,13 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     
     }
     """% (selectClause_2, queryVar_2[0], queryVar_2[1], queryVar_2[2], queryVar_2[3], queryVar_2[4])
-          
+   
+
+  print(queryBusModelParameter)       
   start = time.time()
   print('Querying the Bus Model Parameters...')
   res_para = json.loads(performQuery(ukdigitaltwin_label, queryBusModelParameter))
+  print(res_para)
   end = time.time()  
   print('Finished querying the Bus patameter in ',np.round(end-start,2),' seconds') 
   for r in res_para:
@@ -718,8 +721,8 @@ if __name__ == '__main__':
     ukdigitaltwin_label = "ukdigitaltwin"
     # res = queryPowerPlantForVisualisation(ukdigitaltwin_label)
     # res = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS_json, False)   
-    # queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+    res = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
     # queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
-    res = queryBusLocatedRegionGeoInfo(ukdigitaltwinendpoint, ONS_json)
+    # res = queryBusLocatedRegionGeoInfo(ukdigitaltwinendpoint, ONS_json)
     print(res)
     # print(len(res[0]))

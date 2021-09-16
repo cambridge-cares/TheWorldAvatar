@@ -40,6 +40,7 @@ def selectStoragePath():
     print('Please select a folder')
     return askdirectory()
 
+"""This function allows the user to select a folder to store the generated .owls either default storage or a user specified folder"""
 def specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile): 
     if OWLFileStoragePath == None and os.path.exists(defaultStoredPath):
         return defaultStoredPath

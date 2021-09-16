@@ -13,16 +13,19 @@ ukdigitaltwin_label = "ukdigitaltwin"
 ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
 
 
-# """PowerPlant query"""
-# ret_pow = queryPowerPlantForVisualisation(ukdigitaltwin_label)
-# ret_pow = check_GPS(ret_pow)
+"""PowerPlant query"""
+print("************************Start querying power plant data************************")
+ret_pow = queryPowerPlantForVisualisation(ukdigitaltwin_label)
+ret_pow = check_GPS(ret_pow)
 
-# """Electricity consumption query"""
-# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, True) # query the region consumption
-# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, False) # query the sub areas consumption
+"""Electricity consumption query"""
+print("************************Start querying Electricity consumption data************************")
+ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, True) # query the region consumption
+ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, False) # query the sub areas consumption
 
-# """Grid model query"""
-# ret_grid_model_bus = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+"""Grid model query"""
+print("************************Start querying Grid model************************")
+ret_grid_model_bus = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
 ret_grid_model_branch = queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
 
 """Labels"""
@@ -35,9 +38,15 @@ class_label_branch = "UK_Grid_Model_Branch"
 class_label_FromBus = "UK_Grid_Model_Branch_FromBus_GPSPoints"
 
 """Create GEOJSON files"""
-# powerPlantgeoJSONCreator(ret_pow, class_label_pp)
-# elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
-# elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)
-# busModelJSONCreator(ret_grid_model_bus, class_label_busPara, class_label_busInputVar)
+print("************************Start creating GeoJSON files************************")
+powerPlantgeoJSONCreator(ret_pow, class_label_pp)
+print("powerPlantgeoJSON is done.")
+elecConsAndGEOInfogeoJSONCreator(ret_elec_region, class_label_elec_region)
+print("elecConsAndGEOInfogeoJSON for regions is done.")
+elecConsAndGEOInfogeoJSONCreator(ret_elec_area, class_label_elec_area)
+print("elecConsAndGEOInfogeoJSON for areas is done.")
+busModelJSONCreator(ret_grid_model_bus, class_label_busPara, class_label_busInputVar)
+print("busModelJSON is done.")
 BranchAndBusConnectionGPSLocationJSONCreator(ret_grid_model_branch, class_label_branch, class_label_FromBus) 
+print("BranchAndBusConnectionGPSLocationJSON is done.")
 print("*******************The JSON_Generator.py is finished*******************")

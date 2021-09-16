@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 10 June 2021         #
+# Last Update Date: 15 Sept 2021         #
 ##########################################
 
 """This class defines the properties of UK Energy Consumption data"""
@@ -19,8 +19,17 @@ class EnergyConsumptionData:
         self.headerElectricityConsumption = ["RegionAndArea", "LACode", "IndustrialAndCommercial", "Domestic", "Total\n"]
         
         """Official regions"""
-        self.GovernmentOfficeRegions = ["Wales", "Scotland", "North_East_England", "North_West_England", "Yorkshire_and_the_Humber", "East_Midlands",\
+        if  self.VERSION == 2017:
+            self.GovernmentOfficeRegions = ["Wales", "Scotland", "North_East_England", "North_West_England", "Yorkshire_and_the_Humber", "East_Midlands",\
                                    "West_Midlands_(county)", "East_of_England", "London", "South_East_England", "South_West_England"]
+        if  self.VERSION == 2019:
+            self.GovernmentOfficeRegions = ["Wales", "Scotland", "North_East_England", "North_West_England", "Yorkshire_and_the_Humber", "East_Midlands",\
+                                   "West_Midlands_(county)", "East_of_England", "Inner_London", "Outer_London", "South_East_England", "South_West_England"]
+        
+        """Start Time"""
+        self.startTime_NHH = str(self.VERSION) + '-01-31' # Non-Half Hourly
+        self.startTime_HH = str(self.VERSION)+ '-01-01' # Half Hourly
         
         """Source Data"""
-        self.__ENCONSUMPT = self.DataPath + str(self.VERSION) + "Sub-national-total-final-energy-consumption-statistics_2005-2017.xlsx"
+        self.__ENCONSUMPT_2017 = self.DataPath + str(self.VERSION) + "Sub-national-total-final-energy-consumption-statistics_2005-2017.xlsx"
+        self.__ENCONSUMPT_2019 = self.DataPath + str(self.VERSION) + "Sub_national_electricity_consumption_statistics_2005-2019.xlsx"

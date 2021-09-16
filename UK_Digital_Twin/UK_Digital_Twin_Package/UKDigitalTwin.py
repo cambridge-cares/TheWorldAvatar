@@ -41,11 +41,13 @@ class UKDigitalTwin:
     """ Raw data version""" # Third level node
     dukesDataVersion = {
         2019 : "operationalPowerPlantBy2019",
+        2020 : "operationalPowerPlantBy2020",
         9999: "operationalPowerPlantBy9999",
         }
     
     consumptionDataVersion = {
         2017: "energyConsumptionIn2017",
+        2019: "energyConsumptionIn2019",
 		9999: "energyConsumptionIn9999"
         }
     
@@ -53,7 +55,8 @@ class UKDigitalTwin:
     """ Model type """ # Third level node
     Model = {            
         1:   "1_bus_model", 
-        10 : "10_bus_model"
+        10 : "10_bus_model",
+        29 : "29_bus_model",
         }
     
     """Model_EGen, Model_EBus, Model_ELine""" # fourth level nodes

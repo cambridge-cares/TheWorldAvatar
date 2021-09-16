@@ -8,7 +8,8 @@
 class UKDigitalTwinTBox:
     
     """DBPedia"""
-    dbr = "http://dbpedia.org/resource/"
+    # dbr = "https://dbpedia.org/page/"
+    dbr = "https://dbpedia.org/resource/"
     dbp = "https://dbpedia.org/property/"
     dbo = "https://dbpedia.org/ontology/"
     
