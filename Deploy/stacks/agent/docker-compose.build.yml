@@ -15,7 +15,7 @@ services:
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     build:
-      context: "../"
+      context: "../../../Agents/EmailAgent"
       dockerfile: "./docker/Dockerfile"
       labels:
         authors: "mdhillman@cmclinnovations.com"
