@@ -1,6 +1,9 @@
 import os
+import chemutils.main
+import chemutils.mainutils.mainutils as mainutils
 import chemutils.xyzutils.xyztools as xyztools
 import chemutils.ioutils.ioutils as ioutils
+import docopt
 import pytest
 import json
 
@@ -47,7 +50,6 @@ def test_match_xyzToxyz(testFilesDir, testFileName):
 
 @pytest.mark.parametrize("testFilesDir, testFileName, regenerateResults",
 [
-('xyzFileSamples','h.xyz', False),
 ('xyzFileSamples','h_h.xyz', False),
 ('xyzFileSamples','h2.xyz', False),
 ('xyzFileSamples','c2h6.xyz', False),
@@ -62,23 +64,75 @@ def test_match_xyzToxyz(testFilesDir, testFileName):
 ('xyzFileSamples','teos.xyz', False)
 ]
 )
-def test_xyzToAtomsPositions(testFilesDir, testFileName, regenerateResults):
+def test_xyzToAtomsPositions(testFilesDir, testFileName,
+            regenerateResults, regenerateAllResults=False):
     print('========================================================')
     print('TEST DIR: ', testFilesDir)
     print('TEST LOG: ', testFileName)
     testPath = os.path.join(THIS_DIR, testFilesDir)
     testFile = os.path.join(testPath, testFileName)
-    refFile = testFile + '_atomPosRef.json'
-    testXYZ = ioutils.removeBlankTrailingLines(ioutils.readFile(testFile))
+    refFile = testFile + '_atomspositions.json_ref'
 
-    testAtomsPos = json.dumps(xyztools.xyzToAtomsPositions(xyzFileOrStr=testXYZ))
-    if regenerateResults:
+    testAtomsPos = json.dumps(
+                        mainutils.xyzToAtomsPositionsWrapper(
+                            testFile,
+                            noOutFile=True)[0],
+                        indent=4)
+    if regenerateResults or regenerateAllResults:
         # dump just parsed data as the ref data
         ioutils.writeFile(refFile,testAtomsPos)
 
     refAtomsPos = ioutils.readFile(refFile)
     assert testAtomsPos == refAtomsPos
     print('========================================================')
+
+
+@pytest.mark.parametrize("args, exp_file_output",
+[
+    (['genconfs',
+    'c2h6.xyz',
+    '--input-format', 'xyz'],
+    'c2h6.xyz_conformer_0.xyz'
+    ),
+    (['genconfs',
+    'ethanol.xyz',
+    '--input-format', 'xyz'],
+    'ethanol.xyz_conformer_0.xyz'
+    ),
+    (['genconfs',
+    'cholesterol.inchi',
+    '--input-format', 'inchi',
+    '--gen-num-confs', '10'],
+    'cholesterol.inchi_conformer_0.xyz'
+    ),
+    (['atomspos',
+    'c2h6.xyz',
+    '--no-file-output'],
+    None
+    ),
+    (['convert',
+    'c2h6.xyz',
+    'xyz',
+    'inchi',
+    '--no-file-outputs'],
+    None
+    )
+]
+)
+def test_cli(args,exp_file_output,monkeypatch):
+    args[1] = os.path.join(THIS_DIR,'xyzFileSamples', args[1])
+    args.insert(0, 'test_'+args[0])
+    monkeypatch.setattr("sys.argv", args)
+    try:
+        chemutils.main.start()
+    except docopt.DocoptExit:
+        assert False
+
+    if exp_file_output is not None:
+        exp_file_output = os.path.join(THIS_DIR,'xyzFileSamples', exp_file_output)
+        assert os.path.isfile(exp_file_output)
+
+
 
 #
 #@pytest.mark.parametrize("testFilesDir, testFileName",

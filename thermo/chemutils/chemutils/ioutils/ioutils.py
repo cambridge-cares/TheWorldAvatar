@@ -16,9 +16,13 @@ def fileExists(path):
 def dirExists(path):
     return os.path.isdir(os.path.abspath(path))
 
-def verbosityBasedOutput(output, silent, outFile):
-    if outFile is not None: writeFile(outFile, output)
-    if not silent: print(output)
+def getBaseDirPath(fileOrDir):
+    if fileExists(fileOrDir):
+        return os.path.dirname(fileOrDir)
+    elif dirExists(fileOrDir):
+        return fileOrDir
+    else:
+        raise FileNotFoundError('Error: File or directory does not exists')
 
 def removeBlankTrailingLines(fileContentStr):
     fileContentStr = fileContentStr.split('\n')
@@ -36,3 +40,6 @@ def getFilesWithExtensions(fileOrDir, fileExtList):
 
 def getFileBaseName(filePath):
     return os.path.splitext(filePath)[0]
+
+def getFileNameWithExt(filePath):
+    return os.path.split(filePath)

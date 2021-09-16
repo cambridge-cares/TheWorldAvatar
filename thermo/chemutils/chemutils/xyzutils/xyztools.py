@@ -356,5 +356,11 @@ def getConformersXYZ(moleculeFileOrStr, inputFormat, retNumConfs, genNumConfs,
                         retNumConfs=retNumConfs, numConfs=genNumConfs,
                         maxIters=maxIters, mmffVariant=mmffVariant)
 
-    return [(en, obconverter.obConvert(molBlock,'mol','xyz'))
-                  for (en, molBlock) in conformers]
+    conformers_with_xyz = []
+    for i, (energy, confMolBlock) in enumerate(conformers):
+        confXYZ = obconverter.obConvert(confMolBlock,'mol','xyz')
+        confXYZ = confXYZ.split('\n')
+        confXYZ[1] = f'Conformer: {i}, {mmffVariant} energy: {energy}'
+        confXYZ = '\n'.join(confXYZ)
+        conformers_with_xyz.append((energy,confXYZ))
+    return conformers_with_xyz
