@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-TimeSeries,Class,,,,,,,http://www.theworldavatar.com/kb/ontotimeseries/OntoTimeSeries.owl
-hasTimeSeries,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property,TimeSeries,,,
-hasRDB,Object Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,
-hasTimeUnit,Object Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,
+TimeSeries,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl
+hasTimeSeries,Object Property,,,http://www.w3.org/2002/07/owl#Thing,TimeSeries,,,
+hasRDB,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,,
+hasTimeUnit,Data Property,,,TimeSeries,http://www.w3.org/2001/XMLSchema#string,,should have a list of units,

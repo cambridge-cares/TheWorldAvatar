@@ -18,6 +18,8 @@ import os
 import os.path as path
 import glob
 from pathlib import Path as PathlibPath
+import io
+import textwrap
 
 """Declared column headers as constants"""
 COLUMN_1 = 'Source'
@@ -79,7 +81,7 @@ def process_data(row):
             if (not(row[3].strip() is None or row[3].strip() == '')) \
                     and (row[4].strip() is None or row[4].strip() == '') \
                     and (row[5].strip() is None or row[5].strip() == ''):
-                print('Creating a statement about the ontology:')
+                #print('Creating a statement about the ontology:')
                 """Creating a statement to refer to the TBox"""
                 if (row[2].startswith(HTTP) or row[2].startswith(HTTPS))\
                         and row[3].strip() == 'http://www.w3.org/2002/07/owl#imports':
@@ -94,7 +96,7 @@ def process_data(row):
         elif row[1].strip().lower() == TYPE_INSTANCE.lower():
             if (row[3].strip() is None or row[3].strip() == '') \
                     and (row[4].strip() is None or row[4].strip() == ''):
-                print('Creating an instance:')
+                #print('Creating an instance:')
                 instance = propread.getABoxIRI()+SLASH+format_iri(row[0])
                 type = propread.getTBoxIRI()+HASH+format_iri(row[2])
                 http_flag=False
@@ -103,7 +105,7 @@ def process_data(row):
                     http_flag=True
                 if row[2].strip().startswith(HTTP) or row[2].strip().startswith(HTTPS):
                     type = row[2]
-                print(propread.readInstanceLabelCreationOption().strip().lower())
+                #print(propread.readInstanceLabelCreationOption().strip().lower())
                 if http_flag or propread.readInstanceLabelCreationOption().strip().lower() == 'no':
                     aboxgen.create_instance_without_name(g, URIRef(type), URIRef(instance))
                 else:
@@ -115,8 +117,8 @@ def process_data(row):
                 if not row[0].strip() in instances or row[3].strip()  == '':
                     return
                 else:
-                    print('link instance 1', instances.get(row[0]))
-                    print('link instance 2', instances.get(row[2]))
+                    #print('link instance 1', instances.get(row[0]))
+                    #print('link instance 2', instances.get(row[2]))
                     # If both instance 1 and instance 2 have http or https IRIs, then this block of code will be executed.
                     if (row[0].strip().startswith(HTTP) or row[0].startswith(HTTPS)) and (row[2].strip().startswith(HTTP) or row[2].startswith(HTTPS)):
                         aboxgen.link_instance(g, URIRef(row[3]),
@@ -183,14 +185,13 @@ def get_data_type(data_type):
 
 """Formats an IRI string to discard characters that are not allowed in an IRI"""
 def format_iri(iri):
-    iri = iri.replace(":"," ")
     iri = iri.replace(",", " ")
     iri = iri.replace(" ","")
     return iri
 
 """Converts an IRI into a namespace"""
 def create_namespace(IRI):
-    print(IRI)
+    #print(IRI)
     return Namespace(IRI)
 
 """This function checks the validity of the CSV template header and iterates over each data row until the whole
@@ -217,28 +218,42 @@ def convert_into_rdf(input_file_path, output_file_path=None):
         output_file_path = os.path.dirname(input_file_path)
     output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
 
-    print('Provided file path:', input_file_path)
-    if not path.isfile(input_file_path):
-        print('The provided file path is not valid.')
-        return
     with open(input_file_path, 'rt') as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
-        for row in rows:
-           if line_count == 0:
-               if not is_header_valid(row):
-                   print('Found invalid header, so it will terminate now.')
-                   break
-               else:
-                   print('Found valid header, so it is creating a graph model for adding instances to it.')
-                   global g
-                   g = Graph()
-
-           if line_count > 0:
-               process_data(row)
-           line_count +=1
-           print('[', line_count, ']', row)
+        for csv_row in rows:
+            line_count = _serialize_csv_row(csv_row, line_count)
+           #print('[', line_count, ']', row)
     g.serialize(destination=output_file_path,format="application/rdf+xml")
+
+
+def convert_csv_string_into_rdf(csv_string):
+    # this is a trick so that I can use csv.reader
+    # to split string on ',' delimiter even if it is in quotes
+    csvfile = io.StringIO(csv_string)
+    rows = csv.reader(csvfile, skipinitialspace=True)
+    line_count = 0
+    for csv_row in rows:
+        line_count = _serialize_csv_row(csv_row, line_count)
+    csvfile.close()
+    return str(g.serialize(format="application/rdf+xml"), 'utf-8')
+
+
+def _serialize_csv_row(csv_row, line_count):
+    if line_count == 0:
+        if not is_header_valid(csv_row):
+            raise ValueError(textwrap.dedent(f"""
+                    Error: Found invalid csv header:
+                           {csv_row}
+                           ,so it will terminate now."""))
+        else:
+            global g
+            g = Graph()
+
+    if line_count > 0:
+        process_data(csv_row)
+    line_count+=1
+    return line_count
 
 """This block of codes calls the function that converts the content of an ABox CSV template file into RDF"""
 if __name__ == '__main__':

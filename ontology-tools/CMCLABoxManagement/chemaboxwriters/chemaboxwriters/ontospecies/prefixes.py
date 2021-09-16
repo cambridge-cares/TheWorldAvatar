@@ -1,0 +1,7 @@
+onto_spec = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl'
+onto_kb = 'http://www.theworldavatar.com/kb/ontospecies/'
+gain_pref = 'http://purl.org/gc/'
+kin_pref = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl'
+table_pref = 'http://www.daml.org/2003/01/periodictable/PeriodicTable.owl'
+unit_pref = 'http://data.nasa.gov/qudt/owl/'
+species_entry_prefix= 'Species_'

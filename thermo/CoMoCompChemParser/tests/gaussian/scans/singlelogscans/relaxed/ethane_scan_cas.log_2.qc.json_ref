@@ -1,0 +1,102 @@
+{
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "CASSCF",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.81537,
+            -8.2e-05,
+            3.8e-05
+        ],
+        [
+            -0.81537,
+            8.2e-05,
+            -3.8e-05
+        ],
+        [
+            -1.188594,
+            0.193604,
+            -0.998982
+        ],
+        [
+            -1.188602,
+            0.768201,
+            0.667298
+        ],
+        [
+            -1.188804,
+            -0.962026,
+            0.331774
+        ],
+        [
+            1.188804,
+            0.962026,
+            -0.331774
+        ],
+        [
+            1.188602,
+            -0.768201,
+            -0.667298
+        ],
+        [
+            1.188594,
+            -0.193604,
+            0.998982
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        79.9480731,
+        16.7690382,
+        16.7688531
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -2155.799667250509,
+    "HOMO energy": 0.0,
+    "HOMO-1 energy": 0.0,
+    "HOMO-2 energy": 0.0,
+    "LUMO energy": 0.0,
+    "LUMO+1 energy": 0.0,
+    "LUMO+2 energy": 0.0,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Wed Mar 24 15:03:19 2021",
+    "ScanFlag": "Relaxed",
+    "ScanType": "Bond",
+    "ScanAtoms": [
+        "1",
+        "2"
+    ],
+    "Scan Points": 1.63074,
+    "Log file name": "ethane_scan_cas.log"
+}

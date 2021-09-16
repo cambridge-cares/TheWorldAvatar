@@ -1,0 +1,4 @@
+{
+	"hello": "world",
+	"text": "This is an example of a bad request, it does not contain the required 'subject' and 'body' fields."
+}
