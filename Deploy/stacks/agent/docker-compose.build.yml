@@ -34,6 +34,7 @@ services:
         builder: "${BUILDER}"
         description: "Gas Grid Agent."
         hash: "${HASH}"
+      target: "${MODE}"
 
   # JPS Chatbot
   jps-chatbot:

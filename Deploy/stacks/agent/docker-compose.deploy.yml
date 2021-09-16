@@ -25,7 +25,7 @@ services:
 
   # Gas Grid Agent
   gas-grid-agent:
-    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/gas-grid-agent-$MODE:1.0.0-SNAPSHOT
     container_name: "gas-grid-agent${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     restart: unless-stopped
