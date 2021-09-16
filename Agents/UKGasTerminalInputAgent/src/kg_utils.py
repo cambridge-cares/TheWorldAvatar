@@ -162,6 +162,105 @@ def get_instantiated_terminals(endpoint):
     return res
 
 
+def get_instantiated_gas_amounts(endpoint):
+    """
+        Retrieves IRIs of all instantiated GasAmounts in the knowledge graph.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+
+        Returns:
+            List of Strings of all instantiated gas amount IRIs
+            (empty list in case no gas amounts are instantiated)
+    """
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('comp') + \
+            create_sparql_prefix('rdf') + \
+            'SELECT ?a ' \
+            'WHERE { ?a rdf:type comp:IntakenGas. }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Extract list of IRI Strings from query results dictionary
+    res = [list(r.values())[0] for r in response]
+
+    return res
+
+
+def get_instantiated_quantities(endpoint):
+    """
+        Retrieves IRIs of all instantiated Quantities in the knowledge graph.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+
+        Returns:
+            List of Strings of all instantiated (unit of measure) quantity IRIs
+            (empty list in case no quantities are instantiated)
+    """
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('om') + \
+            create_sparql_prefix('rdf') + \
+            'SELECT ?a ' \
+            'WHERE { ?a rdf:type om:VolumetricFlowRate. }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Extract list of IRI Strings from query results dictionary
+    res = [list(r.values())[0] for r in response]
+
+    return res
+
+
+def get_instantiated_measurements(endpoint):
+    """
+        Retrieves IRIs of all instantiated Measurements in the knowledge graph.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+
+        Returns:
+            List of Strings of all instantiated (unit of measure) measure IRIs
+            (empty list in case no measures are instantiated)
+    """
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('om') + \
+            create_sparql_prefix('rdf') + \
+            'SELECT ?a ' \
+            'WHERE { ?a rdf:type om:Measure. }'
+    response = KGClient.execute(query)
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Extract list of IRI Strings from query results dictionary
+    res = [list(r.values())[0] for r in response]
+
+    return res
+
+
 def check_timeseries_instantiation(endpoint, terminalIRI):
     """
         Check whether terminal already has an instantiated gas flow time series attached to it.
