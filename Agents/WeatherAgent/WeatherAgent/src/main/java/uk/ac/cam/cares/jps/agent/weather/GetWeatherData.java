@@ -73,13 +73,14 @@ public class GetWeatherData extends JPSAgent{
 	    	
 			String station = requestParams.getString("station");
 			
-			//updates station if it's more than 1 hour old
+			//updates station if it's more than 30 minute old
 			long currenttime = Instant.now().getEpochSecond();
 			long lastupdate = weatherClient.getLastUpdateTime(station);
-			if ((currenttime-lastupdate) > 3600) {
+			if ((currenttime-lastupdate) > 1800) {
 				// this will ensure the servlet will always return a response even if the API call fails
 				try {
 					weatherClient.updateStation(station);
+					LOGGER.info("Updated station: <" + station + "> with latest data");
 				} catch (Exception e) {
 					LOGGER.error("API weather update failed, returned values are not up-to-date.");
 				}
