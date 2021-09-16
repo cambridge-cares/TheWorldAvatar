@@ -40,6 +40,11 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+/**
+ * you must have the docker environment configured to run these tests
+ * @author Kok Foong Lee
+ *
+ */
 public class WeatherAgentIntegrationTest {
 	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
@@ -166,6 +171,10 @@ public class WeatherAgentIntegrationTest {
 		when(httprequest.getServletPath()).thenReturn(GetWeatherData.urlPatternHistory);
 		timeSeriesResponse = getWeatherData.processRequestParameters(mockGetRequest, httprequest);
 		new Gson().fromJson(timeSeriesResponse.toString(), timeSeriesType);
+		
+		// delete this station
+		DeleteStation delete = new DeleteStation();
+		delete.processRequestParameters(mockGetRequest);
 	}
 	
 	/**
