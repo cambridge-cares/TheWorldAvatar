@@ -11,7 +11,6 @@ import os
 import sys
 import shutil
 from datetime import datetime as dt
-from datetime import timedelta as td
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
 from jpsSingletons import jpsBaseLibGW
@@ -48,12 +47,14 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     # Initialise TimeSeriesClass
     TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
 
-    # Initialise timestamps for gas flow time series retrieval durations
-    now = dt.utcnow()
-    print("INFO: Submitting TimeSeriesClient SPARQL queries at", now.strftime("%Y-%m-%dT%H:%M:%SZ"))
-    start_1 = now - td(hours=1*duration)
-    start_2 = now - td(hours=2*duration)
-    start_7 = now - td(hours=7*duration)
+    # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
+    # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
+    now = Instant.now()
+    print("INFO: Submitting TimeSeriesClient SPARQL queries at",
+          dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
+    start_1 = now.minusSeconds(int(1 * duration * 60 * 60))
+    start_2 = now.minusSeconds(int(2 * duration * 60 * 60))
+    start_7 = now.minusSeconds(int(7 * duration * 60 * 60))
 
     # Initialise dictionary for all retrieved time series objects
     timeseries_dict = {}
@@ -68,21 +69,17 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
         # Retrieve instantaneous gas flow time series history
         try:
             # Get results for last "duration" hours (e.g. 24h)
-            timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                            Instant.ofEpochSecond(round(start_1.timestamp())),
-                                                            Instant.ofEpochSecond(round(now.timestamp())))
+            timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_1, now)
+
             if not timeseries.getTimes():
                 # Try last "2 x duration" hours if nothing available for last "duration" hours (e.g. 48h)
-                print("WARNING: No results in last %i h, trying last %i h ..." %(duration, 2*duration))
-                timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                                Instant.ofEpochSecond(round(start_2.timestamp())),
-                                                                Instant.ofEpochSecond(round(now.timestamp())))
+                print("WARNING: No results in last %i h, trying last %i h ..." % (duration, 2 * duration))
+                timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_2, now)
+
                 if not timeseries.getTimes():
                     # Last resort, try last "7 x duration" hours (e.g. last week)
-                    print("WARNING: No results in last %i h, trying last %i h ..." %(2*duration, 7*duration))
-                    timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri],
-                                                                    Instant.ofEpochSecond(round(start_7.timestamp())),
-                                                                    Instant.ofEpochSecond(round(now.timestamp())))
+                    print("WARNING: No results in last %i h, trying last %i h ..." % (2 * duration, 7 * duration))
+                    timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
             # populate timeseries dictionary - format:
             # terminal name: [terminal IRI, measurement IRI, Java time series object]
             timeseries_dict[terminal] = [terminalIRI, measurement_iri, timeseries]
@@ -103,7 +100,13 @@ def onSuccess(timeseries_data):
     """
 
     print("INFO: All SPARQL queries successful, time series received.")
-    print("INFO: Number of time series is", len(timeseries_data))
+    print("INFO: Number of retrieved time series:", len(timeseries_data))
+
+    # Obtain total number of retrieved data points
+    data_points = 0
+    for ts in timeseries_data:
+        data_points += len(timeseries_data[ts][2].getTimes())
+    print("INFO: Number of retrieved time series data points:", data_points)
 
     # Initialise (JSON) results String
     res = ''
@@ -112,7 +115,7 @@ def onSuccess(timeseries_data):
     for ts in timeseries_data:
         # Retrieve gas flow values and align format
         num_vals = timeseries_data[ts][2].getValues(timeseries_data[ts][1])
-        num_vals = [round(float(val), 3) for val in num_vals]
+        num_vals = [round(float(val), 4) for val in num_vals]
 
         # Retrieve times as list of Java Instant objects and format as Strings in "2021-06-04T02:58:00.000Z" format
         times_instant = timeseries_data[ts][2].getTimes()

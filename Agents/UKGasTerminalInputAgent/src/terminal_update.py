@@ -177,7 +177,7 @@ def get_flow_data_from_csv():
                 # Parse the CSV rows
                 terminalName = row[0]
 
-                # Times from CSV file are in local time
+                # Times from CSV file are in local UK time
                 dateTimeObj = datetime.datetime.strptime(row[3], "%d/%m/%Y %H:%M:%S")
                 # is_dst=False is used to determine correct timezone in the ambiguous period
                 # at the end of daylight saving time
