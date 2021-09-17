@@ -57,23 +57,20 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     }
     
     /**
-     * Execute a <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a> on the target resource 
-     * in the Knowledge Graph by calling the AccessAgent.
+     * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource 
+     * in the Knowledge Graph by calling the AccessAgent. 
      * @param targetResourceID	target namespace or IRI
      * 							e.g. to access the Ontokin triple store
      * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
      * @param sparqlQuery		SPARQL query string
-     * @return 	the query result in the W3C Query result JSON format, 
-     * see <a href="https://www.w3.org/TR/sparql11-results-json/">Query Results JSON Format</a>
+     * @return 	the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
      */
-    public String query(String targetResourceID, String sparqlQuery) {
-    	//pass the target resource ID directly as the targetUrl
-    	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
-    	return AccessAgentCaller.query(null, targetResourceID, sparqlQuery);
+    public String query(String targetResourceID, String sparqlQuery) {	
+    	return AccessAgentCaller.query(targetResourceID, sparqlQuery);
     }
     
     /**
-     * Execute a <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a> on the target resource 
+     * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
      * @param targetResourceID	the target namespace or IRI
      * 							e.g. to access the Ontokin triple store
@@ -81,8 +78,6 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
      * @param sparqlUpdate		SPARQL update string
      */
     public void update(String targetResourceID, String sparqlUpdate) {
-    	//pass the target resource ID directly as the targetUrl
-    	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
-    	AccessAgentCaller.update(null, targetResourceID, sparqlUpdate);
+    	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
 }
