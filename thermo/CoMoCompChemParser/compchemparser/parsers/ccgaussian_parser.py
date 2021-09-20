@@ -65,6 +65,10 @@ CI_ENERGY = 'CI energy'
 TD_ENERGY = 'TD energy'
 #-------------------------------------------------
 
+
+# extra log file name key
+LOG_FILE_NAME = 'Log file name'
+
 # collate keys to be uploaded to the kg into a single list
 #-------------------------------------------------
 CCKEYS_DATA = [
@@ -235,6 +239,7 @@ class CcGaussianParser():
         # loop thorugh each log and parse it
         for log in split_logs:
             parseddata = self.parse_log(log)
+            parseddata[LOG_FILE_NAME] = os.path.basename(logFile)
             parseddata = data_splitter(parseddata)
             for listdata in parseddata:
                 json_data = json.dumps(listdata)

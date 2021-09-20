@@ -34,9 +34,9 @@ def getKGLocation():
 	kgRoot = os.getenv('KG_LOCATION', FALLBACK_KG)
 	
 	if kgRoot.endswith("/"):
-		return kgRoot +  "namespace/ontocropmapgml/sparql"
+		return kgRoot +  "namespace/landuse/sparql"
 	else:
-		return kgRoot +  "/namespace/ontocropmapgml/sparql"
+		return kgRoot +  "/namespace/landuse/sparql"
 
 
 def buildQuery(county):
@@ -194,7 +194,7 @@ def main():
 	print("INFO: Determined KG endpoint as '" + kgLocation + "'.")
 
 	# Run query for each county
-	runQuery(kgLocation, "CAMBRIDGESHIRE", [])
+	#runQuery(kgLocation, "CAMBRIDGESHIRE", [])
 	runQuery(kgLocation, "NORFOLK", [])
 	runQuery(kgLocation, "SUFFOLK", [])
 
