@@ -23,7 +23,7 @@ To build the image, you can run
 docker build -f Dockerfile .
 ```
 
-## Local testing
+## Testing stack
 A script can be written to make this process easier but not done due to time constraints at the time of writing.
 
 A `docker-compose.yml` file is provided to spin up a stack with a Blazegraph and a PostgreSQL within the same network as the agent container. The dockerised weather agent will not be able to interact with the databases outside of its docker network. For the agent to access the Blazegraph, the hostname is `blazegraph` (specified in the compose file), port number = 8080. The `kg.url` to enter in the `credentials.properties` will be in the form of `http://blazegraph:8080/blazegraph/namespace/[NAME OF NAMESPACE]/sparql`. The Blazegraph namespace must have geospatial enabled.
@@ -39,8 +39,15 @@ Two extra files are needed in the credentials folder to define the passwords for
       postgres_password
 ```
 
+## Unit tests
+To run the unit tests, you must have the Docker installed in your computer. If that is the case, navigate to the folder `WeatherAgent` containing the `pom.xml` file on the command line, and run 
+```
+mvn clean test
+```
+The tests utilise Blazegraph and Postgres docker test containers.
+
 ## Technical specifications
-The `weatheragent` Docker image has the following access URLs
+The Docker container has the following access URLs
 
 1. WeatherAgent/CreateStation
 2. WeatherAgent/UpdateStation
@@ -54,6 +61,7 @@ These classes inherit the JPSAgent class, easiest way to interact with them is t
 
 ### WeatherAgent/CreateStation
 Input: Coordinates in the form "lat#lon" where lat and lon are numerical values. The JSON key is "latlon". E.g. {"latlon": "0#1"}
+
 Output: IRI of the created station with key "station", e.g. {"station": "http://station1"}.
 
 ### WeatherAgent/UpdateStation
@@ -67,8 +75,11 @@ If the station was last updated 30 min ago, the request will be ignored. If the 
 Weather data can be obtained via two different URLs, both options return a time series object. If the weather data at this station is more than 30 minutes old, it will be updated automatically before returning the values.
 
 1) WeatherAgent/GetWeatherData/latest
+
 As the name suggests, this gives the latest data point.
-Input: IRI of the station to update with the "station" key., e.g. {"station": "http://station1"}
+
+Input: IRI of the station to update with the "station" key, e.g. {"station": "http://station1"}
+
 Output: Serialised TimeSeries object using Gson
 
 To deserialise
@@ -76,27 +87,35 @@ To deserialise
 Type timeSeriesType = new TypeToken<TimeSeries<Long>>() {}.getType();
 TimeSeries<Long> ts_deserialise = new Gson().fromJson(JSONSTRING, timeSeriesType);
  ```
- where `JSONSTRING` is the response.
+ where `JSONSTRING` is the serialised time series response.
 
  2) WeatherAgent/GetWeatherData/history
+
  This requires an additional input, the number of hours to query back, in addition to the station IRI.
+
  Input: This requires an additional input, the number of hours to query back with the key "hour", in addition to the station IRI, e.g. {"station": "http://station1", "hour":x}, where x is the number of hours before the current time.
+
  Output: Serialised TimeSeries object using Gson.
 
 ### WeatherAgent/GetStationsInCircle
 This function returns a list of station IRIs that are located within the given circle.
+
 Input: Coordinates of the centre and radius in km with keys "centre" and "radius", e.g. {"centre": latlon, "radius":x} where latlon is in the form "lat#lon" and x is the radius in km.
 
 Output: Station IRIs in a JSON array, i.e. {"station": [LIST OF STATIONS]}.
 
 ### WeatherAgent/GetStationsInRectangle
 This function returns a list of station IRIs that are located within the given rectangle.
+
 Input: Coordinates of the south-west and north-east corners with the keys "southwest" and "northeast", e.g. {"southwest":"lat#lon", "northeast":"lat#lon"}.
+
 Output: Station IRIs in a JSON array, i.e. {"station": [LIST OF STATIONS]}.
 
 ### WeatherAgent/DeleteStation
 Deletes a given station including time series data associated with it.
+
 Input: IRI of station to delete with "station" key, e.g. {"station": "http://station1}.
+
 Output: {"status": "delete success"}, if it is successful.
 
 
