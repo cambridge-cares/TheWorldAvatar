@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -41,7 +42,8 @@ public class DeleteStation extends JPSAgent{
 				weatherClient.deleteStation(station);
 				LOGGER.info("Deleted station: <" + station + ">");
 			} catch (Exception e) {
-				LOGGER.error("Delete failed");
+				LOGGER.error("Delete station failed");
+				throw new JPSRuntimeException(e);
 			}
 			response.put("status", "delete success");
     	}

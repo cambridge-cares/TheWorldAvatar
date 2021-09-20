@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
@@ -55,11 +56,12 @@ public class UpdateStation extends JPSAgent{
 					LOGGER.info("Updated station: <" + station + "> with latest data");
 				} catch (Exception e) {
 					LOGGER.error("Weather update failed");
+					throw new JPSRuntimeException(e);
 				}
 			} else {
 				LOGGER.info("<" + station + "> was last updated within 30 minutes ago, update request will be ignored");
 			}
-			response.put("status", "update successfully");
+			response.put("status", "update successful");
     	}
     	return response;
 	}

@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -42,9 +43,13 @@ public class GetStationsInCircle extends JPSAgent{
 			String centre = requestParams.getString("centre");
 			double radius = requestParams.getDouble("radius");
 			
-			List<String> stations = weatherClient.getStationsInCircle(centre, radius);
-			
-			response.put("station", stations);
+			try {
+				List<String> stations = weatherClient.getStationsInCircle(centre, radius);
+				response.put("station", stations);
+			} catch (Exception e) {
+				LOGGER.error("Query failed");
+				throw new JPSRuntimeException(e);
+			}	
 		}
 		
 		return response;
