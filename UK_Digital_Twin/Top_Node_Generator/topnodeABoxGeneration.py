@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 21 Sept 2021         #
 ##########################################
 
 """This module is designed to generate the top node of UK digital twin."""
@@ -8,8 +8,8 @@
 import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
-from rdflib import Graph, URIRef, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib import Graph, URIRef,  Literal, ConjunctiveGraph
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -26,7 +26,7 @@ from UK_Digital_Twin_Package import UKPowerGridModel as UK_PG
 import Top_Node_Generator.SPARQLQueryUsedInTopNode as query_topNode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -76,10 +76,15 @@ Third_Level_Node = {
     "UKPowerPlant2019" : UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION),
     "UKEnergyConsumption2017" : UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION),
     "UKTopology10Bus" : UKDT.nodeURIGenerator(3, dt.gridTopology, 10),
-    "UKGrid10Bus" : UKDT.nodeURIGenerator(3, dt.powerGridModel, 10)
+    "UKGrid10Bus" : UKDT.nodeURIGenerator(3, dt.powerGridModel, 10),
+    "UKTopology29Bus" : UKDT.nodeURIGenerator(3, dt.gridTopology, 29),
+    "UKGrid29Bus" : UKDT.nodeURIGenerator(3, dt.powerGridModel, 29)
     }
 
-Fourth_Level_Node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10)
+Fourth_Level_Node = {
+    "UKGrid10Bus": UKDT.nodeURIGenerator(4, dt.powerGridModel, 10),
+    "UKGrid29Bus": UKDT.nodeURIGenerator(4, dt.powerGridModel, 29)
+    }
 
 """T-Box URI"""
 #OntoCAPE_upper_level_system
@@ -152,9 +157,23 @@ def addThirdLevelNode(graph):
     
     # Add system type of thrid level nodes 
     graph.add((URIRef(Third_Level_Node["UKPowerPlant2019"]), RDF.type, URIRef(ontocape_upper_level_system.CompositeSystem.iri))) 
+    graph.add((URIRef(Third_Level_Node["UKPowerPlant2019"]), RDFS.label, Literal(str("UKPowerPlant2019"))))
+    
     graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDF.type, URIRef(ontocape_upper_level_system.CompositeSystem.iri)))
+    graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDFS.label, Literal(str("UKEnergyConsumption2017"))))
+    
     graph.add((URIRef(Third_Level_Node["UKTopology10Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri))) 
+    graph.add((URIRef(Third_Level_Node["UKTopology10Bus"]), RDFS.label, Literal(str("UKTopology10Bus")))) 
+    
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
+    graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDFS.label, Literal(str("UKGrid10Bus"))))  
+    
+    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
+    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDFS.label, Literal(str("UKTopology29Bus"))))  
+    
+    graph.add((URIRef(Third_Level_Node["UKGrid29Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
+    graph.add((URIRef(Third_Level_Node["UKGrid29Bus"]), RDFS.label, Literal(str("UKGrid29Bus"))))  
+    
     return graph
 
 """Add sub-graphs to UKPowerPlant and UKEnergyConsumption (third node)"""
@@ -179,38 +198,44 @@ def addFourthLevelNode_powerPlant_energyConsumption(graph, nodeName, localQuery,
 
 """Add Fourth level nodes (Model_EGen, Model_Eline and Model_EBus) to Third Level node (grid model)"""
 def addFourthLevelNode_gridModel(graph): 
-    for fourtlevelnode in Fourth_Level_Node: 
-        graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(fourtlevelnode)))
-        graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
+    for key in Fourth_Level_Node.keys(): 
+        for fourtlevelnode in Fourth_Level_Node[key]:      
+            graph.add((URIRef(Third_Level_Node[key]), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(fourtlevelnode)))
+            graph.add((URIRef(fourtlevelnode), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
+            graph.add((URIRef(fourtlevelnode), RDFS.label, Literal(str(key) + "_" + str(fourtlevelnode.split("#")[1]))))
     return graph
 
 """Add Fifth level nodes (Model_EGen-001, Model_Eline-001, Model_EBus-001, etc.) to Fourth Level node (Model_EGen, Model_Eline and Model_EBus)"""
-def addFifthLevelNode_gridModel(graph, nodeName, localQuery, SleepycatPath = None, remoteEndPoint = None):     
-   if localQuery == False:
-        if nodeName == "EGen": 
-            nodeList = query_topNode.queryEGenNodeURL(endpoint_label, SleepycatPath, localQuery)            
-        elif nodeName == "EBus": 
-            nodeList = query_topNode.queryEBusNodeURL(endpoint_label, SleepycatPath, localQuery)
-        elif nodeName == "ELine": 
-            nodeList = query_topNode.queryELineNodeURL(endpoint_label, SleepycatPath, localQuery)
-   elif SleepycatPath != None and localQuery == True:   
-        if nodeName == "EGen": 
-            nodeList = list(query_topNode.queryEGenNodeURL(endpoint_label, SleepycatPath, localQuery))
-        elif nodeName == "EBus": 
-            nodeList = list(query_topNode.queryEBusNodeURL(endpoint_label, SleepycatPath, localQuery))       
-        elif nodeName == "ELine": 
-            nodeList = list(query_topNode.queryELineNodeURL(endpoint_label, SleepycatPath, localQuery))       
-   for node in nodeList:
-       if SleepycatPath != None and localQuery == True:  
-            node = node[0]
-       graph.add((URIRef(UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, nodeName)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
-                   URIRef(node))) 
-       graph.add((URIRef(node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
-   return graph
+def addFifthLevelNode_gridModel(graph, nodeName, numOfBus, localQuery, SleepycatPath = None, remoteEndPoint = None): 
+    print("The bus number is: ", numOfBus)
+    if localQuery == False:
+         if nodeName == "EGen": 
+             nodeList = query_topNode.queryEGenNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery)            
+         elif nodeName == "EBus": 
+             nodeList = query_topNode.queryEBusNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery)
+         elif nodeName == "ELine": 
+             nodeList = query_topNode.queryELineNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery)
+    elif SleepycatPath != None and localQuery == True:   
+         if nodeName == "EGen": 
+             nodeList = list(query_topNode.queryEGenNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery))
+         elif nodeName == "EBus": 
+             nodeList = list(query_topNode.queryEBusNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery))       
+         elif nodeName == "ELine": 
+             nodeList = list(query_topNode.queryELineNodeURL(endpoint_label, numOfBus, SleepycatPath, localQuery))   
+    if len(nodeList) == 0:
+        print("Empty nodelist, please check the queries and the bus number specification.")
+        return None
+    for node in nodeList:
+        if SleepycatPath != None and localQuery == True:  
+             node = node[0]
+        graph.add((URIRef(UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, nodeName)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri),\
+                    URIRef(node))) 
+        graph.add((URIRef(node), RDF.type, URIRef(ontocape_upper_level_system.ExclusiveSubsystem.iri))) 
+    return graph
     
 
 """####Main function: Create or update the top node owl file####"""
-def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalOWLFile = True):
+def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalOWLFile = True, *numOfBusArray):
     print("******Start creating the top node graph******")
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
@@ -247,13 +272,14 @@ def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalO
     
     g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKEnergyConsumption2017", localQuery, topoAndConsumpPath_Sleepycat, energyConsumption_Endpoint)
     g = addFourthLevelNode_powerPlant_energyConsumption(g, "UKPowerPlant2019", localQuery, powerPlant_Sleepycat, powerPlant_Endpoint)
-    g = addFourthLevelNode_gridModel(g)    
-    g = addFifthLevelNode_gridModel(g, "EGen", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
-    print("EGen added")
-    g = addFifthLevelNode_gridModel(g, "EBus", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
-    print("EBus added")
-    g = addFifthLevelNode_gridModel(g, "ELine", localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
-    print("ELine added")
+    g = addFourthLevelNode_gridModel(g)
+    for numOfBus in numOfBusArray:    
+        g = addFifthLevelNode_gridModel(g, "EGen", numOfBus, localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+        print("EGen added")
+        g = addFifthLevelNode_gridModel(g, "EBus", numOfBus, localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+        print("EBus added")
+        g = addFifthLevelNode_gridModel(g, "ELine", numOfBus, localQuery, uk_egen_model_Sleepycat, gridModel_Endpoint)
+        print("ELine added")
     print('#########TOP NODE GRAPH IS GENERATED#######')
     
     
@@ -270,5 +296,7 @@ def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalO
     return
 
 if __name__ == '__main__':
-   generateTopNodeGraph('default', False, None, False)
+   generateTopNodeGraph('default', False, None, False, 10, 29)
+
+   
    

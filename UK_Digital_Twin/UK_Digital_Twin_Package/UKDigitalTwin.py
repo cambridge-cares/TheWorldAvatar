@@ -72,7 +72,7 @@ class UKDigitalTwin:
     thirdLevelNode = 3
     fourthLevelNode = 4
     
-    """Root URL"""
+    """Root URL (Namespace)"""
     ukdigitaltwin = baseURL + SLASH + topNode
     
     
@@ -131,7 +131,7 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
         return
     
 if __name__ == '__main__':
-    uri = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 10)
+    uri = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 29)
     print (uri)
 
 

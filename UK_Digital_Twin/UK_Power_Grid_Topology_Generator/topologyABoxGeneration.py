@@ -79,12 +79,12 @@ defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 endpoint_label = endpointList.ukdigitaltwin['lable']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
-"""Root_node and root_uri"""
-root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, 10)
-root_uri = root_node.split('#')[0]
-
-"""NameSpace"""
-tp_namespace = root_uri + HASH
+"""Root_node, root_uri (top node) and namespace creator based on different bus number"""
+def rootNodeAndNameSpace(numOfBus): 
+    root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, numOfBus)
+    root_uri = root_node.split('#')[0]
+    tp_namespace = root_uri + HASH
+    return root_node, root_uri, tp_namespace
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -132,8 +132,11 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
-    store = LocalGraphStore(storeType)
+    store = LocalGraphStore(storeType) 
+    # specify the topology properties according to the model type
     topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
+    # specify the top node and name space
+    root_node, root_uri, tp_namespace = rootNodeAndNameSpace(numOfBus)
     print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology' )
     global defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
@@ -158,11 +161,11 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
     
     if addEBusNodes != None:
-        g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays)
+        g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace)
     if addELineNodes != None:    
-        g, nodeName = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery)
+        g, nodeName = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace)
     if addEGenNodes != None:
-        g, nodeName = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery)
+        g, nodeName = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -178,8 +181,8 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
 
 
 """Add nodes represent Buses"""
-def addEBusNodes(graph, header, dataArray): 
-    print('Start adding bus node triples in the topology graph')
+def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_namespace): 
+    print('****************Start adding bus node triples in the topology graph****************')
     nodeName = "EBus"
     if dataArray[0] == header:
         pass
@@ -187,16 +190,17 @@ def addEBusNodes(graph, header, dataArray):
         print('The bus topoinfo data header is not matched, please check the data file')
         return None
     counter = 1
-    while counter < len(dataArray):
+    while counter < len(dataArray):   
         # print('Counter is ', counter)
         busTopoData = dataArray[counter]
-        
+        busTopoData[2] = str(busTopoData[2]).replace("|", ",")
+        print("##Bus number ", counter, " located at ", busTopoData[2])
         # the EquipmentConnection_EBus node uri
         bus_context_locator = uk_topo.EquipmentConnection_EBusKey + busTopoData[0].zfill(3) 
         bus_node = tp_namespace + bus_context_locator
         Ebus_context_locator = uk_ebus_model.EBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
         Model_EBus_context_locator = uk_ebus_model.ModelEBusKey + busTopoData[0].zfill(3) + UNDERSCORE + busTopoData[1]
-        Ebus_node = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + Model_EBus_context_locator + OWL + HASH + Ebus_context_locator
+        Ebus_node = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + Model_EBus_context_locator + OWL + HASH + Ebus_context_locator
         # Link bus node with root node and specify its type
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(bus_node)))
         graph.add((URIRef(bus_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerEquipmentConnection.iri)))
@@ -208,6 +212,9 @@ def addEBusNodes(graph, header, dataArray):
         if busTopoData[5].strip('\n') != 'None': 
            graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[5].strip('\n').strip('&')))) # Agrregated bus node
         graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[2]))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
+        graph.add((URIRef(t_box.dbr + busTopoData[2]), URIRef(t_box.dbo + 'areaCode'), Literal(busTopoData[6].strip('\n')))) #the LA code of the local authority of where the bus located
+        graph.add((URIRef(t_box.dbr + busTopoData[2]), RDF.type, URIRef(ontoecape_space_and_time_extended.AddressArea.iri))) 
+        
         graph.add((URIRef(bus_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator)))
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))       
         graph.add((URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
@@ -235,13 +242,15 @@ def addEBusNodes(graph, header, dataArray):
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                    URIRef(ontocape_SI_units.m.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                   Literal(float(busTopoData[3].strip('\n')))))        
+                   Literal(float(busTopoData[3].strip('\n')))))    
+            
+        
         counter += 1
     return graph, nodeName
 
 """Add nodes represent Branches"""
-def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery):  
-    print("Adding the triples of ELine of the grid topology.")
+def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery, root_node, root_uri, tp_namespace):  
+    print("****************Adding the triples of ELine of the grid topology.****************")
     nodeName = "ELine"
     if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
         pass
@@ -320,7 +329,7 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
     return graph, nodeName 
 
 """Add nodes represent Branches"""
-def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery): 
+def addEGenNodes(graph, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace): 
     print("Adding the triples of EGen of the grid topology.")
     nodeName = "EGen"
     global counter
@@ -418,7 +427,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
+    createTopologyGraph('default', False, 29, 98, addEBusNodes, None, None, None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, False)
     # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, False)
     print('Terminated')

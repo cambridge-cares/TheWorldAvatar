@@ -76,7 +76,8 @@ def queryUKEnergyConsumptionNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         return qres_ec
 
 # query Model_EGen iri
-def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
+def queryEGenNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
+    busLabel = str(numOfBus) + "Bus"
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
@@ -84,10 +85,14 @@ def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
     SELECT DISTINCT ?Model_EGen  
     WHERE 
     {
-    ?Model_EGen rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
-    ?Model_EGen ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:StartCost .
+    ?Model_EGen rdf:type ontocape_mathematical_model:Submodel . 
+    ?Model_EGen rdfs:label ?label .  
+    ?Model_EGen ontocape_upper_level_system:isComposedOfSubsystem ?Model_EGen_instance .
+    ?Model_EGen_instance rdf:type ontopowsys_PowerSystemModel:GeneratorModel .
+    # ?Model_EGen ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:StartCost .
+    ?label bds:search "'%s*'" .
     } 
-    """
+    """% busLabel
     global qres_egen
     if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
@@ -106,24 +111,30 @@ def queryEGenNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         return qres_egen
 
 # query Model_EBus iri
-def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
+def queryEBusNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
+    busLabel = str(numOfBus) + "Bus"
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
     PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
-    SELECT DISTINCT ?Model_EBus  
+    SELECT DISTINCT ?Model_EBus_instance  
     WHERE 
     {
-    ?Model_EBus rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
-    ?Model_EBus ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:PdBus . 
+    ?Model_EBus rdf:type ontocape_mathematical_model:Submodel . 
+    ?Model_EBus rdfs:label ?label .
+    ?Model_EBus ontocape_upper_level_system:isComposedOfSubsystem ?Model_EBus_instance .
+    ?Model_EBus_instance rdf:type ontopowsys_PowerSystemModel:BusModel .
+    # ?Model_EBus_instance ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:PdBus .
+    ?label bds:search "'%s*'" .
     } 
-    """
+    """% busLabel
+    print(queryStr)
     global qres_ebus
     if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         qres_ = []
         for r in res:
-            qres_.append(r["Model_EBus"])
+            qres_.append(r["Model_EBus_instance"])
         return qres_
     elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
@@ -136,24 +147,29 @@ def queryEBusNodeURL(remoteEndPoint, SleepycatPath, localQuery):
         return qres_ebus
 
 # query Model_ELine iri
-def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
+def queryELineNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
+    busLabel = str(numOfBus) + "Bus"
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
     PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
-    SELECT DISTINCT ?Model_ELine  
+    SELECT DISTINCT ?Model_ELine_instance  
     WHERE 
     {
-    ?Model_ELine rdf:type ontopowsys_PowerSystemModel:PowerFlowModelAgent .
-    ?Model_ELine ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:R . 
+    ?Model_ELine rdf:type ontocape_mathematical_model:Submodel . 
+    ?Model_ELine rdfs:label ?label .
+    ?Model_ELine ontocape_upper_level_system:isComposedOfSubsystem ?Model_ELine_instance .
+    ?Model_ELine_instance rdf:type ontopowsys_PowerSystemModel:ElectricalBranchModel .
+    # ?Model_ELine_instance ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:R . 
+    ?label bds:search "'%s*'" .   
     } 
-    """
+    """% busLabel
     global qres_eline
     if remoteEndPoint != None and localQuery == False: 
         res = json.loads(performQuery(remoteEndPoint, queryStr))
         qres_ = []
         for r in res:
-            qres_.append(r["Model_ELine"])
+            qres_.append(r["Model_ELine_instance"])
         return qres_
     elif SleepycatPath != None and localQuery == True:
         dt_cg = ConjunctiveGraph('Sleepycat')
@@ -169,9 +185,11 @@ def queryELineNodeURL(remoteEndPoint, SleepycatPath, localQuery):
 if __name__ == '__main__': 
     sl_path_topo = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
-    res = queryPowerPlantNodeURL('ukpowerplantkg', sl_path_pp, False)
-    print (len(res))
-    print (res[0], res[1])
+    # res = queryPowerPlantNodeURL('ukpowerplantkg', sl_path_pp, False)
+    
+    queryEBusNodeURL("ukdigitaltwin", 10, None, False)
+    # print (len(res))
+    # print (res[0], res[1])
 
 
 

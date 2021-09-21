@@ -232,7 +232,7 @@ def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
     ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .  
     
     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress %s .
-    %s rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
+    %s rdf:type <https://dbpedia.org/ontology/Region> .
     
     ?EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_Bus .    
     ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_Bus .

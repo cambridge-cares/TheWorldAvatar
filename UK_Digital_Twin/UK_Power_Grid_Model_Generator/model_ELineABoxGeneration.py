@@ -147,6 +147,7 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
+        g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem .iri), URIRef(root_node)))
         # link with ELine node in topology
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline[0])))

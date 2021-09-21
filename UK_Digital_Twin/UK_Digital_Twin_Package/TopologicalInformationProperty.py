@@ -18,7 +18,7 @@ class TopologicalInformation:
         self.BranchProperty =  self.DataPath + str(self.EBus_num) + '_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
            
         """Data file header"""
-        self.headerBusTopologicalInformation = ["BusNumber", "Region", "LargestCity", "x-axis", "y-axis", "Agrregated\n"]
+        self.headerBusTopologicalInformation = ["BusNumber", "Region", "LocalAuthority", "x-axis", "y-axis", "Agrregated", "LACode\n"]
         self.headerBranchTopologicalInformation = ["FromBus", "ToBus", "400kV_PARALLEL_CONNECTIONS", "275kV_PARALLEL_CONNECTIONS\n"]
         self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
         

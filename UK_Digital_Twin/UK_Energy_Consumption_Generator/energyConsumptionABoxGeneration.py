@@ -272,5 +272,5 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
 
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
-    addUKElectricityConsumptionTriples('default', 2019, None, True)
+    addUKElectricityConsumptionTriples('default', 2017, None, True)
     print('terminated')
