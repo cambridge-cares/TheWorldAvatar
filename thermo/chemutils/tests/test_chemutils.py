@@ -2,7 +2,11 @@ import os
 import chemutils.main
 import chemutils.mainutils.mainutils as mainutils
 import chemutils.xyzutils.xyztools as xyztools
+import chemutils.xyzutils.xyzconverters as xyzconverters
+import chemutils.rdkitutils.rdkitmolutils as rdkitmolutils
+import chemutils.rdkitutils.rdkitconverters as rdkitconverters
 import chemutils.ioutils.ioutils as ioutils
+import chemutils.obabelutils.obutils as obutils
 import docopt
 import pytest
 import json
@@ -48,42 +52,38 @@ def test_match_xyzToxyz(testFilesDir, testFileName):
         assert tarXYZ == refXYZ
     print('========================================================')
 
-@pytest.mark.parametrize("testFilesDir, testFileName, regenerateResults",
+
+@pytest.mark.parametrize("testFilesDir, testFileName",
 [
-('xyzFileSamples','h_h.xyz', False),
-('xyzFileSamples','h2.xyz', False),
-('xyzFileSamples','c2h6.xyz', False),
-('xyzFileSamples','ethanol.xyz', False),
-('xyzFileSamples','example1_c2h5_h_L5_L10.xyz', False),
-('xyzFileSamples','example2_ch3sih2_f_L5_L10.xyz', False),
-('xyzFileSamples','example3_ch3_ch2oh_L3_L8.xyz', False),
-('xyzFileSamples','example4_circumpyrene-2-nyl_ic_L33_L97.xyz', False),
-('xyzFileSamples','example5_IS56_ic_L16_L79.xyz', False),
-('xyzFileSamples','example6_pyrene-2-nyl_ic_L17_L27.xyz', False),
-('xyzFileSamples','example7_pyrene-2-nyl_ic_mod_L17_L27.xyz', False),
-('xyzFileSamples','teos.xyz', False)
+('xyzFileSamples','h.xyz'),
+('xyzFileSamples','h_h.xyz'),
+('xyzFileSamples','h2.xyz'),
+('xyzFileSamples','c2h6.xyz'),
+('xyzFileSamples','ethanol.xyz'),
+('xyzFileSamples','cholesterol.xyz'),
+('xyzFileSamples','testmol_sym.xyz'),
+('xyzFileSamples','testmol_asym.xyz'),
+('xyzFileSamples','teos.xyz')
 ]
 )
-def test_xyzToAtomsPositions(testFilesDir, testFileName,
-            regenerateResults, regenerateAllResults=False):
+def test_xyzToAtomsPositions(testFilesDir, testFileName):
     print('========================================================')
     print('TEST DIR: ', testFilesDir)
     print('TEST LOG: ', testFileName)
     testPath = os.path.join(THIS_DIR, testFilesDir)
-    testFile = os.path.join(testPath, testFileName)
-    refFile = testFile + '_atomspositions.json_ref'
+    refFile = os.path.join(testPath, testFileName)
+    refXYZ = ioutils.removeBlankTrailingLines(ioutils.readFile(refFile))
+    atomsPos = xyztools.xyzToAtomsPositions(refXYZ)
+    refXYZ = xyztools.xyzReorderOnAtomsMatch(refXYZ, atomsPos)
+    refXYZ = xyztools.xyzToIntertialFrame(refXYZ)
 
-    testAtomsPos = json.dumps(
-                        mainutils.xyzToAtomsPositionsWrapper(
-                            testFile,
-                            noOutFile=True)[0],
-                        indent=4)
-    if regenerateResults or regenerateAllResults:
-        # dump just parsed data as the ref data
-        ioutils.writeFile(refFile,testAtomsPos)
-
-    refAtomsPos = ioutils.readFile(refFile)
-    assert testAtomsPos == refAtomsPos
+    for i in range(10):
+        tarXYZ = xyztools.xyzReshuffle(refXYZ, seed=i)
+        atomsPos = xyztools.xyzToAtomsPositions(tarXYZ)
+        tarXYZ = xyztools.xyzReorderOnAtomsMatch(tarXYZ, atomsPos)
+        tarXYZ = xyztools.xyzToIntertialFrame(tarXYZ)
+        theSame = xyztools.compareXYZs(tarXYZ,refXYZ)
+        assert theSame == True
     print('========================================================')
 
 

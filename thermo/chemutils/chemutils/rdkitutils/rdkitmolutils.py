@@ -337,3 +337,35 @@ def getRdkitMolOptConformers(mol, retNumConfs=1, numConfs=10, maxIters=1000, mmf
     if retNumConfs > len(conformers): retNumConfs = len(conformers)
 
     return conformers[:retNumConfs]
+
+def rdkitSumAllAtomsDistFromAtoms(rdkitMol, equivAtomsList):
+    atomsDistances = []
+    atomsNum = rdkitMol.GetNumAtoms()
+    for equivAtomId in equivAtomsList:
+        equivAtomPos = getRdkitAtomXYZbyId(rdkitMol, equivAtomId)
+        _dist = 0.0
+        for atomId in range(atomsNum):
+            if atomId == equivAtomId: continue
+            atomPos = getRdkitAtomXYZbyId(rdkitMol, atomId)
+            _dist+=linalg.getXYZPointsDistance(equivAtomPos, atomPos)
+        atomsDistances.append(_dist)
+    return atomsDistances
+
+# atm the this rdkit function contains a bug
+# it will probably be solved in the future release
+#def canonicalizeMolOrientation(mol, *args, **kwargs):
+#    rdkit.Chem.rdMolTransforms.CanonicalizeMol(mol, *args, **kwargs)
+
+def getAngleDeg(rdkitMol, atom1id, atom2id, atom3id, confId=0):
+    conf = rdkitMol.GetConformer(confId)
+    return rdkit.Chem.rdMolTransforms.GetAngleDeg(conf, atom1id, atom2id, atom3id)
+
+def getDihedralDeg(rdkitMol, atom1id, atom2id, atom3id, atom4id, confId=0):
+    conf = rdkitMol.GetConformer(confId)
+    return rdkit.Chem.rdMolTransforms.GetDihedralDeg(conf, atom1id, atom2id, atom3id, atom4id)
+
+def getAtomsXYZs(rdkitMol, atomList):
+    atomXYZ = []
+    for atomId in atomList:
+        atomXYZ.append(getRdkitAtomXYZbyId(rdkitMol, atomId))
+    return np.stack(atomXYZ,axis=0)
