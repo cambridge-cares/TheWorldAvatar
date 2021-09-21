@@ -45,7 +45,7 @@ Usage:
 
 Options:
 --conv-options=<convopts>      OpenBabel conversion options. Defaults to none.
---job-route=<jobroute>         Gaussian job route [default: B3LYP/6-311+G(d,p) Opt Freq]
+--job-route=<jobroute>         Gaussian job route [default: #n B3LYP/6-311+G(d,p) Opt Freq]
 --charge=<charge>              Molecule's charge in atomic units [default: 0]
 --spin-mult=<spinmult>         Molecule's spin multiplicity [default: 1]
 --memory=<mem>                 Memory to be used for the gaussian job, in GB  [default: 32]
@@ -104,7 +104,7 @@ def start():
                 )
 
     elif args["xyz2ginp"]:
-        mainutils.xyzToGaussianInputWrapper(xyzFileOrDir=args['<xyzFileOrDir>'], \
+        output = mainutils.xyzToGaussianInputWrapper(xyzFileOrDir=args['<xyzFileOrDir>'], \
              		    jobRoute= args['--job-route'], \
  		                charge= args['--charge'], \
  	                    spinMult = args['--spin-mult'], \
@@ -116,7 +116,7 @@ def start():
                         noOutFile=args['--no-file-output'], \
                 )
     elif args["xyz2xyz"]:
-        mainutils.xyzReorderToxyz(
+        output = mainutils.xyzReorderToxyz(
                         xyzTargetFile= args['<xyzTargetFile>'], \
                         xyzRefFile= args['<xyzRefFile>'], \
                         outDir= args['--out-dir'], \

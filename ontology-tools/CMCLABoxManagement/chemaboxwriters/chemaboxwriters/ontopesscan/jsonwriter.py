@@ -10,11 +10,13 @@ SCAN_COORDINATE_TYPE='ScanCoordinateType'
 SCAN_COORDINATE_UNIT='ScanCoordinateUnit'
 SCAN_COORDINATE_VALUE='ScanCoordinateValue'
 SCAN_POINTS_JOBS='ScanPointsJobs'
+SCAN_ATOM_IDS= 'ScanAtomIDs'
 
 def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
     data_out ={}
     data_out[commonv.SPECIES_IRI] = os_iris.split(',')
     data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(',')
+    data_out[SCAN_ATOM_IDS] = " ".join(oc_atoms_pos.split(',')[:])
     oc_atoms_pos = [int(at_pos)-1 for at_pos in oc_atoms_pos.split(',')]
 
     ndegrees = len(os_atoms_iris.split(','))

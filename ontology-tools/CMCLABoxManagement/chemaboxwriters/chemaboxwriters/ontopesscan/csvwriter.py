@@ -13,7 +13,8 @@ from chemaboxwriters.ontopesscan.jsonwriter import SCAN_COORDINATE_ATOMS_IRIS, \
                                                    SCAN_COORDINATE_TYPE, \
                                                    SCAN_COORDINATE_UNIT, \
                                                    SCAN_COORDINATE_VALUE, \
-                                                   SCAN_POINTS_JOBS
+                                                   SCAN_POINTS_JOBS, \
+                                                   SCAN_ATOM_IDS
 
 def ops_csvwriter(data):
     data = json.loads(data)
@@ -67,6 +68,8 @@ def write_scanpoints(spamwriter,entryIRI,calc_id,data):
         spamwriter.writerow([data[SCAN_POINTS_JOBS][k],'Instance',onto_comp + '#' + gauss_type,'','',''])
         spamwriter.writerow([pes_pref + 'ScanPoint_' + calc_id + '_' + str(k+1),'Instance',
                                 data[SCAN_POINTS_JOBS][k],onto_pes + '#hasCalculation','',''])
+        spamwriter.writerow([onto_pes + '#hasInputAtomIds','Data Property',pes_pref + 'ScanPoint_' + calc_id + '_' + str(k+1),
+        '',data[SCAN_ATOM_IDS],'String'])
 
         spamwriter.writerow([pes_pref + 'ScanCoordinateValue_' + calc_id + '_' + str(k+1),'Instance',onto_pes + '#ScanCoordinateValue',
                                 '','',''])
