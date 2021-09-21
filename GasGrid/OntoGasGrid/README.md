@@ -4,7 +4,7 @@ This folder contains the code to generate semantic descriptions of the UK gas ne
 
 Specific ```README``` files can be located within each folder. 
 
-**To instanciate a representation from scratch I would follow this order:**
+**To instantiate a representation from scratch, I would follow this order:**
 
 1. ```grid_component_owl_generator```
 2. ```pipeline_owl_generator```
