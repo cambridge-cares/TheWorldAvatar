@@ -2,6 +2,11 @@ version: "3.8"
 
 # Services
 services:
+
+  # Gas Grid Agent
+  gas-grid-agent:
+    build:
+      target: dev
   
   # Kinetics Agent.
   # Note: This Image mounts a volume so that it can access the SRM Driver and

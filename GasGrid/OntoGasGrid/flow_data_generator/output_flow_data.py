@@ -112,7 +112,7 @@ def submitQuery(namespace, callbackSuccess, callbackFailure):
     
     # Create instances
     KGRouter = jpsView.KGRouter
-    KGClient = jpsView.RemoteKnowledgeBaseClient(kgLocation)
+    KGClient = jpsView.RemoteStoreClient(kgLocation)
         
     # Submit the query and await the result
     today = dt.now()

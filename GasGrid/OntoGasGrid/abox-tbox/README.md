@@ -1,0 +1,2 @@
+This folder contains the Abox and Tbox files for OntoGasGrid. 
+The pipeline ABox is not under version control, neither is the ONS abox (which was downloaded from the ONS linked data portal and can be found in the project folder.)
