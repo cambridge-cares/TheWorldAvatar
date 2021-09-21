@@ -1,21 +1,27 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'db' stack, with the exception of the 'ports' node which should be set in
+# docker-compose.deploy.live.yml and docker-compose.deploy.test.yml (see those files for details).
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
 version: "3.8"
 
-# Services
+
 services:
 
   # Blazegraph
   blazegraph:
-    build:
-      context: blazegraph
-    container_name: "blazegraph-${MODE}"
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
-      hash: "${HASH}"
+    pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
     secrets:
@@ -23,34 +29,24 @@ services:
     volumes:
       - blazegraph_data:/data
 
-    # Blazegraph geo
-  blazegraph_geo:
-    build:
-      context: blazegraph_geo
-    container_name: "blazegraph_geo-${MODE}"
+  # Blazegraph geo
+  blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
-    labels:
-      authors: "msff2@cam.ac.uk, support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
-      hash: "${HASH}"
+    container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
     restart: unless-stopped
     volumes:
       - blazegraph_geo_data:/data
 
   # Postgres
   postgres:
-    container_name: "postgres-${MODE}"
+    image: docker.cmclinnovations.com/postgres:13.3-alpine
+    container_name: "postgres${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-    image: docker.cmclinnovations.com/postgres:13.3-alpine
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "Postgres/PostgreSQL with SCRAM-SHA-256 authentication."
-      hash: "${HASH}"
     restart: unless-stopped
     secrets:
       - postgres_password
@@ -59,18 +55,12 @@ services:
 
   # RDF4J
   rdf4j:
-    build:
-      context: rdf4j
-    container_name: "rdf4j-${MODE}"
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
+    container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
-    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
-    labels:
-      authors: "support@cmclinnovations"
-      builder: "${BUILDER}"
-      description: "RDF4J with BASIC authentication for the server and workbench."
-      hash: "${HASH}"
+    pull_policy: if_not_present
     restart: unless-stopped
     # Add secrets to set BASIC authentication passwords for both the workbench and server
     secrets:
@@ -78,10 +68,17 @@ services:
       - rdf4j_user_password
     volumes:
       - rdf4j_data:/var/rdf4j
-      - rdf4j_logs:/usr/local/tomcat/logs 
+      - rdf4j_logs:/usr/local/tomcat/logs
 
 
-# Secrets to supply Blazegraph, Postgres, RDF4J passwords
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+
+# Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
     file: blazegraph/secrets/blazegraph_password  
@@ -93,7 +90,7 @@ secrets:
     file: rdf4j/secrets/rdf4j_user_password
 
 
-# Volumes to handle triplestore data and logging for Blazegraph, RDF4J
+# Volumes to handle triplestore data and logging
 volumes:
   blazegraph_data:
     name: "blazegraph_data"

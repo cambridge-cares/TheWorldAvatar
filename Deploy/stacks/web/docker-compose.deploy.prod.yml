@@ -1,3 +1,11 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack in production ('prod') mode and not in development ('dev') mode.
+# It can also include whole services that are only required in production mode, and therefore 
+# aren't declared in docker-compose.deploy.yml .
+
+# Its counterpart is docker-compose.dev.yml, although that file isn't necessarily required.
+# =================================================================================================
+
 version: "3.8"
 
 # Services
@@ -5,10 +13,10 @@ services:
 
   # Add a Certbot container to handle certificate renewal
   certbot:
-    # After starting, run 'certbot renew' every 12 hours
-    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     image: docker.cmclinnovations.com/certbot/certbot:v1.12.0
     container_name: "certbot-${MODE}"
+    # After starting, run 'certbot renew' every 12 hours
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     restart: unless-stopped
     volumes:
       # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir
@@ -25,14 +33,7 @@ services:
         target: /var/lib/letsencrypt
 
   # Reverse Proxy
-  reverse_proxy:
-    # Enable ssl
-    build:
-      target: prod
-    # Map http and https to standard ports
-    ports:
-      - 80:80
-      - 443:443
+  reverse-proxy:
     volumes:
       # Add a bind volume (shared with the certbot container) for the letsencrypt config dir
       - type: bind
@@ -42,37 +43,6 @@ services:
       - type: volume
         source: certbot-challenge
         target: /var/www/certbot
-
-  # Website
-  website:
-    build:
-      target: prod
-      
-  # Power System and SDG Visualisation
-  uk-power-system:
-    build:
-      target: production
-
-  # Gas Grid Visualisation
-  uk-gas-grid:
-    build:
-      target: production
-      
-  # Land Use Crop Map
-  land-use:
-    build:
-      target: production
-      
-  # Flood Map
-  flood-map:
-    build:
-      target: production
-
-
-# Production network
-networks:
-  default:
-    name: prod-web
 
 
 # Volumes

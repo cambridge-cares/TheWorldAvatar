@@ -33,8 +33,8 @@ RUN alternatives --install /usr/bin/python python /usr/bin/python2 1
 RUN alternatives --install /usr/bin/python python /usr/bin/python3 2
 
 # Download and build Slurm
-RUN wget https://download.schedmd.com/slurm/slurm-20.11.5.tar.bz2
-RUN rpmbuild -ta ./slurm-20.11.5.tar.bz2
+RUN wget https://download.schedmd.com/slurm/slurm-20.11.7.tar.bz2
+RUN rpmbuild -ta ./slurm-20.11.7.tar.bz2
 RUN rpm -Uvh ~/rpmbuild/RPMS/x86_64/*.rpm
 
 # Create a slurm user
