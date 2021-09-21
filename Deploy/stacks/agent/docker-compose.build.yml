@@ -23,18 +23,18 @@ services:
         description: "Simple servlet to accept requests and (where valid) forward to SMTP server."
         hash: "${HASH}"
 
-  # # Gas Grid Agent
-  # gas-grid-agent:
-  #   image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
-  #   build:
-  #     context: "../../../GasGrid"
-  #     dockerfile: "./docker/Dockerfile"
-  #     labels:
-  #       authors: "support@cmclinnovations.com"
-  #       builder: "${BUILDER}"
-  #       description: "Gas Grid Agent."
-  #       hash: "${HASH}"
-  #     target: "${MODE}"
+  # Gas Grid Agent
+  gas-grid-agent:
+    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../GasGrid"
+      dockerfile: "docker/Dockerfile"
+      labels:
+        authors: "support@cmclinnovations.com"
+        builder: "${BUILDER}"
+        description: "Gas Grid Agent."
+        hash: "${HASH}"
+      target: "${MODE}"
 
   # JPS Chatbot
   jps-chatbot:
