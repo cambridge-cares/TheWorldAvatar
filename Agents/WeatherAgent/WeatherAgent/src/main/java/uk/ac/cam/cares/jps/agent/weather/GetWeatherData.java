@@ -83,7 +83,6 @@ public class GetWeatherData extends JPSAgent{
 					LOGGER.info("Updated station: <" + station + "> with latest data");
 				} catch (Exception e) {
 					LOGGER.error("API weather update failed, returned values are not up-to-date.");
-					throw new JPSRuntimeException(e);
 				}
 			}
 			
