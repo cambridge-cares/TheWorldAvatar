@@ -10,6 +10,7 @@ import csv
 from io import StringIO
 import re
 import chemaboxwriters.common.commonvars as commonv
+from chemaboxwriters.common import PREFIXES
 from  chemaboxwriters.ontocompchem.prefixes import comp_pref, \
                                                    data_pref, \
                                                    onto_pref, \

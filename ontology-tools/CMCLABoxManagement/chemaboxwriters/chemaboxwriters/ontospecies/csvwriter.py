@@ -63,7 +63,7 @@ def os_csvwriter(data):
 
 def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])
-    spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_kb[:-1],'base','',''])
+    spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_kb,'base','',''])
     spamwriter.writerow([out_id, 'Instance','Species','','',''])
     spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id,'String'])
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
