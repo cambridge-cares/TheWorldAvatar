@@ -15,14 +15,6 @@ def xyzToAtomsPositions(xyzFileOrStr):
     Returns atom positions (order) given a molecule in an xyz format.
     Inchi-based algorithm.
 
-    Note that the assigned positions are NOT UNIQUE and depend on the
-    order of atoms in xyz file. This is true for both, heavy atoms
-    and hydrogens. Heavy atoms positons are based on inchi, so they
-    can only change due to presence of equivalent atoms with respect
-    to connectivity. Positions of hydrogen atoms are assigned after
-    the heavy atoms, taking any non-connected hydrogens first
-    followed by hydrogens connected to heavy atoms.
-
     Use this function to set the atoms positions in a reference
     molecule. The idea is to assign the positions once and to never
     change them again.
@@ -42,6 +34,11 @@ def xyzToAtomsPositions(xyzFileOrStr):
     if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
 
     xyzFileOrStr = xyzToIntertialFrame(xyzFileOrStr)
+
+    # swap all hydrogens with a heavy atom, here I picked Cl, but any other halogen atom
+    # should also work. this atom swap is to force inchi to considered all the atoms in its
+    # connectivity algorithm. note that atoms from the first group (e..g Na, Li) wont work
+    # as they produce solids and thus the inchi string is significantly changed
     xyzFileOrStr = '\n'.join([xyz_line.replace('H','Cl') for xyz_line in xyzFileOrStr.split('\n')])
 
     inchiWithAux = obconverter.obConvert(inputMol=xyzFileOrStr,inputMolFormat='xyz',
@@ -49,13 +46,13 @@ def xyzToAtomsPositions(xyzFileOrStr):
     inchi, inchiAux = inchiWithAux.split('\n')
     # find connectivity info in the inchi string - used to detect the
     # presence of heavy atoms.
-    atomsInchiConnectivity = re.search(r'/c(\d+?\*)?(.*?/?)',inchi)
+    atomsInchiConnectivity = re.search(r'/c(\d+?\*)?(.*?)(?=/|$)',inchi)
     # read the mapping between heavy atoms (+ lone hydrogens) in xyz and inchi
     # from the auxiliary log
-    atomsInchiAuxMap = re.search(r'/N:(.*?/)',inchiAux)
-    atomsInchiAuxEquivMap = re.search(r'/E:(.*?/)',inchiAux)
+    atomsInchiAuxMap = re.search(r'/N:(.*?)(?=/|$)',inchiAux)
+    atomsInchiAuxEquivMap = re.search(r'/E:(.*?)(?=/|$)',inchiAux)
 
-    # create the rdkit mol object which simply serves as the molecule container
+    # create the rdkit mol object
     rdkitMolFromMol = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
     numAtoms = rdkitMolFromMol.GetNumAtoms()
 
@@ -68,7 +65,7 @@ def xyzToAtomsPositions(xyzFileOrStr):
         print(f'Warning: Provided xyz file contains {len(mol_frags)} molecular fragments.')
         #return atomsPositions
 
-    # get the positions for heavy atoms and lone hydrogens
+    # get the atoms based on the inchi connectivity info
     if atomsInchiConnectivity is not None:
         # process the atomsInchiAuxMap and extract the atoms mapping
         atomsInchiAuxMap= atomsInchiAuxMap.groups()[0] \
@@ -96,6 +93,7 @@ def xyzToAtomsPositions(xyzFileOrStr):
                     atomsZ = atomsXYZ[:,2].tolist()
                     _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, equivAtomsList)
                     _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+                    # use four invariants to disambiguate atoms
                     equivAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
 
                     currentAtomsOrder = sorted([atomsInchiMatch[equivAtomId] for equivAtomId in equivAtomsList])
