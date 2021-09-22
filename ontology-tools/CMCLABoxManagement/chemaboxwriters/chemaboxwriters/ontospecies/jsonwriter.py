@@ -17,7 +17,6 @@ from collections import Counter
 import json
 import re
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontospecies.prefixes import onto_kb
 
 cas_re = re.compile('\d{2,7}-\d\d-\d')
 
@@ -32,6 +31,8 @@ CAS_NUMBER='CAS'
 PUBCHEM_CID='PubchemCID'
 ATOM_LIST='AtomsList'
 ATOM_COUNTS='AtomsCounts'
+
+spec_pref = PREFIXES["spec_pref"]
 
 def os_jsonwriter(data, calc_id=""):
     data = json.loads(data)
@@ -91,7 +92,7 @@ def os_jsonwriter(data, calc_id=""):
         calc_id = get_random_id()
 
     data_out[commonv.ENTRY_UUID] = calc_id
-    data_out[commonv.ENTRY_IRI] = onto_kb+'/Species_'+calc_id
+    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+calc_id
 
     return [json.dumps(data_out)]
 

@@ -10,12 +10,14 @@ import csv
 
 from io import StringIO
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontomops.prefixes import onto_spec, \
-                                              onto_mops, \
-                                              mops_pref, \
-                                              rdf_pref, \
-                                              uom_pref, \
-                                              unres_pref
+from chemaboxwriters.common import PREFIXES
+
+onto_spec = PREFIXES["onto_spec"]
+onto_mops = PREFIXES["onto_mops"]
+mops_pref = PREFIXES["mops_pref"]
+rdf_pref = PREFIXES["rdf_pref"]
+uom_pref = PREFIXES["uom_pref"]
+unres_pref = PREFIXES["unres_pref"]                                              
 
 def om_csvwriter(data):
     data = json.loads(data)

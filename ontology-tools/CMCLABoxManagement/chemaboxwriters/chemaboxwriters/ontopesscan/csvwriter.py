@@ -2,19 +2,21 @@ import json
 import csv
 from io import StringIO
 import chemaboxwriters.common.commonvars as commonv
-from  chemaboxwriters.ontopesscan.prefixes import spec_pref, \
-                                                  pes_pref, \
-                                                  gain_pref, \
-                                                  unit_pref, \
-                                                  onto_spec, \
-                                                  onto_comp, \
-                                                  onto_pes
+from chemaboxwriters.common import PREFIXES
 from chemaboxwriters.ontopesscan.jsonwriter import SCAN_COORDINATE_ATOMS_IRIS, \
                                                    SCAN_COORDINATE_TYPE, \
                                                    SCAN_COORDINATE_UNIT, \
                                                    SCAN_COORDINATE_VALUE, \
                                                    SCAN_POINTS_JOBS, \
                                                    SCAN_ATOM_IDS
+
+spec_pref = PREFIXES["spec_pref"]
+pes_pref = PREFIXES["pes_pref"]
+gain_pref = PREFIXES["gain_pref"]
+unit_pref = PREFIXES["unit_pref"]
+onto_spec = PREFIXES["onto_spec"]
+onto_comp = PREFIXES["onto_comp"]
+onto_pes = PREFIXES["onto_pes"]
 
 def ops_csvwriter(data):
     data = json.loads(data)

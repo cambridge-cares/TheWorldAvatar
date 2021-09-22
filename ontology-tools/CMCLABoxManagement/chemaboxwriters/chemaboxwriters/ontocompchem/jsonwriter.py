@@ -4,10 +4,10 @@ from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.randomidgenerator import get_random_id
 import json
 import chemaboxwriters.common.commonvars as commonv
-from  chemaboxwriters.ontocompchem.prefixes import comp_pref
+from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, \
                                                      PROGRAM_VERSION
-
+comp_pref = PREFIXES["comp_pref"] 
 
 def oc_jsonwriter(data, calc_id=""):
     data = json.loads(data)

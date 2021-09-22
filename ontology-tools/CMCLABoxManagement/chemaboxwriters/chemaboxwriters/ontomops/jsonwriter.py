@@ -1,7 +1,9 @@
 import json
 from chemaboxwriters.common.randomidgenerator import get_random_id
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontomops.prefixes import omops_entry_prefix
+from chemaboxwriters.common import PREFIXES
+
+omops_entry_prefix = PREFIXES["omops_entry_prefix"]
 
 def om_jsonwriter(data, calc_id=""):
     data = json.loads(data)
