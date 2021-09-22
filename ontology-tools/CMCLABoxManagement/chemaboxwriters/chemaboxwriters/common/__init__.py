@@ -3,9 +3,9 @@ from chemaboxwriters.common.base import StageHandler, Pipeline
 from chemaboxwriters.common.stageenums import aboxStages
 import json
 import os
+import pkg_resources
 
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-PREFIX_FILE = os.path.join(THIS_DIR,'prefixes.json')
+PREFIX_FILE = pkg_resources.resource_filename(__name__,'prefixes.json')
 
 with open(PREFIX_FILE, 'r') as pfile:
     PREFIXES = json.load(pfile)
