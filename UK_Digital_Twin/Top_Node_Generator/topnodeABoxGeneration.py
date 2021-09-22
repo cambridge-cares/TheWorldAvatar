@@ -150,8 +150,12 @@ def addThirdLevelNode(graph):
                URIRef(ontocape_upper_level_system.hasDirectSubsystem.iri), URIRef(Third_Level_Node['UKPowerPlant2019'])))
     graph.add((URIRef(Second_Level_Node['UKEnergyConsumption']),\
                URIRef(ontocape_upper_level_system.hasDirectSubsystem.iri), URIRef(Third_Level_Node['UKEnergyConsumption2017'])))
+    
+    #################### To be discard, has been assigned in the topology creator  ####################
     graph.add((URIRef(Second_Level_Node['UKGridTopology']),\
                URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(Third_Level_Node['UKTopology10Bus'])))
+    #################### To be discard, has been assigned in the topology creator  ####################   
+        
     graph.add((URIRef(Second_Level_Node['UKPowerGrid']),\
               URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(Third_Level_Node['UKGrid10Bus'])))
     
@@ -162,14 +166,15 @@ def addThirdLevelNode(graph):
     graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDF.type, URIRef(ontocape_upper_level_system.CompositeSystem.iri)))
     graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDFS.label, Literal(str("UKEnergyConsumption2017"))))
     
+    #################### To be discard, has been assigned in the topology creator ####################
     graph.add((URIRef(Third_Level_Node["UKTopology10Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri))) 
     graph.add((URIRef(Third_Level_Node["UKTopology10Bus"]), RDFS.label, Literal(str("UKTopology10Bus")))) 
+    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
+    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDFS.label, Literal(str("UKTopology29Bus"))))    
+    #################### To be discard, has been assigned in the topology creator  ####################
     
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
     graph.add((URIRef(Third_Level_Node["UKGrid10Bus"]), RDFS.label, Literal(str("UKGrid10Bus"))))  
-    
-    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
-    graph.add((URIRef(Third_Level_Node["UKTopology29Bus"]), RDFS.label, Literal(str("UKTopology29Bus"))))  
     
     graph.add((URIRef(Third_Level_Node["UKGrid29Bus"]), RDF.type, URIRef(ontocape_mathematical_model.MathematicalModel.iri)))
     graph.add((URIRef(Third_Level_Node["UKGrid29Bus"]), RDFS.label, Literal(str("UKGrid29Bus"))))  
@@ -234,7 +239,7 @@ def addFifthLevelNode_gridModel(graph, nodeName, numOfBus, localQuery, Sleepycat
     return graph
     
 
-"""####Main function: Create or update the top node owl file####"""
+"""#### Main function: Create or update the top node owl file ####"""
 def generateTopNodeGraph(storeType, localQuery, OWLFileStoragePath, updateLocalOWLFile = True, *numOfBusArray):
     print("******Start creating the top node graph******")
     global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, defaultPath_Sleepycat

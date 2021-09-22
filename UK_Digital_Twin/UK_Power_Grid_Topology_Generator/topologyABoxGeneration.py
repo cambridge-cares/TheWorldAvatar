@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 22 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -82,9 +82,10 @@ endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 """Root_node, root_uri (top node) and namespace creator based on different bus number"""
 def rootNodeAndNameSpace(numOfBus): 
     root_node = UKDT.nodeURIGenerator(3, dt.gridTopology, numOfBus)
+    gridModelNodeSegment = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] 
     root_uri = root_node.split('#')[0]
     tp_namespace = root_uri + HASH
-    return root_node, root_uri, tp_namespace
+    return root_node, root_uri, tp_namespace, gridModelNodeSegment
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -136,7 +137,7 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     # specify the topology properties according to the model type
     topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays = createTopologicalInformationPropertyInstance(numOfBus, numOfBranch)
     # specify the top node and name space
-    root_node, root_uri, tp_namespace = rootNodeAndNameSpace(numOfBus)
+    root_node, root_uri, tp_namespace, gridModelNodeSegment = rootNodeAndNameSpace(numOfBus)
     print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology' )
     global defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
@@ -156,14 +157,15 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontocape_upper_level_system)))
     
     # Add root node type and the connection between root node and its father node   
-    g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
-                        URIRef(UKDT.nodeURIGenerator(2, dt.gridTopology, None))))
+    g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(UKDT.nodeURIGenerator(2, dt.gridTopology, None))))
+    g.add((URIRef(UKDT.nodeURIGenerator(2, dt.gridTopology, None)), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
+    g.add((URIRef(root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus")))  
     
     if addEBusNodes != None:
         g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace)
     if addELineNodes != None:    
-        g, nodeName = addELineNodes(g, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace)
+        g, nodeName = addELineNodes(g, numOfBranch, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment)
     if addEGenNodes != None:
         g, nodeName = addEGenNodes(g, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace)
     
@@ -249,7 +251,7 @@ def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_nam
     return graph, nodeName
 
 """Add nodes represent Branches"""
-def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery, root_node, root_uri, tp_namespace):  
+def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment):  
     print("****************Adding the triples of ELine of the grid topology.****************")
     nodeName = "ELine"
     if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
@@ -260,28 +262,22 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
     counter = 1
     # Number of the Elines (branches)
     Num_Eline = len(branchTopoArray) -1    
+    if numOfBranch == Num_Eline:
+        pass
+    else:
+        print("WARNING: the specified number of the ELine does not equal to the one providede from the branch topoplogy information.")
+        print("The generation of the ELine topology will continue but please check the number of the ELine in the runing model.")
     while counter <= Num_Eline:
         branchTopoData = branchTopoArray[counter]
         FromBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[0].zfill(3)
-        ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)              
-        # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
-        gpsArray = []
-        gpsArray = list(query_topo.queryBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
-        Eline_length = DistanceBasedOnGPDLocation(gpsArray[0])
-        print(Eline_length)      
+        ToBus_iri = tp_namespace + uk_topo.EquipmentConnection_EBusKey + branchTopoData[1].zfill(3)
+        
         # PowerFlow_ELine node uri
         branch_context_locator = uk_topo.PowerFlow_ELineKey + str(counter).zfill(3) 
         branch_node = tp_namespace + branch_context_locator
-        ELine_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, 10).split(OWL)[0] + SLASH + uk_eline_model.ModelELineKey + str(counter).zfill(3) + OWL + HASH
+        ELine_namespace = gridModelNodeSegment + SLASH + uk_eline_model.ModelELineKey + str(counter).zfill(3) + OWL + HASH
         Eline_context_locator = uk_eline_model.ELineKey + str(counter).zfill(3)
         Eline_node = ELine_namespace + Eline_context_locator
-        ELine_shape_node = ELine_namespace + uk_eline_model.ShapeKey + Eline_context_locator
-        ELine_length_node = ELine_namespace + uk_eline_model.LengthKey + Eline_context_locator
-        value_ELine_length_node = ELine_namespace + uk_topo.valueKey + uk_eline_model.LengthKey + Eline_context_locator
-        PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_eline_model.OHL400kVKey + Eline_context_locator
-        PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_eline_model.OHL275kVKey + Eline_context_locator
-        num_of_PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL400kVKey + Eline_context_locator
-        num_of_PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL275kVKey + Eline_context_locator
         
         # Link line node with root node and specify its type
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(branch_node)))
@@ -295,34 +291,53 @@ def addELineNodes(graph, branchTopoArray, branchPropArray, branchTopoHeader, bra
         # link buses with its hasOutput and hasInput
         graph.add((URIRef(FromBus_iri), URIRef(ontocape_network_system.hasOutput.iri), URIRef(branch_node)))
         graph.add((URIRef(ToBus_iri), URIRef(ontocape_network_system.hasInput.iri), URIRef(branch_node)))
-        # add ShapeRepresentation (length) of ELine
-        graph.add((URIRef(Eline_node), URIRef(ontocape_geometry.hasShapeRepresentation.iri), URIRef(ELine_shape_node)))
-        graph.add((URIRef(ELine_shape_node), RDF.type, URIRef(ontocape_geometry.Cylinder.iri)))
-        graph.add((URIRef(ELine_shape_node), URIRef(ontocape_geometry.has_length.iri), URIRef(ELine_length_node)))
-        graph.add((URIRef(ELine_length_node), RDF.type, URIRef(ontocape_geometry.Height.iri)))
-        # value of branch length
-        graph.add((URIRef(ELine_length_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_ELine_length_node)))
-        graph.add((URIRef(value_ELine_length_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.km.iri)))
-        graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(Eline_length))))
-        # the parallel conection of each branch (400kV and 275kV)
-        graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_400kV)))
-        graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_275kV)))
-        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
-        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
-        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("400kV")))
-        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("275kV")))
-        
-        # graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDFS.label, Literal("400kV")))
-        # graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDFS.label, Literal("275kV")))
-        
-        graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_400kV)))
-        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[2]))))
-        
-        graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_275kV)))
-        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-        graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[3]))))
+              
+        # Adding the nodes about the branches' ShapeRepresentation (the different voltage level's branches) 
+        # if the number of the 400kV_PARALLEL_CONNECTIONS and 275kV_PARALLEL_CONNECTIONS are assigned to be 0 inferring that there is no need for represent the 
+        # ShapeRepresentation in the topology graph
+        if int(branchTopoData[2].strip('\n')) != 0 and  int(branchTopoData[3].strip('\n')) != 0: 
+            # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
+            gpsArray = []
+            gpsArray = list(query_topo.queryBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
+            Eline_length = DistanceBasedOnGPDLocation(gpsArray[0])
+            # print(Eline_length)      
+            # ELine ShapeRepresentation node uri
+            ELine_shape_node = ELine_namespace + uk_eline_model.ShapeKey + Eline_context_locator
+            ELine_length_node = ELine_namespace + uk_eline_model.LengthKey + Eline_context_locator
+            value_ELine_length_node = ELine_namespace + uk_topo.valueKey + uk_eline_model.LengthKey + Eline_context_locator
+            PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_eline_model.OHL400kVKey + Eline_context_locator
+            PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_eline_model.OHL275kVKey + Eline_context_locator
+            num_of_PARALLEL_CONNECTIONS_400kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL400kVKey + Eline_context_locator
+            num_of_PARALLEL_CONNECTIONS_275kV = ELine_namespace + uk_topo.NumberOfKey + uk_eline_model.OHL275kVKey + Eline_context_locator
+            
+            # add ShapeRepresentation (length) of ELine
+            graph.add((URIRef(Eline_node), URIRef(ontocape_geometry.hasShapeRepresentation.iri), URIRef(ELine_shape_node)))
+            graph.add((URIRef(ELine_shape_node), RDF.type, URIRef(ontocape_geometry.Cylinder.iri)))
+            graph.add((URIRef(ELine_shape_node), URIRef(ontocape_geometry.has_length.iri), URIRef(ELine_length_node)))
+            graph.add((URIRef(ELine_length_node), RDF.type, URIRef(ontocape_geometry.Height.iri)))
+            # value of branch length
+            graph.add((URIRef(ELine_length_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_ELine_length_node)))
+            graph.add((URIRef(value_ELine_length_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+            graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.km.iri)))
+            graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(Eline_length))))
+            # the parallel conection of each branch (400kV and 275kV)
+            graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_400kV)))
+            graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS_275kV)))
+            graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+            graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
+            graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("400kV")))
+            graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal("275kV")))
+            
+            # graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), RDFS.label, Literal("400kV")))
+            # graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), RDFS.label, Literal("275kV")))
+            
+            graph.add((URIRef(PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_400kV)))
+            graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+            graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_400kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[2]))))
+            
+            graph.add((URIRef(PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS_275kV)))
+            graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+            graph.add((URIRef(num_of_PARALLEL_CONNECTIONS_275kV), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(branchTopoData[3]))))
 
         counter += 1
         
@@ -427,7 +442,7 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays): # fuelType, 
     return graph
 
 if __name__ == '__main__':    
-    createTopologyGraph('default', False, 29, 98, addEBusNodes, None, None, None, True)
-    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, False)
+    # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, None, True)
+    createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, None, True)
     # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, False)
-    print('Terminated')
+    print('**************Terminated**************')
