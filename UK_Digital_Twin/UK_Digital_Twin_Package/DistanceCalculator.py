@@ -8,7 +8,7 @@
 
 from math import sin, cos, sqrt, atan2, radians
 
-def DistanceBasedOnGPDLocation(GPSLocationArray): # GPSLocationArray = [Point1_lat, Point1_long, Point2_lat, Point2_long]
+def DistanceBasedOnGPSLocation(GPSLocationArray): # GPSLocationArray = [Point1_lat, Point1_long, Point2_lat, Point2_long]
     if len(GPSLocationArray) == 4:
         pass
     else:
@@ -28,7 +28,7 @@ def DistanceBasedOnGPDLocation(GPSLocationArray): # GPSLocationArray = [Point1_l
     
     a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
     c = 2 * atan2(sqrt(a), sqrt(1 - a))
-    distance = R * c
+    distance = R * c #unit: km
     
     return round(distance, 4)
 

@@ -14,8 +14,8 @@ from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, 
 
 qres = []
 
-# query the GPD location of both from bus node and to bus node of a branch
-def queryBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuery):
+# query the GPS location of both from bus node and to bus node of a branch
+def queryConnectedBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuery):
     queryStr = """
     PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -47,13 +47,13 @@ def queryBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuer
     global qres
     
     if localQuery == False and remoteEndPoint != None: 
-        print('remoteQuery')
+        print('remoteQuery queryConnectedBusGPS')
         res = json.loads(performQuery(remoteEndPoint, queryStr))
-        print('query is done')
+        print('queryConnectedBusGPS is done')
         qres = [[ str(r['FromBus_latitude']), str(r['FromBus_longitude']), str(r['ToBus_latitude']), str(r['ToBus_longitude'])] for r in res]
         return qres
     elif SleepycatPath != None and localQuery == True:  
-        print('localQuery')
+        print('localQuery queryConnectedBusGPS')
         pp_cg = ConjunctiveGraph('Sleepycat')
         sl = pp_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:
@@ -64,32 +64,39 @@ def queryBusGPS(remoteEndPoint, SleepycatPath, FromBus_iri, ToBus_iri, localQuer
         return qres
 
 # query the bus node iri and its located region
-def queryBusLocation(ConjunctiveGraph, localQuery, *endPoints):
+def queryBusLocatedRegion(numOfBus, ConjunctiveGraph, localQuery, endPoint):
+    label = "_" + str(numOfBus) + "_"
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?Bus_node ?Location_region
     WHERE
     {
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?Bus_node .
     ?Bus_node rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
     ?Bus_node ontocape_upper_level_system:hasAddress ?Location_region . 
     
     ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .   
     }
-    """    
+    """%label 
     #GRAPH ?g { ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .}
-    
+
     global qres
     
-    if localQuery == False and len(endPoints) > 0: 
-        print('remoteQuery')
-        res = json.loads(performFederatedQuery(queryStr, *endPoints))
-        print('query is done')
+    if localQuery == False and endPoint != None: 
+        print('remoteQuery queryBusLocatedRegion')
+        res = json.loads(performQuery(endPoint, queryStr))
+        print('queryBusLocatedRegion is done')
         qres = [[ str(r['Bus_node']), str(r['Location_region'])] for r in res]
         return qres
     elif ConjunctiveGraph != None and localQuery == True:  
-        print('localQuery')
+        print('localQuery queryBusLocatedRegion')
         res = ConjunctiveGraph.query(queryStr)
         qres = [[ str(r[0]), str(r[1])] for r in res]   
         return qres
@@ -113,14 +120,13 @@ def queryPowerPlantLocatedInSameRegion(remoteEndPoint, SleepycatPath, location_i
     global qres
     
     if localQuery == False and remoteEndPoint != None: 
-        print('remoteQuery')
-        # print('############################',queryStr)
+        print('remoteQuery queryPowerPlantLocatedInSameRegion')
         res = json.loads(performQuery(remoteEndPoint, queryStr))
-        print('query is done')
+        print('queryPowerPlantLocatedInSameRegion is done')
         qres = [[ str(r["PowerGenerator"]), str(r["PrimaryFuel"]), str(r["GenerationTechnology"])] for r in res]
         return qres
     elif SleepycatPath != None and localQuery == True:  
-        print('localQuery')
+        print('localQuery queryPowerPlantLocatedInSameRegion')
         pp_cg = ConjunctiveGraph('Sleepycat')
         sl = pp_cg.open(SleepycatPath, create = False)
         if sl == NO_STORE:
@@ -129,6 +135,96 @@ def queryPowerPlantLocatedInSameRegion(remoteEndPoint, SleepycatPath, location_i
         qres = list(pp_cg.query(queryStr))
         pp_cg.close()
         return qres
+    
+def queryBusGPSLocation(numOfBus, ConjunctiveGraph, localQuery, endPoint_label):
+    label = "_" + str(numOfBus) + "_"
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX ontopowsys_PowerSystemModel: <http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>
+    PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    SELECT DISTINCT ?EquipmentConnection_EBus ?lat ?lon 
+    WHERE
+    {    
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
+    
+    ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .      
+    ?EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_Bus .    
+    ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_Bus .
+    ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_Bus .
+    ?x_coordinate_Bus  ontocape_upper_level_system:hasValue ?GPS_x_coordinate_Bus .
+    ?y_coordinate_Bus  ontocape_upper_level_system:hasValue ?GPS_y_coordinate_Bus . 
+    ?GPS_x_coordinate_Bus  ontocape_upper_level_system:numericalValue ?lon .
+    ?GPS_y_coordinate_Bus  ontocape_upper_level_system:numericalValue ?lat .
+    }
+    """% label
+    
+    global qres
+    
+    if localQuery == False and endPoint_label != None: 
+        print('remoteQuery queryBusGPSLocation')
+        res = json.loads(performQuery(endPoint_label, queryStr))
+        print('queryBusGPSLocation is done')
+        qres = [[ str(r['EquipmentConnection_EBus']), float(r['lat']), float(r['lon'])] for r in res]
+        return qres
+    elif ConjunctiveGraph != None and localQuery == True:  
+        print('localQuery queryBusGPSLocation')
+        res = ConjunctiveGraph.query(queryStr)
+        qres = [[ str(r[0]), float(r[1]), float(r[2])] for r in res]   
+        return qres
+
+def queryPowerPlantsLocatedInGB(ConjunctiveGraph, localQuery, endPoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    SELECT DISTINCT ?Region ?PowerGenerator ?PrimaryFuel ?GenerationTechnology ?lat ?lon 
+    WHERE
+    {      	
+    ?powerPlant a ontoeip_powerplant:PowerPlant .
+    ?powerPlant ontocape_upper_level_system:hasAddress ?Region .
+    ?powerPlant ontocape_technical_system:hasRealizationAspect ?PowerGenerator . 
+    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel .
+    ?PowerGenerator ontocape_technical_system:realizes/ontoeip_powerplant:usesGenerationTechnology ?GenerationTechnology .  
+    
+    ?powerPlant space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
+    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate .
+    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate .
+    ?x_coordinate ontocape_upper_level_system:hasValue ?GPS_x_coordinate .
+    ?y_coordinate ontocape_upper_level_system:hasValue ?GPS_y_coordinate . 
+    ?GPS_x_coordinate ontocape_upper_level_system:numericalValue ?lon . # longitude is east/west
+    ?GPS_y_coordinate ontocape_upper_level_system:numericalValue ?lat . # latitude is north/south
+    }
+    """   
+    global qres
+    
+    if localQuery == False and endPoint_label != None: 
+        print('remoteQuery queryPowerPlantsLocatedInGB')
+        res = json.loads(performQuery(endPoint_label, queryStr))
+        print('queryPowerPlantsLocatedInGB is done')
+        for r in res:
+            if "Northern_Ireland" in str(r['Region']): 
+                res.remove(r)     
+        qres = [[ str(r['PowerGenerator']), str(r['PrimaryFuel'].split('#')[1]), str(r['GenerationTechnology'].split('#')[1]), \
+                 float(r['lat']), float(r['lon']) ] for r in res]
+        return qres
+    elif ConjunctiveGraph != None and localQuery == True:  
+        print('localQuery queryPowerPlantsLocatedInGB')
+        res = ConjunctiveGraph.query(queryStr)
+        qres = [[ str(r[1]), float(r[2]), float(r[3]), float(r[4]), float(r[5])] for r in res]   
+        return qres
+    
 
 if __name__ == '__main__':
     sl_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"
@@ -136,17 +232,15 @@ if __name__ == '__main__':
     iri = "http://dbpedia.org/resource/West_Midlands_(county)"  
     test_region = "http://dbpedia.org/resource/North_West_England"
     # scot_iri = 'http://dbpedia.org/resource/Scotland'
-    res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
-    
+    # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
+    # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
+    # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
+    res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
     # res = queryBusGPS('ukpowergridtopology', None, FromBus_iri, ToBus_iri, False)
-    
-    # topologyQueryEndPoint = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology"
-    # energyconsumptionQueryEndPoint = "	https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"
-    # res =  queryBusLocation(None, False, 'https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology', 'https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG')
-    #res = queryBusLocation(topologyQueryEndPoint, energyconsumptionQueryEndPoint, 'ukpowergridtopology', None, False)
-    print(res)
+    # print(res)
+    # print(len(res))
    
    
    

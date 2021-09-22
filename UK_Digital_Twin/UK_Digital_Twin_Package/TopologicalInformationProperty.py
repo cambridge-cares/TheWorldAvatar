@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 June 2021         #
+# Last Update Date: 22 Sept 2021         #
 ##########################################
 
 """This class defines the properties of UK Topological Information data"""
@@ -23,7 +23,11 @@ class TopologicalInformation:
         self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
         
         """Source Data"""
-        self.__TOPOINFO = self.DataPath + str(self.EBus_num) +  "_bus/-Node-24h-Tax-Auto - Template.xlsx"
+        if self.EBus_num == 10:
+            self.__TOPOINFO = self.DataPath + str(self.EBus_num) +  "_bus/-Node-24h-Tax-Auto - Template.xlsx"
+        if self.EBus_num == 29:
+            self.DataSource = "https://www.maths.ed.ac.uk/optenergy/NetworkData/reducedGB/"
+        
 
 if __name__ == '__main__': 
     topoinfo = TopologicalInformation()

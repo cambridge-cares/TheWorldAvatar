@@ -82,6 +82,7 @@ def queryEGenNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
     PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?Model_EGen  
     WHERE 
     {
@@ -90,7 +91,7 @@ def queryEGenNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     ?Model_EGen ontocape_upper_level_system:isComposedOfSubsystem ?Model_EGen_instance .
     ?Model_EGen_instance rdf:type ontopowsys_PowerSystemModel:GeneratorModel .
     # ?Model_EGen ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:StartCost .
-    ?label bds:search "'%s*'" .
+    FILTER regex(?label, "%s") .
     } 
     """% busLabel
     global qres_egen
@@ -117,6 +118,7 @@ def queryEBusNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
     PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?Model_EBus_instance  
     WHERE 
     {
@@ -125,7 +127,7 @@ def queryEBusNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     ?Model_EBus ontocape_upper_level_system:isComposedOfSubsystem ?Model_EBus_instance .
     ?Model_EBus_instance rdf:type ontopowsys_PowerSystemModel:BusModel .
     # ?Model_EBus_instance ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:PdBus .
-    ?label bds:search "'%s*'" .
+    FILTER regex(?label, "%s") .
     } 
     """% busLabel
     print(queryStr)
@@ -153,6 +155,7 @@ def queryELineNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
     PREFIX ontopowsys_PowerSystemModel:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>     
     PREFIX ontocape_mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     SELECT DISTINCT ?Model_ELine_instance  
     WHERE 
     {
@@ -161,7 +164,7 @@ def queryELineNodeURL(remoteEndPoint, numOfBus, SleepycatPath, localQuery):
     ?Model_ELine ontocape_upper_level_system:isComposedOfSubsystem ?Model_ELine_instance .
     ?Model_ELine_instance rdf:type ontopowsys_PowerSystemModel:ElectricalBranchModel .
     # ?Model_ELine_instance ontocape_mathematical_model:hasModelVariable/rdf:type ontopowsys_PowerSystemModel:R . 
-    ?label bds:search "'%s*'" .   
+    FILTER regex(?label, "%s") . 
     } 
     """% busLabel
     global qres_eline
