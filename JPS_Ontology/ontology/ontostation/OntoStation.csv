@@ -1,0 +1,6 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+Station,Class,http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl
+WeatherStation,Class,Station,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl
+AirQualityStation,Class,Station,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl
+http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem,Object Property,,,Station,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#MeasuringInstrument,only,,
+hasCoordinates,Data Property,Station,,Station,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,exactly 1,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl

@@ -10,13 +10,8 @@
 #########################
 
 ##### DEVELOPMENT STAGE #####
-# Base image is a lightweight version of Python
-FROM python:3.7.10 as development
-
-# Meta data
-LABEL authors = "support@cmclinnovations.com"
-LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Flood Visualisation"
+# Base image is Python
+FROM python:3.7.10 as dev
 
 # Install utilities
 RUN apt update && apt-get install -y cron procps nano dos2unix
@@ -68,8 +63,8 @@ CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh && tail -f /dev/null" ]
 
 
 ##### PRODUCTION STAGE #####
-# Using development as the base 
-FROM development as production
+# Using dev as the base 
+FROM dev as prod
 
 # Copy in the download script specific to the PRODUCTION setup
 COPY head-prod.html head.html

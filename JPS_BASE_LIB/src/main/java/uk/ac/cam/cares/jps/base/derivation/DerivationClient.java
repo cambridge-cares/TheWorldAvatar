@@ -82,6 +82,15 @@ public class DerivationClient {
     }
     
     /**
+     * removes time instance added using addTimeInstance
+     * @param entity
+     */
+    public void removeTimeInstance(String entity) {
+    	DerivationSparql.removeTimeInstance(kbClient, entity);
+    	LOGGER.info("Removed timestamp for <" + entity + ">");
+    }
+    
+    /**
      * you may want to use this to update an input's timestamp, the DerivationClient does not deal with inputs directly
      */
     public void updateTimestamp(String entity) {

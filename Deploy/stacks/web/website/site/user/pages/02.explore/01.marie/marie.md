@@ -33,19 +33,6 @@ slug: marie
 	<div id="chatbot-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Google Knowledge Graph</u></b>
-	<div id="google-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Wolfram Alpha</u></b>
-	<div id="wolfram-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
-	<br/>
 </div>
 
 ### Example Questions
