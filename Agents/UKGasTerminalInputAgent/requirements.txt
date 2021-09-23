@@ -6,3 +6,4 @@ SPARQLWrapper~=1.8.5
 tqdm~=4.62.0
 wget~=3.2
 pytest
+rdflib
