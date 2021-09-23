@@ -24,7 +24,7 @@ from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 
 """Notation used in URI construction"""
@@ -242,5 +242,5 @@ def initialiseEBusModelVar(EBus_Model, EBus):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, None, False)       
+    createModel_EBus('default', False, 2019, None, True)       
     print('Terminated')

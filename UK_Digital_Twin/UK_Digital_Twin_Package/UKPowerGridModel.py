@@ -15,8 +15,8 @@ endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
 class UKEbusModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EBus\\Sleepycat_EBus"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EBus\\"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EBus\\Sleepycat_EBus"
     
     """EBus Node keys"""
     EBusKey = "EBus-"
