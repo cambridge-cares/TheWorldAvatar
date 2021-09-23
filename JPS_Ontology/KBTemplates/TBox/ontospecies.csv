@@ -11,6 +11,10 @@ http://purl.org/gc/Value,Class,,,,,,,http://purl.org/gc
 http://purl.org/gc/FloatValue,Class,http://purl.org/gc/Value,IS-A,,,,,http://purl.org/gc
 http://purl.org/gc/IntegerValue,Class,http://purl.org/gc/Value,IS-A,,,,,http://purl.org/gc
 http://purl.org/gc/Atom,Class,,,,,,,http://purl.org/gc
+StandardEnthalpyOfFormation,Class,,,,,,The energy required to form 1 mole of a substance from its constituent elements.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+Temperature,Class,,,,,,"A measure of the average amount of energy of motion, or kinetic energy, a system contains"" (Chemistry LibreTexts, accessed on 11/11/2019).",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,Class,,,,,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Phase,Class,,,,,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 hasEmpiricalFormula,Object Property,,,Species,EmpiricalFormula,only,A relation between a species or molecular entity and the chemical formula describing the relative number of each constituting chemical element of the species or molecular entity.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 hasMolecularWeight,Object Property,,,Species,Molecular Weight,only,A relation between a species or molecular entity and the total mass of one mole of this species or molecular entity in g/mol,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 hasCharge,Object Property,,,Species,Charge,only,A relation between a species or molecular entity and the overall net charge of this species or molecular entity in units of elementary charge,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
@@ -24,6 +28,10 @@ http://purl.org/gc/hasUnit,Object Property,,,http://purl.org/gc/Value,,,,http://
 http://purl.org/gc/hasAtomCoordinateX,Object Property,,,http://purl.org/gc/Atom,StringValue,,,http://purl.org/gc
 http://purl.org/gc/hasAtomCoordinateY,Object Property,,,http://purl.org/gc/Atom,StringValue,,,http://purl.org/gc
 http://purl.org/gc/hasAtomCoordinateZ,Object Property,,,http://purl.org/gc/Atom,StringValue,,,http://purl.org/gc
+hasStandardEnthalpyOfFormation,Object Property,,,Species,StandardEnthalpyOfFormation,,A relation that defines the standard enthalpy of formation of a given species.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasPhase,Object Property,,,StandardEnthalpyOfFormation,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Phase,,A phase for which the standard enthalpy of formation is defined.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasReferenceTemperature,Object Property,,,StandardEnthalpyOfFormation,Temperature,,A relation that defines the temperature at which the value of a property is estimated.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasProvenance,Object Property,,,StandardEnthalpyOfFormation,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,,A relation between the standard enthalpy of formation and its provenance information.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 http://purl.org/gc/hasValue,Data Property,,,http://purl.org/gc/Value,http://www.w3.org/2000/01/rdf-schema#Literal,,,http://purl.org/gc
 hasCanonicalPosition,Data Property,,,http://purl.org/gc/Atom,Integer,,The canonical position of an atom in a species.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasNumberOfElement,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/ontokin.owl#ElementNumber,Integer,,A number that indicates the amount of an element in a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
