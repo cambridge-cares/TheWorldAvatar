@@ -88,7 +88,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'calc_id':'testID-111-111-111'}}
+        'QC_JSON_TO_OC_JSON':{'random_id':'testID-111-111-111'}}
     pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
     fileExts = ['.oc.json', '.oc.csv']
@@ -122,7 +122,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'QC_JSON_TO_OS_JSON':{'calc_id':'testID-111-111-111'}}
+        'QC_JSON_TO_OS_JSON':{'random_id':'testID-111-111-111'}}
 
     pipeline = write_os_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
@@ -161,12 +161,12 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                 {'os_iris': 'Species_11-111-111',
                  'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
                  'oc_atoms_pos': '1,2',
-                 'calc_id': 'OPStestID-111-111-11'
+                 'random_id': 'OPStestID-111-111-11'
                 }
             }
 
     OC_handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'calc_id':'OCtestID-111-111-111'}}
+        'QC_JSON_TO_OC_JSON':{'random_id':'OCtestID-111-111-111'}}
     pipeline = write_ops_abox(inp_file_or_dir, inp_file_type,
                OPS_handlerFuncKwargs=OPS_handlerFuncKwargs,
                OC_handlerFuncKwargs=OC_handlerFuncKwargs)
@@ -199,7 +199,7 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'OMINP_JSON_TO_OM_JSON':{'calc_id':'testID-111-111-111'}}
+        'OMINP_JSON_TO_OM_JSON':{'random_id':'testID-111-111-111'}}
 
     pipeline = write_om_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 

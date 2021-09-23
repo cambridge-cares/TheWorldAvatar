@@ -34,7 +34,7 @@ ATOM_COUNTS='AtomsCounts'
 
 spec_pref = PREFIXES["spec_pref"]
 
-def os_jsonwriter(data, calc_id=""):
+def os_jsonwriter(data, random_id=""):
     data = json.loads(data)
 
     data_out = {}
@@ -88,11 +88,11 @@ def os_jsonwriter(data, calc_id=""):
     data_out[ATOM_LIST] = atom_list
     data_out[ATOM_COUNTS] = atom_counts
 
-    if not calc_id:
-        calc_id = get_random_id()
+    if not random_id:
+        random_id = get_random_id()
 
-    data_out[commonv.ENTRY_UUID] = calc_id
-    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+calc_id
+    data_out[commonv.ENTRY_UUID] = random_id
+    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+random_id
 
     return [json.dumps(data_out)]
 

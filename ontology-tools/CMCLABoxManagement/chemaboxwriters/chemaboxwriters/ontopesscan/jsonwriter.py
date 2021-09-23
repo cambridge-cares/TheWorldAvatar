@@ -12,7 +12,7 @@ SCAN_COORDINATE_VALUE='ScanCoordinateValue'
 SCAN_POINTS_JOBS='ScanPointsJobs'
 SCAN_ATOM_IDS= 'ScanAtomIDs'
 
-def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
+def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
     data_out ={}
     data_out[commonv.SPECIES_IRI] = os_iris.split(',')
     data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(',')
@@ -30,9 +30,9 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, calc_id=""):
         else:
             data_out[SCAN_COORDINATE_TYPE] = 'DihedralAngleCoordinate'
 
-    if not calc_id: calc_id = get_random_id()
-    data_out[commonv.ENTRY_UUID]= calc_id
-    data_out[commonv.ENTRY_IRI]='PotentialEnergySurfaceScan_'+calc_id
+    if not random_id: random_id = get_random_id()
+    data_out[commonv.ENTRY_UUID]= random_id
+    data_out[commonv.ENTRY_IRI]='PotentialEnergySurfaceScan_'+random_id
 
     scanCoordinateValue = []
     ontoCompChemJobs = []

@@ -5,13 +5,13 @@ from chemaboxwriters.common import PREFIXES
 
 omops_entry_prefix = PREFIXES["omops_entry_prefix"]
 
-def om_jsonwriter(data, calc_id=""):
+def om_jsonwriter(data, random_id=""):
     data = json.loads(data)
 
-    if not calc_id:
-        calc_id = get_random_id()
+    if not random_id:
+        random_id = get_random_id()
 
-    data[commonv.ENTRY_UUID] = calc_id
-    data[commonv.ENTRY_IRI] = omops_entry_prefix+calc_id
+    data[commonv.ENTRY_UUID] = random_id
+    data[commonv.ENTRY_IRI] = omops_entry_prefix+random_id
 
     return [json.dumps(data)]

@@ -13,6 +13,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
         inStage = get_inStage(inpFileType)
         files = get_stage_files(fileOrDir, inStage, fileExtPrefix='os', qcLogExt=qcLogExt)
 
+        print(handlerFuncKwargs)
         if handlerFuncKwargs:
             for handlerName, funcKwargs in handlerFuncKwargs.items():
                 pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
