@@ -1,7 +1,7 @@
 ####################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)              #
 # Extended from: Tom Savage (trs3@cam.ac.uk)       #
-# Last Update Date: 23 August 2021                 #
+# Last Update Date: 23 Sept 2021                   #
 ####################################################
 
 """This module contains the functions enabel the colour effects of the visualisation."""
@@ -17,8 +17,8 @@ def gen_fuel_col(gen_fuel):
         "Wind": "#13bef2",
         "HydroGeneration": "#1F618D",
         "Hydro": "#1F618D",
-        "SolarGeneration": "#ffd21f",
-        "Solar": "#ffd21f",
+        "SolarGeneration": "#FFF8E7", #"#ffd21f",
+        "Solar": "#FFF8E7",
         "CoalGeneration": "#99A3A4",
         "Coal": "#99A3A4",
         "OilGeneration": "#1B2631",
@@ -91,3 +91,39 @@ def getBusColour(BusNum):
     elif BusNum > 10:
         print("The bus number is out of range.")
         return None
+
+def generatorClusteringColour(gen_bus):
+  #https://htmlcolorcodes.com/
+  map_bus_dict = {
+        0: "#ffffff",
+        1: "#AED6F1",
+        2: "#1F618D",
+        3: "#F9E79F",
+        4: "#99A3A4",
+        5: "#1B2631",
+        6: "#DC7633",
+        7: "#F1C40F",
+        8: "#1F618D",
+        9: "#873600",
+        10: "#c0c0c0",
+        11: "#800000",
+        12: "#808000",
+        13: "#00ff00",
+        14: "#ff00ff",
+        15: "#5f5fff",
+        16: "#5fd787",
+        17: "#875f5f",
+        18: "#af5f00",
+        19: "#d75f5f",
+        20: "#afffff",
+        21: "#d7af00",
+        22: "#3a3a3a",
+        23: "#0000af",
+        24: "#ffff00",
+        25: "#5f00ff",
+        26: "#5fd700",
+        27: "#ffd7ff",
+        28: "#080808",
+        29: "#1E8449"
+    }
+  return map_bus_dict[(gen_bus%30)]

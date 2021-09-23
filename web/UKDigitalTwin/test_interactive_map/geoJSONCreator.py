@@ -5,7 +5,7 @@
 ####################################################
 
 import matplotlib.cm 
-from colourLayers import gen_fuel_col, getChoropleth, getBusColour
+from colourLayers import gen_fuel_col, getChoropleth, getBusColour, generatorClusteringColour
 
 # def SDGgeoJSONCreator():
   # geojson_file = """
@@ -297,3 +297,116 @@ def BranchAndBusConnectionGPSLocationJSONCreator(ret_branch, class_label_branch,
     geojson_written.write(geojson_file)
     geojson_written.close() 
     return 
+
+# TODO: temporary 
+def BusGPSLocationJSONCreator(ret_busLocation, class_label): 
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_busLocation)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }             
+          },"""%(ret_busLocation[i][0], ret_busLocation[i][1], ret_busLocation[i][2])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label+'.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close() 
+    return 
+
+# TODO: temporary 
+def BranchGPSLocationJSONCreator(ret_branchGPS, class_label_29_branch_GPS): 
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_branchGPS)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s"
+            },
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [[%s, %s], 
+                                [%s, %s]]
+                }            
+          },""" %(ret_branchGPS[i][0], ret_branchGPS[i][1], ret_branchGPS[i][2], ret_branchGPS[i][3], ret_branchGPS[i][4])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_29_branch_GPS + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close()
+    return
+
+# TODO: temporary 
+def genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS): 
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for i in range(len(ret_genLocation)):
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s",
+              "gen_colour": "%s"
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }                     
+          },""" %(ret_genLocation[i][0], generatorClusteringColour(ret_genLocation[i][1]), ret_genLocation[i][2], ret_genLocation[i][3])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_29_gen_GPS + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close()
+    return

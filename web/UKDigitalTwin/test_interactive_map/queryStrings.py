@@ -203,7 +203,107 @@ def queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwin, ONS, region
   
   return ret_array 
 
+# TODO: a temporary function only used for visualise the bus location
+def queryBusGPSLocation(ukdigitaltwin_label, numOfBus):
+    label = "_" + str(numOfBus) + "_"
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
+    PREFIX mathematical_model: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+    PREFIX ontopowsys_PowerSystemModel: <http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#>
+    PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    SELECT DISTINCT ?EquipmentConnection_EBus ?numericalValue_y ?numericalValue_x 
+    WHERE
+    {    
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
+    
+    ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .      
+    ?EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_Bus .    
+    ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_Bus .
+    ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_Bus .
+    ?x_coordinate_Bus  ontocape_upper_level_system:hasValue ?GPS_x_coordinate_Bus .
+    ?y_coordinate_Bus  ontocape_upper_level_system:hasValue ?GPS_y_coordinate_Bus . 
+    ?GPS_x_coordinate_Bus  ontocape_upper_level_system:numericalValue ?numericalValue_x .
+    ?GPS_y_coordinate_Bus  ontocape_upper_level_system:numericalValue ?numericalValue_y .
+    }
+    """% label
+          
+    start = time.time()
+    print('Querying the Bus location...')
+    res = json.loads(performQuery(ukdigitaltwin_label, queryStr))
+    # print(res_para)
+    end = time.time()  
+    print('Finished querying the Bus location in ',np.round(end-start,2),' seconds') 
+    for r in res:
+        for key in r.keys():
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','')         
+    qres_busLocation = [[ int(r['EquipmentConnection_EBus'].split('EBus-')[1]), float(r['numericalValue_x']), float(r['numericalValue_y']) ] for r in res ]
+    
+    return qres_busLocation
 
+# TODO: a temporary function only used for visualise the branches
+def queryBranchConnectedGPSLocation(ukdigitaltwin_label, numOfBus):
+    label = "_" + str(numOfBus) + "_"
+    queryStr = """
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    SELECT DISTINCT ?PowerFlow_ELine ?FromBus_latitude ?FromBus_longitude ?ToBus_latitude ?ToBus_longitude 
+    WHERE
+    {
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerFlow_ELine .
+    ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .  
+    
+    ?PowerFlow_ELine ontocape_network_system:leaves ?From_EquipmentConnection_EBus .    
+    ?From_EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_FromBus .
+    ?From_EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_FromBus .
+    ?CoordinateSystem_FromBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_FromBus .
+    ?x_coordinate_FromBus  system:hasValue ?GPS_x_coordinate_FromBus .
+    ?y_coordinate_FromBus  system:hasValue ?GPS_y_coordinate_FromBus . 
+    ?GPS_x_coordinate_FromBus  system:numericalValue ?FromBus_longitude .
+    ?GPS_y_coordinate_FromBus  system:numericalValue ?FromBus_latitude .
+    
+    ?PowerFlow_ELine ontocape_network_system:enters ?To_EquipmentConnection_EBus .    
+    ?To_EquipmentConnection_EBus space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem_ToBus .
+    ?To_EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate_ToBus .
+    ?CoordinateSystem_ToBus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_ToBus .
+    ?x_coordinate_ToBus  system:hasValue ?GPS_x_coordinate_ToBus .
+    ?y_coordinate_ToBus  system:hasValue ?GPS_y_coordinate_ToBus . 
+    ?GPS_x_coordinate_ToBus  system:numericalValue ?ToBus_longitude .
+    ?GPS_y_coordinate_ToBus  system:numericalValue ?ToBus_latitude .
+    }
+    """ % label
+          
+    start = time.time()
+    print('Querying branch connected GPS location...')
+    res = json.loads(performQuery(ukdigitaltwin_label, queryStr))
+    # print(res_para)
+    end = time.time()  
+    print('Finished querying branch connected GPS location in ',np.round(end-start,2),' seconds') 
+    for r in res:
+        for key in r.keys():
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','')         
+    qres_branchLocation = [[ int(r['PowerFlow_ELine'].split('ELine-')[1]), float(r['FromBus_longitude']), float(r['FromBus_latitude']), float(r['ToBus_longitude']), float(r['ToBus_latitude']) ] for r in res ]   
+    return qres_branchLocation
+      
+# TODO: add numOfBus and merge the query strings; needs to modify the 10 bus visualisation html
 """This function is used for query the bus model parameters and input variables from the grid model endpoint and query the location of the bus from the grid topology endpoint"""
 # ukdigitaltwin_label = "ukdigitaltwin"
 def queryGridModeltForVisualisation_Bus(ukdigitaltwin_label):
@@ -698,6 +798,61 @@ def queryGridModeltForVisualisation_Generator(ukdigitaltwin_label):
 
   return qres
 
+#TODO: temporary for visualising the gen clustering of 29_bus model
+def queryGeneratorLocation(ukdigitaltwin_label, numOfBus):
+    label = "_" + str(numOfBus) + "_"
+    queryStr = """
+    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX space_and_time_extended:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
+    PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    SELECT DISTINCT ?PowerGeneration_EGen ?EquipmentConnection_EBus ?numericalValue_x ?numericalValue_y
+    WHERE
+    {
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerGeneration_EGen .
+    ?PowerGeneration_EGen rdf:type ontopowsys_PowSysFunction:PowerGeneration .  
+    
+    ?PowerGeneration_EGen meta_model_topology:isConnectedTo ?EquipmentConnection_EBus .
+    ?EquipmentConnection_EBus a ontopowsys_PowSysFunction:PowerEquipmentConnection . 
+    
+    ?PowerGeneration_EGen ontoecape_technical_system:isRealizedBy/ontocape_upper_level_system:isExclusivelySubsystemOf ?pg_plant . 
+    ?pg_plant a ontoeip_powerplant:PowerGenerator .
+    ?PowerPlant ontoecape_technical_system:hasRealizationAspect ?pg_plant .
+    ?PowerPlant a ontoeip_powerplant:PowerPlant .
+    
+    ?PowerPlant space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
+    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x ?x_coordinate .
+    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate .
+    ?x_coordinate ontocape_upper_level_system:hasValue ?GPS_x_coordinate .
+    ?y_coordinate ontocape_upper_level_system:hasValue ?GPS_y_coordinate . 
+    ?GPS_x_coordinate ontocape_upper_level_system:numericalValue ?numericalValue_x . # longitude is east/west
+    ?GPS_y_coordinate ontocape_upper_level_system:numericalValue ?numericalValue_y . # latitude is north/south
+    }
+    """ % label
+          
+    start = time.time()
+    print('Querying Generator Location...')
+    res = json.loads(performQuery(ukdigitaltwin_label, queryStr))
+    # print(res_para)
+    end = time.time()  
+    print('Finished querying Generator Location in ',np.round(end-start,2),' seconds') 
+    for r in res:
+        for key in r.keys():
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','')         
+    qres_genLocation = [[ int(r['PowerGeneration_EGen'].split('EGen-')[1]), int(r['EquipmentConnection_EBus'].split('EBus-')[1]), float(r['numericalValue_x']), float(r['numericalValue_y'])] for r in res ]
+    
+    return qres_genLocation
+
+
 def queryUKSDGIndicatorForVisualisation():
 
   query_sdg = """
@@ -721,7 +876,9 @@ if __name__ == '__main__':
     ukdigitaltwin_label = "ukdigitaltwin"
     # res = queryPowerPlantForVisualisation(ukdigitaltwin_label)
     # res = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS_json, False)   
-    res = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+    # res = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+    # res = queryBranchConnectedGPSLocation(ukdigitaltwin_label, 29)
+    res= queryGeneratorLocation(ukdigitaltwin_label, 29)
     # queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
     # res = queryBusLocatedRegionGeoInfo(ukdigitaltwinendpoint, ONS_json)
     print(res)
