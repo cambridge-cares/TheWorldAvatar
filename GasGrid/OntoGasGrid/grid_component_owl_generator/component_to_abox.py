@@ -9,7 +9,42 @@ import uuid
 from EntityRDFizer_new import * 
 import time
  
-offtakes = pd.read_csv('grid_component_data.csv').to_numpy()[:,:]
+
+pipelines = pd.read_csv('OntoGasGrid/pipeline_owl_generator/pipeline_split.csv').to_numpy()
+offtakes = pd.read_csv('OntoGasGrid/grid_component_owl_generator/grid_component_data.csv').to_numpy()
+
+if len(offtakes[0,:]) < 8:
+
+    n_offt = len(offtakes[:,0])
+    n_cons = len(pipelines[:,0])
+    closest_connection = np.zeros((n_offt,2),dtype=object)
+
+    def connection_name_get(i):
+        grid_line = pipelines[i,3]
+        connect_num = pipelines[i,8]
+        return grid_line + ' ' + str(connect_num) + ' Connection'
+    
+    
+
+    for i in tqdm(range(n_offt)):
+        if offtakes[i,2] != '#VALUE!':
+            dist_store = []
+            max_dist = 1000
+            off_lat = float(offtakes[i,2])
+            off_lng = float(offtakes[i,1])
+            for ii in range(n_cons):
+                con_lat = float(pipelines[ii,0])
+                con_lng = float(pipelines[ii,1])
+                dist = np.sqrt((off_lat-con_lat)**2+(off_lng-con_lng)**2)
+                if dist < max_dist:
+                    closest_connection[i,0] = connection_name_get(ii)
+                    closest_connection[i,1] = pipelines[ii,2]
+                    max_dist = dist 
+                    
+    offtakes = np.concatenate((offtakes,closest_connection),axis=1)
+
+
+
 
 abox = np.array([['Source','Type','Target','Relation','Value']]) 
 

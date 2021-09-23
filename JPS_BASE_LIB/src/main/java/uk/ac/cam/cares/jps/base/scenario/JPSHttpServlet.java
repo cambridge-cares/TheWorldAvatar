@@ -133,8 +133,10 @@ public abstract class JPSHttpServlet extends HttpServlet {
             String responseBody = getResponseBody(request);
             response.getWriter().write(responseBody);
         } catch (BadRequestException e) {
+        	logger.error(e.getMessage());
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         } catch (JPSRuntimeException e) {
+        	logger.error(e.getMessage());
         	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
         }
     }
@@ -152,6 +154,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
             String responseBody = getResponseBody(request, reqBody);
             response.getWriter().write(responseBody);
         } catch (BadRequestException e) {
+        	logger.error(e.getMessage());
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         }
     }
