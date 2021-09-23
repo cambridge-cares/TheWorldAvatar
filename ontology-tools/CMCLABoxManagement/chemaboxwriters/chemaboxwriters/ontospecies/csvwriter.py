@@ -26,12 +26,16 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    ATOM_COUNTS, \
                                                    SPIN_MULT
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontospecies.prefixes import onto_spec, \
-                                                 gain_pref, \
-                                                 kin_pref, \
-                                                 table_pref, \
-                                                 unit_pref, \
-                                                 onto_kb
+from chemaboxwriters.common import PREFIXES
+
+
+onto_spec = PREFIXES["onto_spec"]
+gain_pref = PREFIXES["gain_pref"]
+kin_pref = PREFIXES["kin_pref"]
+table_pref = PREFIXES["table_pref"]
+unit_pref = PREFIXES["unit_pref"]
+spec_pref = PREFIXES["spec_pref"]
+
 
 def os_csvwriter(data):
     data = json.loads(data)
@@ -63,7 +67,7 @@ def os_csvwriter(data):
 
 def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_spec,'http://www.w3.org/2002/07/owl#imports','',''])
-    spamwriter.writerow(['ABoxOntoSpecies','Ontology',onto_kb[:-1],'base','',''])
+    spamwriter.writerow(['ABoxOntoSpecies','Ontology',spec_pref[:-1],'base','',''])
     spamwriter.writerow([out_id, 'Instance','Species','','',''])
     spamwriter.writerow(['http://purl.org/dc/elements/1.1/identifier','Data Property',out_id,'',out_id,'String'])
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])

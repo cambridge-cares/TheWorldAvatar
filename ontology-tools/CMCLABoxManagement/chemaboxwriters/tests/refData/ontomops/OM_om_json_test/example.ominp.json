@@ -1,7 +1,5 @@
 {
 	"Mops_Molecular_Weight":"MolWeightData" ,
-	"EntryUUID": "Test12341234",
-	"EntryIRI": "MetalOrganicPolyhedra_Test12341234",
 	"Mops_Molecular_Weight_Unit":"g/mol",
 	"Mops_Polyhedral_Shape": "Tetrahedron",
 	"Mops_Polyhedral_Shape_Symbol": "Tetrahedron",
@@ -13,6 +11,7 @@
 	"Mops_Label": "someLabel",
 	"Mops_CavityVolume": "someVolume",
 	"Mops_CCDC_Number": "someLabel",
+	"Mops_Reference_DOI": "someDOI",
 	"Mops_Chemical_Building_Units":[
 		{"OntoSpecies_IRI":"IRI1",
 		 "CBU_Formula":"Some_formula",
