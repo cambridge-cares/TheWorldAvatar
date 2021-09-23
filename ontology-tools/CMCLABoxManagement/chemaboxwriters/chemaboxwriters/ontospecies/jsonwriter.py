@@ -40,7 +40,10 @@ ENTH_PROV='StandardEnthalpyofFormationProvenance'
 
 spec_pref = PREFIXES["spec_pref"]
 
-def os_jsonwriter(data, random_id=""):
+def os_jsonwriter(data, random_id="",
+            spec_pref = PREFIXES["spec_pref"],
+            hf=None, hf_unit=None, hf_phase=None,
+            hfTref=None, hfTref_unit=None, hf_prov=None):
     data = json.loads(data)
 
     data_out = {}
@@ -53,13 +56,13 @@ def os_jsonwriter(data, random_id=""):
     data_out[ATOM_TYPES] = data[ATOM_TYPES]
     data_out[GEOM] = data[GEOM]
     data_out[SPIN_MULT] = data[SPIN_MULT]
-    
-    data_out[ENTH_FORM] = data[ENTH_FORM]
-    data_out[ENTH_UNIT] = data[ENTH_UNIT]
-    data_out[ENTH_PHASE] = data[ENTH_PHASE]
-    data_out[ENTH_REFTEMP] = data[ENTH_REFTEMP]
-    data_out[ENTH_REFTEMP_UNIT] = data[ENTH_REFTEMP_UNIT]
-    data_out[ENTH_PROV] = data[ENTH_PROV]
+
+    if hf: data_out[ENTH_FORM] = hf
+    if hf_unit: data_out[ENTH_UNIT] = hf_unit
+    if hf_phase: data_out[ENTH_PHASE] = hf_phase
+    if hfTref: data_out[ENTH_REFTEMP] = hfTref
+    if hfTref_unit: data_out[ENTH_REFTEMP_UNIT] = hfTref_unit
+    if hf_prov: data_out[ENTH_PROV] = hf_prov
 
     if ATOM_MASSES not in data.keys():
         data_out[MOLWT] = get_molwt_from_atom_types(data_out[ATOM_TYPES])
