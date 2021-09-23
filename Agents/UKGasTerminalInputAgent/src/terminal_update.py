@@ -25,9 +25,9 @@ from configobj import ConfigObj
 import pandas as pd
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from jpsSingletons import jpsBaseLibGW
+from src.jpsSingletons import jpsBaseLibGW
 # get settings and functions from kg_utils module
-import kg_utils as kg
+import src.kg_utils as kg
 
 
 def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):

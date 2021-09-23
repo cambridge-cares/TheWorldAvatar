@@ -7,7 +7,7 @@ import json
 from configobj import ConfigObj
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from jpsSingletons import jpsBaseLibGW
+from src.jpsSingletons import jpsBaseLibGW
 
 
 # Define location of properties file (with Triple Store and RDB settings)
