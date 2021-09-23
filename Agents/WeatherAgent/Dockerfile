@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/WeatherAgent
-RUN mvn clean install -DskipTests
+RUN --mount=type=cache,target=/root/.m2/repository mvn clean install -DskipTests
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
