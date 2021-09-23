@@ -24,7 +24,14 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    CAS_NUMBER, \
                                                    ATOM_LIST, \
                                                    ATOM_COUNTS, \
-                                                   SPIN_MULT
+                                                   SPIN_MULT, \
+                                                   ENTH_FORM, \
+                                                   ENTH_UNIT, \
+                                                   ENTH_PHASE, \
+                                                   ENTH_REFTEMP, \
+                                                   ENTH_REFTEMP_UNIT, \
+                                                   ENTH_PROV
+
 import chemaboxwriters.common.commonvars as commonv
 from chemaboxwriters.common import PREFIXES
 
@@ -149,3 +156,21 @@ def write_molwts(spamwriter,gen_id,out_id,data):
     spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance',
                           unit_pref + 'unit#Dalton', gain_pref + 'hasUnit','',''])
 
+def write_enth(spamwriter,gen_id,out_id,data):
+    #Write enthalpy of formation data.
+    spamwriter.writerow(['StandardEnthalpyOfFormation_'+ gen_id,'Instance',onto_spec + '#StandardEnthalpyOfFormation','','',''])
+    spamwriter.writerow([out_id,'Instance','StandardEnthalpyOfFormation__'+ gen_id,onto_spec + '#hasStandardEnthalpyOfFormation','',''])
+    spamwriter.writerow([onto_spec + '#value','Data Property','StandardEnthalpyOfFormation__'+ gen_id,'',data[ENTH_FORM],'String'])
+    spamwriter.writerow([onto_spec + '#units','Data Property','StandardEnthalpyOfFormation__'+ gen_id,'',data[ENTH_UNIT],'String'])
+    spamwriter.writerow(['Temperature_'+ gen_id,'Instance',onto_spec + '#Temperature','','',''])
+    spamwriter.writerow(['StandardEnthalpyOfFormation__'+ gen_id,'Instance',
+    'Temperature_'+ gen_id, onto_spec + '#hasReferenceTemperature','',''])
+    spamwriter.writerow([onto_spec + '#value','Data Property','Temperature__'+ gen_id,'',data[ENTH_REFTEMP],'String'])
+    spamwriter.writerow([onto_spec + '#units','Data Property','Temperature__'+ gen_id,'',data[ENTH_REFTEMP_UNIT],'String'])
+    spamwriter([data[ENTH_PHASE] + 'Phase_' + gen_id,'Instance',kin_pref + '#' + data[ENTH_PHASE] +'Phase','','',''])
+    spamwriter.writerow(['StandardEnthalpyOfFormation__'+ gen_id,'Instance',
+    data[ENTH_PHASE] + 'Phase_' + gen_id, onto_spec + '#hasPhase','',''])
+    spamwriter.writerow(['Reference_' + gen_id, 'Instance',kin_pref + '#Reference','','',''])
+    spamwriter.writerow(['StandardEnthalpyOfFormation__'+ gen_id,'Instance',
+    'Reference'+ gen_id, onto_spec + '#hasProvenance','',''])
+    spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property', 'Reference'+ gen_id,'',data[ENTH_PROV],'String'])
