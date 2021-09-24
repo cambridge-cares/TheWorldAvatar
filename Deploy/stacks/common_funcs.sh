@@ -143,7 +143,7 @@ set_missing_secrets()
           fi
           # If secret still isn't valid, either it isn't a single word, or the user chose not to enter it; abort
           if [ $secret_state != "valid" ]; then
-            echo "\n Populate the secret file and re-run this script to continue"
+            echo " Populate the secret file and re-run this script to continue"
             exit 5
           fi
         fi
