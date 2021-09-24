@@ -42,3 +42,8 @@ services:
   oscml-agent:
     ports:
       - 46001:5000
+
+  # Weather Agent
+  weather-agent:
+    ports:
+      - "48085:8080"

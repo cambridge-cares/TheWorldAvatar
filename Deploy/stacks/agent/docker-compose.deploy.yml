@@ -99,6 +99,15 @@ services:
   #     - driver:/usr/local/srm-driver
   #     - mpi:/usr/local/intel-mpi
 
+  # Weather Agent
+  weather-agent:
+    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
+    container_name: "weather-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    volumes:
+      - external_maven_repo:/root/.m2
+      - WAlogs:/root/.jps
 
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
@@ -109,4 +118,6 @@ networks:
 
 volumes:
   driver:
+  external_maven_repo:
   mpi:
+  WAlogs:
