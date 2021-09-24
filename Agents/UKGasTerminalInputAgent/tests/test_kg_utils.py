@@ -1,19 +1,46 @@
 import os
+import time
 import pytest
-from rdflib import Graph
+from pathlib import Path
 from configobj import ConfigObj
+from testcontainers.core.container import DockerContainer
 
-from src import kg_utils as utils
+# get the jpsBaseLibGateWay instance from the jpsSingletons module
+import ukgasflows.jpsSingletons as jps
+import ukgasflows.kg_utils as utils
 
-
+@pytest.fixture(scope="session", autouse=True)
 def initialise_triple_store():
 
-    # Instantiate ABox from components_abox.owl as in-memory triple store / local graph
-    g = Graph()
-    rdf_file = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "components_abox.owl"))
-    g.parse(rdf_file)
+    # Spin up temporary Docker container based on Blazegraph image from CMCL registry
+    blazegraph = DockerContainer('docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+    blazegraph.with_exposed_ports(9999)
+    blazegraph.start()
 
-    return g
+    # Wait a few seconds until container is ready (duration a little arbitrary, but ~5-10s seems sufficient)
+    time.sleep(5)
+
+    # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+    endpoint = 'http://' + blazegraph.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
+               + blazegraph.get_exposed_port(9999)
+    # 'kb' is default namespace in Blazegraph
+    endpoint += '/blazegraph/namespace/kb/sparql'
+
+    # Create a JVM module view and use it to import the required java classes
+    jpsBaseLib_view = jps.jpsBaseLibGW.createModuleView()
+    jps.jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint, endpoint)
+
+    # Read RDF/XML ABox file
+    rdf_file = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "components_abox.owl"))
+    with open(rdf_file, 'r') as f:
+        content = f.read()
+
+    # Insert all triples from RDF/XML file to triple store
+    KGClient.insert(None, content, None)
+
+    return endpoint
 
 
 def test_read_properties_file(tmp_path):

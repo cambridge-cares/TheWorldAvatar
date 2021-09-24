@@ -1,0 +1,10 @@
+configobj
+pandas
+py4jps
+pytz
+tqdm
+wget
+
+# Only needed for unit and integration tests
+pytest
+testcontainers

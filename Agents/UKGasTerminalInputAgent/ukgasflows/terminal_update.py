@@ -20,14 +20,12 @@ import sys
 import traceback
 import wget
 import csv
-import json
-from configobj import ConfigObj
 import pandas as pd
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from src.jpsSingletons import jpsBaseLibGW
+from ukgasflows.jpsSingletons import jpsBaseLibGW
 # get settings and functions from kg_utils module
-import src.kg_utils as kg
+import ukgasflows.kg_utils as kg
 
 
 def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
@@ -305,14 +303,20 @@ def single_update():
     return
 
 
-# Try to detect (command-line) arguments passed to the script and launch update method
-if len(sys.argv) <= 1:
-    single_update()
-elif sys.argv[1] == '-single':
-    print('Detected \'-single\' argument, running single update...')
-    single_update()
-elif sys.argv[1] == '-continuous':
-    print('Detected \'-continuous\' argument, running continuous updates...')
-    continuous_update()
-else:
-    single_update()
+def main():
+    # Try to detect (command-line) arguments passed to the script and launch update method
+    if len(sys.argv) <= 1:
+        single_update()
+    elif sys.argv[1] == '-single':
+        print('Detected \'-single\' argument, running single update...')
+        single_update()
+    elif sys.argv[1] == '-continuous':
+        print('Detected \'-continuous\' argument, running continuous updates...')
+        continuous_update()
+    else:
+        single_update()
+
+
+# Entry point, calls main function
+if __name__ == '__main__':
+    main()

@@ -13,9 +13,9 @@ import shutil
 from datetime import datetime as dt
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from src.jpsSingletons import jpsBaseLibGW
+from ukgasflows.jpsSingletons import jpsBaseLibGW
 # get settings and functions from kg_utils module
-import src.kg_utils as kg
+import ukgasflows.kg_utils as kg
 
 
 def get_gasflow_history(duration, callbackSuccess, callbackFailure):
@@ -163,6 +163,8 @@ def onSuccess(timeseries_data):
 
         except Exception:
             print("ERROR: Could not write out data file!")
+
+    return res_final
 
 
 def onFailure(error):

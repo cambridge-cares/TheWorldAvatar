@@ -4,14 +4,15 @@
 
 import os
 import json
+from pathlib import Path
 from configobj import ConfigObj
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from src.jpsSingletons import jpsBaseLibGW
+from ukgasflows.jpsSingletons import jpsBaseLibGW
 
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(os.getcwd(), "..", "resources", "timeseries.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
 
 # Initialise global variables to be read from properties file
 global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
