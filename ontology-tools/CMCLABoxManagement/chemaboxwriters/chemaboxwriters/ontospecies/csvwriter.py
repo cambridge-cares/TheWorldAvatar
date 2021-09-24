@@ -58,7 +58,7 @@ def os_csvwriter(data, spec_pref = PREFIXES["spec_pref"]):
     label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 
     spamwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
 
     write_prelim(spamwriter,out_id,spec_pref,label)
@@ -128,13 +128,15 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
         count += 1
 
 def write_charge_info(spamwriter,gen_id,out_id,data):
-    charge = data[FORMAL_CHARGE]
-    spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
-    spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
-    spamwriter.writerow([onto_spec+'#value','Data Property','Charge_' + gen_id,'',charge,'String'])
-    spamwriter.writerow([onto_spec+'#units','Data Property','Charge_' + gen_id,'','e','String'])
-    spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
-    spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
+    if FORMAL_CHARGE in data:
+        charge = data[FORMAL_CHARGE]
+
+        spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
+        spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
+        spamwriter.writerow([onto_spec+'#value','Data Property','Charge_' + gen_id,'',charge,'String'])
+        spamwriter.writerow([onto_spec+'#units','Data Property','Charge_' + gen_id,'','e','String'])
+        spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
 
 
 def write_atoms(spamwriter,gen_id,out_id,data):
@@ -150,11 +152,12 @@ def write_atoms(spamwriter,gen_id,out_id,data):
     spamwriter.writerow([out_id,'Instance',onto_spec + '#Species','','',''])
 
 def write_molwts(spamwriter,gen_id,out_id,data):
-    molwt = data[MOLWT]
-    spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
-    spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
-    spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
-    spamwriter.writerow([onto_spec + '#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
+    if MOLWT in data:
+        molwt = data[MOLWT]
+        spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
+        spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
+        spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
+        spamwriter.writerow([onto_spec + '#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
 
 def write_enth(spamwriter,gen_id,out_id,data):
     #Write enthalpy of formation data.
