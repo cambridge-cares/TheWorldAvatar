@@ -131,11 +131,11 @@ def write_charge_info(spamwriter,gen_id,out_id,data):
     charge = data[FORMAL_CHARGE]
     spamwriter.writerow(['Charge_' + gen_id,'Instance',onto_spec + '#Charge','','',''])
     spamwriter.writerow([out_id,'Instance','Charge_' + gen_id, onto_spec + '#hasCharge','',''])
-    spamwriter.writerow([gain_pref + 'hasValue','Instance','Charge_' + gen_id,'',charge,'String'])
-    spamwriter.writerow(['Charge_' + gen_id,'Instance','Charge_' + gen_id,
-                        unit_pref + 'unit#AtomicChargeUnit',gain_pref + 'hasUnit','',''])
+    spamwriter.writerow([onto_spec+'#value','Data Property','Charge_' + gen_id,'',charge,'String'])
+    spamwriter.writerow([onto_spec+'#units','Data Property','Charge_' + gen_id,'','e','String'])
     spamwriter.writerow(['MolecularFormula_'+ gen_id,'Instance',onto_spec + '#MolecularFormula','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularFormula_'+gen_id,onto_spec + '#hasMolecularFormula','',''])
+
 
 def write_atoms(spamwriter,gen_id,out_id,data):
     atom_list = data[ATOM_LIST]
@@ -153,9 +153,8 @@ def write_molwts(spamwriter,gen_id,out_id,data):
     molwt = data[MOLWT]
     spamwriter.writerow(['MolecularWeight_'+ gen_id,'Instance',onto_spec + '#MolecularWeight','','',''])
     spamwriter.writerow([out_id,'Instance','MolecularWeight_'+ gen_id,onto_spec + '#hasMolecularWeight','',''])
-    spamwriter.writerow([gain_pref + 'hasValue','Instance','MolecularWeight_' + gen_id,'',molwt,'String'])
-    spamwriter.writerow(['MolecularWeight_' + gen_id,'Instance',
-                          unit_pref + 'unit#Dalton', gain_pref + 'hasUnit','',''])
+    spamwriter.writerow([onto_spec + '#value','Data Property','MolecularWeight_' + gen_id,'',molwt,'String'])
+    spamwriter.writerow([onto_spec + '#units','Data Property','MolecularWeight_' + gen_id,'','g/mol','String'])
 
 def write_enth(spamwriter,gen_id,out_id,data):
     #Write enthalpy of formation data.
