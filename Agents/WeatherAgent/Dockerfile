@@ -22,8 +22,14 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/WeatherAgent/output/WeatherAgent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+# Install zip so that the entrypoint script can modify the war at runtime, if necessary
+RUN apt update && apt install -y zip
 
-# Start the Tomcat server
-ENTRYPOINT ["catalina.sh", "run"]
+# Remove version suffix when copying the war to simplify the entrypoint script
+COPY --from=builder /root/WeatherAgent/output/WeatherAgent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/WeatherAgent.war
+
+COPY ./docker/entrypoint.sh .
+
+# Run the entrypoint script
+ENTRYPOINT ["./entrypoint.sh"]
 #==================================================================================================
