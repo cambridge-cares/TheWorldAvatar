@@ -350,8 +350,8 @@ http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,
-http://purl.org/gc/hasValue,Instance,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,0,String
-Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,http://data.nasa.gov/qudt/owl/unit#AtomicChargeUnit,http://purl.org/gc/hasUnit,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,0,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,e,String
 MolecularFormula_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,MolecularFormula_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula,,
 Element_C,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
@@ -369,5 +369,5 @@ ElementNumber_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_2,Instance,Element_H,http://w
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
 MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight,,
-http://purl.org/gc/hasValue,Instance,MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,153.0704700000001,String
-MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://data.nasa.gov/qudt/owl/unit#Dalton,http://purl.org/gc/hasUnit,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,153.0704700000001,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,MolecularWeight_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,,g/mol,String

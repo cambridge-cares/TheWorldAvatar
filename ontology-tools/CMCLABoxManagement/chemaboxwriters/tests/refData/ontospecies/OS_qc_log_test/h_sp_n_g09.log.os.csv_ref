@@ -30,8 +30,8 @@ http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_testID-111-111-111_H_1,,0.0
 AtomCoordinateZ_testID-111-111-111_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Charge_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
 http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance,Charge_testID-111-111-111,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,
-http://purl.org/gc/hasValue,Instance,Charge_testID-111-111-111,,0,String
-Charge_testID-111-111-111,Instance,Charge_testID-111-111-111,http://data.nasa.gov/qudt/owl/unit#AtomicChargeUnit,http://purl.org/gc/hasUnit,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,Charge_testID-111-111-111,,0,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,Charge_testID-111-111-111,,e,String
 MolecularFormula_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularFormula,,,
 http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance,MolecularFormula_testID-111-111-111,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularFormula,,
 Element_H,Instance,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Element,,,
@@ -43,5 +43,5 @@ ElementNumber_testID-111-111-111_1,Instance,Element_H,http://www.theworldavatar.
 http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,,,
 MolecularWeight_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#MolecularWeight,,,
 http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance,MolecularWeight_testID-111-111-111,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight,,
-http://purl.org/gc/hasValue,Instance,MolecularWeight_testID-111-111-111,,1.00783,String
-MolecularWeight_testID-111-111-111,Instance,http://data.nasa.gov/qudt/owl/unit#Dalton,http://purl.org/gc/hasUnit,,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value,Data Property,MolecularWeight_testID-111-111-111,,1.00783,String
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#units,Data Property,MolecularWeight_testID-111-111-111,,g/mol,String
