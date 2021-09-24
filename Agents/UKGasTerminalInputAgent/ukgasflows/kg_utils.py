@@ -379,3 +379,6 @@ def get_time_format(endpoint, terminalIRI):
         return None
     else:
         return response[0][var]
+
+
+read_properties_file(PROPERTIES_FILE)
