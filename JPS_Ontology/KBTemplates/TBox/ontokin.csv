@@ -96,8 +96,7 @@ participates In,Object Property,,,Product,Reverse Reaction,,A relation that defi
 http://www.w3.org/2002/07/owl#sameAs,Object Property,,,Reactant UNION Product,Species,,,http://www.w3.org/2002/07/owl
 http://www.w3.org/2002/07/owl#versionInfo,Data Property,,,Mechanism Representation Language,String,,,http://www.w3.org/2002/07/owl
 efficiency,Data Property,,,,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,,,,String,,,http://www.w3.org/2000/01/rdf-schema
-hasCommit,Data Property,,,Mechanism Representation Language,String,,test comment,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+hasCommit,Data Property,,,Mechanism Representation Language,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 has Source Comment,Data Property,,,,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 requires Reaction Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 requires Species Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
@@ -115,7 +114,6 @@ has Type Of Kinetics Model,Data Property,,,Gas Phase UNION Site Phase,String,,,h
 has Type Of Transport Model,Data Property,,,Phase UNION Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 has Phase Array,Data Property,,,Bulk Phase UNION Site Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 is Element Data Case Sensitive,Data Property,,,Element Metadata,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,,String,,,http://www.w3.org/2000/01/rdf-schema
 has Atomic Mass,Data Property,,,Element,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 has Atomic Mass Units,Data Property,,,Element,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 has Expected Phase,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
