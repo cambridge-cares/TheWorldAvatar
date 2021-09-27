@@ -11,9 +11,35 @@ import numpy as np
 import copy
 
 def xyzToAtomsPositions(xyzFileOrStr):
+    # setting the main xyzToAtomsPositions function.
+    # at the moment it is the inchi-based algorithm with
+    # hydrogen atoms replacement. Once the inchi-based
+    # algorithm without the hydrogen replacement is mature
+    # enough I will use it instead.
+    return xyzToAtomsPositionsInChiWithAtomsRepl(xyzFileOrStr)
+
+def xyzToAtomsPositionsNoInChi(xyzFileOrStr):
     """
     Returns atom positions (order) given a molecule in an xyz format.
-    Inchi-based algorithm.
+    The atoms order is determined using four invariants, in the
+    following order of precedence:
+        1) Largest sum of distances from all other atoms
+        2) Largest X coordinate
+        3) Largest Y coordinate
+        4) Largest Z coordinate
+
+    Pros:
+    This is the possible simplest algorithm to canonicalize
+    atoms order in molecules.
+    The algorithm works with single molecules and disconnected
+    molecular fragments out of the box.
+
+    Cons:
+    Since the algorithm doesnt use any topological information
+    (atoms connectivity) it is sensitive to the quality of the
+    xyz coordinates. This means that atoms canonical order may
+    change if their positions are distorted too much with
+    respoect to each other.
 
     Use this function to set the atoms positions in a reference
     molecule. The idea is to assign the positions once and to never
@@ -35,11 +61,104 @@ def xyzToAtomsPositions(xyzFileOrStr):
 
     xyzFileOrStr = xyzToIntertialFrame(xyzFileOrStr)
 
+    # create the rdkit mol object
+    rdkitMolFromMol = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
+    numAtoms = rdkitMolFromMol.GetNumAtoms()
+
+    # initialise the atoms position dict
+    atomsPositions = {k:None for k in range(numAtoms)}
+    atomsIds = list(atomsPositions.keys())
+    nextAtomId = 0
+
+    atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, atomsIds)
+    atomsXYZ = (atomsXYZ * 1e7).astype(int)
+    atomsX = atomsXYZ[:,0].tolist()
+    atomsY = atomsXYZ[:,1].tolist()
+    atomsZ = atomsXYZ[:,2].tolist()
+    _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, atomsIds)
+    _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+    atomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+
+    for atomPos in atomsOrder:
+        atomsPositions[atomsIds[atomPos]] = nextAtomId
+        nextAtomId += 1
+
+    # check for duplicate and None values at the end
+    hasDuplicates = len(atomsPositions.values()) > len(set(atomsPositions.values()))
+    hasNones = None in atomsPositions.values()
+    if hasDuplicates or hasNones:
+        print('Error: atom canoncial positions algorithm has failed.')
+        atomsPositions= {}
+    return atomsPositions
+
+def xyzToAtomsPositionsInChiWithAtomsRepl(xyzFileOrStr, atomRepl='Cl'):
+    """
+    Returns atom positions (order) given a molecule in an xyz format.
+    Inchi-based algorithm.
+    The atoms order is the inchi order. Given that inchi does not
+    assign order to hydrogen atoms, these atoms are swapped by some
+    other heavy atom (default is Cl) so that all atoms are treated
+    explicitly by inchi. Any topologically equivalent atoms indicated
+    by inchi are disammbiguated using four invariants, in the
+    following order of precedence:
+        1) Largest sum of distances from all other atoms
+        2) Largest X coordinate
+        3) Largest Y coordinate
+        4) Largest Z coordinate
+
+    Pros:
+    All atoms have their orders assigned by inchi, which is a rather
+    robust algorithm. All topologically equivalent atoms are flagged
+    by the inchi algorithm for further order sorting. The algorithm
+    is not too difficult, and with small modifications, now works
+    with single molecules and disconnected molecular fragments.
+
+    Cons:
+    Replacing H atoms with some other heavy atom may lead to splitting
+    the molecule into fragments or combining it back into less
+    fragmetns. This can happen if hydrogens that are
+    swapped are very close to each other, but not yet within the
+    hydrogen bond distance. Then swapping such atoms with the heavy
+    atoms may trick inchi to insert a bond between them (heavy atoms
+    bond lengths are usually much longer than the hydrogen bonds).
+    This leads to the algorithm wrongly assigning the atoms orders.
+    Therefore a check has been imlemented to catch such cases
+    to notify a user that the algorithm has failed.
+    Another con is that the final order of atoms depends on the
+    choice of heavy atom to replace hydrogens with.
+
+
+    Use this function to set the atoms positions in a reference
+    molecule. The idea is to assign the positions once and to never
+    change them again.
+
+    Arguments:
+    ----------
+    xyzFileOrStr : str
+        input xyz molecule (either file path or xyz string)
+    atomRepl : str
+        atom to replace the hydrogens with
+
+    Returns:
+    ----------
+    atomsPositions: dict
+        dictionary whose keys correspond to atoms positions in xyz
+        file and values to the newly assigned positions
+    """
+    # get inchi with extra auxiliary log
+    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
+
+    xyzFileOrStr = xyzToIntertialFrame(xyzFileOrStr)
+
+    # create the rdkit mol object for an original xyz string
+    rdkitMolFromMolOriginal = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
+
     # swap all hydrogens with a heavy atom, here I picked Cl, but any other halogen atom
     # should also work. this atom swap is to force inchi to considered all the atoms in its
     # connectivity algorithm. note that atoms from the first group (e..g Na, Li) wont work
     # as they produce solids and thus the inchi string is significantly changed
-    xyzFileOrStr = '\n'.join([xyz_line.replace('H','Cl') for xyz_line in xyzFileOrStr.split('\n')])
+    xyzFileOrStr = '\n'.join([xyz_line.replace('H',atomRepl)
+                    for xyz_line in xyzFileOrStr.split('\n')])
 
     inchiWithAux = obconverter.obConvert(inputMol=xyzFileOrStr,inputMolFormat='xyz',
                             outputMolFormat='inchi', options=['-xa'])
@@ -50,7 +169,7 @@ def xyzToAtomsPositions(xyzFileOrStr):
     # read the mapping between heavy atoms (+ lone hydrogens) in xyz and inchi
     # from the auxiliary log
     atomsInchiAuxMap = re.search(r'/N:(.*?)(?=/|$)',inchiAux)
-    atomsInchiAuxEquivMap = re.search(r'/E:(.*?)(?=/|$)',inchiAux)
+    atomsInchiAuxEquivMap = re.search(r'/E:(?P<equivMap>.*?)(?=/|$)',inchiAux)
 
     # create the rdkit mol object
     rdkitMolFromMol = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
@@ -61,31 +180,30 @@ def xyzToAtomsPositions(xyzFileOrStr):
     nextAtomId = 0
 
     mol_frags = rdkitmolutils.rdkitMolToMolFrags(rdkitMolFromMol)
-    if mol_frags:
-        print(f'Warning: Provided xyz file contains {len(mol_frags)} molecular fragments.')
-        #return atomsPositions
+    mol_frags_original = rdkitmolutils.rdkitMolToMolFrags(rdkitMolFromMolOriginal)
+
+    # this catches a case where swapping H atoms with heavy atoms leads to
+    # either splitting an original mol into n fragments or combining
+    # the original framgented mol into less fragments. It probably would
+    # never happen, but it is good to have this check in place
+    if mol_frags != mol_frags_original:
+        print('Error: atom canoncial positions algorithm has failed.')
+        return {}
 
     # get the atoms based on the inchi connectivity info
     if atomsInchiConnectivity is not None:
         # process the atomsInchiAuxMap and extract the atoms mapping
+        atomsInchiAuxMapFrags = atomsInchiAuxMap.groups()[0]
         atomsInchiAuxMap= atomsInchiAuxMap.groups()[0] \
                         .replace('/','').replace(';',',').split(',')
         atomsInchiMatch = {int(atomId)-1: i
                            for i, atomId in enumerate(atomsInchiAuxMap)}
-        atomsInchiMatchList = list(map(lambda x: int(x)-1, atomsInchiAuxMap))
-
         if atomsInchiMatch:
             # now disambiguate any equivalent atoms
             if atomsInchiAuxEquivMap:
-                atomsInchiAuxEquivMap= atomsInchiAuxEquivMap.groups()[0] \
-                                    .replace('/','').replace(')(','#').replace(')','') \
-                                    .replace('(','').split('#')
+                equivMap = _getAtomsInchiAuxEquivMap(atomsInchiAuxEquivMap.group('equivMap'), atomsInchiAuxMapFrags)
 
-                for i in range(len(atomsInchiAuxEquivMap)):
-                    atomsInchiAuxEquivMap[i] = list(map(lambda x: int(x)-1, atomsInchiAuxEquivMap[i].split(',')))
-                    atomsInchiAuxEquivMap[i] = list(map(lambda x: atomsInchiMatchList[x], atomsInchiAuxEquivMap[i]))
-
-                for equivAtomsList in atomsInchiAuxEquivMap:
+                for equivAtomsList in equivMap:
                     atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, equivAtomsList)
                     atomsXYZ = (atomsXYZ * 1e7).astype(int)
                     atomsX = atomsXYZ[:,0].tolist()
@@ -104,6 +222,187 @@ def xyzToAtomsPositions(xyzFileOrStr):
             # add the atoms positions to the overall atomsPosition dictionary
             atomsPositions = {**atomsPositions, **atomsInchiMatch}
             nextAtomId = len(atomsInchiMatch)
+
+    # assign posititions to any atoms that are left
+    if nextAtomId < numAtoms:
+        loneAtomsIds = [atomId
+                        for atomId, refId in atomsPositions.items()
+                        if refId is None]
+        loneAtomsMap = {}
+
+        atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, loneAtomsIds)
+        atomsXYZ = (atomsXYZ * 1e7).astype(int)
+        atomsX = atomsXYZ[:,0].tolist()
+        atomsY = atomsXYZ[:,1].tolist()
+        atomsZ = atomsXYZ[:,2].tolist()
+        _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, loneAtomsIds)
+        _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+        loneAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+
+        for loneAtomPos in loneAtomsOrder:
+            loneAtomsMap[loneAtomsIds[loneAtomPos]] = nextAtomId
+            nextAtomId += 1
+
+        # add the remaining positions to the overall atoms positions
+        atomsPositions = {**atomsPositions, **loneAtomsMap}
+
+    # check for duplicate and None values at the end
+    hasDuplicates = len(atomsPositions.values()) > len(set(atomsPositions.values()))
+    hasNones = None in atomsPositions.values()
+    if hasDuplicates or hasNones:
+        print('Error: atom canoncial positions algorithm has failed.')
+        atomsPositions= {}
+    return atomsPositions
+
+
+def xyzToAtomsPositionsInChiNoAtomsRepl(xyzFileOrStr):
+    """
+    Returns atom positions (order) given a molecule in an xyz format.
+    Inchi-based algorithm.
+    The heavy atoms order is the inchi order. Any topologically
+    equivalent atoms indicated by inchi are disammbiguated using
+    four invariants, in the following order of precedence:
+        1) Largest sum of distances from all other atoms
+        2) Largest X coordinate
+        3) Largest Y coordinate
+        4) Largest Z coordinate
+
+    Hydrogen atoms order is assigned by looping over heavy atoms
+    in their found order of precendce. If more than one hydrogen
+    is attached to a heavy atom, then all of them are treated
+    as topologically equivalent and their order is disambiguated
+    using four invariants, in the following order of precedence:
+        1) Largest sum of distances from all other atoms
+        2) Largest X coordinate
+        3) Largest Y coordinate
+        4) Largest Z coordinate
+
+    Pros:
+    Gives atom orders that are closest to the inchi algorithm
+    atoms ordering. The atoms order is much less affected by the
+    quality of the xyz coordinates. No hydrogen atoms swapping.
+
+    Cons:
+    The most difficult algorithm to write. At the moment, it
+    doesnt work with disconnected molecular fragments.
+
+    Use this function to set the atoms positions in a reference
+    molecule. The idea is to assign the positions once and to never
+    change them again.
+
+    Arguments:
+    ----------
+    xyzFileOrStr : str
+        input xyz molecule (either file path or xyz string)
+
+    Returns:
+    ----------
+    atomsPositions: dict
+        dictionary whose keys correspond to atoms positions in xyz
+        file and values to the newly assigned positions
+    """
+    # get inchi with extra auxiliary log
+    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
+
+    xyzFileOrStr = xyzToIntertialFrame(xyzFileOrStr)
+
+    inchiWithAux = obconverter.obConvert(inputMol=xyzFileOrStr,inputMolFormat='xyz',
+                            outputMolFormat='inchi', options=['-xa'])
+    inchi, inchiAux = inchiWithAux.split('\n')
+    # find connectivity info in the inchi string - used to detect the
+    # presence of heavy atoms.
+    atomsInchiConnectivity = re.search(r'/c(\d+?\*)?(.*?)(?=/|$)',inchi)
+    # read the mapping between heavy atoms (+ lone hydrogens) in xyz and inchi
+    # from the auxiliary log
+    atomsInchiAuxMap = re.search(r'/N:(.*?)(?=/|$)',inchiAux)
+    atomsInchiAuxEquivMap = re.search(r'/E:(?P<equivMap>.*?)(?=/|$)',inchiAux)
+
+    # create the rdkit mol object
+    rdkitMolFromMol = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
+    numAtoms = rdkitMolFromMol.GetNumAtoms()
+
+    # initialise the atoms position dict
+    atomsPositions = {k:None for k in range(numAtoms)}
+    nextAtomId = 0
+    posToUse = [i for i in range(numAtoms)]
+
+    # get the atoms based on the inchi connectivity info
+    if atomsInchiAuxMap is not None:
+        # process the atomsInchiAuxMap and extract the atoms mapping
+        atomsInchiAuxMapFrags = atomsInchiAuxMap.groups()[0]
+        atomsInchiAuxMap= atomsInchiAuxMap.groups()[0] \
+                        .replace('/','').replace(';',',').split(',')
+        atomsInchiMatch = {int(atomId)-1: i
+                           for i, atomId in enumerate(atomsInchiAuxMap)}
+        if atomsInchiMatch:
+            equivMap = []
+            # now disambiguate any equi-valent atoms
+            if atomsInchiAuxEquivMap:
+                equivMap = _getAtomsInchiAuxEquivMap(
+                    rdkitMolFromMol,
+                    atomsInchiAuxEquivMap.group('equivMap'),
+                    atomsInchiAuxMapFrags)
+
+                for equivAtomsList in equivMap:
+                    atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, equivAtomsList)
+                    atomsXYZ = (atomsXYZ * 1e7).astype(int)
+                    atomsX = atomsXYZ[:,0].tolist()
+                    atomsY = atomsXYZ[:,1].tolist()
+                    atomsZ = atomsXYZ[:,2].tolist()
+                    _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, equivAtomsList)
+                    _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+                    # use four invariants to disambiguate atoms
+                    equivAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+
+                    currentAtomsOrder = sorted([atomsInchiMatch[equivAtomId] for equivAtomId in equivAtomsList])
+                    for equivAtomPos in equivAtomsOrder:
+                        atomsInchiMatch[equivAtomsList[equivAtomPos]] = currentAtomsOrder.pop(0)
+
+            # add the atoms positions to the overall atomsPosition dictionary
+            atomsPositions = {**atomsPositions, **atomsInchiMatch}
+            nextAtomId = len(atomsInchiMatch)
+
+    atomsSorted = {k: v for k, v in sorted(atomsInchiMatch.items(), key=lambda item: item[1])}
+    posToUse = [i for i in range(numAtoms) if i not in atomsPositions.values()]
+
+
+    hydrogenMap = {}
+    for atomId in atomsSorted:
+        atom_i = rdkitMolFromMol.GetAtomWithIdx(atomId)
+        if atom_i.GetAtomicNum() > 1:
+            min_atom_i = atomId
+            for equivLists in equivMap:
+                if atomId in equivLists:
+                    min_atom_i = min(equivLists)
+
+            hydrogenIds = [atom.GetIdx()
+                        for atom in atom_i.GetNeighbors()
+                        if atom.GetAtomicNum() == 1]
+            if hydrogenIds:
+                if min_atom_i not in hydrogenMap.keys():
+                    hydrogenMap[min_atom_i] = hydrogenIds
+                else:
+                    hydrogenMap[min_atom_i].extend(hydrogenIds)
+
+
+    for _ , equivAtomsList in hydrogenMap.items():
+        if len(equivAtomsList)>1:
+            atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, equivAtomsList)
+            atomsXYZ = (atomsXYZ * 1e7).astype(int)
+            atomsX = atomsXYZ[:,0].tolist()
+            atomsY = atomsXYZ[:,1].tolist()
+            atomsZ = atomsXYZ[:,2].tolist()
+            _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, equivAtomsList)
+            _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+            # use four invariants to disambiguate atoms
+            equivAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+        else:
+            equivAtomsOrder = [0]
+        currentAtomsOrder = [i for i in posToUse[:len(equivAtomsList)]]
+        for equivAtomPos in equivAtomsOrder:
+            atomsPositions[equivAtomsList[equivAtomPos]] = currentAtomsOrder[0]
+            posToUse.remove(currentAtomsOrder.pop(0))
+            nextAtomId +=1
 
     # assign posititions to any atoms that are left
     if nextAtomId < numAtoms:
@@ -420,3 +719,74 @@ def roundXYZ(xyzString, numDigits=5):
         xyzLine = f'{atomType} {x:{fspec}} {y:{fspec}} {z:{fspec}}'
         xyzRounded.append(xyzLine)
     return '\n'.join(xyzRounded)
+
+
+def _getAtomsInchiAuxEquivMap(atomsInchiAuxEquivMap, atomsInchiAuxMapFrags):
+    """Creates the final equivalence atoms mapping array"""
+    # atomsInchiAuxMapFrags - this a raw list of atoms pos assigned by the inchi
+    equivAtomsMapFrags = atomsInchiAuxEquivMap.split(';')
+    equivAtomsMapFrags = [eqvFrag for eqvFrag in equivAtomsMapFrags if eqvFrag != '']
+    #atomsInchiAuxEquivMap - this is a raw equivalence atoms string from inchi
+    atomsInchiAuxMapFrags = atomsInchiAuxMapFrags.split(';')
+
+    atomFragsId = 0
+
+    equivAtomsMapOut = []
+    for equivAtomsMap in equivAtomsMapFrags:
+        equivAtomsProcessed, atomFragsId = _procesxEquivAtomsMap(equivAtomsMap, atomsInchiAuxMapFrags, atomFragsId)
+        for equivAtomsIds in equivAtomsProcessed:
+            equivAtomsMapOut.append(equivAtomsIds)
+    return equivAtomsMapOut
+
+def _procesxEquivAtomsMap(equivAtomsMap, atomsInchiMapFrags, atomFragsId):
+    # inchi equiv atoms multiplier match
+    # e.g. for equiv atoms = 2*(1,2) it would match the first 2
+    equivAtomsMultMatch = re.match(r'(?P<equivAtomsMult>\d+?)\*',equivAtomsMap)
+    equivAtomsMult = 1
+    equivAtomsTempStr = ''
+    if equivAtomsMultMatch:
+        # if multiplier found, it means that there are two the same fragments
+        equivAtomsMultStr = equivAtomsMultMatch.group('equivAtomsMult')
+        equivAtomsMult = int(equivAtomsMultStr)
+
+        equivAtomsMap = equivAtomsMap.replace(equivAtomsMultStr+'*','')
+
+        # this adds extra equivalent atoms for the same fragments, that
+        # were missed by the inchi algorithm because the
+        # fragments are apart
+        atomsInchiMapFrags_i = atomsInchiMapFrags[atomFragsId]
+        for k in range(len(atomsInchiMapFrags_i.split(','))):
+            if str(k+1) not in equivAtomsMap:
+                equivAtomsMap = f'{equivAtomsMap}({k+1})'
+
+    equivAtomsMap = equivAtomsMap.replace(')(','#') \
+                            .replace(')','') \
+                            .replace('(','')
+    i = 0
+    while i< len(equivAtomsMap):
+        digit_to_repl = ''
+
+        while True:
+            digit_to_repl = digit_to_repl + equivAtomsMap[i]
+            i+=1
+            commaFound = digit_to_repl[-1] == ','
+            hashFound = digit_to_repl[-1] == '#'
+            eolFound = i== len(equivAtomsMap)
+            if commaFound or hashFound:
+                digit_to_repl = digit_to_repl[:-1]
+                break
+            if eolFound: break
+
+        digit_to_repl = int(digit_to_repl)-1
+        for j in range(equivAtomsMult):
+            atFrags = atomsInchiMapFrags[atomFragsId+j].split(',')
+            equivAtomsTempStr = f'{equivAtomsTempStr}{int(atFrags[digit_to_repl])-1},'
+
+        if hashFound: equivAtomsTempStr = equivAtomsTempStr[:-1]+'#'
+        if eolFound: equivAtomsTempStr = equivAtomsTempStr[:-1]
+    atomFragsId = atomFragsId + equivAtomsMult
+
+    equivAtomsArray = list(map(lambda x: x.split(',') ,equivAtomsTempStr.split('#')))
+    for i in range(len(equivAtomsArray)):
+        equivAtomsArray[i] = list(map(lambda x: int(x) , equivAtomsArray[i]))
+    return equivAtomsArray, atomFragsId
