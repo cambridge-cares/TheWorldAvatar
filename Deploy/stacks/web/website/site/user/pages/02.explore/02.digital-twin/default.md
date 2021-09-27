@@ -22,7 +22,7 @@ slug: digital-twin
 	<div class="intro-center">
 		<p style="font-size: 12pt !important;">Countries must make significant changes to their infrastructure and energy systems to meet their obligations under the Paris Agreement. A comprehensive approach is required to evaluate possible changes as the challenges posted by climate change are inherently interdisciplinary and interconnected. Digitalisation offers new ways to design and operate infrastructure, and will form an important part of the response to this challenge. Digital Twins composed of distributed collaborative entities that share, and combine data to answer complex questions have been identified as a key aspect of the move towards this digitalisation.​</p>
 		<p style="font-size: 12pt !important;">On the pages linked below, we demonstrate how a comprehensive Digital Twin can be implemented as a dynamic Knowledge Graph using technologies from the Semantic Web. The Knowledge Graph includes the notions of a "base world" that describes the current state of the real world, and of "parallel worlds" that support the intelligent exploration of alternative scenarios.​</p>
-		<p style="font-size: 10pt; font-style: italic;">Adapted from <a href="https://cmclinnovations.com/files/publications/2021-01-14.pdf">"The National Digital Twin of the UK - a knowledge graph approach"<a>.</p>
+		<p style="font-size: 10pt; font-style: italic;">Adapted from <a href="https://doi.org/10.1017/dce.2021.10">"Universal Digital Twin - A Dynamic Knowledge Graph"<a>.</p>
 	</div>
 </div>
 
