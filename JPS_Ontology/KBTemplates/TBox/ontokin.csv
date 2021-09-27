@@ -5,6 +5,8 @@ Phase,Class,,,,,,"A phase of a substance is a form of matter that is uniform thr
 Bulk Phase,Class,Phase,IS-A,,,,A solid phase that is contiguous with site phases and remote from the gas phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 Site Phase,Class,Phase,IS-A,,,,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 Gas Phase,Class,Phase,IS-A,,,,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+Liquid Phase,Class,Phase,IS-A,,,,"The structural phase of matter in which the thermal mobility of molecules or atoms is comparable with the cohesiveness, having them connected but fluid in a mass [Wikitionary].",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+Solid Phase,Class,Phase,IS-A,,,,"The structural phase of matter in which the cohesive force of matter is strong enough to keep the molecules or atoms in the given positions, restraining the thermal mobility [Wikitionary].",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 Material,Class,,,,,,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 Element Number,Class,,,,,,A number indicating the multiplicity of an element in a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
