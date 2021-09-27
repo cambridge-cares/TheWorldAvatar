@@ -7,9 +7,9 @@ from matchers.elementMatcher import *
 import numpy
 import math
 class BOWMatcher(ElementMatcher):
-    def __init__(self, mm):
+    def __init__(self, mm, pairIterator):
         self.name = 'BOWMatcher'
-        ElementMatcher.__init__(self, mm)
+        ElementMatcher.__init__(self, mm, pairIterator)
 
     #todo: cos similarity
     def prep(self):

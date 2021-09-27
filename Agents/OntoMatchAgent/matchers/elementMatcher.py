@@ -10,8 +10,9 @@ matcher that compares entities pair by pair
 
 class ElementMatcher(object):
 
-    def __init__(self, es):
+    def __init__(self, es, pairIterator):
         self.S, self.T = es
+        self.pairIterator = pairIterator
         self.compareMethod = 'compare'
         self.prep()
 
@@ -91,13 +92,17 @@ class ElementMatcher(object):
         msize = (len(self.S.individualList),len(self.T.individualList))
         results = numpy.zeros(msize)
         print(msize)
-        for keyS in range(len(self.S.individualList)):
-            for keyT in range(len(self.T.individualList)):
+        #for keyS in range(len(self.S.individualList)):
+        #    for keyT in range(len(self.T.individualList)):
+        count = 0
+        for keyS, keyT in self.pairIterator:
                 #todo:class check??
                 #todo:build a list of ids, now is string id
                 #property check
                 result =self.add2Alignment((keyS, keyT), self.compareMethod)[2]
                 results[keyS, keyT] = result
+                count += 1
+        print('number of candidate pairs=', count)
         return results
 
     def matchWrite2Sqlite(self):

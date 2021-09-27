@@ -6,9 +6,9 @@ import matchers.StringMatcher as StringMatcher
 from matchManager import *
 class instanceStringMatcher(ElementMatcher):
     #add penalty for different class
-    def __init__(self, es,penalizer,db=False):
+    def __init__(self, es, pairIterator, penalizer,db=False):
         print('StringMatcher')
-        ElementMatcher.__init__(self, es)
+        ElementMatcher.__init__(self, es, pairIterator)
         self.name ='StringMatcher'
         self.penalizer = penalizer
         if db is True:

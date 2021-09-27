@@ -192,7 +192,7 @@ class Alignment(object):
         #add map
         self.id2Entity(onto1E,onto2E,entitylistName)
         for t3 in self.map:
-            print(t3)
+            #print(t3)
             o = BNode()
             g.add((o, RDF.type, A.Cell))
             g.add((o, A.entity1, Literal(t3[0])))

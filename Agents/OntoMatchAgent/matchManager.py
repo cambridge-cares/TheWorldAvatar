@@ -1,14 +1,17 @@
-import matchers
+import pickle
+import sys
+import time
+
+import numpy
+
 from alignment import Alignment
+import blocking
+import matchers
 from matchers.GeoAttrFinder import GeoAttrFinder
 from matchers.Penalizer import Penalizer
 from matchers.MeronymRematcher import *
-
 from ontologyWrapper import Ontology
-import sys
-import pickle
-import numpy
-import time
+
 class matchManager(object):
     def __init__(self, matchSteps, srcAddr, tgtAddr, aggregation = 'average',thre=0.6, weight =None, paras = None, matchIndividuals = False,penalize = None,useAttrFinder=False):
         self.matchSteps = []
@@ -28,25 +31,38 @@ class matchManager(object):
 
 
     def load(self):
-        self.srcOnto = Ontology(self.srcAddr)
+
+        if self.srcAddr.endswith('.pkl'):
+            with open(self.srcAddr,'rb') as file:
+                self.srcOnto = pickle.load(file)
+        else:
+            self.srcOnto = Ontology(self.srcAddr)
             #self.srcOnto._load(False)
 
-
-        self.tgtOnto = Ontology(self.tgtAddr)
+        if self.tgtAddr.endswith('.pkl'):
+            with open(self.tgtAddr,'rb') as file:
+                self.tgtOnto = pickle.load(file)
+        else:
+            self.tgtOnto = Ontology(self.tgtAddr)
             #self.tgtOnto._load(False)
-        #self.tgtOnto = Ontology(self.tgtAddr)
+            #self.tgtOnto = Ontology(self.tgtAddr)
 
-        #print('finish loading ontologies')
+        print('finish loading ontologies')
 
+    def default_params(self):
+        return {
+            'blocking': {'name': 'FullPairIterator'}
+        }
 
+    def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False, params=None):
 
-    def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False):
+        if params is None:
+            params = self.default_params()
+
         #load ontology
 
-        thisManager= self
         #run matching step by Step
-        self.A = Alignment()
-
+        self.A = Alignment()   
 
         if self.matchI:
             entityListName = 'individualList'
@@ -68,14 +84,17 @@ class matchManager(object):
 
         self.matchSteps = [getattr(matchers, step) for step in self.matchSteps]
         if match_method is 'matchWrite2Matrix':
+
             msize = (len(self.srcOnto.individualList), len(self.tgtOnto.individualList))
             resultMatrix = numpy.zeros(msize)
             for idx, matcherName in enumerate(self.matchSteps):
                 mtime = time.time()
+                pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params['blocking'])
+
                 if self.paras is not None and self.paras[idx] is not None:
-                    matcher = matcherName((self.srcOnto, self.tgtOnto), *self.paras[idx])
+                    matcher = matcherName((self.srcOnto, self.tgtOnto), pair_iterator, *self.paras[idx])
                 else:
-                    matcher = matcherName((self.srcOnto, self.tgtOnto))
+                    matcher = matcherName((self.srcOnto, self.tgtOnto), pair_iterator)
                 mm = getattr(matcher, match_method)
                 resultMatrix = resultMatrix + mm()*self.weight[idx]
                 mrunTime = time.time() - mtime
@@ -83,11 +102,13 @@ class matchManager(object):
 
             #translate matrix to  alignment
             resultArr = []
-            for idxS in range(len(resultMatrix)):
-                for idxT in range(len(resultMatrix[0])):
-                    result = resultMatrix[idxS,idxT]
-                    if result >=self.thre:
-                        resultArr.append((idxS, idxT, result))
+            pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params['blocking'])
+            for idxS, idxT in pair_iterator:
+                result = resultMatrix[idxS,idxT]
+                if result >= self.thre:
+                    resultArr.append((idxS, idxT, result))
+
+            print('number of pairs with scores larger threshold=', len(resultArr))
 
             self.A = Alignment(resultArr)
             if to1:
@@ -106,7 +127,7 @@ class matchManager(object):
                 matcher = matcherName((self.srcOnto, self.tgtOnto))
             mm = getattr(matcher, match_method)
             a = mm()
-            self.showResult(a,entityListName,0.0,'step'+ str(idx))
+            #self.showResult(a,entityListName,0.0,'step'+ str(idx))
             self.A.aggregate(a, self.weight[idx], mode='weight')
             print('raw', str(idx))
             mrunTime = time.time() - mtime
@@ -114,7 +135,6 @@ class matchManager(object):
 
 
         '''
-       x
             #penalize for non match class
             p = Penalizer(self.penalize['align'],self.srcOnto.icmap, self.tgtOnto.icmap)
             self.A = p.penal(self.A)

@@ -6,11 +6,11 @@ from unicodedata import *
 import re
 import math
 class ValueMatcher(ElementMatcher):
-    def __init__(self, es,penalizer,extraMap=None):
+    def __init__(self, es, pairIterator, penalizer, extraMap=None):
         print('ValueMatcher')
-        ElementMatcher.__init__(self, es)
+        ElementMatcher.__init__(self, es, pairIterator)
         self.name = 'ValueMatcher'
-        self.bowM = BOWMatcher(es)
+        self.bowM = BOWMatcher(es, pairIterator)
         self.penalizer =penalizer
         self.extraValueMapS = None
         self.extraValueMapT = None

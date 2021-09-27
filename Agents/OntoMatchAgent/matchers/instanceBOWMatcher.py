@@ -7,11 +7,11 @@ from matchers.elementMatcher import *
 import numpy
 import math
 class instanceBOWMatcher(ElementMatcher):
-    def __init__(self, mm,penalizer,db=False):
+    def __init__(self, mm, pairIterator, penalizer,db=False):
         print('BOWMatcher')
 
         self.name = 'BOWMatcher'
-        ElementMatcher.__init__(self, mm)
+        ElementMatcher.__init__(self, mm, pairIterator)
         self.penalizer = penalizer
         if db is True:
             self.con = self.connectDBnCreateTable(self.name)
