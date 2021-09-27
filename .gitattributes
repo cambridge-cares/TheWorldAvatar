@@ -1,0 +1,5 @@
+# Git will decide which files are binary, this is usually correct but can be overridden.
+* text=auto
+# These files should be force to have Linux line endings
+*.xml text eol=lf
+*.sh text eol=lf
