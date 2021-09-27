@@ -3,9 +3,7 @@ version: '3.8'
 services:
   example:
     image: python_agent_eg:1.0.0
+    build: .
     container_name: python_agent_eg
-    build:
-      context: .
-      dockerfile: ./Dockerfile
     ports:
-      - 7000:5000
+      - 55002:5000

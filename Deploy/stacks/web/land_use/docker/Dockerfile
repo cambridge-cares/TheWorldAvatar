@@ -8,14 +8,14 @@
 # for more details.
 # 
 # Stages:
-#	- development:	uses development JS/CSS imports
-#	- production:	uses production JS/CSS imports
+#	- dev:	uses development JS/CSS imports
+#	- prod:	uses production JS/CSS imports
 #
 #########################
 
 ##### DEVELOPMENT STAGE #####
 # Using Alpine as the base 
-FROM  alpine:3.14.0 as development
+FROM  alpine:3.14.0 as dev
 
 # Meta data
 LABEL authors = "zh305@cam.ac.uk, dnls2@cam.ac.uk, support@cmclinnovations.com"
@@ -49,8 +49,8 @@ EXPOSE 80
 CMD [ "httpd" , "-D", "FOREGROUND"]
 
 ##### PRODUCTION STAGE #####
-# Using development as the base 
-FROM development as production
+# Using development image as the base 
+FROM dev as prod
 
 # Copy in the head.html specific to the PRODUCTION setup
 COPY head-prod.html head.html

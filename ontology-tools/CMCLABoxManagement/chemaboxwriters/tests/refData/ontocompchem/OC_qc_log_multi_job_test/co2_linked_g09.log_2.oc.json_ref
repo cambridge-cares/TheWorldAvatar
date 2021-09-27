@@ -54,6 +54,7 @@
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Thu Jul 16 13:46:33 2020",
+    "Log file name": "co2_linked_g09.log",
     "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/s00009360.owl/Species_7258652483811000",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
     "EntryUUID": "testID-111-111-111"

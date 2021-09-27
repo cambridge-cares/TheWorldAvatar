@@ -35,7 +35,7 @@ function resetSidePanel() {
 	var textHTML = `
 		<p>The map to the left shows a sample of the power system data within the UK Digital Twin.</p>
 		<p>Intake terminals (<span style="color:#108dcc;">blue</span>), offtakes (<span style="color:#B42222;">red</span>), and pipes (<span style="color:#B1B1B1;">grey</span>) from the gas transmission system are shown for the mainland UK.</p>
-		<p>Select an Intake terminal(<span style="color:#108dcc;">blue</span>) to see the recent flow of gas into the grid. This data is pulled from the UK Digital Twin and is updated on a daily basis.​</p>
+		<p>Select an intake terminal (<span style="color:#108dcc;">blue</span>) to see the recent flow of gas into the grid. This data is pulled from the UK Digital Twin and is updated on a daily basis.​</p>
 	`;
 	setSidePanelText(textHTML);
 
@@ -43,9 +43,9 @@ function resetSidePanel() {
 		<div id="legend">
 			<b>Legend:</b><br>
 			<div id="padding" style="height: 6px;"></div>
-			<img width="24px" src="legend-terminal.svg"/>Terminals<br>
-			<img width="24px" src="legend-offtake.svg"/>Offtakes<br>
-			<img width="24px" src="legend-pipe.svg"/>Pipelines<br>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend-terminal.svg"/>Terminals</div>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend-offtake.svg"/>Offtakes</div>
+			<div style="padding-bottom: 2px;"><img width="24px" src="legend-pipe.svg"/>Pipelines</div>
 		</div>
 	`;
 	setSidePanelLegend(legendHTML);

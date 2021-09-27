@@ -1,23 +1,23 @@
 from chemaboxwriters.common import StageHandler
 from compchemparser.helpers.utils import jsonStringToFile
 from chemaboxwriters.common.stageenums import aboxStages
-from chemaboxwriters.ontopesscan import compchem_opsjson_abox_from_string, \
-                                        pesscan_csv_abox_from_string
-from chemutils.ioutils import writeFile
+from chemaboxwriters.ontopesscan import ops_jsonwriter, \
+                                        ops_csvwriter
+import chemutils.ioutils.ioutils as ioutils
 from chemaboxwriters.common import CSV_TO_OWL
 import copy
 
-OC_JSON_TO_OPS_JSON = StageHandler(handlerFunc=compchem_opsjson_abox_from_string,
+OC_JSON_TO_OPS_JSON = StageHandler(handlerFunc=ops_jsonwriter,
                              inStage=aboxStages.OC_JSON,
                              outStage=aboxStages.OPS_JSON,
                              unrollListInput=False,
                              fileWriter=jsonStringToFile,
                              fileExt='.ops.json')
 
-OPS_JSON_TO_CSV = StageHandler(handlerFunc=pesscan_csv_abox_from_string,
+OPS_JSON_TO_CSV = StageHandler(handlerFunc=ops_csvwriter,
                             inStage=aboxStages.OPS_JSON,
                             outStage=aboxStages.CSV,
-                            fileWriter= writeFile,
+                            fileWriter= ioutils.writeFile,
                             fileWriterKwargs={'newline':''},
                             fileExt='.ops.csv')
 

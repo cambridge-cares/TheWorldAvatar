@@ -98,6 +98,7 @@
         "1"
     ],
     "Scan Points": 1.6307,
+    "Log file name": "ethane_scan_rigid.g09",
     "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/s00002784.owl/Species_7257944035703500",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
     "EntryUUID": "testID-111-111-111"

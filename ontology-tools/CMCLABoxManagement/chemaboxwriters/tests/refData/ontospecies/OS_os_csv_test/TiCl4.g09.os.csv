@@ -6,8 +6,10 @@ http://www.w3.org/2004/02/skos/core#altLabel,Data Property,Species_7a79313e-0a45
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,7550-45-0,String
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Cl[Ti](Cl)(Cl)Cl,String
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,InChI=1S/4ClH.Ti/h4*1H;/q;;;;+4/p-4,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#pubChemCID,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,24193,String
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasAtomicBond,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,3 2 1 1 2 1 2 4 1 2 5 1,String
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasGeometry,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,Cl -2.44155 1.30134 -0.88072 Ti -0.90475 0.14582 0.13755 Cl 0.07915 -1.16904 -1.28966 Cl 0.56107 1.49734 1.00851 Cl -1.81756 -1.04628 1.71222,String
+http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#spinMultiplicity,Data Property,Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,,1,String
 Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,Instance,http://purl.org/gc/Atom,,,
 Species_7a79313e-0a45-4758-9b43-9a937d0a9da3,Instance,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,http://purl.org/gc/hasAtom,,
 http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCanonicalPosition,Data Property,Atom_7a79313e-0a45-4758-9b43-9a937d0a9da3_Cl_1,,4,Integer
