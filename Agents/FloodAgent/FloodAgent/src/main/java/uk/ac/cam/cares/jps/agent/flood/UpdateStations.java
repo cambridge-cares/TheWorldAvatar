@@ -76,9 +76,9 @@ public class UpdateStations {
 			
 			CloseableHttpClient httpclient = HttpClients.createDefault();
 			
-			LOGGER.debug("Downloading data from API");
+			LOGGER.info("Downloading data from API");
 	        CloseableHttpResponse response = httpclient.execute(request);
-	        LOGGER.debug("Download complete");
+	        LOGGER.info("Download complete");
 	        
 	        return EntityUtils.toString(response.getEntity());
 		} catch (Exception e) {
@@ -129,7 +129,7 @@ public class UpdateStations {
         	}
         }
         LOGGER.info("Received a total of " + Integer.toString(readings.length())+ " readings");
-        LOGGER.info("Organised into " + Integer.toString(readings.length()) + " groups");
+        LOGGER.info("Organised into " + Integer.toString(datatime_map.size()) + " groups");
         LOGGER.info("Failed to add " + Integer.toString(num_fail)+ " readings due to inconsistencies");
 	}
 	
