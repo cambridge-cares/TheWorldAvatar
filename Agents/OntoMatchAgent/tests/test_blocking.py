@@ -32,6 +32,7 @@ class TestModels(unittest.TestCase):
             'min_token_length': 3,
             'max_token_occurrences_src': 20,
             'max_token_occurrences_tgt': 20,
+            'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
         it = blocking.create_iterator(src_onto, tgt_onto, params)
@@ -50,6 +51,7 @@ class TestModels(unittest.TestCase):
             'min_token_length': 3,
             'max_token_occurrences_src': 30,
             'max_token_occurrences_tgt': 30,
+            'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
         it = blocking.create_iterator(src_onto, tgt_onto, params)

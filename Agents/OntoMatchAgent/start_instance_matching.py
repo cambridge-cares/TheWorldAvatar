@@ -40,6 +40,7 @@ if __name__ == '__main__':
         'min_token_length': 3,
         'max_token_occurrences_src': 20,
         'max_token_occurrences_tgt': 20,
+        'blocking_properties': ['name', 'isOwnedBy'],
         'reset_index': False
     }
 

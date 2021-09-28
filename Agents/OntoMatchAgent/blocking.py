@@ -54,7 +54,9 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
     candidate_matching_pairs = None
 
     def __init__(self, src_onto:Ontology, tgt_onto:Ontology,
-                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20, reset_index=False):
+                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20, 
+                blocking_properties: typing.List[str] =None, reset_index:bool =False):
+ 
         """
         Init a token-based iterator.
 
@@ -64,12 +66,16 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             min_token_length (int, optional): minimum length of a token to be considered for candidate matching pairs. Defaults to 3.
             max_token_occurrences_src (int, optional): discard the token if the number of source individuals containing the token is larger than this value. Defaults to 20.
             max_token_occurrences_tgt (int, optional): discard the token if the number of target individuals containing the token is larger than this value. Defaults to 20.
+            blocking_properties (typing.List[str], optional): the names of the properties which string values are tokenized. If None all properties with string values are used. Defaults to None.
+            reset_index (bool, optional): create the index only once if False else create it from scratch. Defaults to False.
         """
+
+        
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
-            dframe = self._create_index(src_onto, tgt_onto)
+            dframe = self._create_index(src_onto, tgt_onto, blocking_properties)
             # discard tokens that are too small or too frequent
             mask = (dframe['len'] >= min_token_length) & (dframe['count_1'] <= max_token_occurrences_src) & (dframe['count_2'] <= max_token_occurrences_tgt)
             dframe = dframe[mask]
@@ -158,21 +164,23 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
         print('columns=', dframe.columns)
         return dframe
 
-    def _create_index(self, src_onto, tgt_onto):
+    def _create_index(self, src_onto, tgt_onto, blocking_properties):
 
         index = {}
 
         # create token index for source ontology
         dframe = self._create_dataframe_from_ontology(src_onto)
-        props = ['name', 'isOwnedBy']
-        for prop in props:
+        if blocking_properties is None:
+            blocking_properties = dframe.columns
+        for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
             print('total number of tokens after processing property ', prop, ' is ', len(df_index))
 
         # add tokens for target ontology
         dframe = self._create_dataframe_from_ontology(tgt_onto)
-        props = ['name', 'isOwnedBy']
-        for prop in props:
+        if blocking_properties is None:
+            blocking_properties = dframe.columns
+        for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
             print('total number of tokens after processing property ', prop, ' is ', len(df_index))
 
