@@ -1,4 +1,6 @@
 
+import logging
+
 import pandas as pd
 
 class Agent():
@@ -6,7 +8,7 @@ class Agent():
     def __init__(self):
         file = 'C:/my/tmp/ontomatch/municipalities_germany.csv'
         self.df_municip = pd.read_csv(file)
-        print('loaded file=', file, ', number=', len(self.df_municip), ', columns=', self.df_municip.columns)
+        logging.info('loaded file=%s, number of entries=%s, columns=%s', file, len(self.df_municip), self.df_municip.columns)
 
     def query(self, location:str, zipcode:int):
 
@@ -18,7 +20,7 @@ class Agent():
             if len(df_tmp) == 1:
                 found_row = df_tmp.iloc[0]
             elif len(df_tmp) > 1:
-                print('several entries found for zipcode=', zipcode)
+                logging.info('several entries found for zipcode=%', zipcode)
                 if location:
                     for _, row in df_tmp.iterrows():
                         token = row['location_normalized'].split()[0]

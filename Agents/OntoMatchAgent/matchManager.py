@@ -1,3 +1,4 @@
+import logging
 import pickle
 import sys
 import time
@@ -47,7 +48,7 @@ class matchManager(object):
             #self.tgtOnto._load(False)
             #self.tgtOnto = Ontology(self.tgtAddr)
 
-        print('finish loading ontologies')
+        logging.info('finish loading ontologies')
 
     def default_params(self):
         return {
@@ -98,7 +99,7 @@ class matchManager(object):
                 mm = getattr(matcher, match_method)
                 resultMatrix = resultMatrix + mm()*self.weight[idx]
                 mrunTime = time.time() - mtime
-                print("Finished matcher "+str(idx)+" in "+ str(mrunTime))
+                logging.info('Finished matcher %s in %s', idx, mrunTime)
 
             #translate matrix to  alignment
             resultArr = []
@@ -108,13 +109,13 @@ class matchManager(object):
                 if result >= self.thre:
                     resultArr.append((idxS, idxT, result))
 
-            print('number of pairs with scores larger threshold=', len(resultArr))
+            logging.info('number of pairs with scores larger than threshold=%s', len(resultArr))
 
             self.A = Alignment(resultArr)
             if to1:
                 self.A.stableMarriage()
             if rematch is True:
-                print("rematch")
+                logging.info('rematch')
                 self.A = MeronymRematcher((self.srcOnto, self.tgtOnto), self.A).rematch()
             return
 
@@ -129,9 +130,9 @@ class matchManager(object):
             a = mm()
             #self.showResult(a,entityListName,0.0,'step'+ str(idx))
             self.A.aggregate(a, self.weight[idx], mode='weight')
-            print('raw', str(idx))
+            logging.info('raw  %s', idx)
             mrunTime = time.time() - mtime
-            print("Finished matcher "+str(idx)+" in "+ str(mrunTime))
+            logging.info('Finished matcher %s in %s', idx, mrunTime)
 
 
         '''
@@ -151,7 +152,7 @@ class matchManager(object):
             self.A.stableMarriage()
 
         if rematch is True:
-            print("rematch")
+            logging.info('rematch')
             self.A = MeronymRematcher((self.srcOnto, self.tgtOnto), self.A).rematch()
         #TODO: save to second list
 
@@ -160,13 +161,13 @@ class matchManager(object):
 
 
     def showResult(self, a, entityListName,thre = 0, label = ''):
-        #print("shwoing result")
+        #logging.debug('showing result')
         re = a.filter(thre)
         #re = re.stableMarriage()
         for id1,id2, p in re.map:
             srcE = getattr(self.srcOnto,entityListName)[id1]
             tgtE = getattr(self.tgtOnto,entityListName)[id2]
-            print(label+' src entity:' +' '+ str(srcE)+' tgt entity:'+' '+str(tgtE)+"  "+str(p))
+            logging.debug(label + ' src= %s, tgt= %s, score=%s', srcE, tgtE, p)
 
 
 
@@ -246,5 +247,4 @@ if __name__ == '__main__':
     m.runMatch()
 
     #m.searchS('installedCapacity')
-    #print(m.tgtOnto.entities[8])
 

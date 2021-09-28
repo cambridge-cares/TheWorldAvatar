@@ -1,15 +1,13 @@
-from matchManager import *
-from matchers.Penalizer import *
-from alignment import Alignment
-from PlusImport import PlusImport
-
-import os
-import owlready2
+import logging
 import time
-import csv
 
+from alignment import Alignment
+from matchManager import matchManager
+import util
 
 if __name__ == '__main__':
+
+    util.init_logging('.', '..')
 
     starttime = time.time()
 
@@ -20,14 +18,14 @@ if __name__ == '__main__':
     clist = [('PowerStation', 'PowerPlant', 0.9)]
     sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
     for subc in sublist:
-        for subc in sublist:
-            clist.append((subc,subc,0.9))
+        #for subc in sublist:
+        clist.append((subc,subc,0.9))
 
-    dir = './data/'
-    #src = dir + 'kwl.owl'
-    #tgt = dir + 'gppd0722.owl'
-    src = dir + 'kwl.pkl'
-    tgt = dir + 'gppd.pkl'
+    directory = './data/'
+    #src = directory + 'kwl.owl'
+    #tgt = directory + 'gppd0722.owl'
+    src = directory + 'kwl.pkl'
+    tgt = directory + 'gppd.pkl'
 
     m = matchManager(matchSteps, src, tgt, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
 
@@ -53,7 +51,7 @@ if __name__ == '__main__':
     a = m.runMatch("matchWrite2Matrix", to1=False, rematch = False, params = params)
 
     #m.showResult(m.A,'individualList')
-    m.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '210927xxx.owl', True)
+    m.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
 
     timenow = time.time()-starttime
-    print('elapsed time in seconds=', timenow)
+    logging.info('elapsed time in seconds=%s', timenow)

@@ -5,6 +5,7 @@ of two ontologies.
 
 import collections
 import itertools
+import logging
 import typing
 
 import pandas as pd
@@ -73,15 +74,17 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
+            logging.info('creating inverted index ...')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
             dframe = self._create_index(src_onto, tgt_onto, blocking_properties)
             # discard tokens that are too small or too frequent
             mask = (dframe['len'] >= min_token_length) & (dframe['count_1'] <= max_token_occurrences_src) & (dframe['count_2'] <= max_token_occurrences_tgt)
             dframe = dframe[mask]
-            print('number of tokens in inverted index=', len(dframe))
+            logging.info('finished creating index')
+            logging.info('number of tokens in inverted index=%s', len(dframe))
             TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(dframe)
-            print('number of candidate matching pairs=', len(TokenBasedPairIterator.candidate_matching_pairs))
+            logging.info('number of candidate matching pairs=%s', len(TokenBasedPairIterator.candidate_matching_pairs))
 
     def __iter__(self):
         return iter(TokenBasedPairIterator.candidate_matching_pairs)
@@ -120,7 +123,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                     index[key][column_count] = length
 
         else:
-            print('column not found:', column, )
+            logging.warn('column not found:%s', column, )
 
         df_index = pd.DataFrame.from_dict(index, orient='index')
 
@@ -136,7 +139,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             blocking_properties = dframe.columns
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
-            print('total number of tokens after processing property ', prop, ' is ', len(df_index))
+            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
 
         # add tokens for target ontology
         dframe = create_dataframe_from_ontology(tgt_onto)
@@ -144,9 +147,9 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             blocking_properties = dframe.columns
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
-            print('total number of tokens after processing property ', prop, ' is ', len(df_index))
+            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
 
-        print(df_index.columns)
+        logging.info('columns=%s', df_index.columns)
 
         return df_index
 
@@ -162,7 +165,6 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             links_2 = row['links_2']
 
             if isinstance(links_1, set) and isinstance(links_2, set):
-                #print(token)
                 for entry in links_1:
                     dict_pairs = pairs.get(entry)
                     if dict_pairs is None:
@@ -202,7 +204,7 @@ def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
 def create_dataframe_from_ontology(onto):
     rows = []
 
-    print('number of entities=', len(onto.valueMap.items()))
+    logging.info('number of entities=%s', len(onto.valueMap.items()))
 
     for props in tqdm(onto.valueMap.items()):
 
@@ -232,6 +234,6 @@ def create_dataframe_from_ontology(onto):
 
     dframe = pd.DataFrame(rows)
     dframe.set_index(['idx'], inplace=True)
-    print('number of rows=', len(dframe))
-    print('columns=', dframe.columns)
+    logging.info('number of rows=%s', len(dframe))
+    logging.info('columns=%s', dframe.columns)
     return dframe
