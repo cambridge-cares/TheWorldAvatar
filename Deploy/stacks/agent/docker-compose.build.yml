@@ -11,6 +11,19 @@ version: "3.8"
 
 services:
 
+  # Status Agent
+  status-agent:
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/StatusAgent"
+      dockerfile: "./docker/Dockerfile"
+      labels:
+        description: "Simple servlet to run KG availability tests and display results."
+        authors: "mdhillman@cmclinnovations.com"
+        builder: "${BUILDER}"
+        hash: "${HASH}"
+
+      
   # Email Agent
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
@@ -81,3 +94,4 @@ services:
   #       builder: "${BUILDER}"
   #       description: "Slurm compute node."
   #      hash: "${HASH}"
+
