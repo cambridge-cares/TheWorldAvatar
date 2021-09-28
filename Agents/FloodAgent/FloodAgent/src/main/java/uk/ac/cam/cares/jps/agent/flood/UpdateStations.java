@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -38,10 +35,13 @@ public class UpdateStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(UpdateStations.class);
     
+    static Map<String, List<Instant>> datatime_map;
+    static Map<String, List<Double>> datavalue_map;
+    
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
 	
-	public static void main(String[] args) throws URISyntaxException, ClientProtocolException, IOException {
+	public static void main(String[] args) {
 		LocalDate date;
 		
 		// input validation
@@ -55,54 +55,94 @@ public class UpdateStations {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
-		
+
 		// obtain data from API for a specific date
-		Config.initProperties();
-		URIBuilder gov_URL = new URIBuilder("http://environment.data.gov.uk/flood-monitoring/data/readings")
-				.setParameter("date", date.toString());
-		// option to set the limit for testing purposes
-//		gov_URL.addParameter("_limit", "100");
-        HttpGet request = new HttpGet(gov_URL.build());
-		
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-        CloseableHttpResponse response = httpclient.execute(request);
+        String response = getDataFromAPI(date);
         
-        // convert response to JSON Object
-        JSONObject response_jo = new JSONObject(EntityUtils.toString(response.getEntity()));
+        // process data into tables before upload
+        processAPIResponse(response);
+        
+        // upload to postgres
+        uploadDataToRDB();
+	}
+	
+	private static String getDataFromAPI(LocalDate date) {
+		try {
+			URIBuilder gov_URL = new URIBuilder("http://environment.data.gov.uk/flood-monitoring/data/readings")
+					.setParameter("date", date.toString());
+			// option to set the limit for testing purposes
+//			gov_URL.addParameter("_limit", "1000");
+	        HttpGet request = new HttpGet(gov_URL.build());
+			
+			CloseableHttpClient httpclient = HttpClients.createDefault();
+			
+			LOGGER.debug("Downloading data from API");
+	        CloseableHttpResponse response = httpclient.execute(request);
+	        LOGGER.debug("Download complete");
+	        
+	        return EntityUtils.toString(response.getEntity());
+		} catch (Exception e) {
+		    LOGGER.error(e.getMessage());
+		    throw new JPSRuntimeException(e);
+		}	
+	}
+	
+	/**
+	 * puts data into datatime_map and datavalue_map
+	 * @param response
+	 */
+	static void processAPIResponse(String response) {
+		LOGGER.info("Processing data from API");
+		// convert response to JSON Object
+        JSONObject response_jo = new JSONObject(response);
         JSONArray readings = response_jo.getJSONArray("items");
         
         // collect data belonging to the same URL into lists
         // this reduces the number of uploads required
-        Map<String, List<Instant>> datatime_map = new HashMap<>();
-        Map<String, List<Double>> datavalue_map = new HashMap<>();
-        
+        datatime_map = new HashMap<>();
+        datavalue_map = new HashMap<>();
+        String dataIRI = null;
+        int num_fail = 0;
         for (int i = 0; i < readings.length(); i++) {
-        	String dataIRI = readings.getJSONObject(i).getString("measure");
-        	double value = readings.getJSONObject(i).getDouble("value");
-        	Instant timestamp = Instant.parse(readings.getJSONObject(i).getString("dateTime"));
-        	
-        	if (datatime_map.containsKey(dataIRI)) {
-        		// add timestamp to the list
-        		datatime_map.get(dataIRI).add(timestamp);
-        		datavalue_map.get(dataIRI).add(value);
-        	} else {
-        		// instantiate new lists and add them to the map
-        		List<Instant> times = new ArrayList<>();
-        		List<Double> values = new ArrayList<>();
-        		times.add(timestamp);
-        		values.add(value);
-        		datatime_map.put(dataIRI, times);
-        		datavalue_map.put(dataIRI, values);
+        	try {
+	        	dataIRI = readings.getJSONObject(i).getString("measure");
+	        	double value = readings.getJSONObject(i).getDouble("value");
+	        	Instant timestamp = Instant.parse(readings.getJSONObject(i).getString("dateTime"));
+	        	
+	        	if (datatime_map.containsKey(dataIRI)) {
+	        		// add timestamp to the list
+	        		datatime_map.get(dataIRI).add(timestamp);
+	        		datavalue_map.get(dataIRI).add(value);
+	        	} else {
+	        		// instantiate new lists and add them to the map
+	        		List<Instant> times = new ArrayList<>();
+	        		List<Double> values = new ArrayList<>();
+	        		times.add(timestamp);
+	        		values.add(value);
+	        		datatime_map.put(dataIRI, times);
+	        		datavalue_map.put(dataIRI, values);
+	        	}
+        	} catch (Exception e) {
+        		num_fail += 1;
+        		LOGGER.error(readings.getJSONObject(i));
+        		LOGGER.error(e.getMessage());
         	}
         }
-        
+        LOGGER.info("Received a total of " + Integer.toString(readings.length())+ " readings");
+        LOGGER.info("Organised into " + Integer.toString(readings.length()) + " groups");
+        LOGGER.info("Failed to add " + Integer.toString(num_fail)+ " readings due to inconsistencies");
+	}
+	
+	static void uploadDataToRDB() {
+		Config.initProperties();
         // create a time series object for each data set and upload to db 1 by 1
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl);
+        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		TimeSeriesClient<Instant> tsClient = 
 				new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
         
         Iterator<String> iter = datatime_map.keySet().iterator();
         int num_failures = 0;
+        LOGGER.info("Uploading data to postgres");
         while (iter.hasNext()) {
         	String dataIRI = iter.next();
         	List<List<?>> values = new ArrayList<>();
@@ -117,6 +157,6 @@ public class UpdateStations {
         		LOGGER.error(e.getMessage());
         	}
         }
-        LOGGER.info("A total of " + Integer.toString(num_failures) + " values do not exist");
+        LOGGER.info("Failed to add " + Integer.toString(num_failures) + " values from API");
 	}
 }
