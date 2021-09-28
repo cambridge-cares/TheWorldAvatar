@@ -32,8 +32,6 @@ http://www.theworldavatar.com/kb/ontocompchem/BasisSet_a848bbdd-e333-4480-bd68-3
 http://www.theworldavatar.com/kb/ontocompchem/InitializationModule_a848bbdd-e333-4480-bd68-3101d502e0c3,Instance,http://www.theworldavatar.com/kb/ontocompchem/BasisSet_a848bbdd-e333-4480-bd68-3101d502e0c3,http://purl.org/gc/hasParameter,,
 http://purl.org/gc/hasBasisSet,Data Property,http://www.theworldavatar.com/kb/ontocompchem/BasisSet_a848bbdd-e333-4480-bd68-3101d502e0c3,,"""6-31G(d)""",
 http://purl.org/gc/hasName,Data Property,http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_a848bbdd-e333-4480-bd68-3101d502e0c3,,C2H6,
-http://www.theworldavatar.com/kb/ontocompchem/RotationalSymmetry_a848bbdd-e333-4480-bd68-3101d502e0c3,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalSymmetry,,,
-http://www.theworldavatar.com/kb/ontocompchem/G09_a848bbdd-e333-4480-bd68-3101d502e0c3,Instance,http://www.theworldavatar.com/kb/ontocompchem/RotationalSymmetry_a848bbdd-e333-4480-bd68-3101d502e0c3,http://purl.org/gc/isCalculationOn,,
 http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_a848bbdd-e333-4480-bd68-3101d502e0c3,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalConstants,,,
 http://www.theworldavatar.com/kb/ontocompchem/G09_a848bbdd-e333-4480-bd68-3101d502e0c3,Instance,http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_a848bbdd-e333-4480-bd68-3101d502e0c3,http://purl.org/gc/isCalculationOn,,
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRotationalConstants,Data Property,http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_a848bbdd-e333-4480-bd68-3101d502e0c3,,79.2600076 18.2114267 18.211344,

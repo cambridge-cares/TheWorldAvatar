@@ -32,8 +32,6 @@ http://www.theworldavatar.com/kb/ontocompchem/BasisSet_testID-111-111-111,Instan
 http://www.theworldavatar.com/kb/ontocompchem/InitializationModule_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/BasisSet_testID-111-111-111,http://purl.org/gc/hasParameter,,
 http://purl.org/gc/hasBasisSet,Data Property,http://www.theworldavatar.com/kb/ontocompchem/BasisSet_testID-111-111-111,,"""CC-pVTZ""",
 http://purl.org/gc/hasName,Data Property,http://www.theworldavatar.com/kb/ontocompchem/MoleculeProperty_testID-111-111-111,,CO2,
-http://www.theworldavatar.com/kb/ontocompchem/RotationalSymmetry_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalSymmetry,,,
-http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/RotationalSymmetry_testID-111-111-111,http://purl.org/gc/isCalculationOn,,
 http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalConstants,,,
 http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111,Instance,http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_testID-111-111-111,http://purl.org/gc/isCalculationOn,,
 http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRotationalConstants,Data Property,http://www.theworldavatar.com/kb/ontocompchem/RotationalConstants_testID-111-111-111,,11.7298833,
