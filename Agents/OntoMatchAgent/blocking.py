@@ -54,9 +54,9 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
     candidate_matching_pairs = None
 
     def __init__(self, src_onto:Ontology, tgt_onto:Ontology,
-                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20, 
+                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20,
                 blocking_properties: typing.List[str] =None, reset_index:bool =False):
- 
+
         """
         Init a token-based iterator.
 
@@ -70,7 +70,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             reset_index (bool, optional): create the index only once if False else create it from scratch. Defaults to False.
         """
 
-        
+
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
             # create the index as pandas DataFrame with additional information about length of tokens
@@ -126,50 +126,12 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         return index, df_index
 
-
-    def _create_dataframe_from_ontology(self, onto):
-        rows = []
-
-        print('number of entities=', len(onto.valueMap.items()))
-
-        for props in tqdm(onto.valueMap.items()):
-
-            row = {}
-
-            # get the position of the subject
-            pos = props[0]
-            subj = onto.individualNames[pos]
-            first = subj.find('_')
-            last = subj.rfind('_')
-            idx = subj[:first]
-            subj = subj[first+1:last]
-
-            row['pos'] = pos
-            row['idx'] = idx
-            row['name'] = subj
-
-            # predicate object tuples
-            p_o_tuples = props[1]
-            for p, o in p_o_tuples:
-                if isinstance(o, rdflib.Literal):
-                    row[p] = o.toPython()
-                else:
-                    raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
-
-            rows.append(row)
-
-        dframe = pd.DataFrame(rows)
-        dframe.set_index(['idx'], inplace=True)
-        print('number of rows=', len(dframe))
-        print('columns=', dframe.columns)
-        return dframe
-
     def _create_index(self, src_onto, tgt_onto, blocking_properties):
 
         index = {}
 
         # create token index for source ontology
-        dframe = self._create_dataframe_from_ontology(src_onto)
+        dframe = create_dataframe_from_ontology(src_onto)
         if blocking_properties is None:
             blocking_properties = dframe.columns
         for prop in blocking_properties:
@@ -177,7 +139,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             print('total number of tokens after processing property ', prop, ' is ', len(df_index))
 
         # add tokens for target ontology
-        dframe = self._create_dataframe_from_ontology(tgt_onto)
+        dframe = create_dataframe_from_ontology(tgt_onto)
         if blocking_properties is None:
             blocking_properties = dframe.columns
         for prop in blocking_properties:
@@ -236,3 +198,40 @@ def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
     name = params_copy.pop('name')
     it_instance = globals()[name](src_onto, tgt_onto, **params_copy)
     return it_instance
+
+def create_dataframe_from_ontology(onto):
+    rows = []
+
+    print('number of entities=', len(onto.valueMap.items()))
+
+    for props in tqdm(onto.valueMap.items()):
+
+        row = {}
+
+        # get the position of the subject
+        pos = props[0]
+        subj = onto.individualNames[pos]
+        first = subj.find('_')
+        last = subj.rfind('_')
+        idx = subj[:first]
+        subj = subj[first+1:last]
+
+        row['pos'] = pos
+        row['idx'] = idx
+        row['name'] = subj
+
+        # predicate object tuples
+        p_o_tuples = props[1]
+        for p, o in p_o_tuples:
+            if isinstance(o, rdflib.Literal):
+                row[p] = o.toPython()
+            else:
+                raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
+
+        rows.append(row)
+
+    dframe = pd.DataFrame(rows)
+    dframe.set_index(['idx'], inplace=True)
+    print('number of rows=', len(dframe))
+    print('columns=', dframe.columns)
+    return dframe
