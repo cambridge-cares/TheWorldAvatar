@@ -9,5 +9,5 @@ requests==2.22.0
 scipy==1.7.1
 -e git+https://github.com/casics/spiral.git@a10fcd3afbd4c28e917cc0056d6f646cc2e9bd44#egg=spiral
 pathos==0.2.3
-
-
+pandas==1.2.4
+tqdm==4.49.0
