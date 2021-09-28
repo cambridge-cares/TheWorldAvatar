@@ -4,6 +4,7 @@ public interface JPSConstants {
 
 	static String KNOWLEDGE_BASE_JPS = "jps";
 	static String KNOWLEDGE_BASE_PATH_JPS_DATASET = "/jps/dataset";
+	static String ACCESS_AGENT_PATH = "/access-agent/access";
 	
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
@@ -30,7 +31,8 @@ public interface JPSConstants {
 	static String CONTENTTYPE = "contentType";
 	static String METHOD = "method";
 	static String HEADERS = "acceptHeaders";
-	static String TARGETIRI = "resourceUrl";
+	static String TARGETIRI = "targetresourceiri";
+	static String TARGETGRAPH = "targetgraph";
 	static String KNOWLEDGE_BASE_URL = "jps/kb";
 	/**
 	 * If true then all read files are copied into the scenario bucket.

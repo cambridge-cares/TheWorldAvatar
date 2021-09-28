@@ -1,0 +1,31 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack WITH the '--test' flag.
+# Its counterpart is docker-compose.live.yml.
+#
+# The expectation is that this file will contain 'ports' nodes for any services that need to map a
+# host port, but other options may be valid too - please consult CMCL admins for more details.
+# For guidance in setting an appropriate port number, please see the instructions at
+# https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker:-Stacks#instructions-1
+# =================================================================================================
+
+version: "3.8"
+
+# Services
+services:
+
+  # Status Agent (Development Only)
+  status-agent:     
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    container_name: "status-agent${CONTAINER_NAME_SUFFIX}"
+    hostname: status-agent
+    pull_policy: if_not_present
+    restart: unless-stopped
+    ports:
+      - 8087:8080
+    volumes:
+      - status-agent:/root/.jps
+      
+
+# Volumes
+volumes:
+  status-agent:

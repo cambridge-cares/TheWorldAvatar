@@ -13,6 +13,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
         inStage = get_inStage(inpFileType)
         files = get_stage_files(fileOrDir, inStage, fileExtPrefix='os', qcLogExt=qcLogExt)
 
+        print(handlerFuncKwargs)
         if handlerFuncKwargs:
             for handlerName, funcKwargs in handlerFuncKwargs.items():
                 pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
@@ -25,7 +26,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
                 if fileExists(file_): outBaseName=os.path.basename(file_)
                 else: outBaseName='file'
             outPath = os.path.join(outDir,outBaseName)
-            pipeline.execute(file_, inStage, outPath)
+            pipeline.execute([file_], inStage, outPath)
 
     except NotSupportedStage:
         supportedStagesNames = [stage.name.lower() for stage in pipeline.supportedStages]
