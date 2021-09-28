@@ -1,0 +1,8 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+File,Class,,,,,,A generic file concept stored at some location.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+WebServer,Class,,,,,,A generic web server concept hosted at some address.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+hasFile,Object Property,,,,File,only,A relation betwenn  a class in an ontology and an online File.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+isLocatedAt,Object Property,,,File,WebServer,only,A relation betwenn  a File  and a WebServer the file is located on.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+hasFilePath,Data Property,,,File,String,only,Location of a file on the web server.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+hasBaseURL,Data Property,,,WebServer,String,only,Address of the web server.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl
+hasPort,Data Property,,,WebServer,integer,only,Port number that the web server takes the requests from.,http://www.theworldavatar.com/ontology/ontowebfile/OntoWebFile.owl

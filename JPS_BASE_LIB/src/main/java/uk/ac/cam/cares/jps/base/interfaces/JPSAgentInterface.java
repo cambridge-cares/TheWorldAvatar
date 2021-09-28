@@ -33,4 +33,18 @@ public interface JPSAgentInterface {
      */
     boolean validateInput(JSONObject requestParams) throws BadRequestException;
 
+    /**
+     * Shall implement logic to perform a sparql query on a resource in the KG.
+     * @param targetResourceID
+     * @param sparqlQuery
+     * @return
+     */
+    String query(String targetResourceID, String sparqlQuery);
+    
+    /**
+     * Shall implement logic to perform a sparql update on a resource in the KG.
+     * @param targetResourceID
+     * @param sparqlUpdate
+     */
+    void update(String targetResourceID, String sparqlUpdate);
 }

@@ -1,162 +1,115 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that builds/starts the requested stack in one of three
-# modes (dev/test/prod).
+# Wrapper script for docker-compose that starts the requested stack in either 'dev' or 'prod' mode.
 #
-# Each stack has its own dev, test and prod configuration files. See the following files for
-# more info:
-# ./<stack_name>/
-#   docker-compose.yml
-#   docker-compose.dev.yml
-#   docker-compose.test.yml
-#   docker-compose.prod.yml
-#
-# Run this script with no arguments for usage instructions.
+# Each stack directory contains a base configuration file and, optionally, mode-specific configuration files.
+# That is:
+#   docker-compose.deploy.yml
+#   docker-compose.deploy.dev.yml (optional)
+#   docker-compose.deploy.prod.yml (optional)
 
 
-# Bail out if the stack name and mode weren't supplied
+# Show a usage statement if too few arguments were supplied (use 'lt' rather than 'ne' to allow additional arguments to docker-compose up)
 if [ "$#" -lt 2 ]; then
   echo "============================================================================="
   echo " Usage:"
-  echo "  $0 [stack_name] [mode] <additional_args_for_docker_compose>"
+  echo "  $0 [stack_name] [mode] <--force-pull service_list> <--test> <additional_args>"
   echo ""
-  echo " [stack_name] : the stack to start (agent/db/web)"
-  echo "       [mode] : configuration mode name (dev/test/prod)"
+  echo "                stack_name : the stack to start (agent/db/web)"
+  echo "                      mode : configuration mode name (dev/prod)"
+  echo " --force-pull service_list : pull images from the registry, even if they exist locally."
+  echo "                             'service_list' is a comma-separated list of service names"
+  echo "                    --test : modify service options (particularly port mappings) according to docker-compose.deploy.test.yml"
+  echo "           additional_args : remaining arguments are passed on to 'docker-compose up'"
+  echo ""
+  echo "e.g. To start the web stack in dev mode:"
+  echo "  $0 web dev"
   echo "============================================================================="
   exit 1
 fi
 
-# Read stack and mode from the first two args
-stack=$1
-mode=$2
-shift
-shift
 
-# Check that a valid stack name was supplied
-case $stack in
-  db) ;;
-  agent) ;;
-  web) ;;
-  *)
-    echo "[$stack] is not a recognised stack name; choose 'agent', 'db', or 'web'."
-    exit 2
-esac
+# Default options for docker-compose up
+default_up_args="-d --no-build"
 
-# Check that a valid mode was supplied and set default options for 'docker-compose up'
-up_default_opts="-d"
-case $mode in
-  dev)
-    up_default_opts="$up_default_opts --force-recreate"
-    ;;
-  test)
-    ;;
-  prod)
-    ;;
-  *)
-    echo "[$mode] is not a recognised mode - choose 'dev', 'test' or 'prod'."
-    exit 3
-    ;;
-esac
+# Assign first two input args to variables and pop/shift them from the arg array
+process="deploy"
+stack="$1"
+mode="$2"
+shift;shift
 
-# Check that we're in the right directory
-stack_dir="./$stack"
-if [ ! -d $stack_dir ]; then
-  echo "Stack directory not found at $stack_dir - make sure you're running this script in the current directory"
-  exit 4
-fi
-
-# Set compose files for this mode
-compose_files="docker-compose.yml docker-compose.$mode.yml"
-
-# Set args to docker-compose itself, including the file specifiers
-compose_file_args=$(echo $compose_files |sed -e 's/ / -f /' -e 's/^/-f /')
-env_filename="env.txt"
-compose_opts="$compose_file_args -p $mode-$stack --env-file $env_filename"
-
-# Set options for 'docker-compose up', including any additional args passed to this script
-up_opts="$up_default_opts $*"
-
-printf "\n==========================================================================================\n"
-printf "Building the $stack stack in $mode mode\n\n"
-
-# Build in stack dir
-cd $stack_dir
-
-# Write some properties (e.g. the current git hash) to a temporary env file so that they can be used
-# in the compose config files
-# Note that this file shouldn't be deleted or down commands will fail
-if [ -e "$env_filename" ]; then
-  rm "$env_filename"
-fi
-
-echo "Generating environment variables file..."
-hash="$(git rev-parse --short=6 HEAD)"
-builder="$(git config user.name)"
-echo "HASH=$hash" >> "$env_filename"
-echo "MODE=$mode" >> "$env_filename"
-echo "BUILDER=$builder" >> "$env_filename"
-printf "Done\n\n"
-
-# Loop over secret files listed in the compose files, ensuring that they all exist, and have exactly one word on one line
-echo "Checking required Docker secrets..."
-for compose_file in $compose_files; do
-  secret_file_paths=$(grep -E "file:.*\/secrets\/.*" $compose_file|awk '{print $2}'|tr "\n" " ")
-  for secret_file_path in $secret_file_paths; do
-    secret_state=""
-    while [ "$secret_state" != "valid" ]
-    do
-      # Check that the secret file is present and valid
-      if [ -f $secret_file_path ]; then
-        num_lines=$(wc -l $secret_file_path |awk '{print $1}')
-        # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
-        num_lines=$(( num_lines==0 ? 1 : num_lines ))
-        num_words=$(wc -w $secret_file_path |awk '{print $1}')
-        if [ $num_lines -eq 1 ] && [ $num_words -eq 1 ]; then
-          secret_state="valid"
-        else
-          secret_state="invalid"
-          echo "  Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
-        fi
-      else
-        secret_state="missing"
-        echo "  Expected secret file not found at $stack/$secret_file_path"
-      fi
-
-      # If secret is missing/invalid, let the user enter a new value
-      if [ $secret_state != "valid" ]; then
-          read -p "  Enter a value for $secret_file_path (or a blank string to abort): " new_secret_val
-          if [ -z "$new_secret_val" ]; then
-            echo "Aborting..."
-            exit 5
-          else
-            if [ -f $secret_file_path ]; then
-              \rm -f $secret_file_path
-            fi
-            touch $secret_file_path
-            echo $new_secret_val >> $secret_file_path
-            secret_state="valid"
-            echo "  Value set"
-          fi
-      fi
-    done
-  done
-done
-printf "Done\n\n"
-
-# Run docker-compose
-docker_compose_cmd="docker-compose $compose_opts up $up_opts"
-echo "Running $docker_compose_cmd in ./$stack ..."
-$docker_compose_cmd
-compose_up_exit_code=$?
-echo Done
-
-
-if [ $compose_up_exit_code -eq 0 ]; then
-  printf "\n$stack stack started in $mode mode\n"
+# Load common helper functions
+if [ -e ./common_funcs.sh ]; then
+  . ./common_funcs.sh
 else
-  printf "\n'docker-compose up' failed with exit code $compose_up_exit_code\n"
+  echo "Unable to load bash helper functions, make sure you're running this script in Deploy/stacks/"
+  exit 1
 fi
 
-printf "==========================================================================================\n"
+# Process remaining args. Avoiding using getopts here in a vain attempt to keep things shell-agnostic
+additional_up_args=""
+services_to_force_pull=""
+use_test_config=$FALSE
+while test $# -gt 0; do
+  case "$1" in
+    --force-pull)
+      shift
+      services_to_force_pull=$1
+      shift
+      ;;
+    --test)
+      use_test_config=$TRUE
+      shift
+      ;;
+    *)
+      additional_up_args="$additional_up_args $1"
+      shift
+      ;;
+  esac
+done
 
-exit $compose_up_exit_code
+# Validate args
+if ! $(is_valid_stack $stack); then echo "$0: '$stack' is not a valid stack" && exit 2; fi
+if ! $(is_valid_mode $mode); then echo "$0: '$mode' is not a valid mode" && exit 3; fi
+
+
+# Print preamble and cd to stack directory
+init_stack_script $stack "Deploying the $stack stack in $mode mode\n\n"
+
+# Get yml filenames
+yml_fnames=$(get_yml_fnames $mode $process $use_test_config)
+if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
+yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /g' -e 's/^/-f /')
+
+# Write environment variables to file so that docker-compose can pick them up
+env_filename="env.txt"
+write_env_file $env_filename $stack $mode $use_test_config
+
+# Assemble arguments for docker-compose
+project_name=$(get_project_name $stack $mode $use_test_config)
+compose_opts="$yml_fname_args --env-file $env_filename -p $project_name"
+
+# Examine secret files defined in the config files and set missing values where necessary
+set_missing_secrets $yml_fnames
+
+# For images that exist locally, but need to be updated from the registry, need to run docker pull explicitly
+if [ ! -z "$services_to_force_pull" ]; then
+  echo "Overriding local image(s) with registry version..."
+  cmd="docker-compose $compose_opts pull $services_to_force_pull"
+  echo "Running $cmd in ./$stack ..."
+  $cmd
+  pull_return_code=$?
+  exit_on_error "$pull_return_code" "\n'docker-compose pull' failed"
+  printf "Done\n\n"
+fi
+
+# Run docker-compose up, passing on any additional args that were supplied to this script
+echo "Deploying stack"
+cmd="docker-compose $compose_opts up $default_up_args $additional_up_args"
+echo "Running $cmd in ./$stack ..."
+$cmd
+up_exit_code=$?
+exit_on_error $up_exit_code "\n'docker-compose up' failed"
+
+# print success message and exit
+exit_with_msg 0 "\n$stack stack started in $mode mode"

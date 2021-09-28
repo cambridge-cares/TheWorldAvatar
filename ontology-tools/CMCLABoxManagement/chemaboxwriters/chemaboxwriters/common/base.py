@@ -26,7 +26,7 @@ class StageHandler:
         if inStage == self.inStage:
             output, outStage= self.handle_input(input)
             if self.fileWriter is not None:
-                writtenFiles = self.handle_write_output(output, outPath)
+                writtenFiles = self.write_output(output, outPath)
         return output, outStage, writtenFiles
 
     def set_handler_func_kwargs(self,handlerFuncKwargs):
@@ -45,49 +45,28 @@ class StageHandler:
         self.fileExt = fileExt
         return self
 
-    def handle_input(self,input):
-        if isinstance(input, list) and self.unrollListInput:
-            output= self.handle_list_input(input)
-        else:
-            output =self.handle_single_input(input)
+    def handle_input(self,inputList):
+        outputs = []
         outStage= self.outStage
-        return output, outStage
-
-    def handle_list_input(self,inputList):
-        outputs= []
-        for input in inputList:
-            output = self.handle_single_input(input)
-            if isinstance(output, list): outputs.extend(output)
-            else: outputs.append(output)
-        return outputs
-
-    def handle_single_input(self,input):
         if not self.disableFileToStrConv:
-            if isinstance(input, list):
-                input = [readFile(inp) if fileExists(inp) else inp for inp in input]
-            else:
-                if fileExists(input): input = readFile(input)
-        output = self.handlerFunc(input,**self.handlerFuncKwargs)
-        return output
+            inputList = [readFile(inp) if fileExists(inp) else inp for inp in inputList]
 
-    def handle_write_output(self, output, outPath):
-        writtenFiles = []
-        if isinstance(output, list):
-            writtenFiles.extend(self.write_list_output(output, outPath))
+        if self.unrollListInput:
+            for inp in inputList:
+                output = self.handlerFunc(inp,**self.handlerFuncKwargs)
+                outputs.extend(output)
         else:
-            writtenFiles.append(self.write_single_output(output, outPath))
-        return writtenFiles
+            outputs = self.handlerFunc(inputList,**self.handlerFuncKwargs)
+        return outputs, outStage
 
-    def write_list_output(self,outputs, outPath):
+    def write_output(self, outputs, outPath):
         writtenFiles = []
-        for i, output in enumerate(outputs):
-            writtenFiles.append(self.write_single_output(output,outPath, i, len(outputs)))
+        jobNum = len(outputs)
+        for jobId, output in enumerate(outputs):
+            refOutPath = getRefName(outPath, jobId, jobNum, self.fileExt)
+            self.fileWriter(refOutPath, output, **self.fileWriterKwargs)
+            writtenFiles.append(refOutPath)
         return writtenFiles
-
-    def write_single_output(self,output, outPath, jobId=-1, jobNum=-1):
-        refOutPath = getRefName(outPath, jobId, jobNum, self.fileExt)
-        self.fileWriter(refOutPath, output, **self.fileWriterKwargs)
-        return refOutPath
 
 class Pipeline:
     """

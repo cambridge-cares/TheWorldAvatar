@@ -16,5 +16,6 @@ hasScanPoint,Object Property,,,ScanCoordinate,ScanPoint,only,Defines the relatio
 hasScanCoordinateValue,Object Property,,,ScanPoint,ScanCoordinateValue,only,Defines the relationship between the ScanPoint and ScanCoordinateValue.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 hasScanAtom,Object Property,,,ScanCoordinate,http://purl.org/gc/Atom,only,Defines the relationship between the ScanCoordinate and an atom.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 hasCalculation,Object Property,,,ScanPoint,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GaussianCalculation,only,Defines a relationship between a given ScanPoint and associated calculation results.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
+hasInputAtomIds,Data Property,,,ScanPoint,String,,Defines a relationship between a given ScanPoint and the atom IDs in the input file used for the scan.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 http://purl.org/gc/hasValue,Data Property,,,ScanCoordinateValue,String,,,http://purl.org/gc/,
 http://purl.org/gc/hasUnit,Object Property,,,ScanCoordinateValue,http://data.nasa.gov/qudt/owl/LengthUnit UNION http://data.nasa.gov/qudt/owl/PlaneAngleUnit,,,http://purl.org/gc/,

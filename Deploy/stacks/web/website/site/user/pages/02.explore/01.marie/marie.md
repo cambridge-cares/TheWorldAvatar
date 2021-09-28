@@ -5,7 +5,9 @@ slug: marie
 
 <div class="intro-container three-quarter-width">
 	<div class="intro-left">
-		<img src="/user/images/marie/search-engine-large.jpg" class="header-image" alt="Search Engine" />
+		<video width="175" height="250" poster="/user/images/marie/marie-thumbnail.jpg" controls="controls">
+			<source src="/user/videos/animated-marie.mp4" type="video/mp4">
+		</video>
 	</div>
 	<div class="intro-center">
 		<h2>Marie</h2>
@@ -32,19 +34,6 @@ slug: marie
 	<b><u>From the World Avatar</u></b>
 	<div id="chatbot-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
-	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Google Knowledge Graph</u></b>
-	<div id="google-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
-	<hr/>
-	<br/>
-	<b><u>From Wolfram Alpha</u></b>
-	<div id="wolfram-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
-	</div>
-	<br/>
 	<br/>
 </div>
 

@@ -8,14 +8,14 @@
 # for more details.
 # 
 # Stages:
-#	- development:	copies in download-dev.sh
-#	- production:	copies in download-prod.sh
+#	- dev:	copies in download-dev.sh
+#	- prod:	copies in download-prod.sh
 #
 #########################
 
 ##### DEVELOPMENT STAGE #####
 # Using Alpine as the base 
-FROM  alpine:3.14.0 as development
+FROM  alpine:3.14.0 as dev
 
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
@@ -70,8 +70,8 @@ CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh" ]
 
 
 ##### PRODUCTION STAGE #####
-# Using development as the base 
-FROM development as production
+# Using development image as the base 
+FROM dev as prod
 
 # Copy in the download script specific to the PRODUCTION setup
 COPY docker/download-prod.sh /usr/local/download.sh
