@@ -130,7 +130,7 @@ public class UpdateStations {
         }
         LOGGER.info("Received a total of " + Integer.toString(readings.length())+ " readings");
         LOGGER.info("Organised into " + Integer.toString(datatime_map.size()) + " groups");
-        LOGGER.info("Failed to add " + Integer.toString(num_fail)+ " readings due to inconsistencies");
+        LOGGER.info("Failed to process " + Integer.toString(num_fail)+ " readings");
 	}
 	
 	static void uploadDataToRDB() {
@@ -152,9 +152,38 @@ public class UpdateStations {
         	try {
         		tsClient.addTimeSeriesData(ts);
         	} catch (Exception e) {
-        		num_failures += 1;
-        		LOGGER.error("Failed to add <" + dataIRI + ">");
-        		LOGGER.error(e.getMessage());
+        		if (e.getMessage().contains("is not attached to any time series instance in the KG")) {
+        			LOGGER.info(dataIRI + " is not present in the initial rdf data");
+        			LOGGER.info("Attempting to initialise <" + dataIRI + ">");
+        			
+        			// Obtain station name for this measure
+        			HttpGet request = new HttpGet(dataIRI);
+        			CloseableHttpClient httpclient = HttpClients.createDefault();
+        	        
+					try {
+						CloseableHttpResponse response = httpclient.execute(request);
+						JSONObject response_jo = new JSONObject(EntityUtils.toString(response.getEntity()));
+						
+						// get the station that measures this quantity
+						String station = response_jo.getJSONObject("items").getString("station");
+						
+						// add this missing information in blazegraph and rdb
+						FloodSparql sparqlClient = new FloodSparql(storeClient);
+						sparqlClient.addMeasureToStation(station, dataIRI);
+						tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
+						tsClient.addTimeSeriesData(ts);
+						
+						LOGGER.info("Created new instance successfully");
+					} catch (Exception e1) {
+						num_failures += 1;
+						LOGGER.error(e1.getMessage());
+						LOGGER.error("Failed to add <" + dataIRI + ">");
+					} 
+        		} else {
+        			num_failures += 1;
+        			LOGGER.error(e.getMessage());
+        			LOGGER.error("Failed to add <" + dataIRI + ">");
+        		}
         	}
         }
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " values from API");

@@ -35,6 +35,7 @@ public class FloodSparql {
 	
     // properties
     static Iri hasCoordinates = p_station.iri("hasCoordinates");
+    static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
         
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
@@ -148,5 +149,17 @@ public class FloodSparql {
 			storeClient.executeUpdate(modify.getQueryString());
 		}
 		LOGGER.info(Integer.toString(num_without_coordinates) + " stations do not have coordinates");
+	}
+	
+	/**
+	 * add a measure that was not present in the initial RDF file, but present
+	 * in the data download
+	 * @param station
+	 * @param measure
+	 */
+	void addMeasureToStation(String station, String measure) {
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(iri(station).has(measures,iri(measure)));
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 }
