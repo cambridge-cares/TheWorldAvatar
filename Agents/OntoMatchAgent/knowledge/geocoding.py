@@ -20,7 +20,7 @@ class Agent():
             if len(df_tmp) == 1:
                 found_row = df_tmp.iloc[0]
             elif len(df_tmp) > 1:
-                logging.info('several entries found for zipcode=%', zipcode)
+                logging.info('several entries found for zipcode=%s', zipcode)
                 if location:
                     for _, row in df_tmp.iterrows():
                         token = row['location_normalized'].split()[0]

@@ -47,9 +47,9 @@ def concat(*args):
         for m in args:
             message += str(m) + ' '
         return message
-    
+
 def log(*args):
     logging.info(concat(*args))
-       
+
 def logm(*args):
     logging.getLogger().info(args)

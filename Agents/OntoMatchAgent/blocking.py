@@ -123,7 +123,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                     index[key][column_count] = length
 
         else:
-            logging.warn('column not found:%s', column, )
+            logging.warning('column not found:%s', column)
 
         df_index = pd.DataFrame.from_dict(index, orient='index')
 

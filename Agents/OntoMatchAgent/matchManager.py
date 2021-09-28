@@ -63,7 +63,7 @@ class matchManager(object):
         #load ontology
 
         #run matching step by Step
-        self.A = Alignment()   
+        self.A = Alignment()
 
         if self.matchI:
             entityListName = 'individualList'
