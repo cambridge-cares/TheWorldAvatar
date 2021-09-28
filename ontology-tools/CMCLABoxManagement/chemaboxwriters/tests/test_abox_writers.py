@@ -42,9 +42,13 @@ def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
             shutil.copy2(file, file+'_ref')
 
     for file in files_to_check_content:
-        targetFile = readFile(file)
-        refFile = readFile(file+'_ref')
-        assert targetFile == refFile
+        targetFile = readFile(file).split('\n')
+        refFile = readFile(file+'_ref').split('\n')
+
+        assert len(targetFile) == len(refFile)
+
+        for tarLine, refLine in zip(targetFile,refFile):
+            assert tarLine == refLine
 
     for file in files_to_check_existance:
         assert fileExists(file) == True

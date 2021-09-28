@@ -18,7 +18,6 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    SMILES, \
                                                    GEOM_STRING, \
                                                    BOND_STRING, \
-                                                   ATOMS_CAN_POSITIONS, \
                                                    PUBCHEM_ALT_LABEL, \
                                                    PUBCHEM_CID, \
                                                    CAS_NUMBER, \
@@ -109,8 +108,6 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
         spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),gain_pref + 'hasAtom',
                                 '',''])
-        spamwriter.writerow([onto_spec + '#hasCanonicalPosition','Data Property','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
-                                '',data[ATOMS_CAN_POSITIONS][str(k)],'Integer'])
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
                                 table_pref + '#' + data[ATOM_TYPES][k],gain_pref + 'isElement','',''])
         for i in range(3): #Write the atom coordinates.

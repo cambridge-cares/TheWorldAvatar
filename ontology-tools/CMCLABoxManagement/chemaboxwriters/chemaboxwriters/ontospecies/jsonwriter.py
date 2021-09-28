@@ -1,6 +1,5 @@
 from chemutils.obabelutils.obconverter import obConvert
 from chemutils.obabelutils.obutils import obGetMolBonds
-from chemutils.xyzutils.xyztools import xyzToAtomsPositions
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.randomidgenerator import get_random_id
 from chemaboxwriters.common import PREFIXES
@@ -25,7 +24,6 @@ INCHI='InChi'
 SMILES='Smiles'
 GEOM_STRING='GeometryString'
 BOND_STRING='BondString'
-ATOMS_CAN_POSITIONS='AtomsCanonicalPositions'
 PUBCHEM_ALT_LABEL='PubchemAlternativeLabel'
 CAS_NUMBER='CAS'
 PUBCHEM_CID='PubchemCID'
@@ -82,7 +80,6 @@ def os_jsonwriter(data, random_id="",
                       +str(bond['order']) for bond in bonds_info]
     data_out[BOND_STRING] = ' '.join(bonds_info_line)
     # add atoms positions!
-    data_out[ATOMS_CAN_POSITIONS] = xyzToAtomsPositions(xyz)
 
     alt_labels = None
     casid = None
