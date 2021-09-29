@@ -21,14 +21,14 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Owen Parry {@literal <oparry@cmclinnovations.com>}
  */
-@WebServlet(name = "FileUploadServlet", urlPatterns = {FileUploadServlet.DOWNLOAD_URL_PATTERN, FileUploadServlet.UPLOAD_URL_PATTERN})
+@WebServlet(name = "FileServer", urlPatterns = {FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN})
 @MultipartConfig(
-fileSizeThreshold = FileUploadServlet.ONE_MB_IN_B,
+fileSizeThreshold = FileServer.ONE_MB_IN_B,
 location = "/app/fs_root/",
-maxFileSize = FileUploadServlet.TEN_MB_IN_B,
-maxRequestSize = FileUploadServlet.ONE_HUNDRED_MB_IN_B
+maxFileSize = FileServer.TEN_MB_IN_B,
+maxRequestSize = FileServer.ONE_HUNDRED_MB_IN_B
 )
-public class FileUploadServlet extends HttpServlet {
+public class FileServer extends HttpServlet {
 
     // URL Patterns
     static final String DOWNLOAD_URL_PATTERN = "/download/*";
@@ -39,7 +39,7 @@ public class FileUploadServlet extends HttpServlet {
     static final int TEN_MB_IN_B = 10 * ONE_MB_IN_B;
     static final int ONE_HUNDRED_MB_IN_B = 100 * ONE_MB_IN_B;
 
-    private static final Logger LOGGER = LogManager.getLogger(FileUploadServlet.class);
+    private static final Logger LOGGER = LogManager.getLogger(FileServer.class);
 
     private synchronized String writeFilePart(Part filePart, String subDirStr_in) {
         String fNameRequested = filePart.getSubmittedFileName();
