@@ -1,12 +1,11 @@
 import logging
-import os
 import pickle
 import re
 
 from gensim import *
 import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
-from owlready2 import *
+from owlready2 import * #get_ontology, default_world
 from spiral import ronin
 
 from valueMap import *
@@ -15,7 +14,7 @@ from matchers.UnitConverter import UnitConverter
 logging.getLogger("gensim").setLevel(logging.CRITICAL)
 
 class Ontology():
-    def __init__(self, addr, use_comment = False, save=False, no_stem = False):
+    def __init__(self, addr, use_comment = False, save=False, no_stem = False, ontology = None, graph=None):
         self.useComment = use_comment
         self.tokensDict = {}
         self.tokensDictLong = {}
@@ -24,17 +23,23 @@ class Ontology():
         self.rangeMap = {} #classId to range
         self.domainMap = {}
         self.save = save
+        self.ontology = ontology
+        self.graph = graph
         self._load(no_stem)
 
-    def _load(self,no_stem = False):
+    def _load(self, no_stem = False):
         '''
         load the ontology entities, divide into words entry
         '''
-        onto = get_ontology(self._addr).load()
-        self.procesLEX(onto,no_stem)
-        self.baseiri = onto.base_iri
-        #self.classes = list( onto.classes())
-        #self.properties =list( onto.properties())
+        if not self.ontology:
+            self.ontology = get_ontology(self._addr).load()
+        if not self.graph:
+            self.graph = rdflib.Graph()
+            self.graph.parse(self._addr)
+        self.procesLEX(self.ontology,no_stem)
+        self.baseiri = self.ontology.base_iri
+        #self.classes = list( self.ontology.classes())
+        #self.properties =list( self.ontology.properties())
         #self.getRdfLevelDef()
         self.ontoName = self._addr.replace('.','')
         self.individualList, self.individualNames, self.instanceDict, self.instanceTokensDict, self.icmap, self.ipmap, self.valueMap = self.buildValueMap()
@@ -157,17 +162,9 @@ class Ontology():
         return self.types[idx] == type
 
 
-    def queryG(self, qstr):
-        onto = get_ontology(self._addr).load()
-        graph = onto.as_rdflib_graph()
-        return list(graph.query(qstr))
-
-
     def getRdfLevelDef(self):
-        g = rdflib.Graph()
-        g.parse(self._addr)
         #self.rdfsClasses = self.getRDFSClasses(g)
-        self.rdfProperties = self.getRDFProp(g)
+        self.rdfProperties = self.getRDFProp(self.graph)
 
 
     def buildValueMap(self):
@@ -178,8 +175,7 @@ class Ontology():
         :return:
         '''
         ####initiation############################################################
-        g = rdflib.Graph()
-        g.parse(self._addr)
+        g = self.graph
         valuemap,idlist,namelist,instanceTokenDict,icmap,ipmap = {},[],[],{},{},{}
         instanceDict = corpora.Dictionary()
         li = self.getAllLiteralInstances(g)#search first for all triples with literal value
@@ -286,7 +282,7 @@ class Ontology():
         return None
 
     def getAllLiteralInstances(self,g):
-        monto = get_ontology(self._addr).load()
+        monto = self.ontology
         literalps = list(monto.properties())
         #literalps = self.rdfProperties
         #literalps.extend(self.rdfProperties)

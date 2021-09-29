@@ -1,9 +1,9 @@
 import pickle
-import unittest
 
 import blocking
+import utils_for_testing
 
-class TestBlocking(unittest.TestCase):
+class TestBlocking(utils_for_testing.TestCaseOntoMatch):
 
     def load_kwl_gppd_ontologies(self):
         with open('./data/kwl.pkl','rb') as file:

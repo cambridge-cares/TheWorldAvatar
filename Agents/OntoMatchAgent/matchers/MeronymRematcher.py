@@ -5,7 +5,7 @@ from itertools import chain, combinations
 from alignment import Alignment
 
 
-from matchManager import *
+
 
 #TODO: you should combine S and T together!
 class MeronymRematcher():

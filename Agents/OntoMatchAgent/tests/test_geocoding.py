@@ -1,10 +1,10 @@
 import pickle
-import unittest
 
-import knowledge.geocoding
 import blocking
+import knowledge.geocoding
+import utils_for_testing
 
-class TestGeocoding(unittest.TestCase):
+class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
 
     def load_kwl_gppd_ontologies(self):
         with open('./data/kwl.pkl','rb') as file:

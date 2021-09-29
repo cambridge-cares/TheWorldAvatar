@@ -10,16 +10,14 @@ import blocking
 import matchers
 from matchers.GeoAttrFinder import GeoAttrFinder
 from matchers.Penalizer import Penalizer
-from matchers.MeronymRematcher import *
-from ontologyWrapper import Ontology
+from matchers.MeronymRematcher import MeronymRematcher
+import ontologyWrapper
 
 class matchManager(object):
     def __init__(self, matchSteps, srcAddr, tgtAddr, aggregation = 'average',thre=0.6, weight =None, paras = None, matchIndividuals = False,penalize = None,useAttrFinder=False):
         self.matchSteps = []
         #todo null handling
         self.matchSteps = matchSteps
-        self.srcAddr = srcAddr
-        self.tgtAddr = tgtAddr
         self.aggregation = aggregation
         self.thre= thre
         self.weight = weight
@@ -27,30 +25,34 @@ class matchManager(object):
         self.matchI = matchIndividuals
         self.penalize = penalize
         self.useAttrFinder = useAttrFinder
-        self.load()
-
-
-
-    def load(self):
-
-        logging.info('loading ontology=%s ...', self.srcAddr)
-        if self.srcAddr.endswith('.pkl'):
-            with open(self.srcAddr,'rb') as file:
-                self.srcOnto = pickle.load(file)
+        # TODO-AE remove this after talking to Shaocong
+        if isinstance(srcAddr, str):
+            self.srcOnto, self.tgtOnto = self.load(srcAddr, tgtAddr)
         else:
-            self.srcOnto = Ontology(self.srcAddr, save=False)
-            #self.srcOnto._load(False)
+            self.srcOnto = srcAddr
+            self.tgtOnto = tgtAddr
+
+    def load(self, srcAddr, tgtAddr):
+
+        logging.info('loading ontology=%s ...', srcAddr)
+        if srcAddr.endswith('.pkl'):
+            with open(srcAddr,'rb') as file:
+                srcOnto = pickle.load(file)
+        else:
+            srcOnto = ontologyWrapper.Ontology(srcAddr, save=False)
+            #srcOnto._load(False)
         logging.info('finished loading ontology')
 
-        logging.info('loading ontology=%s ...', self.tgtAddr)
-        if self.tgtAddr.endswith('.pkl'):
-            with open(self.tgtAddr,'rb') as file:
-                self.tgtOnto = pickle.load(file)
+        logging.info('loading ontology=%s ...', tgtAddr)
+        if tgtAddr.endswith('.pkl'):
+            with open(tgtAddr,'rb') as file:
+                tgtOnto = pickle.load(file)
         else:
-            self.tgtOnto = Ontology(self.tgtAddr, save=False)
-            #self.tgtOnto._load(False)
-            #self.tgtOnto = Ontology(self.tgtAddr)
+            tgtOnto = ontologyWrapper.Ontology(tgtAddr, save=False)
+            #tgtOnto._load(False)
+            #tgtOnto = Ontology(tgtAddr)
         logging.info('finished loading ontology')
+        return srcOnto, tgtOnto
 
     def default_params(self):
         return {
@@ -93,6 +95,7 @@ class matchManager(object):
             for idx, matcherName in enumerate(self.matchSteps):
                 mtime = time.time()
                 pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params['blocking'])
+                logging.info('number of candidate matching pairs=%s', len(pair_iterator))
 
                 if self.paras is not None and self.paras[idx] is not None:
                     matcher = matcherName((self.srcOnto, self.tgtOnto), pair_iterator, *self.paras[idx])

@@ -68,7 +68,7 @@ class valueMap(object):
 
 
 if __name__ == "__main__":
-    from owlready2 import *
+    from owlready2 import get_ontology
     from ontologyWrapper import PlusImport
     addr = "C:/Users/Shaocong/WORK/ontoMatchData/simMatch/test/59th_Street_Oil_Plant_NY_USA.owl"
     addr2 = "C:/Users/Shaocong/WORK/ontoMatchData/simMatch/test/PowerPlant.owl"
