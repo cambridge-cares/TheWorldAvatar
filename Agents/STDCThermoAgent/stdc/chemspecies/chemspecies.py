@@ -26,6 +26,10 @@ MOL_WEIGHT_CONV = unitconv.convertMassUnitsToSI('AMU',)
 ELEC_EN_CONV = unitconv.convertEnergyMoleculeUnitsToSI('HA')
 LVL_EN_CONV = unitconv.convertEnergyMoleculeUnitsToSI('CM^-1')
 
+TP_THERMODATA = 'Thermodynamic data for a single T, P point'
+TRANGE_P_THERMODATA = 'Thermodynamic data over a selected T range at a single P point'
+NASA_THERMODATA = 'Fitted NASA polynomials'
+
 class ChemSpecies:
     def __init__(self,
                  chem_formula,
@@ -80,8 +84,11 @@ class ChemSpecies:
         self.RequestedTrange = _strInputToList(
                             temperature_range,
                             type=float)                      #     [n2 x K]
-        self.RequestedTPPointData = {}                       #
-        self.RequestedTrangeData = {}                        #
+        self.ThermoData = {
+            TP_THERMODATA: {},
+            TRANGE_P_THERMODATA: {},
+            NASA_THERMODATA: {}
+        }
         #  NASA polynomials fitting - extra output
         #--------------------------------------------------
         self.FitNasa = fit_nasa
@@ -128,6 +135,7 @@ class ChemSpecies:
         if self.DevEnthRefFromNasa:
             self.EnthRef = self.getSpEnthalpyNASA(self.DevEnthRefNasaTemp,useFittedNasa=False)
         self._getSpHcorrSTHD()
+
     #======================================================
     #            Methods
     #======================================================
@@ -317,36 +325,24 @@ class ChemSpecies:
         T = self.RequestedTemp
         P = self.RequestedPressure
         ThermoData= self._getSpThermoAtTP(T,P)
+        ThermoData['T'] = T
+        ThermoData['P'] = P
 
-        self.RequestedTPPointData = self._thermoOutToFormattedDict(
-            T=T,
-            P=P,
-            H=ThermoData['H']*1e-3,
-            S=ThermoData['S'],
-            U=ThermoData['U']*1e-3,
-            G=ThermoData['G']*1e-3,
-            Cp=ThermoData['Cp'],
-            Cv=ThermoData['Cv'])
+        self.ThermoData[TP_THERMODATA] = self._thermoOutToFormattedDict(ThermoData)
 
     def _getRequestedTrangeData(self):
         T = self.RequestedTrange
         P = self.RequestedPressure
 
         ThermoData= self._getSpThermoAtTrangeP(T,P)
+        ThermoData['T'] =T
+        ThermoData['P'] =P
 
-        self.RequestedTrangeData = self._thermoOutToFormattedDict(
-            T=T,
-            P=P,
-            H=[Hi*1e-3 for Hi in ThermoData['H']],
-            S=ThermoData['S'],
-            U=[Ui*1e-3 for Ui in ThermoData['U']],
-            G=[Gi*1e-3 for Gi in ThermoData['G']],
-            Cp=ThermoData['Cp'],
-            Cv=ThermoData['Cv'])
+        self.ThermoData[TRANGE_P_THERMODATA] = self._thermoOutToFormattedDict(ThermoData)
 
     def _getNasaPolynomialsData(self):
         self._fitNasaPolynomials()
-        self.NasaPolynomialsData = self._nasaOutToFormattedDict()
+        self.ThermoData[NASA_THERMODATA] = self._nasaOutToFormattedDict()
 
     def _fitNasaPolynomials(self):
         # By default the Trange is subdivided into 20 temperatures
@@ -376,16 +372,26 @@ class ChemSpecies:
         self.FittedHighNasaCoeffs = NasaHighTCoeffs
 
     @staticmethod
-    def _thermoOutToFormattedDict(T,P,H,S,U,G,Cp,Cv):
+    def _thermoOutToFormattedDict(ThermoData):
+        for key, value in ThermoData.items():
+            if key == "H" or key == "G" or key == "U":
+                mult=1e-3
+            else:
+                mult = 1.0
+            if isinstance(value, list):
+                ThermoData[key] = [f"{x*mult:.2f}" for x in value]
+            else:
+                ThermoData[key] = f"{value*mult:.2f}"
+
         FormattedThermoDict = {
-            'RequestedTemperature': {'value': T, 'unit': 'K'},
-            'RequestedPressure': {'value': P, 'unit': 'Pa'},
-            'Enthalpy': {'value': H, 'unit': 'kJ/mol'},
-            'InternalEnergy': {'value': U, 'unit': 'kJ/mol'},
-            'Entropy': {'value': S, 'unit': 'J/mol/K'},
-            'GibbsEnergy': {'value': G, 'unit': 'kJ/mol'},
-            'HeatCapacityAtConstPressure': {'value': Cp, 'unit': 'J/mol/K'},
-            'HeatCapacityAtConstVolume': {'value': Cv, 'unit': 'J/mol/K'}
+            'Temperature': {'value': ThermoData['T'], 'unit': 'K'},
+            'Pressure': {'value': ThermoData['P'], 'unit': 'Pa'},
+            'Enthalpy': {'value': ThermoData['H'], 'unit': 'kJ/mol'},
+            'Internal energy': {'value': ThermoData['U'], 'unit': 'kJ/mol'},
+            'Entropy': {'value': ThermoData['S'], 'unit': 'J/mol/K'},
+            'Gibbs energy': {'value': ThermoData['G'], 'unit': 'kJ/mol'},
+            'Heat capacity at constant pressure': {'value': ThermoData['Cp'], 'unit': 'J/mol/K'},
+            'Heat capacity at constant volume': {'value': ThermoData['Cv'], 'unit': 'J/mol/K'}
         }
         return FormattedThermoDict
 
@@ -401,22 +407,17 @@ class ChemSpecies:
         Thigh = self.NasaFitTemps[2]
         NasaLowTCoeffs = self.FittedLowNasaCoeffs
         NasaHighTCoeffs = self.FittedHighNasaCoeffs
-        EnthRef = self.EnthRef
-        EnthRefTemp = self.EnthRefTemp
 
         FormattedThermoDict = {
-            'LowTemperature': {'value': Tlow, 'unit': 'K'},
-            'MidTemperature': {'value': Tmid, 'unit': 'K'},
-            'HighTemperature': {'value': Thigh, 'unit': 'K'},
-            'RequestedPressure': {'value': Pref, 'unit': 'Pa'},
-            'EnthalpyRef': {'value': EnthRef, 'unit': 'J/mol'},
-            'EnthalpyRefTemp': {'value': EnthRefTemp, 'unit': 'K'},
-            'LowTemperatureCoefficients': NasaLowTCoeffs,
-            'HighTemperatureCoefficients':NasaHighTCoeffs,
-            'NasaChemkinBlock': nasawriter.writeNasaChemkinBlock(
-                                    formula,composition,Pref,Tlow,Tmid,Thigh,
-                                    NasaLowTCoeffs,NasaHighTCoeffs,
-                                    EnthRef,EnthRefTemp)
+            'Pressure': {'value': f"{Pref:.2f}", 'unit': 'Pa'},
+            'NASA low temperature': {'value': f"{Tlow:.2f}", 'unit': 'K'},
+            'NASA medium temperature': {'value': f"{Tmid:.2f}", 'unit': 'K'},
+            'NASA high temperature': {'value': f"{Thigh:.2f}", 'unit': 'K'},
+            'NASA low temperature coefficients': [f"{x:.5e}" for x in NasaLowTCoeffs],
+            'NASA high temperature coefficients':[f"{x:.5e}" for x in NasaHighTCoeffs],
+            'Chemkin-style NASA polynomials data': nasawriter.writeNasaChemkinBlock(
+                                    formula,composition,Tlow,Tmid,Thigh,
+                                    NasaLowTCoeffs,NasaHighTCoeffs)
         }
         return FormattedThermoDict
 
