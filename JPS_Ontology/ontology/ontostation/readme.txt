@@ -1,0 +1,1 @@
+the TBoxGeneration tool does not support custom data type - http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon, so it's added manually

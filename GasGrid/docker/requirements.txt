@@ -11,12 +11,12 @@
 #	- geoJSON_output_agent/all_terminals_to_geojson.py
 #
 
-bs4 
-numpy
-pandas
-py4jps
-requests_html
-SPARQLWrapper
-tabulate
-tqdm
-wget
+bs4==0.0.1
+numpy==1.21.2
+pandas==1.3.3
+py4jps==1.0.3
+requests_html==0.10.0
+SPARQLWrapper==1.8.5
+tabulate==0.8.9
+tqdm==4.62.2
+wget==3.2

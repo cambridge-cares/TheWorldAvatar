@@ -119,7 +119,7 @@ WHERE
 DEF_NAMESPACE = 'ontogasgrid'
 LOCAL_KG = "http://localhost:9999/blazegraph"
 LOCAL_KG_SPARQL = LOCAL_KG + '/namespace/'+DEF_NAMESPACE+'/sparql'
-KGClient = jpsGW_view.RemoteKnowledgeBaseClient(LOCAL_KG_SPARQL)
+KGClient = jpsGW_view.RemoteStoreClient(LOCAL_KG_SPARQL)
 ret = KGClient.executeQuery(queryString)
 
 # KGClient = KGRouter.getKnowledgeBaseClient('http://kb/ontogasgrid', True, False)

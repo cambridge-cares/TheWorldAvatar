@@ -250,6 +250,23 @@ public class DerivationSparql{
 	    kbClient.executeUpdate();
 	}
 	
+	static void removeTimeInstance(StoreClientInterface kbClient, String entity) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		SelectQuery query = Queries.SELECT();
+		Variable time_instant = query.var();
+		Variable time_unix = query.var();
+		Variable timestamp = query.var();
+		Variable TRS = query.var();
+		
+		TriplePattern[] queryPattern = {iri(entity).has(hasTime,time_instant),
+				time_instant.isA(InstantClass).andHas(inTimePosition, time_unix),
+				time_unix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, TRS)};
+		
+		modify.delete(queryPattern).where(queryPattern).prefix(p_time);
+		kbClient.executeUpdate(modify.getQueryString());
+	}
+	
 	/**
 	 * returns the url of the agent used to calculate the given derived quantity
 	 * @param kbClient
