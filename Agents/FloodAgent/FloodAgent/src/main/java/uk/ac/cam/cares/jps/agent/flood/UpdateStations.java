@@ -106,7 +106,21 @@ public class UpdateStations {
         for (int i = 0; i < readings.length(); i++) {
         	try {
 	        	dataIRI = readings.getJSONObject(i).getString("measure");
-	        	double value = readings.getJSONObject(i).getDouble("value");
+	        	
+	        	// if it is a JSON Array, take the average
+	        	// not clear why more than 1 value is given
+	        	Double value = null;
+	        	try {
+	        		value = readings.getJSONObject(i).getDouble("value");
+	        	} catch (Exception e) {
+	        		// some data points have 2 values, not sure why
+	        		// in this case we take the average
+	        		value = readings.getJSONObject(i).getJSONArray("value").toList().stream().mapToDouble(x -> (double) x).average().getAsDouble();
+	        		LOGGER.info("More than 1 value is given for a data point");
+	        		LOGGER.info(readings.getJSONObject(i));
+	        		LOGGER.info("Taking the average");
+	        	}
+	        	
 	        	Instant timestamp = Instant.parse(readings.getJSONObject(i).getString("dateTime"));
 	        	
 	        	if (datatime_map.containsKey(dataIRI)) {
@@ -186,6 +200,6 @@ public class UpdateStations {
         		}
         	}
         }
-        LOGGER.info("Failed to add " + Integer.toString(num_failures) + " values from API");
+        LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
 	}
 }

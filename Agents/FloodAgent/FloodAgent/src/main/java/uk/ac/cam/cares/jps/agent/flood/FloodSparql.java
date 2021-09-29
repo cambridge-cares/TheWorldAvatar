@@ -153,7 +153,8 @@ public class FloodSparql {
 	
 	/**
 	 * add a measure that was not present in the initial RDF file, but present
-	 * in the data download
+	 * in the data downloaded later
+	 * adds a triple <station> <measures> <measure>
 	 * @param station
 	 * @param measure
 	 */
