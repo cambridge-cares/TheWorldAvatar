@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>uk.ac.cam.cares.jps</groupId>
+    <artifactId>FileServerAgent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <!-- Project properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+    </properties>
+
+    <!-- Parent POM -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+
+    <!-- Profiles are used to switch between building for development and production
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+    <profiles>
+        <!-- This profile should be used for development builds. -->
+        <profile>
+            <id>dev-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Set property to download development logging config -->
+                <log.artifact>java-logging-dev</log.artifact>
+            </properties>
+        </profile>
+
+        <!-- This profile should be used for production builds. -->
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <!-- Set property to download production logging config -->
+                <log.artifact>java-logging-prod</log.artifact>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+
+            <!-- Compile and build with Java 11 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- Allows maven executions -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+            </plugin>
+
+            <!-- Used to execute unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
+                <version>2.22.0</version>
+            </plugin>
+
+            <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
+            gets copied into the final WAR file's internal WEB-INF directory. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the
+                parent POM unless overridden here. -->
+            </plugin>
+
+            <!-- Downloads and extracts ZIP archives from Maven repository -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <!-- Version, configuration, and executions should be pulled from the
+                parent POM unless overridden here. -->
+            </plugin>
+
+        </plugins>
+    </build>
+
+    <!-- Dependencies -->
+    <dependencies>
+
+        <!-- Java servlet API, version pulled from parent -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+
+        <!-- Logging, versions pulled from parent -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.8.0</version>
+            <type>jar</type>
+        </dependency>
+    </dependencies>
+</project>
