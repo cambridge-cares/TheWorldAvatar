@@ -42,6 +42,7 @@ public class UpdateStations {
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
 	
 	public static void main(String[] args) {
+		Config.initProperties();
 		LocalDate date;
 		
 		// input validation
@@ -64,6 +65,11 @@ public class UpdateStations {
         
         // upload to postgres
         uploadDataToRDB();
+        
+        // update last updated date
+        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+        FloodSparql sparqlClient = new FloodSparql(storeClient);
+        sparqlClient.updateLastDate(date);
 	}
 	
 	private static String getDataFromAPI(LocalDate date) {
@@ -148,7 +154,6 @@ public class UpdateStations {
 	}
 	
 	static void uploadDataToRDB() {
-		Config.initProperties();
         // create a time series object for each data set and upload to db 1 by 1
         RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		TimeSeriesClient<Instant> tsClient = 

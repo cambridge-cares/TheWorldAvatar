@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,6 +10,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -24,18 +26,25 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 public class FloodSparql {
     private StoreClientInterface storeClient;
     
     // prefix
- 	static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
-    static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
+ 	private static String ontostation = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontostation/OntoStation.owl#";
+    private static Prefix p_station = SparqlBuilder.prefix("station",iri(ontostation));
+    private static Prefix p_time = SparqlBuilder.prefix("time", iri("http://www.w3.org/2006/time#"));
+    
+    // classes
     private static Iri Station = p_station.iri("Station");
+    private static Iri Instant = p_time.iri("Instant");
 	
     // properties
-    static Iri hasCoordinates = p_station.iri("hasCoordinates");
-    static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
+    private static Iri hasCoordinates = p_station.iri("hasCoordinates");
+    private static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
+    private static Iri hasTime = p_time.iri("hasTime");
+    private static Iri inXSDDate = p_time.iri("inXSDDate");
         
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
@@ -162,5 +171,85 @@ public class FloodSparql {
 		ModifyQuery modify = Queries.MODIFY();
 		modify.insert(iri(station).has(measures,iri(measure)));
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/** 
+	 * performs a very simple check on whether stations are already initialised
+	 * with time series
+	 * @return
+	 */
+	boolean areStationsInitialised() {
+		SelectQuery query = Queries.SELECT();
+		Variable station = query.var();
+		Variable measure = query.var();
+		Variable timeseries = query.var();
+		
+		Iri hasTimeSeries = iri(TimeSeriesSparql.ns_ontology + "hasTimeSeries");
+		
+		GraphPattern queryPattern = GraphPatterns.and(station.has(measures, measure).andIsA(Station),
+				measure.has(hasTimeSeries,timeseries));
+		
+		query.prefix(p_station).where(queryPattern).limit(10);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() >= 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Initialise last update date with an empty string
+	 * @param date
+	 */
+	void addLastDate() {
+		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
+		Iri instant = iri("http://environment.data.gov.uk/flood-monitoring/id/stations/time");
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(stations.has(hasTime,instant));
+		modify.insert(instant.isA(Instant).andHas(inXSDDate, ""));
+		modify.prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * update the last updated date
+	 * @param newdate
+	 */
+	void updateLastDate(LocalDate newdate) {
+		ModifyQuery modify = Queries.MODIFY();
+		Variable instant = SparqlBuilder.var("instant");
+		Variable olddate = SparqlBuilder.var("date");
+		
+		TriplePattern delete_tp = instant.has(inXSDDate,olddate);
+		TriplePattern insert_tp = instant.has(inXSDDate, Rdf.literalOfType(newdate.toString(), XSD.DATE));
+		
+		modify.insert(insert_tp).delete(delete_tp).prefix(p_time).where(delete_tp);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * returns the last updated date for the data set
+	 * @return
+	 */
+	LocalDate getLastDate() {
+		SelectQuery query = Queries.SELECT();
+		Variable instant = query.var();
+		Variable date = query.var();
+		
+		GraphPattern queryPattern = instant.has(inXSDDate,date);
+		
+		query.prefix(p_time).select(date).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		LocalDate queriedDate = LocalDate.parse(queryResult.getJSONObject(0).getString(date.getQueryString().substring(1)));
+		
+		return queriedDate;
 	}
 }

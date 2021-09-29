@@ -30,14 +30,27 @@ public class InitialiseStations {
     private static final Logger LOGGER = LogManager.getLogger(InitialiseStations.class);
 	    
     public static void main(String[] args) {
+    	Config.initProperties();
+    	
     	// this retrieves the high level information and uploads it to Blazegraph
     	initFloodStationsWithAPI();
     	
     	// create a table for each measure uploaded to Blazegraph
     	initTimeSeriesTables();
     	
-    	// add rdf:type and coordinates in blazegraph format
-    	addCoordinatesAndType();
+    	// obtain stations added to blazegraph
+        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+		FloodSparql sparqlClient = new FloodSparql(storeClient);
+        List<String> stations = sparqlClient.getStations();
+        
+        // add RDF:type to each station instance
+		sparqlClient.addStationRdfType(stations);
+		
+		// add coordinates required by blazegraph geospatial support
+		sparqlClient.addBlazegraphCoordinates(stations);
+		
+		// add last updated date
+		sparqlClient.addLastDate();
     }
     
 	/** 
@@ -46,7 +59,6 @@ public class InitialiseStations {
 	 * its location, what it measures
 	 */
 	static void initFloodStationsWithAPI() {
-		Config.initProperties();
 		try {
 			// get rdf data from gov website
 			LOGGER.info("Downloading station data from API");
@@ -80,7 +92,6 @@ public class InitialiseStations {
 	 * create a table for each measure
 	 */
 	static void initTimeSeriesTables() {
-		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
 		FloodSparql sparqlClient = new FloodSparql(storeClient);
 		TimeSeriesClient<Instant> tsClient = 
@@ -91,22 +102,5 @@ public class InitialiseStations {
 		for (String measure : measures) {
 			tsClient.initTimeSeries(Arrays.asList(measure), Arrays.asList(Double.class), null);
 		}
-	}
-	
-	/**
-	 * Add rdf:type and coordinates in Blazegraph format
-	 */
-	static void addCoordinatesAndType() {
-		// obtain stations added to blazegraph
-		Config.initProperties();
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
-		FloodSparql sparqlClient = new FloodSparql(storeClient);
-        List<String> stations = sparqlClient.getStations();
-        
-        // add RDF:type to each station instance
-		sparqlClient.addStationRdfType(stations);
-		
-		// add coordinates required by blazegraph geospatial support
-		sparqlClient.addBlazegraphCoordinates(stations);
 	}
 }
