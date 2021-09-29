@@ -21,11 +21,10 @@ if __name__ == '__main__':
         #for subc in sublist:
         clist.append((subc,subc,0.9))
 
-    directory = './data/'
-    #src = directory + 'kwl.owl'
+    src = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.pkl'
     #tgt = directory + 'gppd0722.owl'
-    src = directory + 'kwl.pkl'
-    tgt = directory + 'gppd.pkl'
+    #src = './data/kwl.pkl'
+    tgt = './data/gppd.pkl'
 
     m = matchManager(matchSteps, src, tgt, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
 

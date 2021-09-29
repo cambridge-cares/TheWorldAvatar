@@ -33,22 +33,24 @@ class matchManager(object):
 
     def load(self):
 
+        logging.info('loading ontology=%s ...', self.srcAddr)
         if self.srcAddr.endswith('.pkl'):
             with open(self.srcAddr,'rb') as file:
                 self.srcOnto = pickle.load(file)
         else:
-            self.srcOnto = Ontology(self.srcAddr)
+            self.srcOnto = Ontology(self.srcAddr, save=False)
             #self.srcOnto._load(False)
+        logging.info('finished loading ontology')
 
+        logging.info('loading ontology=%s ...', self.tgtAddr)
         if self.tgtAddr.endswith('.pkl'):
             with open(self.tgtAddr,'rb') as file:
                 self.tgtOnto = pickle.load(file)
         else:
-            self.tgtOnto = Ontology(self.tgtAddr)
+            self.tgtOnto = Ontology(self.tgtAddr, save=False)
             #self.tgtOnto._load(False)
             #self.tgtOnto = Ontology(self.tgtAddr)
-
-        logging.info('finish loading ontologies')
+        logging.info('finished loading ontology')
 
     def default_params(self):
         return {

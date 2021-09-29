@@ -1,24 +1,42 @@
+import logging
+
 import numpy as np
 import pandas as pd
 import rdflib
-from rdflib import RDF, RDFS, OWL, Namespace, Literal, URIRef
+from rdflib import RDF, RDFS, OWL, SDO, Namespace, Literal, URIRef
 from rdflib.namespace import XSD
 from rdflib.term import _is_valid_uri
 from tqdm import tqdm
 
+import util
+
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
-DBR = Namespace('http://dbpedia.org/resource/')
 DBO = Namespace('http://dbpedia.org/ontology/')
-PSREAL = Namespace('http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#')
+DBR = Namespace('http://dbpedia.org/resource/')
 POW = Namespace('http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#')
+PSREAL = Namespace('http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#')
 CPSYS = Namespace('http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#')
 CPSYSV1 = Namespace('http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#')
 CPSPACEEXT = Namespace('http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#')
 CPUNIT = Namespace('http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#')
 EIPREAL = Namespace('http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#')
-SCHEMA = Namespace('http://schema.org/')
+
+def bind_prefixes(g):
+    g.bind('rdf', RDF)
+    g.bind('owl', OWL)
+    g.bind('sdo', SDO)  # schema.org
+    g.bind('base', BASE)
+    g.bind('dbo', DBO)
+    g.bind('dbr', DBR)
+    g.bind('pow', POW)
+    g.bind('psreal', PSREAL)
+    g.bind('cpsys', CPSYS)
+    g.bind('cpsysv1', CPSYSV1)
+    g.bind('cpspaceext', CPSPACEEXT)
+    g.bind('cpunit', CPUNIT)
+    g.bind('eipreal', EIPREAL)
 
 def uri(prefix, entity):
     return URIRef(prefix + entity)
@@ -108,20 +126,20 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
             g.add((s, DBO['country'], o))
 
         x = rdflib.BNode()
-        g.add((s, SCHEMA['address'], x))
-        g.add((x, SCHEMA['addressCountry'], Literal(country_short)))
+        g.add((s, SDO['address'], x))
+        g.add((x, SDO['addressCountry'], Literal(country_short)))
         o = d['location']
         if o:
-            g.add((x, SCHEMA['addressLocality'], Literal(o)))
+            g.add((x, SDO['addressLocality'], Literal(o)))
         o = d['zip_code']
         if o:
-            g.add((x, SCHEMA['postalCode'], Literal(o, datatype=XSD.integer)))
+            g.add((x, SDO['postalCode'], Literal(o, datatype=XSD.integer)))
         o = d['street']
         if o:
-            g.add((x, SCHEMA['streetAddress'], Literal(o)))
+            g.add((x, SDO['streetAddress'], Literal(o)))
         o = d['region']
         if o:
-            g.add((x, SCHEMA['addressRegion'], Literal(o)))
+            g.add((x, SDO['addressRegion'], Literal(o)))
 
 
     longitude = d.get('long')
@@ -156,18 +174,6 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
             g.add((x, CPSYSV1['hasName'], Literal(o)))
 
     return name
-
-def bind_prefixes(g):
-    g.bind('base', BASE)
-    g.bind('rdf', RDF)
-    g.bind('owl', OWL)
-    g.bind('dbr', DBR)
-    g.bind('psreal', PSREAL)
-    g.bind('cpsys', CPSYS)
-    g.bind('cpsysv1', CPSYSV1)
-    g.bind('cpspaceext', CPSPACEEXT)
-    g.bind('cpunit', CPUNIT)
-    g.bind('eipreal', EIPREAL)
 
 def create_DUKES_plants(source_file, target_file, version, format):
 
@@ -527,7 +533,7 @@ def create_KWL_plants(source_file, target_file, version, format):
 
     dframe = pd.read_csv(source_file, delimiter=';', encoding='utf8')
     dframe = get_kwl(dframe)
-    dframe = dframe.sort_values(by='idx')[:10]
+    dframe = dframe.sort_values(by='idx')
 
     country = DBR['Germany']
     owner_dict = {}
@@ -551,6 +557,20 @@ def create_KWL_plants(source_file, target_file, version, format):
         fuel = v(row, 'primary_fuel')
         fuel_type = convert_fuel_to_subclass(fuel)
 
+        region = v(row, 'federal_state')
+        if region in ['Luxemburg', 'Österreich', 'Schweiz']:
+            logging.warning('the record is skipped since the country is not Germany, index=%s, region=%s', i, region)
+            continue
+
+        try:
+            zip_code = v(row, 'zip_code')
+            if zip_code is not None:
+                zip_code = int(zip_code)
+        except ValueError:
+            logging.info('invalid zip code format, index=%s, zip code=%s', i, zip_code)
+            zip_code = None
+
+
         d = {
             'plant_id': i,
             'type': fuel_type,
@@ -559,9 +579,9 @@ def create_KWL_plants(source_file, target_file, version, format):
             'owner': owner,
             'country': country,
             'location': v(row, 'location'),
-            'zip_code': v(row, 'zip_code'),
+            'zip_code': zip_code,
             'street': v(row, 'street'),
-            'region': v(row, 'federal_state'),
+            'region': region,
             #'long': v(row, 'longitude'),
             #'lat': v(row, 'latitude'),
             'year_built': v(row, 'commissioning_year'),
@@ -587,8 +607,11 @@ def create_KWL_plants(source_file, target_file, version, format):
 
 if __name__ == '__main__':
 
-    frmt = 'turtle'
-    #frmt = 'xml'
+    util.init_logging('.', '..')
+
+    #frmt = 'turtle'
+    frmt = 'xml'
+    #frmt = 'nt' # ntriples
     #src_file = 'C:/my/tmp/ontomatch/dukes_tmp.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/matching_test_files/4_dukes_all.owl'
     #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
@@ -599,7 +622,8 @@ if __name__ == '__main__':
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
     src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_kwl_files'
-    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_test.ttl'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_test.owl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.ttl'
+    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.nt'
     #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
     create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)

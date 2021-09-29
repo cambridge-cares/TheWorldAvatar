@@ -1,39 +1,36 @@
-from spiral import ronin
+import logging
+import os
+import pickle
+import re
+
+from gensim import *
+import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from owlready2 import *
-import nltk
-from gensim import *
-import re
-import os
+from spiral import ronin
+
 from valueMap import *
 from matchers.UnitConverter import UnitConverter
-import logging
+
 logging.getLogger("gensim").setLevel(logging.CRITICAL)
-import pickle
 
 class Ontology():
-    def __init__(self, addr,use_comment = False,save=False,no_stem = False):
-        ##print('init ',addr)
+    def __init__(self, addr, use_comment = False, save=False, no_stem = False):
         self.useComment = use_comment
         self.tokensDict = {}
         self.tokensDictLong = {}
         self.classTree = {}
         self._addr = addr
-        self.rangeMap = {}#classId to range
+        self.rangeMap = {} #classId to range
         self.domainMap = {}
-        self.save =save
+        self.save = save
         self._load(no_stem)
-        print('loaded')
-
-
 
     def _load(self,no_stem = False):
         '''
         load the ontology entities, divide into words entry
         '''
-
         onto = get_ontology(self._addr).load()
-        print('loading')
         self.procesLEX(onto,no_stem)
         self.baseiri = onto.base_iri
         #self.classes = list( onto.classes())
@@ -43,8 +40,8 @@ class Ontology():
         self.individualList, self.individualNames, self.instanceDict, self.instanceTokensDict, self.icmap, self.ipmap, self.valueMap = self.buildValueMap()
         if self.save:
             pklname = self._addr.replace('rdf','pkl').replace('owl','pkl').replace('xml','pkl')
-            fw = open(pklname,'wb')
-            pickle.dump(self, fw, -1)
+            with open(pklname,'wb') as file:
+                pickle.dump(self, file, -1)
 
     @staticmethod
     def lemmatize_stemming(text, no_stem = False):
@@ -242,8 +239,8 @@ class Ontology():
 
         return idlist,namelist,instanceDict,instanceTokenDict,icmap, ipmap, valueMap(idlist,valuemap)
 
-
     def getName(self,iri):
+
         if '#' in iri:
             s= iri.split('#')
             return s[len(s)-1]
@@ -256,7 +253,7 @@ class Ontology():
 
     def query4unit(self,g, siri):
         qstr = """
-        PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> 
+        PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
         SELECT ?m WHERE {{
          <{}> sys:hasUnitOfMeasure ?m.
         }}"""
@@ -272,7 +269,7 @@ class Ontology():
 
     def query4class(self,g, siri):
         qstr = """
-        PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> 
+        PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
         PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 
         SELECT ?c WHERE {{
@@ -299,8 +296,8 @@ class Ontology():
 
         #for i in literalps:
         qstr = """
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
         PREFIX owl: <http://www.w3.org/2002/07/owl>
         SELECT ?s ?p ?v WHERE {
          ?s ?p ?v.
@@ -413,7 +410,7 @@ class Ontology():
 
     def getRDFProp(self, mg):
         qstr = """
-        PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
+        PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         SELECT  ?p  WHERE {{
          ?p a rdf:Property.
 
