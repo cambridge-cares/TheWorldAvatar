@@ -2,6 +2,9 @@
 #==================================================================================================
 FROM maven:3.6-openjdk-11-slim as builder
 
+# Allow Maven profile to be passed as an arg, defaulting to 'dev-profile'
+ARG mvn_profile="dev-profile"
+
 WORKDIR /root
 COPY docker .
 
@@ -17,7 +20,7 @@ WORKDIR /root/build
 # Copy in source files ./m2 directory and credentials
 COPY ./FileServerAgent .
 
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package -P $mvn_profile
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
