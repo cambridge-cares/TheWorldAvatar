@@ -30,5 +30,5 @@
         1
     ],
     "EntryUUID": "testID-111-111-111",
-    "EntryIRI": "Species_testID-111-111-111"
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111"
 }

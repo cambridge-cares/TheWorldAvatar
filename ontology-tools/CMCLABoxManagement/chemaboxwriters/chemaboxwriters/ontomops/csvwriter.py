@@ -10,12 +10,14 @@ import csv
 
 from io import StringIO
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontomops.prefixes import onto_spec, \
-                                              onto_mops, \
-                                              mops_pref, \
-                                              rdf_pref, \
-                                              uom_pref, \
-                                              unres_pref
+from chemaboxwriters.common import PREFIXES
+
+onto_spec = PREFIXES["onto_spec"]
+onto_mops = PREFIXES["onto_mops"]
+mops_pref = PREFIXES["mops_pref"]
+rdf_pref = PREFIXES["rdf_pref"]
+uom_pref = PREFIXES["uom_pref"]
+unres_pref = PREFIXES["unres_pref"]                                              
 
 def om_csvwriter(data):
     data = json.loads(data)
@@ -54,6 +56,8 @@ def om_csvwriter(data):
     '','','']) #Initialize the Provenance object for the MOPs.
     spamwriter.writerow([mops_pref +  mops_id,'Instance',mops_pref + 'Provenance_' + gen_id,
     onto_mops + '#hasProvenance','','']) # Connect the Provenance to the MOPs instance.
+    spamwriter.writerow([onto_mops + '#hasReferenceDOI','Data Property',mops_pref + 'Provenance_' + gen_id,
+    '',data["Mops_Reference_DOI"],'String'])
 
     #Write the Molecular Weight section for the MOPs.
     spamwriter.writerow([mops_pref + 'MolecularWeight_' + gen_id, 'Instance', onto_spec + '#MolecularWeight',
