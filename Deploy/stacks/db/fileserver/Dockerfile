@@ -18,18 +18,18 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 WORKDIR /root/build
 
 # Copy in source files ./m2 directory and credentials
-COPY ./FileServerAgent .
+COPY ./fileserver .
 
 RUN --mount=type=cache,target=/root/.m2/repository mvn package -P $mvn_profile
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
-FROM tomcat:9.0 as agent
+FROM tomcat:9.0 as app
 
 WORKDIR /app
 
-COPY --from=builder /root/build/output/FileServerAgent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/build/output/FileServer##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Overwrite tomcat-users to set up a role for authentication
 COPY ./docker/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/

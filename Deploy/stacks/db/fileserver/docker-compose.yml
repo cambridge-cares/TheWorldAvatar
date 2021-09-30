@@ -1,13 +1,13 @@
 version: "3.8"
 
 services:
-  test-file-server-agent:
-    image: test-file-server-agent
+  test-file-server:
+    image: test-file-server
     build:
       args:
         mvn_profile: dev-profile
       context: .
-    container_name: file-server-agent
+    container_name: file-server
     ports:
       - "58090:8080"
 
