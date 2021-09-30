@@ -1,0 +1,279 @@
+@prefix base: <http://www.theworldavatar.com/kb/powsys/kwl/> .
+@prefix cpsys: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix cpsysv1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#> .
+@prefix cpunit: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#> .
+@prefix dbo: <http://dbpedia.org/ontology/> .
+@prefix dbr: <http://dbpedia.org/resource/> .
+@prefix eipreal: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix pow: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> .
+@prefix psreal: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sdo: <https://schema.org/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+base:BNA0001_DE a psreal:WindPlant,
+        owl:NamedIndividual ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1997 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1.5e+01 ] ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Aachen" ;
+            sdo:addressRegion "Nordrhein-Westfalen" ;
+            sdo:postalCode 52074 ] .
+
+base:BNA0005_Ahrensfelde_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Ahrensfelde"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1990 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 3.75e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Lausitz Energie Kraftwerke AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Ahrensfelde" ;
+            sdo:addressRegion "Brandenburg" ;
+            sdo:postalCode 16356 ;
+            sdo:streetAddress "Lindenberger Weg" ] .
+
+base:BNA0006_Ahrensfelde_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Ahrensfelde"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1990 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 3.75e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Lausitz Energie Kraftwerke AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Ahrensfelde" ;
+            sdo:addressRegion "Brandenburg" ;
+            sdo:postalCode 16356 ;
+            sdo:streetAddress "Lindenberger Weg" ] .
+
+base:BNA0007_Ahrensfelde_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Ahrensfelde"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1990 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 3.75e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Lausitz Energie Kraftwerke AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Ahrensfelde" ;
+            sdo:addressRegion "Brandenburg" ;
+            sdo:postalCode 16356 ;
+            sdo:streetAddress "Lindenberger Weg" ] .
+
+base:BNA0008_Ahrensfelde_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Ahrensfelde"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1990 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 3.75e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Lausitz Energie Kraftwerke AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Ahrensfelde" ;
+            sdo:addressRegion "Brandenburg" ;
+            sdo:postalCode 16356 ;
+            sdo:streetAddress "Lindenberger Weg" ] .
+			
+base:BNA0010a_RADAG_DE a psreal:HydroelectricPlant,
+        owl:NamedIndividual ;
+    rdfs:label "RADAG"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1934 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 7.95e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Rheinkraftwerk Albbruck-Dogern AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Albbruck" ;
+            sdo:addressRegion "Baden-Württemberg" ;
+            sdo:postalCode 79774 ;
+            sdo:streetAddress "Kraftwerkstrasse 34" ] .
+
+base:BNA0010b_WKW_DE a psreal:HydroelectricPlant,
+        owl:NamedIndividual ;
+    rdfs:label "WKW"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2009 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.4e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Rheinkraftwerk Albbruck-Dogern AG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Dogern" ;
+            sdo:addressRegion "Baden-Württemberg" ;
+            sdo:postalCode 79804 ;
+            sdo:streetAddress "Zollstrasse" ] .
+
+base:BNA0011_Papierfabrik_Albbruck_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Papierfabrik Albbruck"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2009 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.8e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Papierfabrik Albbruck GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Albbruck" ;
+            sdo:addressRegion "Baden-Württemberg" ;
+            sdo:postalCode 79774 ] .
+
+base:BNA0012a_Werkskraftwerk_Sappi_Alfeld_DE a psreal:BiomassPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Werkskraftwerk Sappi Alfeld"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2003 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1.3e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Sappi Alfeld GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alfeld" ;
+            sdo:addressRegion "Niedersachsen" ;
+            sdo:postalCode 31061 ;
+            sdo:streetAddress "Mühlenmarsch 1" ] .
+
+base:BNA0012b_Werkskraftwerk_Sappi_Alfeld_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Werkskraftwerk Sappi Alfeld"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1947 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1.1e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Sappi Alfeld GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alfeld" ;
+            sdo:addressRegion "Niedersachsen" ;
+            sdo:postalCode 31061 ;
+            sdo:streetAddress "Mühlenmarsch 1" ] .
+
+base:BNA0012c_Werkskraftwerk_Sappi_Alfeld_DE a psreal:HydroelectricPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Werkskraftwerk Sappi Alfeld"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1912 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1e-01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Sappi Alfeld GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alfeld" ;
+            sdo:addressRegion "Niedersachsen" ;
+            sdo:postalCode 31061 ;
+            sdo:streetAddress "Mühlenmarsch 1" ] .
+
+base:BNA0012d_Werkskraftwerk_Sappi_Alfeld_DE a psreal:FossilFuelPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Werkskraftwerk Sappi Alfeld"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 1994 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.8e+00 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Sappi Alfeld GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alfeld" ;
+            sdo:addressRegion "Niedersachsen" ;
+            sdo:postalCode 31061 ;
+            sdo:streetAddress "Mühlenmarsch 1" ] .
+
+base:BNA0013_DE a psreal:WindPlant,
+        owl:NamedIndividual ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2007 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.76e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Windpark Balkum-Thiene GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alfhausen " ;
+            sdo:addressRegion "Niedersachsen" ;
+            sdo:postalCode 49594 ] .
+
+base:BNA0014_Windpark_Alsleben_DE a psreal:WindPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Windpark Alsleben"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2016 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.1e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Dortmunder Energie- und Wasserversorgung GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Alsleben (Saale)" ;
+            sdo:addressRegion "Sachsen-Anhalt" ;
+            sdo:postalCode 6425 ] .
+			
+base:BNA0029_Solarpark_Petzenbach_DE a psreal:SolarPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Solarpark Petzenbach"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2010 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "ESK Solarenergie GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Arnstorf" ;
+            sdo:addressRegion "Bayern" ;
+            sdo:postalCode 94424 ] .
+
+base:BNA0030_DE a psreal:WindPlant,
+        owl:NamedIndividual ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2002 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 1.2e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "e.disnatur Erneuerbare Energien GmbH" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Artern" ;
+            sdo:addressRegion "Thüringen" ;
+            sdo:postalCode 6556 ] .
+			
+base:BNA0039_Bard_Offshore_1_DE a psreal:WindPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Bard Offshore 1"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2013 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 4e+02 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "Ocean Breeze Energy GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Nordsee " ;
+            sdo:addressRegion "AWZ" ;
+            sdo:streetAddress "90 km nordwestlich von Borkum" ] .
+			
+base:BNA0132_Waldpolenz_Energiepark_FF_2_DE a psreal:SolarPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Waldpolenz Energiepark FF 2"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2008 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 7.98e+00 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "SachsenFonds Solar II GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Brandis" ;
+            sdo:addressRegion "Sachsen" ;
+            sdo:postalCode 4821 ] .
+
+base:BNA0133_Waldpolenz_Energiepark_FF_3_DE a psreal:SolarPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Waldpolenz Energiepark FF 3"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2008 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 8e+00 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "SachsenFonds Solar III GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Brandis" ;
+            sdo:addressRegion "Sachsen" ;
+            sdo:postalCode 4821 ] .
+
+base:BNA0134_Waldpolenz_Energiepark_FF_1_DE a psreal:SolarPlant,
+        owl:NamedIndividual ;
+    rdfs:label "Waldpolenz Energiepark FF 1"@en ;
+    dbo:country dbr:Germany ;
+    pow:hasYearOfBuilt [ cpsys:hasValue [ cpsys:numericalValue 2007 ] ] ;
+    eipreal:designCapacity [ cpsys:hasValue [ cpsys:hasUnitOfMeasure cpunit:MW ;
+                    cpsys:numericalValue 2.41e+01 ] ] ;
+    cpsysv1:isOwnedBy [ cpsysv1:hasName "SachsenFonds Solar I GmbH & Co. KG" ] ;
+    sdo:address [ sdo:addressCountry "DE" ;
+            sdo:addressLocality "Brandis" ;
+            sdo:addressRegion "Sachsen" ;
+            sdo:postalCode 4821 ] .

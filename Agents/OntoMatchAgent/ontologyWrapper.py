@@ -379,7 +379,7 @@ class Ontology():
                     if type(res[0]) is not rdflib.term.BNode:
                         iri =res[0].n3().replace('<','').replace('>','')
                         pChain = [self.getName(someP.n3().replace('<','').replace('>','')) for someP in res[1:]]
-                        print(pChain)
+                        #print(pChain)
                         pChain.append(self.getName(pOne))
                         pset.append(iri)
                         pl.append((iri,pChain))
