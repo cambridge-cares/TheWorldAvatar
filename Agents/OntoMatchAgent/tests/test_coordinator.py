@@ -1,7 +1,4 @@
-import logging
-
 import coordinator
-import util
 import utils_for_testing
 
 class TestCoordinator(utils_for_testing.TestCaseOntoMatch):

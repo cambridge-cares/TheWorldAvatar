@@ -11,9 +11,6 @@ from ontologyWrapper import Ontology
 
 class Agent():
 
-    def TODOstart(self, srcaddr, tgtaddr, add_knowledge=False):
-        srconto, tgtonto = load(self, srcaddr, tgtaddr, add_knowledge)
-
     def load(self, srcaddr, tgtaddr, add_knowledge=False, dump_ontology=False):
 
         logging.info('loading ontology for %s', srcaddr)

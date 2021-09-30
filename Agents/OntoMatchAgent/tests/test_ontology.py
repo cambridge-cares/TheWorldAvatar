@@ -1,5 +1,3 @@
-import unittest
-
 from owlready2 import get_ontology
 import rdflib
 
@@ -21,7 +19,7 @@ class TestOntology(utils_for_testing.TestCaseOntoMatch):
         locality = None
         year = None
         owner = None
-        for entity_pos, propvalues in onto.valueMap.items():
+        for _, propvalues in onto.valueMap.items():
             #print(entity_pos, propvalues)
             for propchain, value in propvalues:
                 if propchain[0] == 'address' and len(propchain) > 1:

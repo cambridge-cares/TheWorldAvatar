@@ -14,18 +14,18 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
 
     def test_fullpairiterator(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #it = blocking.FullPairIterator(src_onto, tgt_onto)
+        #iter = blocking.FullPairIterator(src_onto, tgt_onto)
         params = {'name': 'FullPairIterator'}
-        it = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
-        for _, _ in it:
+        for _, _ in iterator:
             count += 1
         self.assertEqual(count, len(src_onto.individualList) * len(tgt_onto.individualList))
-        self.assertEqual(len(it), count)
+        self.assertEqual(len(iterator), count)
 
     def test_tokenbasedpairiterator_max20(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #it = blocking.TokenBasedPairIterator(src_onto, tgt_onto,
+        #iter = blocking.TokenBasedPairIterator(src_onto, tgt_onto,
         #        min_token_length=3, max_token_occurrences_src=20, max_token_occurrences_tgt=20, reset_index=True)
         params = {
             'name': 'TokenBasedPairIterator',
@@ -35,12 +35,12 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
             'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
-        it = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
-        for _, _ in it:
+        for _, _ in iterator:
             count += 1
         self.assertEqual(count, 4704)
-        self.assertEqual(len(it), count)
+        self.assertEqual(len(iterator), count)
 
     def test_tokenbasedpairiterator_max30(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
@@ -54,9 +54,9 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
             'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
-        it = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
-        for _, _ in it:
+        for _, _ in iterator:
             count += 1
         self.assertEqual(count, 6972)
-        self.assertEqual(len(it), count)
+        self.assertEqual(len(iterator), count)
