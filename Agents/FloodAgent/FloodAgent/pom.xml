@@ -131,6 +131,7 @@
                             <!-- To use the dependencies copied in separate folder -->
                             <classpathPrefix>lib</classpathPrefix>
                             <!-- java -jar [jarname] will launch this class by default -->
+                            <!-- use java -jar -cp [jarname] [classname] to launch other classes manually -->
                             <mainClass>uk.ac.cam.cares.jps.agent.flood.LaunchScheduledUpdater</mainClass>
                         </manifest>
                     </archive>
