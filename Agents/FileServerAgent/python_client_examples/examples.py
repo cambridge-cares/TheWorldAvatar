@@ -65,6 +65,18 @@ with open(text_fpath,'rb') as file_obj:
         print("  ERROR: File upload failed with code %d " % response.status_code)
 
 
+# Test single file upload with nested sub-dir
+with open(text_fpath,'rb') as file_obj:
+    nested_subdir="%s/group1" % remote_subdir
+    print("\nUploading single file to nested subdir (%s)" % nested_subdir)
+    response = requests.post(upload_URL, auth=auth, headers= {'subDir': nested_subdir}, files={'file':file_obj})
+    if (response.status_code == status_codes.codes.OK):
+        for key in files.keys():
+            print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
+    else:
+        print("  ERROR: File upload failed with code %d " % response.status_code)
+
+
 # Test single file download
 print("\nRe-downloading file")
 response = requests.get(download_URL+expected_owl_remote_fpath, auth=auth)
@@ -87,6 +99,7 @@ if (response.status_code != status_codes.codes.bad_request):
     print("  ERROR: GET from upload URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
 else:
     print("  Rejected, as expected")
+
 
 # Try POST to download URL (should fail)
 print("\nAttempting POST to download URL")
