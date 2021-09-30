@@ -328,45 +328,49 @@ class Ontology():
         pl = []
         pset = []
         qstrBNode = """
-                    SELECT  ?a ?p WHERE {{
+                    SELECT  ?a ?p {} WHERE {{
                      ?a ?p ?s0.
                      {} {} {}.
                     }}"""
-        def traceOne(mg, s):
+        def traceOne(mg, s, pChainSoFar):
             qstr = """
             SELECT  ?a ?p WHERE {{
              ?a ?p <{}>
             }}"""
 
             re = list(mg.query(qstr.format(s)))
-            #todo:trace for all
             if len(re) is not 0 and re[0][0].n3().replace('<','').replace('>','') not in pset:
                 for res in re:
                     if res[0].n3().replace('<','').replace('>','') not in pset:
                         iri =res[0].n3().replace('<','').replace('>','')
                         p =self.getName(res[1].n3().replace('<','').replace('>',''))
                         pset.append(iri)
-                        pl.append((iri,p))
-                        traceOne(mg,iri)
+                        thispChain = pChainSoFar.copy()
+                        thispChain.append(p)
+                        pl.append((iri,thispChain))
+                        #Handle p chain
+                        traceOne(mg,iri, thispChain)
 
-        def traceUntilNotBNode(mg,p ,v):
-            re = list(mg.query(qstrBNode.format("?s0",p.n3(),v.n3())))
+        def traceUntilNotBNode(mg,pOne ,v):
+            re = list(mg.query(qstrBNode.format("","?s0",pOne.n3(),v.n3())))
+            #Assume only one level of blank node
             if len(re) is not 0 and type(re[0][0]) is not rdflib.term.BNode and  re[0][0].n3().replace('<','').replace('>','') not in pset:
                 for res in re:
                     if type(res[0]) is not rdflib.term.BNode :
                         iri =res[0].n3().replace('<','').replace('>','')
-                        p =self.getName(res[1].n3().replace('<','').replace('>',''))
+                        pZero =self.getName(res[1].n3().replace('<','').replace('>',''))
                         pset.append(iri)
-                        pl.append((iri,p))
-            else :
-                godownBlank(mg, p , v, 1)
+                        pl.append((iri,[pZero, self.getName(pOne)]))
+            else:#First level still blank, go down another
+                godownBlank(mg, pOne , v, 1)
 
-        def godownBlank(mg, p , v ,level):
-            bstr = ""
+        def godownBlank(mg, pOne , v ,level):
+            bstr,qstr = ("","")
             for idx in range(level):
                 bstr = bstr+"?s"+str(idx)+" ?p"+str(idx)+" ?s"+str(idx+1)+"."
+                qstr = qstr + " ?p"+str(idx)
             bstr = bstr+" ?s"+str(level)
-            re = list(mg.query(qstrBNode.format(bstr,p.n3(),v.n3())))
+            re = list(mg.query(qstrBNode.format(qstr, bstr, pOne.n3(), v.n3())))
             if level >= 5:
                 print("warning: deep level 5, could be lopping")
                 return
@@ -374,10 +378,12 @@ class Ontology():
                 for res in re:
                     if type(res[0]) is not rdflib.term.BNode:
                         iri =res[0].n3().replace('<','').replace('>','')
-                        p =self.getName(res[1].n3().replace('<','').replace('>',''))
+                        pChain = [self.getName(someP.n3().replace('<','').replace('>','')) for someP in res[1:]]
+                        print(pChain)
+                        pChain.append(self.getName(pOne))
                         pset.append(iri)
-                        pl.append((iri,p))
-            else:
+                        pl.append((iri,pChain))
+            else:#Found nothing, go down one level
                 godownBlank(mg,p,v,level+1)
 
 
@@ -389,7 +395,7 @@ class Ontology():
         if type(s) is rdflib.term.BNode:
             traceUntilNotBNode(g,p,v)
         else:
-            traceOne(g,siri)
+            traceOne(g,siri,[])
         return pl
 
     def getRDFSClasses(self,mg):
