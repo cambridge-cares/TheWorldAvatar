@@ -5,7 +5,9 @@ slug: marie
 
 <div class="intro-container three-quarter-width">
 	<div class="intro-left">
-		<img src="/user/images/marie/search-engine-large.jpg" class="header-image" alt="Search Engine" />
+		<video width="175" height="250" poster="/user/images/marie/marie-thumbnail.jpg" controls="controls">
+			<source src="/user/videos/animated-marie.mp4" type="video/mp4">
+		</video>
 	</div>
 	<div class="intro-center">
 		<h2>Marie</h2>

@@ -1,32 +1,23 @@
-from openbabel import openbabel
-from chemutils.ioutils import readFile, \
-                              writeFile, \
-                              fileExists, \
-                              verbosityBasedOutput
+import openbabel.openbabel as ob
+import chemutils.ioutils.ioutils as ioutils
 import re
 optTypesRegex = re.compile('(^-x|^-a|^-([^-ax])|^--)')
 
 def obConvert(inputMol, inputMolFormat, outputMolFormat, options=None):
-    if fileExists(inputMol): inputMol= readFile(inputMol)
-    obConversion = openbabel.OBConversion()
+    if ioutils.fileExists(inputMol): inputMol= ioutils.readFile(inputMol)
+    obConversion = ob.OBConversion()
     obConversion.SetInAndOutFormats(inputMolFormat, outputMolFormat)
 
     if options is not None:
-        addObConversionOptions(obConversion, options)
+        _addObConversionOptions(obConversion, options)
 
-    mol = openbabel.OBMol()
+    mol = ob.OBMol()
     obConversion.ReadString(mol, inputMol)
     mol = obConversion.WriteString(mol).rstrip()
     return mol
 
-def obConvertWrapper(inputMol, inputMolFormat, outputMolFormat, convOptions=None, outFile=None, silent=False):
-    if convOptions is not None: convOptions = convOptions.split(' ')
-    mol = obConvert(inputMol, inputMolFormat, outputMolFormat, convOptions)
-    verbosityBasedOutput(mol, silent, outFile)
-    return mol
-
-def addObConversionOptions(obConvObject, options):
-    def splitOptKeyValue(opt):
+def _addObConversionOptions(obConvObject, options):
+    def _splitOptKeyValue(opt):
         key = opt
         value = ''
         if '=' in opt: key, value = opt.split('=')
@@ -46,5 +37,5 @@ def addObConversionOptions(obConvObject, options):
                 for o in opt:
                     obConvObject.AddOption(o, obConvObject.OUTOPTIONS)
             else:
-                optKey, optValue = splitOptKeyValue(opt.replace('-',''))
+                optKey, optValue = _splitOptKeyValue(opt.replace('-',''))
                 obConvObject.AddOption(optKey, obConvObject.GENOPTIONS, optValue)

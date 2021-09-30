@@ -11,7 +11,7 @@ setup(
     long_description=open('README.md').read(),
     install_requires= ["docopt", "py4jps", "pubchempy", "entityrdfizer"],
     include_package_data=True,
-    entry_points={  # Optional
+    entry_points={
         'console_scripts': [
             'ocompchem=chemaboxwriters.ocompchem_driver:start',
             'ospecies=chemaboxwriters.ospecies_driver:start',

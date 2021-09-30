@@ -33,7 +33,7 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  * @author Michael Hillman
  */
 @Controller
-@WebServlet(urlPatterns = {"/email"})
+@WebServlet(urlPatterns = {"/send", "/status"})
 public class EmailAgent extends JPSAgent {
 
     /**
@@ -61,7 +61,7 @@ public class EmailAgent extends JPSAgent {
         LOGGER.error("This is a test ERROR message");
         LOGGER.fatal("This is a test FATAL message");
         System.out.println("This is a test SYSTEM.OUT message");
-        
+
         // Read the properties file
         try {
             EmailAgentConfiguration.readProperties();
@@ -94,22 +94,30 @@ public class EmailAgent extends JPSAgent {
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: " + datetime);
 
-        // Check if this is an email request or a ping to determine availability
-        if (!requestParams.isNull("ping")) {
-            return processPingRequest(request);
+        // Get the URL path
+        String url = request.getRequestURI();
+        url = url.substring(url.lastIndexOf("/"), url.length());
+        if (url.contains("?")) url = url.split("?")[0];
+
+        switch (url) {
+            case "/send":
+                // Check validity
+                boolean validInput = validateInput(requestParams);
+                boolean validSource = validateRequest(request);
+
+                if (validInput && validSource) {
+                    return processEmailRequest(requestParams, request);
+                } else {
+                    // Should already haev triggered a BadRequestException, but just in case
+                    LOGGER.warn("Bad request detected, throwing BadRequestException.");
+                    throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
+                }
+
+            case "/status":
+                return getStatus(request);
         }
 
-        // Check validity
-        boolean validInput = validateInput(requestParams);
-        boolean validSource = validateRequest(request);
-
-        if (validInput && validSource) {
-            return processEmailRequest(requestParams, request);
-        } else {
-            // Should already haev triggered a BadRequestException, but just in case
-            LOGGER.warn("Bad request detected, throwing BadRequestException.");
-            throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
-        }
+        throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
     }
 
     /**
@@ -119,7 +127,7 @@ public class EmailAgent extends JPSAgent {
      *
      * @return result JSON
      */
-    private JSONObject processPingRequest(HttpServletRequest request) {
+    private JSONObject getStatus(HttpServletRequest request) {
         LOGGER.info("Determined as availability request, checking...");
 
         // Is it from a valid source

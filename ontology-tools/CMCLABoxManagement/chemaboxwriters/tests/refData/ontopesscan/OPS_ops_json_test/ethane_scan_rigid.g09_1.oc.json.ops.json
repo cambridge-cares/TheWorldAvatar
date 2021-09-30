@@ -6,6 +6,7 @@
         "Atom_11-11-111_C1",
         "Atom_11-11-111_C2"
     ],
+	"ScanAtomIDs": "1 2",
     "ScanCoordinateType": "Distance coordinate",
     "ScanCoordinateUnit": "Angstrom",
     "EntryUUID": "OPStestID-111-111-11",
