@@ -25,8 +25,8 @@ import org.apache.logging.log4j.Logger;
 @MultipartConfig(
 fileSizeThreshold = FileServer.ONE_MB_IN_B,
 location = "/app/fs_root/",
-maxFileSize = FileServer.TEN_MB_IN_B,
-maxRequestSize = FileServer.ONE_HUNDRED_MB_IN_B
+maxFileSize = FileServer.ONE_HUNDRED_MB_IN_B,
+maxRequestSize = FileServer.ONE_GB_IN_B
 )
 public class FileServer extends HttpServlet {
 
@@ -36,8 +36,8 @@ public class FileServer extends HttpServlet {
 
     // Some constants to set size limits
     static final int ONE_MB_IN_B = 1024 * 1024;
-    static final int TEN_MB_IN_B = 10 * ONE_MB_IN_B;
     static final int ONE_HUNDRED_MB_IN_B = 100 * ONE_MB_IN_B;
+    static final int ONE_GB_IN_B = 1000 * ONE_MB_IN_B;
 
     private static final Logger LOGGER = LogManager.getLogger(FileServer.class);
 
