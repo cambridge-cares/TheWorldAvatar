@@ -210,7 +210,8 @@ public class FloodSparql {
 		
 		ModifyQuery modify = Queries.MODIFY();
 		modify.insert(stations.has(hasTime,instant));
-		modify.insert(instant.isA(Instant).andHas(inXSDDate, ""));
+		// set an arbitrary old date (10 years ago)
+		modify.insert(instant.isA(Instant).andHas(inXSDDate, Rdf.literalOfType(LocalDate.now().minusYears(10).toString(), XSD.DATE)));
 		modify.prefix(p_time);
 		
 		storeClient.executeUpdate(modify.getQueryString());
