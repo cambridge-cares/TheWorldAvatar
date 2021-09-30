@@ -2,6 +2,7 @@
    To start the agent on that port, run 'docker-compose up' in the directory above this one.
 """
 
+import filecmp
 import os.path
 import requests
 from requests import status_codes
@@ -15,15 +16,24 @@ download_URL = server_URL+'download/'
 # Default credentials for authentication. If you supply a different password via a secret, modify 'fs_pass' on the next line accordingly
 auth=('fs_user', 'fs_pass')
 
+# Paths to some dummy data files
 base_dir   = os.path.join(os.path.dirname(__file__),"data")
 owl_fpath  = os.path.join(base_dir,'dummy.owl')
 log_fpath  = os.path.join(base_dir,'dummy.log')
 text_fpath = os.path.join(base_dir,'dummy.txt')
 
+# Remote sub-directory used for some uploads
+remote_subdir = 'my_namespace'
+
+# Paths used to download a file and compare it to the original that was uploaded
+expected_owl_remote_fpath = "%s/%s" % (remote_subdir,os.path.basename(owl_fpath))
+downloaded_owl_fpath  = os.path.join(base_dir,'downloaded_dummy.owl')
+
+
 # Test multi-file upload
 with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(text_fpath,'rb') as file_obj3:
     # Set the subdirectory in which to store files (optional header)
-    headers= {'subDir': 'my_namespace'}
+    headers= {'subDir': remote_subdir}
     print("Uploading multiple files to subdir [%s]" % headers['subDir'])
 
     # Aggregrate file objects in a dict
@@ -37,7 +47,7 @@ with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(
         for key in files.keys():
             print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
     else:
-        print("  File upload failed with code %d " % response.status_code)
+        print("  ERROR: File upload failed with code %d " % response.status_code)
 
 
 # Test single file upload
@@ -49,14 +59,29 @@ with open(text_fpath,'rb') as file_obj:
         for key in files.keys():
             print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
     else:
-        print("  File upload failed with code %d " % response.status_code)
+        print("  ERROR: File upload failed with code %d " % response.status_code)
+
+
+# Test single file download
+print("\nRe-downloading file")
+response = requests.get(download_URL+expected_owl_remote_fpath, auth=auth)
+if (response.status_code == status_codes.codes.OK):
+    with open(downloaded_owl_fpath, 'wb') as file_obj:
+        for chunk in response.iter_content(chunk_size=128):
+            file_obj.write(chunk)
+    if filecmp.cmp(owl_fpath,downloaded_owl_fpath):
+        print("  Downloaded file matches original")
+    else:
+        print("  ERROR: Downloaded file differs from original")
+else:
+    print("  ERROR: File download failed with code %d " % response.status_code)
 
 
 # Try GET from upload URL (should fail)
 print("\nAttempting GET from upload URL")
 response = requests.get(upload_URL, auth=auth)
 if (response.status_code != status_codes.codes.bad_request):
-    print("  GET from upload URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+    print("  ERROR: GET from upload URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
 else:
     print("  Rejected, as expected")
 
@@ -65,6 +90,6 @@ print("\nAttempting POST to download URL")
 fname="my_namespace/dummy.owl"
 response = requests.post(download_URL+fname, auth=auth)
 if (response.status_code != status_codes.codes.bad_request):
-    print("  POST to download URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+    print("  ERROR: POST to download URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
 else:
     print("  Rejected, as expected")
