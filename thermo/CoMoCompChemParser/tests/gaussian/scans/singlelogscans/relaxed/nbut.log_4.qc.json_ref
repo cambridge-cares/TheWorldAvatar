@@ -141,5 +141,6 @@
         "6",
         "9"
     ],
-    "Scan Points": -89.99645
+    "Scan Points": -89.99645,
+    "Log file name": "nbut.log"
 }

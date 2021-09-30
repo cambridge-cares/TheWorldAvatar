@@ -109,12 +109,6 @@ function resetResults() {
 	
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
-
-	let googleResults = document.getElementById("google-results");
-	googleResults.innerHTML = html;
-
-	let wolframResults = document.getElementById("wolfram-results");
-	wolframResults.innerHTML = html;
 }
 
 
@@ -154,16 +148,10 @@ function askQuestion() {
 
 	var promises = [];
 	
-	asking = 3;
+	asking = 1;
 	// Make the request for the world avatar
 	makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
 
-	// Make the request for google
-	makeRequest(question, "google", "html", processGoogleResults, promises);
-
-	// Make the request for wolfram
-	makeRequest(question, "wolfram", "html", processWolframResults, promises);
-	
 	// Reset the search button when all requests are complete
 	$.when.apply($, promises).then(function() {
 		// Revert button to search icon
@@ -243,43 +231,6 @@ function processChatbotResults(rawResults) {
 	// Find the div container to add results to
 	let resultsContainer = document.getElementById("chatbot-results");
 	resultsContainer.innerHTML = chatbotResults;
-}
-
-
-/*
- Process the results from a Google Knowledge Graph request.
-*/
-function processGoogleResults(rawResults) {
-	// Parse the results
-	var googleResults = null;
-
-	if (rawResults == null || rawResults == "" || rawResults.includes("failed")) {
-		googleResults = "<span style=\"color: red;padding-left: 15px;\">The Google Knowledge Graph failed to provide an answer.</span>";
-	} else {
-		googleResults = rawResults;
-	}
-
-	// Find the div container to add results to
-	let resultsContainer = document.getElementById("google-results");
-	resultsContainer.innerHTML = googleResults;
-}
-
-/*
- Process the results from a Wolfram Alpha request.
-*/
-function processWolframResults(rawResults) {
-	// Parse the results
-	var wolframResults = null;
-
-	if (rawResults == null || rawResults == "" || rawResults.includes("failed")) {
-		wolframResults = "<span style=\"color: red;padding-left: 15px;\">Wolfram Alpha failed to provide an answer.</span>";
-	} else {
-		wolframResults = rawResults;
-	}
-
-	// Find the div container to add results to
-	let resultsContainer = document.getElementById("wolfram-results");
-	resultsContainer.innerHTML = wolframResults;
 }
 
 /*

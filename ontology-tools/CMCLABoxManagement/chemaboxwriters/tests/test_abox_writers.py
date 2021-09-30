@@ -1,9 +1,10 @@
 from chemaboxwriters.ontocompchem.writeabox import write_abox as write_oc_abox
 from chemaboxwriters.ontospecies.writeabox import write_abox as write_os_abox
 from chemaboxwriters.ontopesscan.writeabox import write_abox as write_ops_abox
+from chemaboxwriters.ontomops.writeabox import write_abox as write_om_abox
 from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.commonfunc import get_file_ext, get_inStage
-from chemutils.ioutils import readFile, fileExists
+from chemutils.ioutils.ioutils import readFile, fileExists
 import pytest
 import shutil
 import re
@@ -15,6 +16,7 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 OCOMPCHEM_REF_DIR = os.path.join(THIS_DIR,'refData','ontocompchem')
 OSPECIES_REF_DIR = os.path.join(THIS_DIR,'refData','ontospecies')
 OPSSCAN_REF_DIR = os.path.join(THIS_DIR,'refData','ontopesscan')
+OMOPS_REF_DIR = os.path.join(THIS_DIR,'refData','ontomops')
 
 def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
 
@@ -77,7 +79,7 @@ def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
 ]
 )
 def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -86,14 +88,15 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'calc_id':'testID-111-111-111'}}
+        'QC_JSON_TO_OC_JSON':{'random_id':'testID-111-111-111'}}
     pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
     fileExts = ['.oc.json', '.oc.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='oc',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='oc',fileExts=fileExts)
 
     print('========================================================')
     print()
@@ -110,7 +113,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -119,7 +122,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
-        'QC_JSON_TO_OS_JSON':{'calc_id':'testID-111-111-111'}}
+        'QC_JSON_TO_OS_JSON':{'random_id':'testID-111-111-111'}}
 
     pipeline = write_os_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
@@ -127,7 +130,8 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult,regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='os',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='os',fileExts=fileExts)
 
     print('========================================================')
     print()
@@ -143,7 +147,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, regenerateAllResults=False):
+           regenerateResult, clean_tests, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -157,12 +161,12 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                 {'os_iris': 'Species_11-111-111',
                  'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
                  'oc_atoms_pos': '1,2',
-                 'calc_id': 'OPStestID-111-111-11'
+                 'random_id': 'OPStestID-111-111-11'
                 }
             }
 
     OC_handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'calc_id':'OCtestID-111-111-111'}}
+        'QC_JSON_TO_OC_JSON':{'random_id':'OCtestID-111-111-111'}}
     pipeline = write_ops_abox(inp_file_or_dir, inp_file_type,
                OPS_handlerFuncKwargs=OPS_handlerFuncKwargs,
                OC_handlerFuncKwargs=OC_handlerFuncKwargs)
@@ -171,7 +175,40 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='ops',fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='ops',fileExts=fileExts)
+
+    print('========================================================')
+    print()
+    print()
+
+
+@pytest.mark.parametrize("inp_file_or_dir, inp_file_type,  \
+                          regenerateResult",
+[
+('OM_om_json_test', 'ominp_json', False),
+]
+)
+def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
+           regenerateResult, clean_tests, regenerateAllResults=False):
+    print('========================================================')
+    print('TEST INPUT FILE: ', inp_file_or_dir)
+    print('TEST INPUT FILE TYPE: ', inp_file_type)
+    print()
+    print()
+
+    inp_file_or_dir = os.path.join(OMOPS_REF_DIR,inp_file_or_dir)
+    handlerFuncKwargs={
+        'OMINP_JSON_TO_OM_JSON':{'random_id':'testID-111-111-111'}}
+
+    pipeline = write_om_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
+
+    fileExts = ['.om.json', '.om.csv']
+    compare_results(pipeline,regenerateResult,regenerateAllResults,
+                    fileExts=fileExts)
+
+    if clean_tests:
+        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='om',fileExts=fileExts)
 
     print('========================================================')
     print()

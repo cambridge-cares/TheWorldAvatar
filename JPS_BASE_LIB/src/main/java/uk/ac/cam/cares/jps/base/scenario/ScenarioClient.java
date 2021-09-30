@@ -10,6 +10,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 
 public class ScenarioClient {
 	
@@ -80,7 +81,7 @@ public class ScenarioClient {
 		
 		//throw new UnsupportedOperationException();
 		
-		Object[] a = AccessAgentCaller.createRequestUrl(null, resourceUrl, false);
+		Object[] a = createRequestUrl(null, resourceUrl, false);
 		String requestUrl = (String) a[0];
 		JSONObject joparams = (JSONObject) a[1];
 		HttpGet get = Http.get(requestUrl, null, joparams);
@@ -108,4 +109,58 @@ public class ScenarioClient {
 		String url = scenarioUrl + "/query";
 		return AgentCaller.executeGetWithURLAndJSON(url, json);
 	}
+	
+	public static Object[] createRequestUrl(String datasetUrl, String targetUrl, boolean targetHasSparqlAbility) {
+		
+		// the same cases as described in method query have to be distinguished
+		
+		String scenarioUrl = JPSContext.getScenarioUrl();			
+		String requestUrl = null;
+		
+		if ((datasetUrl != null) && datasetUrl.isEmpty()) {
+			datasetUrl = null;
+		}
+		
+		// case 3 or case 2 or case 1a
+		if ((scenarioUrl != null) || (datasetUrl != null) || targetHasSparqlAbility)  {	
+		
+			JSONObject joparams = null;
+		
+			// case 3
+			if (scenarioUrl != null)  {				
+				// redirect the request to the scenario agent
+				// the scenario agent has to be called even for get / query in combination with copy-on-write since in previous calls
+				// another agent might have updated the file within the same scenario 
+				joparams = new JSONObject();
+				String resource = AccessAgentCaller.cutHashFragment(targetUrl);
+				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
+				if (datasetUrl != null) {
+					if (targetUrl == null) {
+						joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
+					} else {
+						joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+					}
+				}
+				requestUrl = scenarioUrl;
+			// case 2
+			} else if (datasetUrl != null) {
+				joparams = new JSONObject();
+				String resource = AccessAgentCaller.cutHashFragment(targetUrl);
+				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
+				requestUrl = datasetUrl;
+			// case 1a
+			} else {
+				requestUrl = AccessAgentCaller.cutHashFragment(targetUrl);
+			}
+		
+			//requestUrl = ScenarioHelper.cutHash(requestUrl);
+			requestUrl = ResourcePathConverter.convert(requestUrl);
+		
+			Object[] a = new Object[] {requestUrl, joparams};			
+			return a;
+		} 
+		
+		// case 1b
+		return null;
+	}	
 }

@@ -3,4 +3,5 @@ channels:
 dependencies:
   - pip
   - pip:
+    - pytest
     - -e .

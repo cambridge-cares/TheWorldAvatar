@@ -413,7 +413,7 @@ public class RemoteStoreClient implements StoreClientInterface {
 		if(queryEndpoint != null) {
 			builder = RDFConnectionRemote.create().destination(queryEndpoint);
 		}else {
-			throw new JPSRuntimeException("RemoteKnowledgeBaseClient: update endpoint not specified.");
+			throw new JPSRuntimeException("RemoteStoreClient: update endpoint not specified.");
 		}
 		
 		return builder.build();

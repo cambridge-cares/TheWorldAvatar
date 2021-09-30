@@ -2,6 +2,7 @@ from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.base import NotSupportedStage
 from chemaboxwriters.common.commonvars import CC_LOG_EXT
 from chemutils.ioutils.ioutils import getFilesWithExtensions
+from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_csv_string_into_rdf
 import textwrap
 
 def get_inStage(inpFileType):
@@ -13,8 +14,8 @@ def get_inStage(inpFileType):
 
 def get_file_ext(inStage,fileExtPrefix,qcLogExt=None):
     fileExt=[]
-    if qcLogExt is None: qcLogExt=CC_LOG_EXT
     if inStage == aboxStages.QC_LOG:
+        if qcLogExt is None: qcLogExt=CC_LOG_EXT
         fileExt = qcLogExt.split(',')
     elif inStage == aboxStages.CSV or inStage == aboxStages.OWL:
         fileExt = ['.'+fileExtPrefix+'.'+inStage.name.lower()]
@@ -31,3 +32,6 @@ def get_stage_files(fileOrDir,inStage,fileExtPrefix,qcLogExt):
             Error: Provided directory or file path is either empty or does not
                    contain the required '{inStage.name.lower()}' files."""))
     return files
+
+def csv2rdf_wrapper(csv_string):
+    return [convert_csv_string_into_rdf(csv_string)]
