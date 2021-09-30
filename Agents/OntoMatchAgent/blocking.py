@@ -5,6 +5,7 @@ of two ontologies.
 
 import collections
 import itertools
+import logging
 import typing
 
 import pandas as pd
@@ -54,7 +55,9 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
     candidate_matching_pairs = None
 
     def __init__(self, src_onto:Ontology, tgt_onto:Ontology,
-                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20, reset_index=False):
+                min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20,
+                blocking_properties: typing.List[str] =None, reset_index:bool =False):
+
         """
         Init a token-based iterator.
 
@@ -64,18 +67,24 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             min_token_length (int, optional): minimum length of a token to be considered for candidate matching pairs. Defaults to 3.
             max_token_occurrences_src (int, optional): discard the token if the number of source individuals containing the token is larger than this value. Defaults to 20.
             max_token_occurrences_tgt (int, optional): discard the token if the number of target individuals containing the token is larger than this value. Defaults to 20.
+            blocking_properties (typing.List[str], optional): the names of the properties which string values are tokenized. If None all properties with string values are used. Defaults to None.
+            reset_index (bool, optional): create the index only once if False else create it from scratch. Defaults to False.
         """
+
+
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
+            logging.info('creating inverted index ...')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
-            dframe = self._create_index(src_onto, tgt_onto)
+            dframe = self._create_index(src_onto, tgt_onto, blocking_properties)
             # discard tokens that are too small or too frequent
             mask = (dframe['len'] >= min_token_length) & (dframe['count_1'] <= max_token_occurrences_src) & (dframe['count_2'] <= max_token_occurrences_tgt)
             dframe = dframe[mask]
-            print('number of tokens in inverted index=', len(dframe))
+            logging.info('finished creating index')
+            logging.info('number of tokens in inverted index=%s', len(dframe))
             TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(dframe)
-            print('number of candidate matching pairs=', len(TokenBasedPairIterator.candidate_matching_pairs))
+            logging.info('number of candidate matching pairs=%s', len(TokenBasedPairIterator.candidate_matching_pairs))
 
     def __iter__(self):
         return iter(TokenBasedPairIterator.candidate_matching_pairs)
@@ -114,69 +123,33 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                     index[key][column_count] = length
 
         else:
-            print('column not found:', column, )
+            logging.warning('column not found:%s', column)
 
         df_index = pd.DataFrame.from_dict(index, orient='index')
 
         return index, df_index
 
-
-    def _create_dataframe_from_ontology(self, onto):
-        rows = []
-
-        print('number of entities=', len(onto.valueMap.items()))
-
-        for props in tqdm(onto.valueMap.items()):
-
-            row = {}
-
-            # get the position of the subject
-            pos = props[0]
-            subj = onto.individualNames[pos]
-            first = subj.find('_')
-            last = subj.rfind('_')
-            idx = subj[:first]
-            subj = subj[first+1:last]
-
-            row['pos'] = pos
-            row['idx'] = idx
-            row['name'] = subj
-
-            # predicate object tuples
-            p_o_tuples = props[1]
-            for p, o in p_o_tuples:
-                if isinstance(o, rdflib.Literal):
-                    row[p] = o.toPython()
-                else:
-                    raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
-
-            rows.append(row)
-
-        dframe = pd.DataFrame(rows)
-        dframe.set_index(['idx'], inplace=True)
-        print('number of rows=', len(dframe))
-        print('columns=', dframe.columns)
-        return dframe
-
-    def _create_index(self, src_onto, tgt_onto):
+    def _create_index(self, src_onto, tgt_onto, blocking_properties):
 
         index = {}
 
         # create token index for source ontology
-        dframe = self._create_dataframe_from_ontology(src_onto)
-        props = ['name', 'isOwnedBy']
-        for prop in props:
+        dframe = create_dataframe_from_ontology(src_onto)
+        if blocking_properties is None:
+            blocking_properties = dframe.columns
+        for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
-            print('total number of tokens after processing property ', prop, ' is ', len(df_index))
+            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
 
         # add tokens for target ontology
-        dframe = self._create_dataframe_from_ontology(tgt_onto)
-        props = ['name', 'isOwnedBy']
-        for prop in props:
+        dframe = create_dataframe_from_ontology(tgt_onto)
+        if blocking_properties is None:
+            blocking_properties = dframe.columns
+        for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
-            print('total number of tokens after processing property ', prop, ' is ', len(df_index))
+            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
 
-        print(df_index.columns)
+        logging.info('columns=%s', df_index.columns)
 
         return df_index
 
@@ -192,7 +165,6 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             links_2 = row['links_2']
 
             if isinstance(links_1, set) and isinstance(links_2, set):
-                #print(token)
                 for entry in links_1:
                     dict_pairs = pairs.get(entry)
                     if dict_pairs is None:
@@ -228,3 +200,40 @@ def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
     name = params_copy.pop('name')
     it_instance = globals()[name](src_onto, tgt_onto, **params_copy)
     return it_instance
+
+def create_dataframe_from_ontology(onto):
+    rows = []
+
+    logging.info('number of entities=%s', len(onto.valueMap.items()))
+
+    for props in tqdm(onto.valueMap.items()):
+
+        row = {}
+
+        # get the position of the subject
+        pos = props[0]
+        subj = onto.individualNames[pos]
+        first = subj.find('_')
+        last = subj.rfind('_')
+        idx = subj[:first]
+        subj = subj[first+1:last]
+
+        row['pos'] = pos
+        row['idx'] = idx
+        row['name'] = subj
+
+        # predicate object tuples
+        p_o_tuples = props[1]
+        for p, o in p_o_tuples:
+            if isinstance(o, rdflib.Literal):
+                row[p] = o.toPython()
+            else:
+                raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
+
+        rows.append(row)
+
+    dframe = pd.DataFrame(rows)
+    dframe.set_index(['idx'], inplace=True)
+    logging.info('number of rows=%s', len(dframe))
+    logging.info('columns=%s', dframe.columns)
+    return dframe

@@ -3,7 +3,7 @@ import unittest
 
 import blocking
 
-class TestModels(unittest.TestCase):
+class TestBlocking(unittest.TestCase):
 
     def load_kwl_gppd_ontologies(self):
         with open('./data/kwl.pkl','rb') as file:
@@ -20,8 +20,8 @@ class TestModels(unittest.TestCase):
         count = 0
         for _, _ in it:
             count += 1
-        assert count == len(src_onto.individualList) * len(tgt_onto.individualList)
-        assert len(it) == count
+        self.assertEqual(count, len(src_onto.individualList) * len(tgt_onto.individualList))
+        self.assertEqual(len(it), count)
 
     def test_tokenbasedpairiterator_max20(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
@@ -32,14 +32,15 @@ class TestModels(unittest.TestCase):
             'min_token_length': 3,
             'max_token_occurrences_src': 20,
             'max_token_occurrences_tgt': 20,
+            'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
         it = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
         for _, _ in it:
             count += 1
-        assert count == 4704
-        assert len(it) == count
+        self.assertEqual(count, 4704)
+        self.assertEqual(len(it), count)
 
     def test_tokenbasedpairiterator_max30(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
@@ -50,11 +51,12 @@ class TestModels(unittest.TestCase):
             'min_token_length': 3,
             'max_token_occurrences_src': 30,
             'max_token_occurrences_tgt': 30,
+            'blocking_properties': ['name', 'isOwnedBy'],
             'reset_index': True
         }
         it = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
         for _, _ in it:
             count += 1
-        assert count == 6972
-        assert len(it) == count
+        self.assertEqual(count, 6972)
+        self.assertEqual(len(it), count)

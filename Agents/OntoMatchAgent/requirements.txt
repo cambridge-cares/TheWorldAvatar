@@ -11,3 +11,4 @@ scipy==1.7.1
 pathos==0.2.3
 pandas==1.2.4
 tqdm==4.49.0
+pyyaml==5.3.1
