@@ -1,5 +1,8 @@
 """This script expects an instance of the FileServerAgent to be running locally on port 58090.
    To start the agent on that port, run 'docker-compose up' in the directory above this one.
+
+   N.B. These examples are intended to illustrate use of the server via one particular
+   (Python-based) client and shouldn't be treated as unit tests.
 """
 
 import filecmp
