@@ -46,4 +46,4 @@ services:
   # Weather Agent
   weather-agent:
     ports:
-      - "48085:8080"
+      - "49085:8080"
