@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.fileserver;
+package com.cmclinnovations.fileserver;
 
 import java.io.File;
 import java.io.IOException;
