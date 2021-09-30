@@ -8,7 +8,9 @@ from requests import status_codes
 
 
 # Port must match the one specified in docker-compose.yml
-url = 'http://localhost:58090/FileServerAgent/upload'
+server_URL = 'http://localhost:58090/FileServerAgent/'
+upload_URL = server_URL+'upload'
+download_URL = server_URL+'download/'
 
 base_dir   = os.path.join(os.path.dirname(__file__),"data")
 owl_fpath  = os.path.join(base_dir,'dummy.owl')
@@ -26,7 +28,7 @@ with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(
     files = {'file1': file_obj1,'file2': file_obj2,'file3': file_obj3}
 
     # Post request
-    response = requests.post(url, headers=headers, files=files)
+    response = requests.post(upload_URL, headers=headers, files=files)
     # Extract actual filenames from the response
     if (response.status_code == status_codes.codes.OK):
         for key in files.keys():
@@ -39,9 +41,28 @@ with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(
 with open(text_fpath,'rb') as file_obj:
     print("\nUploading single file without a subdir")
     files={'file':file_obj}
-    response = requests.post(url, files=files)
+    response = requests.post(upload_URL, files=files)
     if (response.status_code == status_codes.codes.OK):
         for key in files.keys():
             print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
     else:
         print("File upload failed with code %d " % response.status_code)
+
+
+
+# Try GET from upload URL (should fail)
+print("\nAttempting GET from upload URL")
+response = requests.get(upload_URL)
+if (response.status_code != status_codes.codes.bad_request):
+    print("  GET from upload URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+else:
+    print("  Rejected, as expected")
+
+# Try POST to download URL (should fail)
+print("\nAttempting POST to download URL")
+fname="my_namespace/dummy.owl"
+response = requests.post(download_URL+fname)
+if (response.status_code != status_codes.codes.bad_request):
+    print("  POST to download URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+else:
+    print("  Rejected, as expected")

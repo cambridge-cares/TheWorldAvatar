@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.fileserver;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -20,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Owen Parry {@literal <oparry@cmclinnovations.com>}
  */
-@WebServlet(name = "FileUploadServlet", urlPatterns = {"/upload"})
+@WebServlet(name = "FileUploadServlet", urlPatterns = {FileUploadServlet.DOWNLOAD_URL_PATTERN, FileUploadServlet.UPLOAD_URL_PATTERN})
 @MultipartConfig(
 fileSizeThreshold = FileUploadServlet.ONE_MB_IN_B,
 location = "/app/fs_root/",
@@ -28,6 +29,10 @@ maxFileSize = FileUploadServlet.TEN_MB_IN_B,
 maxRequestSize = FileUploadServlet.ONE_HUNDRED_MB_IN_B
 )
 public class FileUploadServlet extends HttpServlet {
+
+    // URL Patterns
+    static final String DOWNLOAD_URL_PATTERN = "/download/*";
+    static final String UPLOAD_URL_PATTERN = "/upload";
 
     // Some constants to set size limits
     static final int ONE_MB_IN_B = 1024 * 1024;
@@ -86,7 +91,44 @@ public class FileUploadServlet extends HttpServlet {
     }
 
     @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        // Reject GET requests to upload URL
+        String servletPath = request.getServletPath();
+        if (servletPath.contentEquals(UPLOAD_URL_PATTERN)) {
+            LOGGER.error("Rejecting GET request to " + UPLOAD_URL_PATTERN);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Extract the path following the servlet URL, minus the leading slash
+        String fPath = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
+
+        LOGGER.info("Received a request for file " + fPath);
+        File file = new File(fPath);
+        if (file.exists()) {
+            response.setHeader("Content-Type", getServletContext().getMimeType(fPath));
+            response.setHeader("Content-Length", String.valueOf(file.length()));
+            response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
+            Files.copy(file.toPath(), response.getOutputStream());
+        } else {
+            LOGGER.error("No file found at " + fPath);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        // Reject POST requests to download URL
+        String servletPath = request.getServletPath();
+        final String downloadPath = DOWNLOAD_URL_PATTERN.substring(0, servletPath.length());
+        if (servletPath.contentEquals(downloadPath)) {
+            LOGGER.error("Rejecting POST request to " + downloadPath);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         // Extract subdirectory from header (null if none was supplied)
         String subDir = request.getHeader("subDir");
 
