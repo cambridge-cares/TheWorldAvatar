@@ -28,9 +28,14 @@ WORKDIR /app
 
 COPY --from=builder /root/build/output/FileServerAgent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
+# Overwrite tomcat-users to set up a role for authentication
+COPY ./docker/tomcat/conf/tomcat-users.xml /usr/local/tomcat/conf/
+
 # Create a directory which will act as the file server root, to be mounted to a voume
 WORKDIR /app/fs_root
 
-# Start the Tomcat server
-ENTRYPOINT ["catalina.sh", "run"]
+# Copy-in entrypoint script
+COPY ./docker/entrypoint.sh /app/
+
+ENTRYPOINT ["/app/entrypoint.sh"]
 #==================================================================================================
