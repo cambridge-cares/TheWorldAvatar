@@ -23,7 +23,7 @@ Set-up (in development mode)
   This installs all requirements from requirements.txt and the Python package itself
   
 2) Activate virtual environment
-  $ ukgasflows_ven\Scripts\activate.bat
+  $ ukgasflows_venv\Scripts\activate.bat
   
 3) Update jps-base-lib (to version including TimeSeriesClient) using in-built py4jps resource package manager
   3.1) Build latest JPS_BASE_LIB locally

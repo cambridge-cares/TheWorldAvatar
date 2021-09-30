@@ -79,27 +79,11 @@ def setKGEndpoints(filepath):
              filepath - absolute file path to properties file.
     """
 
-    # Define global scope for global variables
-    global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT
-
-    # Check for the KG_LOCATION environment variable, using local fallback
-    kgRoot = os.getenv('KG_LOCATION', FALLBACK_KG)
-
-    # Construct full URLs for SPARQL endpoints
-    if kgRoot.endswith("/"):
-        QUERY_ENDPOINT = kgRoot + "namespace/" + NAMESPACE + "/sparql"
-        UPDATE_ENDPOINT = QUERY_ENDPOINT
-    else:
-        QUERY_ENDPOINT = kgRoot + "/namespace/" + NAMESPACE + "/sparql"
-        UPDATE_ENDPOINT = QUERY_ENDPOINT
-
-    # Write full SPARQL endpoints to properties file as required for Java TimeSeriesClient
-    # Read properties file
     props = ConfigObj(filepath)
-    # Write SPARQL endpoints to properties file (overwrite potentially existing entries)
-    props['sparql.query.endpoint'] = QUERY_ENDPOINT
-    props['sparql.update.endpoint'] = UPDATE_ENDPOINT
-    props.write()
+    global QUERY_ENDPOINT, UPDATE_ENDPOINT
+
+    QUERY_ENDPOINT = props['sparql.query.endpoint']
+    UPDATE_ENDPOINT = props['sparql.update.endpoint']
 
 
 def create_sparql_prefix(abbreviation):
@@ -151,7 +135,9 @@ def get_instantiated_terminals(endpoint):
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
     # Initialise remote KG client with only query endpoint specified
+    print("Getting instantiated terminals from endpoint at:", endpoint)
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+	
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('rdf') + \
@@ -159,7 +145,9 @@ def get_instantiated_terminals(endpoint):
             'SELECT ?' + var1 + ' ?' + var2 + ' ' \
             'WHERE { ?' + var1 + ' rdf:type comp:GasTerminal; \
                                    rdfs:label ?' + var2 + '. }'
+
     response = KGClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -189,12 +177,15 @@ def get_instantiated_gas_amounts(endpoint):
 
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('rdf') + \
             'SELECT ?a ' \
             'WHERE { ?a rdf:type comp:IntakenGas. }'
+
     response = KGClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -222,12 +213,15 @@ def get_instantiated_quantities(endpoint):
 
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
             'SELECT ?a ' \
             'WHERE { ?a rdf:type om:VolumetricFlowRate. }'
+
     response = KGClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -254,20 +248,49 @@ def get_instantiated_measurements(endpoint):
     jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
 
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
-    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    kgClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
+    # Get the measurement IRIs in chunks
+    iriList = list()
+    get_measurements_chunk(kgClient, 0, iriList)
+    print("Number of instantiated measurements is", len(iriList))
+    return iriList
+
+
+def get_measurements_chunk(kgClient, offset, iriList):
+    """
+        Recursively retrieves IRIs of all instantiated Measurements in the knowledge graph,
+        in chunks of 250,000 results.
+
+        Arguments:
+            kgClient - KGClient instance.
+            offset - current SPARQL offset.
+            iriList - list of final IRIs to add to.
+    """
+    print("Getting 250,000 more measurements, offset is", offset)
+
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
             'SELECT ?a ' \
-            'WHERE { ?a rdf:type om:Measure. }'
-    response = KGClient.execute(query)
+            'WHERE { ?a rdf:type om:Measure. }' \
+            'OFFSET ' + str(offset) + ' LIMIT 250000'
+
+    # Run the query
+    response = kgClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
     # Extract list of IRI Strings from query results dictionary
     res = [list(r.values())[0] for r in response]
+    iriList.extend(res)
 
-    return res
+    # Recurse as needed    
+    if(len(res) == 250000):
+        print("May not have all measurements, running next chunk...")
+        get_measurements_chunk(kgClient, offset + 250000, iriList)
+    else:
+        print("Have all the instantiated measurements now!")
 
 
 def check_timeseries_instantiation(endpoint, terminalIRI):
@@ -282,6 +305,7 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
             True - if gas terminal is associated with a time series via the specified path.
             False - otherwise.
     """
+    print("Checking for pre-instantiated timeseries for terminal:", terminalIRI)
 
     # Create a JVM module view and use it to import the required java classes
     jpsBaseLib_view = jpsBaseLibGW.createModuleView()
@@ -289,6 +313,7 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
 
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('om') + \
@@ -301,8 +326,10 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
 
     # Return True if any TimeSeries is associated with gas terminal via specified property path
     if len(response) > 0:
+        print("Instantiated time series detected!")
         return True
     else:
+        print("No instantiated timeseries.")
         return False
 
 
@@ -327,13 +354,16 @@ def get_measurementIRI(endpoint, terminalIRI):
 
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('om') + \
             create_sparql_prefix('ts') + \
             'SELECT ?' + var + ' '\
             'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue ?' + var + '. }'
+
     response = KGClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
@@ -364,6 +394,7 @@ def get_time_format(endpoint, terminalIRI):
 
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('om') + \
@@ -372,6 +403,7 @@ def get_time_format(endpoint, terminalIRI):
             'WHERE { <' + terminalIRI + '> comp:hasTaken/^om:hasPhenomenon/om:hasValue/' \
                                           'ts:hasTimeSeries/ts:hasTimeUnit ?' + var + '. }'
     response = KGClient.execute(query)
+
     # Convert JSONArray String back to list
     response = json.loads(response)
 
