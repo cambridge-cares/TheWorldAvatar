@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -38,6 +40,8 @@ public class UpdateStations {
     static Map<String, List<Instant>> datatime_map;
     static Map<String, List<Double>> datavalue_map;
     
+    static boolean updated;
+    
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
 	
@@ -63,8 +67,9 @@ public class UpdateStations {
         // process data into tables before upload
         processAPIResponse(response);
         
+        updated = false;
         // upload to postgres
-        uploadDataToRDB();
+        uploadDataToRDB(date);
         
         // update last updated date
         RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
@@ -153,7 +158,7 @@ public class UpdateStations {
         LOGGER.info("Failed to process " + Integer.toString(num_fail)+ " readings");
 	}
 	
-	static void uploadDataToRDB() {
+	static void uploadDataToRDB(LocalDate date) {
         // create a time series object for each data set and upload to db 1 by 1
         RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
 		TimeSeriesClient<Instant> tsClient = 
@@ -164,6 +169,16 @@ public class UpdateStations {
         LOGGER.info("Uploading data to postgres");
         while (iter.hasNext()) {
         	String dataIRI = iter.next();
+        	
+        	// avoid adding duplicate data
+        	// this may happen when the previous update was terminated halfway
+        	// extract date from the latest timestamp
+        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
+        	if (!date.isAfter(lastUpdateDate)) {
+        		LOGGER.info(dataIRI + " is already up-to-date");
+        		continue;
+        	}
+        	
         	List<List<?>> values = new ArrayList<>();
         	values.add(datavalue_map.get(dataIRI));
         	
@@ -206,5 +221,9 @@ public class UpdateStations {
         	}
         }
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
+        // consider updated if at least one was updated..
+        if (num_failures < datatime_map.size()) {
+        	updated = true;
+        }
 	}
 }
