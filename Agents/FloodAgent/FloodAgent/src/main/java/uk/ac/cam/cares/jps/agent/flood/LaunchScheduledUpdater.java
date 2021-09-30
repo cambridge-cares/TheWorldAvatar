@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.time.Instant;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Executors;
@@ -37,6 +39,7 @@ public class LaunchScheduledUpdater {
     static void startScheduledTask() {
     	scheduler.scheduleAtFixedRate(() -> {
             try {
+            	Instant nextUpdate = Instant.now().plus(1, ChronoUnit.DAYS);
             	LOGGER.info("Launching scheduled task to update stations");
             	// date to query
                 LocalDate yesterday = LocalDate.now().minusDays(1);
@@ -47,6 +50,8 @@ public class LaunchScheduledUpdater {
 	            	String[] input = new String[1];
 	            	input[0] = yesterday.toString();
 	            	UpdateStations.main(input);
+	            	LOGGER.info("Stations are up-to-date");
+	            	LOGGER.info("Next update will be at " + nextUpdate);
                 } else {
                 	LOGGER.info("Stations are up-to-date, ignoring update request");
                 }
