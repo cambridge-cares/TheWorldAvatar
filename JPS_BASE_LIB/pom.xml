@@ -314,7 +314,16 @@
             <artifactId>rdf4j-tools-federation</artifactId>
             <version>3.1.0</version>
         </dependency>
-        
+		<dependency>
+			<groupId>com.blazegraph</groupId>
+			<artifactId>bigdata-core</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.blazegraph</groupId>
+			<artifactId>bigdata-blueprints</artifactId>
+			<version>2.0.0</version>
+		</dependency>        
 		<!-- used in the DerivationClient to detect circular dependencies -->
 		<dependency>
     		<groupId>org.jgrapht</groupId>
@@ -335,7 +344,11 @@
             <version>5.7.2</version>
             <scope>test</scope>
         </dependency>
-        
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
+		</dependency>
         <!-- ??? -->
         <dependency>
             <groupId>org.mockito</groupId>
