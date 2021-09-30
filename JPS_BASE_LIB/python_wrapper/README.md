@@ -4,7 +4,7 @@
 
 # Requirements
 
-- You need Python 3.4 - 3.7 to run the py4jps. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
+- You need Python >=3.5 to run the py4jps. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
 - You also need to install a [Java Runtime Environment version 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 
 # Installation
