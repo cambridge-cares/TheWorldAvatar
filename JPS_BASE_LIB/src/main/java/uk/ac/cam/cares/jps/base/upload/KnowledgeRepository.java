@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.blazegraph;
+package uk.ac.cam.cares.jps.base.upload;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -31,8 +31,8 @@ import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
- * This class has been designed and developed to enable performing CRUD<br>
- * operations on any knowledge-graph built using Blazegraph.  
+ * This class has been designed and developed to enable performing upload<br>
+ * operations on any knowledge-graph built using Blazegraph.
  * 
  * @author msff2
  *
