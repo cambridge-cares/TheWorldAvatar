@@ -30,6 +30,7 @@ public class LaunchScheduledUpdater {
         // initialise stations in blazegraph and time series in postgres
         if (!sparqlClient.areStationsInitialised()) {
         	// arguments are not needed for the below function
+        	LOGGER.info("Initialising stations");
         	InitialiseStations.main(args);
         }
         

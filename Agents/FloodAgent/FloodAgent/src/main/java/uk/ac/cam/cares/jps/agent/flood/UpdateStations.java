@@ -170,54 +170,60 @@ public class UpdateStations {
         while (iter.hasNext()) {
         	String dataIRI = iter.next();
         	
+        	// try to initialise table if it does not exist
+        	if (!tsClient.checkDataHasTimeSeries(dataIRI)) {
+        		LOGGER.info(dataIRI + " is not present in the initial rdf data");
+    			LOGGER.info("Attempting to initialise <" + dataIRI + ">");
+    			
+    			// Obtain station name for this measure
+    			HttpGet request = new HttpGet(dataIRI);
+    			CloseableHttpClient httpclient = HttpClients.createDefault();
+    	        
+				try {
+					CloseableHttpResponse response = httpclient.execute(request);
+					JSONObject response_jo = new JSONObject(EntityUtils.toString(response.getEntity()));
+					
+					// get the station that measures this quantity
+					String station = response_jo.getJSONObject("items").getString("station");
+					
+					// add this missing information in blazegraph and rdb
+					FloodSparql sparqlClient = new FloodSparql(storeClient);
+					sparqlClient.addMeasureToStation(station, dataIRI);
+					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
+					
+					LOGGER.info("Created new table successfully");
+				} catch (Exception e1) {
+					num_failures += 1;
+					LOGGER.error(e1.getMessage());
+					LOGGER.error("Failed to initialise <" + dataIRI + ">");
+					continue;
+				} 
+        	}
+        	
         	// avoid adding duplicate data
         	// this may happen when the previous update was terminated halfway
         	// extract date from the latest timestamp
-        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
-        	if (!date.isAfter(lastUpdateDate)) {
-        		LOGGER.info(dataIRI + " is already up-to-date");
-        		continue;
+        	try {
+	        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
+	        	if (!date.isAfter(lastUpdateDate)) {
+	        		LOGGER.info(dataIRI + " is already up-to-date");
+	        		continue;
+	        	}
+        	} catch (Exception e) {
+        		// dataIRI is initialised but contains no data yet
         	}
         	
+        	// create time series object to upload to the client
         	List<List<?>> values = new ArrayList<>();
         	values.add(datavalue_map.get(dataIRI));
-        	
         	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+        	
         	try {
         		tsClient.addTimeSeriesData(ts);
         	} catch (Exception e) {
-        		if (e.getMessage().contains("is not attached to any time series instance in the KG")) {
-        			LOGGER.info(dataIRI + " is not present in the initial rdf data");
-        			LOGGER.info("Attempting to initialise <" + dataIRI + ">");
-        			
-        			// Obtain station name for this measure
-        			HttpGet request = new HttpGet(dataIRI);
-        			CloseableHttpClient httpclient = HttpClients.createDefault();
-        	        
-					try {
-						CloseableHttpResponse response = httpclient.execute(request);
-						JSONObject response_jo = new JSONObject(EntityUtils.toString(response.getEntity()));
-						
-						// get the station that measures this quantity
-						String station = response_jo.getJSONObject("items").getString("station");
-						
-						// add this missing information in blazegraph and rdb
-						FloodSparql sparqlClient = new FloodSparql(storeClient);
-						sparqlClient.addMeasureToStation(station, dataIRI);
-						tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
-						tsClient.addTimeSeriesData(ts);
-						
-						LOGGER.info("Created new instance successfully");
-					} catch (Exception e1) {
-						num_failures += 1;
-						LOGGER.error(e1.getMessage());
-						LOGGER.error("Failed to add <" + dataIRI + ">");
-					} 
-        		} else {
-        			num_failures += 1;
-        			LOGGER.error(e.getMessage());
-        			LOGGER.error("Failed to add <" + dataIRI + ">");
-        		}
+				num_failures += 1;
+				LOGGER.error(e.getMessage());
+				LOGGER.error("Failed to upload time series <" + dataIRI + ">");
         	}
         }
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");

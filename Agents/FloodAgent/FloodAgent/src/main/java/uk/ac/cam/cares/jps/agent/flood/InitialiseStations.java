@@ -92,6 +92,7 @@ public class InitialiseStations {
 	 * create a table for each measure
 	 */
 	static void initTimeSeriesTables() {
+		LOGGER.info("Initialising time series tables");
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
 		FloodSparql sparqlClient = new FloodSparql(storeClient);
 		TimeSeriesClient<Instant> tsClient = 
