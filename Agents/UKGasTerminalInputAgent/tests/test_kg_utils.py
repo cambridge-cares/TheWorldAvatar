@@ -36,49 +36,8 @@ def test_read_properties_file(tmp_path):
     # Create empty test properties file
     p = os.path.join(tmp_path, "test_timeseries.properties")
 
-    # Test for 'fallback_kg'
-    # 1) Exception for missing key
-    with pytest.raises(KeyError) as excinfo:
-        # Check correct exception type
-        utils.read_properties_file(p)
-    # Check correct exception message
-    expected = 'Key "fallback_kg" is missing in properties file: '
-    assert expected in str(excinfo.value)
-    # 2) Exception for available key, but missing value
-    with open(p, 'w') as f:
-        f.write("fallback_kg = ")
-    with pytest.raises(KeyError) as excinfo:
-        # Check correct exception type
-        utils.read_properties_file(p)
-    # Check correct exception message
-    expected = 'No "fallback_kg" value has been provided in properties file: '
-    assert expected in str(excinfo.value)
-
-    # Test for 'namespace'
-    # 1) Exception for missing key
-    with open(p, 'w') as f:
-        f.write("fallback_kg = test_kg\n")
-    with pytest.raises(KeyError) as excinfo:
-        # Check correct exception type
-        utils.read_properties_file(p)
-    # Check correct exception message
-    expected = 'Key "namespace" is missing in properties file: '
-    assert expected in str(excinfo.value)
-    # 2) Exception for available key, but missing value
-    with open(p, 'a') as f:
-        f.write("namespace = ")
-    with pytest.raises(KeyError) as excinfo:
-        # Check correct exception type
-        utils.read_properties_file(p)
-    # Check correct exception message
-    expected = 'No "namespace" value has been provided in properties file: '
-    assert expected in str(excinfo.value)
-
     # Test for 'output.directory'
     # 1) Exception for missing key
-    with open(p, 'w') as f:
-        f.write("fallback_kg = test_kg\n"
-                "namespace = test_namespace\n")
     with pytest.raises(KeyError) as excinfo:
         # Check correct exception type
         utils.read_properties_file(p)
@@ -97,17 +56,14 @@ def test_read_properties_file(tmp_path):
 
     # Test correct reading of timeseries.properties file
     with open(p, 'w') as f:
-        f.write("fallback_kg = test_kg\n"
-                "namespace = test_namespace\n"
-                "output.directory = test_outdir")
+        f.write("output.directory = test_outdir")
     utils.read_properties_file(p)
-    assert utils.FALLBACK_KG == 'test_kg'
-    assert utils.NAMESPACE == 'test_namespace'
     assert utils.OUTPUT_DIR == 'test_outdir'
 
 
-sets = ["fallback_kg = test_kg\nnamespace = test_namespace\noutput.directory = test_outdir",
-        "fallback_kg = test_kg/\nnamespace = test_namespace\noutput.directory = test_outdir"]
+sets = [
+    "output.directory = test_outdir\nsparql.query.endpoint=test_kg/namespace/test_namespace/sparql\nsparql.update.endpoint=test_kg/namespace/test_namespace/sparql"
+    ]
 @pytest.mark.parametrize('settings', sets)
 def test_setKGEndpoints(tmp_path, settings):
     # Create test properties file
@@ -119,6 +75,7 @@ def test_setKGEndpoints(tmp_path, settings):
 
     # Set KG endpoints and retrieve from properties file
     utils.setKGEndpoints(p)
+
     # Read properties file
     props = ConfigObj(p)
     assert props['sparql.query.endpoint'] == 'test_kg/namespace/test_namespace/sparql'
