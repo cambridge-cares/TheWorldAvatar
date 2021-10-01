@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=('tests')),
-    install_requires= ['py4j==0.10.9.1','py4jps','docopt'],
+    install_requires= ['py4jps','docopt','requests'],
     include_package_data= True,
     entry_points={
         'console_scripts': [
