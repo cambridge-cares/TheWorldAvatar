@@ -33,6 +33,19 @@ services:
         description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
         hash: "${HASH}"
 
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver-${MODE}:1.0.0-SNAPSHOT
+    build:
+      args:
+        mvn_profile: ${MODE}-profile
+      context: fileserver
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Tomcat servlet designed to simplify the storage and retrieval of files referenced in the knowledge graph."
+        hash: "${HASH}"
+
   # RDF4J
   rdf4j:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT

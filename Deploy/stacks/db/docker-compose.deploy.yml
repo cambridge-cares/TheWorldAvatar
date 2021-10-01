@@ -38,6 +38,18 @@ services:
     volumes:
       - blazegraph_geo_data:/data
 
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver-${MODE}:1.0.0-SNAPSHOT
+    container_name: "fileserver${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+    volumes:
+      - file_server_data:/app/fs_root
+
   # Postgres
   postgres:
     image: docker.cmclinnovations.com/postgres:13.3-alpine
@@ -81,7 +93,9 @@ networks:
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: blazegraph/secrets/blazegraph_password  
+    file: blazegraph/secrets/blazegraph_password
+  file_server_password:
+    file: fileserver/secrets/file_server_password
   postgres_password:
     file: postgres/secrets/postgres_password
   rdf4j_admin_password:
@@ -90,12 +104,13 @@ secrets:
     file: rdf4j/secrets/rdf4j_user_password
 
 
-# Volumes to handle triplestore data and logging
+# Volumes
 volumes:
   blazegraph_data:
     name: "blazegraph_data"
   blazegraph_geo_data:
     name: "blazegraph_geo_data"
+  file_server_data:
   postgres_data:
     name: "postgres_data"
   rdf4j_data:

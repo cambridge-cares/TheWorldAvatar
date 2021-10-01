@@ -23,6 +23,11 @@ services:
     ports:
       - 48083:8080
 
+  # File server
+  fileserver:
+    ports:
+      - 48086:8080
+
   # Postgres
   postgres:
     ports:
