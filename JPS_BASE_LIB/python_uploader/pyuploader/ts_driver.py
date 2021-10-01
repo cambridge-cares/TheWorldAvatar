@@ -1,14 +1,14 @@
-from docopt import docopt, DocoptExit
+import docopt
 import pyuploader.app as app
 
 doc = """pyuploader
 Usage:
-    ts_upload <fileOrDir>  [--tstore-nmsp=<nmsp>]
-                           [--tstore-filext=<ext>]
-                           [--log-file-name=<name>]
-                           [--log-file-dir=<dir>]
-                           [--no-logging]
-                           [--dry-run]
+    ts_upload <file_or_dir>  [--tstore-nmsp=<nmsp>]
+                             [--tstore-filext=<ext>]
+                             [--log-file-name=<name>]
+                             [--log-file-dir=<dir>]
+                             [--no-file-logging]
+                             [--dry-run]
 
 Options:
 --tstore-nmsp=<nmsp>    Triple store namespace.                       [default: base]
@@ -18,24 +18,24 @@ Options:
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <fileOrDir> directory.
---no-logging            No logging flag.
+--no-file-logging       No logging flag to a file.
 --dry-run               Run the triple store uploader tool in a dry
                         run without uploading any triples.
 """
 
 def start():
     try:
-        args = docopt(doc)
-    except DocoptExit:
-        raise DocoptExit('Error: oupload called with wrong arguments.')
+        args = docopt.docopt(doc)
+    except docopt.DocoptExit:
+        raise docopt.DocoptExit('Error: ts_upload called with wrong arguments.')
 
     app.ts_upload_wrapper(
-        fileOrDir = args['<fileOrDir>'],
+        file_or_dir = args['<file_or_dir>'],
         tstore_nmsp = args['--tstore-nmsp'],
         tstore_filext = args['--tstore-filext'],
-        log_file_name = args['--log-file-name'],
         log_file_dir = args['--log-file-dir'],
-        no_logging = args['--no-logging'],
+        log_file_name = args['--log-file-name'],
+        no_file_logging = args['--no_file_logging'],
         dry_run = args['--dry-run']
     )
 

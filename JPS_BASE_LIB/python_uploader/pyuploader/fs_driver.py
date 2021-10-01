@@ -1,42 +1,43 @@
-from docopt import docopt, DocoptExit
+import docopt
 import pyuploader.app as app
 
 doc = """pyuploader
 Usage:
-    fs_upload <fileOrDir>  (--file-server-filext=<ext>)
-                           [--file-server-subdir=<dir>]
-                           [--log-file-name=<name>]
-                           [--log-file-dir=<dir>]
-                           [--no-logging]
-                           [--dry-run]
+    fs_upload <file_or_dir>  (--file-server-filext=<ext>)
+                             [--file-server-subdirs=<dir>]
+                             [--log-file-name=<name>]
+                             [--log-file-dir=<dir>]
+                             [--no-file-logging]
+                             [--dry-run]
 
 Options:
 --file-server-filext=<ext>   List of extensions used to select files
                              that will be uploaded to the file server.
                              Example: --file-server-filext='.log,.txt'
---file-server-subdir=<dir>   Optional subdirectory to be created on
+--file-server-subdirs=<dir>  Optional subdirectories to be created on
                              the file server to upload your files into.
+                             Example: --file-server-subdirs='dir1/dir2/'
 --log-file-name=<name>       Name of the generated log file.               [default: fs_upload.log]
 --log-file-dir=<dir>         Path to the log file storing information of
                              what has been uploaded and where. Defaults
                              to the <fileOrDir> directory.
---no-logging                 No logging flag.
+--no-file-logging            No logging to a file flag.
 --dry-run                    Run the triple store uploader tool in a dry
                              run without uploading any triples.
 """
 def start():
     try:
-        args = docopt(doc)
-    except DocoptExit:
-        raise DocoptExit('Error: oupload called with wrong arguments.')
+        args = docopt.docopt(doc)
+    except docopt.DocoptExit:
+        raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.')
 
     app.fs_upload_wrapper(
-        fileOrDir = args['<fileOrDir>'],
+        file_or_dir = args['<file_or_dir>'],
         file_server_filext = args['--file-server-filext'],
-        file_server_subdir = args['--file-server-subdir'],
-        log_file_name = args['--log-file-name'],
+        file_server_subdirs = args['--file-server-subdirs'],
         log_file_dir = args['--log-file-dir'],
-        no_logging = args['--no-logging'],
+        log_file_name = args['--log-file-name'],
+        no_file_logging = args['--no-file-logging'],
         dry_run = args['--dry-run']
     )
 

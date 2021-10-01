@@ -1,13 +1,15 @@
-import pyuploader.common.querykg as querykg
-import requests
 import os
+import logging
+import pyuploader.errorhandling.appexceptions as appexcept
 
-def get_user_credentials():
-    user_login = os.environ['CMCL_FILE_SERVER_LOGIN']
-    user_passwd = os.environ['CMCL_FILE_SERVER_PASSWORD']
-    return (user_login, user_passwd)
+logger = logging.getLogger(__name__)
 
-def get_server_upload_url():
-    return os.environ['CMCL_FILE_SERVER_UPLOAD_URL']
+def get_striple_store_url():
+    logger.info("Reading triple store info.")
+    try:
+        tstore_url = os.environ['TRIPLE_STORE_URL']
+    except KeyError:
+        raise appexcept.EnvironmentVarError("Error: Triple store url not found in environment variables.")
+    return tstore_url
 
 

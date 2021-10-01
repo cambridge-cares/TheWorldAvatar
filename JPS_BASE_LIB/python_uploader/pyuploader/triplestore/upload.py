@@ -2,19 +2,24 @@ import pyuploader.common.utils as utils
 import logging
 import pathlib
 
-def upload_to_triple_store(fileOrDir, tstore_url, namespace,
-                           tstore_file_ext, dry_run, **kwargs):
+logger = logging.getLogger(__name__)
 
-    files = utils.get_files_by_extensions(fileOrDir,tstore_file_ext)
+def upload_to_triple_store(
+        file_or_dir,
+        tstore_url,
+        tstore_nmsp,
+        tstore_fileext,
+        dry_run):
 
-    logging.info(f"TRIPLE STORE UPLOAD")
-    logging.info(f"---------------------------------------------------------------------------")
+    files = utils.get_files_by_extensions(file_or_dir,tstore_fileext)
+
+    logger.info(f"TRIPLE STORE UPLOAD")
+    logger.info(f"---------------------------------------------------------------------------")
     if files:
-        logging.info(f"Uploading files to the triple store: {tstore_url} at namespace: {namespace}")
+        logger.info(f"Uploading files to the triple store: {tstore_url} at namespace: {tstore_nmsp}.")
         for f in files:
             basenf = pathlib.Path(f).name
-
-            logging.info(f"Uploading file: {basenf}")
+            logger.info(f"Uploading file: {basenf}")
     else:
-        logging.info('No files to upload')
-    logging.info(f"---------------------------------------------------------------------------")
+        logger.info('No files to upload')
+    logger.info(f"---------------------------------------------------------------------------")
