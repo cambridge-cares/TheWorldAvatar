@@ -71,7 +71,7 @@
 		<dependency>
 			<groupId>com.cmclinnovations.mods</groupId>
 			<artifactId>MoDS_API</artifactId>
-			<version>0.15.0</version>
+			<version>0.5.0</version>
 		</dependency>
 		<dependency>
 	        <groupId>xml-apis</groupId>
