@@ -68,8 +68,8 @@ function create_env {
 			rm -r $VENV_DIR"/"$VENV_NAME
 		fi
 		# TODO: Potentially specify specific Python version to use
-		py -3.7 -m venv $VENV_DIR"/"$VENV_NAME
-		#python -m venv $VENV_DIR"/"$VENV_NAME
+		#py -3.7 -m venv $VENV_DIR"/"$VENV_NAME
+		python -m venv $VENV_DIR"/"$VENV_NAME
 		if [ $? -eq 0 ]; then
 			echo ""
 			echo "    INFO: Virtual environment created."

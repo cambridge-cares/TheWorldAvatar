@@ -35,10 +35,6 @@ crontab /root/docker/cron-jobs
 echo "Starting cron..."
 service cron start
 
-# Run the 'run-outputs.sh' script on boot
-echo "Running 'run-outputs.sh' script (may take up to 10 minutes)..."
-/root/docker/run-outputs.sh
-
 # Start the Apache web server
 echo "Starting Apache..."
 service apache2 start
