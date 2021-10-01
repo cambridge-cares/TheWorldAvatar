@@ -15,7 +15,7 @@ from ukgasflows.jpsSingletons import jpsBaseLibGW
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
 
 # Initialise global variables to be read from properties file
-global FALLBACK_KG, NAMESPACE, QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
+global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -41,26 +41,10 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global FALLBACK_KG, NAMESPACE, OUTPUT_DIR
+    global OUTPUT_DIR
 
     # Read properties file
     props = ConfigObj(filepath)
-
-    # Extract local KG location and set as fallback
-    try:
-        FALLBACK_KG = props['fallback_kg']
-    except KeyError:
-        raise KeyError('Key "fallback_kg" is missing in properties file: ' + filepath)
-    if FALLBACK_KG == '':
-        raise KeyError('No "fallback_kg" value has been provided in properties file: ' + filepath)
-
-    # Extract KG's SPARQL endpoint to use (namespace in Blazegraph)
-    try:
-        NAMESPACE = props['namespace']
-    except KeyError:
-        raise KeyError('Key "namespace" is missing in properties file: ' + filepath)
-    if NAMESPACE == '':
-        raise KeyError('No "namespace" value has been provided in properties file: ' + filepath)
 
     # Extract output directory for JSON file containing retrieved time series data from KG
     try:
@@ -250,32 +234,11 @@ def get_instantiated_measurements(endpoint):
     # Initialise remote KG client with only query endpoint specified
     kgClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
 
-    # Get the measurement IRIs in chunks
-    iriList = list()
-    get_measurements_chunk(kgClient, 0, iriList)
-    print("Number of instantiated measurements is", len(iriList))
-    return iriList
-
-
-def get_measurements_chunk(kgClient, offset, iriList):
-    """
-        Recursively retrieves IRIs of all instantiated Measurements in the knowledge graph,
-        in chunks of 250,000 results.
-
-        Arguments:
-            kgClient - KGClient instance.
-            offset - current SPARQL offset.
-            iriList - list of final IRIs to add to.
-    """
-    print("Getting 250,000 more measurements, offset is", offset)
-
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
             'SELECT ?a ' \
-            'WHERE { ?a rdf:type om:Measure. }' \
-            'OFFSET ' + str(offset) + ' LIMIT 250000'
+            'WHERE { ?a rdf:type om:Measure. }'
 
-    # Run the query
     response = kgClient.execute(query)
 
     # Convert JSONArray String back to list
@@ -283,14 +246,7 @@ def get_measurements_chunk(kgClient, offset, iriList):
 
     # Extract list of IRI Strings from query results dictionary
     res = [list(r.values())[0] for r in response]
-    iriList.extend(res)
-
-    # Recurse as needed    
-    if(len(res) == 250000):
-        print("May not have all measurements, running next chunk...")
-        get_measurements_chunk(kgClient, offset + 250000, iriList)
-    else:
-        print("Have all the instantiated measurements now!")
+    return res
 
 
 def check_timeseries_instantiation(endpoint, terminalIRI):
