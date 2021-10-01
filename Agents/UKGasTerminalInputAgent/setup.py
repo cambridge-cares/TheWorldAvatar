@@ -6,7 +6,7 @@ setup(
     author='Markus Hofmeister (based on work from Tom Savage)',
     author_email='mh807@cam.ac.uk',
     license='MIT',
-    python_requires=' >=3.5, <3.8',
+    python_requires=' >=3.5',
     packages=find_packages(exclude=('tests')),
     long_description=open('README.txt').read(),
     #install_requires=[""],
