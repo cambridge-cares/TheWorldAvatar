@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.Path;
 
-import com.jayway.jsonpath.JsonPath;
+//import com.jayway.jsonpath.JsonPath;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.json.JSONArray;
@@ -94,7 +94,7 @@ public class CrossDomainQueryAgent extends JPSAgent {
                 return requestParams.put(BAD_INPUT, e.getMessage());
             }
             CrossDomainQuery performCrossDomainQuery = new CrossDomainQuery();
-            return new performCrossDomainQuery.performCrossDomainQuery(requestParams);
+            return null;/*new performCrossDomainQuery.performCrossDomainQuery(requestParams);*/
         }
         else {
             System.out.println("Unknown request.\n");

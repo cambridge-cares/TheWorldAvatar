@@ -68,17 +68,20 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
-				<dependency>
+		<dependency>
 			<groupId>com.cmclinnovations.mods</groupId>
-			<artifactId>MoDS_Java_API</artifactId>
-			<version>0.3.3</version>
+			<artifactId>MoDS_API</artifactId>
+			<version>0.15.0</version>
 		</dependency>
 		<dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.4.01</version>
- </dependency>
-
-
+	        <groupId>xml-apis</groupId>
+	        <artifactId>xml-apis</artifactId>
+	        <version>1.4.01</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.jayway.jsonpath</groupId>
+    		<artifactId>json-path</artifactId>
+    		<version>2.4.0</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -3,8 +3,8 @@ package uk.ac.cam.cares.jps.bio;
 import com.sun.jna.StringArray;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.locationtech.jts.awt.PointShapeFactory;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+//import org.locationtech.jts.awt.PointShapeFactory;
+//import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.bio.json.parser.JSonRequestParser;
 
 import java.sql.SQLException;
@@ -100,10 +100,10 @@ public class CrossDomainQuery extends JSONObject{
     }
 
     public JSONArray runQuery(String query,String queryEndpoint) throws SQLException{
-        RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
-        JSONArray queryResult         = kbClient.executeQuery(query);
+//        RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+//        JSONArray queryResult         = kbClient.executeQuery(query);
 
-        return queryResult;
+        return null;
     }
 
 
