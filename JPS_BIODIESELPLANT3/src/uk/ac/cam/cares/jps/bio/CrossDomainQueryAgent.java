@@ -61,15 +61,15 @@ import java.util.concurrent.ScheduledExecutorService;
 
 
 @Controller
-@WebServlet(urlPatterns = {CrossdomainQueryAgent.URL_PATH})
+@WebServlet(urlPatterns = {CrossDomainQueryAgent.URL_PATH})
 
 // Agent begins
-public class CrossdomainQueryAgent extends JPSAgent {
+public class CrossDomainQueryAgent extends JPSAgent {
 
 
-    public static final String URL_PATH         = "/performquery";
+    public static final String URL_PATH = "/performquery";
     //Display messages
-    private static final String BAD_INPUT       = "Error in input parameters, please check the" +
+    private static final String BAD_INPUT = "Error in input parameters, please check the" +
                                                     " input file";
     private static final String UNKNOWN_REQUEST = "This request is unknown";
 
@@ -93,7 +93,8 @@ public class CrossdomainQueryAgent extends JPSAgent {
             } catch (BadRequestException e) {
                 return requestParams.put(BAD_INPUT, e.getMessage());
             }
-            return new performcrossdomainquery(requestParams);
+            CrossDomainQuery performCrossDomainQuery = new CrossDomainQuery();
+            return new performCrossDomainQuery.performCrossDomainQuery(requestParams);
         }
         else {
             System.out.println("Unknown request.\n");
