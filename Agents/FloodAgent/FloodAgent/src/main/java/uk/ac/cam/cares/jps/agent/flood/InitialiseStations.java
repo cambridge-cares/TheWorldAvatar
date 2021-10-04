@@ -5,9 +5,8 @@ import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -28,19 +27,52 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class InitialiseStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(InitialiseStations.class);
-	    
+    
+    // will be replaced with mocks in junit tests
+    private static APIConnector api = null;
+    private static FloodSparql sparqlClient = null;
+    private static TimeSeriesClient<Instant> tsClient = null;
+    private static RemoteStoreClient storeClient = null;
+	
+    // setters to replace these with mocks
+    public static void setAPIConnector(APIConnector api) {
+    	InitialiseStations.api = api;
+    }
+    public static void setSparqlClient(FloodSparql sparqlClient) {
+    	InitialiseStations.sparqlClient = sparqlClient;
+    }
+    public static void setTsClient(TimeSeriesClient<Instant> tsClient) {
+    	InitialiseStations.tsClient = tsClient;
+    }
+    public static void setStoreClient(RemoteStoreClient storeClient) {
+    	InitialiseStations.storeClient = storeClient;
+    }
+    
     public static void main(String[] args) {
     	Config.initProperties();
     	
+    	// if these are null, they are in deployed mode, otherwise they should
+    	// be set with mocks using their respective setters
+    	if (api == null) {
+    		InitialiseStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/id/stations.rdf");
+    	}
+    	if (storeClient == null) {
+    		InitialiseStations.storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+    	}
+    	if (sparqlClient == null) {
+    		InitialiseStations.sparqlClient = new FloodSparql(storeClient);
+    	}
+    	if (tsClient == null) {
+    		InitialiseStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    	}
+    	
     	// this retrieves the high level information and uploads it to Blazegraph
-    	initFloodStationsWithAPI();
+    	initFloodStationsWithAPI(InitialiseStations.api, InitialiseStations.storeClient);
     	
     	// create a table for each measure uploaded to Blazegraph
-    	initTimeSeriesTables();
+    	initTimeSeriesTables(sparqlClient, tsClient);
     	
     	// obtain stations added to blazegraph
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
-		FloodSparql sparqlClient = new FloodSparql(storeClient);
         List<String> stations = sparqlClient.getStations();
         
         // add RDF:type to each station instance
@@ -58,29 +90,25 @@ public class InitialiseStations {
 	 * The RDF data contains high level information for each station, e.g. 
 	 * its location, what it measures
 	 */
-	static void initFloodStationsWithAPI() {
+	static void initFloodStationsWithAPI(APIConnector api, RemoteStoreClient storeClient) {
 		try {
 			// get rdf data from gov website
-			LOGGER.info("Downloading station data from API");
-			HttpGet request = new HttpGet("http://environment.data.gov.uk/flood-monitoring/id/stations.rdf");
+			HttpEntity response_entity = api.getData();
 			
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-	        CloseableHttpResponse response = httpclient.execute(request);
-	        LOGGER.info("Download complete");
-
 	        // use Blazegraph's REST API to upload RDF data to a SPARQL endpoint
 	        LOGGER.info("Posting data to Blazegraph");
 	        
 	        // tried a few methods to add credentials, this seems to be the only way that works
 	        // i.e. setting it manually in the header
-	        String auth = Config.kguser + ":" + Config.kgpassword;
+	        String auth = storeClient.getUser() + ":" + storeClient.getPassword();
 	        String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes()); 
-	        HttpPost postRequest = new HttpPost(Config.kgurl);
+	        HttpPost postRequest = new HttpPost(storeClient.getUpdateEndpoint());
 	        postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
 	        
 	        // add contents downloaded from the API to the post request 
-	        postRequest.setEntity(response.getEntity());
+	        postRequest.setEntity(response_entity);
 	        // then send the post request
+	        CloseableHttpClient httpclient = HttpClients.createDefault();
 	        httpclient.execute(postRequest);
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -91,12 +119,8 @@ public class InitialiseStations {
 	/**
 	 * create a table for each measure
 	 */
-	static void initTimeSeriesTables() {
+	static void initTimeSeriesTables(FloodSparql sparqlClient, TimeSeriesClient<Instant> tsClient) {
 		LOGGER.info("Initialising time series tables");
-		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
-		FloodSparql sparqlClient = new FloodSparql(storeClient);
-		TimeSeriesClient<Instant> tsClient = 
-				new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
 		
 		List<String> measures = sparqlClient.getMeasures();
 		
