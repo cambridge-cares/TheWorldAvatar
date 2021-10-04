@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>JPS_BIODIESELPLANT3</artifactId>
-  <version>1.0.0</version>
+  <version>2.0.0</version>
   <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -68,11 +68,11 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>com.cmclinnovations.mods</groupId>
-			<artifactId>MoDS_API</artifactId>
-			<version>0.5.0</version>
-		</dependency>
+			<artifactId>MoDS_Java_API</artifactId>
+			<version>0.3.3</version>
+		</dependency>-->
 		<dependency>
 	        <groupId>xml-apis</groupId>
 	        <artifactId>xml-apis</artifactId>
@@ -83,5 +83,11 @@
     		<artifactId>json-path</artifactId>
     		<version>2.4.0</version>
 		</dependency>
-	</dependencies>
+	  <dependency>
+		  <groupId>uk.ac.cam.cares.jps</groupId>
+		  <artifactId>jps-base-lib</artifactId>
+		  <version>1.4.0-SNAPSHOT</version>
+		  <scope>compile</scope>
+	  </dependency>
+  </dependencies>
 </project>
