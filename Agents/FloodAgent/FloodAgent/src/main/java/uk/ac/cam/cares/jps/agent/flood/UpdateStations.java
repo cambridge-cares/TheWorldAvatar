@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,11 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.HttpEntity;
+import org.apache.http.ParseException;
 import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -37,14 +35,32 @@ public class UpdateStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(UpdateStations.class);
     
+    // processed data to upload to postgres
     static Map<String, List<Instant>> datatime_map;
     static Map<String, List<Double>> datavalue_map;
     
+    // boolean to check if RDB data is uploaded
     static boolean updated;
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
 	
+    // will be replaced with mocks in junit tests
+    private static APIConnector api = null;
+    private static FloodSparql sparqlClient = null;
+    private static TimeSeriesClient<Instant> tsClient = null;
+    
+    // setters to replace these with mocks
+    public static void setAPIConnector(APIConnector api) {
+    	UpdateStations.api = api;
+    }
+    public static void setSparqlClient(FloodSparql sparqlClient) {
+    	UpdateStations.sparqlClient = sparqlClient;
+    }
+    public static void setTsClient(TimeSeriesClient<Instant> tsClient) {
+    	UpdateStations.tsClient = tsClient;
+    }
+    
 	public static void main(String[] args) {
 		Config.initProperties();
 		LocalDate date;
@@ -61,51 +77,51 @@ public class UpdateStations {
 			throw new JPSRuntimeException(e);
 		}
 
-		// obtain data from API for a specific date
-        String response = getDataFromAPI(date);
-        
-        // process data into tables before upload
-        processAPIResponse(response);
+		// if these are null, they are in deployed mode, otherwise they should
+    	// be set with mocks using their respective setters
+    	if (api == null) {
+    		UpdateStations.api = new APIConnector("http://environment.data.gov.uk/flood-monitoring/data/readings");
+    		UpdateStations.api.setParameter("date", date.toString());
+    	}
+    	if (sparqlClient == null) {
+    		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+    		UpdateStations.sparqlClient = new FloodSparql(storeClient);
+    	}
+    	if (tsClient == null) {
+    		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
+    		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
+    	}
+		
+    	try {
+    		// obtain data from API for a specific date
+        	HttpEntity response = api.getData();
+            
+            // process data into tables before upload
+            processAPIResponse(response);
+    	} catch (Exception e) {
+    		LOGGER.error(e.getMessage());
+    		throw new JPSRuntimeException(e);
+    	}
         
         updated = false;
         // upload to postgres
-        uploadDataToRDB(date);
+        uploadDataToRDB(date, tsClient, sparqlClient);
         
         // update last updated date
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-        FloodSparql sparqlClient = new FloodSparql(storeClient);
         sparqlClient.updateLastDate(date);
-	}
-	
-	private static String getDataFromAPI(LocalDate date) {
-		try {
-			URIBuilder gov_URL = new URIBuilder("http://environment.data.gov.uk/flood-monitoring/data/readings")
-					.setParameter("date", date.toString());
-			// option to set the limit for testing purposes
-//			gov_URL.addParameter("_limit", "1000");
-	        HttpGet request = new HttpGet(gov_URL.build());
-			
-			CloseableHttpClient httpclient = HttpClients.createDefault();
-			
-			LOGGER.info("Downloading data from API");
-	        CloseableHttpResponse response = httpclient.execute(request);
-	        LOGGER.info("Download complete");
-	        
-	        return EntityUtils.toString(response.getEntity());
-		} catch (Exception e) {
-		    LOGGER.error(e.getMessage());
-		    throw new JPSRuntimeException(e);
-		}	
 	}
 	
 	/**
 	 * puts data into datatime_map and datavalue_map
 	 * @param response
+	 * @throws IOException 
+	 * @throws ParseException 
 	 */
-	static void processAPIResponse(String response) {
+	static void processAPIResponse(HttpEntity response) throws ParseException, IOException {
 		LOGGER.info("Processing data from API");
 		// convert response to JSON Object
-        JSONObject response_jo = new JSONObject(response);
+		String response_string = EntityUtils.toString(response);
+        JSONObject response_jo = new JSONObject(response_string);
         JSONArray readings = response_jo.getJSONArray("items");
         
         // collect data belonging to the same URL into lists
@@ -158,12 +174,7 @@ public class UpdateStations {
         LOGGER.info("Failed to process " + Integer.toString(num_fail)+ " readings");
 	}
 	
-	static void uploadDataToRDB(LocalDate date) {
-        // create a time series object for each data set and upload to db 1 by 1
-        RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
-		TimeSeriesClient<Instant> tsClient = 
-				new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
-        
+	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient) {
         Iterator<String> iter = datatime_map.keySet().iterator();
         int num_failures = 0;
         LOGGER.info("Uploading data to postgres");
@@ -175,19 +186,15 @@ public class UpdateStations {
         		LOGGER.info(dataIRI + " is not present in the initial rdf data");
     			LOGGER.info("Attempting to initialise <" + dataIRI + ">");
     			
-    			// Obtain station name for this measure
-    			HttpGet request = new HttpGet(dataIRI);
-    			CloseableHttpClient httpclient = HttpClients.createDefault();
-    	        
 				try {
-					CloseableHttpResponse response = httpclient.execute(request);
-					JSONObject response_jo = new JSONObject(EntityUtils.toString(response.getEntity()));
+					// Obtain station name for this measure
+					HttpEntity response = new APIConnector(dataIRI).getData();
+					JSONObject response_jo = new JSONObject(EntityUtils.toString(response));
 					
 					// get the station that measures this quantity
 					String station = response_jo.getJSONObject("items").getString("station");
 					
 					// add this missing information in blazegraph and rdb
-					FloodSparql sparqlClient = new FloodSparql(storeClient);
 					sparqlClient.addMeasureToStation(station, dataIRI);
 					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
 					
