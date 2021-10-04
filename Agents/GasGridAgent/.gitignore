@@ -10,5 +10,7 @@ dist/
 .idea/
 *venv/
 
+.vscode/
+
 # Miscellaneous files/folders:
 *flow-data-*.json

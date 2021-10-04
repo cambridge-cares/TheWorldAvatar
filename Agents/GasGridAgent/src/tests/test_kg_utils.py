@@ -8,8 +8,8 @@ from testcontainers.core.container import DockerContainer
 from py4jps.resources import JpsBaseLib
 
 # Import module under test from ukgasflows
-import ukgasflows.kg_utils as utils
-import ukgasflows.terminal_update as term_in
+import gasgridagent.kg_utils as utils
+import gasgridagent.terminal_update as term_in
 
 # Define expected gas terminals and respective IRIs (as defined in components_abox)
 expected_terminals = \
@@ -34,7 +34,7 @@ def initialise_triple_store():
 
 def test_read_properties_file(tmp_path):
     # Create empty test properties file
-    p = os.path.join(tmp_path, "test_timeseries.properties")
+    p = os.path.join(tmp_path, "test_gasgridagent.properties")
 
     # Test for 'output.directory'
     # 1) Exception for missing key
@@ -54,7 +54,7 @@ def test_read_properties_file(tmp_path):
     expected = 'No "output.directory" value has been provided in properties file: '
     assert expected in str(excinfo.value)
 
-    # Test correct reading of timeseries.properties file
+    # Test correct reading of gasgridagent.properties file
     with open(p, 'w') as f:
         f.write("output.directory = test_outdir")
     utils.read_properties_file(p)
@@ -67,7 +67,7 @@ sets = [
 @pytest.mark.parametrize('settings', sets)
 def test_setKGEndpoints(tmp_path, settings):
     # Create test properties file
-    p = os.path.join(tmp_path, "test_timeseries.properties")
+    p = os.path.join(tmp_path, "test_gasgridagent.properties")
     with open(p, 'w') as f:
         f.write(settings)
     # Read properties
@@ -240,10 +240,10 @@ def test_check_timeseries_instantiation(initialise_triple_store):
             # Verify that no time series association yet instantiated
             assert not utils.check_timeseries_instantiation(endpoint, iri)
             try:
-                # "Override" properties normally read from timeseries.properties for testing
+                # "Override" properties normally read from gasgridagent.properties for testing
                 utils.QUERY_ENDPOINT = endpoint
-                # Path to timeseries.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
+                # Path to gasgridagent.properties file
+                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
                 props = ConfigObj(p)
                 props['sparql.query.endpoint'] = endpoint
                 props['sparql.update.endpoint'] = endpoint
@@ -273,10 +273,10 @@ def test_get_time_format(initialise_triple_store):
             # Verify that no time format is yet instantiated
             assert utils.get_time_format(endpoint, iri) is None
             try:
-                # "Override" properties normally read from timeseries.properties for testing
+                # "Override" properties normally read from gasgridagent.properties for testing
                 utils.QUERY_ENDPOINT = endpoint
-                # Path to timeseries.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
+                # Path to gasgridagent.properties file
+                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
                 props = ConfigObj(p)
                 props['sparql.query.endpoint'] = endpoint
                 props['sparql.update.endpoint'] = endpoint
@@ -306,10 +306,10 @@ def test_get_measurementIRI(initialise_triple_store):
             # Verify that no measurement is yet instantiated
             assert utils.get_measurementIRI(endpoint, iri) is None
             try:
-                # "Override" properties normally read from timeseries.properties for testing
+                # "Override" properties normally read from gasgridagent.properties for testing
                 utils.QUERY_ENDPOINT = endpoint
-                # Path to timeseries.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
+                # Path to gasgridagent.properties file
+                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
                 props = ConfigObj(p)
                 props['sparql.query.endpoint'] = endpoint
                 props['sparql.update.endpoint'] = endpoint

@@ -13,9 +13,10 @@ import shutil
 from datetime import datetime as dt
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from ukgasflows.jpsSingletons import jpsBaseLibGW
+from gasgridagent.jpsSingletons import jpsBaseLibView
+
 # get settings and functions from kg_utils module
-import ukgasflows.kg_utils as kg
+import gasgridagent.kg_utils as kg
 
 
 def get_gasflow_history(duration, callbackSuccess, callbackFailure):
@@ -36,22 +37,20 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     kg.setKGEndpoints(kg.PROPERTIES_FILE)
     print("INFO: Determined KG endpoint as '" + kg.QUERY_ENDPOINT + "'.")
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
-
     # Retrieve Java's Instant class to initialise TimeSeriesClient
     # Get class simply via Java's ".class" does not work as this command also exists in Python
-    Instant = jpsBaseLib_view.java.time.Instant
+    Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
+
     # Initialise TimeSeriesClass
-    TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
 
     # Initialise timestamps for gas flow time series retrieval durations (time series entries stored as UTC times!)
     # Java Instant instances are associated with UTC (i.e. hold a value of date-time with a UTC time-line)
     now = Instant.now()
     print("INFO: Submitting TimeSeriesClient SPARQL queries at",
           dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
+
     start_1 = now.minusSeconds(int(1 * duration * 60 * 60))
     start_2 = now.minusSeconds(int(2 * duration * 60 * 60))
     start_7 = now.minusSeconds(int(7 * duration * 60 * 60))
@@ -80,6 +79,7 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
                     # Last resort, try last "7 x duration" hours (e.g. last week)
                     print("WARNING: No results in last %i h, trying last %i h ..." % (2 * duration, 7 * duration))
                     timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
+
             # populate timeseries dictionary - format:
             # terminal name: [terminal IRI, measurement IRI, Java time series object]
             timeseries_dict[terminal] = [terminalIRI, measurement_iri, timeseries]
@@ -185,9 +185,21 @@ def main():
     """
     print("\n")
 
+    try:
+        duration = 24
+        get_gasflow_history(duration, onSuccess, onFailure)
+    except:
+        sender = jpsBaseLibView.EmailSender()
+        sender.sendEmail(
+            "GasGridAgent - Exception when outputting recent flow data.",
+            """
+                The 'output_flow_data.py' script of the GasGridAgent has encountered an Exception. This script will continue to execute daily, as the issue may be temporary.
+                \n\n
+                It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
+            """
+        )
     # Duration of latest historical data to retrieve (in h)
-    duration = 24
-    get_gasflow_history(duration, onSuccess, onFailure)
+   
 
 
 # Entry point, calls main function

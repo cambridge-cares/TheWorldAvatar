@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ukgasflows',
+    name='gasgridagent',
     version='1.0.0',
     author='Markus Hofmeister (based on work from Tom Savage)',
     author_email='mh807@cam.ac.uk',
@@ -13,8 +13,8 @@ setup(
     #include_package_data=True,
     entry_points={  # Optional
         'console_scripts': [
-            'update_gas_flows=ukgasflows.terminal_update:main',
-            'retrieve_gas_flows=ukgasflows.output_flow_data:main'
+            'update_gas_flows=gasgridagent.input_flow_data:main',
+            'retrieve_gas_flows=gasgridagent.output_flow_data:main'
         ],
     }
 )

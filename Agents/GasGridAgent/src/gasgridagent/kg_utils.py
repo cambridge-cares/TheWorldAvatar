@@ -8,11 +8,10 @@ from pathlib import Path
 from configobj import ConfigObj
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from ukgasflows.jpsSingletons import jpsBaseLibGW
-
+from gasgridagent.jpsSingletons import jpsBaseLibView
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
@@ -114,13 +113,9 @@ def get_instantiated_terminals(endpoint):
     # Initialise SPARQL query variables for gas terminal IRIs and names
     var1, var2 = 'iri', 'name'
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
     print("Getting instantiated terminals from endpoint at:", endpoint)
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 	
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
@@ -155,12 +150,8 @@ def get_instantiated_gas_amounts(endpoint):
             (empty list in case no gas amounts are instantiated)
     """
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
@@ -191,12 +182,8 @@ def get_instantiated_quantities(endpoint):
             (empty list in case no quantities are instantiated)
     """
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('om') + \
@@ -227,18 +214,17 @@ def get_instantiated_measurements(endpoint):
             (empty list in case no measures are instantiated)
     """
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    kgClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    kgClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
             'SELECT ?a ' \
             'WHERE { ?a rdf:type om:Measure. }'
-
+        
+    print(query)
+    
+    """
     response = kgClient.execute(query)
 
     # Convert JSONArray String back to list
@@ -247,6 +233,7 @@ def get_instantiated_measurements(endpoint):
     # Extract list of IRI Strings from query results dictionary
     res = [list(r.values())[0] for r in response]
     return res
+    """
 
 
 def check_timeseries_instantiation(endpoint, terminalIRI):
@@ -263,12 +250,8 @@ def check_timeseries_instantiation(endpoint, terminalIRI):
     """
     print("Checking for pre-instantiated timeseries for terminal:", terminalIRI)
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
@@ -304,12 +287,8 @@ def get_measurementIRI(endpoint, terminalIRI):
     # Initialise SPARQL query variable
     var = 'iri'
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
@@ -344,12 +323,8 @@ def get_time_format(endpoint, terminalIRI):
     # Initialise SPARQL query variable
     var = 'format'
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with only query endpoint specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \

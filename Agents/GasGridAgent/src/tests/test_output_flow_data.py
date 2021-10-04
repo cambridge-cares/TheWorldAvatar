@@ -9,8 +9,8 @@ from testcontainers.core.container import DockerContainer
 from py4jps.resources import JpsBaseLib
 
 # Import module under test from ukgasflows
-import ukgasflows.output_flow_data as term_out
-import ukgasflows.kg_utils as utils
+import gasgridagent.output_flow_data as term_out
+import gasgridagent.kg_utils as utils
 
 
 @pytest.fixture()

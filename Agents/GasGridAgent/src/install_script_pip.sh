@@ -1,8 +1,8 @@
 #!/bin/bash
 # D. Nurkowski (danieln@cmclinnovations.com)
-echo "-----------------------------------------------"
-echo "--   python ukgasflows installation script  --"
-echo "-----------------------------------------------"
+echo "--------------------------------------------------"
+echo "--   python gasgridagent installation script  --"
+echo "--------------------------------------------------"
 echo ""
 #
 
@@ -10,11 +10,11 @@ AUTHOR="Daniel Nurkowski <danieln@cmclinnovations.com>"
 SPATH="$( cd  "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 CREATE_VENV='n'
 # TODO: Set name of virtual environment
-VENV_NAME='ukgasflows_venv'
+VENV_NAME='gasgridagent-venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
 # TODO: Set Python project name (as in setup.py)
-PROJ_NAME='ukgasflows'
+PROJ_NAME='gasgridagent'
 
 function usage {
     echo "==============================================================================================================="
@@ -74,6 +74,7 @@ function create_env {
 			echo ""
 			echo "    INFO: Virtual environment created."
 			echo "-----------------------------------------"
+            chmod -R 755 $VENV_DIR"/"$VENV_NAME
 		else
 			echo ""
 			echo "    ERROR: Failed to create virtual environment."
@@ -87,7 +88,7 @@ function create_env {
 function get_pip_path {
     if [[ $CREATE_VENV == 'y' ]]
 	then        
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+	    if [ -f "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
             PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
 		else
 		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3

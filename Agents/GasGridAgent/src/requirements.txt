@@ -4,3 +4,4 @@ py4jps
 pytz
 tqdm
 wget
+numpy

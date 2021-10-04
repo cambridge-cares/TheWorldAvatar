@@ -23,10 +23,10 @@ import csv
 import pandas as pd
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
-from ukgasflows.jpsSingletons import jpsBaseLibGW
+from gasgridagent.jpsSingletons import jpsBaseLibView
 
 # get settings and functions from kg_utils module
-import ukgasflows.kg_utils as kg
+import gasgridagent.kg_utils as kg
 
 
 def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
@@ -49,12 +49,9 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
         terminalIRI = kg.PREFIXES['compa'] + terminal_name.replace(' ', '') + str(n)
         n += 1
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-
     # Initialise remote KG client with query AND update endpoints specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
+
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     query = kg.create_sparql_prefix('comp') + \
             kg.create_sparql_prefix('rdf') + \
@@ -95,17 +92,12 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
     measurements_existing = kg.get_instantiated_measurements(query_endpoint)
     while any(existing.endswith(measurement) for existing in measurements_existing):
         measurement = 'Measurement_' + str(uuid.uuid4())
-    
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     # Initialise remote KG client with query AND update endpoints specified
     print("Connected to KG endpoints:")
     print("Queries:", query_endpoint)
     print("Updates:", update_endpoint)
-    KGClient = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
     # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     query = kg.create_sparql_prefix('comp') + \
@@ -128,16 +120,16 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
     # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
     # ".class" does not work as this command also exists in Python
-    Instant = jpsBaseLib_view.java.time.Instant
+    Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
-    double_class = jpsBaseLib_view.java.lang.Double.TYPE
+    double_class = jpsBaseLibView.java.lang.Double.TYPE
 
     # Get MeasurementIRI to which time series is actually connected to
     measurement_iri = kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminalIRI)
     print("Got measurement_iri, ", measurement_iri)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
-    TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
 
 
@@ -218,27 +210,22 @@ def add_time_series_data(terminalIRI, flow_data, terminal_name=''):
     """
     print("Adding time series data for gas terminal " + terminal_name)
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
-
     # Extract data to create Java TimeSeries object
     measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminalIRI)
     times = list(flow_data['time (utc)'].values)
     flows = list(flow_data['flowrate (m3/s)'].values)
 
     # Create Java TimeSeries object
-    timeseries = jpsBaseLib_view.TimeSeries(times, [measurementIRI], [flows])
+    timeseries = jpsBaseLibView.TimeSeries(times, [measurementIRI], [flows])
 
     # Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Retrieve Java class for time entries (Instant) - to get class simply via Java's
     # ".class" does not work as this command also exists in Python
-    Instant = jpsBaseLib_view.java.time.Instant
+    Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
 
     # Add time series data to existing time series association in KG using TimeSeriesClass
-    TSClient = jpsBaseLib_view.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
+    TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.addTimeSeriesData(timeseries)
     print("Time series data added.")
 
@@ -292,32 +279,56 @@ def update_triple_store():
 
 
 def continuous_update():
+    """
+        Ensures that the update_triple_store() function runs once per 12 minutes (as this is the
+        interval at which new flow data is published).
+    """
+    emailed = False
+
     while True:
         start = time.time()
 
         try:
             update_triple_store()
         except Exception:
-            print("Encountered exception, will try again in 15 minutes...")
+            print("Encountered exception, will try again in 12 minutes...")
             print(traceback.format_exc())
 
-        end = time.time()
+            # Send a notification email
+            if not emailed:
+                sender = jpsBaseLibView.EmailSender()
+                sender.sendEmail(
+                    "GasGridAgent - Exception when gathering live flow data.",
+                     """
+                        The 'input_flow_data.py' script of the GasGridAgent has encountered an Exception. This script will continue to loop (attempting to gather data every 12 minutes), as the issue may be temporary.
+                        \n\n
+                        It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
+                    """
+                )
+                emailed = True
 
+        end = time.time()
         print('\n')
-        # wait for 12 minutes taking into account time to update queries
+
+        # Wait for 12 minutes (taking into account time to update queries)
         for i in tqdm(range(60 * 12 - int((end - start)))):
             time.sleep(1)
-    return
 
 
 def single_update():
+    """
+        Runs a single update, downloading CSV data, parsing it, and adding it to the KG once.
+    """
     print("Time before:", time.time())
     update_triple_store()
     print("Time after:", time.time())
-    return
 
 
 def main():
+    """
+        Main method, parses arguments.
+    """
+
     # Try to detect (command-line) arguments passed to the script and launch update method
     if len(sys.argv) <= 1:
         single_update()
