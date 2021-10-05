@@ -4,7 +4,6 @@ FROM python:3.7.11-slim-buster
 
 # Meta data
 LABEL authors = "danieln@cmclinnovations.com, support@cmclinnovations.com"
-LABEL version = "1.0.0-SNAPSHOT"
 LABEL description = "Thermodynamic properties calculation agent"
 
 # Install Java
