@@ -41,9 +41,5 @@ EXPOSE 5000
 # entry point setup
 #------------------------------------
 # Set the entrypoint
-RUN chmod 0744 /app/app_entry_point.sh
 ENTRYPOINT /app/app_entry_point.sh
-
-# Finish
-RUN echo -e "Image installation completed."
 #==================================================================================================
