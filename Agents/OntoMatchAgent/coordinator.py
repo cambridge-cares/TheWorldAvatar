@@ -51,8 +51,13 @@ class Agent():
         return onto
 
     def load_rdflib_graph(self, addr, add_knowledge=False):
+
+        frmt = 'xml'
+        if addr.endswith('.ttl'):
+            frmt = 'turtle'
+
         graph = rdflib.Graph()
-        graph.parse(addr)
+        graph.parse(addr, format=frmt)
         if add_knowledge:
             logging.info('adding knowledge for %s', addr)
             self.add_knowledge_fct(graph)

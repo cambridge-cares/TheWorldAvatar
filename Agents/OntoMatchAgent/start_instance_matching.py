@@ -23,11 +23,11 @@ if __name__ == '__main__':
         #for subc in sublist:
         clist.append((subc,subc,0.9))
 
-    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_without_geo.pkl'
-    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
+    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_with_geo.pkl'
+    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
-    #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.owl'
-    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.owl'
+    #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.pkl'
+    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
     #srcaddr = './data/kwl.pkl'
     #tgtaddr = './data/gppd.pkl'
 
@@ -41,6 +41,7 @@ if __name__ == '__main__':
 
     #params_blocking = {'name': 'FullPairIterator'}
 
+
     params_blocking = {
         'name': 'TokenBasedPairIterator',
         'min_token_length': 3,
@@ -49,6 +50,8 @@ if __name__ == '__main__':
         'blocking_properties': ['name', 'isOwnedBy'],
         'reset_index': False
     }
+
+
 
 
 

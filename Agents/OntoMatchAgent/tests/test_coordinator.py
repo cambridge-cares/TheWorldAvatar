@@ -6,8 +6,9 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
     def test_coordinator_load_add_knowledge(self):
 
         #directory = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/'
-        directory = 'C:/my/tmp/ontomatch/tmp_kwl_files/'
-        srcaddr = directory + 'kwl.owl'
+        #directory = 'C:/my/tmp/ontomatch/tmp_kwl_files/'
+        #srcaddr = directory + 'kwl.owl'
+        srcaddr = './tests/data/KWL_20_power_plants.ttl'
 
         agent = coordinator.Agent()
         graph = agent.load_rdflib_graph(srcaddr, add_knowledge=True)
@@ -21,7 +22,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         }'''
 
         result = list(graph.query(query))
-        self.assertGreater(len(result), 1500)
+        self.assertEquals(len(result), 19)
 
         onto = agent.load_owlready2_ontology(graph)
         self.assertIsNotNone(onto)

@@ -15,9 +15,9 @@ class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
 
     def test_geocoding_query(self):
         agent = knowledge.geocoding.Agent()
-        lat, long = agent.query(None, 99713)
-        self.assertAlmostEqual(lat, 51.259592, places=4)
-        self.assertAlmostEqual(long, 10.762472, places=4)
+        lat, long = agent.query(None, 91602)
+        self.assertAlmostEqual(lat, 49.108758, places=4)
+        self.assertAlmostEqual(long, 10.386423, places=4)
 
         lat, long = agent.query('test', None)
         self.assertIsNone(lat)
@@ -31,9 +31,9 @@ class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
         self.assertAlmostEqual(lat, 48.428963, places=4)
         self.assertAlmostEqual(long, 8.205832, places=4)
 
-        lat, long = agent.query('Bärenbach', None)
-        self.assertAlmostEqual(lat, 49.748601, places=4)
-        self.assertAlmostEqual(long, 7.443275, places=4)
+        lat, long = agent.query('Bälau', None)
+        self.assertAlmostEqual(lat, 53.616381, places=4)
+        self.assertAlmostEqual(long, 10.621739, places=4)
 
     def test_geocoding_kwl(self):
         kwl_onto, _ = self.load_kwl_gppd_ontologies()

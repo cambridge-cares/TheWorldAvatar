@@ -13,8 +13,10 @@ import util
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
+BASE_MUN_GER = Namespace('http://www.theworldavatar.com/kb/municipalities/')
 DBO = Namespace('http://dbpedia.org/ontology/')
 DBR = Namespace('http://dbpedia.org/resource/')
+GEO = Namespace('http://www.w3.org/2003/01/geo/wgs84_pos#')
 POW = Namespace('http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#')
 PSREAL = Namespace('http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#')
 CPSYS = Namespace('http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#')
@@ -30,6 +32,7 @@ def bind_prefixes(g):
     g.bind('base', BASE)
     g.bind('dbo', DBO)
     g.bind('dbr', DBR)
+    g.bind('geo', GEO )
     g.bind('pow', POW)
     g.bind('psreal', PSREAL)
     g.bind('cpsys', CPSYS)
@@ -604,13 +607,79 @@ def create_KWL_plants(source_file, target_file, version, format):
         '''
     graph.serialize(target_file, format=format)
 
+def create_location_file(source_file, target_file, frmt):
+
+    dframe = pd.read_csv(source_file, delimiter=',', encoding='utf8')
+    mask = (dframe['Satzart'] == 60)
+    dframe = dframe[mask].copy()
+
+    df_conv = pd.DataFrame()
+
+    def fct_munic(s):
+        for c in [',', '(', '/']:
+            i = s.find(c)
+            if i >= 0:
+                s = s[0:i]
+        return s
+
+    df_conv['municipality'] = dframe['Gemeindename'].copy().apply(fct_munic)
+
+    fct_postalcode = lambda s : None if np.isnan(s) else int(s)
+    df_conv['postalcode'] = dframe['Postleitzahl'].copy().apply(fct_postalcode).astype('Int64')
+
+    def fct_str_to_float(s):
+        if isinstance(s, str):
+            s = s.replace(',', '.')
+            return float(s)
+        return None
+
+    df_conv['longitude'] = dframe['Längengrad'].copy().apply(fct_str_to_float)
+    df_conv['latitude'] = dframe['Breitengrad'].copy().apply(fct_str_to_float)
+
+    #df_conv.to_csv(tgt_file, index=False)
+
+    global BASE
+    BASE = BASE_MUN_GER
+
+    graph = rdflib.Graph()
+    bind_prefixes(graph)
+
+
+    wikidata_city = URIRef('https://www.wikidata.org/wiki/Q515')
+
+
+    for i, row in tqdm(df_conv.iterrows()):
+        # TODO: remove characters from URL that are not allowed, e.g. ( or - or . (as in i.d. ....)
+        municipality = row['municipality'].strip().replace(' ', '_') + '_DE'
+        s = BASE[municipality]
+        #graph.add((s, RDF.type, OWL.NamedIndividual))
+        graph.add((s, RDF.type, wikidata_city))
+        graph.add((s, RDFS.label, Literal(row['municipality'], lang='de')))
+        o = row['postalcode']
+        if isinstance(o, int):
+            o = Literal(o, datatype=XSD.integer)
+            graph.add((s, SDO['postalCode'], o))
+        o = row['latitude']
+        if isinstance(o, float):
+            o = Literal(o, datatype=XSD.float)
+            graph.add((s, GEO['lat'], o))
+        o = row['longitude']
+        if isinstance(o, float):
+            o = Literal(o, datatype=XSD.float)
+            graph.add((s, GEO['long'], o))
+
+        #TODO federal state
+        #if o:
+        #    g.add((x, SDO['addressRegion'], Literal(o)))
+
+    graph.serialize(target_file, format=frmt)
 
 if __name__ == '__main__':
 
     util.init_logging('.', '..')
 
-    #frmt = 'turtle'
-    frmt = 'xml'
+    frmt = 'turtle'
+    #frmt = 'xml'
     #frmt = 'nt' # ntriples
     #src_file = 'C:/my/tmp/ontomatch/dukes_tmp.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/matching_test_files/4_dukes_all.owl'
@@ -620,10 +689,14 @@ if __name__ == '__main__':
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='United Kingdom', country_short='UK')
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
-    src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
+    #src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_kwl_files'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.ttl'
-    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.nt'
     #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
-    create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+    #create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+
+    src_file = 'C:/my/tmp/ontomatch/Municipalities_Germany_UTF8.csv'
+    tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'
+    create_location_file(src_file, tgt_file, frmt)
