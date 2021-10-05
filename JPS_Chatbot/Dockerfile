@@ -27,11 +27,10 @@ FROM python:3.7-slim-buster as app
 
 WORKDIR /app
 
-RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list \
-    && apt-get update \
-    && apt-get install -y --no-install-recommends firefox \
-    && apt-get install -y libmysqlclient-dev \
-    && apt-get install -y mysql-server
+# Install packages required for mysql
+RUN apt-get update \
+ && apt-get install -y default-libmysqlclient-dev \
+ && apt-get install -y default-mysql-server
 
 # Copy in dependencies from first stage
 COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikidata_Query

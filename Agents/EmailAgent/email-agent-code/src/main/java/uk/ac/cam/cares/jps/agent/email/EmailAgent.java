@@ -10,11 +10,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -32,8 +33,13 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
  * @author Michael Hillman
  */
 @Controller
-@WebServlet(urlPatterns = {"/email"})
+@WebServlet(urlPatterns = {"/send", "/status"})
 public class EmailAgent extends JPSAgent {
+
+    /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailAgent.class);
 
     /**
      * Is the EmailAgent in a valid state.
@@ -49,9 +55,18 @@ public class EmailAgent extends JPSAgent {
     public void init() throws ServletException {
         super.init();
 
+        LOGGER.debug("This is a test DEBUG message");
+        LOGGER.info("This is a test INFO message");
+        LOGGER.warn("This is a test WARN message");
+        LOGGER.error("This is a test ERROR message");
+        LOGGER.fatal("This is a test FATAL message");
+        System.out.println("This is a test SYSTEM.OUT message");
+
         // Read the properties file
         try {
             EmailAgentConfiguration.readProperties();
+            LOGGER.debug("EmailAgent has been initialised.");
+
         } catch (IOException ioException) {
             validState = false;
 
@@ -75,29 +90,34 @@ public class EmailAgent extends JPSAgent {
      */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        System.out.println("processRequestParameters(2)");
-        System.out.println(requestParams.toString());
-
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        System.out.println("INFO: Request received at: " + datetime);
+        LOGGER.info("Request received at: " + datetime);
 
-        // Check if this is an email request or a ping to determine availability
-        if (!requestParams.isNull("ping")) {
-            return processPingRequest(request);
+        // Get the URL path
+        String url = request.getRequestURI();
+        url = url.substring(url.lastIndexOf("/"), url.length());
+        if (url.contains("?")) url = url.split("?")[0];
+
+        switch (url) {
+            case "/send":
+                // Check validity
+                boolean validInput = validateInput(requestParams);
+                boolean validSource = validateRequest(request);
+
+                if (validInput && validSource) {
+                    return processEmailRequest(requestParams, request);
+                } else {
+                    // Should already haev triggered a BadRequestException, but just in case
+                    LOGGER.warn("Bad request detected, throwing BadRequestException.");
+                    throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
+                }
+
+            case "/status":
+                return getStatus(request);
         }
 
-        // Check validity
-        boolean validInput = validateInput(requestParams);
-        boolean validSource = validateRequest(request);
-
-        if (validInput && validSource) {
-            return processEmailRequest(requestParams, request);
-        } else {
-            // Should already haev triggered a BadRequestException, but just in case
-            System.out.println("WARN: Bad request detected, throwing BadRequestException.");
-            throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
-        }
+        throw new BadRequestException("Invalid inputs, or untrusted source, cannot process request.");
     }
 
     /**
@@ -107,8 +127,8 @@ public class EmailAgent extends JPSAgent {
      *
      * @return result JSON
      */
-    private JSONObject processPingRequest(HttpServletRequest request) {
-        System.out.println("INFO: Determined as availability request, checking...");
+    private JSONObject getStatus(HttpServletRequest request) {
+        LOGGER.info("Determined as availability request, checking...");
 
         // Is it from a valid source
         boolean validSource = validateRequest(request);
@@ -121,16 +141,16 @@ public class EmailAgent extends JPSAgent {
             // Server is in invalid state
             status = 500;
             description = "Internal server error, cannot process requests.";
-            System.out.println("WARN: Servlet not in valid state, returning status 500.");
+            LOGGER.warn("Servlet not in valid state, returning status 500.");
 
         } else if (!validSource) {
             // Non-permitted source of request.
             status = 403;
             description = "Unauthorised source (not on white-list), cannot process requests.";
-            System.out.println("WARN: Unauthorised request source, returning status 403.");
+            LOGGER.warn("Unauthorised request source, returning status 403.");
 
         } else {
-            System.out.println("INFO: Approved request, returning status 200.");
+            LOGGER.info("Approved request, returning status 200.");
         }
 
         // Send response
@@ -149,7 +169,7 @@ public class EmailAgent extends JPSAgent {
      * @return result JSON
      */
     private JSONObject processEmailRequest(JSONObject requestParams, HttpServletRequest request) {
-        System.out.println("INFO: Determined as email request, submitting...");
+        LOGGER.info("Determined as email request, submitting...");
 
         // Attempt to send email
         return EmailHandler.submitEmail(
@@ -169,7 +189,7 @@ public class EmailAgent extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (!validState) {
-            System.out.println("ERROR: EmailAgent is in invalid state, cannot validate inputs.");
+            LOGGER.error("EmailAgent is in invalid state, cannot validate inputs.");
             return false;
         }
 
@@ -195,7 +215,7 @@ public class EmailAgent extends JPSAgent {
      */
     private boolean validateRequest(HttpServletRequest request) {
         if (!validState) {
-            System.out.println("ERROR: EmailAgent is in invalid state, cannot validate request.");
+            LOGGER.error("EmailAgent is in invalid state, cannot validate request.");
             return false;
         }
 
@@ -216,7 +236,7 @@ public class EmailAgent extends JPSAgent {
             }
 
             // For testing, good to know even in production
-            System.out.println("INFO: Request IP(s) reported as: " + sourceIP);
+            LOGGER.info("Request IP(s) reported as: " + sourceIP);
 
             // Source may be multiple IPs if client was using a proxy
             String[] sourceIPs = sourceIP.split(",");
@@ -247,7 +267,7 @@ public class EmailAgent extends JPSAgent {
                     || address.isSiteLocalAddress();
 
         } catch (UnknownHostException exception) {
-            System.out.println("ERROR: Value '" + ipString + "' is not a valid IP address.");
+            LOGGER.error("Value '" + ipString + "' is not a valid IP address.");
             return false;
         }
     }

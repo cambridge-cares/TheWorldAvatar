@@ -2,11 +2,11 @@ import os
 import glob
 
 def readFile(path, *args, **kwargs):
-    with open (os.path.abspath(path),'r', *args, **kwargs) as myfile:
+    with open (os.path.abspath(path), 'r', *args, **kwargs) as myfile:
         data=myfile.read()
     return data
 
-def writeFile(path,data, *args, **kwargs):
+def writeFile(path, data, *args, **kwargs):
     with open (os.path.abspath(path), 'w', *args, **kwargs) as myfile:
         myfile.write(data)
 
@@ -16,9 +16,13 @@ def fileExists(path):
 def dirExists(path):
     return os.path.isdir(os.path.abspath(path))
 
-def verbosityBasedOutput(output, silent, outFile):
-    if outFile is not None: writeFile(outFile, output)
-    if not silent: print(output)
+def getBaseDirPath(fileOrDir):
+    if fileExists(fileOrDir):
+        return os.path.dirname(fileOrDir)
+    elif dirExists(fileOrDir):
+        return fileOrDir
+    else:
+        raise FileNotFoundError('Error: File or directory does not exists')
 
 def removeBlankTrailingLines(fileContentStr):
     fileContentStr = fileContentStr.split('\n')
@@ -33,3 +37,9 @@ def getFilesWithExtensions(fileOrDir, fileExtList):
         for fileExt in fileExtList:
             files+=glob.glob(os.path.join(fileOrDir,'*'+fileExt))
     return files
+
+def getFileBaseName(filePath):
+    return os.path.splitext(filePath)[0]
+
+def getFileNameWithExt(filePath):
+    return os.path.split(filePath)
