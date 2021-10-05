@@ -95,8 +95,8 @@ public class ModelSurrogateDataDriven extends MoDSMarshaller implements IModel {
 		// -------------------------------------------Read from csv-----------------------------------------------------
 
 		String csvPathFolder = "C:\\Users\\ddeme\\Desktop\\AM_OT_csv_files\\WorldAvatar_DataDrivenAgent_csv_file";
-		String csvFileNameInput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_INPUTS_v1.csv";
-		String csvFileNameOutput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_OUTPUTS_v1.csv";
+		String csvFileNameInput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_INPUTS_v2.csv";
+		String csvFileNameOutput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_OUTPUTS_v2.csv";
 
 		String csvPathFileInput = csvPathFolder + "\\" + csvFileNameInput; 
 		String csvPathFileOutput = csvPathFolder + "\\" + csvFileNameOutput; 
