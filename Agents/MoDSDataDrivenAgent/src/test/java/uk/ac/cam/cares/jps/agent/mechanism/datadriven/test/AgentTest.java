@@ -44,7 +44,7 @@ public class AgentTest {
                         final URL baseURL = AgentTest.class.getResource(fileMap.getOrDefault(relativeResultPath, relativeResultPath));
                         if (null != baseURL) {
                             Path basePath = Path.of(baseURL.toURI());
-                            TestUtils.compareFiles(basePath, resultPath);
+                            FileComparer.compareFiles(basePath, resultPath);
                         }
                     } catch (URISyntaxException ex) {
                         throw new RuntimeException(resultPath.toString(), ex);
