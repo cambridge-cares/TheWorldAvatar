@@ -18,7 +18,7 @@ Next, you'll need to specify the urls/credentials for the Blazegraph and Postgre
 
 To build the image, you can run 
 ```
-docker build -f Dockerfile -t flood.
+docker build -f Dockerfile -t flood .
 ```
 
 The tag name after -t can be different, but you need to use the same name in the docker run command.
