@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,10 +35,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 public class UpdateStations {
 	// Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(UpdateStations.class);
-    
-    // processed data to upload to postgres
-    static Map<String, List<Instant>> datatime_map;
-    static Map<String, List<Double>> datavalue_map;
     
     // boolean to check if RDB data is uploaded
     static boolean updated;
@@ -91,13 +88,11 @@ public class UpdateStations {
     		RemoteStoreClient storeClient = new RemoteStoreClient(Config.kgurl,Config.kgurl, Config.kguser, Config.kgpassword);
     		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
-		
-    	try {
-    		// obtain data from API for a specific date
-        	HttpEntity response = api.getData();
-            
+    	
+		List<Map<?,?>> processed_data;
+    	try {            
             // process data into tables before upload
-            processAPIResponse(response);
+            processed_data = processAPIResponse(api);
     	} catch (Exception e) {
     		LOGGER.error(e.getMessage());
     		throw new JPSRuntimeException(e);
@@ -105,7 +100,7 @@ public class UpdateStations {
         
         updated = false;
         // upload to postgres
-        uploadDataToRDB(date, tsClient, sparqlClient);
+        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
         
         // update last updated date
         sparqlClient.updateLastDate(date);
@@ -113,12 +108,15 @@ public class UpdateStations {
 	
 	/**
 	 * puts data into datatime_map and datavalue_map
+	 * first element is datatime_map, second element is datavalue_map
 	 * @param response
 	 * @throws IOException 
 	 * @throws ParseException 
+	 * @throws URISyntaxException 
 	 */
-	static void processAPIResponse(HttpEntity response) throws ParseException, IOException {
+	static List<Map<?,?>> processAPIResponse(APIConnector api) throws ParseException, IOException, URISyntaxException {
 		LOGGER.info("Processing data from API");
+		HttpEntity response = api.getData();
 		// convert response to JSON Object
 		String response_string = EntityUtils.toString(response);
         JSONObject response_jo = new JSONObject(response_string);
@@ -126,8 +124,8 @@ public class UpdateStations {
         
         // collect data belonging to the same URL into lists
         // this reduces the number of uploads required
-        datatime_map = new HashMap<>();
-        datavalue_map = new HashMap<>();
+        Map<String, List<Instant>> datatime_map = new HashMap<>();
+        Map<String, List<Double>> datavalue_map = new HashMap<>();
         String dataIRI = null;
         int num_fail = 0;
         for (int i = 0; i < readings.length(); i++) {
@@ -169,12 +167,23 @@ public class UpdateStations {
         		LOGGER.error(e.getMessage());
         	}
         }
+        
+        List<Map<?,?>> processed_data = new ArrayList<>();
+        processed_data.add(datatime_map);
+        processed_data.add(datavalue_map);
+        
         LOGGER.info("Received a total of " + Integer.toString(readings.length())+ " readings");
         LOGGER.info("Organised into " + Integer.toString(datatime_map.size()) + " groups");
         LOGGER.info("Failed to process " + Integer.toString(num_fail)+ " readings");
+        
+        return processed_data;
 	}
 	
-	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient) {
+	@SuppressWarnings("unchecked")
+	static void uploadDataToRDB(LocalDate date, TimeSeriesClient<Instant> tsClient, FloodSparql sparqlClient,
+			List<Map<?,?>> processed_data) {
+		Map<String, List<Instant>> datatime_map = (Map<String, List<Instant>>) processed_data.get(0);
+		Map<String, List<Double>> datavalue_map = (Map<String, List<Double>>) processed_data.get(1);
         Iterator<String> iter = datatime_map.keySet().iterator();
         int num_failures = 0;
         LOGGER.info("Uploading data to postgres");
