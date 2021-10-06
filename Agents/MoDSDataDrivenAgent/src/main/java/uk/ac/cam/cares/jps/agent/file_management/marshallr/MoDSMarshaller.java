@@ -493,5 +493,12 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		// TODO Auto-generated method stub
 		
 	}
+
+	
+	@Override
+	public void setUpMoDS() throws IOException, MoDSDataDrivenAgentException {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

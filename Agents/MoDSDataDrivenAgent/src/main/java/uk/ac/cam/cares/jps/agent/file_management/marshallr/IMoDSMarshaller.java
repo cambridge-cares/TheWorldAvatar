@@ -16,4 +16,12 @@ public interface IMoDSMarshaller {
 	public String marshall() throws IOException, MoDSDataDrivenAgentException;
 
 	public void plugInModelDataDriven(List<String> dataVar, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSDataDrivenAgentException;
+
+	/**
+	 * Set up all the components of executable in the MoDS input file. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSDataDrivenAgentException
+	 */
+	void setUpMoDS() throws IOException, MoDSDataDrivenAgentException;
 }
