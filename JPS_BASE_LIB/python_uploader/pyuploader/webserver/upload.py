@@ -42,23 +42,26 @@ def upload_file_to_web_server(
         file_path,
         auth,
         server_url,
-        server_upload_route,
-        server_download_route,
-        remote_subdir=None):
+        server_upload_route='',
+        server_download_route='',
+        remote_subdir=''):
 
-    server_file_location = None
+    file_url_out = None
     headers = {}
-    if remote_subdir is not None:
-        remote_subdir = f"{remote_subdir}/".replace('//','/')
+    if remote_subdir:
+        if not remote_subdir.endswith('/'): remote_subdir = f"{remote_subdir}/"
         headers = {'subDir': remote_subdir}
-    else:
-        remote_subdir = ''
+
+    if server_download_route and not server_download_route.endswith('/'):
+        server_download_route = f"{server_download_route}/"
+
     with open(file_path,'rb') as file_obj:
-        response = requests.post(f"{server_url}{server_upload_route}",
-                                auth=auth,
-                                headers = headers,
-                                files={'file': file_obj})
+        response = requests.post(url= f"{server_url}{server_upload_route}",
+                                auth= auth,
+                                headers= headers,
+                                files= {'file': file_obj})
         response.raise_for_status()
 
         server_file_location = response.headers['file']
-    return f"{server_url}{server_download_route}{remote_subdir}{server_file_location}"
+    file_url_out = f"{server_url}{server_download_route}{remote_subdir}{server_file_location}"
+    return file_url_out
