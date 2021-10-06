@@ -1,7 +1,7 @@
 import docopt
 import pyuploader.app as app
 
-doc = """pyuploader
+__doc__ = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--tstore-nmsp=<nmsp>]
                              [--tstore-filext=<ext>]
@@ -25,7 +25,7 @@ Options:
 
 def start():
     try:
-        args = docopt.docopt(doc)
+        args = docopt.docopt(__doc__)
     except docopt.DocoptExit:
         raise docopt.DocoptExit('Error: ts_upload called with wrong arguments.')
 
@@ -35,7 +35,7 @@ def start():
         tstore_filext = args['--tstore-filext'],
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],
-        no_file_logging = args['--no_file_logging'],
+        no_file_logging = args['--no-file-logging'],
         dry_run = args['--dry-run']
     )
 

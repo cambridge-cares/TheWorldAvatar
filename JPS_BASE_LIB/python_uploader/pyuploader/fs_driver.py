@@ -1,7 +1,7 @@
 import docopt
 import pyuploader.app as app
 
-doc = """pyuploader
+__doc__ = """pyuploader
 Usage:
     fs_upload <file_or_dir>  (--file-server-filext=<ext>)
                              [--file-server-subdirs=<dir>]
@@ -27,7 +27,7 @@ Options:
 """
 def start():
     try:
-        args = docopt.docopt(doc)
+        args = docopt.docopt(__doc__)
     except docopt.DocoptExit:
         raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.')
 
