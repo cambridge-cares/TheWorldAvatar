@@ -27,7 +27,7 @@ def get_server_upload_route():
     try:
         server_upload_route = os.environ['KG_FILE_SERVER_UPLOAD_ROUTE']
     except KeyError:
-        server_upload_route = 'upload/'
+        server_upload_route = 'upload'
         logger.info(f"File server upload route not found in environment variables. Using the default '{server_upload_route}' route.")
     return server_upload_route
 
