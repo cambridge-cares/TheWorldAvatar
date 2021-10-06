@@ -27,13 +27,15 @@ print("************************Start querying Electricity consumption data******
 
 """Grid model query"""
 print("************************Start querying Grid model************************")
-# ret_grid_model_bus = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
-# ret_grid_model_branch = queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
+#ret_grid_model_bus = queryGridModeltForVisualisation_Bus(ukdigitaltwin_label)
+#ret_grid_model_branch = queryGridModeltForVisualisation_Branch(ukdigitaltwin_label)
 
 """"29-bus model query"""
 # ret_busLocation = queryBusGPSLocation(ukdigitaltwin_label, 29)
 # ret_branchLocation = queryBranchConnectedGPSLocation(ukdigitaltwin_label, 29)
-ret_genLocation = queryGeneratorLocation(ukdigitaltwin_label, 29)
+# ret_genLocation = queryGeneratorLocation(ukdigitaltwin_label, 29)
+
+# ret_genLocation_10 = queryGeneratorLocation(ukdigitaltwin_label, 10)
 
 """Labels"""
 class_label_pp = 'UK_PowerPlants'
@@ -43,6 +45,8 @@ class_label_busPara = "UK_Grid_Model_Bus_Parameter"
 class_label_busInputVar = "UK_Grid_Model_Bus_InputVar"
 class_label_branch = "UK_Grid_Model_10_bus_Branch"
 class_label_FromBus = "UK_Grid_Model_Branch_FromBus_GPSPoints"
+
+class_label_10_gen_GPS = "UK_Grid_10_gen_GPS"
 
 #29_bus model
 class_label_29_bus_GPS_location = "UK_Grid_29_bus_GPS_location"
@@ -65,6 +69,7 @@ class_label_29_gen_GPS = "UK_Grid_29_gen_GPS"
 
 # BusGPSLocationJSONCreator(ret_busLocation, class_label_29_bus_GPS_location)
 # BranchGPSLocationJSONCreator(ret_branchLocation, class_label_29_bus_branch_GPS)
-genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS)
+# genLocationJSONCreator(ret_genLocation, class_label_29_gen_GPS)
+# genLocationJSONCreator(ret_genLocation_10, class_label_10_gen_GPS)
 
 print("*******************The JSON_Generator.py is finished*******************")

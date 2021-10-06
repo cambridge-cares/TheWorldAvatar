@@ -1,6 +1,6 @@
 ##############################################
 # Author: Wanni Xie (wx243@cam.ac.uk)        #
-# Last Update Date: 14 Sept 2021             #
+# Last Update Date: 24 Sept 2021             #
 ##############################################
 
 """This script developed functuions for querying the data from remote triple store or SPARQL endpoints for data visualisation."""
@@ -670,7 +670,7 @@ def queryGridModeltForVisualisation_Branch(ukdigitaltwin_label):
 
 """This function is used for query the generator model parameters and input variables, also there connectivity relationship with buses"""
 # ukdigitaltwin_label = "ukdigitaltwin"
-def queryGridModeltForVisualisation_Generator(ukdigitaltwin_label):
+def queryGridModeltForVisualisation_Generator(ukdigitaltwin_label, numOfBus):
   
   queryVar = ["?PowerFlow_ELine", "?FromBus_latitude", "?FromBus_longitude", "?ToBus_latitude", "?ToBus_longitude", "?From_Bus", "?To_Bus", "?para_R", "?para_X", "?para_B", "?para_RateA", "?para_RateB", "?para_RateC", "?para_RatioCoefficient", \
                 "?para_Angle", "?para_Status", "?para_AngleMin", "?para_AngleMax"] 

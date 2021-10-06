@@ -114,11 +114,13 @@
                 toggleLayer("Model_10_EBus_GPSLocation", false);
                 toggleLayer("Model_10_bus_Branch", false);
                 toggleLayer("Model_10_bus_Branch_Arrow", false);
+                toggleLayer("Model_10_gen_GPS", false);
 
                 //Hide the 29 bus model layers
                 toggleLayer("Model_29_EBus_GPSLocation", false);
                 toggleLayer("Model_29_bus_Branch", false);
                 toggleLayer("Model_29_bus_Branch_Arrow", false);
+                toggleLayer("Model_29_gen_GPS", false);                
             }
 
             if (enabled && layerID.includes("sdg_")) {
@@ -139,11 +141,13 @@
                 toggleLayer("Model_10_EBus_GPSLocation", false);
                 toggleLayer("Model_10_bus_Branch", false);
                 toggleLayer("Model_10_bus_Branch_Arrow", false);
+                toggleLayer("Model_10_gen_GPS", false);
 
                 //Hide the 29 bus model layers
                 toggleLayer("Model_29_EBus_GPSLocation", false);
                 toggleLayer("Model_29_bus_Branch", false);
                 toggleLayer("Model_29_bus_Branch_Arrow", false);
+                toggleLayer("Model_29_gen_GPS", false);
             }
 
             if (enabled && layerID.includes("Electricity_")) {
@@ -164,11 +168,13 @@
                 toggleLayer("Model_10_EBus_GPSLocation", false);
                 toggleLayer("Model_10_bus_Branch", false);
                 toggleLayer("Model_10_bus_Branch_Arrow", false);
+                toggleLayer("Model_10_gen_GPS", false);
 
                 //Hide the 29 bus model layers
                 toggleLayer("Model_29_EBus_GPSLocation", false);
                 toggleLayer("Model_29_bus_Branch", false);
                 toggleLayer("Model_29_bus_Branch_Arrow", false);
+                toggleLayer("Model_29_gen_GPS", false);
             }
 
             if (enabled && layerID.includes("Model_10")) {
@@ -176,6 +182,7 @@
                 toggleLayer("Model_10_EBus_GPSLocation", true);
                 toggleLayer("Model_10_bus_Branch", true);
                 toggleLayer("Model_10_bus_Branch_Arrow", true);
+                toggleLayer("Model_10_gen_GPS", true);
 
                 // Hide the power layers
                 toggleLayer("power_locations", false);
@@ -194,6 +201,8 @@
                 toggleLayer("Model_29_EBus_GPSLocation", false);
                 toggleLayer("Model_29_bus_Branch", false);
                 toggleLayer("Model_29_bus_Branch_Arrow", false);
+                toggleLayer("Model_29_gen_GPS", false);
+
 
             }
 
@@ -202,6 +211,7 @@
                 toggleLayer("Model_29_EBus_GPSLocation", true);
                 toggleLayer("Model_29_bus_Branch", true);
                 toggleLayer("Model_29_bus_Branch_Arrow", true);
+                toggleLayer("Model_29_gen_GPS", true);
 
                 // Hide the power layers
                 toggleLayer("power_locations", false);
@@ -220,6 +230,7 @@
                 toggleLayer("Model_10_EBus_GPSLocation", false);
                 toggleLayer("Model_10_bus_Branch", false);
                 toggleLayer("Model_10_bus_Branch_Arrow", false);
+                toggleLayer("Model_10_gen_GPS", false);
 
             }
 
@@ -442,6 +453,11 @@
                 data: 'UK_Grid_29_gen_GPS.geojson'
             });
 
+            map.addSource('UK_Grid_10_gen_GPS', {
+                type: 'geojson',
+                data: 'UK_Grid_10_gen_GPS.geojson'
+            });
+
             map.loadImage('/bus.png', (error, image) => {
                 if (error) throw error;
                 map.addImage('EBus_icon', image);
@@ -468,7 +484,7 @@
                 source: 'Bus_model_GPS_Parameters',
                 layout: {
                     'icon-image': 'EBus_icon',
-                    'icon-size': 0.075,
+                    'icon-size': 0.065,
                     'text-field': ['get', 'Bus_num'],
                     'text-font': [
                         'Open Sans Semibold',
@@ -485,8 +501,8 @@
                 source: 'UK_Grid_29_bus_GPS_location',
                 layout: {
                     'icon-image': 'EBus_icon',
-                    'icon-size': 0.045,
-                    'text-field': ['get', 'Name'],
+                    'icon-size': 0.055,
+                    'text-field': ['get', 'Bus_num'],
                     'text-font': [
                         'Open Sans Semibold',
                         'Arial Unicode MS Bold'
@@ -497,7 +513,23 @@
             });
 
             map.addLayer({
-                'id': 'UK_Grid_29_gen_GPS',
+                'id': 'Model_10_gen_GPS',
+                'type': 'circle',
+                'source': 'UK_Grid_10_gen_GPS',
+                'layout': {
+                    'visibility': 'visible'
+                },
+                'paint': {
+                    'circle-radius': 4,
+                    'circle-color': ["get", "gen_colour"],
+                    'circle-opacity': 0.75,
+                    'circle-stroke-width': 0
+                }
+            });
+
+
+            map.addLayer({
+                'id': 'Model_29_gen_GPS',
                 'type': 'circle',
                 'source': 'UK_Grid_29_gen_GPS',
                 'layout': {
@@ -871,8 +903,8 @@
             "Electricity_Consumption_region_borders"
         ],
             null, false);
-        registerLayer("10-Bus Grid Model", ["Model_10_EBus_GPSLocation", "Model_10_bus_Branch_Arrow", "Model_10_bus_Branch"], null, false);
-        registerLayer("29-Bus Grid Model", ["Model_29_EBus_GPSLocation", "Model_29_bus_Branch_Arrow", "Model_29_bus_Branch"], null, false);
+        registerLayer("10-Bus Grid Model", ["Model_10_EBus_GPSLocation", "Model_10_bus_Branch_Arrow", "Model_10_bus_Branch", "Model_10_gen_GPS"], null, false);
+        registerLayer("29-Bus Grid Model", ["Model_29_EBus_GPSLocation", "Model_29_bus_Branch_Arrow", "Model_29_bus_Branch", "Model_29_gen_GPS"], null, false);
 
         // Build the layer selection tree
         buildLayerTree("radio");
