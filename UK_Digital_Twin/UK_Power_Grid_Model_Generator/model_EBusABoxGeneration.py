@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 23 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -9,7 +9,7 @@ import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -57,7 +57,6 @@ energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
 
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable'] # remote query
-endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
 
 """Sleepycat storage path"""
 defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
@@ -67,13 +66,6 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 
 """OWL file storage path"""
 defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs # default path
-
-"""father node"""
-father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EBus")
-
-# """NameSpace"""
-# father_uri = father_node.split('#')[0]
-# model_ebus_namespace = father_uri + HASH
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -90,7 +82,7 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, OWLFileStoragePath, updateLocalOWLFile = True):
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
@@ -120,8 +112,8 @@ def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath
     else:
         topoAndConsumpPath_Sleepycat = None
         print('Store is IOMemery')
-        
-    EBus = list(query_model.queryEBusandRegionalDemand(topoAndConsumpPath_Sleepycat, localQuery, endpoint_url))
+    # TODO: add load clustering    
+    EBus = list(query_model.queryEBusandRegionalDemand(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
     EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
     
     if EBus == None:
@@ -137,6 +129,7 @@ def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath
         namespace = root_uri + HASH
         node_locator = ebus[0].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
+        father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "EBus")
         
         # create a named graph
         g = Graph(store = store, identifier = URIRef(root_uri))
@@ -147,16 +140,17 @@ def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_Model")))  
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'BusModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
-        g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem .iri), URIRef(root_node)))
+        g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
         # link with EBus node in topology
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(ebus[0])))
         g.add((URIRef(ebus[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
         ###add EBus model parametor###
-        uk_ebus_model_ = UK_PG.UKEbusModel(version = version_of_model)
+        uk_ebus_model_ = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
         uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model_, ebus) 
         print('the bus type is ',uk_ebus_model_.TYPE)
         
@@ -199,9 +193,9 @@ def createModel_EBus(storeType, localQuery, version_of_model, OWLFileStoragePath
         if updateLocalOWLFile == True:    
             # Store/update the generated owl files      
             if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
+                filepath_ = filepath + '\\' + 'Model_' + str(numOfBus) + '_Bus_Grid_' + node_locator + OWL
             else:
-                filepath_ = filepath + 'Model_' + node_locator + OWL
+                filepath_ = filepath + 'Model_' + str(numOfBus) + '_Bus_Grid_' + node_locator + OWL
             storeGeneratedOWLs(g, filepath_)
             
     if isinstance(store, Sleepycat):  
@@ -234,7 +228,8 @@ def initialiseEBusModelVar(EBus_Model, EBus):
         print('The first argument should be an instence of UKEbusModel')
         return None
     EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
-    if EBus_Model.BUS == 1:
+    #TODO: assigning slack bus is different
+    if EBus_Model.BUS == 1: # assign slack bus
         EBus_Model.TYPE = 3
     
     EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
@@ -242,5 +237,5 @@ def initialiseEBusModelVar(EBus_Model, EBus):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, None, True)       
+    createModel_EBus('default', False, 2019, 10, None, True)       
     print('Terminated')

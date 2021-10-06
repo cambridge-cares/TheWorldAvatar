@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 24 Sept 2021         #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -49,18 +49,29 @@ def queryDigitalTwinLocation(ukdigitaltwin_Endpoint, SleepycatPath, localQuery):
 # queryStr_Egen: Query the model EGen and its corresponding power plant iri as well as its cost factors (fixed m&o, varialbe m&o, fuel cost), CO2 emission factor and its connected bus
 # queryStr_capacityAndPrimaryFuel: query the capacity and primary fuel of the EGen's corresponding power plant.  
 
-def queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, *endPoints): # endpoints: topology_Endpoint, powerPlant_Endpoint
+def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endPoint_label): # endpoints: topology_Endpoint, powerPlant_Endpoint
+    label = "_" + str(numOfBus) + "_"  
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>
     PREFIX ontopowsys_PowSysPerformance: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     SELECT DISTINCT ?EGen ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
     WHERE
     {
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerGeneration_EGen .
+    ?PowerGeneration_EGen rdf:type ontopowsys_PowSysFunction:PowerGeneration .
+    ?PowerGeneration_EGen ontoecape_technical_system:isRealizedBy ?EGen .
+     
     ?EGen rdf:type ontopowsys_PowSysRealization:PowerGenerator .
     ?EGen ontocape_upper_level_system:isExclusivelySubsystemOf ?PowerGenerator .
     
@@ -85,13 +96,13 @@ def queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery
     
     ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel .
     }
-    """
+    """% label
     
     global qres, capa_PrimaryFuel
     
-    if localQuery == False and len(endPoints) > 0:
+    if localQuery == False and len(endPoint_label) > 0:
         print('remoteQuery')
-        res = json.loads(performFederatedQuery(queryStr, *endPoints))
+        res = json.loads(performQuery(endPoint_label, queryStr))
         qres = [[ str(r['EGen']), str(r['PowerGenerator']), float((r['FixedMO'].split('\"^^')[0]).replace('\"','')), float((r['VarMO'].split('\"^^')[0]).replace('\"','')), \
                  float((r['FuelCost'].split('\"^^')[0]).replace('\"','')), float((r['CO2EmissionFactor'].split('\"^^')[0]).replace('\"','')), int(r['Bus'].split('EBus-')[1]), \
                  float((r['Capacity'].split('\"^^')[0]).replace('\"','')), (str(r['PrimaryFuel']).split('#'))[1]] for r in res]
@@ -215,17 +226,26 @@ def queryRegionalElecConsumption(energyConsumption_Endpoint, consumption_Sleepyc
 
 ###############EBus#############
 # query the EBus iri and its located area's total electricity consumption 
-def queryEBusandRegionalDemand(topo_Consumption_SleepycatPath, localQuery, *endPoints): # endPoints: topology_Endpoint, energyConsumption_Endpoint
+def queryEBusandRegionalDemand(numOfBus, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
+    label = "_" + str(numOfBus) + "_"  
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     SELECT DISTINCT ?EBus ?TotalELecConsumption
     WHERE
     {
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
     ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location_region . 
+    
     ?EquipmentConnection_EBus ontoecape_technical_system:isRealizedBy ?EBus . 
     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location .
     ?Location rdf:type <https://dbpedia.org/ontology/Region> .
@@ -234,11 +254,11 @@ def queryEBusandRegionalDemand(topo_Consumption_SleepycatPath, localQuery, *endP
     ?regionalConsumption ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
     ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
     }
-    """   
+    """ % label  
     global qres
-    if localQuery == False and len(endPoints) > 0:
-       print('remoteQuery')
-       res = json.loads(performFederatedQuery(queryStr, *endPoints))
+    if localQuery == False and len(endPoint_label) > 0:
+       print('remoteQuery')     
+       res = json.loads(performQuery(endPoint_label, queryStr))            
        qres = [[ str(r['EBus']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
     elif topo_Consumption_SleepycatPath != None and localQuery == True:  
         ebus_cg = ConjunctiveGraph('Sleepycat')
@@ -253,19 +273,27 @@ def queryEBusandRegionalDemand(topo_Consumption_SleepycatPath, localQuery, *endP
 ###############ELine#############
 # queryStr_busConnectionAndLength: query ELine iri and its From_Bus, To_Bus and the Length_ELine.
 # queryStr_parallelBranches: the number of OHL_400 and 275kV of an ELine
-def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, localQuery):
+def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleepycat, localQuery):
+    label = "_" + str(numOfBus) + "_"  
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     SELECT  ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400kV ?Num_OHL_275kV
     WHERE
     {
-    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerFlow_ELine .
+    ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .   
     ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
+    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
     ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
     ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
     
@@ -282,7 +310,7 @@ def queryELineTopologicalInformation(topology_Endpoint, topology_Sleepycat, loca
     ?OHL_275kV ontopowsys_PowSysRealization:hasVoltageLevel "275kV" .
     ?OHL_275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_275kV .       
     }
-    """
+    """% label
     
     global qres 
     
@@ -333,15 +361,14 @@ if __name__ == '__main__':
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     # res = queryRegionalElecConsumption('ukenergyconsumptionkg', None, False)
-    res = queryELineTopologicalInformation('ukpowergridtopology', None, False)
-    print (res)
-    
+    res = queryELineTopologicalInformation(10, 'ukdigitaltwin', None, False)
+   
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
-    # res = queryEBusandRegionalDemand(None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG")
-    # print(res)
+    # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
+    print(res)
     # for r in res:
     #     print(res)
     #testLabel()

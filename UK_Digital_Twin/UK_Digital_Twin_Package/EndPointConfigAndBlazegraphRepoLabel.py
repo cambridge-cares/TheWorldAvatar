@@ -8,12 +8,12 @@
 """The lables of different repositories maintained in RDF4j triple store deployed in CoMo server"""
 
 ##################decommissioned repositories##################
-UKDigitalTwinKG = { # the repo used to store the top node graph (lookup table)
-    'lable': 'ukdigitaltwin', # lable is used in Blazegraph while ID for CoMo RDF4j
-    'ID': 'UKDigitalTwin',
-    'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukdigitaltwin",
-    'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin",
-    'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"}
+# UKDigitalTwinKG = { # the repo used to store the top node graph (lookup table)
+#     'lable': 'ukdigitaltwin', # lable is used in Blazegraph while ID for CoMo RDF4j
+#     'ID': 'UKDigitalTwin',
+#     'endpoint_iri' : "http://www.theworldavatar.com/kb/ontokgrouter/ukdigitaltwin",
+#     'queryendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin",
+#     'updateendpoint_iri' : "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKDigitalTwin/statements"}
 
 UKPowerPlantKG = { # level 1
     'lable': 'ukpowerplantkg',

@@ -43,8 +43,9 @@ class UKEbusModel:
     PDGENKey = "Pd_Gen_"
     GDGENKey = "Gd_Gen_"
     
-    def __init__(self, version = 2019):
-        self.version = version
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+        self.DUKESVersion = DUKESVersion
+        self.numOfBus = numOfBus
         self.location = 'http://dbpedia.org/resource/United_Kingdom'
         self.BUS = None
         self.TYPE = 1
@@ -70,8 +71,8 @@ class UKEbusModel:
 class UKElineModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\ELine\\Sleepycat_ELine"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\ELine\\"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\ELine\\Sleepycat_ELine"
      
     """ELine Node keys"""
     ELineKey = "ELine-"
@@ -96,8 +97,9 @@ class UKElineModel:
     ANGMINKey = "AngleMin_"
     ANGMAXKey = "AngleMax_"
     
-    def __init__(self, version = 2019):
-        self.version = version
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+        self.DUKESVersion = DUKESVersion
+        self.numOfBus = numOfBus
         self.location = 'http://dbpedia.org/resource/United_Kingdom'
         self.FROMBUS = None
         self.TOBUS = None
@@ -118,9 +120,8 @@ class UKElineModel:
 class UKEGenModel:
     
     """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\"
-    # StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\test\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\EGen\\Sleepycat_EGen"
+    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EGen\\"
+    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EGen\\Sleepycat_EGen"
     
     """EGen Node keys"""
     EGenKey = "EGen-"
@@ -152,8 +153,9 @@ class UKEGenModel:
     APFKey = "APF_"
     
     
-    def __init__(self, version = 2019):
-        self.version = version
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+        self.DUKESVersion = DUKESVersion
+        self.numOfBus = numOfBus
         self.location = 'http://dbpedia.org/resource/United_Kingdom'
         self.BUS = None
         self.PG_INPUT = None
@@ -192,8 +194,8 @@ class UKEGenModel_CostFunc(UKEGenModel):
     genCost_cKey = "genCostcn-2_c_"
     
     """Initialise the cost function"""
-    def __init__(self, version = 2019, CarbonTax = 16): # 2019 base world UK carbon tax is £16/tCO2 eq.
-            self.version = version
+    def __init__(self, DUKESVersion = 2019, CarbonTax = 16): # 2019 base world UK carbon tax is £16/tCO2 eq.
+            self.DUKESVersion = DUKESVersion
             self.location = 'http://dbpedia.org/resource/United_Kingdom'
             self.MODEL = 2
             self.STARTUP = 0

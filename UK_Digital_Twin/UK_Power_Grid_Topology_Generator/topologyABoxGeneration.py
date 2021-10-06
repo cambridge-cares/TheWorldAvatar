@@ -1,11 +1,10 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 Sept 2021         #
+# Last Update Date: 24 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
 
-import os
 import owlready2
 # import numpy as np
 from rdflib.extras.infixowl import OWL_NS
@@ -13,7 +12,7 @@ from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
 from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE
-import sys
+import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package import UKDigitalTwin as UKDT
@@ -28,7 +27,7 @@ from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStor
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
-from UK_Digital_Twin_Package import generatorCluster
+from UK_Digital_Twin_Package import generatorCluster as genCluster
 
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
 
@@ -115,7 +114,7 @@ userSpecified = False
 """Topology Conjunctive graph identifier"""
 topo_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model"
 
-counter = 1 
+#counter = 1 
 
 ### Functions ### 
 
@@ -130,7 +129,7 @@ def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch):
     return topo_info, busInfoArrays, branchTopoInfoArrays, branchPropArrays
 
 """Main function: create the sub graph represents the Topology"""
-def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, OWLFileStoragePath, updateLocalOWLFile = True):
+def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, generatorClusterFunctionName, OWLFileStoragePath, updateLocalOWLFile = True):
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
@@ -168,7 +167,7 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     if addELineNodes != None:    
         g, nodeName = addELineNodes(g, numOfBranch, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment)
     if addEGenNodes != None:
-        g, nodeName = addEGenNodes(g, numOfBus, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace)
+        g, nodeName = addEGenNodes(g, numOfBus, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -296,7 +295,7 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTo
         # Adding the nodes about the branches' ShapeRepresentation (the different voltage level's branches) 
         # if the number of the 400kV_PARALLEL_CONNECTIONS and 275kV_PARALLEL_CONNECTIONS are assigned to be 0 inferring that there is no need for represent the 
         # ShapeRepresentation in the topology graph
-        if int(branchTopoData[2].strip('\n')) != 0 and  int(branchTopoData[3].strip('\n')) != 0: 
+        if not (int(branchTopoData[2].strip('\n')) == 0 and int(branchTopoData[3].strip('\n')) == 0): 
             # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
             gpsArray = []
             gpsArray = list(query_topo.queryConnectedBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
@@ -345,110 +344,70 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTo
     return graph, nodeName 
 
 """Add nodes represent Branches"""
-def addEGenNodes(graph, numOfBus, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace): 
+#generatorClusterFunctionName is the name of the cluster function in the class generatorCluster 
+def addEGenNodes(graph, numOfBus, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace): 
     print("Adding the triples of EGen of the grid topology.")
+    print('#########START addEGenNodes for', numOfBus, '-bus model##############')
     nodeName = "EGen"
-    global counter # starts from 1
+    counter = 1 
     if modelFactorArrays[0] == ukmf.headerModelFactor:
         pass
     else:
         print('The bus model factor data header is not matched, please check the data file')
         return None
+   
+    # query the Bus Topological Information and power plant attributes  
+    #### Bus: Bus_node, Region, Bus_lat, Bus_lon ####
+    res_queryBusTopologicalInformation = list(query_topo.queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endpoint_label))
+    #### power plant: PowerGenerator, Region, lat, lon, PrimaryFuel, GenerationTechnology ####
+    res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endpoint_label))
     
-    if numOfBus == 10: # the 10-bus model takes an assumption of clustering the generators with bus who locates in the same region as the generator does
-        res_BusLocatedRegion= list(query_topo.queryBusLocatedRegion(numOfBus, ConjunctiveGraph, localQuery, endpoint_label))
-        print('#########START addEGenNodes for 10_bus model##############')
-        for bus_location in res_BusLocatedRegion: # bus_location[0]: bus node; bus_location[1]: located region
-            # bus_location[1] = str(bus_location[1]).replace('http:', 'https:')
-            # print(bus_location[1])     
-            res_powerplant= list(query_topo.queryPowerPlantLocatedInSameRegion(endpoint_label, ukpp.SleepycatStoragePath, str(bus_location[1]), localQuery))  
-            local_counter = 1
-            while local_counter <= len(res_powerplant):
-                for pg in res_powerplant: # pg[0]: powerGenerator, pg[1]: PrimaryFuel; pg[2]: GenerationTechnology
-                    # build up iris
-                    generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
-                    generator_node = tp_namespace + generator_context_locator
-                    EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
-                    EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
-                    EGen_node = EGen_namespace + EGen_context_locator
-                    
-                    # link the generator_node, EGen_node and their PowerGenerator of the power plant
-                    graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
-                    graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(bus_location[0])))
-                    graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
-                    graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))
-                    graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
-                    graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(pg[0])))
-                    # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-                    if pg[1].split('#')[1] in ukmf.Renewable:
-                        graph = AddCostAttributes(graph, counter, 1, modelFactorArrays, numOfBus)
-                    elif pg[1].split('#')[1] == 'Nuclear':
-                        graph = AddCostAttributes(graph, counter, 2, modelFactorArrays, numOfBus)
-                    elif pg[1].split('#')[1] in ukmf.Bio:
-                        graph = AddCostAttributes(graph, counter, 3, modelFactorArrays, numOfBus)
-                    elif pg[1].split('#')[1] == 'Coal':  
-                        graph = AddCostAttributes(graph, counter, 4, modelFactorArrays, numOfBus)
-                    elif pg[2].split('#')[1] in ukmf.CCGT:  
-                        graph = AddCostAttributes(graph, counter, 5, modelFactorArrays, numOfBus)
-                    elif pg[2].split('#')[1] in ukmf.OCGT:  
-                        graph = AddCostAttributes(graph, counter, 6, modelFactorArrays, numOfBus)
-                    else:
-                        graph = AddCostAttributes(graph, counter, 7, modelFactorArrays, numOfBus)                   
-                    counter += 1               
-                    local_counter += 1 
-    else: # clustering the power plants to the closest bus
-        busList = list(query_topo.queryBusGPSLocation(numOfBus, ConjunctiveGraph, localQuery, endpoint_label))
-        busNumberArray = list(range(1, len(busList) + 1))
-        plantInGBList = list(query_topo.queryPowerPlantsLocatedInGB(ConjunctiveGraph, localQuery, endpoint_label)) #query the power plant located in the Great Britain
-        print('#########START addEGenNodes for', numOfBus, '_bus model##############')
-        for pg in plantInGBList:
-            # build up iris            
-            generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
-            generator_node = tp_namespace + generator_context_locator
-            EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
-            EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
-            EGen_node = EGen_namespace + EGen_context_locator
-            
-            # link the generator_node, EGen_node and their PowerGenerator of the power plant
-            graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
-            graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
-            
-            # assign a closet bus to the generator
-            connectedBus = str(generatorCluster.closestBus(busList, pg[3], pg[4]))
-            print("The closet bus is: ", connectedBus)
-            # check if all buses are connected with generators            
-            if int(connectedBus.split("EBus-")[1]) in busNumberArray:
-                bn = int(connectedBus.split("EBus-")[1])
-                busNumberArray.remove(bn)
-                
-            graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(connectedBus)))
-            graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))           
-            graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
-            graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(pg[0])))
-            # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-            if pg[1]in ukmf.Renewable:
-                graph = AddCostAttributes(graph, counter, 1, modelFactorArrays, numOfBus)
-            elif pg[1] == 'Nuclear':
-                graph = AddCostAttributes(graph, counter, 2, modelFactorArrays, numOfBus)
-            elif pg[1] in ukmf.Bio:
-                graph = AddCostAttributes(graph, counter, 3, modelFactorArrays, numOfBus)
-            elif pg[1] == 'Coal':  
-                graph = AddCostAttributes(graph, counter, 4, modelFactorArrays, numOfBus)
-            elif pg[2] in ukmf.CCGT:  
-                graph = AddCostAttributes(graph, counter, 5, modelFactorArrays, numOfBus)
-            elif pg[2] in ukmf.OCGT:  
-                graph = AddCostAttributes(graph, counter, 6, modelFactorArrays, numOfBus)
-            else:
-                graph = AddCostAttributes(graph, counter, 7, modelFactorArrays, numOfBus)       
-            counter += 1   
-        if len(busNumberArray) != 0:
-            print("WARNING: There are buses not being connected by the generators, which are number:", busNumberArray)
-        else:
-            print("All buses are connected with generators. ")
+    # create an instance of class generatorCluster
+    gc = genCluster.generatorCluster()
+    # get the cluster method via getattr function 
+    genClusterMethod = getattr(gc, generatorClusterFunctionName)
+    # pass the arrguments to the cluster method
+    bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes)
+                             
+    for busGen in bus_generator_assignment_list: # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
+        # build up iris
+        generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
+        generator_node = tp_namespace + generator_context_locator
+        EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
+        EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
+        EGen_node = EGen_namespace + EGen_context_locator
         
+        # link the generator_node, EGen_node and their PowerGenerator of the power plant
+        graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
+        graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(busGen[1])))
+        graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
+        graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))
+        graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
+        graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen[0])))
+        # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
+        graph = AddCostAttributes(graph, counter, busGen[2].split('#')[1], busGen[3].split('#')[1], modelFactorArrays, numOfBus)
+        
+        counter += 1               
     return graph, nodeName   
 
-def AddCostAttributes(graph, counter, fuelType, modelFactorArrays, numOfBus): # fuelType, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
+
+"""This function is designed for added the attributes to the generator cost function"""
+def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numOfBus): 
+    if fuelType in ukmf.Renewable:
+        fuelTypeIndex = 1     # fuelTypeIndex, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
+    elif fuelType == 'Nuclear':
+        fuelTypeIndex = 2
+    elif fuelType in ukmf.Bio:
+        fuelTypeIndex = 3
+    elif fuelType == 'Coal': 
+        fuelTypeIndex = 4
+    elif genTech in ukmf.CCGT:  
+        fuelTypeIndex = 5
+    elif genTech in ukmf.OCGT:  
+        fuelTypeIndex = 6
+    else:
+        fuelTypeIndex = 7  
+
     EGen_namespace = UKDT.nodeURIGenerator(3, dt.powerGridModel, numOfBus).split(OWL)[0] + SLASH + uk_egen_model.ModelEGenKey + str(counter).zfill(3) + OWL + HASH
     EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
     EGen_node = EGen_namespace + EGen_context_locator
@@ -458,8 +417,8 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays, numOfBus): # 
     value_EGen_VarOandMCost_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[2] + UNDERSCORE + EGen_context_locator
     EGen_FuelCost_node = EGen_namespace + ukmf.headerModelFactor[3] + UNDERSCORE + EGen_context_locator
     value_EGen_FuelCost_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[3] + UNDERSCORE + EGen_context_locator
-    EGen_CarbonFactor_node = EGen_namespace + ukmf.headerModelFactor[4].strip('\n').strip('&')  + UNDERSCORE + modelFactorArrays[fuelType][0] + UNDERSCORE + EGen_context_locator
-    value_EGen_CarbonFactor_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[4].strip('\n').strip('&') + UNDERSCORE + modelFactorArrays[fuelType][0] + UNDERSCORE + EGen_context_locator
+    EGen_CarbonFactor_node = EGen_namespace + ukmf.headerModelFactor[4].strip('\n').strip('&')  + UNDERSCORE + modelFactorArrays[fuelTypeIndex][0] + UNDERSCORE + EGen_context_locator
+    value_EGen_CarbonFactor_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[4].strip('\n').strip('&') + UNDERSCORE + modelFactorArrays[fuelTypeIndex][0] + UNDERSCORE + EGen_context_locator
     
     # add FixedOperatingCostandMaintenanceCost
     graph.add((URIRef(EGen_node), URIRef(ontopowsys_PowSysPerformance.hasFixedMaintenanceCost.iri), URIRef(EGen_FixedOandMCost_node)))
@@ -467,38 +426,38 @@ def AddCostAttributes(graph, counter, fuelType, modelFactorArrays, numOfBus): # 
     graph.add((URIRef(EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_FixedOandMCost_node)))
     graph.add((URIRef(value_EGen_FixedOandMCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
     graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
-    graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][1]))))
+    graph.add((URIRef(value_EGen_FixedOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][1]))))
     # add VariableOperatingCostandMaintenanceCost  
     graph.add((URIRef(EGen_node), URIRef(ontopowsys_PowSysPerformance.hasCost.iri), URIRef(EGen_VarOandMCost_node)))
     graph.add((URIRef(EGen_VarOandMCost_node), RDF.type, URIRef(ontopowsys_PowSysPerformance.OperationalExpenditureCosts.iri)))
     graph.add((URIRef(EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_VarOandMCost_node)))
     graph.add((URIRef(value_EGen_VarOandMCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
     graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
-    graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][2]))))
+    graph.add((URIRef(value_EGen_VarOandMCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][2]))))
     # add FuelCost  
     graph.add((URIRef(EGen_node), URIRef(ontopowsys_PowSysPerformance.hasFuelCost.iri), URIRef(EGen_FuelCost_node)))
     graph.add((URIRef(EGen_FuelCost_node), RDF.type, URIRef(ontopowsys_PowSysPerformance.FuelCosts.iri)))
     graph.add((URIRef(EGen_FuelCost_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_FuelCost_node)))
     graph.add((URIRef(value_EGen_FuelCost_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
     graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
-    graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][3]))))
+    graph.add((URIRef(value_EGen_FuelCost_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][3]))))
     # add CarbonFactor 
     graph.add((URIRef(EGen_node), URIRef(ontoeip_powerplant.hasEmissionFactor.iri), URIRef(EGen_CarbonFactor_node)))
     graph.add((URIRef(EGen_CarbonFactor_node), RDF.type, URIRef(t_box.ontoeip_powerplant + 'CO2EmissionFactor'))) # undefined CO2EmissionFactor
     graph.add((URIRef(EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(value_EGen_CarbonFactor_node)))
     graph.add((URIRef(value_EGen_CarbonFactor_node), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
     graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(t_box.ontocape_derived_SI_units + 'GBP_per_MWh'))) # undefined unit
-    graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelType][4].strip('\n')))))
+    graph.add((URIRef(value_EGen_CarbonFactor_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(modelFactorArrays[fuelTypeIndex][4].strip('\n')))))
    
     return graph
 
 if __name__ == '__main__': 
-    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, None, True)
-    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, None, True)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', None, True)
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', None, True)
     
-    # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, None, True)
-    # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, None, True)
-    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, None, True) 
+    # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', None, True)
+    # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', None, True)
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', None, True) 
     
     print('**************Terminated**************')

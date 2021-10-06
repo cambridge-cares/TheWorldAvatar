@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 24 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -27,7 +27,7 @@ from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStor
 from UK_Power_Grid_Model_Generator.costFunctionParameterAgent import costFuncPara
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 
@@ -82,13 +82,6 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 """OWL file storage path"""
 defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
 
-"""father node"""
-father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "EGen")
-
-# """NameSpace"""
-# father_uri = father_node.split('#')[0]
-# model_egen_namespace = father_uri + HASH
-
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
@@ -108,7 +101,7 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return   
@@ -138,9 +131,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath
     else:
         print('Store is IOMemery')        
             
-    
-    # EGenInfo = list(query_model.queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, topology_federated_query_Endpoint, powerPlant_federated_query_Endpoint))
-    EGenInfo = list(query_model.queryEGenInfo(topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endpoint_url))
+    EGenInfo = list(query_model.queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endpoint_label))
                     
     if EGenInfo == None:
         print('EGenInfo is empty')
@@ -158,6 +149,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath
         namespace = root_uri + HASH
         node_locator = egen[0].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
+        father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "EGen")
         
         # create a named graph
         g = Graph(store = store, identifier = URIRef(root_uri))
@@ -168,6 +160,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus")))
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'GeneratorModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
@@ -178,7 +171,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath
         
         ###add cost function parameters###
         # calculate a, b, c
-        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version = version_of_model)
+        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax)
         uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location,  localQuery)
         
         if uk_egen_costFunc != None:
@@ -205,7 +198,7 @@ def createModel_EGen(storeType, localQuery, version_of_model, OWLFileStoragePath
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
         ###add EGen model parametor###
-        uk_egen_model_ = UK_PG.UKEGenModel(version = version_of_model)
+        uk_egen_model_ = UK_PG.UKEGenModel(version = version_of_DUKES)
         uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, egen)
         
         if uk_egen_model_ != None:

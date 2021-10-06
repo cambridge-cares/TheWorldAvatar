@@ -25,8 +25,8 @@ class UKDigitalTwin:
     """Default path of SleepycatStoragePath"""
     SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     
-    """Default remote endpoint"""
-    endpoint = EndPointConfigAndBlazegraphRepoLabel.UKDigitalTwinKG
+    # """Default remote endpoint"""
+    # endpoint = EndPointConfigAndBlazegraphRepoLabel.UKDigitalTwinKG
     
     """ Node Names """
     baseURL = "http://www.theworldavatar.com/kb" 

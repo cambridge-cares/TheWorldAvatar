@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 06 Sept 2021         #
+# Last Update Date: 23 Sept 2021         #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
@@ -9,7 +9,7 @@ import os
 import owlready2
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF
+from rdflib.namespace import RDF, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -26,7 +26,7 @@ import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologicalInformationPropertyInstance
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
-from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLable as endpointList
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -65,13 +65,6 @@ userSpecified_Sleepycat = False # storage mode: False: default, True: user speci
 """OWL file storage path"""
 defaultStoredPath = uk_eline_model.StoreGeneratedOWLs # default path
 
-"""father node"""
-father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, 10, "ELine")
-
-# """NameSpace"""
-# father_uri = father_node.split('#')[0]
-# model_ebus_namespace = father_uri + HASH
-
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
@@ -87,7 +80,7 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 
 ### Functions ###
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
-def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_model, OWLFileStoragePath, updateLocalOWLFile = True): 
+def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_DUKES, OWLFileStoragePath, updateLocalOWLFile = True): 
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return    
@@ -118,9 +111,11 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
     else:
         print('Store is IOMemery')
-        
+    
+    
+    # TODO: skip the shape geo of elins
     # ELineTopoInfo = list(query_model.queryELineTopologicalInformation(topology_Endpoint, topoAndConsumpPath_Sleepycat, localQuery))
-    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(endpoint_label, topoAndConsumpPath_Sleepycat, localQuery))
+    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(numOfBus, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery))
     
     if ELineTopoInfo == None:
         print('ELineTopoInfo is empty')
@@ -135,6 +130,7 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
         namespace = root_uri + HASH
         node_locator = eline[0].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
+        father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "ELine")
         
         # create a named graph
         g = Graph(store = store, identifier = URIRef(root_uri))
@@ -145,6 +141,7 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_Model")))
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
@@ -153,8 +150,8 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline[0])))
         g.add((URIRef(eline[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
-        ###add ELine model parametor###
-        uk_eline_model_ = UK_PG.UKElineModel(version = version_of_model)
+        ###add ELine model parameter###
+        uk_eline_model_ = UK_PG.UKElineModel(version_of_DUKES, numOfBus)
         uk_eline_model_ = initialiseELineModelVar(topo_info, branchPropertyArrays, uk_eline_model_, eline) 
         
         if uk_eline_model_ != None:
@@ -196,15 +193,16 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_m
         if updateLocalOWLFile == True:    
             # Store/update the generated owl files      
             if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
+                filepath_ = filepath + '\\' + 'Model_' + str(numOfBus) + '_Bus_Grid_' + node_locator + OWL
             else:
-                filepath_ = filepath + 'Model_' + node_locator + OWL
+                filepath_ = filepath + 'Model_' + str(numOfBus) + '_Bus_Grid_' + node_locator + OWL
             storeGeneratedOWLs(g, filepath_)
     
     if isinstance(store, Sleepycat):  
         cg_model_ELine.close()       
     return
 
+# TODO: skip the calculation of B, R,X of 29_bus model
 # Eline = ['http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-001.owl#ELine-001', 1, 2, 184.8475, 3, 0] , 400kv, 275kv
 def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine):
     if isinstance (ELine_Model, UK_PG.UKElineModel):
@@ -237,5 +235,5 @@ def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine)
     return ELine_Model
 
 if __name__ == '__main__':    
-    createModel_ELine('default', False, 10, 14, 2019, None, False)       
+    createModel_ELine('default', False, 10, 14, 2019, None, True)       
     print('Terminated')
