@@ -2,8 +2,8 @@ import json
 import time
 from pprint import pprint
 
-from .CoordinateAgent import CoordinateAgent
-from .dashboard.Messenger import Messenger
+from CoordinateAgent import CoordinateAgent
+from dashboard.Messenger import Messenger
 
 
 class FullTest:
@@ -12,7 +12,7 @@ class FullTest:
         self.failed_questions = []
 
     def start(self):
-        ca = CoordinateAgent(None)
+        ca = CoordinateAgent()
         msg = Messenger()
         with open('test_result') as f:
             q_a_pairs = json.loads(f.read())
@@ -33,11 +33,7 @@ class FullTest:
             if rst != true_rst:
                 print('We have a problem')
                 # msg.send_error_message('Test on example question %s failed' % q)
-                print('================ rst ===============')
-                pprint(rst)
-                print('============== true rst ============')
-                pprint(true_rst)
-                self.failed_questions.append(msg)
+                self.failed_questions.append(q)
                 # msg.send_error_message(q)
             time.sleep(20)
 

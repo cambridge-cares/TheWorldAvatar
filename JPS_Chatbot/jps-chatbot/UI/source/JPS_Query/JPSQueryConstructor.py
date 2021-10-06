@@ -38,12 +38,8 @@ def process_ontocompchem_results(rst):
 class JPSQueryConstructor:
 
     def __init__(self, socketio):
-        print("================= JPS_SPARQL_TEMPLATE_PATH =============")
-        print(JPS_SPARQL_TEMPLATE_PATH)
         with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
-        print('============== Config path =============')
-        print(CONFIG_PATH)
         if os.path.isfile(CONFIG_PATH):
 
             with open(CONFIG_PATH) as f:
@@ -53,33 +49,24 @@ class JPSQueryConstructor:
             # which should be the case when its running alongside the chatbot in the same docker stack
             self.config = {'ldf_host': 'http://jps-ldf', 'ldf_port': 3000}
 
-
-        print('JPSQueryConstructor 51')
-        pprint(self.config)
         self.serach_interface = SearchInterface()
         self.socketio = socketio
         self.validator = SpeciesValidator()
         self.attribute_mapper = AttributeMapper()
 
     # Builds the base URL for all LDF queries
+
     def build_base_url(self):
-        print('JPSQueryConstructor - 59')
         # Get the URL listed in the config
         host = str(self.config['ldf_host'])
-        print("LDF Host: ", host)
-
         # Get the port listed in the config
         port = int(str(self.config['ldf_port']))
-        print("LDF Port: ", port)
 
         if port > 0:
-            print("Valid LDF port listed in config, adding to URL.")
             url = "%s:%s/" % (host, port)
         else:
-            print("No valid LDF port listed in config, omitting from URL.")
             url = "%s/" % host
 
-        print("Base URL:", url)
         return url
 
     def fire_query_to_ldf_ontocompchem(self, query):
@@ -90,7 +77,6 @@ class JPSQueryConstructor:
         parameter_hash = hashlib.md5(json.dumps(values).encode('utf-8')).hexdigest()
         values['hash'] = parameter_hash
         full_url = url + urllib.parse.urlencode(values)
-        print('full url', full_url)
         req = urllib.request.Request(full_url)
         return urllib.request.urlopen(req).read()
 
@@ -99,8 +85,6 @@ class JPSQueryConstructor:
             products = []
         if reactants is None:
             reactants = []
-        print("query fired to LDF server")
-        print(query)
 
         # Get the base URL
         url = self.build_base_url()
@@ -150,7 +134,6 @@ class JPSQueryConstructor:
         #     entity_pairs) + '-----------------')
 
         if intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
-            print('JPSQueryConstructor 146')
             result = {'intent': intent}
             for e in intents['entities']:
                 entity_type = e['entity']
@@ -235,7 +218,6 @@ class JPSQueryConstructor:
     def construct_query(self, intents):
         result = self.extract_info(intents)
         intent = result['intent']
-        print('JPSConstructor 230')
         rst = None
         if intent == 'query_reaction_property':
             try:
@@ -249,8 +231,6 @@ class JPSQueryConstructor:
             if rst is None:
                 return None
         elif intent in ontocompchem_simple_intents or (intent == 'query_quantum_chemistry'):
-            print('JPSQueryConstructor - 241')
-            pprint(result)
             rst = self.query_quantum_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
@@ -258,7 +238,6 @@ class JPSQueryConstructor:
             rst = self.query_thermo_of_moleculars(result['intent'], result['species'], result['attribute'])
             if rst is None:
                 return None
-        print('JPSQueryConstructor 254')
 
         return rst.replace('[=]', '->').replace('=]', '->')
 
@@ -304,7 +283,6 @@ class JPSQueryConstructor:
         _intent = self.attribute_mapper.map_to_quantum_queries(attribute_iri)
 
         if species is None:
-            print('[ERROR JPSQueryConstructor 304]: No species is received for ontocompchem')
             return None
 
         if _intent in intent_to_template_mapping:
@@ -313,12 +291,10 @@ class JPSQueryConstructor:
             return rst
 
         else:
-            print('[ERROR JPSQueryConstructor 311]: Unknown intent for ontocompchem')
             return None
 
     # to find the reactions that meet the conditions first, then find the mechanism
     def query_mechanism_by_reaction(self, reactants, products):
-        print('query_mechanism_by_reaction')
         q = self.template_dict['select_mechanism_by_reaction']
         rst = self.fire_query_to_ldf_ontokin(q, products, reactants).decode('utf-8')
         return rst

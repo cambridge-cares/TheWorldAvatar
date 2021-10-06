@@ -47,7 +47,6 @@ class SPARQLQuery:
             else:
                 queries = queries[self.query_step:]  # remove the first self.query_step elements from the queries
             time.sleep(2)
-
         return r
 
     def start_multiple_queries(self, queries, valid_results):
@@ -59,6 +58,7 @@ class SPARQLQuery:
         print('starting a batch quest of ', len(queries), 'for iteration', self.iteration_round)
         self.iteration_round = self.iteration_round + 1
         processes = []
+        print('Query step', self.query_step)
         with ThreadPoolExecutor(max_workers=self.query_step) as executor:
             counter = 0
             for q in queries[:self.query_step]:  # only select the first 5 queries in the list

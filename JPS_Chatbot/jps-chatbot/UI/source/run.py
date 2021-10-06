@@ -15,10 +15,10 @@ from functools import lru_cache
 
 # sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 # sys.path.append('/source')
-from UI.source.wolfram_alpha_and_google.GoogleAPI import GoogleAPI
-from UI.source.wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-from UI.source.CoordinateAgent import CoordinateAgent
-from UI.source.full_test import FullTest
+from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
+from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
+from CoordinateAgent import CoordinateAgent
+from full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)
@@ -99,7 +99,7 @@ def hello_world():
 
 
 # google_api = GoogleAPI()
-coordinate_agent = CoordinateAgent(socketio)
+coordinate_agent = CoordinateAgent()
 wolfram_and_google = WolframGoogle()
 
 if __name__ == '__main__':

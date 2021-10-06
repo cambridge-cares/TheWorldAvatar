@@ -6,6 +6,7 @@ from pprint import pprint
 import rdflib
 from .location import AGENT_OWL_DIR, FILE_DIR
 
+
 class AgentRequestConstructor:
     def __init__(self):
         self.base_url = "http://cmclinnovations.com"

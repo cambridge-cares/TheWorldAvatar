@@ -12,4 +12,3 @@ def get_parent_path(path):
 
 
 LDA_DIR = os.path.dirname(os.path.abspath(__file__))
-print('LDA_DIR', LDA_DIR)

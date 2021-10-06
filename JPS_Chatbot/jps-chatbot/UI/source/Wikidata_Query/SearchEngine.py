@@ -8,7 +8,6 @@ from .fuzzysearch_wiki import *
 
 
 def remove_duplicated(uris):
-    print('SearchEngine - 11', uris)
     if type(uris) != type([]):
         uris = uris[0]
     temp = []
@@ -19,8 +18,6 @@ def remove_duplicated(uris):
             result.append(uri)
         # temp.append(uri[0])
         temp.append(uri)
-    print('removed duplicates')
-    pprint(result)
     return result
 
 
@@ -34,8 +31,7 @@ def filter_components(term_type, term):
     try:
         term_tokens = word_tokenize(term)
     except:
-        print('SearchEngine - 36 term', term)
-        print('[Error Search Engine: 28]: failed to tokenize the term')
+
         return term
 
 
@@ -79,11 +75,7 @@ class SearchEngine:
             return 0
 
     def find_matches_from_wiki(self, term, mode='species', intent='item_attribute_query'):
-        print('SearchEngine - 70')
-        print('Term', term)
-        print('Mode', mode)
         rst = find_nearest_match(entity_value=term, entity_type=mode)
-        print('search result', rst)
         # Connect the new dictionary function here
         return rst
         # high_score_terms = self.find_high_scores(term, mode, intent)
@@ -137,11 +129,6 @@ class SearchEngine:
         question_type = entities['type']
         list_of_entities = entities['entities']
         results = []
-
-        print('=============================================')
-        print('SearchEngine - 142')
-        pprint(entities)
-
         for key, value in list_of_entities.items():
             if key == 'comparison' or key == 'number':
                 value = filter_components(term_type=key, term=value)

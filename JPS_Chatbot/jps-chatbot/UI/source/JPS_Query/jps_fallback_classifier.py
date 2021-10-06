@@ -29,10 +29,8 @@ class JPSQuestionClassifier:
         # self.extract_nlu_model(temp_dir_path)
         # # Load the trained model from the temporary directory
         # model_path = os.path.join(temp_dir_path, "nlu")
-        print('loading jps nlu model from', self.nlu_model_directory)
         self.interpreter = Interpreter.load(self.nlu_model_directory)
 
-        print('model loaded')
 
     def extract_nlu_model(self, extract_dir):
         # Identify the newest trained nlu model

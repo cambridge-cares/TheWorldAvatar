@@ -30,12 +30,7 @@ class InterpretationParser:
         self.socketio = socketio
 
     def parse_question_interpretation(self, question):
-        print('question', question)
         result = self.interpreter.parse(question)
-        print('============================================')
-        print('Interpretation parser - 23')
-        pprint(result)
-        print('============================================')
         # get the key components and their types out
         # get the intent of the question
         intent = result['intent']['name']
@@ -45,8 +40,6 @@ class InterpretationParser:
         return result
 
     def fill_in_components(self, intent, confidence_map, entities):
-        pprint(entities)
-        print('intent', intent)
         intent_list = list(self.entity_intent_map.keys())
         intent_list.remove(intent)
         intent_list.insert(0, intent)
@@ -64,13 +57,12 @@ class InterpretationParser:
                     if entity_type in obj:
                         slot = obj[entity_type]
                         if type(slot) == type([]):
-                            print('the slot is a list ')
                             obj[entity_type].append(term)
                             # more than one term should present ...
                         else:
                             obj[entity_type] = term
                     else:
-                        print('There is a mismatch', candidate_intent)
+                        # TODO: MISMATCH
                         # there is a mismatch, proceed to the next intent
                         perfect_match = False
 

@@ -97,6 +97,7 @@ def fill_sparql_query_for_one_intent(intent, template, order, entities, index_or
             list_of_sparqls.append(sparql_query)
         except:
             return None
+
     return list_of_sparqls
 
 
@@ -202,17 +203,22 @@ class SPARQLConstructor:
 
             'item_attribute_query': '''
             
-        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
-        
-        wd:%s wdt:%s ?v2 .
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> 
+        SELECT (GROUP_CONCAT(DISTINCT STR(?name); SEPARATOR=", ") AS ?names) ?v ?unitLabel WHERE  {                     
+        wd:%s wdt:%s ?v .
         OPTIONAL {
         wd:%s p:%s/psv:%s ?value . # attribute
-        wd:%s rdfs:label ?name filter (lang(?name) = "en").
         ?value wikibase:quantityAmount ?v .
         ?value wikibase:quantityUnit ?unit . 
         }
+        OPTIONAL {
+         wd:%s rdfs:label ?name . 
+        FILTER (langMatches( lang(?name), "en" ) )
+        }
 
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+        }  GROUP BY ?names ?v ?unitLabel
+ 
         ''',
 
             'batch_restriction_query_numerical_and_attribute': '''
@@ -262,10 +268,6 @@ class SPARQLConstructor:
             index_order = [0,0]
 
         elif intent == 'attribute_batch_attribute_query_numerical':
-            print('SPARQLConstrcutor - 205')
-            print('template', template)
-            print('entities', entities)
-            print('intent', intent)
             order = ['attribute_1', 'attribute_2', 'class', 'comparison', 'number']  # first attribute is the
             index_order = [2, 1, 0, 3, 4]  # ['class', 'a2', 'a1', 'comparison', 'number']
 
@@ -274,7 +276,6 @@ class SPARQLConstructor:
             index_order = [0, 1, 2, 3, 1, 1]
             # class, attribute, comparison, numerical_value, attribute, attribute
         elif intent == 'batch_attribute_query':
-            print('SPARQLConstructor - 197', entities)
             # class, attribute, attribute, attribute
             order = ['class', 'attribute']
             index_order = [0, 1, 1, 1]
