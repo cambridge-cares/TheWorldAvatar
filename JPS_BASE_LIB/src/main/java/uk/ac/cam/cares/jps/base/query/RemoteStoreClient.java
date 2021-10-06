@@ -1,14 +1,25 @@
 package uk.ac.cam.cares.jps.base.query;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Base64;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.jdbc.JenaDriver;
@@ -24,6 +35,8 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.update.UpdateRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -60,7 +73,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  *
  */
 public class RemoteStoreClient implements StoreClientInterface {
-
+	private static final Logger LOGGER = LogManager.getLogger(RemoteStoreClient.class);
 	private static final String HTTP_PROTOCOL= "http:";
 	private static final String HTTPS_PROTOCOL = "https:";
 
@@ -764,5 +777,37 @@ public class RemoteStoreClient implements StoreClientInterface {
         }
         
 		executeUpdate(builder.buildRequest());
+	}
+	
+	/**
+	 * upload an RDF file to a sparql endpoint using REST API
+	 * only tested with Blazegraph
+	 * @param file
+	 */
+	public void uploadRDFFile(File file) {
+		try {
+			InputStream is = new FileInputStream(file);
+			StringEntity entity = new StringEntity(IOUtils.toString(is,StandardCharsets.UTF_8),ContentType.create("application/rdf+xml"));
+	        
+	        // tried a few methods to add credentials, this seems to be the only way that works
+	        // i.e. setting it manually in the header
+			HttpPost postRequest = new HttpPost(this.updateEndpoint);
+			if ((this.userName != null) && (this.password != null)) {
+				String auth = this.userName + ":" + this.password;
+		        String encoded_auth = Base64.getEncoder().encodeToString(auth.getBytes()); 
+		        postRequest.setHeader(HttpHeaders.AUTHORIZATION, "Basic " + encoded_auth);
+			}
+			
+	        // add contents to the post request 
+	        postRequest.setEntity(entity);
+	        
+	        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
+	        // then send the post request
+	        CloseableHttpClient httpclient = HttpClients.createDefault();
+	        httpclient.execute(postRequest);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 	}
 }
