@@ -21,7 +21,7 @@ Options:
                              Example: --file-server-filext='.log,.txt'
 --file-server-subdirs=<dir>  Optional subdirectories to be created on
                              the file server to upload your files into.
-                             Example: --file-server-subdirs='dir1/dir2/'
+                             Example: --file-server-subdirs='dir1/dir2/'   [default: ]
 --log-file-name=<name>       Name of the generated log file.               [default: fs_upload.log]
 --log-file-dir=<dir>         Path to the log file storing information of
                              what has been uploaded and where. Defaults
