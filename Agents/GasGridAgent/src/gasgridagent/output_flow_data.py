@@ -14,7 +14,6 @@ from datetime import datetime as dt
 
 # get the jpsBaseLibGateWay instance from the jpsSingletons module
 from gasgridagent.jpsSingletons import jpsBaseLibView
-
 # get settings and functions from kg_utils module
 import gasgridagent.kg_utils as kg
 
@@ -30,18 +29,14 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
             callbackFailure - function to call on failure
     """
 
-    # Read properties file (to retrieve namespace and fallback_kg)
+    # Read properties file incl. SPARQL endpoints and output directory
     kg.read_properties_file(kg.PROPERTIES_FILE)
-
-    # Set URLs to KG SPARQL endpoints (and update properties file accordingly)
-    kg.setKGEndpoints(kg.PROPERTIES_FILE)
-    print("INFO: Determined KG endpoint as '" + kg.QUERY_ENDPOINT + "'.")
+    print("INFO: Determined KG Query endpoint as '" + kg.QUERY_ENDPOINT + "'.")
 
     # Retrieve Java's Instant class to initialise TimeSeriesClient
     # Get class simply via Java's ".class" does not work as this command also exists in Python
     Instant = jpsBaseLibView.java.time.Instant
     instant_class = Instant.now().getClass()
-
     # Initialise TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
 
@@ -50,7 +45,6 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
     now = Instant.now()
     print("INFO: Submitting TimeSeriesClient SPARQL queries at",
           dt.utcfromtimestamp(now.getEpochSecond()).strftime("%Y-%m-%dT%H:%M:%SZ"))
-
     start_1 = now.minusSeconds(int(1 * duration * 60 * 60))
     start_2 = now.minusSeconds(int(2 * duration * 60 * 60))
     start_7 = now.minusSeconds(int(7 * duration * 60 * 60))
@@ -79,7 +73,7 @@ def get_gasflow_history(duration, callbackSuccess, callbackFailure):
                     # Last resort, try last "7 x duration" hours (e.g. last week)
                     print("WARNING: No results in last %i h, trying last %i h ..." % (2 * duration, 7 * duration))
                     timeseries = TSClient.getTimeSeriesWithinBounds([measurement_iri], start_7, now)
-
+                    
             # populate timeseries dictionary - format:
             # terminal name: [terminal IRI, measurement IRI, Java time series object]
             timeseries_dict[terminal] = [terminalIRI, measurement_iri, timeseries]
@@ -106,7 +100,7 @@ def onSuccess(timeseries_data):
     data_points = 0
     for ts in timeseries_data:
         data_points += len(timeseries_data[ts][2].getTimes())
-    print("INFO: Number of retrieved time series data points:", data_points)
+    print("INFO: Total number of retrieved time series data points:", data_points)
 
     # Initialise (JSON) results String
     res = ''
@@ -184,8 +178,9 @@ def main():
         Main function.
     """
     print("\n")
-
+    
     try:
+        # Duration of latest historical data to retrieve (in h)
         duration = 24
         get_gasflow_history(duration, onSuccess, onFailure)
     except:
@@ -198,9 +193,6 @@ def main():
                 It is recommended that a developer logs into the relevant VM and checks the logs for the gas-grid-agent Docker container.
             """
         )
-    # Duration of latest historical data to retrieve (in h)
-   
-
 
 # Entry point, calls main function
 if __name__ == "__main__":

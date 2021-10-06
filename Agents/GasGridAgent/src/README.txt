@@ -38,7 +38,7 @@ Run all tests (only available if set up in development mode)
 ============================================================
 
 1) Activate virtual environment
-  $ ukgasflows_ven\Scripts\activate.bat
+  $ gasgridagent-venv\Scripts\activate.bat
   
 2) Call pytest to run all tests (from package root directory)
   $ pytest

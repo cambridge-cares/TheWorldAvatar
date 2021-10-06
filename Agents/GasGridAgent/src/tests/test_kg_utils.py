@@ -9,7 +9,7 @@ from py4jps.resources import JpsBaseLib
 
 # Import module under test from ukgasflows
 import gasgridagent.kg_utils as utils
-import gasgridagent.terminal_update as term_in
+import gasgridagent.input_flow_data as term_in
 
 # Define expected gas terminals and respective IRIs (as defined in components_abox)
 expected_terminals = \
@@ -45,7 +45,7 @@ def test_read_properties_file(tmp_path):
     expected = 'Key "output.directory" is missing in properties file: '
     assert expected in str(excinfo.value)
     # 2) Exception for available key, but missing value
-    with open(p, 'a') as f:
+    with open(p, 'w') as f:
         f.write("output.directory = ")
     with pytest.raises(KeyError) as excinfo:
         # Check correct exception type
@@ -54,33 +54,56 @@ def test_read_properties_file(tmp_path):
     expected = 'No "output.directory" value has been provided in properties file: '
     assert expected in str(excinfo.value)
 
-    # Test correct reading of gasgridagent.properties file
+    # Test for 'sparql.query.endpoint'
+    # 1) Exception for missing key
     with open(p, 'w') as f:
-        f.write("output.directory = test_outdir")
+        f.write("output.directory = test_outdir\n")
+    with pytest.raises(KeyError) as excinfo:
+        # Check correct exception type
+        utils.read_properties_file(p)
+    # Check correct exception message
+    expected = 'Key "sparql.query.endpoint" is missing in properties file: '
+    assert expected in str(excinfo.value)
+    # 2) Exception for available key, but missing value
+    with open(p, 'a') as f:
+        f.write("sparql.query.endpoint = ")
+    with pytest.raises(KeyError) as excinfo:
+        # Check correct exception type
+        utils.read_properties_file(p)
+    # Check correct exception message
+    expected = 'No "sparql.query.endpoint" value has been provided in properties file: '
+    assert expected in str(excinfo.value)
+
+    # Test for 'sparql.update.endpoint'
+    # 1) Exception for missing key
+    with open(p, 'w') as f:
+        f.write("output.directory = test_outdir\n\
+                sparql.query.endpoint = test_query_endpoint\n")
+    with pytest.raises(KeyError) as excinfo:
+        # Check correct exception type
+        utils.read_properties_file(p)
+    # Check correct exception message
+    expected = 'Key "sparql.update.endpoint" is missing in properties file: '
+    assert expected in str(excinfo.value)
+    # 2) Exception for available key, but missing value
+    with open(p, 'a') as f:
+        f.write("sparql.update.endpoint = ")
+    with pytest.raises(KeyError) as excinfo:
+        # Check correct exception type
+        utils.read_properties_file(p)
+    # Check correct exception message
+    expected = 'No "sparql.update.endpoint" value has been provided in properties file: '
+    assert expected in str(excinfo.value)
+
+    # Test correct reading of timeseries.properties file
+    with open(p, 'w') as f:
+        f.write("output.directory = test_outdir\n\
+                sparql.query.endpoint = test_query_endpoint\n\
+                sparql.update.endpoint = test_update_endpoint")
     utils.read_properties_file(p)
     assert utils.OUTPUT_DIR == 'test_outdir'
-
-
-sets = [
-    "output.directory = test_outdir\nsparql.query.endpoint=test_kg/namespace/test_namespace/sparql\nsparql.update.endpoint=test_kg/namespace/test_namespace/sparql"
-    ]
-@pytest.mark.parametrize('settings', sets)
-def test_setKGEndpoints(tmp_path, settings):
-    # Create test properties file
-    p = os.path.join(tmp_path, "test_gasgridagent.properties")
-    with open(p, 'w') as f:
-        f.write(settings)
-    # Read properties
-    utils.read_properties_file(p)
-
-    # Set KG endpoints and retrieve from properties file
-    utils.setKGEndpoints(p)
-
-    # Read properties file
-    props = ConfigObj(p)
-    assert props['sparql.query.endpoint'] == 'test_kg/namespace/test_namespace/sparql'
-    assert props['sparql.update.endpoint'] == 'test_kg/namespace/test_namespace/sparql'
-    assert props['sparql.query.endpoint'] != 'test_kg/namespace/test_namespace/sparql...'
+    assert utils.QUERY_ENDPOINT == 'test_query_endpoint'
+    assert utils.UPDATE_ENDPOINT == 'test_update_endpoint'
 
 
 def test_create_sparql_prefix():
@@ -104,7 +127,7 @@ def test_get_instantiated_terminals(initialise_triple_store):
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
@@ -130,7 +153,7 @@ def test_get_instantiated_gas_amounts(initialise_triple_store):
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
@@ -163,7 +186,7 @@ def test_get_instantiated_quantities(initialise_triple_store):
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
@@ -196,7 +219,7 @@ def test_get_instantiated_measurements(initialise_triple_store):
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
@@ -224,63 +247,34 @@ def test_get_instantiated_measurements(initialise_triple_store):
         assert len(res) == len(expected_terminals)
 
 
-def test_check_timeseries_instantiation(initialise_triple_store):
-
-    # Spin up temporary docker container
-    with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(2)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
-        endpoint = get_endpoint(container)
-
-        # Populate triple store with ABox RDF data
-        load_abox_data(endpoint)
-
-        for iri in expected_terminals.values():
-            # Verify that no time series association yet instantiated
-            assert not utils.check_timeseries_instantiation(endpoint, iri)
-            try:
-                # "Override" properties normally read from gasgridagent.properties for testing
-                utils.QUERY_ENDPOINT = endpoint
-                # Path to gasgridagent.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
-                props = ConfigObj(p)
-                props['sparql.query.endpoint'] = endpoint
-                props['sparql.update.endpoint'] = endpoint
-                props.write()
-                # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
-                term_in.instantiate_timeseries(endpoint, endpoint, iri)
-            except Exception:
-                # Just catch and suppress exception due to unreachable postgres database
-                pass
-            # Verify that time series association is now instantiated
-            assert utils.check_timeseries_instantiation(endpoint, iri)
-
-
 def test_get_time_format(initialise_triple_store):
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
         # Populate triple store with ABox RDF data
         load_abox_data(endpoint)
 
+        # Path to timeseries.properties file
+        p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
+        props = ConfigObj(p)
+        # Retrieve original settings
+        orig_query = props['sparql.query.endpoint']
+        orig_update = props['sparql.update.endpoint']
+        # "Override" properties normally read from timeseries.properties for testing
+        utils.QUERY_ENDPOINT = endpoint
+        props['sparql.query.endpoint'] = endpoint
+        props['sparql.update.endpoint'] = endpoint
+        props.write()
+
         for iri in expected_terminals.values():
             # Verify that no time format is yet instantiated
             assert utils.get_time_format(endpoint, iri) is None
             try:
-                # "Override" properties normally read from gasgridagent.properties for testing
-                utils.QUERY_ENDPOINT = endpoint
-                # Path to gasgridagent.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
-                props = ConfigObj(p)
-                props['sparql.query.endpoint'] = endpoint
-                props['sparql.update.endpoint'] = endpoint
-                props.write()
                 # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
                 term_in.instantiate_timeseries(endpoint, endpoint, iri)
             except Exception:
@@ -289,31 +283,41 @@ def test_get_time_format(initialise_triple_store):
             # Verify the correct time format
             assert utils.get_time_format(endpoint, iri) == utils.FORMAT
 
+        # Restore original properties file
+        props = ConfigObj(p)
+        props['sparql.query.endpoint'] = orig_query
+        props['sparql.update.endpoint'] = orig_update
+        props.write()
+
 
 def test_get_measurementIRI(initialise_triple_store):
 
     # Spin up temporary docker container
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(2)
+        time.sleep(3)
         # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
         endpoint = get_endpoint(container)
 
         # Populate triple store with ABox RDF data
         load_abox_data(endpoint)
 
+        # Path to gasgridagent.properties file
+        p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
+        props = ConfigObj(p)
+        # Retrieve original settings
+        orig_query = props['sparql.query.endpoint']
+        orig_update = props['sparql.update.endpoint']
+        # "Override" properties normally read from gasgridagent.properties for testing
+        utils.QUERY_ENDPOINT = endpoint
+        props['sparql.query.endpoint'] = endpoint
+        props['sparql.update.endpoint'] = endpoint
+        props.write()
+
         for iri in expected_terminals.values():
             # Verify that no measurement is yet instantiated
             assert utils.get_measurementIRI(endpoint, iri) is None
             try:
-                # "Override" properties normally read from gasgridagent.properties for testing
-                utils.QUERY_ENDPOINT = endpoint
-                # Path to gasgridagent.properties file
-                p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
-                props = ConfigObj(p)
-                props['sparql.query.endpoint'] = endpoint
-                props['sparql.update.endpoint'] = endpoint
-                props.write()
                 # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
                 term_in.instantiate_timeseries(endpoint, endpoint, iri)
             except Exception:
@@ -321,6 +325,27 @@ def test_get_measurementIRI(initialise_triple_store):
                 pass
             # Verify that measurement is now instantiated
             assert isinstance(utils.get_measurementIRI(endpoint, iri), str)
+
+            # Verify exception for ambiguous instantiations
+            with pytest.raises(ValueError) as excinfo:
+                # Check correct exception type
+                try:
+                    # Instantiate 2nd time series associations in knowledge base
+                    term_in.instantiate_timeseries(endpoint, endpoint, iri)
+                except Exception:
+                    # Just catch and suppress exception due to unreachable postgres database
+                    pass
+                # Verify that measurement is now instantiated
+                utils.get_measurementIRI(endpoint, iri)
+            # Check correct exception message
+            expected = 'AMBIGUITY ERROR: Terminal connected to several gas flow time series!'
+            assert expected in str(excinfo.value)
+
+        # Restore original properties file
+        props = ConfigObj(p)
+        props['sparql.query.endpoint'] = orig_query
+        props['sparql.update.endpoint'] = orig_update
+        props.write()
 
 
 def get_endpoint(docker_container):
@@ -346,7 +371,7 @@ def load_abox_data(endpoint):
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint, endpoint)
 
     # Read RDF/XML ABox file
-    rdf_file = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "components_abox.owl"))
+    rdf_file = os.path.abspath(os.path.join(Path(__file__).parent, "components_abox.owl"))
     with open(rdf_file, 'r') as f:
         content = f.read()
 

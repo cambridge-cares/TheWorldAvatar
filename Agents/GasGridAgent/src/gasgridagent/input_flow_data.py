@@ -39,7 +39,7 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
             update_endpoint - SPARQL Update endpoint for knowledge graph.
             terminal_name - name of gas terminal to be instantiated.
     """
-    print("Instantiate new gas terminal " + terminal_name)
+    print("Instantiate new gas terminal: " + terminal_name)
 
     # Create unique IRI for new gas terminal based on terminal name
     terminalIRI = kg.PREFIXES['compa'] + terminal_name.replace(' ', '')
@@ -51,7 +51,7 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
-
+    
     # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
     query = kg.create_sparql_prefix('comp') + \
             kg.create_sparql_prefix('rdf') + \
@@ -74,7 +74,7 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
             terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
             terminal_name - gas terminal name (optional).
     """
-    print("Instantiating time series association for gas terminal " + terminal_name)
+    print("Instantiate time series association for: " + terminal_name)
 
     # Create UUIDs for IntakenGas, VolumetricFlowRate, and Measure instances
     # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
@@ -91,12 +91,9 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
     measurement = 'Measurement_' + str(uuid.uuid4())
     measurements_existing = kg.get_instantiated_measurements(query_endpoint)
     while any(existing.endswith(measurement) for existing in measurements_existing):
-        measurement = 'Measurement_' + str(uuid.uuid4())
-
+        measurement = 'Measurement_' + str(uuid.uuid4())    
+    
     # Initialise remote KG client with query AND update endpoints specified
-    print("Connected to KG endpoints:")
-    print("Queries:", query_endpoint)
-    print("Updates:", update_endpoint)
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
 
     # 1) Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
@@ -115,7 +112,7 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
                 terminalIRI, gas, gas, quantity, gas, measurement, measurement)
 
     KGClient.executeUpdate(query)
-    print("KG query/update completed.")
+    print("Time series triples independent of Java TimeSeriesClient successfully instantiated.")
 
     # 2) Perform SPARQL update for time series related triples (i.e. via TimeSeriesClient)
     # Retrieve Java classes for time entries (Instant) and data (Double) - to get class simply via Java's
@@ -124,13 +121,15 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
     instant_class = Instant.now().getClass()
     double_class = jpsBaseLibView.java.lang.Double.TYPE
 
-    # Get MeasurementIRI to which time series is actually connected to
-    measurement_iri = kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminalIRI)
-    print("Got measurement_iri, ", measurement_iri)
+    # Derive MeasurementIRI to which time series is actually connected to
+    measurement_iri = kg.PREFIXES['compa'] + measurement
+    print("Measurement IRI for actual time series: ", measurement_iri)
 
     # Initialise time series in both KG and RDB using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.initTimeSeries([measurement_iri], [double_class], kg.FORMAT)
+
+    print("Time series triples via Java TimeSeriesClient successfully instantiated.")
 
 
 def get_flow_data_from_csv():
@@ -208,7 +207,7 @@ def add_time_series_data(terminalIRI, flow_data, terminal_name=''):
                         ['time (utc)', 'flowrate (m3/s)'].
             terminal_name - gas terminal name (optional).
     """
-    print("Adding time series data for gas terminal " + terminal_name)
+    print("Adding time series data for: " + terminal_name)
 
     # Extract data to create Java TimeSeries object
     measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminalIRI)
@@ -227,7 +226,7 @@ def add_time_series_data(terminalIRI, flow_data, terminal_name=''):
     # Add time series data to existing time series association in KG using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.addTimeSeriesData(timeseries)
-    print("Time series data added.")
+    print("Time series data successfully added.\n")
 
 
 def update_triple_store():
@@ -236,11 +235,11 @@ def update_triple_store():
         of relevant relationships and new gas terminals in case new data becomes available
     """
 
-    # Read properties file
+    # Read properties file incl. SPARQL endpoints
     kg.read_properties_file(kg.PROPERTIES_FILE)
-
-    # Set URLs to KG SPARQL endpoints (and update properties file accordingly)
-    kg.setKGEndpoints(kg.PROPERTIES_FILE)
+    print("Connected to KG SPARQL endpoints:")
+    print("Queries: ", kg.QUERY_ENDPOINT)
+    print("Updates: ", kg.UPDATE_ENDPOINT)
 
     # Get the gas flow data from National Grid csv as DataFrame
     flow_data = get_flow_data_from_csv()   
@@ -268,8 +267,11 @@ def update_triple_store():
     # Assimilate gas flow data for instantiated gas terminals
     for gt in terminals_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
-        if not kg.check_timeseries_instantiation(kg.QUERY_ENDPOINT, terminals_instantiated[gt]):
+        if kg.get_measurementIRI(kg.QUERY_ENDPOINT, terminals_instantiated[gt]) is None:
+            print("No instantiated timeseries detected for: ", gt)
             instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, terminals_instantiated[gt], gt)
+        else:
+            print("Instantiated time series detected!")
 
         # Retrieve gas flow time series data for respective terminal from overall DataFrame
         new_data = flow_data[flow_data['terminal'] == gt][['time (utc)', 'flowrate (m3/s)']]
@@ -283,8 +285,7 @@ def continuous_update():
         Ensures that the update_triple_store() function runs once per 12 minutes (as this is the
         interval at which new flow data is published).
     """
-    emailed = False
-
+    emailed = False                                                                      
     while True:
         start = time.time()
 
@@ -293,7 +294,7 @@ def continuous_update():
         except Exception:
             print("Encountered exception, will try again in 12 minutes...")
             print(traceback.format_exc())
-
+            
             # Send a notification email
             if not emailed:
                 sender = jpsBaseLibView.EmailSender()
@@ -308,27 +309,25 @@ def continuous_update():
                 emailed = True
 
         end = time.time()
-        print('\n')
 
-        # Wait for 12 minutes (taking into account time to update queries)
+        print('\n')
+        # Wait for 12 minutes taking into account time to update queries
         for i in tqdm(range(60 * 12 - int((end - start)))):
             time.sleep(1)
+    return
 
 
 def single_update():
-    """
-        Runs a single update, downloading CSV data, parsing it, and adding it to the KG once.
-    """
-    print("Time before:", time.time())
+    print('Time before (UNIX): {}'.format(int(time.time())))
     update_triple_store()
-    print("Time after:", time.time())
+    print('Time after (UNIX): {}'.format(int(time.time())))
+    return
 
 
 def main():
     """
         Main method, parses arguments.
-    """
-
+    """                                                                                          
     # Try to detect (command-line) arguments passed to the script and launch update method
     if len(sys.argv) <= 1:
         single_update()

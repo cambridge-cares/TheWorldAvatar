@@ -1,0 +1,261 @@
+"""
+    Script to clean up initial time series data implementation in KG
+
+    Author: mh807<@>cam.ac.uk
+"""
+
+import os
+import time
+import json
+
+# get the jpsBaseLibGateWay instance from the jpsSingletons module
+from gasgridagent.jpsSingletons import jpsBaseLibView
+
+# get settings and functions from kg_utils module
+import gasgridagent.kg_utils as kg
+
+
+def count_all_instances(query_endpoint):
+    """
+        Counts total number of triples in KG
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+    """
+
+    var = 'triples'
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint)
+
+    # Perform SPARQL query
+    query = '''SELECT (COUNT(*) as ?%s) 
+               WHERE { ?s ?p ?o }''' % var
+
+    response = KGClient.execute(query)
+    response = json.loads(response)
+
+    return int(response[0][var])
+
+
+def count_all_gas_amount_instances(query_endpoint):
+    """
+        Counts total number of instantiated gas amounts in KG
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+    """
+
+    var = 'triples'
+
+    # Initialise remote KG client with only query endpoint specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint)
+
+    # Perform SPARQL query
+    query = kg.create_sparql_prefix('comp') + \
+            kg.create_sparql_prefix('compa') + \
+            kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''SELECT (COUNT(?s) as ?%s) 
+               WHERE { ?s rdf:type comp:IntakenGas; \
+                          ^comp:hasTaken ?b; \
+                          comp:atUTC ?c }''' % var
+
+    response = KGClient.execute(query)
+    response = json.loads(response)
+
+    return int(response[0][var])
+
+
+def count_word_in_rdf_file(file, word):
+    """
+        Counts total number of occurrences of 'word' in rdf file 'file'
+
+        Arguments:
+            file - absolute path to rdf file.
+            word - String of word to search.
+    """
+
+    with open(file, 'r') as f:
+        data = f.read()
+        total = data.count(word)
+
+    return total
+
+
+def delete_old_timeseries_triples(update_endpoint, offset, limit):
+    """
+        Deletes all triples associated with initial time series representation of gas flow data
+
+        Arguments:
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+            offset - offset for SPARQL query
+            limit - limit for SPARQL query
+    """
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(update_endpoint, update_endpoint)
+    # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    query = kg.create_sparql_prefix('comp') + \
+            kg.create_sparql_prefix('compa') + \
+            kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''DELETE {?a comp:hasTaken ?b. \
+                       ?b rdf:type comp:IntakenGas; \
+                          comp:atUTC ?c. \
+                       ?d rdf:type om:VolumetricFlowRate; \
+                          om:hasPhenomenon ?b;
+                          om:hasValue ?e. \
+                       ?e rdf:type om:Measure; \
+                          om:hasNumericalValue ?f; \
+                          om:hasUnit om:cubicMetrePerSecond-Time. }
+               WHERE { SELECT ?a ?b ?c ?d ?e ?f
+                       WHERE { ?a rdf:type comp:GasTerminal; \
+                                  comp:hasTaken ?b. \
+                               ?b rdf:type comp:IntakenGas; \
+                                  comp:atUTC ?c. \
+                               ?d rdf:type om:VolumetricFlowRate; \
+                                  om:hasPhenomenon ?b;
+                                  om:hasValue ?e. \
+                               ?e rdf:type om:Measure; \
+                                  om:hasNumericalValue ?f; \
+                                  om:hasUnit om:cubicMetrePerSecond-Time. }
+                       ORDER BY ?f
+                       OFFSET %i LIMIT %i
+               }''' % (offset, limit)
+
+    KGClient.executeUpdate(query)
+
+
+def clean_up_old_timeseries(chunk):
+    """
+        Clean up existing KG wrt old gas flow time series triples with (potentially) successive SPARQL update runs
+
+        Arguments:
+            chunk - chunk size of individual cleanup runs, i.e. limit for respective SPARQL queries.
+    """
+
+    # Read properties file incl. SPARQL endpoints
+    kg.read_properties_file(kg.PROPERTIES_FILE)
+
+    # Initial KG summary statistics
+    triples_old = count_all_instances(kg.QUERY_ENDPOINT)
+    gas_amounts_old = count_all_gas_amount_instances(kg.QUERY_ENDPOINT)
+    print('Before clean up:')
+    print('Total number of triples: {}'.format(triples_old))
+    print('Total number of old gas amounts: {} \n'.format(gas_amounts_old))
+
+    s = int(time.time())
+    print('Time before cleanup: {}'.format(s))
+
+    # Run consecutive updates of size 'chunk'
+    offset = 0
+    total_deleted = 0
+    total_screened = 0
+    further_triples = True
+
+    while further_triples:
+
+        # Total number of remaining triples
+        triples = count_all_instances(kg.QUERY_ENDPOINT)
+
+        # Clean up (portion of) KG
+        delete_old_timeseries_triples(kg.UPDATE_ENDPOINT, offset, chunk)
+
+        # If triples have been deleted in currently screened portion of KG
+        if triples > count_all_instances(kg.QUERY_ENDPOINT):
+            new_deleted = (triples - count_all_instances(kg.QUERY_ENDPOINT))
+            total_deleted += new_deleted
+            total_screened += new_deleted
+            deleted = True
+        else:
+            deleted = False
+
+        # Update offset only if no data has been deleted in that chunk
+        if not deleted:
+            offset += chunk
+            total_screened += chunk
+
+        # End successive partial SPARQL update if all triples have been screened
+        if total_screened > triples_old:
+            further_triples = False
+
+    e = int(time.time())
+    print('Time after cleanup: {}'.format(e))
+    print('Cleanup duration in s: {}\n'.format(e - s))
+
+    # Final summary statistics
+    triples_new = count_all_instances(kg.QUERY_ENDPOINT)
+    gas_amounts_new = count_all_gas_amount_instances(kg.QUERY_ENDPOINT)
+    print('After clean up:')
+    print('Total number of triples: {}'.format(triples_new))
+    print('Total number of old gas amounts: {} \n'.format(gas_amounts_new))
+
+    # Each initial gas flow measurement was represented by n triples
+    n = 9
+    if triples_old == triples_new:
+        print('No triples have been deleted.\n')
+    else:
+        if (triples_old - triples_new) == (9 * (gas_amounts_old - gas_amounts_new)):
+            print('SUCCESS: Only outdated gas flow measurements have been deleted.\n')
+        else:
+            print('WARNING: Triples beyond outdated gas flow measurements have been deleted.')
+            print('Number of additionally deleted triples: {} \n'.format(triples_old - triples_new))
+
+
+def correct_terminal_spelling():
+    """
+        Correct spelling of "Theddlethorpe Terminal"
+    """
+
+    # Define incorrect and corrected objects
+    wrong_IRI = 'http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTermin'
+    wrong_name = 'Theddlethorpe Termin'
+    correct_IRI = 'http://www.theworldavatar.com/kb/ontogasgrid/offtakes_abox/TheddlethorpeTerminal'
+    correct_name = 'Theddlethorpe Terminal'
+
+    # Read properties file incl. SPARQL endpoints
+    kg.read_properties_file(kg.PROPERTIES_FILE)
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(kg.UPDATE_ENDPOINT, kg.UPDATE_ENDPOINT)
+
+    # 1) Correct wrong spelling of terminal IRI
+    query = kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''DELETE { <%s> ?p ?o } \
+               INSERT { <%s> ?p ?o } \
+               WHERE { <%s> ?p ?o; \
+                            rdfs:label "%s"^^xsd:string }''' % (wrong_IRI, correct_IRI, wrong_IRI, wrong_name)
+    KGClient.executeUpdate(query)
+
+    # 2) Correct wrong spelling of terminal label
+    query = kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''DELETE { ?s rdfs:label "%s"^^xsd:string } \
+               INSERT { ?s rdfs:label "%s"^^xsd:string } \
+               WHERE { ?s rdfs:label "%s"^^xsd:string }''' % (wrong_name, correct_name, wrong_name)
+    KGClient.executeUpdate(query)
+
+
+# Entry point, calls main function
+if __name__ == '__main__':
+
+    # #1) Derive (approximate) number of old gas flow measurements (only to double check numbers from SPARQL queries
+    # #   if local copy of rdf file is present)
+    # #Path to rdf file
+    # f = os.path.abspath(r'C:\Users\mh807.CEB-315-55-WLO\Documents\99 Projects\3 UK GasGrid'
+    #                     r'\0 Ontologies and Instantiation\Time series data\ontogasgrid.rdf')
+    # # Word/relationship to look for
+    # w = 'hasTaken'
+    # print('Total number of \'{}\' in rdf file: {}'.format(w, count_word_in_rdf_file(f, w)))
+
+    # Define (max) number of results per SPARQL query (for 'limit' and 'offset' of SPARQL queries)
+    chunk = 100000
+
+    # 2) Delete old gas flow measurement
+    clean_up_old_timeseries(chunk)
+
+    # 3) Correct wrong spelling of "Theddlethorpe Terminal"
+    correct_terminal_spelling()

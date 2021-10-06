@@ -1,10 +1,5 @@
-import os
 import re
-import time
 import pytest
-from pathlib import Path
-from configobj import ConfigObj
-from testcontainers.core.container import DockerContainer
 
 from py4jps.resources import JpsBaseLib
 
@@ -28,7 +23,7 @@ def get_sample_gasflow_history():
     ts_data = {}
 
     # Create sample data of length n
-    n = 2
+    n = 4
     terminal_name = 'test_terminal'
     terminal_iri = 'test_terminal_iri'
     data_iri = 'test_data_iri'
