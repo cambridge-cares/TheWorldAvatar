@@ -50,7 +50,7 @@ with open(CSV, mode="r") as csvFile:
 		height = elevations.getHeight(WMS, lat, lon)
 
 		# Add rows in output files
-		outputLine(height, name, lat, lon, resultsFile)
+		outputLine(resultsFile, name, lat, lon, height)
 
 
 # Close file and finish
