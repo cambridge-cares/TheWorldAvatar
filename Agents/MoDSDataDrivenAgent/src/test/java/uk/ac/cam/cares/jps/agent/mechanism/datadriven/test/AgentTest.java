@@ -35,7 +35,7 @@ public class AgentTest {
         Path outputPath = agent.jobSubmission.getWorkspaceDirectory().toPath().resolve(message);
         Map<String, String> fileMap = new HashMap<>();
         String resultZipFilename = agent.jobSubmission.getHpcAddress() + outputPath.getFileName().toString().substring(outputPath.getFileName().toString().lastIndexOf("_")) + ".zip";
-        fileMap.put(resultZipFilename, "input.zip");
+        fileMap.put(resultZipFilename, "input");
         Files.walk(outputPath)
                 .filter(resultPath -> resultPath.toFile().isFile())
                 .forEach(resultPath -> {
