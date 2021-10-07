@@ -1,4 +1,4 @@
-from chemutils.mathutils.linalg import getXYZPointsDistance
+from chemutils.mathutils.linalg import getXYZPointsDistance, getPlaneAngle, getDihedralAngle
 from chemaboxwriters.common.randomidgenerator import get_random_id
 import json
 import numpy as np
@@ -36,6 +36,7 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
 
     scanCoordinateValue = []
     ontoCompChemJobs = []
+
     for data_item in data:
         data_item = json.loads(data_item)
 
@@ -45,6 +46,13 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
         if ndegrees==2:
             scanAtomsPos = xyz[oc_atoms_pos]
             scanCoordinateValue.append(getXYZPointsDistance(scanAtomsPos[0],scanAtomsPos[1]))
+        elif ndegrees==3:
+            scanAtomsPos =  xyz[oc_atoms_pos]
+            scanCoordinateValue.append(getPlaneAngle(scanAtomsPos[0],scanAtomsPos[1],scanAtomsPos[2]))
+        
+        elif ndegrees==4:
+            scanAtomsPos =  xyz[oc_atoms_pos]
+            scanCoordinateValue.append(getDihedralAngle(scanAtomsPos[0],scanAtomsPos[1],scanAtomsPos[2],scanAtomsPos[3]))
 
     data_out[SCAN_COORDINATE_VALUE]=scanCoordinateValue
     data_out[SCAN_POINTS_JOBS]=ontoCompChemJobs
