@@ -3,10 +3,12 @@ import logging
 
 import rdflib
 
+import knowledge.search
+
 class Agent():
 
     def __init__(self):
-        logging.info('initializing geocoding agent ...')
+        logging.info('initializing geocoding agent')
         addr = './data/municipalities_germany.ttl'
         frmt = 'turtle'
         self.graph = rdflib.Graph()
@@ -14,56 +16,25 @@ class Agent():
         self.graph.bind('sdo', rdflib.SDO)
         self.graph.bind('geo', rdflib.Namespace('http://www.w3.org/2003/01/geo/wgs84_pos#'))
 
-        self.index = self.__create_index()
+        #self.index = self.__create_index()
+        properties = ['rdfs:label', 'sdo:postalCode']
+        self.index = knowledge.search.create_index(addr, frmt, properties)
+        logging.info('created index with %s keys', len(self.index))
         logging.info('geocoding agent initialized')
-
-    def __normalize(self, s:str):
-        return s.strip().lower()
-
-    def __create_index(self):
-        logging.info('create index')
-        # one dictionary for both labels and postal codes
-        # d = { 'label' or 'postalcode : { municipality IRIs }}
-        d = {}
-        query = '''
-        SELECT ?munic ?label ?postalCode
-        WHERE {
-        ?munic rdfs:label ?label .
-        OPTIONAL { ?munic sdo:postalCode ?postalCode . }
-        }'''
-
-        result = self.graph.query(query)
-        for row in result:
-            #print(row['munic'], row['label'], row['postalCode'])
-
-            munic_iri = row['munic']
-            for prop in ['label', 'postalCode']:
-                if not row[prop]:
-                    continue
-                value = row[prop].toPython()
-                if prop == 'label':
-                    value = self.__normalize(value)
-                iris = d.get(value)
-                if iris:
-                    iris.append(munic_iri)
-                else:
-                    d[value] = [munic_iri]
-
-        return d
 
     def query(self, location:str, zipcode:int) -> tuple[float, float]:
 
         found_iri = None
 
         iris_zipcode = self.index.get(zipcode) if zipcode else None
-        if iris_zipcode:
+        if iris_zipcode and len(iris_zipcode) > 1:
             logging.info('several entries found for zipcode=%s', zipcode)
 
         iris_location = None
         if location:
-            location_normalized = self.__normalize(location)
+            location_normalized = knowledge.search.normalize(location)
             iris_location = self.index.get(location_normalized)
-            if iris_location:
+            if iris_location and len(iris_location) > 1:
                 logging.info('several entries found for location=%s', location)
 
         if iris_zipcode and not iris_location:

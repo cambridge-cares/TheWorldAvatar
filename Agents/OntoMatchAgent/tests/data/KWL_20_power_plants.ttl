@@ -78,7 +78,7 @@ base:BNA0008_Ahrensfelde_DE a psreal:FossilFuelPlant,
             sdo:addressRegion "Brandenburg" ;
             sdo:postalCode 16356 ;
             sdo:streetAddress "Lindenberger Weg" ] .
-			
+
 base:BNA0010a_RADAG_DE a psreal:HydroelectricPlant,
         owl:NamedIndividual ;
     rdfs:label "RADAG"@en ;
@@ -184,7 +184,7 @@ base:BNA0013_DE a psreal:WindPlant,
                     cpsys:numericalValue 2.76e+01 ] ] ;
     cpsysv1:isOwnedBy [ cpsysv1:hasName "Windpark Balkum-Thiene GmbH & Co. KG" ] ;
     sdo:address [ sdo:addressCountry "DE" ;
-            sdo:addressLocality "Alfhausen " ;
+            sdo:addressLocality "Alfhausen" ;
             sdo:addressRegion "Niedersachsen" ;
             sdo:postalCode 49594 ] .
 
@@ -200,7 +200,7 @@ base:BNA0014_Windpark_Alsleben_DE a psreal:WindPlant,
             sdo:addressLocality "Alsleben (Saale)" ;
             sdo:addressRegion "Sachsen-Anhalt" ;
             sdo:postalCode 6425 ] .
-			
+
 base:BNA0029_Solarpark_Petzenbach_DE a psreal:SolarPlant,
         owl:NamedIndividual ;
     rdfs:label "Solarpark Petzenbach"@en ;
@@ -225,7 +225,7 @@ base:BNA0030_DE a psreal:WindPlant,
             sdo:addressLocality "Artern" ;
             sdo:addressRegion "Thüringen" ;
             sdo:postalCode 6556 ] .
-			
+
 base:BNA0039_Bard_Offshore_1_DE a psreal:WindPlant,
         owl:NamedIndividual ;
     rdfs:label "Bard Offshore 1"@en ;
@@ -238,7 +238,7 @@ base:BNA0039_Bard_Offshore_1_DE a psreal:WindPlant,
             sdo:addressLocality "Nordsee " ;
             sdo:addressRegion "AWZ" ;
             sdo:streetAddress "90 km nordwestlich von Borkum" ] .
-			
+
 base:BNA0132_Waldpolenz_Energiepark_FF_2_DE a psreal:SolarPlant,
         owl:NamedIndividual ;
     rdfs:label "Waldpolenz Energiepark FF 2"@en ;

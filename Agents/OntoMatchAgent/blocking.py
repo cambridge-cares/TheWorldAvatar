@@ -74,7 +74,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
-            logging.info('creating inverted index ...')
+            logging.info('creating inverted index')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
             dframe = self._create_index(src_onto, tgt_onto, blocking_properties)
@@ -226,7 +226,14 @@ def create_dataframe_from_ontology(onto):
         p_o_tuples = props[1]
         for p, o in p_o_tuples:
             if isinstance(o, rdflib.Literal):
-                row[p] = o.toPython()
+                if isinstance(p, list):
+                    # list contains the properties of a property path
+                    # they are merged to get a name for the dataframe column
+                    column = '/'.join(p)
+                else:
+                    column = p
+
+                row[column] = o.toPython()
             else:
                 raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
 

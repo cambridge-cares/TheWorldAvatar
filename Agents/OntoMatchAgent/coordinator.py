@@ -99,7 +99,7 @@ class Agent():
             logging.info('no background knowledge has been added')
             return
 
-        logging.info('adding geographic coordinates ...')
+        logging.info('adding geographic coordinates')
 
         query = '''
         PREFIX owl: <http://www.w3.org/2002/07/owl#>

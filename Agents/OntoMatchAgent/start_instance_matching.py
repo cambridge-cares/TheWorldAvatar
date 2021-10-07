@@ -23,19 +23,20 @@ if __name__ == '__main__':
         #for subc in sublist:
         clist.append((subc,subc,0.9))
 
-    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_with_geo.pkl'
-    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
+    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
+    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_no_geo.pkl'
+    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_geo.pkl'
     #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.pkl'
-    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
-    #srcaddr = './data/kwl.pkl'
-    #tgtaddr = './data/gppd.pkl'
+    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.owl'
+    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
+    srcaddr = './data/kwl_geo.pkl'
+    tgtaddr = './data/gppd.pkl'
 
-    #agent = coordinator.Agent()
-    #srconto, tgtonto = agent.load(srcaddr, tgtaddr, dump_ontology=False)
+    agent = coordinator.Agent()
+    srconto, tgtonto = agent.load(srcaddr, tgtaddr, add_knowledge=True, dump_ontology=True)
 
-    m = matchManager(matchSteps, srcaddr, tgtaddr, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
-    #m = matchManager(matchSteps, srconto, tgtonto, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
+    #m = matchManager(matchSteps, srcaddr, tgtaddr, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
+    m = matchManager(matchSteps, srconto, tgtonto, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
 
 
 
@@ -47,7 +48,7 @@ if __name__ == '__main__':
         'min_token_length': 3,
         'max_token_occurrences_src': 20,
         'max_token_occurrences_tgt': 20,
-        'blocking_properties': ['name', 'isOwnedBy'],
+        'blocking_properties': ['name', 'isOwnedBy/hasName'],
         'reset_index': False
     }
 

@@ -22,12 +22,14 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         }'''
 
         result = list(graph.query(query))
-        self.assertEquals(len(result), 19)
+        self.assertEqual(len(result), 19)
 
         onto = agent.load_owlready2_ontology(graph)
         self.assertIsNotNone(onto)
 
     def xxxtest_coordinator_load(self):
+
+        # TODO-AE remove this test or adapt directories
 
         directory = 'C:/my/tmp/ontomatch/tmp_kwl_files/'
         srcaddr = directory + 'kwl.owl'
@@ -39,10 +41,10 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
 
     def test_coordinator_load_with_pickle_files(self):
 
-        directory = 'C:/my/tmp/ontomatch/tmp_kwl_files/'
-        srcaddr = directory + 'kwl_with_geo.pkl'
-        directory = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/'
-        tgtaddr = directory + 'gppd0722.pkl'
+        # TODO-AE add assert commands or extend test
+
+        srcaddr = './data/kwl_geo.pkl'
+        tgtaddr = './data/gppd.pkl'
 
         agent = coordinator.Agent()
         agent.load(srcaddr, tgtaddr)

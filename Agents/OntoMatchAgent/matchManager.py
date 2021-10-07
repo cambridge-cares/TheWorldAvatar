@@ -34,7 +34,7 @@ class matchManager(object):
 
     def load(self, srcAddr, tgtAddr):
 
-        logging.info('loading ontology=%s ...', srcAddr)
+        logging.info('loading ontology=%s', srcAddr)
         if srcAddr.endswith('.pkl'):
             with open(srcAddr,'rb') as file:
                 srcOnto = pickle.load(file)
@@ -43,7 +43,7 @@ class matchManager(object):
             #srcOnto._load(False)
         logging.info('finished loading ontology')
 
-        logging.info('loading ontology=%s ...', tgtAddr)
+        logging.info('loading ontology=%s', tgtAddr)
         if tgtAddr.endswith('.pkl'):
             with open(tgtAddr,'rb') as file:
                 tgtOnto = pickle.load(file)

@@ -39,7 +39,7 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         count = 0
         for _, _ in iterator:
             count += 1
-        self.assertEqual(count, 4704)
+        self.assertEqual(count, 2432)
         self.assertEqual(len(iterator), count)
 
     def test_tokenbasedpairiterator_max30(self):
@@ -58,5 +58,5 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         count = 0
         for _, _ in iterator:
             count += 1
-        self.assertEqual(count, 6972)
+        self.assertEqual(count, 3083)
         self.assertEqual(len(iterator), count)
