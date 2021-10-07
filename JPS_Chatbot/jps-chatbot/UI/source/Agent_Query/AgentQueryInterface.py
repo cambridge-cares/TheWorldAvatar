@@ -1,7 +1,7 @@
 import json
 from json import JSONDecodeError
 from rasa.nlu.model import Interpreter
-from AgentRequestConstructor import AgentRequestConstructor
+from .AgentRequestConstructor import AgentRequestConstructor
 
 
 class AgentQueryInterface:

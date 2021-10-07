@@ -16,7 +16,7 @@ def MarieIOLog(func):
             logger.warning('{} is called with input {} but returned None'.format(func.__name__, args[1:]))
         else:
             try:
-                rst = json.dumps(rst,indent=4)
+                rst = json.dumps(rst, indent=4)
             except:
                 pass
             logger.info('{} is called with input {} and output {}'.format(func.__name__, args[1:], rst))
@@ -32,7 +32,6 @@ class WikiQueryInterface:
         self.sparql_constructor = SPARQLConstructor()
         self.sparql_query = SPARQLQuery()
         self.interpreter_parser.interpreter = model
-
 
     @MarieIOLog
     def wiki_query(self, question):
@@ -53,4 +52,6 @@ class WikiQueryInterface:
         if result is None:
             return None
         else:
-            return result[0][0]
+            query_result = result[0][0]
+            print(query_result)
+            return query_result

@@ -4,6 +4,7 @@ from util.MarieLogger import MarieLog, MarieIOLog
 from util.StopWords import removeStopWords
 from Wikidata_Query.WikiQueryInterface import WikiQueryInterface
 from JPS_Query.JPSQueryInterface import JPSQueryInterface
+from Agent_Query.AgentQueryInterface import AgentQueryInterface
 from LDA.LDA_classifier import LDAClassifier
 
 
@@ -18,6 +19,11 @@ class CoordinateAgent:
                                 'ontokin': self.jps_nlu_model,
                                 'agent': self.agent_nlu_model}
 
+        self.topic_function_map = {'wiki': self.wiki_query,
+                                   'ontocompchem': self.jps_query,
+                                   'ontokin': self.jps_query,
+                                   'agent': self.agent_query}
+
     # @MarieLog
     def run(self, _question):
         # Identify the topics
@@ -26,17 +32,11 @@ class CoordinateAgent:
         rst = None
         for topic in topics:
             # parse_result = self.parse_question(topic, _question)
-            if topic == 'wiki':
-                _question = removeStopWords(_question)
-                try:
-                    rst = self.wiki_query(self.topic_model_map[topic], _question)
-                except:
-                    logging.warning('Wiki failed to provide an answer for {}'.format(_question))
-            elif topic in ['ontokin', 'ontocompchem']:
-                try:
-                    rst = self.jps_query(_question)
-                except:
-                    logging.warning('JPS failed to provide an answer for {}'.format(_question))
+            try:
+                # select the function and model according to the topic
+                rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
+            except:
+                logging.warning('{} failed to provide an answer for {}'.format(topic, _question))
             if rst is None:
                 pass
             else:
@@ -46,12 +46,15 @@ class CoordinateAgent:
     def identify_topic(self, _question):
         return self.lda_classifier.classify(_question)
 
-    # @MarieIOLog
-    # def parse_question(self, topic, _question):
-    #     return self.topic_model_map[topic].parse(_question)
-
+    @MarieIOLog
     def wiki_query(self, model, question):
+        question = removeStopWords(question)
         return WikiQueryInterface(model).wiki_query(question)
+
+    @MarieIOLog
+    def agent_query(self, question):
+        return AgentQueryInterface().agent_query(question)
+
 
     @MarieIOLog
     def jps_query(self, question):
@@ -79,10 +82,10 @@ if __name__ == '__main__':
     #
     # for wiki_q in wiki_questions:
     #     answer = ca.run(wiki_q)
-
-    jps_questions = ['show me the vibration frequency of H2O2', 'symmetry number of c9h14']
-    for jps_q in jps_questions:
-        answer = ca.run(jps_q)
+    ca.run('geometry c=c=c=c')
+    # jps_questions = ['show me the vibration frequency of H2O2', 'symmetry number of c9h14']
+    # for jps_q in jps_questions:
+    #     answer = ca.run(jps_q)
 
 
 
@@ -112,7 +115,7 @@ if __name__ == '__main__':
 # from JPS_Query.chatbot_interface import Chatbot
 # # from dashboard.LogWriter import LogWriter
 # from dashboard.Messenger import Messenger
-# from Agent_query.AgentRequestConstructor import AgentRequestConstructor
+# from Agent_Query.AgentRequestConstructor import AgentRequestConstructor
 #
 # from rasa.nlu.model import Interpreter
 # import os

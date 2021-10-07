@@ -17,7 +17,7 @@ parent_dir = get_parent_path(this_dir)
 WIKIDATA_QUERY_DIR = os.path.join(parent_dir, 'Wikidata_Query')
 WIKI_MODELS_DIR = os.path.join(WIKIDATA_QUERY_DIR, 'models')
 
-AGENT_QUERY_DIR = os.path.join(parent_dir, 'Agent_query')
+AGENT_QUERY_DIR = os.path.join(parent_dir, 'Agent_Query')
 AGENT_MODELS_DIR = os.path.join(AGENT_QUERY_DIR, 'models')
 AGENT_OWL_DIR = os.path.join(AGENT_QUERY_DIR, 'Agents')
 
