@@ -1,5 +1,5 @@
 intents:
-  - Service__PCE_Agent.owl
+  - PCE_Agent.owl
   - weather_agent
 
 entities:

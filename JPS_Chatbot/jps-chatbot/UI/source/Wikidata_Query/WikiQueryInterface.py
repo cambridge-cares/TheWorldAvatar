@@ -3,7 +3,7 @@ import logging
 from pprint import pprint
 from .SearchEngine import SearchEngine
 from .SPARQLConstructor import SPARQLConstructor
-from .tmp_SPARQLQuery import SPARQLQuery
+from .SPARQLQuery import SPARQLQuery
 from .Interpretation_parser import InterpretationParser
 
 
@@ -53,5 +53,4 @@ class WikiQueryInterface:
             return None
         else:
             query_result = result[0][0]
-            print(query_result)
             return query_result

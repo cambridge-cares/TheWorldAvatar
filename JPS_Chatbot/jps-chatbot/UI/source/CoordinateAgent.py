@@ -1,4 +1,6 @@
 import logging
+import traceback
+
 from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
 from util.MarieLogger import MarieLog, MarieIOLog
 from util.StopWords import removeStopWords
@@ -30,13 +32,18 @@ class CoordinateAgent:
         topics = self.identify_topic(_question)
         topics.append('agent')
         rst = None
+        topics = ['agent']
         for topic in topics:
+            rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
+
             # parse_result = self.parse_question(topic, _question)
-            try:
-                # select the function and model according to the topic
-                rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
-            except:
-                logging.warning('{} failed to provide an answer for {}'.format(topic, _question))
+            # try:
+            #     # select the function and model according to the topic
+            #     rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
+            # except Exception:
+            #     logging.warning('{} failed to provide an answer for {}'.format(topic, _question))
+            #     logging.error('{}'.format(traceback.format_exc()))
+
             if rst is None:
                 pass
             else:
@@ -52,8 +59,9 @@ class CoordinateAgent:
         return WikiQueryInterface(model).wiki_query(question)
 
     @MarieIOLog
-    def agent_query(self, question):
-        return AgentQueryInterface().agent_query(question)
+    def agent_query(self, model, question):
+        print('Doing Agent query', question)
+        return AgentQueryInterface(model).agent_query(question)
 
 
     @MarieIOLog
@@ -82,7 +90,9 @@ if __name__ == '__main__':
     #
     # for wiki_q in wiki_questions:
     #     answer = ca.run(wiki_q)
-    ca.run('geometry c=c=c=c')
+    # ca.run('geometry c=c=c=c')
+    # ca.run('show me the pce of c=c=c=c')
+    ca.run('what is the enthalpy of InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3 at 1522.1 Pa and 123245 K')
     # jps_questions = ['show me the vibration frequency of H2O2', 'symmetry number of c9h14']
     # for jps_q in jps_questions:
     #     answer = ca.run(jps_q)

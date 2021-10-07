@@ -91,10 +91,7 @@ class AgentRequestConstructor:
 
     def get_agent_request_attributes(self, agent_name):
         g = rdflib.Graph()
-        agent_dir = os.path.join(FILE_DIR, agent_name + '.owl')
-        print('=============================')
-        print('agent dir', agent_dir)
-
+        agent_dir = os.path.join(FILE_DIR, agent_name)
         g.parse(agent_dir)
         agent_url = ''
         get_input_query = """
@@ -138,44 +135,3 @@ class AgentRequestConstructor:
 
         return {'inputs': inputs, 'url': agent_url}
 
-
-if __name__ == '__main__':
-    nlu_result = {
-        "intent": {
-            "name": "Service__PCE_Agent.owl",
-            "confidence": 1.0
-        },
-        "entities": [
-            {
-                "entity": "attribute",
-                "start": 0,
-                "end": 27,
-                "confidence_entity": 0.9998610959570444,
-                "value": "power conversion efficiency",
-                "extractor": "CRFEntityExtractor"
-            },
-            {
-                "entity": "species",
-                "start": 46,
-                "end": 48,
-                "confidence_entity": 0.9967629527315255,
-                "value": "c1cccc1",
-                "extractor": "CRFEntityExtractor"
-            }
-        ],
-        "intent_ranking": [
-            {
-                "name": "Service__PCE_Agent.owl",
-                "confidence": 1.0
-            },
-            {
-                "name": "weather_agent",
-                "confidence": 4.125258801224163e-09
-            }
-        ],
-        "text": "power conversion efficiency of OPV with donar CC"
-    }
-    ac = AgentRequestConstructor()
-    rst = ac.proces_nlu_result(nlu_result)
-    ac.make_http(rst)
-    pprint(rst)
