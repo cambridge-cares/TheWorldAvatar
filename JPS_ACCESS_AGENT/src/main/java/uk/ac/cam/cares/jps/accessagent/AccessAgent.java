@@ -170,7 +170,11 @@ public class AccessAgent extends JPSAgent{
 	 */
 	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {		
 		try {
-			return StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
+			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
+			if (storeClient == null) {
+				throw new RuntimeException();
+			}
+			return storeClient;
 		}catch (RuntimeException e) {
 			LOGGER.error("Failed to instantiate StoreClient");
 			throw new JPSRuntimeException("Failed to instantiate StoreClient");
