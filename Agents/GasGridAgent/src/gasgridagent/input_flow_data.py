@@ -74,7 +74,10 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
             terminalIRI - full gas terminal IRI incl. namespace (without trailing '<' or '>').
             terminal_name - gas terminal name (optional).
     """
-    print("Instantiate time series association for: " + terminal_name)
+    if terminal_name != '':
+        print("Instantiate time series association for: " + terminal_name)
+    else:
+        print("Instantiate time series association.")
 
     # Create UUIDs for IntakenGas, VolumetricFlowRate, and Measure instances
     # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create

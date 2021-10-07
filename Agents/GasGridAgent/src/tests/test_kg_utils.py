@@ -5,9 +5,10 @@ from pathlib import Path
 from configobj import ConfigObj
 from testcontainers.core.container import DockerContainer
 
-from py4jps.resources import JpsBaseLib
+# get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
+from gasgridagent.jpsSingletons import jpsBaseLibView
 
-# Import module under test from ukgasflows
+# Import module under test from gasgridagent
 import gasgridagent.kg_utils as utils
 import gasgridagent.input_flow_data as term_in
 
@@ -128,7 +129,7 @@ def test_get_instantiated_terminals(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
         time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+        # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
 
         # Verify that knowledge base is empty
@@ -154,7 +155,7 @@ def test_get_instantiated_gas_amounts(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
         time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+        # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
 
         # Verify that knowledge base is empty
@@ -176,7 +177,7 @@ def test_get_instantiated_gas_amounts(initialise_triple_store):
                 # Just catch and suppress exception due to unreachable postgres database
                 pass
 
-        # Verify that instantiated terminals are retrieved correctly
+        # Verify that instantiated gas amounts are retrieved correctly
         res = utils.get_instantiated_gas_amounts(endpoint)
         assert len(res) == len(expected_terminals)
 
@@ -187,7 +188,7 @@ def test_get_instantiated_quantities(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
         time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+        # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
 
         # Verify that knowledge base is empty
@@ -209,7 +210,7 @@ def test_get_instantiated_quantities(initialise_triple_store):
                 # Just catch and suppress exception due to unreachable postgres database
                 pass
 
-        # Verify that instantiated terminals are retrieved correctly
+        # Verify that instantiated quantities are retrieved correctly
         res = utils.get_instantiated_quantities(endpoint)
         assert len(res) == len(expected_terminals)
 
@@ -220,7 +221,7 @@ def test_get_instantiated_measurements(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
         time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+        # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
 
         # Verify that knowledge base is empty
@@ -242,7 +243,7 @@ def test_get_instantiated_measurements(initialise_triple_store):
                 # Just catch and suppress exception due to unreachable postgres database
                 pass
 
-        # Verify that instantiated terminals are retrieved correctly
+        # Verify that instantiated measurements are retrieved correctly
         res = utils.get_instantiated_measurements(endpoint)
         assert len(res) == len(expected_terminals)
 
@@ -253,50 +254,7 @@ def test_get_time_format(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
         time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
-        endpoint = get_endpoint(container)
-
-        # Populate triple store with ABox RDF data
-        load_abox_data(endpoint)
-
-        # Path to timeseries.properties file
-        p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "timeseries.properties"))
-        props = ConfigObj(p)
-        # Retrieve original settings
-        orig_query = props['sparql.query.endpoint']
-        orig_update = props['sparql.update.endpoint']
-        # "Override" properties normally read from timeseries.properties for testing
-        utils.QUERY_ENDPOINT = endpoint
-        props['sparql.query.endpoint'] = endpoint
-        props['sparql.update.endpoint'] = endpoint
-        props.write()
-
-        for iri in expected_terminals.values():
-            # Verify that no time format is yet instantiated
-            assert utils.get_time_format(endpoint, iri) is None
-            try:
-                # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
-                term_in.instantiate_timeseries(endpoint, endpoint, iri)
-            except Exception:
-                # Just catch and suppress exception due to unreachable postgres database
-                pass
-            # Verify the correct time format
-            assert utils.get_time_format(endpoint, iri) == utils.FORMAT
-
-        # Restore original properties file
-        props = ConfigObj(p)
-        props['sparql.query.endpoint'] = orig_query
-        props['sparql.update.endpoint'] = orig_update
-        props.write()
-
-
-def test_get_measurementIRI(initialise_triple_store):
-
-    # Spin up temporary docker container
-    with initialise_triple_store as container:
-        # Wait some arbitrary time until container is reachable
-        time.sleep(3)
-        # Retrieve SPARQL endpoint (replace potentially returned erroneous 'localnpipe' with 'localhost')
+        # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
 
         # Populate triple store with ABox RDF data
@@ -308,48 +266,98 @@ def test_get_measurementIRI(initialise_triple_store):
         # Retrieve original settings
         orig_query = props['sparql.query.endpoint']
         orig_update = props['sparql.update.endpoint']
-        # "Override" properties normally read from gasgridagent.properties for testing
-        utils.QUERY_ENDPOINT = endpoint
-        props['sparql.query.endpoint'] = endpoint
-        props['sparql.update.endpoint'] = endpoint
-        props.write()
 
-        for iri in expected_terminals.values():
-            # Verify that no measurement is yet instantiated
-            assert utils.get_measurementIRI(endpoint, iri) is None
-            try:
-                # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
-                term_in.instantiate_timeseries(endpoint, endpoint, iri)
-            except Exception:
-                # Just catch and suppress exception due to unreachable postgres database
-                pass
-            # Verify that measurement is now instantiated
-            assert isinstance(utils.get_measurementIRI(endpoint, iri), str)
+        try:
+            # "Override" properties normally read from gasgridagent.properties for testing
+            utils.QUERY_ENDPOINT = endpoint
+            props['sparql.query.endpoint'] = endpoint
+            props['sparql.update.endpoint'] = endpoint
+            props.write()
 
-            # Verify exception for ambiguous instantiations
-            with pytest.raises(ValueError) as excinfo:
-                # Check correct exception type
+            for iri in expected_terminals.values():
+                # Verify that no time format is yet instantiated
+                assert utils.get_time_format(endpoint, iri) is None
                 try:
-                    # Instantiate 2nd time series associations in knowledge base
+                    # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
+                    term_in.instantiate_timeseries(endpoint, endpoint, iri)
+                except Exception:
+                    # Just catch and suppress exception due to unreachable postgres database
+                    pass
+                # Verify the correct time format
+                assert utils.get_time_format(endpoint, iri) == utils.FORMAT
+
+        finally:
+            # Restore original properties file
+            props = ConfigObj(p)
+            props['sparql.query.endpoint'] = orig_query
+            props['sparql.update.endpoint'] = orig_update
+            props.write()
+
+
+def test_get_measurementIRI(initialise_triple_store):
+
+    # Spin up temporary docker container
+    with initialise_triple_store as container:
+        # Wait some arbitrary time until container is reachable
+        time.sleep(3)
+        # Retrieve SPARQL endpoint
+        endpoint = get_endpoint(container)
+
+        # Populate triple store with ABox RDF data
+        load_abox_data(endpoint)
+
+        # Path to gasgridagent.properties file
+        p = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
+        props = ConfigObj(p)
+        # Retrieve original settings
+        orig_query = props['sparql.query.endpoint']
+        orig_update = props['sparql.update.endpoint']
+
+        try:
+            # "Override" properties normally read from gasgridagent.properties for testing
+            utils.QUERY_ENDPOINT = endpoint
+            props['sparql.query.endpoint'] = endpoint
+            props['sparql.update.endpoint'] = endpoint
+            props.write()
+
+            for iri in expected_terminals.values():
+                # Verify that no measurement is yet instantiated
+                assert utils.get_measurementIRI(endpoint, iri) is None
+                try:
+                    # Instantiate time series associations in knowledge base (neglect corresponding postgres instantiation)
                     term_in.instantiate_timeseries(endpoint, endpoint, iri)
                 except Exception:
                     # Just catch and suppress exception due to unreachable postgres database
                     pass
                 # Verify that measurement is now instantiated
-                utils.get_measurementIRI(endpoint, iri)
-            # Check correct exception message
-            expected = 'AMBIGUITY ERROR: Terminal connected to several gas flow time series!'
-            assert expected in str(excinfo.value)
+                assert isinstance(utils.get_measurementIRI(endpoint, iri), str)
 
-        # Restore original properties file
-        props = ConfigObj(p)
-        props['sparql.query.endpoint'] = orig_query
-        props['sparql.update.endpoint'] = orig_update
-        props.write()
+                # Verify exception for ambiguous instantiations
+                with pytest.raises(ValueError) as excinfo:
+                    # Check correct exception type
+                    try:
+                        # Instantiate 2nd time series associations in knowledge base
+                        term_in.instantiate_timeseries(endpoint, endpoint, iri)
+                    except Exception:
+                        # Just catch and suppress exception due to unreachable postgres database
+                        pass
+                    # Verify that measurement is now instantiated
+                    utils.get_measurementIRI(endpoint, iri)
+                # Check correct exception message
+                expected = 'AMBIGUITY ERROR: Terminal connected to several gas flow time series!'
+                assert expected in str(excinfo.value)
+
+        finally:
+            # Restore original properties file
+            props = ConfigObj(p)
+            props['sparql.query.endpoint'] = orig_query
+            props['sparql.update.endpoint'] = orig_update
+            props.write()
 
 
 def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
+    # endpoint acts as both Query and Update endpoint
     endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
                + docker_container.get_exposed_port(9999)
     # 'kb' is default namespace in Blazegraph
@@ -361,17 +369,11 @@ def load_abox_data(endpoint):
     # Load gas_network_components ABox into (temporary) triple store
     # Requires reachable SPARQL endpoint 'endpoint'
 
-    # Create jpsBaseLibGateWay instance
-    jpsBaseLibGW = JpsBaseLib()
-    jpsBaseLibGW.launchGateway()
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.query.*")
     # Initialise remote KG client with query AND update endpoints specified
-    KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint, endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint, endpoint)
 
     # Read RDF/XML ABox file
-    rdf_file = os.path.abspath(os.path.join(Path(__file__).parent, "components_abox.owl"))
+    rdf_file = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "components_abox.owl"))
     with open(rdf_file, 'r') as f:
         content = f.read()
 

@@ -1,24 +1,17 @@
 import re
 import pytest
 
-from py4jps.resources import JpsBaseLib
+# get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
+from gasgridagent.jpsSingletons import jpsBaseLibView
 
-# Import module under test from ukgasflows
+# Import module under test from gasgridagent
 import gasgridagent.output_flow_data as term_out
-import gasgridagent.kg_utils as utils
 
 
 @pytest.fixture()
 def get_sample_gasflow_history():
     # Create sample test data as returned by get_gasflow_history() from triple store and postgres database
     # FORMAT: {terminal name: [terminal IRI, measurement IRI, Java time series object], ...}
-
-    # Create jpsBaseLibGateWay instance
-    jpsBaseLibGW = JpsBaseLib()
-    jpsBaseLibGW.launchGateway()
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLib_view, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     ts_data = {}
 
@@ -28,13 +21,13 @@ def get_sample_gasflow_history():
     terminal_iri = 'test_terminal_iri'
     data_iri = 'test_data_iri'
     values = [[1.0 for j in (range(n))]]
-    t = jpsBaseLib_view.java.time.Instant.now()
+    t = jpsBaseLibView.java.time.Instant.now()
     times = []
     for k in range(n):
         times.append(t.plusSeconds(k))
 
     # Construct time series object from sample data
-    ts = jpsBaseLib_view.TimeSeries(times, [data_iri], values)
+    ts = jpsBaseLibView.TimeSeries(times, [data_iri], values)
     # Add to dictionary
     ts_data[terminal_name] = [terminal_iri, data_iri, ts]
 
