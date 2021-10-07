@@ -203,6 +203,72 @@ def clean_up_old_timeseries(chunk):
             print('Number of additionally deleted triples: {} \n'.format(triples_old - triples_new))
 
 
+def delete_incomplete_new_timeseries_triples(update_endpoint):
+    """
+        Deletes all triples associated with incomplete (unintentional) new time series instantiation
+
+        Arguments:
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+    """
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(update_endpoint, update_endpoint)
+    # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    query = kg.create_sparql_prefix('comp') + \
+            kg.create_sparql_prefix('compa') + \
+            kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('om') + \
+            kg.create_sparql_prefix('ts') + \
+            '''DELETE {?a comp:hasTaken ?b. \
+                       ?b rdf:type comp:IntakenGas. \
+                       ?c rdf:type om:VolumetricFlowRate; \
+                          om:hasPhenomenon ?b; \
+                          om:hasValue ?d. \
+                       ?d rdf:type om:Measure; \
+                          om:hasUnit om:cubicMetrePerSecond-Time; \
+                          ts:hasTimeSeries ?e. \
+                       ?e ?f ?g } \
+               WHERE { SELECT ?a ?b ?c ?d ?e ?f ?g \
+                       WHERE { ?a rdf:type comp:GasTerminal; \
+                                  comp:hasTaken ?b. \
+                               ?b rdf:type comp:IntakenGas. \
+                               ?c rdf:type om:VolumetricFlowRate; \
+                                  om:hasPhenomenon ?b;
+                                  om:hasValue ?d. \
+                               ?d rdf:type om:Measure; \
+                                  om:hasUnit om:cubicMetrePerSecond-Time. \
+                               OPTIONAL { ?d ts:hasTimeSeries ?e. \
+                                          ?e ?f ?g } \
+                               } \
+               }'''
+
+    KGClient.executeUpdate(query)
+
+
+# USE WITH CAUTION!!
+def delete_terminal(terminal_label):
+    """
+        Delete all triples associated with Gas Terminal with given rdfs_label
+
+        Arguments:
+            terminal_label - rdfs label for terminal to be deleted.
+    """
+
+    # Read properties file incl. SPARQL endpoints
+    kg.read_properties_file(kg.PROPERTIES_FILE)
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(kg.UPDATE_ENDPOINT, kg.UPDATE_ENDPOINT)
+
+    # Run delete query
+    query = kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''DELETE { ?s ?p ?o } \
+               WHERE { ?s rdfs:label "%s"^^xsd:string; \
+                          ?p ?o }''' % (terminal_label)
+    KGClient.executeUpdate(query)
+
+
 def correct_terminal_spelling():
     """
         Correct spelling of "Theddlethorpe Terminal"
@@ -225,16 +291,17 @@ def correct_terminal_spelling():
             kg.create_sparql_prefix('xsd') + \
             '''DELETE { <%s> ?p ?o } \
                INSERT { <%s> ?p ?o } \
-               WHERE { <%s> ?p ?o; \
-                            rdfs:label "%s"^^xsd:string }''' % (wrong_IRI, correct_IRI, wrong_IRI, wrong_name)
+               WHERE { <%s> ?p ?o }''' % (wrong_IRI, correct_IRI, wrong_IRI)
     KGClient.executeUpdate(query)
 
     # 2) Correct wrong spelling of terminal label
     query = kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('xsd') + \
-            '''DELETE { ?s rdfs:label "%s"^^xsd:string } \
-               INSERT { ?s rdfs:label "%s"^^xsd:string } \
-               WHERE { ?s rdfs:label "%s"^^xsd:string }''' % (wrong_name, correct_name, wrong_name)
+            '''DELETE DATA { <%s> rdfs:label "%s"^^xsd:string }''' % (correct_IRI, wrong_name)
+    KGClient.executeUpdate(query)
+    query = kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('xsd') + \
+            '''INSERT DATA { <%s> rdfs:label "%s"^^xsd:string }''' % (correct_IRI, correct_name)
     KGClient.executeUpdate(query)
 
 
@@ -254,7 +321,14 @@ if __name__ == '__main__':
     chunk = 100000
 
     # 2) Delete old gas flow measurement
-    clean_up_old_timeseries(chunk)
+    #clean_up_old_timeseries(chunk)
 
-    # 3) Correct wrong spelling of "Theddlethorpe Terminal"
-    correct_terminal_spelling()
+    # 3) Delete existing incomplete gas flow measurement time series instantiations
+    #delete_incomplete_new_timeseries_triples(kg.QUERY_ENDPOINT)
+
+    # 4) Delete duplicate of "Theddlethorpe Terminal"
+    #terminal_label = 'Theddlethorpe Terminal'
+    #delete_terminal(terminal_label)
+
+    # 5) Correct wrong spelling of "Theddlethorpe Terminal"
+    #correct_terminal_spelling()
