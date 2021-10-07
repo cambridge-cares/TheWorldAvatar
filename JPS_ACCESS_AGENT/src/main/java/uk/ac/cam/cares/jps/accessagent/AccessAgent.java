@@ -189,10 +189,11 @@ public class AccessAgent extends JPSAgent{
 	        if (method == null) {
 	        	return false;
 	        }
-	    	
-	        String targetiri = requestParams.getString(JPSConstants.TARGETIRI);
-	        boolean v = InputValidator.checkIfURLpattern(targetiri);
-	        if(!v) {return false;}
+	    		        
+	        String targetiri = MiscUtil.optNullKey(requestParams,JPSConstants.TARGETIRI);
+	        if (targetiri == null) {
+	        	return false;
+	        }
 	        
 	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
 	        if(!q) {return false;};
