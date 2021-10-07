@@ -12,7 +12,7 @@ class TestOntology(utils_for_testing.TestCaseOntoMatch):
         onto_owlready2 = get_ontology(addr).load()
         graph = rdflib.Graph()
         graph.parse(addr)
-        onto = Ontology(addr, save=False, ontology=onto_owlready2, graph=graph)
+        onto = Ontology(addr, ontology=onto_owlready2, graph=graph)
 
         # search for entity with (unique) postalCode 6425
         code = None

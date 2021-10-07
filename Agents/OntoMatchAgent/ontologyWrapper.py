@@ -14,28 +14,22 @@ from matchers.UnitConverter import UnitConverter
 logging.getLogger("gensim").setLevel(logging.CRITICAL)
 
 class Ontology():
-    def __init__(self, addr, use_comment = False, save=False, no_stem = False, ontology = None, graph=None):
+    def __init__(self, addr, ontology, graph, use_comment=False, no_stem=False):
+        self._addr = addr
+        self.ontology = ontology
+        self.graph = graph
         self.useComment = use_comment
         self.tokensDict = {}
         self.tokensDictLong = {}
         self.classTree = {}
-        self._addr = addr
         self.rangeMap = {} #classId to range
         self.domainMap = {}
-        self.save = save
-        self.ontology = ontology
-        self.graph = graph
         self._load(no_stem)
 
     def _load(self, no_stem = False):
         '''
         load the ontology entities, divide into words entry
         '''
-        if not self.ontology:
-            self.ontology = get_ontology(self._addr).load()
-        if not self.graph:
-            self.graph = rdflib.Graph()
-            self.graph.parse(self._addr)
         self.procesLEX(self.ontology,no_stem)
         self.baseiri = self.ontology.base_iri
         #self.classes = list( self.ontology.classes())
@@ -43,10 +37,6 @@ class Ontology():
         #self.getRdfLevelDef()
         self.ontoName = self._addr.replace('.','')
         self.individualList, self.individualNames, self.instanceDict, self.instanceTokensDict, self.icmap, self.ipmap, self.valueMap = self.buildValueMap()
-        if self.save:
-            pklname = self._addr.replace('rdf','pkl').replace('owl','pkl').replace('xml','pkl')
-            with open(pklname,'wb') as file:
-                pickle.dump(self, file, -1)
 
     @staticmethod
     def lemmatize_stemming(text, no_stem = False):

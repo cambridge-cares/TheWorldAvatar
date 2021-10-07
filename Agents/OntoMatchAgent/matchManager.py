@@ -14,7 +14,7 @@ from matchers.MeronymRematcher import MeronymRematcher
 import ontologyWrapper
 
 class matchManager(object):
-    def __init__(self, matchSteps, srcAddr, tgtAddr, aggregation = 'average',thre=0.6, weight =None, paras = None, matchIndividuals = False,penalize = None,useAttrFinder=False):
+    def __init__(self, matchSteps, srconto, tgtonto, aggregation='average',thre=0.6, weight =None, paras=None, matchIndividuals=False, penalize=None, useAttrFinder=False):
         self.matchSteps = []
         #todo null handling
         self.matchSteps = matchSteps
@@ -25,34 +25,8 @@ class matchManager(object):
         self.matchI = matchIndividuals
         self.penalize = penalize
         self.useAttrFinder = useAttrFinder
-        # TODO-AE remove this after talking to Shaocong
-        if isinstance(srcAddr, str):
-            self.srcOnto, self.tgtOnto = self.load(srcAddr, tgtAddr)
-        else:
-            self.srcOnto = srcAddr
-            self.tgtOnto = tgtAddr
-
-    def load(self, srcAddr, tgtAddr):
-
-        logging.info('loading ontology=%s', srcAddr)
-        if srcAddr.endswith('.pkl'):
-            with open(srcAddr,'rb') as file:
-                srcOnto = pickle.load(file)
-        else:
-            srcOnto = ontologyWrapper.Ontology(srcAddr, save=False)
-            #srcOnto._load(False)
-        logging.info('finished loading ontology')
-
-        logging.info('loading ontology=%s', tgtAddr)
-        if tgtAddr.endswith('.pkl'):
-            with open(tgtAddr,'rb') as file:
-                tgtOnto = pickle.load(file)
-        else:
-            tgtOnto = ontologyWrapper.Ontology(tgtAddr, save=False)
-            #tgtOnto._load(False)
-            #tgtOnto = Ontology(tgtAddr)
-        logging.info('finished loading ontology')
-        return srcOnto, tgtOnto
+        self.srcOnto = srconto
+        self.tgtOnto = tgtonto
 
     def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False, params_blocking=None):
 

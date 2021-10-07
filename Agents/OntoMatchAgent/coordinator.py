@@ -22,7 +22,7 @@ class Agent():
         else:
             srcgraph = self.load_rdflib_graph(srcaddr, add_knowledge)
             srcowlready2onto = self.load_owlready2_ontology(srcgraph)
-            srconto = Ontology(srcaddr, save=False, ontology=srcowlready2onto, graph=srcgraph)
+            srconto = Ontology(srcaddr, ontology=srcowlready2onto, graph=srcgraph)
             if dump_ontology:
                 self.dump(srcaddr, srconto)
 
@@ -36,7 +36,7 @@ class Agent():
         else:
             tgtgraph = self.load_rdflib_graph(tgtaddr, add_knowledge)
             tgtowlready2onto = self.load_owlready2_ontology(tgtgraph)
-            tgtonto = Ontology(tgtaddr, save=False, ontology=tgtowlready2onto, graph=tgtgraph)
+            tgtonto = Ontology(tgtaddr, ontology=tgtowlready2onto, graph=tgtgraph)
             if dump_ontology:
                 self.dump(tgtaddr, tgtonto)
 
@@ -165,10 +165,11 @@ class Agent():
 
         params_blocking = params['blocking']
 
+        # TODO-AE move more config params to dictionary / config file
         match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
                 weight=match_weights, paras=additional_match_params,
-                matchIndividuals =True, penalize = penalize, useAttrFinder=False)
+                matchIndividuals=True, penalize=penalize, useAttrFinder=False)
 
-        alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch = False, params_blocking = params_blocking)
+        alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
         #match_manager.showResult(match_manager.A,'individualList')
         match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)

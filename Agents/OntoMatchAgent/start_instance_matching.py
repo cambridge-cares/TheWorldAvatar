@@ -52,7 +52,7 @@ if __name__ == '__main__':
         }
     }
 
-    # TODO-AE Can be remove this for instance matching?
+    # TODO-AE Do we need this for instance matching?
     clist = [('PowerStation', 'PowerPlant', 0.9)]
     sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
     for subc in sublist:
