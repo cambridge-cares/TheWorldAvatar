@@ -29,11 +29,13 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         #        min_token_length=3, max_token_occurrences_src=20, max_token_occurrences_tgt=20, reset_index=True)
         params = {
             'name': 'TokenBasedPairIterator',
-            'min_token_length': 3,
-            'max_token_occurrences_src': 20,
-            'max_token_occurrences_tgt': 20,
-            'blocking_properties': ['name', 'isOwnedBy'],
-            'reset_index': True
+            'model_specific': {
+                'min_token_length': 3,
+                'max_token_occurrences_src': 20,
+                'max_token_occurrences_tgt': 20,
+                'blocking_properties': ['name', 'isOwnedBy'],
+                'reset_index': True,
+            }
         }
         iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
@@ -48,11 +50,13 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         #        min_token_length=3, max_token_occurrences_src=30, max_token_occurrences_tgt=30, reset_index=True)
         params = {
             'name': 'TokenBasedPairIterator',
-            'min_token_length': 3,
-            'max_token_occurrences_src': 30,
-            'max_token_occurrences_tgt': 30,
-            'blocking_properties': ['name', 'isOwnedBy'],
-            'reset_index': True
+            'model_specific': {
+                'min_token_length': 3,
+                'max_token_occurrences_src': 30,
+                'max_token_occurrences_tgt': 30,
+                'blocking_properties': ['name', 'isOwnedBy'],
+                'reset_index': True,
+            }
         }
         iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0

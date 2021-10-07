@@ -198,7 +198,10 @@ def tokenize(s:str) -> typing.List[str]:
 def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
     params_copy = params.copy()
     name = params_copy.pop('name')
-    it_instance = globals()[name](src_onto, tgt_onto, **params_copy)
+    params_model_specific = params.get('model_specific')
+    if not params_model_specific:
+        params_model_specific = {}
+    it_instance = globals()[name](src_onto, tgt_onto, **params_model_specific)
     return it_instance
 
 def create_dataframe_from_ontology(onto):

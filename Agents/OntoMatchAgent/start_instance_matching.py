@@ -12,17 +12,6 @@ if __name__ == '__main__':
 
     starttime = time.time()
 
-    matchSteps = ['ValueMatcher','instanceStringMatcher', 'instanceBOWMatcher']
-    w = [0.5, 0.4, 0.1]
-    paras = [None,None,None]
-    #threshold = .2
-    threshold = .0
-    clist = [('PowerStation', 'PowerPlant', 0.9)]
-    sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
-    for subc in sublist:
-        #for subc in sublist:
-        clist.append((subc,subc,0.9))
-
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_no_geo.pkl'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_geo.pkl'
@@ -32,39 +21,47 @@ if __name__ == '__main__':
     srcaddr = './data/kwl_geo.pkl'
     tgtaddr = './data/gppd.pkl'
 
-    agent = coordinator.Agent()
-    srconto, tgtonto = agent.load(srcaddr, tgtaddr, add_knowledge=True, dump_ontology=True)
-
-    #m = matchManager(matchSteps, srcaddr, tgtaddr, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
-    m = matchManager(matchSteps, srconto, tgtonto, thre=threshold, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
-
-
-
-    #params_blocking = {'name': 'FullPairIterator'}
-
-
-    params_blocking = {
-        'name': 'TokenBasedPairIterator',
-        'min_token_length': 3,
-        'max_token_occurrences_src': 20,
-        'max_token_occurrences_tgt': 20,
-        'blocking_properties': ['name', 'isOwnedBy/hasName'],
-        'reset_index': False
-    }
-
-
-
-
-
-
     params = {
-        'blocking': params_blocking
+        "dataset": {
+            "src": srcaddr,
+            "tgt": tgtaddr,
+        },
+        "pre_processing": {
+            "add_knowledge": True,
+            "pickle_dump": False,
+        },
+        "blocking": {
+            #"name": "FullPairIterator",
+            "name": "TokenBasedPairIterator",
+            "model_specific": {
+                "min_token_length": 3,
+                "max_token_occurrences_src": 20,
+                "max_token_occurrences_tgt": 20,
+                "blocking_properties": ["name", "isOwnedBy/hasName"],
+                "reset_index": False,
+            }
+        },
+        "matching": {
+            "name": "matchManager",
+            "model_specific": {
+                "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
+                "weights": [0.5, 0.4, 0.1],
+                "params": [None, None, None],
+                "threshold": 0.2,
+            },
+        }
     }
 
-    a = m.runMatch("matchWrite2Matrix", to1=False, rematch = False, params = params)
+    # TODO-AE Can be remove this for instance matching?
+    clist = [('PowerStation', 'PowerPlant', 0.9)]
+    sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
+    for subc in sublist:
+        #for subc in sublist:
+        clist.append((subc,subc,0.9))
+    penalize = {'class':True,'align':Alignment(clist)}
 
-    #m.showResult(m.A,'individualList')
-    m.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+    agent = coordinator.Agent()
+    agent.start(params, penalize)
 
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)

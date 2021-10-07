@@ -54,15 +54,7 @@ class matchManager(object):
         logging.info('finished loading ontology')
         return srcOnto, tgtOnto
 
-    def default_params(self):
-        return {
-            'blocking': {'name': 'FullPairIterator'}
-        }
-
-    def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False, params=None):
-
-        if params is None:
-            params = self.default_params()
+    def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False, params_blocking=None):
 
         #load ontology
 
@@ -94,7 +86,7 @@ class matchManager(object):
             resultMatrix = numpy.zeros(msize)
             for idx, matcherName in enumerate(self.matchSteps):
                 mtime = time.time()
-                pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params['blocking'])
+                pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking)
                 logging.info('number of candidate matching pairs=%s', len(pair_iterator))
 
                 if self.paras is not None and self.paras[idx] is not None:
@@ -108,7 +100,7 @@ class matchManager(object):
 
             #translate matrix to  alignment
             resultArr = []
-            pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params['blocking'])
+            pair_iterator = blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking)
             for idxS, idxT in pair_iterator:
                 result = resultMatrix[idxS,idxT]
                 if result >= self.thre:
@@ -172,7 +164,7 @@ class matchManager(object):
         for id1,id2, p in re.map:
             srcE = getattr(self.srcOnto,entityListName)[id1]
             tgtE = getattr(self.tgtOnto,entityListName)[id2]
-            logging.debug(label + ' src= %s, tgt= %s, score=%s', srcE, tgtE, p)
+            logging.debug('%s src= %s, tgt= %s, score=%s', label, srcE, tgtE, p)
 
 
 
