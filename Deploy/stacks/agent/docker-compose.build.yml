@@ -94,3 +94,13 @@ services:
   #       description: "Slurm compute node."
   #      hash: "${HASH}"
 
+  # Weather agent
+  weather-agent:
+    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/WeatherAgent"
+      labels:
+        authors: "kflee@cmclinnovations.com, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Instantiate and query virtual weather stations using the openweathermap.org API."
+        hash: "${HASH}"

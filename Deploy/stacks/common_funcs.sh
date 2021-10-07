@@ -90,25 +90,37 @@ is_valid_stack()
 # If it doesn't, give the user the option to create the file and supply a value
 set_missing_secrets()
 {
-  local compose_files=$1
+  local compose_files="$1"
+  local mode="$2"
 
   for compose_file in $compose_files; do
-    secret_file_paths=$(grep -E "file:.*\/secrets\/.*" $compose_file|awk '{print $2}'|tr "\n" " ")
-    for secret_file_path in $secret_file_paths; do
+    secret_file_paths=$(grep -E "^\s*file:.*\/secrets\/.*" $compose_file|awk '{print $2}'|tr "\n" " ")
+    for raw_secret_file_path in $secret_file_paths; do
+
+      # Handle secret paths containing the MODE variable
+      secret_file_path=$(echo "$raw_secret_file_path"|sed -e "s/\${MODE}/$mode/" -e "s/\$MODE/$mode/")
+
       secret_state=""
       while [ "$secret_state" != "valid" ]
       do
+        # Decide whether secret is a single word based on its name
+        if [ -z "${secret_file_path##*password*}" ] || [ -z "${secret_file_path##*api_key*}" ]; then single_word_secret=$TRUE; else single_word_secret=$FALSE; fi
+
         # Check that the secret file is present and valid
         if [ -f $secret_file_path ]; then
-          num_lines=$(wc -l $secret_file_path |awk '{print $1}')
-          # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
-          num_lines=$(( num_lines==0 ? 1 : num_lines ))
-          num_words=$(wc -w $secret_file_path |awk '{print $1}')
-          if [ $num_lines -eq 1 ] && [ $num_words -eq 1 ]; then
+          if [ $single_word_secret -eq $TRUE ]; then
+            num_lines=$(wc -l $secret_file_path |awk '{print $1}')
+            # Zero lines (having no newline char) is allowed; set num_lines=1 if that's the case
+            num_lines=$(( num_lines==0 ? 1 : num_lines ))
+            num_words=$(wc -w $secret_file_path |awk '{print $1}')
+            if [ $num_lines -eq 1 ] && [ $num_words -eq 1 ]; then
             secret_state="valid"
+            else
+              secret_state="invalid"
+              echo "  Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
+            fi
           else
-            secret_state="invalid"
-            echo "  Secret file at $secret_file_path looks to be invalid (contains $num_words words on $num_lines lines; expected 1 word on 1 line)"
+            secret_state="valid"
           fi
         else
           secret_state="missing"
@@ -117,18 +129,22 @@ set_missing_secrets()
 
         # If secret is missing/invalid, let the user enter a new value
         if [ $secret_state != "valid" ]; then
+          if [ $single_word_secret -eq $TRUE ]; then
             read -p "  Enter a value for $secret_file_path (or a blank string to abort): " new_secret_val
-          if [ -z "$new_secret_val" ]; then
-            echo "Aborting..."
-            exit 5
-          else
-            if [ -f $secret_file_path ]; then
-              \rm -f $secret_file_path
+            if [ -n "$new_secret_val" ]; then
+              if [ -f $secret_file_path ]; then
+                \rm -f $secret_file_path
+              fi
+              touch $secret_file_path
+              echo $new_secret_val >> $secret_file_path
+              secret_state="valid"
+              echo "  Value set"
             fi
-            touch $secret_file_path
-            echo $new_secret_val >> $secret_file_path
-            secret_state="valid"
-            echo "  Value set"
+          fi
+          # If secret still isn't valid, either it isn't a single word, or the user chose not to enter it; abort
+          if [ $secret_state != "valid" ]; then
+            echo " Populate the secret file and re-run this script to continue"
+            exit 5
           fi
         fi
       done
