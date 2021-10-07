@@ -4,6 +4,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 /**
  * This class is developed to work as an instance factory for StoreClient.<br>
@@ -68,8 +71,8 @@ public class StoreRouter{
 	/**
 	 * Returns a StoreClientInterface object based on a target resource ID
 	 * provided as the input. For query and/or update operations, it
-	 * supports two types of resources: <br> a) a repository/namespace and <br>
-	 * b) an ontology/rdf file. <br> Some examples of these resources are provided below:<br>
+	 * supports two types of resources: <br> (a) a repository/namespace and <br>
+	 * (b) an ontology/rdf file. <br> Some examples of these resources are provided below:<br>
 	 * a) Example repositories/namespaces are (both IRI and namespace are accepted):<br>
 	 *    - "http://theworldavatar.com/kb/ontokin" or "ontokin"<br>
 	 *    - "http://theworldavatar.com/kb/ontospecies" or "ontospecies"<br>
@@ -98,7 +101,7 @@ public class StoreRouter{
 				storeRouter = new StoreRouter();
 			}
 		
-			if (isFileBased(targetResourceID)) {
+			if (isFileBasedTargetResourceID(targetResourceID)) {
 			  
 				String relativePath = getPathComponent(targetResourceID);
 				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
@@ -106,7 +109,7 @@ public class StoreRouter{
 				LOGGER.debug("file path: "+filePath);
 				
 				kbClient = new FileBasedStoreClient(filePath);	
-			}else{
+			}else if(isRemoteTargetResourceID(targetResourceID)){
 				
 				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
 				
@@ -125,25 +128,72 @@ public class StoreRouter{
 					}
 					kbClient.setUpdateEndpoint(updateIRI);
 				}
+			
 				if(queryIRI==null && updateIRI==null){
 					LOGGER.error("Endpoint could not be retrieved for the following resource IRI:"+targetResourceID+", label:"+targetResourceLabel);
 				}
 				if(isQueryOperation == false && isUpdateOperation == false){
 					LOGGER.error("null will be returned as both the isQueryOperation and isUpdateOperation parameters are set to false.");
 				}
+			}else {
+				throw new JPSRuntimeException("Invalid targetResourceID: "+targetResourceID);
+			}
+		}else {
+			LOGGER.error("targetResourceID is null.");
+		}
+		
+		return kbClient;
+	}
+	
+	/**
+	 * Check that the targetResourceID is either a valid IRI or namespace label for a remote resource.
+	 * A namespace label is valid if it is composed of only alphanumeric characters (A-Z, 0-9).
+	 * @param targetResourceID
+	 * @return
+	 */
+	public static boolean isRemoteTargetResourceID(String targetResourceID) {
+		
+		if(InputValidator.checkIfValidIRI(targetResourceID)){
+			return true;
+		}else {
+			if(targetResourceID.matches("[A-Za-z0-9]+")) {
+				return true;
+			}else {
+				LOGGER.error("Invalid namespace label:"+targetResourceID+". Not alphanumeric.");
+				return false;
 			}
 		}
-		return kbClient;
 	}
 	
 	/**
 	 * Returns true if the resource is a file. 
 	 * Checks if the targetResourceID ends with a listed file extension {@link #fileExtensions}
+	 * and is a valid file path.
 	 * @param targetResourceID
 	 * @return
 	 */
-	public static boolean isFileBased(String targetResourceID) {
-		return fileExtensions.stream().anyMatch(targetResourceID.trim()::endsWith);		
+	public static boolean isFileBasedTargetResourceID(String targetResourceID) {
+		//check for valid file extension
+		if( fileExtensions.stream().anyMatch(targetResourceID.trim()::endsWith)) {
+			
+			String path = null;
+			try {
+				if(InputValidator.checkIfValidIRI(targetResourceID)) {
+					//targetResourceID is an IRI, so get the path component first
+					path = getPathComponent(targetResourceID);
+				}else {
+					path = targetResourceID;
+				}
+				Paths.get(path);
+			//JPSRuntimeException can be thrown by getPathComponent
+			} catch (InvalidPathException | JPSRuntimeException ex ) {
+				LOGGER.error("Invalid file path: "+path);
+				return false;
+			}
+		    return true;
+		}else {
+			return false;
+		}
 	}
 	
 	/**

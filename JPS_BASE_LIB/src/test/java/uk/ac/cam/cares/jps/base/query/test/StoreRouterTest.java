@@ -9,18 +9,23 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
 class StoreRouterTest {
 
 	@Test
-	void testIsFileBased() {		
+	void testIsFileBasedTargetResourceID() {		
 		//Test different extensions
-		assertTrue(StoreRouter.isFileBased("kb/sgp/singapore/SGTemperatureSensor-001.owl"));
-		assertTrue(StoreRouter.isFileBased("kb/sgp/singapore/SGTemperatureSensor-001.rdf"));
-		assertTrue(StoreRouter.isFileBased("kb/sgp/singapore/SGTemperatureSensor-001.nt"));
+		assertTrue(StoreRouter.isFileBasedTargetResourceID("kb/sgp/singapore/SGTemperatureSensor-001.owl"));
+		assertTrue(StoreRouter.isFileBasedTargetResourceID("kb/sgp/singapore/SGTemperatureSensor-001.rdf"));
+		assertTrue(StoreRouter.isFileBasedTargetResourceID("kb/sgp/singapore/SGTemperatureSensor-001.nt"));
 		
 		//Test IRI
-		assertTrue(StoreRouter.isFileBased("http://theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl"));
+		assertTrue(StoreRouter.isFileBasedTargetResourceID("http://theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl"));
 		
 		//Test not file based resources
-		assertFalse(StoreRouter.isFileBased("http://theworldavatar.com/kb/ontokin"));
-		assertFalse(StoreRouter.isFileBased("ontokin"));
+		assertFalse(StoreRouter.isFileBasedTargetResourceID("http://theworldavatar.com/kb/ontokin"));
+		assertFalse(StoreRouter.isFileBasedTargetResourceID("ontokin"));
+		
+		//Invalid file paths
+		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp:singapore/SGTemperatureSensor-001.owl"));
+		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp?singapore/SGTemperatureSensor-001.owl"));
+		assertFalse(StoreRouter.isFileBasedTargetResourceID("kb/sgp*singapore/SGTemperatureSensor-001.owl"));
 	}
 	
 	@Test
@@ -51,4 +56,15 @@ class StoreRouterTest {
 		assertEquals(expected,StoreRouter.joinPaths(path1, path2));
 		assertEquals(expected,StoreRouter.joinPaths(path1, "/"+path2));
 	}
+	
+	@Test
+	void testISRemoteTargetResourceID() {
+		assertTrue(StoreRouter.isRemoteTargetResourceID("http://theworldavatar.com/kb/ontokin"));
+		assertTrue(StoreRouter.isRemoteTargetResourceID("ontokin"));
+		assertTrue(StoreRouter.isRemoteTargetResourceID("ontokin123"));
+		assertTrue(StoreRouter.isRemoteTargetResourceID("123"));
+		assertFalse(StoreRouter.isRemoteTargetResourceID("test/ontokin"));
+		assertFalse(StoreRouter.isRemoteTargetResourceID("kb_ontokin"));
+	}
+	
 }
