@@ -22,9 +22,8 @@ import wget
 import csv
 import pandas as pd
 
-# get the jpsBaseLibGateWay instance from the jpsSingletons module
+# get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from gasgridagent.jpsSingletons import jpsBaseLibView
-
 # get settings and functions from kg_utils module
 import gasgridagent.kg_utils as kg
 
@@ -187,7 +186,7 @@ def get_flow_data_from_csv():
                 flowValue = row[2]
                 data.append([terminalName, dateTimeStr, flowValue])
 
-    print("Finished reading flow data CSV, removing file...")
+    print("Finished reading flow data CSV, removing file...\n")
     os.remove(filename)
 
     # Create DataFrame

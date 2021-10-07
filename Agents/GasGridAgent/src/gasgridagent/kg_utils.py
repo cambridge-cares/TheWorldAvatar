@@ -7,7 +7,7 @@ import json
 from pathlib import Path
 from configobj import ConfigObj
 
-# get the jpsBaseLibGateWay instance from the jpsSingletons module
+# get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from gasgridagent.jpsSingletons import jpsBaseLibView
 
 

@@ -8,9 +8,8 @@ import os
 import time
 import json
 
-# get the jpsBaseLibGateWay instance from the jpsSingletons module
+# get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from gasgridagent.jpsSingletons import jpsBaseLibView
-
 # get settings and functions from kg_utils module
 import gasgridagent.kg_utils as kg
 
