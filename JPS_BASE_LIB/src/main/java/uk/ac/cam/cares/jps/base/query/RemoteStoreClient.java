@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
@@ -804,7 +805,10 @@ public class RemoteStoreClient implements StoreClientInterface {
 	        LOGGER.info("Uploading " + file + " to " + this.updateEndpoint);
 	        // then send the post request
 	        CloseableHttpClient httpclient = HttpClients.createDefault();
-	        httpclient.execute(postRequest);
+	        CloseableHttpResponse response = httpclient.execute(postRequest);
+	        if (response.getStatusLine().getStatusCode() != 200) {
+	            throw new Exception("Upload RDF file failed");	
+	        }
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(e);
