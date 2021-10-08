@@ -99,6 +99,12 @@ services:
   #     - driver:/usr/local/srm-driver
   #     - mpi:/usr/local/intel-mpi
 
+  stdc-agent:
+    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
+    container_name: "stdc-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
   # Weather Agent
   weather-agent:
     image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
