@@ -3,16 +3,24 @@ import pyuploader.app as app
 
 __doc__ = """pyuploader
 Usage:
-    ts_upload <file_or_dir>  [--tstore-nmsp=<nmsp>]
-                             [--tstore-filext=<ext>]
+    ts_upload <file_or_dir>  [--url=<url>]
+                             [--auth=<auth>]
+                             [--namespace=<nmsp>]
+                             [--file-ext=<ext>]
                              [--log-file-name=<name>]
                              [--log-file-dir=<dir>]
                              [--no-file-logging]
                              [--dry-run]
 
 Options:
---tstore-nmsp=<nmsp>    Triple store namespace.                       [default: base]
---tstore-filext=<ext>   List of extensions used to select files       [default: .owl]
+--url=<url>             Triple store upload endpoint. If not specified,
+                        the code will try to read it from user
+                        environment variables.
+--auth=<auth>           Triple store authorization as a "username:password"
+                        string. If not specified, the code will try to read
+                        it from user environment variables.
+--namespace=<nmsp>      Triple store namespace.                       [default: base]
+--file-ext=<ext>        List of extensions used to select files       [default: .owl]
                         that will be uploaded to the triple store.
 --log-file-name=<name>  Name of the generated log file.               [default: ts_upload.log]
 --log-file-dir=<dir>    Path to the log file storing information of
@@ -31,8 +39,10 @@ def start():
 
     app.ts_upload_wrapper(
         file_or_dir = args['<file_or_dir>'],
-        tstore_nmsp = args['--tstore-nmsp'],
-        tstore_filext = args['--tstore-filext'],
+        url = tuple(args['--url'].split(',')) if args['--url'] is not None else args['--url'],
+        auth = tuple(args['--auth'].split(',')) if args['--auth'] is not None else args['--auth'],
+        namespace = args['--namespace'],
+        file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],
         no_file_logging = args['--no-file-logging'],

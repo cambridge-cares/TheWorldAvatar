@@ -11,23 +11,26 @@ jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.upload.*")
 
 def upload_to_triple_store(
         file_or_dir,
-        tstore_nmsp,
-        tstore_fileext,
-        dry_run):
+        url='',
+        auth='',
+        namespace='base',
+        file_ext='.owl',
+        dry_run= False):
 
-    tstore_url = tsbase.get_striple_store_url()
-    files = utils.get_files_by_extensions(file_or_dir,tstore_fileext)
+    if not url: url = tsbase.get_striple_store_url()
+    if not auth: auth = tsbase.get_user_credentials()
+    files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
     logger.info(f"---------------------------------------------------------------------------")
     logger.info(f"TRIPLE STORE UPLOAD")
     logger.info(f"---------------------------------------------------------------------------")
     if files:
-        logger.info(f"Uploading files to the triple store: {tstore_url} at namespace: {tstore_nmsp}.")
+        logger.info(f"Uploading files to the triple store: {url} at namespace: {namespace}.")
         for f in files:
             basenf = pathlib.Path(f).name
             logger.info(f"Uploading file: {basenf}")
             if not dry_run:
-                KnowledgeRepository = jpsBaseLib_view.KnowledgeRepository(tstore_url, tstore_nmsp,f,"")
+                KnowledgeRepository = jpsBaseLib_view.RemoteStoreClient(url, url, auth[0], auth[1], namespace,f,"")
                 KnowledgeRepository.uploadOntology()
     else:
         logger.info('No files to upload')
