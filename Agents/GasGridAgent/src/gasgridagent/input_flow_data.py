@@ -56,9 +56,9 @@ def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
             kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('xsd') + \
-            '''INSERT DATA { \
-            <%s> rdf:type comp:GasTerminal; \
-                 rdfs:label "%s"^^xsd:string. }''' % (terminalIRI, terminal_name)
+            '''INSERT DATA { <%s> rdf:type comp:GasTerminal . \
+                             <%s> rdfs:label "%s"^^xsd:string . }''' % \
+            (terminalIRI, terminalIRI, terminal_name)
     KGClient.executeUpdate(query)
 
 
@@ -104,11 +104,11 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
             kg.create_sparql_prefix('om') + \
             kg.create_sparql_prefix('rdf') + \
             '''INSERT DATA { \
-            <%s> comp:hasTaken compa:%s. \
-            compa:%s rdf:type comp:IntakenGas. \
+            <%s> comp:hasTaken compa:%s . \
+            compa:%s rdf:type comp:IntakenGas . \
             compa:%s rdf:type om:VolumetricFlowRate; \
                      om:hasPhenomenon compa:%s; \
-                     om:hasValue compa:%s. \
+                     om:hasValue compa:%s . \
             compa:%s rdf:type om:Measure; \
                      om:hasUnit om:cubicMetrePerSecond-Time. }''' % (
                 terminalIRI, gas, gas, quantity, gas, measurement, measurement)
