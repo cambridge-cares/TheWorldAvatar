@@ -87,7 +87,7 @@ public class FileServer extends HttpServlet {
         } catch (InterruptedException ex) {
             LOGGER.error("writeFilePart: (Thread)InterruptedException whilst pausing at the end of the method", ex);
         }
-        return fName;
+        return destPath.toString();
     }
 
     @Override
@@ -139,14 +139,14 @@ public class FileServer extends HttpServlet {
         .filter(part -> part.getSize() > 0)
         .takeWhile(part -> response.getStatus() == HttpServletResponse.SC_OK)
         .forEach(part -> {
-            String fNameWritten = writeFilePart(part, subDir);
+            String fPathWritten = writeFilePart(part, subDir);
 
             // If writing failed, set error code (breaks stream forEach)
-            if (fNameWritten == null) {
+            if (fPathWritten == null) {
                 response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } else {
-                LOGGER.info("Wrote file to path " + fNameWritten);
-                response.setHeader(part.getName(), fNameWritten);
+                LOGGER.info("Wrote file to path " + fPathWritten);
+                response.setHeader(part.getName(), fPathWritten);
             }
         });
     }
