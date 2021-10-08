@@ -75,16 +75,16 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 			logger.info("Ontokin TBox generation FINISHED.");
 		} catch (IOException e) {
 			logger.error("IOException occured.");
-			throw new JPSRuntimeException(e);
+			e.printStackTrace();
 		} catch (JPSRuntimeException e) {
 			logger.error("JPSRuntimeException occured.");
-			throw new JPSRuntimeException(e);
+			e.printStackTrace();
 		} catch (OWLOntologyCreationException e) {
 			logger.error("OWLOntologyCreationException occured.");
-			throw new JPSRuntimeException(e);
+			e.printStackTrace();
 		} catch (OWLOntologyStorageException e) {
 			logger.error("OWLOntologyStorageException occured.");
-			throw new JPSRuntimeException(e);
+			e.printStackTrace();
 		}
 	}
 
