@@ -1,0 +1,278 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:OntoCropMapGML="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 July 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for representing crop maps.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/elements/1.1/date -->
+
+    <owl:AnnotationProperty rdf:about="http://purl.org/dc/elements/1.1/date"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#gitCommitHash -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#gitCommitHash"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon -->
+
+    <rdfs:Datatype rdf:about="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/datatype/POLYGON-2-14 -->
+
+    <rdfs:Datatype rdf:about="http://www.theworldavatar.com/ontology/datatype/POLYGON-2-14"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#boundedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#boundedBy">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies which EnvelopType the CropMap belongs to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies which Land Use Code (LUcode) is assigned to this CropMap.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://ns.inria.fr/ast/sql#ObjectIdentifier -->
+
+    <owl:DatatypeProperty rdf:about="http://ns.inria.fr/ast/sql#ObjectIdentifier">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An identifier unique within the EnvelopeType which refers to a specific CropMap.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://ns.inria.fr/ast/sql</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://open.vocab.org/terms/length -->
+
+    <owl:DatatypeProperty rdf:about="http://open.vocab.org/terms/length">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length is a measure of distance. This value refers to the perimeter of the CropMap in metres.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://open.vocab.org/terms</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://vocab.datex.org/terms#centrePoint -->
+
+    <owl:DatatypeProperty rdf:about="http://vocab.datex.org/terms#centrePoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Centre point of a CropMap as identified by the Rural Payments Agency. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://vocab.datex.org/terms</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#lowerCornerPoint -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#lowerCornerPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The lowermost vertex of the EnvelopeType.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#srsname -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#srsname">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies the coordinate system which the EnvelopeType refers to.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#upperCornerPoint -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#upperCornerPoint">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The uppermost vertex of the EnvelopeType.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasCromeID -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasCromeID">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A CROMEID is assigned as specified by the Rural Payments Agency (RPA) for a CropMap. The CROMEID is the unique identifier assigned to each CropMap, consisting of the letters RPA and a twelve digit number, which are the Easting and Northing coordinates of the centroid of the cell. For example a CropMap with CROMEID RPAXXXXXXYYYYYY would have a centre point with Easting XXXXXX and Northing YYYYYY.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasGeometry -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasGeometry">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/datatype/POLYGON-2-14"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relates a CropMap to its vertex coordinates.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasReferenceDate -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasReferenceDate">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The reference date is the date or date range of the images referenced to assign the Land Use Code to the CROME CropMap. The date format used is YYYYMMDD e.g. 20181121. The value is expected to remain constant for each CropMap in a CROME release.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#srsDimension -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#srsDimension">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Specifies the number of dimensions which the EnvelopeType has.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://dbpedia.org/ontology/area -->
+
+    <owl:DatatypeProperty rdf:about="https://dbpedia.org/ontology/area">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Area is the quantity that expresses the extent of a two-dimensional region, shape, or planar lamina, in the plane. This value refers to the area of the CropMap in metres squared.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://dbpedia.org/ontology</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">EnvelopeType defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. Here, the lower left corner point and upper right corner point are used.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#CropMap">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#boundedBy"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl#hasLucode"/>
+                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A geomtrical object which has a Land Use Code (LUcode).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

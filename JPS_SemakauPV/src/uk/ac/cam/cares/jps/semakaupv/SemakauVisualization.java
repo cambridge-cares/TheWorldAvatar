@@ -28,13 +28,12 @@ public class SemakauVisualization extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
 		if (!validateInput(requestParams)) {
-			throw new JSONException("SemakauVisualizationAgent: Input parameters not found.\n");
+			throw new BadRequestException("SemakauVisualizationAgent: Input parameters not found.\n");
 		}
 		String irradiationsensorIRI=requestParams.getString("irradiationsensor");
 		String pvgeneratorIRI=requestParams.optString("pvgenerator","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl#PV-002");
 		String busIRI=requestParams.optString("ebus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl#EBus-006");
 		JSONObject responseParams =  graphDataPoints(irradiationsensorIRI, pvgeneratorIRI, busIRI);
-		System.gc();
 		return responseParams;
 	}
 	@Override

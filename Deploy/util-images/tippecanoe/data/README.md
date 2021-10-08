@@ -1,0 +1,1 @@
+When executed with the default options shown in the ../README.md file, this directory will be added as a bind mount volume accessible within the Container at "/usr/local/tippecanoe/data". It will allow developers to add data files to the Contianer simply by adding them to this directory.

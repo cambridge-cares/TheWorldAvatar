@@ -4,11 +4,14 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import com.cmclinnovations.ontochemexp.model.configuration.OperationControlConfig;
 import com.cmclinnovations.conversion.Completeness;
+import com.cmclinnovations.ontochemexp.model.configuration.DimensionalQuantityMapping;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpKBConfig;
 import com.cmclinnovations.ontochemexp.model.configuration.OntoChemExpVocabulary;
 import com.cmclinnovations.ontochemexp.model.configuration.PrimeVocabulary;
@@ -38,6 +41,11 @@ import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Appa
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Kind;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.apparatus.Mode;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.BibliographyLink;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Contributor;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Doi;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.IDoi;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.Journal;
+import com.cmclinnovations.ontochemexp.model.data.structure.prime.bibliography.JournalSpecification;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonProperties;
 import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
 //import com.cmclinnovations.ontochemexp.model.data.structure.prime.common_properties.CommonPropertiesProperty;
@@ -101,9 +109,9 @@ import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.ModePa
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.property.ApparatusPropertyUncertaintyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.apparatus.property.ApparatusPropertyValueParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.CommonPropertiesPropertyParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentAmountParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.ComponentAmountParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyComponentSpeciesLinkParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.ComponentSpeciesLinkParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyUncertaintyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.common_properties.property.CommonPropertiesPropertyValueParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataGroupDataGroupLinkParseStatus;
@@ -111,9 +119,9 @@ import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataG
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataPointParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.DataPointXParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyComponentParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureIndicatorParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureObservableParseStatus;
-import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyFeatureParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureIndicatorParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureObservableParseStatus;
+import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DerivedPropertyFeatureParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyDerivedPropertyParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertySpeciesLinkParseStatus;
 import com.cmclinnovations.ontochemexp.model.parse.status.prime.data_group.property.DataGroupPropertyValueParseStatus;
@@ -188,6 +196,9 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		if (ontoChemExpKB == null) {
 			ontoChemExpKB = applicationContext.getBean(OntoChemExpKBConfig.class);
 		}
+		if (dimensionalQuantityMapping == null) {
+			dimensionalQuantityMapping = applicationContext.getBean(DimensionalQuantityMapping.class);
+		}
 
 		if (iABoxManagement == null) {
 			iABoxManagement = new ABoxManagement();
@@ -198,6 +209,8 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 
 		experimentName = EMPTY;
 		needsToCreateExperiment = true;
+		
+		currentExperimentInstance = EMPTY;
 		
 		inApparatus = false;
 		inCommonProperties = false;
@@ -374,6 +387,9 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		dataGroupDataPointXParseStatus = new DataPointXParseStatus();
 		iDataGroupDataPointXParser = new DataGroupDataPointXParser();
 		
+		xDQMap = new HashMap<String, String>();
+		currentDQInstance = new String();
+		
 		x1 = new X1();
 		x2 = new X2();
 		x3 = new X3();
@@ -415,6 +431,13 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		preferredKeyID = instanceSerialID+5;
 		commonPropertiesID = instanceSerialID+6;
 		dataGroupID = instanceSerialID+7;
+		experimentPerformerInstanceID = System.nanoTime();
+		journalSpecInstanceId = System.nanoTime();
+		journalInstanceId = System.nanoTime();
+		filesProvenanceInstanceID = System.nanoTime();
+		filesModificationInstanceID = System.nanoTime();
+		
+		currentBibliographyLinkInstance = new String();
 		
 		additionalDataItemCount = 0;
 		apparatusPropertyCount = 0;
@@ -444,7 +467,11 @@ public class InitPrimeConverter extends PrimeConverter implements IInitPrimeConv
 		iCommonPropertiesQuery = new CommonPropertiesQuery();
 		iDataGroupQuery = new DataGroupQuery();
 		
-		
-		
+		//================BibliographyLink Doi Started=================//
+		iDoi = new Doi();
+		contributor = new Contributor();
+		contributorList = new ArrayList<Contributor>();
+		journal = new Journal();
+		journalSpec = new JournalSpecification();
 	}
 }

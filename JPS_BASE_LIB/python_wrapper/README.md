@@ -4,7 +4,7 @@
 
 # Requirements
 
-- You need Python 3.4 - 3.7 to run the py4jps. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
+- You need Python >=3.5 to run the py4jps. You can install Python by going to the official Python [download page](https://www.python.org/getit/)
 - You also need to install a [Java Runtime Environment version 8](https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot)
 
 # Installation
@@ -32,25 +32,19 @@ $ source py4jps_venv\bin\activate
 
 The above commands will create and activate the virtual environment `py4jps_venv` in the current directory.
 
-## Installation from the wheel
+## Installation via pip
 
-This type of installation is recommended for non-developers where the `py4jps` package is installed by pip from the provided wheel file:
-```bash
-(py4jps_venv) $ pip install <provided_py4jps_wheel_file_name>.whl
+To install the `py4jps` simply run the following command:
+
+```sh
+(py4jps_venv) $ pip install py4jps
 ```
 
 The above command will install the `py4jps` package including the `JpsBaseLib` library that has been packaged together with the code.
 
-## Installation from the tarball
-
-Another way of installing the `py4jps` is from its tarball. Similarly, to the wheel installation, this option is recommended for non-developers where the `py4jps` source code and default `JpsBaseLib` library are zipped together into the final tar.gz file. To install the package simply run:
-```bash
-(py4jps_venv) $ pip install <provided_py4jps_tarball>.tar.gz
-```
-
 ## Installation from the version-controlled source (for developers)
 
-This type of installation is only for the developers. To install `py4jps` directly from its repository you need to first clone the `TheWorldAvatar` project. Once that has been done, simply navigate to the *TheWorldAvatar\JPS_BASE_LIB\python_wrapper* directory and execute the following commands:
+This type of installation is only for the developers. To install `py4jps` directly from its repository you need to first clone the `TheWorldAvatar` project. Then simply navigate to the *TheWorldAvatar\JPS_BASE_LIB\python_wrapper* directory and execute the following commands:
 ```bash
 # build and install
 (py4jps_venv) $ pip install .
@@ -168,22 +162,22 @@ The example above shows how to set the optional `py4j JavaGateway.launch_gateway
 
 ## Accessing Java classes and methods
 
-Once your resource gateway is launched you can access any **public** classes and methods in the following way:
+Once your resource gateway is launched you can access any **public** classes and methods. Here is an example on how to access the `StoreRouter` class:
 
 ```python
-KGRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.KGRouter
+StoreRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.StoreRouter
 ```
 
-As can be seen, the gateway's jvm class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.KGRouter` path is for example purposes only. **Please note that though accessing objects via their fully qualified names is possible, it is not recommended**. A much simpler way exists, through the java import statements explained in the **JVM module views** section.
+As can be seen, the gateway's jvm class serves as an entry point to any java classes and objects you wish to access. Simply provide the fully qualified name of the resource to access it. The `uk.ac.cam.cares.jps.base.query.StoreRouter` path is for example purposes only. **Please note that though accessing objects via their fully qualified names is possible, it is not recommended**. A much simpler way exists, through the java import statements explained in the **JVM module views** section.
 
 It is also important to understand the difference in accessing the **java static and non-static methods**. The former can be done without the object instantiation, e.g.
 
 ```python
-KGRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.KGRouter
-KGRouter.getKnowledgeBaseClient('http://kb/ontokin', True, False)
+StoreRouter = yourGateway.gateway.jvm.uk.ac.cam.cares.jps.base.query.StoreRouter
+StoreRouter.getStoreClient('http://kb/ontokin', True, False)
 ```
 
-here the `KGRouter static getKnowledgeBaseClient` class can be directly called without the `KGRouter` instantiation. The non-static methods can only be accessed once the object is instantiated, e.g
+here the `static getStoreClient` method can be called without the `StoreRouter` instantiation. The non-static methods can only be accessed once the object is instantiated, e.g
 
 ```python
 # create a FileUtil instance to access its non static getDirectoryFiles method
@@ -194,7 +188,7 @@ output = FileUtil.getDirectoryFiles(method_arguments)
 
 ## Resource gateways
 
-The resource gateway class is automatically created upon the resource installation. The class name is the same as the name of the resource given during the installation. Furthermore, **each resource gateway class inherits from the `py4jps JPSGateway` class**. Therefore, **one should ideally only work with the resource classes rather than with the parent JPSGateway class**. It is also recommended to have only one gateway object in your Python application per java resource you wish to access. This can be easily achieved by instantiating and starting the resource gateway objects in a specially designed module e.g., `jpsSingletons` and then to import these objects instances to any other module that requires it.
+The resource gateway class is automatically created upon the resource installation. The class name is the same as the name of the resource given during the installation. Furthermore, **each resource gateway class inherits from the `py4jps JPSGateway` class**. Therefore, **one should ideally only work with the resource classes rather than with the parent JPSGateway class**. It is also recommended to have only one gateway object in your Python application per java resource you wish to access. This can be easily achieved by instantiating and starting the resource gateway objects in a single module and then to import these objects instances to any other module that requires it.
 
 To give a simple example, after installing the `JpsBaseLib` resource, one can import and use it in the following way:
 ```python
@@ -219,7 +213,7 @@ where the `resGateway` is the gateway of a resource we wish to create the module
 # import classes into the module view
 resGateway.importPackages(moduleViewInstance,"uk.ac.cam.cares.jps.base.query.*")
 # once classes are imported, they can be accesses as follows
-KGRouter = moduleViewInstance.KGRouter
+StoreRouter = moduleViewInstance.StoreRouter
 ```
 The module view should be created for each Python module in your application that requires access to the java resource, followed by any desired import statements. The name of the module view is arbitrary, though it is recommended to name it after your parent resource to avoid confusion.
 
@@ -255,8 +249,8 @@ jpsBaseLibGW_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLibGW_view,'uk.ac.cam.cares.jps.base.util.*')
 
 # create a FileUtil instance to access its non-static methods
-# compare it with the KGRouter example, where there was no need to add
-# () brackets to the router, so we were only retrieving the KGRouter class
+# compare it with the StoreRouter example, where there was no need to add
+# () brackets to the router, so we were only retrieving the StoreRouter class
 FileUtil = jpsBaseLibGW_view.FileUtil()
 
 # create the required `File folder` argument to be passed to the `getDirectoryFiles` method
@@ -302,27 +296,33 @@ javaArray.append(javaFileObj)
 
 ## Example code:
 
-Putting the above recommendations together leads to the following design pattern:
+Putting the above recommendations together leads to the following project layout:
 
 *Example project source files layout*
 
     .
-    ├── ...                         # your other project files (README, LICENSE, etc..)
-    └── src                         # your project source files
-        ├── jpsSingletons.py        # your singleton module that instantiates and starts the resources gateway objects
-        ├── main.py                 # your application main entry point
-        ├── app_module1.py          # your application module 1
-        └── app_module2.py          # your application module 2, etc..
-
-Please note that the above project layout is extremely simple just to show an example `py4jps` usage (e.g. typically the `jpsSingletons.py` file should be moved to its own module etc...)
+    ├── ...                         # other project files (README, LICENSE, etc..)
+    └── projectname                 # project source files
+        ├── kgoperations            # module that deals with the KG communication
+        │    ├── __init__.py
+        │    ├── query.py           # base query function
+        │    ├── ...                # any other kg-related file modules
+        │    └── gateways.py        # python-java communication gateways
+        ├── app1                    # application module 1
+        │   ├── __init__.py
+        │   └── app.py
+        ├── app2                    # application module 2, etc..
+        │   ├── __init__.py
+        │   └── app.py
+        └── main.py                 # application main entry point
 
 *Example code*
 
-`File: jpsSingletons.py`
+`File: projectname.kgoperations.gateways.py`
 
 ```python
 # The purpose of this module is to create and start resource
-# gateway objects to be used in all your other modules
+# gateway objects to be used in all of your other modules
 #============================================================
 from py4jps.resources import JpsBaseLib
 
@@ -337,27 +337,51 @@ jpsBaseLibGW.launchGateway()
 #============================================================
 ```
 
+`File: projectname.kgoperations.query.py`
+```python
+# The purpose of this module is to provide a standard api
+# interface for querying the KG. Note that the actual
+# implementation is dependent on the version of the jps-base-lib
+# installed. Always consult the jps-base-lib docs if in doubt.
+#============================================================
+from projectname.kgoperations.gateways import jpsBaseLibGW
+import json
+
+# create a JVM module view and use it to import the required java classes
+jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+def querykg(sparqlEndPoint=None, queryStr=None):
+
+    # perform an example sparql query,
+    # see the jps-base-lib docs for further details
+    StoreRouter = jpsGW_view.StoreRouter
+    StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
+    response = json.loads(str(StoreClient.executeQuery(queryStr)))
+    return response
+#============================================================
+```
+
 `File: main.py`
 
 ```python
-# The purpose of this module is to have a single entry point
+# The purpose of this file is to have a single entry point
 # to your application
 #============================================================
-from app_module1 import doTask1
-from app_module2 import doTask2
+from projectname.app1.app import doTask1
+from projectname.app2.app import doTask2
 
 response1 = doTask1()
 response2 = doTask2()
 ```
 
-`File: app_module1.py`
+`File: app1.app.py`
 
 ```python
 # The purpose of this module is to group certain tasks you
 # wish to perform on the KG
 #============================================================
-# get the jpsBaseLibGW instance from the jpsSingletons module
-from jpsSingletons import jpsBaseLibGW
+from projectname.kgoperations.query import querykg
 
 # create a JVM module view and use it to import the required java classes
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
@@ -365,35 +389,33 @@ jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
 # this function shows how to do a simple KG query
 def doTask1():
-    # perform an example sparqle query, see the jps-base-lib docs for further details
-    KGRouter = jpsBaseLib_view.KGRouter
-    KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
-    response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
-                                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>   SELECT ?mechanismIRI \
-                                    WHERE   { ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
-    return str(response)
+    queryStr ="""
+    PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI
+    WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10
+    """
+    return querykg(sparqlEndPoint='http://kb/ontokin',queryStr=queryStr)
 ```
 
-`File: app_module2.py`
+`File: app2.app.py`
 ```python
 # The purpose of this module is to group certain tasks you
 # wish to perform on the KG
 #============================================================
-# get the jpsBaseLibGW instance from the jpsSingletons module
-from jpsSingletons import jpsBaseLibGW
+from projectname.kgoperations.gateways import jpsBaseLibGW
 
 # create a JVM module view and use it to import the required java classes
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view,'uk.ac.cam.cares.jps.base.util.*')
 
-# this function shows how to use jps-base-lib file util object to read a local file
+# this function shows how to use jps-base-lib file util object
+# to read a local file.
 def doTask2():
     FileUtil = jpsBaseLib_view.FileUtil
-    # any paths passed to the jps-base-lib FileUtil object should be absolute paths
-    # here the FileUtil object does not need to be instantiated as the readFileLocally
-    # method is static
-    response = FileUtil.readFileLocally('<your_absolute_file_path>')
-    return response
+    # any paths passed to the jps-base-lib FileUtil object should be
+    # absolute paths. Here the FileUtil object does not need to be
+    # instantiated as the readFileLocally method is static
+    return FileUtil.readFileLocally('<your_absolute_file_path>')
 #============================================================
 ```
 

@@ -1,0 +1,2 @@
+from entityrdfizer.ABoxTemplateCSVFilesToRDF import convert as convertDir
+from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_into_rdf as convertFile

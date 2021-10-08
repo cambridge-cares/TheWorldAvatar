@@ -1,0 +1,11 @@
+state: enabled
+email: mdhillman@cmclinnovations.com
+fullname: 'Michael Hillman'
+title: Administrator
+access:
+  admin:
+    login: true
+    super: true
+  site:
+    login: true
+hashed_password: $2y$10$KB.lV8DZEp53Y0vG5SxYROMXxG5kUFyoQB7RT4ydkgwQohzqDVV2.

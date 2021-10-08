@@ -1,0 +1,12 @@
+{% extends 'partials/base.html.twig' %}
+
+{% block javascripts %}
+	{{ parent() }}
+		
+	{# Custom JS #}
+	{% do assets.addJs('theme://js/uk_power_system.js', {group:'bottom'}) %}
+{% endblock %}
+	
+{% block content %}
+    {{ page.content|raw }}
+{% endblock %}

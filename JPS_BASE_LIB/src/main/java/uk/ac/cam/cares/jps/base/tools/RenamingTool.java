@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.base.tools;
 
+import java.sql.SQLException;
+
 import org.apache.jena.arq.querybuilder.ExprFactory;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
@@ -13,20 +15,22 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * Renaming Tool
  * 
- * This tool renames IRIs and literals from target to replacement in the supplied KnowledgeBaseClient.
+ * This tool renames IRIs and literals from target to replacement in the supplied StoreClient.
  * Where the target and replacement are IRIs use the method renameIRI(...). 
  * Where the target and replacement are strings/substrings use the method renameString(...).
  * In the case of renameString a match string can also be supplied. In this case, the tool will   
  * select triples containing both match and target, and replace the target with the replacement string.
  * Renaming is by default performed over multiple steps, updating a sub-set of triples in the 
- * KnowledgeBaseClient every step. This feature can be turned off using setSingleUpdate(...) and 
+ * StoreClient every step. This feature can be turned off using setSingleUpdate(...) and 
  * the number of triples updated every step can be set through setUpdateSize(...).
  * An optional filter expression can be applied through setFilter(...).
+ * NOTE: If the KB is a remote triple store (rather than quad store) then "setTripleStore()" 
+ * must be set for the tool to function.
  * 
  * @author Casper Lindberg
  *
@@ -39,6 +43,7 @@ public class RenamingTool {
 	Expr exprFilter = null; 	//optional additional filer 
 	boolean splitUpdate = true;	//flag: splits the renaming operation in multiple smaller updates 
 	int stepSize = 1000000;		//number of triples processed per update
+	boolean quads = true;		//is the KBClient a quads store?
 	
 	//// Constructors
 	
@@ -117,6 +122,20 @@ public class RenamingTool {
 		splitUpdate = false;
 	}
 	
+	/**
+	 * Set source KBClient is a triple store 
+	 */
+	public void setTripleStore() {
+		this.quads = false;
+	}
+	
+	/**
+	 * Set source KBClient is a quad store
+	 */
+	public void setQuadsStore() {
+		this.quads = true;
+	}
+	
 	//// Rename string
 	
 	/**
@@ -125,7 +144,7 @@ public class RenamingTool {
 	 * 
 	 * @param kbClient
 	 */
-	public void renameString(KnowledgeBaseClientInterface kbClient) {
+	public void renameString(StoreClientInterface kbClient) {
 		renameString(kbClient, null);
 	}
 	
@@ -133,10 +152,10 @@ public class RenamingTool {
 	 * Replace a target string in all URIs or literals also containing the match string 
 	 * (if different/specified) in a named graph.
 	 * 
-	 * @param KnowledgeBaseClient
+	 * @param StoreClient
 	 * @param graph
 	 */
-	public void renameString(KnowledgeBaseClientInterface kbClient, String graph) {		
+	public void renameString(StoreClientInterface kbClient, String graph) {		
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -159,19 +178,19 @@ public class RenamingTool {
 	/**
 	 * Replaces a target IRI with the replacement IRI in the default graph.
 	 * 
-	 * @param KnowledgeBaseClient
+	 * @param StoreClient
 	 */
-	public void renameIRI(KnowledgeBaseClientInterface kbClient) {
+	public void renameIRI(StoreClientInterface kbClient) {
 		renameIRI(kbClient, null);
 	}
 	
 	/**
 	 * Replaces a target IRI with the replacement IRI in a named graph.
 	 * 
-	 * @param kbClient KnowledgeBaseClient
+	 * @param kbClient StoreClient
 	 * @param graph
 	 */
-	public void renameIRI(KnowledgeBaseClientInterface kbClient, String graph) {
+	public void renameIRI(StoreClientInterface kbClient, String graph) {
 		
 		if(strTarget == null || strReplacement == null) {
 			throw new JPSRuntimeException("RenamingTool: target or replacement is null!");
@@ -191,7 +210,7 @@ public class RenamingTool {
 	 * @param whereFilter
 	 * @param whereUpdate
 	 */
-	private void performRename(KnowledgeBaseClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
+	private void performRename(StoreClientInterface kbClient, String graph, WhereBuilder whereMatch, WhereBuilder whereUpdate) {
 		
 		if(splitUpdate == true) {
 			
@@ -210,7 +229,15 @@ public class RenamingTool {
 			
 			//loop over splits 
 			for(int i = 0; i<steps; i++) {
-				 kbClient.executeUpdate(sparqlUpdate);
+				try {
+					kbClient.executeUpdate(sparqlUpdate);
+				}catch(Exception e) {
+					if (e.getCause() instanceof SQLException) {
+						throw new JPSRuntimeException("RenamingTool: tagging update failed! SourceKB might not be quads. Try setTripleStore().", e);
+					}else {
+						throw e;
+					}
+				}
 			}
 			
 			//check all triples have been renamed, if not then update all
@@ -262,12 +289,14 @@ public class RenamingTool {
 	static Var varS = Var.alloc("s");
 	static Var varP = Var.alloc("p");
 	static Var varO = Var.alloc("o");
+	static Var varG = Var.alloc("g");
 	
 	//(Old) s,p,o variables accessible to calling methods in order to build optional filter expression
 	public static ExprVar exprS = new ExprVar(varS);
 	public static ExprVar exprP = new ExprVar(varP);
 	public static ExprVar exprO = new ExprVar(varO);
-
+	public static ExprVar exprG = new ExprVar(varG);
+	
 	// match s, p, o 
 	static Var matchS = Var.alloc("matchS");
 	static Var matchP = Var.alloc("matchP");
@@ -334,18 +363,26 @@ public class RenamingTool {
 		UpdateBuilder builder = new UpdateBuilder();
 		
 		// Add select subquery and optional graph
-		if (graph == null) {
+		if(quads == true) {
+			if (graph == null) {
+				select.addVar(varG);
+				select.addGraph(varG,where);
+				builder.addInsert(varG, newS, newP, newO)
+					.addDelete(varG, varS, varP, varO)
+					.addSubQuery(select);
+			}else {	
+				// Graph
+				String graphURI = "<" + graph + ">";
+				select.addGraph(graphURI, where);
+				builder.addInsert(graphURI, newS, newP, newO)
+					.addDelete(graphURI, varS, varP, varO)
+					.addSubQuery(select);	
+			}
+		}else {
 			select.addWhere(where);
 			builder.addInsert(newS, newP, newO)
-				.addDelete(varS, varP, varO)
-				.addSubQuery(select);
-		}else {	
-			select.addGraph(graph, where);
-			// Graph
-			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, newS, newP, newO)
-				.addDelete(graphURI, varS, varP, varO)
-				.addSubQuery(select);	
+			.addDelete(varS, varP, varO)
+			.addSubQuery(select);
 		}
 		
 		return builder.buildRequest();

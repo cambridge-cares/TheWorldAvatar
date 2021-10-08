@@ -1,0 +1,21 @@
+{
+   "comp_pref": "http://www.theworldavatar.com/kb/ontocompchem/",
+   "data_pref": "http://www.theworldavatar.com/data/ontocompchem/",
+   "onto_comp": "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl",
+   "inst_spec" : "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species",
+   "has_spec" : "http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies",
+   "gain_pref" : "http://purl.org/gc/",
+   "table_pref" : "http://www.daml.org/2003/01/periodictable/PeriodicTable.owl", 
+   "unit_pref" : "http://data.nasa.gov/qudt/owl/",
+   "onto_spec" : "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl",
+   "onto_mops" : "http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl",
+   "rdf_pref" : "http://www.w3.org/2000/01/rdf-schema",
+   "kin_pref" : "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl",
+   "spec_pref" : "http://www.theworldavatar.com/kb/ontospecies/",
+   "mops_pref" : "http://www.theworldavatar.com/kb/ontomops/",
+   "uom_pref" : "http://www.ontology-of-units-of-measure.org/resource/om-2/",
+   "unres_pref" : "http://theworldavatar.com/resource/ontouom/",
+   "omops_entry_prefix" : "MetalOrganicPolyhedra_",
+   "pes_pref" : "http://www.theworldavatar.com/kb/ontopesscan/",
+   "onto_pes" :  "http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl"
+}

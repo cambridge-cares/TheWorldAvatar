@@ -2,9 +2,14 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -35,10 +40,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -50,8 +55,12 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 public class AgentCaller {
 
+     /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(AgentCaller.class);
+            
     private static final String JSON_PARAMETER_KEY = "query";
-    private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
     private static String hostPort = null;
 
     private static synchronized String getHostPort() {
@@ -179,7 +188,7 @@ public class AgentCaller {
     public static String executeGetWithURLAndJSON(String url, String json) {
         URI uri = createURIWithURLandJSON(url, json);
         HttpGet request = new HttpGet(uri);
-        logger.info("REQUEST HERE= "+request);
+        LOGGER.info("REQUEST HERE= "+request);
         return AgentCaller.executeGet(request);
     }
 
@@ -330,7 +339,7 @@ public class AgentCaller {
 		if (acceptList.hasMoreElements()) {
 			accept = acceptList.nextElement();
 		}
-		logger.info("accept = " + accept);
+		LOGGER.info("accept = " + accept);
 		return accept;
 	}
     public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
@@ -363,25 +372,25 @@ public class AgentCaller {
                 }
                 buf.append("?").append(query);
             }
-            logger.info(buf.toString());
+            LOGGER.info(buf.toString());
             // use the next line to log the percentage encoded query component
-            //logger.info(request.toString());
+            //LOGGER.info(request.toString());
 
             httpResponse = HttpClientBuilder.create().build().execute(request);
 
             if (httpResponse.getStatusLine().getStatusCode() != 200) {
                 String body = EntityUtils.toString(httpResponse.getEntity());
-                logger.error(body);
+                LOGGER.error(body);
                 String message = "original request = " + requestAsString;
                 if (request.getURI().getQuery() != null) {
                     message += "?" + request.getURI().getQuery();
                 }
-                logger.info(message);
+                LOGGER.info(message);
                 throw new JPSRuntimeException("HTTP response with error = " + httpResponse.getStatusLine() + ", " + message);
             }
 
             String body = EntityUtils.toString(httpResponse.getEntity());
-            logger.debug(body);
+            LOGGER.debug(body);
             return body;
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -391,26 +400,47 @@ public class AgentCaller {
                     httpResponse.close();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    logger.error(e.getMessage(), e);
+                    LOGGER.error(e.getMessage(), e);
                 }
             }
         }
     }
 
-    // TODO-AE this method seems not to be required.
-    public static String getRequestBody(final HttpServletRequest req) {
-        final StringBuilder builder = new StringBuilder();
-        try (final BufferedReader reader = req.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                builder.append(line);
-            }
-            return builder.toString();
-        } catch (final Exception e) {
-            return null;
-        }
-    }
+    /** queries URL for data in requestBody
+     * checks if HTTPUrlConnection is ok
+     * @param url
+     * @return requestBody as String
+     * @throws IOException
+     */
+    public static String getRequestBody(String url) {
+    	try {
+    	URL urlForGetRequest = new URL(url);
+	    HttpURLConnection conection = (HttpURLConnection) urlForGetRequest.openConnection();
+	    conection.setRequestMethod("GET");
+	    String readLine = null;
+	    int responseCode = conection.getResponseCode();
+	    if (responseCode == HttpURLConnection.HTTP_OK) {
+	    	 BufferedReader in = new BufferedReader(new InputStreamReader(conection.getInputStream()));
+	    	 StringBuffer response = new StringBuffer();
+	    	 while ((readLine = in.readLine()) != null) {
+	    		 response.append(readLine);
+	    	 	}
+	    	 in.close();
 
+		 return response.toString();
+	    }else {
+	    	throw new JPSRuntimeException("Failure to connect");
+	    	
+	    }
+	    }catch (MalformedURLException e) {
+	    	throw new JPSRuntimeException("Malformed URL "+ url + "; try again.");
+	    	
+	    }catch (ProtocolException e) {
+	    	throw new JPSRuntimeException("Protocol Exception "+ url + "; try again.");
+	    }catch (IOException e){
+	    	throw new JPSRuntimeException("IO Exception "+ url + "; try again.");
+	    }
+    }
     public static void printToResponse(Object object, HttpServletResponse resp) {
 
         if (object == null) {

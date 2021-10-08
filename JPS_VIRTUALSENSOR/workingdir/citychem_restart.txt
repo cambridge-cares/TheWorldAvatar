@@ -62,10 +62,10 @@
 2000.0, 2000.0, 10.00,10.00,15.00,25.00,40.00,100.00,300.00,500.00,500.00,500.00,500.00,500.00,500.00       
 *
 * Main grid topography file/value
-../INPUT/other/topo_20191118_20191118.asc
+0
 *
 * Surface roughness file/value (constant value)
-../INPUT/other/surfrough_episode_20191118_20191118.asc
+0.5
 *
 * Surface Albedo file/value (1 = Total reflection; 0 = Black body) Default 0.3?
   inp_xxxnn/albedo.fld

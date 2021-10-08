@@ -53,7 +53,9 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 	 */
 	private void createExperiment() {
 		try {
-			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassExperiment(), "Experiment"+UNDERSCORE+experimentInstanceId);
+			currentExperimentInstance = "Experiment"+UNDERSCORE+experimentInstanceId;
+			iABoxManagement.createIndividual(ontoChemExpVocabulary.getClassExperiment(), currentExperimentInstance);
+			
 		} catch (ABoxManagementException e) {
 			logger.error(
 					"An individual of experiment could not be created.");
@@ -61,45 +63,6 @@ public class ExperimentWriter extends PrimeConverter implements IExperimentWrite
 	}
 	
 	private void addAllAttributes() {
-//		if (experiment.getPrimeID() != null && !experiment.getPrimeID().trim().isEmpty()) {
-//			try {
-//				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
-//						ontoChemExpVocabulary.getDataPropertyhasPrimeID(), experiment.getPrimeID(), STRING);
-//			} catch (ABoxManagementException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-		
-		if (experiment.getXmlns() != null && !experiment.getXmlns().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
-						ontoChemExpVocabulary.getDataPropertyhasXmlns(), experiment.getXmlns(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if (experiment.getXmlnsXsi() != null && !experiment.getXmlnsXsi().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
-						ontoChemExpVocabulary.getDataPropertyhasXmlnsXsi(), experiment.getXmlnsXsi(), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		if (experiment.getXsiSchemaLocation() != null && !experiment.getXsiSchemaLocation().trim().isEmpty()) {
-			try {
-				iABoxManagement.addProperty("Experiment"+UNDERSCORE+experimentInstanceId, 
-						ontoChemExpVocabulary.getDataPropertyhasXsiSchemaLocation(), experiment.getXsiSchemaLocation().replace("\r", " ").replace("\n", ""), STRING);
-			} catch (ABoxManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	private void addHeadComment() {
