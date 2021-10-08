@@ -41,8 +41,8 @@ def start():
 
     app.fs_upload_wrapper(
         file_or_dir = args['<file_or_dir>'],
-        url = tuple(args['--url'].split(',')) if args['--url'] is not None else args['--url'],
-        auth = tuple(args['--auth'].split(',')) if args['--auth'] is not None else args['--auth'],
+        url = args['--url'],
+        auth = tuple(args['--auth'].split(':')) if args['--auth'] is not None else args['--auth'],
         file_ext = args['--file-ext'],
         subdirs = args['--subdirs'],
         log_file_dir = args['--log-file-dir'],
