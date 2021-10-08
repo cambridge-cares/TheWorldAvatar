@@ -249,10 +249,18 @@ get_yml_fnames()
     if [ -f "$testmodifier_yml" ]; then
       result="$result $testmodifier_yml"
     fi
+    local modespec_testmodifier_yml="docker-compose.$process.$mode.test.yml"
+    if [ -f "$modespec_testmodifier_yml" ]; then
+      result="$result $modespec_testmodifier_yml"
+    fi
   else
     local livemodifier_yml="docker-compose.$process.live.yml"
     if [ -f "$livemodifier_yml" ]; then
       result="$result $livemodifier_yml"
+    fi
+    local modespec_livemodifier_yml="docker-compose.$process.$mode.live.yml"
+    if [ -f "$modespec_livemodifier_yml" ]; then
+      result="$result $modespec_livemodifier_yml"
     fi
   fi
 
