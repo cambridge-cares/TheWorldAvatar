@@ -31,5 +31,3 @@ def csv2tbox(csvFile, outDir):
         raise e(f"Tbox generation failed with the following error {e.java_exception}")
     except Py4JError as e:
         raise e(f"Tbox generation failed with the following error {e.java_exception}")
-
-    print('a')
