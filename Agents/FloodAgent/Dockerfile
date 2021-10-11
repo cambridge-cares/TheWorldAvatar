@@ -29,13 +29,18 @@ COPY --from=builder /root/FloodAgent/target/*.jar /app
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
 
 # Install web server (to host json files for download)
-RUN apk update && apk add apache2
+RUN apk update && apk add apache2 dos2unix bash
 COPY ./httpd.conf /etc/apache2/httpd.conf
 RUN mkdir -p /var/www/html/
 RUN chown -R apache:apache /var/www/
 RUN chmod -R 775 /var/www/
 
+# Copy in start up script
+COPY ./start-up.sh /app/start-up.sh
+RUN dos2unix /app/start-up.sh
+RUN chmod -R 775 /app/start-up.sh
+
 
 # Run the jar to start the agent
-ENTRYPOINT /usr/sbin/httpd -D FOREGROUND && java -jar FloodAgent-1.0.0-SNAPSHOT.jar 
+ENTRYPOINT bash /app/start-up.sh
 #==================================================================================================
