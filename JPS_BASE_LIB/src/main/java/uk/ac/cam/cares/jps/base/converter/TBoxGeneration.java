@@ -87,6 +87,33 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 			throw new JPSRuntimeException(e);
 		}
 	}
+	
+	public void generateTBox(String csvFileNamePlusPath, String outputFilePlusPath) {
+		if (csvFileNamePlusPath == null || csvFileNamePlusPath.isEmpty()) {
+			logger.error("No file has been found in the path specied.");
+		}
+		logger.info("Ontokin TBox generator started running...");
+		owlFilePath = outputFilePlusPath;
+		iTBoxManagement = new TBoxManagement();
+		try {
+			iTBoxManagement.init();
+			readCSVTemplate(csvFileNamePlusPath);
+			iTBoxManagement.saveOntology(owlFilePath);
+			logger.info("Ontokin TBox generation FINISHED.");
+		} catch (IOException e) {
+			logger.error("IOException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (JPSRuntimeException e) {
+			logger.error("JPSRuntimeException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyCreationException e) {
+			logger.error("OWLOntologyCreationException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyStorageException e) {
+			logger.error("OWLOntologyStorageException occured.");
+			throw new JPSRuntimeException(e);
+		}
+	}
 
 	/**
 	 * Reads a CSV template with inputs for creating TBoxes.
