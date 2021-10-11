@@ -1,6 +1,4 @@
-#from entityrdfizer import convertDir, convertFile
-from entityrdfizer.ABoxTemplateCSVFilesToRDF import convert as convertDir
-from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_into_rdf as convertFile
+from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import convert_into_rdf as convertFile
 import pytest
 import os
 import re

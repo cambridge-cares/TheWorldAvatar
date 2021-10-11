@@ -6,17 +6,16 @@
 """This module is designed to convert entities of any domain and their data and metadata into RDF.
 It requires the entities and their data to be provided as inputs in an ABox CSV template file."""
 
-from rdflib import Graph, FOAF, URIRef, BNode, Literal
+from rdflib import Graph, URIRef
 from rdflib.extras.infixowl import OWL_NS
-from rdflib.namespace import RDF, RDFS, Namespace, XSD
+from rdflib.namespace import Namespace, XSD
 from tkinter import Tk  # from tkinter import Tk for Python 3.x
 from tkinter.filedialog import askopenfilename
 import csv
 import entityrdfizer.PropertyReader as propread
-import entityrdfizer.ABoxGeneration as aboxgen
+import entityrdfizer.aboxgenerator.ABoxGeneration as aboxgen
 import os
 import os.path as path
-import glob
 from pathlib import Path as PathlibPath
 import io
 import textwrap
@@ -202,7 +201,6 @@ output_file_path = "C:/Users/.../TheWorldAvatar/JPS_Ontology/KBTemplates/ABoxRDF
 """
 def convert_into_rdf(input_file_path, output_file_path=None):
     input_file_path = PathlibPath(input_file_path)
-    input_dir = os.path.dirname(input_file_path)
     input_name = os.path.basename(input_file_path)
     """Checks if the input file path exists. If the path or file does not exist, it skips further processing."""
     if not path.exists(input_file_path):
