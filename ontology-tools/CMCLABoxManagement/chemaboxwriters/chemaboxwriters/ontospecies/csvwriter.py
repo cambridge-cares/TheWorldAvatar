@@ -80,13 +80,14 @@ def write_prelim(spamwriter,out_id,spec_pref,label):
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
 
 def write_identifier_geom(spamwriter,out_id,data):
-    if data[PUBCHEM_ALT_LABEL] is not None:
+    if PUBCHEM_ALT_LABEL in data:
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
-    if data[CAS_NUMBER] is not None:
+    if CAS_NUMBER in data:
         spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
-    spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
+    if PUBCHEM_CID in data:
+        spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
     spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
