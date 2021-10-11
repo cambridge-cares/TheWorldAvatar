@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.agent.flood;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,6 +30,11 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
+/**
+ * contains a collection of methods to query and update the KG
+ * @author Kok Foong Lee
+ *
+ */
 public class FloodSparql {
     private StoreClientInterface storeClient;
     
@@ -253,4 +260,43 @@ public class FloodSparql {
 		
 		return queriedDate;
 	}
+	
+	/**
+	 * station with its lat/lon in 3 lists
+	 * index 1 = station name (List<String>), 2 = lat (List<Double>), 3 = lon (List<Double>)
+	 */
+	List<List<?>> getStationsWithCoordinates() {
+		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
+		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
+		Iri stationref = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
+		
+		List<String> stations = new ArrayList<>();
+		List<Double> latval = new ArrayList<>();
+		List<Double> lonval = new ArrayList<>();
+		
+		SelectQuery query = Queries.SELECT();
+		
+		Variable lat = query.var();
+		Variable lon = query.var();
+		Variable station = query.var();
+		Variable ref = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
+				.andHas(lon_prop,lon),station.has(stationref,ref).optional());
+		
+		query.where(queryPattern).select(lat,lon,ref);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			stations.add(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
+			latval.add(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
+			lonval.add(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
+		}
+		
+		List<List<?>> station_coord = Arrays.asList(stations,latval,lonval);
+		
+		return station_coord;
+	}
+
 }

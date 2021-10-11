@@ -20,6 +20,8 @@ public class Config{
 	public static String kguser;
 	public static String kgpassword;
 	
+	public static String outputdir;
+	
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
 	public static void initProperties() {
@@ -36,6 +38,7 @@ public class Config{
 	    		Config.kgurl = Config.props.getProperty("kg.url");
 	    		Config.kguser = Config.props.getProperty("kg.user");
 	    		Config.kgpassword = Config.props.getProperty("kg.password");
+	    		Config.outputdir = Config.props.getProperty("outputdir");
 			} catch (IOException e1) {
 				LOGGER.error(e1.getMessage());
 				throw new JPSRuntimeException(e1);
