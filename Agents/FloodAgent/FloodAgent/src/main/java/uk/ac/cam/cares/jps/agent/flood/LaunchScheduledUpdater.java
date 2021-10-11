@@ -53,6 +53,10 @@ public class LaunchScheduledUpdater {
 	            	UpdateStations.main(input);
 	            	LOGGER.info("Stations are up-to-date");
 	            	LOGGER.info("Next update will be at " + nextUpdate);
+	            	
+	            	// write output files for visualisation
+	            	LOGGER.info("Writing output files");
+	            	WriteOutputs.main(input);
                 } else {
                 	LOGGER.info("Stations are up-to-date, ignoring update request");
                 }

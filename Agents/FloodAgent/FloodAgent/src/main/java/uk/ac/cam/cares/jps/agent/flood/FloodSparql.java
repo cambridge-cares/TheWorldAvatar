@@ -52,7 +52,8 @@ public class FloodSparql {
     private static Iri measures = iri("http://environment.data.gov.uk/flood-monitoring/def/core/measures");
     private static Iri hasTime = p_time.iri("hasTime");
     private static Iri inXSDDate = p_time.iri("inXSDDate");
-        
+    private static Iri stationReference = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
+    
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
     
@@ -268,7 +269,6 @@ public class FloodSparql {
 	List<List<?>> getStationsWithCoordinates() {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-		Iri stationref = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
 		
 		List<String> stations = new ArrayList<>();
 		List<Double> latval = new ArrayList<>();
@@ -282,7 +282,7 @@ public class FloodSparql {
 		Variable ref = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon),station.has(stationref,ref).optional());
+				.andHas(lon_prop,lon),station.has(stationReference,ref).optional());
 		
 		query.where(queryPattern).select(lat,lon,ref);
 		
@@ -299,4 +299,74 @@ public class FloodSparql {
 		return station_coord;
 	}
 
+	/**
+	 * returns station name that measures this quantity
+	 * @param measure
+	 * @return
+	 */
+	String getStationNameFromMeasure(String measure) {
+	    SelectQuery query = Queries.SELECT();
+	    Variable station = query.var();
+	    Variable stationRef = query.var();
+	    
+	    GraphPattern queryPattern = station.has(measures, iri(measure)).andHas(stationReference,stationRef);
+	    
+	    query.select(stationRef).where(queryPattern);
+	    
+	    return storeClient.executeQuery(query.getQueryString())
+	    .getJSONObject(0).getString(stationRef.getQueryString().substring(1));
+	}
+	
+	/**
+	 * returns units of this measure
+	 * @param measure
+	 * @return
+	 */
+	String getUnitOfMeasure(String measure) {
+		Iri unitName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/unitName");
+		
+		// construct query
+		SelectQuery query = Queries.SELECT();
+		Variable unit = query.var();
+		query.select(unit).where(iri(measure).has(unitName,unit));
+		
+		String unitstring;
+		try {
+    		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    		unitstring = queryResult.getJSONObject(0)
+    				.getString(unit.getQueryString().substring(1));
+		} catch (Exception e) {
+			unitstring = "";
+		}
+		
+		return unitstring;
+	}
+	
+    String getMeasureName(String measure) {
+    	Iri parameterName = iri("http://environment.data.gov.uk/flood-monitoring/def/core/parameterName");
+    	Iri qualifier = iri("http://environment.data.gov.uk/flood-monitoring/def/core/qualifier");
+    	
+    	// construct query
+    	SelectQuery query = Queries.SELECT();
+    	Variable param = query.var();
+    	Variable qual = query.var();
+    	GraphPattern queryPattern = iri(measure).has(parameterName,param)
+    			.andHas(qualifier,qual);
+    	
+    	query.select(param,qual).where(queryPattern);
+    	
+    	String measureName;
+    	
+    	try {
+    		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        	
+        	String s_param = queryResult.getJSONObject(0).getString(param.getQueryString().substring(1));
+        	String s_qual = queryResult.getJSONObject(0).getString(qual.getQueryString().substring(1));
+    	    measureName = s_param + " (" + s_qual + ")";
+    	} catch (Exception e) {
+    	    measureName = measure;	
+    	}
+    	
+    	return measureName ;
+    }
 }

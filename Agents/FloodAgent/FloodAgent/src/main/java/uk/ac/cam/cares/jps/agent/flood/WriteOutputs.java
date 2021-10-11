@@ -68,7 +68,8 @@ public class WriteOutputs {
 	}
 	
 	/**
-	 * each station is a "point"
+	 * location of file - Config.outputdir
+	 * name of file  - stations.geojson
 	 */
 	static void writeStationsToGeojson() {
 		File file = new File(Paths.get(Config.outputdir,"stations.geojson").toString());
@@ -117,12 +118,13 @@ public class WriteOutputs {
 				byte[] strToBytes = featureCollection.toString().getBytes();
 				outputStream.write(strToBytes);
 				outputStream.close();
+				LOGGER.info("Created " + file.getAbsolutePath());
 			} catch (Exception e) {
 				LOGGER.error(e.getMessage());
 				throw new JPSRuntimeException(e);
 			}
 		} else {
-			LOGGER.info("stations.geojson already exists, skipping this");
+			LOGGER.info(file.getAbsolutePath() + " already exists, skipping writeStationsToGeojson");
 		}
 	}
 	
@@ -131,18 +133,61 @@ public class WriteOutputs {
 	 * @param date
 	 */
 	static void writeTimeSeriesJson(LocalDate date) {
-		List<String> measures = sparqlClient.getMeasures();
-		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
-		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+		// write to file 
+		File file = new File(Paths.get(Config.outputdir,"flood_" + date + ".json").toString());
 		
-		for (String measure : measures) {
-			TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
-			List<Instant> time = ts.getTimes();
+		if (!file.exists()) {
+			List<String> measures = sparqlClient.getMeasures();
+			Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+			Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
 			
-			// ignore blank tables
-			if (time.size() > 0) {
-				List<Double> values = ts.getValuesAsDouble(measure);
+			JSONArray ts_array = new JSONArray();
+			
+			// collect objects into an array
+			for (String measure : measures) {
+				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
+				List<Instant> time = ts.getTimes();
+				
+				// ignore blank tables
+				if (time.size() > 0) {
+					JSONObject ts_jo = new JSONObject();
+					
+					// to link this time series to a station
+					ts_jo.put("label", sparqlClient.getStationNameFromMeasure(measure));
+					
+					// for table headers
+					String tablename = sparqlClient.getMeasureName(measure);
+					String unit = sparqlClient.getUnitOfMeasure(measure);
+			    	ts_jo.put("data", Arrays.asList(tablename));
+			    	ts_jo.put("units", Arrays.asList(unit));
+			    	
+			    	// time column
+			    	ts_jo.put("time", ts.getTimes());
+			    	
+			    	// values columns
+			    	// values columns, one array for each data
+			    	JSONArray values = new JSONArray();
+			    	values.put(ts.getValuesAsDouble(measure));
+			    	ts_jo.put("values", values);
+					
+					ts_array.put(ts_jo);
+				}
 			}
+			
+			// write to file
+			try {
+				file.createNewFile();
+				FileOutputStream outputStream = new FileOutputStream(file);
+				byte[] strToBytes = ts_array.toString().getBytes();
+				outputStream.write(strToBytes);
+				outputStream.close();
+				LOGGER.info("Created " + file.getAbsolutePath());
+			} catch (Exception e) {
+				LOGGER.error(e.getMessage());
+				throw new JPSRuntimeException(e);
+			}
+		} else {
+			LOGGER.info(file.getAbsolutePath() + " already exists, skipping writeTimeSeriesJson");
 		}
 	}
 }
