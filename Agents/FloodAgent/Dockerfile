@@ -28,6 +28,14 @@ COPY --from=builder /root/FloodAgent/target/*.jar /app
 # Copy the downloaded dependencies from the builder
 COPY --from=builder /root/FloodAgent/target/lib /app/lib
 
+# Install web server (to host json files for download)
+RUN apk update && apk add apache2
+COPY ./httpd.conf /etc/apache2/httpd.conf
+RUN mkdir -p /var/www/html/
+RUN chown -R apache:apache /var/www/
+RUN chmod -R 775 /var/www/
+
+
 # Run the jar to start the agent
-ENTRYPOINT java -jar FloodAgent-1.0.0-SNAPSHOT.jar 
+ENTRYPOINT /usr/sbin/httpd -D FOREGROUND && java -jar FloodAgent-1.0.0-SNAPSHOT.jar 
 #==================================================================================================
