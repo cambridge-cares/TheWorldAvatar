@@ -1,11 +1,11 @@
-package com.cmclinnovations.ontochem.model.tboxes;
+package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.IOException;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * This provides interface to the following methods:</br>
@@ -25,12 +25,8 @@ public interface ITBoxGeneration {
 	 * Reads a CSV file containing TBoxes (i.e. Classes, object properties and data properties).
 	 * 
 	 * @param csvFileNamePlusPath
-	 * @throws IOException
-	 * @throws TBoxManagementException
-	 * @throws OWLOntologyCreationException
-	 * @throws OWLOntologyStorageException
 	 */
-	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, TBoxManagementException, OWLOntologyCreationException, OWLOntologyStorageException;
+	public void generateTBox(String csvFileNamePlusPath);
 	/**
 	 * Generates an ontology class.
 	 * 
@@ -40,7 +36,7 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateClass(String className, String targetName, String relation) throws IOException, TBoxManagementException;
+	public void generateClass(String className, String targetName, String relation) throws IOException, JPSRuntimeException;
 	/**
 	 * Generates an ontological data property.
 	 * 
@@ -52,7 +48,7 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, TBoxManagementException;
+	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException;
 	/**
 	 * Generates an ontological object property.
 	 * 
@@ -65,5 +61,5 @@ public interface ITBoxGeneration {
 	 * @throws IOException
 	 * @throws TBoxManagementException
 	 */
-	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, TBoxManagementException;
+	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException;
 }

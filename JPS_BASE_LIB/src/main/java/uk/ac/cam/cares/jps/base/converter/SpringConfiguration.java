@@ -1,4 +1,4 @@
-package com.cmclinnovations.ontochem.model.configuration;
+package uk.ac.cam.cares.jps.base.converter;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

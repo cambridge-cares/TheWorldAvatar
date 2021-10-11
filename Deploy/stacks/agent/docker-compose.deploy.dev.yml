@@ -19,8 +19,6 @@ services:
     hostname: status-agent
     pull_policy: if_not_present
     restart: unless-stopped
-    ports:
-      - 8087:8080
     volumes:
       - status-agent:/root/.jps
       
