@@ -9,10 +9,8 @@ It requires the entities and their data to be provided as inputs in an ABox CSV 
 from rdflib import Graph, URIRef
 from rdflib.extras.infixowl import OWL_NS
 from rdflib.namespace import Namespace, XSD
-from tkinter import Tk  # from tkinter import Tk for Python 3.x
-from tkinter.filedialog import askopenfilename
 import csv
-import entityrdfizer.PropertyReader as propread
+import entityrdfizer.aboxgenerator.PropertyReader as propread
 import entityrdfizer.aboxgenerator.ABoxGeneration as aboxgen
 import os
 import os.path as path
@@ -48,13 +46,6 @@ DATA_TYPE_DATE_TIME = 'datetime'
 """Declared an array to maintain the list of already created instances"""
 instances = dict()
 g = Graph()
-
-"""This shows a file dialog box that enables the user to select a file to convert into RDF"""
-def select_file():
-    """Suppresses the root window of GUI"""
-    Tk().withdraw()
-    """Opens a file dialog box to select a file"""
-    return askopenfilename()
 
 """This function checks the validity of header in the ABox CSV template file"""
 def is_header_valid(row):
@@ -216,6 +207,7 @@ def convert_into_rdf(input_file_path, output_file_path=None):
         output_file_path = os.path.dirname(input_file_path)
     output_file_path = os.path.join(output_file_path,input_name+propread.readABoxFileExtension())
 
+    print(f"Converting abox {input_file_path} into rdf format.")
     with open(input_file_path, 'rt') as csvfile:
         rows = csv.reader(csvfile, skipinitialspace=True)
         line_count = 0
@@ -223,6 +215,7 @@ def convert_into_rdf(input_file_path, output_file_path=None):
             line_count = _serialize_csv_row(csv_row, line_count)
            #print('[', line_count, ']', row)
     g.serialize(destination=output_file_path,format="application/rdf+xml")
+    print(f"Conversion complete. Abox created at {output_file_path}")
 
 
 def convert_csv_string_into_rdf(csv_string):
@@ -252,8 +245,3 @@ def _serialize_csv_row(csv_row, line_count):
         process_data(csv_row)
     line_count+=1
     return line_count
-
-"""This block of codes calls the function that converts the content of an ABox CSV template file into RDF"""
-if __name__ == '__main__':
-    """Calls the RDF conversion function"""
-    convert_into_rdf(select_file(), "")
