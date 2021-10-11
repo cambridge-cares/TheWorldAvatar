@@ -123,7 +123,7 @@ def get_instantiated_terminals(endpoint):
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
-            'SELECT ?' + var1 + ' ?' + var2 + ' ' \
+            'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
             'WHERE { ?' + var1 + ' rdf:type comp:GasTerminal; \
                                    rdfs:label ?' + var2 + '. }'
 
@@ -158,7 +158,7 @@ def get_instantiated_gas_amounts(endpoint):
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('comp') + \
             create_sparql_prefix('rdf') + \
-            'SELECT ?a ' \
+            'SELECT distinct ?a ' \
             'WHERE { ?a rdf:type comp:IntakenGas. }'
 
     response = KGClient.execute(query)
@@ -190,7 +190,7 @@ def get_instantiated_quantities(endpoint):
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
-            'SELECT ?a ' \
+            'SELECT distinct ?a ' \
             'WHERE { ?a rdf:type om:VolumetricFlowRate. }'
 
     response = KGClient.execute(query)
@@ -221,7 +221,7 @@ def get_instantiated_measurements(endpoint):
 
     query = create_sparql_prefix('om') + \
             create_sparql_prefix('rdf') + \
-            'SELECT ?a ' \
+            'SELECT distinct ?a ' \
             'WHERE { ?a rdf:type om:Measure. }'
 
     response = kgClient.execute(query)

@@ -1,8 +1,10 @@
 import requests
+# get settings and functions from kg_utils module
+import gasgridagent.kg_utils as kg
 
 # URL to Blazegraph namespace
-url = 'http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ts_backup/sparql'
-payload = {'query': 'CONSTRUCT WHERE { hint:Query hint:analytic "true" . hint:Query hint:constructDistinctSPO "false" . ?s ?p ?o }'}
+url = kg.QUERY_ENDPOINT
+payload = {'query': 'CONSTRUCT WHERE { hint:Query hint:analytic "true" . hint:Query hint:constructDistinctSPO "false" . ?s ?p ?o } '}
 # Set the export format to be
 #   rdf/xml: application/rdf+xml
 #   or  ttl: application/x-turtle

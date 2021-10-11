@@ -79,21 +79,24 @@ def instantiate_timeseries(query_endpoint, update_endpoint, terminalIRI, termina
         print("Instantiate time series association.")
 
     # Create UUIDs for IntakenGas, VolumetricFlowRate, and Measure instances
-    # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
     gas = 'GasAmount_' + str(uuid.uuid4())
-    gases_existing = kg.get_instantiated_gas_amounts(query_endpoint)
-    while any(existing.endswith(gas) for existing in gases_existing):
-        gas = 'GasAmount_' + str(uuid.uuid4())
-
     quantity = 'Quantity_' + str(uuid.uuid4())
-    quantities_existing = kg.get_instantiated_quantities(query_endpoint)
-    while any(existing.endswith(quantity) for existing in quantities_existing):
-        quantity = 'Quantity_' + str(uuid.uuid4())
-
     measurement = 'Measurement_' + str(uuid.uuid4())
-    measurements_existing = kg.get_instantiated_measurements(query_endpoint)
-    while any(existing.endswith(measurement) for existing in measurements_existing):
-        measurement = 'Measurement_' + str(uuid.uuid4())    
+
+    # Ensure that newly created IRIs are not already present in knowledge graph --> if so, re-create
+    # !! ASSUMED TO BE UNNECESSARY DUE TO random UUID --> currently left out due to long query times !!
+    #
+    # gases_existing = kg.get_instantiated_gas_amounts(query_endpoint)
+    # while any(existing.endswith(gas) for existing in gases_existing):
+    #     gas = 'GasAmount_' + str(uuid.uuid4())
+    #
+    # quantities_existing = kg.get_instantiated_quantities(query_endpoint)
+    # while any(existing.endswith(quantity) for existing in quantities_existing):
+    #     quantity = 'Quantity_' + str(uuid.uuid4())
+    #
+    # measurements_existing = kg.get_instantiated_measurements(query_endpoint)
+    # while any(existing.endswith(measurement) for existing in measurements_existing):
+    #     measurement = 'Measurement_' + str(uuid.uuid4())
     
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
