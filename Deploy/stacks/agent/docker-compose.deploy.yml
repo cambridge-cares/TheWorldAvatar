@@ -30,6 +30,13 @@ services:
     mem_limit: 2g
     pull_policy: if_not_present
     restart: unless-stopped
+    
+  # Flood Agent
+  flood-agent:
+    image: docker.cmclinnovations.com/flood-agent-$MODE:1.0.0-SNAPSHOT
+    container_name: "flood-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
 
   # JPS Chatbot
   jps-chatbot:
