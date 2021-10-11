@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSDataDrivenAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSDataDrivenAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.datadriven.MoDSDataDrivenAgent;
@@ -27,6 +28,7 @@ public class MoDSDataDrivenAgentJobSetupTest extends MoDSDataDrivenAgent {
 	private static final long serialVersionUID = -5572888046042546793L;
 
 	@Test
+        @Ignore
 	public void test() throws IOException, MoDSDataDrivenAgentException, SlurmJobException {
 		initAgentProperty();
 		

@@ -12,6 +12,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.Ignore;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentProperty;
@@ -30,6 +31,7 @@ public class MoDSMooAgentProcessOutputTest extends MoDSMooAgent {
 	private String tempFolderPath;
 	
 	@Test
+        @Ignore
 	public void test() throws IOException, MoDSMooAgentException {
 		String tempFolderName = "temp_job_"+Utils.getTimeStamp();
 		tempFolderPath = System.getProperty("user.home").concat(File.separator).concat("."+tempFolderName);

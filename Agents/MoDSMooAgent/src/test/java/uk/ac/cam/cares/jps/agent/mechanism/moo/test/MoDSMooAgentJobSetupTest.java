@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import junit.framework.Assert;
+import org.junit.Ignore;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.moo.MoDSMooAgent;
@@ -27,6 +28,7 @@ public class MoDSMooAgentJobSetupTest extends MoDSMooAgent {
 	private static final long serialVersionUID = -5572888046042546793L;
 
 	@Test
+        @Ignore
 	public void test() throws IOException, MoDSMooAgentException, SlurmJobException {
 		initAgentProperty();
 		
