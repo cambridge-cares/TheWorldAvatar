@@ -47,3 +47,12 @@ services:
   oscml-agent:
     ports:
       - 45001:5000
+
+  stdc-agent:
+    ports:
+      - 45002:5000
+
+  # Weather Agent
+  weather-agent:
+    ports:
+      - "48085:8080"

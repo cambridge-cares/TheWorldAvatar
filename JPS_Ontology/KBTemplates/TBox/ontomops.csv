@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoMOPs,TBox,http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoMOPs,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoMOPs,TBox,An ontology developed for representing Metal-Organic Polyhedra (MOPs).,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoMOPs,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 MolecularCage,Class,,,,,,A molecular cage is chemical species that has a dimensional chamber (i.e. cavity) surrounded by a molecular framework. It is a form of a polyatomic entity. ,http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl
 CoordinationCage,Class,MolecularCage,IS-A,,,,A coordination cage is a molecular cage comprised of metal-based and organic building units.  A metal-organic cage (MOC) may be a synonym for coordination cage. ,http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl
 MetalOrganicPolyhedron,Class,CoordinationCage,IS-A,,,,A metal-organic polyhedron (MOP) is a highly symmetrical coordination cage.,http://www.theworldavatar.com/ontology/ontomop/OntoMOP.owl

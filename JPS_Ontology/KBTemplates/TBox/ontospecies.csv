@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoSpecies,TBox,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoSpecies,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoSpecies,TBox,OntoSpecies is an ontology developed for representing chemical species.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoSpecies,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 Species,Class,,,,,,"""An ensemble of chemically identical molecular entities"" (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
 EmpiricalFormula,Class,,,,,,A chemical formula that indicates the relative number of each constituting chemical element of a species or molecular entity.,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl
 http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ElementNumber,Class,,,,,,A combined representation of a number indicating the amount of an element in a species and the element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
