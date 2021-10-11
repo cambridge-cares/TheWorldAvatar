@@ -19,11 +19,38 @@ from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
 from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
 from CoordinateAgent import CoordinateAgent
 from full_test import FullTest
+from Agent_Query.ThermoAgent import ThermoAgent
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
+
+
+@app.route('/thermo_agent')
+def call_thermo_agent():
+    species = None
+    if 'species' in request.args:
+        species = request.args.get('species')
+
+    attribute = None
+    if 'attribute' in request.args:
+        attribute = request.args.get('attribute')
+
+    temperature = None
+    if 'temperature' in request.args:
+        temperature = request.args.get('temperature')
+
+    pressure = None
+    if 'pressure' in request.args:
+        pressure = request.args.get('pressure')
+
+    result = None
+    try:
+        result = thermo_agent.callThermoAgent(species=species, attribute=attribute, temperature=temperature, pressure=pressure)
+    except:
+        pass
+    return result
 
 
 @app.route('/start_test')
@@ -101,6 +128,7 @@ def hello_world():
 # google_api = GoogleAPI()
 coordinate_agent = CoordinateAgent()
 wolfram_and_google = WolframGoogle()
+thermo_agent = ThermoAgent()
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)

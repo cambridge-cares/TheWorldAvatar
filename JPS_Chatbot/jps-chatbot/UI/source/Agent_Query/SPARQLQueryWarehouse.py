@@ -22,6 +22,9 @@ GET_AGENT_OUTPUTS = """
                        msm:hasName ?name ; 
                        msm:isArray ?isArray ;
                        msm:hasNerLabel ?nerLabel ;
-                       msm:hasQualifier ?qualifier . 
+                       msm:hasQualifier ?qualifier_node .
+                       
+          ?qualifier_node msm:hasName ?qualifier .  
        }  GROUP BY ?type ?name 
 """
+

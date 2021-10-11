@@ -7,6 +7,7 @@ from SPARQLQueryWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS
 from location import FILE_DIR
 
 
+# extract inputs from the SPARQL query
 def create_input_dict(_input_rst):
     # ?type ?name ?isArray ?nerLabel ?qualifiers)
     input_dict = {}
@@ -17,28 +18,38 @@ def create_input_dict(_input_rst):
     return input_dict
 
 
-def extract_qualifiers( _entities):
+# find the qualifiers from the NLU results
+def extract_qualifiers(_entities):
     qualifiers = []
     for _e in _entities:
         _e_label = _e['entity']
-        if _e_label == 'qualifier': # you are a qualifier, lets discuss your fate
+        if _e_label == 'qualifier':  # you are a qualifier, lets discuss your fate
             qualifiers.append(_e['value'])
-    # TODO: get their types 
+    # TODO: get their types
     return qualifiers
 
     # get the labels of the qualifiers
 
 
+# parse the outputs results returned from the SPARQL query
 def create_output_dict(_output_rst):
     # ?type ?name ?isArray ?nerLabel ?qualifiers)
     output_dict = {}
     for _o in _output_rst:
         name = _o['name'].value
         label = _o['nerLabel'].value
-        output_dict[name] = label
+        qualifiers = _o['qualifiers'].value
+        if '; ' in qualifiers:
+            qualifiers = qualifiers.split('; ')
+        else:
+            qualifiers = [qualifiers]
+        output_dict[name] = {'label': label, 'qualifiers': qualifiers}
     return output_dict
 
 
+# match between the inputs from the SPARQL query and the entities from the NLU result
+# e.g. the input from the SPARQL is "species", then you need to find the entity in the NLU result, where the
+# label of the entity is "species"
 def match_inputs(_entities, _input_parameters_dict):  # _output_parameters_dict {'species': 'species'}
     # inputs are simpler, just match the exact labels
     inputs = []  # you need the nerlabel: value
@@ -53,6 +64,10 @@ def match_inputs(_entities, _input_parameters_dict):  # _output_parameters_dict 
     return inputs
 
 
+# match between the outputs from the SPARQL query and the NLU results
+# e.g. in the NLU result, you might find {'enthalpy': 'attribute'}, while in
+# SPARQL query result, you might find an output with a name "enthalpy" and label "attribute"
+# However, the match needs to be fuzzy when comparing the names but explicit when comparing the labels
 def match_outputs(_entities, _output_parameters_dict):  # _output_parameters_dict {'enthalpy': 'attribute'}
     # find a matching output for each entity, if there is any
     # make a list of _output_parameters names for fuzzy match
@@ -64,11 +79,21 @@ def match_outputs(_entities, _output_parameters_dict):  # _output_parameters_dic
         rst = process.extractOne(_e_name, candidate_names, scorer=fuzz.ratio)
         output_name = rst[0]
         score = rst[1]
-        output_label = _output_parameters_dict[output_name]
-        # score larger than 70, attributes match
-        if score > 70 and (_e_label == output_label):
+        output_label = _output_parameters_dict[output_name]['label']
+        qualifier_labels = _output_parameters_dict[output_name]['qualifiers']
+        valid_qualifier_labels = []
+        # score larger than 80, attributes match
+        if score > 80 and (_e_label == output_label):
             # here is a match, this is an output
-            tmp = {'label': output_label, 'name': output_name}
+            # find the qualifiers
+            for _q_name in qualifier_labels:
+                for _e_qualifier in _entities:
+                    _e_qualifier_name = _e_qualifier['entity']
+                    _e_qualifier_value = _e_qualifier['value']
+                    if _q_name == _e_qualifier_name:
+                        valid_qualifier_labels.append({'label': _e_qualifier_name, 'value': _e_qualifier_value})
+
+            tmp = {'label': output_label, 'value': output_name, 'qualifiers': valid_qualifier_labels}
             outputs.append(tmp)
 
     return outputs
@@ -84,20 +109,16 @@ class AgentQueryParser:
         # get the intent
         agent_name = _nlu_result['intent']['name']
         entities = _nlu_result['entities']
-        io_results = self.get_agent_request_attributes(agent_name)
-
-        output_rst = io_results[0]
-        input_rst = io_results[1]
+        output_rst, input_rst = self.get_agent_request_attributes(agent_name)
 
         output_dict = create_output_dict(_output_rst=output_rst)
         outputs = match_outputs(_entities=entities, _output_parameters_dict=output_dict)
-
+        print('outputs\n', outputs)
         input_dict = create_input_dict(_input_rst=input_rst)
         inputs = match_inputs(_entities=entities, _input_parameters_dict=input_dict)
+        print('inputs\n', inputs)
 
-        qualifiers = extract_qualifiers(_entities=entities)
-        print(qualifiers)
-
+    # query the OntoAgent instance via SPARQL and extract the inputs/outputs parameters of the agent
     def get_agent_request_attributes(self, agent_name):
         agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
         self.graph.parse(agent_dir)
@@ -105,10 +126,6 @@ class AgentQueryParser:
         for _input in input_rst:
             print('Type: %s \nName: %s \nisArray: %s \nnerLabel: %s \n' % _input)
         # species fits species as the ner label
-        # TODO: match identified stuff with the ner labels
-
-        # TODO:
-        print('===========================================================')
         output_rst = self.graph.query(GET_AGENT_OUTPUTS)
         return output_rst, input_rst
 
@@ -119,7 +136,7 @@ if __name__ == '__main__':
                                 'entity': 'attribute',
                                 'extractor': 'CRFEntityExtractor',
                                 'start': 0,
-                                'value': 'enthalpy'},
+                                'value': 'entropy'},
                                {'confidence_entity': 0.8038620659230102,
                                 'end': 42,
                                 'entity': 'species',
@@ -128,13 +145,13 @@ if __name__ == '__main__':
                                 'value': 'inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3'},
                                {'confidence_entity': 0.8924032698970731,
                                 'end': 55,
-                                'entity': 'qualifier',
+                                'entity': 'pressure',
                                 'extractor': 'CRFEntityExtractor',
                                 'start': 46,
                                 'value': '1522.1 pa'},
                                {'confidence_entity': 0.9948107351393644,
                                 'end': 68,
-                                'entity': 'qualifier',
+                                'entity': 'temperature',
                                 'extractor': 'CRFEntityExtractor',
                                 'start': 60,
                                 'value': '123245 k'}],

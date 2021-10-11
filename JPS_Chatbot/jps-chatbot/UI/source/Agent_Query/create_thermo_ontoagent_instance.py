@@ -7,7 +7,7 @@ agent = {
     "question_templates":
         ['<attribute> of <species>', '<attribute> of <species> at <qualifier>',
          '<attribute> of <species> at <qualifier> and <qualifier>'],
-    "http_url": "http://somewhereincmcl.com/thermal",
+    "http_url": " http://127.0.0.1:5000/thermo_agent",
     "outputs": [
         {
             "data_name": "HeatCapacity",
@@ -72,13 +72,13 @@ agent = {
             "data_name": "temperature",
             "data_type": "http://fake_concept_for_temperature",
             "is_array": False,
-            "ner_label": "qualifier"
+            "ner_label": "temperature"
         },
         {
             "data_name": "pressure",
             "data_type": "http://fake_concept_for_pressure",
             "is_array": False,
-            "ner_label": "qualifier"
+            "ner_label": "pressure"
         }
     ]
 }

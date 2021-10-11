@@ -1,2 +1,3 @@
 from .AgentRequestConstructor import AgentRequestConstructor
 from .AgentQueryInterface import AgentQueryInterface
+from .ThermoAgent import ThermoAgent

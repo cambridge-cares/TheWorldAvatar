@@ -4,10 +4,9 @@
 
 # e.g. what is the [power conversion efficiency](output) of [smile string](input)
 import json
+import logging
 import os
 import random
-from pprint import pprint
-from random import sample
 from AgentPropertyQuery import AgentPropertyQuery
 from location import FILE_DIR
 
@@ -72,7 +71,6 @@ def create_labelled_questions(inputs_for_creating_questions):
                 template = template.replace(placeholder, value)
                 tmp_templates.append(template)
     templates = tmp_templates
-    print(templates)
     input_data_types = inputs_for_creating_questions['input_data_types']
     input_ner_labels = inputs_for_creating_questions['input_ner_labels']
 
@@ -92,7 +90,7 @@ def create_labelled_questions(inputs_for_creating_questions):
                             questions.append(' - ' + question + '\n')
 
                 for qualifier_name, qualifier_ner_label in zip(qualifier_names, qualifier_ner_labels):
-                    qualifier_placeholder = '<%s>' % qualifier_ner_label
+                    qualifier_placeholder = '<%s>' % 'qualifier'
                     # 1. fill in the inputs value (species instances)
                     if qualifier_placeholder in question:
                         qualifier_content = generate_numerical_for_qualifiers(qualifier_name)
@@ -100,8 +98,6 @@ def create_labelled_questions(inputs_for_creating_questions):
                         question = question.replace(qualifier_placeholder, qualifier_value, 1)
                         if '<qualifier>' not in question:
                             questions.append(' - ' + question + '\n')
-
-
 
     return questions
 
@@ -128,7 +124,6 @@ def create_questions_from_agent(agent_name):
         input_types.append(data_type)
 
     for output in agent_outputs:
-        print(output)
         data_ner_label = output['ner_label']
         data_nlp_label = output['data_nlp_label']
         qualifier_name = output['qualifier_name']
@@ -162,7 +157,7 @@ def create_questions_from_agent(agent_name):
     questions_blk = ''.join(questions)
     block = '''## intent: %s\n %s ''' % (agent_name.replace('.owl', ''), questions_blk)
 
-    return block
+    return block, questions
 
 
 def generate_numerical_for_qualifiers(qualifier):
@@ -184,7 +179,7 @@ def get_species(number=500):
     with open(os.path.join(FILE_DIR, 'instance_property_mapping_first_2000')) as f:
         mapping = json.loads(f.read())
         instances = mapping.keys()
-        return sample(instances, number)
+        return random.sample(instances, number)
 
 
 def get_smiles(id_list):
@@ -227,9 +222,12 @@ def get_smiles(id_list):
 #     block = block % questions_text
 #     return block
 
-
-blk_1 = create_questions_from_agent('Thermo_Agent.owl')
-blk_2 = create_questions_from_agent('PCE_Agent.owl')
+logger = logging.getLogger('Function I/O')
+logger.setLevel(logging.INFO)
+blk_1, blk_1_questions = create_questions_from_agent('Thermo_Agent.owl')
+logger.info('{} Thermo Agent Questions Are Created'.format(len(blk_1_questions)))
+blk_2, blk_2_questions = create_questions_from_agent('PCE_Agent.owl')
+logger.info('{} PCE    Agent Questions Are Created'.format(len(blk_2_questions)))
 
 with open('./training/data/nlu.md', 'wb') as f:
     f.write(blk_1.encode('utf-8'))
