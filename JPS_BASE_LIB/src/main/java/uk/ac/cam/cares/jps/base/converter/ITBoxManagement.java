@@ -1,11 +1,11 @@
-package com.cmclinnovations.ontochem.model.tboxes;
+package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.IOException;
 
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 
-import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * This provides interface to the following methods:</br>
@@ -18,12 +18,20 @@ import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
  */
 public interface ITBoxManagement {
 	/**
-	 * Initialises the ontology parameter and ontology model.
+	 * Initialises the ontology parameter.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 * @throws OWLOntologyCreationException
 	 */
-	public void init() throws TBoxManagementException, OWLOntologyCreationException;
+	public void init() throws JPSRuntimeException, OWLOntologyCreationException;
+
+	/**
+	 * Instantiates the ontology model.
+	 * 
+	 * @throws OWLOntologyCreationException
+	 */
+	public void instantiateOntologyModel() throws OWLOntologyCreationException;
+	
 	/**
 	 * Saves the generated OWL file under the path species by user in the </br>
 	 * kb.ontochem.management.properties.
@@ -38,10 +46,9 @@ public interface ITBoxManagement {
 	 * @param className
 	 * @param targetName
 	 * @param relation
-	 * @throws TBoxManagementException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException, TBoxManagementException;
+	public void createOWLClass(String className, String targetName, String relation) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological data property.
 	 * 
@@ -50,9 +57,9 @@ public interface ITBoxManagement {
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws TBoxManagementException;
+	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological object property.
 	 * 
@@ -62,70 +69,70 @@ public interface ITBoxManagement {
 	 * @param domain
 	 * @param range
 	 * @param quantifier
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws TBoxManagementException;
+	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definition as a comment to the OWL class.
 	 * 
 	 * @param className
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToOWLClass(String className, String definition) throws TBoxManagementException;
+	public void addDefinitionToOWLClass(String className, String definition) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definition of the current object property.
 	 * 
 	 * @param property
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToObjectProperty(String property, String definition) throws TBoxManagementException;
+	public void addDefinitionToObjectProperty(String property, String definition) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definition of the current data property.
 	 * 
 	 * @param property
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToDataProperty(String property, String definition) throws TBoxManagementException;	
+	public void addDefinitionToDataProperty(String property, String definition) throws JPSRuntimeException;	
 
 	/**
 	 * Adds the definedBy annotation property to the current OWL class.
 	 * 
 	 * @param className
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToClass(String className, String url) throws TBoxManagementException;
+	public void addDefinedByToClass(String className, String url) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definedBy annotation property to the current object property.
 	 * 
 	 * @param property
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToObjectProperty(String property, String url) throws TBoxManagementException;
+	public void addDefinedByToObjectProperty(String property, String url) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definedBy annotation property to the current data property.
 	 * 
 	 * @param property
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToDataProperty(String property, String url) throws TBoxManagementException;
+	public void addDefinedByToDataProperty(String property, String url) throws JPSRuntimeException;
 	
 	/**
 	 * 
 	 * 
 	 * @param property
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
 	/**
 	 * Adds a logical formula to the current object property.
@@ -134,7 +141,7 @@ public interface ITBoxManagement {
 	 * @param quantifier
 	 * @param domain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range) throws TBoxManagementException;
+	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range) throws JPSRuntimeException;
 }

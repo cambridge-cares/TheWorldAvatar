@@ -1,19 +1,26 @@
-package com.cmclinnovations.ontochem.model.tboxes;
+package uk.ac.cam.cares.jps.base.converter;
  
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.filechooser.FileFilter;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.jfree.ui.ExtensionFileFilter;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
 
-import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
-import com.cmclinnovations.ontochem.model.utils.CtmlConverterUtils;
-import com.cmclinnovations.ontochem.model.utils.Dialogs;
+import com.opencsv.CSVReader;
+
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.util.Dialogs;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
  * This class implemented the methods that were provided in the ITBoxGeneration</br> 
@@ -33,7 +40,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	static Logger logger = org.slf4j.LoggerFactory.getLogger(TBoxGeneration.class);
 	ITBoxManagement iTBoxManagement;
 	public static String owlFilePath; 
-	
+	public static final String HAS_IRI = "https://www.w3.org/2007/05/powder-s#hasIRI";
+	public static final String VERSION_INFO = "http://www.w3.org/2002/07/owl#versionInfo";
+	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
+	public static final String OWL_IMPORTS = "http://www.w3.org/2002/07/owl#imports";
 	
 	public static void main(String[] args) {
 		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")), new FileFilter[]{new ExtensionFileFilter("Comma-separated Value", "csv")}, false);
@@ -41,23 +51,8 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 		} else if (!folder.exists()) {
 			Dialogs.showErrorDialog("Selected folder does not exist.", "Read");
 		} else{
-			owlFilePath = folder.getAbsolutePath().replace(".csv", ".owl");
 			ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
-			try{
-				iTBoxGeneration.readTBoxTemplate(folder.toString());
-			} catch(IOException e){
-				logger.error("IOException occured.");
-				e.printStackTrace();
-			} catch(TBoxManagementException e){
-				logger.error("TBoxManagementException occured.");
-				e.printStackTrace();
-			} catch(OWLOntologyCreationException e){
-				logger.error("OWLOntologyCreationException occured.");
-				e.printStackTrace();
-			} catch(OWLOntologyStorageException e){
-				logger.error("OWLOntologyStorageException occured.");
-				e.printStackTrace();
-			}
+			iTBoxGeneration.generateTBox(folder.toString());
 		}
 	}
 	
@@ -66,26 +61,42 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param csvFileNamePlusPath
 	 */
-	public void readTBoxTemplate(String csvFileNamePlusPath) throws IOException, TBoxManagementException, OWLOntologyCreationException, OWLOntologyStorageException{
-		if(csvFileNamePlusPath == null || csvFileNamePlusPath.isEmpty()){
+	public void generateTBox(String csvFileNamePlusPath) {
+		if (csvFileNamePlusPath == null || csvFileNamePlusPath.isEmpty()) {
 			logger.error("No file has been found in the path specied.");
 		}
 		logger.info("Ontokin TBox generator started running...");
+		owlFilePath = csvFileNamePlusPath.replace(".csv", ".owl");
 		iTBoxManagement = new TBoxManagement();
-		iTBoxManagement.init();
-		readCSVTemplate(csvFileNamePlusPath);
-		iTBoxManagement.saveOntology(owlFilePath);
-		logger.info("Ontokin TBox generation FINISHED.");
+		try {
+			iTBoxManagement.init();
+			readCSVTemplate(csvFileNamePlusPath);
+			iTBoxManagement.saveOntology(owlFilePath);
+			logger.info("Ontokin TBox generation FINISHED.");
+		} catch (IOException e) {
+			logger.error("IOException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (JPSRuntimeException e) {
+			logger.error("JPSRuntimeException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyCreationException e) {
+			logger.error("OWLOntologyCreationException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyStorageException e) {
+			logger.error("OWLOntologyStorageException occured.");
+			throw new JPSRuntimeException(e);
+		}
 	}
-	
+
 	/**
 	 * Reads a CSV template with inputs for creating TBoxes.
 	 * 
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
+	 * @throws OWLOntologyCreationException 
 	 */
-	private void readCSVTemplate(String csvFileNamePlusPath) throws IOException, TBoxManagementException{
-		List<List<String>> brSourceCtml = CtmlConverterUtils.openCSVSourceFile(csvFileNamePlusPath);
+	private void readCSVTemplate(String csvFileNamePlusPath) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
+		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int countLine = 0;
 		for(List<String> singleLine:brSourceCtml){
 			if(++countLine<=1){
@@ -102,7 +113,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param line represents the header of the CSV file
 	 * @throws IOException
 	 */
-	private void processHeader(List<String> line) throws IOException, TBoxManagementException{
+	private void processHeader(List<String> line) throws IOException, JPSRuntimeException{
 		if(line.isEmpty()){
 			logger.error("The header is empty.");
 			throw new IOException("TBox generation stopped proceeding as the header is empty.");
@@ -127,7 +138,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param tokens
 	 */
-	private void processHeader(String[] tokens) throws TBoxManagementException{
+	private void processHeader(String[] tokens) throws JPSRuntimeException{
 		int tokenNumber = 0;
 		for (String token : tokens) {
 			switch (++tokenNumber) {
@@ -160,11 +171,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfSourceAppears(String token) throws TBoxManagementException{
+	private void checkIfSourceAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("source")){
-			throw new TBoxManagementException("The source column is missing in the header.");
+			throw new JPSRuntimeException("The source column is missing in the header.");
 		}
 	}
 	
@@ -173,11 +184,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfTypeAppears(String token) throws TBoxManagementException{
+	private void checkIfTypeAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("type")){
-			throw new TBoxManagementException("The type column is missing in the header.");
+			throw new JPSRuntimeException("The type column is missing in the header.");
 		}
 	}
 	
@@ -186,11 +197,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfTargetAppears(String token) throws TBoxManagementException{
+	private void checkIfTargetAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("target")){
-			throw new TBoxManagementException("The target column is missing in the header.");
+			throw new JPSRuntimeException("The target column is missing in the header.");
 		}
 	}
 	
@@ -199,11 +210,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfRelationAppears(String token) throws TBoxManagementException{
+	private void checkIfRelationAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("relation")){
-			throw new TBoxManagementException("The relation column is missing in the header.");
+			throw new JPSRuntimeException("The relation column is missing in the header.");
 		}
 	}
 	
@@ -212,11 +223,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfDomainAppears(String token) throws TBoxManagementException{
+	private void checkIfDomainAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("domain")){
-			throw new TBoxManagementException("The domain column is missing in the header.");
+			throw new JPSRuntimeException("The domain column is missing in the header.");
 		}
 	}
 	
@@ -225,11 +236,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfRangeAppears(String token) throws TBoxManagementException{
+	private void checkIfRangeAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("range")){
-			throw new TBoxManagementException("The range column is missing in the header.");
+			throw new JPSRuntimeException("The range column is missing in the header.");
 		}
 	}
 	
@@ -238,11 +249,11 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * appear in the header, it throws an exception.
 	 * 
 	 * @param token
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkIfDefinedByAppears(String token) throws TBoxManagementException{
+	private void checkIfDefinedByAppears(String token) throws JPSRuntimeException{
 		if (!token.equalsIgnoreCase("defined by")){
-			throw new TBoxManagementException("The defined by column is missing in the header.");
+			throw new JPSRuntimeException("The defined by column is missing in the header.");
 		}
 	}
 	
@@ -253,9 +264,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param line represents a TBox originating from the CSV file
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
+	 * @throws OWLOntologyCreationException 
 	 */
-	private void processLine(List<String> line) throws IOException, TBoxManagementException{
+	private void processLine(List<String> line) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		if(line.isEmpty()){
 			logger.info("It encountered an empty line.");
 			return;
@@ -269,9 +281,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param line represents a TBox originating from the CSV file
 	 * @throws IOException
-	 * @throws TBoxManagementException 
+	 * @throws JPSRuntimeException 
+	 * @throws OWLOntologyCreationException 
 	 */
-	private void readEachColumn(List<String> line) throws IOException, TBoxManagementException{
+	private void readEachColumn(List<String> line) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		String[] tokens = line.toArray(new String[line.size()]);
 		int tokenNumber = 0;
 		for(String token: tokens){
@@ -292,9 +305,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param firstColumn represents the value of the source in any row
 	 * except the header
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void readSourceColumn(String firstColumn) throws IOException, TBoxManagementException{
+	private void readSourceColumn(String firstColumn) throws IOException, JPSRuntimeException{
 		if(firstColumn == null || firstColumn.isEmpty()){
 			throw new IOException("The first column of a row is empty.");
 		}
@@ -307,9 +320,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param secondColumn represents the value of the type of source in any
 	 * row except the header
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
+	 * @throws OWLOntologyCreationException 
 	 */
-	private void readTypeColumn(String[] tokens, int tokenNumber) throws IOException, TBoxManagementException{
+	private void readTypeColumn(String[] tokens, int tokenNumber) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		if(tokens[tokenNumber] == null || tokens[tokenNumber].isEmpty()){
 			throw new IOException("The second column of a row is empty.");
 		}
@@ -317,7 +331,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	}
 	
 	/**
-	 * Decides whether to create a class, data property or object property.</br>
+	 * Decides whether to create a class, data property, object property or TBox property.</br>
 	 * Following the decision it calls the appropriate method to do it.</br>
 	 * For creating a data property, it passes 1 as the first parameter of the</br>
 	 * generateProperty method.</br>
@@ -327,9 +341,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param tokens
 	 * @param tokenNumber
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
+	 * @throws OWLOntologyCreationException 
 	 */
-	private void decideTypeOfConstruct(String[] tokens, int tokenNumber) throws IOException, TBoxManagementException{
+	private void decideTypeOfConstruct(String[] tokens, int tokenNumber) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("class")){
 			if(tokens.length>tokenNumber+1 && !tokens[tokenNumber+1].isEmpty() && tokens.length>tokenNumber+2 && !tokens[tokenNumber+2].isEmpty()){
 				generateClass(tokens[tokenNumber-1], tokens[tokenNumber+1], tokens[tokenNumber+2]);
@@ -343,7 +358,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 		} else if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("object property")){
 			generateProperty(2, tokens);
 			generateObjectPropertyMetadata(tokens);
-		}
+		} else if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("tbox")){
+			generateTBoxProperty(tokens);
+		} 
 	}
 	
 	/**
@@ -357,9 +374,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param tokens
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void generateProperty(int propertyType, String[] tokens) throws IOException, TBoxManagementException {
+	private void generateProperty(int propertyType, String[] tokens) throws IOException, JPSRuntimeException {
 		int i = 0;
 		String propertyName = "";
 		String targetName = "";
@@ -384,6 +401,38 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 		}
 		callPropertyGenerateor(propertyType, propertyName, targetName, relation, domain, range, quantifier);
 	}
+
+	/**
+	 * Processes and extracts the following info to send this to the 
+	 * callPropertyGenerateor method:
+	 * 1. Property name;</br>
+	 * 2. Target name;</br>
+	 * 3. Relation;</br>
+	 * 2. Domain, which can have multiple values; </br> 
+	 * 3. Range, which can have multiple values.
+	 * 
+	 * @param tokens
+	 * @throws IOException
+	 * @throws JPSRuntimeException
+	 * @throws OWLOntologyCreationException 
+	 */
+	private void generateTBoxProperty(String[] tokens) throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+		int i = 0;
+		String tBoxName = "";
+		String target = "";
+		String relation = "";
+		for(String token: tokens){
+			if(++i==1){
+				tBoxName = token;
+			} if(i==3){
+				target = token;
+			} if(i==4){
+				relation = token;
+			}
+		}
+		assignTBoxProperty(tBoxName, target, relation);
+	}
+
 	
 	/**
 	 * Calls either the data property generator or the object property</br> 
@@ -394,14 +443,40 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param propertyType
 	 * @param strings
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void callPropertyGenerateor(int propertyType, String...strings) throws IOException, TBoxManagementException {
+	private void callPropertyGenerateor(int propertyType, String...strings) throws IOException, JPSRuntimeException {
 		if(propertyType==1){
 			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4]);
 		}
 		if(propertyType==2){
 			generateObjectProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]);
+		}
+	}
+
+	/**
+	 * Assigns each TBox property to the corresponding setter method. 
+	 * 
+	 * @param tBoxName
+	 * @param target
+	 * @param relation
+	 * @throws IOException
+	 * @throws JPSRuntimeException
+	 * @throws OWLOntologyCreationException 
+	 */
+	private void assignTBoxProperty(String tBoxName, String target, String relation)
+			throws IOException, JPSRuntimeException, OWLOntologyCreationException {
+		if (tBoxName != null && !tBoxName.isEmpty() && relation != null && !relation.isEmpty()) {
+			if (relation.trim().equals(HAS_IRI) && target != null && new UrlValidator().isValid(target)) {
+				TBoxManagement.tBoxConfig.settBoxIri(target);
+				iTBoxManagement.instantiateOntologyModel();
+			} else if (relation.trim().equals(VERSION_INFO) && target != null && !target.isEmpty()) {
+				TBoxManagement.tBoxConfig.settBoxVersion(target);
+			} else if (relation.trim().equals(RDFS_COMMENT) && target != null && !target.isEmpty()) {
+				TBoxManagement.tBoxConfig.settBoxComment(target);
+			} else if (relation.trim().equals(OWL_IMPORTS) && target != null && !target.isEmpty()) {
+				TBoxManagement.tBoxConfig.settBoxImport(target);
+			}
 		}
 	}
 	
@@ -414,10 +489,10 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param targetName
 	 * @param relation
 	 * @throw IOException
-	 * @throws TBoxManagementException 
+	 * @throws JPSRuntimeException 
 	 *
 	 */
-	public void generateClass(String className, String targetName, String relation) throws IOException, TBoxManagementException{
+	public void generateClass(String className, String targetName, String relation) throws IOException, JPSRuntimeException{
 		iTBoxManagement.createOWLClass(className, targetName, relation);
 	}
 	
@@ -428,9 +503,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param tokens
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void generateClassMetadata(String[] tokens) throws IOException, TBoxManagementException{
+	public void generateClassMetadata(String[] tokens) throws IOException, JPSRuntimeException{
 		if(tokens.length>7){
 			iTBoxManagement.addDefinitionToOWLClass(tokens[0], tokens[7]);
 		}
@@ -449,9 +524,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param tokens
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void generateObjectPropertyMetadata(String[] tokens) throws IOException, TBoxManagementException{
+	public void generateObjectPropertyMetadata(String[] tokens) throws IOException, JPSRuntimeException{
 		if(tokens.length>7){
 			iTBoxManagement.addDefinitionToObjectProperty(tokens[0], tokens[7]);
 		}
@@ -473,9 +548,9 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * 
 	 * @param tokens
 	 * @throws IOException
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void generateDataPropertyMetadata(String[] tokens) throws IOException, TBoxManagementException{
+	public void generateDataPropertyMetadata(String[] tokens) throws IOException, JPSRuntimeException{
 		if(tokens.length>7){
 			iTBoxManagement.addDefinitionToDataProperty(tokens[0], tokens[7]);
 		}
@@ -496,7 +571,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param domain
 	 * @param range
 	 */
-	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, TBoxManagementException{
+	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException{
 		iTBoxManagement.createOWLDataProperty(propertyName, targetName, relation, domain, range);
 	}
 	
@@ -512,7 +587,7 @@ import com.cmclinnovations.ontochem.model.utils.Dialogs;
 	 * @param range
 	 * @param quantifier
 	 */
-	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, TBoxManagementException{
+	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException{
 		iTBoxManagement.createOWLObjectProperty(propertyName, targetName, relation, domain, range, quantifier);
 	}
  }

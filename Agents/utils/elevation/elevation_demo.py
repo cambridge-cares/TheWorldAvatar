@@ -12,7 +12,7 @@
 import csv
 import elevations
 
-def outputLine(outputFile, name, lat, lon, height):
+def outputLine(outputFile, name, lat, lon, refHeight, height, absDev, relDev):
 	"""
 		Output line in CSV file.
 	"""
@@ -22,7 +22,13 @@ def outputLine(outputFile, name, lat, lon, height):
 	outputFile.write(",")
 	outputFile.write(str(lon))
 	outputFile.write(",")
+	outputFile.write(str(refHeight))
+	outputFile.write(",")
 	outputFile.write(str(height))
+	outputFile.write(",")
+	outputFile.write(str(absDev))
+	outputFile.write(",")
+	outputFile.write(str(relDev))
 	outputFile.write("\n")
 
 
@@ -34,7 +40,7 @@ CSV = "./inputs.csv"
 
 # Open file handles
 resultsFile = open("results.csv", "w")
-resultsFile.write("Name,Latitude,Longitude,Height [m]\n")
+resultsFile.write("Name,Latitude,Longitude,Ref height [m],Height [m],Absolute deviation [m],Relative deviation [%]\n")
 
 # Read the CSV
 with open(CSV, mode="r") as csvFile:
@@ -43,14 +49,19 @@ with open(CSV, mode="r") as csvFile:
 	# Read each row
 	for row in csvReader:
 		name = row["Name"]
+		refHeight = float(row["Height [m]"])
 		lat = float(row["Latitude"])
 		lon = float(row["Longitude"])
 
 		# Determine the elevations
 		height = elevations.getHeight(WMS, lat, lon)
 
+		# Calculate deviations
+		absDev = abs(refHeight - height)
+		relDev = 100.0 * abs(refHeight - height) / refHeight
+
 		# Add rows in output files
-		outputLine(height, name, lat, lon, resultsFile)
+		outputLine(resultsFile, name, lat, lon, refHeight, height, absDev, relDev)
 
 
 # Close file and finish

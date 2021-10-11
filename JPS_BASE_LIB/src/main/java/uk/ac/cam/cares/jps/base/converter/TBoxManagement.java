@@ -1,4 +1,4 @@
-package com.cmclinnovations.ontochem.model.tboxes;
+package uk.ac.cam.cares.jps.base.converter;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -33,13 +34,7 @@ import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.cmclinnovations.ontochem.model.configuration.OntoKinVocabulary;
-import com.cmclinnovations.ontochem.model.configuration.SpringConfiguration;
-import com.cmclinnovations.ontochem.model.configuration.TBoxConfiguration;
-import com.cmclinnovations.ontochem.model.exception.OntoException;
-import com.cmclinnovations.ontochem.model.exception.TBoxManagementException;
-import com.cmclinnovations.ontochem.model.utils.CtmlConverterUtils;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * This class implemented the methods that were provided in the ITBoxmanagement</br> 
@@ -51,15 +46,14 @@ import com.cmclinnovations.ontochem.model.utils.CtmlConverterUtils;
  * @author msff2
  *
  */
-public class TBoxManagement implements ITBoxManagement{
+public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	private Logger logger = org.slf4j.LoggerFactory.getLogger(TBoxManagement.class);
 	public OWLDataFactory dataFactory = OWLManager.getOWLDataFactory();
 	public OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	public OWLOntology ontology;
 	public IRI ontologyIRI;
-	public TBoxConfiguration tBoxConfig;
+	public static TBoxConfiguration tBoxConfig;
 	public static ApplicationContext applicationContext;
-	public static OntoKinVocabulary appConfigOntoKin;
 	public String SLASH = "/";
 	public String BACKSLASH = "\\";
 	public String FILE_EXT_OWL = ".owl";
@@ -68,6 +62,9 @@ public class TBoxManagement implements ITBoxManagement{
 	public static final String HTTP_PROTOCOL="http://";
 	public static final String HTTPS_PROTOCOL="https://";			
 	
+	public static final String OWL_VERSIONINFO = "versionInfo";
+	public static final String OWL_URL = "http://www.w3.org/2002/07/owl#";
+	
 	/**
 	 * Creates an OWL class using the name provided. If the name of the parent 
 	 * class is also provided, it creates the subClassOf relation as well.
@@ -75,9 +72,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param className
 	 * @param targetName
 	 * @param relation
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLClass(String className, String targetName, String relation) throws TBoxManagementException, TBoxManagementException{
+	public void createOWLClass(String className, String targetName, String relation) throws JPSRuntimeException{
 		// Checks if the class name is null or empty
 		checkClassName(className);
 		// Creates the child class.
@@ -86,12 +83,20 @@ public class TBoxManagement implements ITBoxManagement{
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
 			// Creates the target class.
 			parent = createClass(targetName);
-			if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+			if(relation.equalsIgnoreCase(tBoxConfig.getIsARelation())){
 				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(child, parent)));
-			} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+			} else if(relation.equalsIgnoreCase(tBoxConfig.getEquivalentToRelation())){
 				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentClassesAxiom(child, parent)));				
 			}
 		} else {
+			if(tBoxConfig.gettBoxIri()==null || tBoxConfig.gettBoxIri().isEmpty()){
+				logger.error("TBox IRI is not provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+				throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			}
+			if(ontology==null){
+				logger.error("TBox IRI is missing in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+				throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));				
+			}
 			ontology.add(dataFactory.getOWLDeclarationAxiom(child));
 		}
 	}
@@ -101,9 +106,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param className
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToOWLClass(String className, String definition) throws TBoxManagementException{
+	public void addDefinitionToOWLClass(String className, String definition) throws JPSRuntimeException{
 		if(definition!=null && !definition.isEmpty()){
 			// Reads the class from the ontology model. If not available, 
 			// it creates the class.
@@ -120,9 +125,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param property
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToObjectProperty(String property, String definition) throws TBoxManagementException{
+	public void addDefinitionToObjectProperty(String property, String definition) throws JPSRuntimeException{
 		if(definition!=null && !definition.isEmpty()){
 			// Reads the object property from the ontology model. If not available, 
 			// it creates the property.
@@ -139,9 +144,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param property
 	 * @param definition
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinitionToDataProperty(String property, String definition) throws TBoxManagementException{
+	public void addDefinitionToDataProperty(String property, String definition) throws JPSRuntimeException{
 		if(definition!=null && !definition.isEmpty()){
 			// Reads the data property from the ontology model. If not available, 
 			// it creates the property.
@@ -158,9 +163,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param className
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToClass(String className, String url) throws TBoxManagementException{
+	public void addDefinedByToClass(String className, String url) throws JPSRuntimeException{
 		if(url!=null && !url.isEmpty()){
 			// Reads the class from the ontology model. If not available, 
 			// it creates the class.
@@ -177,9 +182,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param property
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToObjectProperty(String property, String url) throws TBoxManagementException{
+	public void addDefinedByToObjectProperty(String property, String url) throws JPSRuntimeException{
 		if(url!=null && !url.isEmpty()){
 			// Reads the object property from the ontology model. If not available, 
 			// it creates the property.
@@ -196,9 +201,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param property
 	 * @param url
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void addDefinedByToDataProperty(String property, String url) throws TBoxManagementException{
+	public void addDefinedByToDataProperty(String property, String url) throws JPSRuntimeException{
 		if(url!=null && !url.isEmpty()){
 			// Reads the object property from the ontology model. If not available, 
 			// it creates the property.
@@ -217,10 +222,10 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param quantifier
 	 * @param domain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
 	public void addLogicalFormulaToObjectProperty(String property, String quantifier, String domain, String range)
-			throws TBoxManagementException {
+			throws JPSRuntimeException {
 		if (quantifier!=null && !quantifier.isEmpty() && domain != null && !domain.isEmpty() && range != null && !range.isEmpty()) {
 			// Reads the object property from the ontology model. If not
 			// available, it creates the property.
@@ -243,9 +248,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param objectUnionOfRanges
 	 * @param domain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, OWLObjectUnionOf objectUnionOfRanges, String domain, String range) throws TBoxManagementException {
+	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, OWLObjectUnionOf objectUnionOfRanges, String domain, String range) throws JPSRuntimeException {
 		if (range.contains("UNION")) {
 			objectUnionOfRanges = getUnionOfRange(objectProperty, range.split("UNION"));
 		}else{
@@ -271,11 +276,11 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param quantifier
 	 * @param singleDomain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
 	private void decideToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, OWLClass rangeClass,
 			OWLObjectUnionOf objectUnionOfRanges, String quantifier, String singleDomain, String range)
-			throws TBoxManagementException {
+			throws JPSRuntimeException {
 		OWLClass domainClass = createClass(singleDomain);
 		if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("only")) {
 			addUniversalQuantification(objectProperty, domainClass, rangeClass, objectUnionOfRanges, range);
@@ -357,9 +362,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param propertyName
 	 * @param domain
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws TBoxManagementException {
+	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			addDomain(dataProperty, domain);
@@ -368,9 +373,9 @@ public class TBoxManagement implements ITBoxManagement{
 			if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
 				// Creates the target property.
 				parentProperty = createDataProperty(targetName);
-				if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+				if(relation.equalsIgnoreCase(tBoxConfig.getIsARelation())){
 					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubDataPropertyOfAxiom(dataProperty, parentProperty)));
-				} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+				} else if(relation.equalsIgnoreCase(tBoxConfig.getEquivalentToRelation())){
 					manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentDataPropertiesAxiom(dataProperty, parentProperty)));				
 				}
 			}
@@ -385,9 +390,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param domain
 	 * @param range
 	 * @param quantifier
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws TBoxManagementException {
+	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
 		addDomain(objectProperty, domain, quantifier);
@@ -396,11 +401,11 @@ public class TBoxManagement implements ITBoxManagement{
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
 			// Creates the target property.
 			parentProperty = createObjectProperty(targetName);
-			if(relation.equalsIgnoreCase(appConfigOntoKin.getIsARelation())){
+			if(relation.equalsIgnoreCase(tBoxConfig.getIsARelation())){
 				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLSubObjectPropertyOfAxiom(objectProperty, parentProperty)));
-			} else if(relation.equalsIgnoreCase(appConfigOntoKin.getEquivalentToRelation())){
+			} else if(relation.equalsIgnoreCase(tBoxConfig.getEquivalentToRelation())){
 				manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLEquivalentObjectPropertiesAxiom(objectProperty, parentProperty)));				
-			} else if(relation.equalsIgnoreCase(appConfigOntoKin.getInverseOfRelation())){
+			} else if(relation.equalsIgnoreCase(tBoxConfig.getInverseOfRelation())){
 			manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLInverseObjectPropertiesAxiom(objectProperty, parentProperty)));
 			}
 		}
@@ -411,9 +416,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param domain
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLDataProperty dataProperty, String domain) throws TBoxManagementException {
+	private void addDomain(OWLDataProperty dataProperty, String domain) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -433,9 +438,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param objectProperty
 	 * @param domain
 	 * @param quantifier
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws TBoxManagementException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -453,9 +458,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param range
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addRange(OWLDataProperty dataProperty, String range) throws TBoxManagementException {
+	private void addRange(OWLDataProperty dataProperty, String range) throws JPSRuntimeException {
 		if(range==null || range.isEmpty()){
 			return;
 		}
@@ -473,9 +478,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param objectProperty
 	 * @param range
 	 * @param quantifier
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier) throws TBoxManagementException {
+	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier) throws JPSRuntimeException {
 		if(range==null || range.isEmpty()){
 			return;
 		}
@@ -493,9 +498,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addSingleClassDomain(OWLDataProperty dataProperty, String domain) throws TBoxManagementException{
+	private void addSingleClassDomain(OWLDataProperty dataProperty, String domain) throws JPSRuntimeException{
 		OWLClass owlClass = createClass(domain);
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyDomainAxiom(dataProperty, owlClass)));
@@ -506,9 +511,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addSingleClassDomain(OWLObjectProperty objectProperty, String domain) throws TBoxManagementException{
+	private void addSingleClassDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException{
 		OWLClass owlClass = createClass(domain);
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, owlClass)));
@@ -519,9 +524,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param ranges
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addSingleDataTypeRange(OWLDataProperty dataProperty, String range) throws TBoxManagementException{
+	private void addSingleDataTypeRange(OWLDataProperty dataProperty, String range) throws JPSRuntimeException{
 		if(range.trim().startsWith(HTTP_PROTOCOL) || range.trim().startsWith(HTTPS_PROTOCOL)){
 			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLDataPropertyRangeAxiom(dataProperty, dataFactory.getOWLDatatype(range))));
@@ -536,9 +541,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param ranges
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addSingleClassRange(OWLObjectProperty objectProperty, String range) throws TBoxManagementException{
+	private void addSingleClassRange(OWLObjectProperty objectProperty, String range) throws JPSRuntimeException{
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, createClass(range))));
 	}
@@ -548,9 +553,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param ranges
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws TBoxManagementException{
+	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String range: ranges){
 			owlClassExpressions.add(createClass(range));
@@ -565,9 +570,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param ranges
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLObjectUnionOf getUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws TBoxManagementException{
+	private OWLObjectUnionOf getUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String range: ranges){
 			owlClassExpressions.add(createClass(range));
@@ -580,9 +585,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param ranges
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws TBoxManagementException{
+	private void addIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String range: ranges){
 			owlClassExpressions.add(createClass(range));
@@ -596,9 +601,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws TBoxManagementException{
+	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
 			owlClassExpressions.add(createClass(domain));
@@ -613,9 +618,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLObjectUnionOf getUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws TBoxManagementException{
+	private OWLObjectUnionOf getUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
 			owlClassExpressions.add(createClass(domain));
@@ -630,9 +635,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws TBoxManagementException{
+	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
 			owlClassExpressions.add(createClass(domain));
@@ -646,9 +651,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfDomain(OWLDataProperty dataProperty, String[] domains) throws TBoxManagementException{
+	private void addUnionOfDomain(OWLDataProperty dataProperty, String[] domains) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
 			owlClassExpressions.add(createClass(domain));
@@ -662,9 +667,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param dataProperty
 	 * @param domains
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addIntersectionOfDomain(OWLDataProperty dataProperty, String[] domains) throws TBoxManagementException{
+	private void addIntersectionOfDomain(OWLDataProperty dataProperty, String[] domains) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
 			owlClassExpressions.add(createClass(domain));
@@ -704,9 +709,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param className
 	 * @return
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLClass createClass(String className) throws TBoxManagementException{
+	private OWLClass createClass(String className) throws JPSRuntimeException{
 		String[] classLabels;
 		if(className.contains(",")){
 			classLabels = className.split(",");			
@@ -722,9 +727,17 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param classLabels
 	 * @return
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLClass createClass(String[] classLabels) throws TBoxManagementException{
+	private OWLClass createClass(String[] classLabels) throws JPSRuntimeException{
+		if(tBoxConfig.gettBoxIri()==null || tBoxConfig.gettBoxIri().isEmpty()){
+			logger.error("TBox IRI is not provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+		}
+		if(ontology==null){
+			logger.error("TBox IRI is missing in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));				
+		}
 		OWLClass classInOwl = null;
 		int labelSequence = 0;
 		for (String classLabel : classLabels) {
@@ -747,9 +760,17 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param propertyLabel
 	 * @return
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLDataProperty createDataProperty(String propertyLabel) throws TBoxManagementException {
+	private OWLDataProperty createDataProperty(String propertyLabel) throws JPSRuntimeException {
+		if(tBoxConfig.gettBoxIri()==null || tBoxConfig.gettBoxIri().isEmpty()){
+			logger.error("TBox IRI is not provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+		}
+		if(ontology==null){
+			logger.error("TBox IRI is missing in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));				
+		}
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
@@ -763,9 +784,17 @@ public class TBoxManagement implements ITBoxManagement{
 	 * 
 	 * @param propertyLabel
 	 * @return
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private OWLObjectProperty createObjectProperty(String propertyLabel) throws TBoxManagementException {
+	private OWLObjectProperty createObjectProperty(String propertyLabel) throws JPSRuntimeException {
+		if(tBoxConfig.gettBoxIri()==null || tBoxConfig.gettBoxIri().isEmpty()){
+			logger.error("TBox IRI is not provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+		}
+		if(ontology==null){
+			logger.error("TBox IRI is missing in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));
+			throw new JPSRuntimeException("TBox IRI must be provided in the following CSV template file: "+owlFilePath.replace(".owl", ".csv"));				
+		}
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
@@ -778,16 +807,16 @@ public class TBoxManagement implements ITBoxManagement{
 	 * same is empty. 
 	 * 
 	 * @param className
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkClassName(String className) throws TBoxManagementException{
+	private void checkClassName(String className) throws JPSRuntimeException{
 		if(className==null){
 			logger.error("Class name is null.");
-			throw new TBoxManagementException("Class name is null.");
+			throw new JPSRuntimeException("Class name is null.");
 		}
 		if(className.isEmpty()){
 			logger.error("Class name is empty.");
-			throw new TBoxManagementException("Class name is empty.");
+			throw new JPSRuntimeException("Class name is empty.");
 		}		
 	}
  
@@ -796,36 +825,48 @@ public class TBoxManagement implements ITBoxManagement{
 	 * same is empty. 
 	 * 
 	 * @param className
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void checkPropertyName(String propertyName) throws TBoxManagementException{
+	private void checkPropertyName(String propertyName) throws JPSRuntimeException{
 		if(propertyName==null){
 			logger.error("Property name is null.");
-			throw new TBoxManagementException("Property name is null.");
+			throw new JPSRuntimeException("Property name is null.");
 		}
 		if(propertyName.isEmpty()){
 			logger.error("Property name is empty.");
-			throw new TBoxManagementException("Property name is empty.");
+			throw new JPSRuntimeException("Property name is empty.");
 		}		
 	}
 	
-	public void init() throws TBoxManagementException, OWLOntologyCreationException{
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (appConfigOntoKin == null) {
-			appConfigOntoKin = applicationContext.getBean(OntoKinVocabulary.class);
-		}
-		if (tBoxConfig == null) {
-			tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
-		}
+	/**
+	 * Initialise variables for reading configuration properties.
+	 */
+	public void init() throws JPSRuntimeException, OWLOntologyCreationException{
+		applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
+	}
+	
+	/**
+	 * Instantiates the ontology model after reading the TBox IRI from the CSV template.
+	 * 
+	 * @throws OWLOntologyCreationException
+	 */
+	public void instantiateOntologyModel() throws OWLOntologyCreationException{
 		if(ontologyIRI==null){
+			if(tBoxConfig.gettBoxIri()==null || tBoxConfig.gettBoxIri().isEmpty()){
+				logger.error("TBox IRI must be provided.");
+				throw new JPSRuntimeException("TBox IRI must be provided.");				
+			}
+			if(!(new UrlValidator().isValid(tBoxConfig.gettBoxIri()))){
+				logger.error("Provided TBox IRI is not a valid:"+tBoxConfig.gettBoxIri());
+				throw new JPSRuntimeException("Provided TBox IRI is not a valid:"+tBoxConfig.gettBoxIri());				
+			}
 			ontologyIRI = IRI.create(tBoxConfig.gettBoxIri());
 		}
 		ontology = manager.createOntology(ontologyIRI);
 		if (ontology == null) {
 			logger.error("The requested ontology could not be created.");
-			throw new TBoxManagementException("Ontology could not be created.");
+			throw new JPSRuntimeException("Ontology could not be created.");
 		}
 	}
 	
@@ -838,13 +879,10 @@ public class TBoxManagement implements ITBoxManagement{
 					|| getOntologyFileNameFromIri(tBoxConfig.gettBoxIri()).isEmpty()){
 				throw new OWLOntologyStorageException("Invalid TBox file name provided.");
 			}
-			File file = new File(
-					System.getProperty("user.dir").concat(File.separator)
-							.concat(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())));
+			File file = new File(owlFilePath);
 			// Adding metadata to the ontology.
 			representOntologyMetadata();
 			// Adding import statements to the ontology.
-			// Adds the import clause to the OntoChem ABox
 			if(tBoxConfig.gettBoxImport()!=null && tBoxConfig.gettBoxImport().length()>HTTP_PROTOCOL.length()){
 				for(String ontologyBeingImported:tBoxConfig.gettBoxImport().split(",")){
 					if(ontologyBeingImported.trim().startsWith(HTTP_PROTOCOL) || ontologyBeingImported.trim().startsWith(HTTPS_PROTOCOL)){
@@ -854,14 +892,12 @@ public class TBoxManagement implements ITBoxManagement{
 				}
 			}
 			manager.saveOntology(ontology, manager.getOntologyFormat(ontology), IRI.create(file.toURI()));
-			logger.info("The TBox has been saved under the path "
-					+ System.getProperty("user.dir").concat(File.separator)
-					.concat(getOntologyFileNameFromIri(tBoxConfig.gettBoxIri())));
+			logger.info("The TBox has been saved at the path of " + owlFilePath);
 		} catch (OWLOntologyStorageException e) {
 			logger.error("The ontology could not be saved.");
 			e.printStackTrace();
 			throw new OWLOntologyStorageException("The ontology could not be saved.");
-		} catch (TBoxManagementException e){
+		} catch (JPSRuntimeException e){
 			logger.error("The ontology-code commit hash could not be retrieved.");
 			e.printStackTrace();
 			throw new OWLOntologyStorageException("The ontology-code commit hash could not be retrieved.");			
@@ -876,9 +912,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param iri
 	 * @param propertyValue
 	 * @param individialName
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addDataProperty(IRI iri, String propertyValue, String individialName) throws TBoxManagementException {
+	private void addDataProperty(IRI iri, String propertyValue, String individialName) throws JPSRuntimeException {
 		// Reads the data property from the OWL API data factory
 		OWLDataProperty identifierProperty = dataFactory.getOWLDataProperty(iri);
 		addDataProperty(identifierProperty, propertyValue, individialName);
@@ -890,9 +926,9 @@ public class TBoxManagement implements ITBoxManagement{
 	 * @param identifierProperty
 	 * @param propertyValue
 	 * @param individialName
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void addDataProperty(OWLDataProperty identifierProperty, String propertyValue, String individialName) throws TBoxManagementException {
+	private void addDataProperty(OWLDataProperty identifierProperty, String propertyValue, String individialName) throws JPSRuntimeException {
 		OWLLiteral literal = createOWLLiteral(dataFactory, propertyValue);
 		OWLIndividual individual = dataFactory
 				.getOWLNamedIndividual(ontologyIRI.toString().concat("#").concat(individialName));
@@ -907,9 +943,9 @@ public class TBoxManagement implements ITBoxManagement{
 	/**
 	 * Represents metadata of the ontology.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void representOntologyMetadata() throws TBoxManagementException{
+	private void representOntologyMetadata() throws JPSRuntimeException{
 		representComment();
 		representDateOfGeneration();
 		representVersion();
@@ -919,9 +955,9 @@ public class TBoxManagement implements ITBoxManagement{
 	/**
 	 * Represents a comment about the ontology.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void representComment() throws TBoxManagementException{
+	private void representComment() throws JPSRuntimeException{
 		String comment = tBoxConfig.gettBoxComment();
 		if (comment != null && !comment.isEmpty()) {
 			OWLLiteral commentValue = dataFactory.getOWLLiteral(comment);
@@ -934,15 +970,15 @@ public class TBoxManagement implements ITBoxManagement{
 	/**
 	 * Represents the current commit hash using OWL.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void representCommitHash() throws TBoxManagementException{
+	private void representCommitHash() throws JPSRuntimeException{
 		//String commitHash = CtmlConverterUtils.gitCommitHash();
 		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
 			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
-					.gettBoxIri().concat("#").concat(appConfigOntoKin.getCompChemGitCommitHash())));
+					.gettBoxIri().concat("#").concat(tBoxConfig.getCompChemGitCommitHash())));
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
 		}
@@ -951,13 +987,13 @@ public class TBoxManagement implements ITBoxManagement{
 	/**
 	 * Represents the current version of the ontology.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void representVersion() throws TBoxManagementException{
+	private void representVersion() throws JPSRuntimeException{
 		String version = tBoxConfig.gettBoxVersion();
 		if (version != null && !version.isEmpty()) {
 			OWLLiteral versionValue = dataFactory.getOWLLiteral(version);
-			OWLAnnotationProperty versionProperty = dataFactory.getOWLAnnotationProperty(CtmlConverterUtils.OWL_URL.concat(CtmlConverterUtils.OWL_VERSIONINFO));
+			OWLAnnotationProperty versionProperty = dataFactory.getOWLAnnotationProperty(OWL_URL.concat(OWL_VERSIONINFO));
 			OWLAnnotation versionAttributeWithValue = dataFactory.getOWLAnnotation(versionProperty, versionValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, versionAttributeWithValue));
 		}
@@ -966,10 +1002,10 @@ public class TBoxManagement implements ITBoxManagement{
 	/**
 	 * Represents the date on which the ontological TBox is generated from the excel template.
 	 * 
-	 * @throws TBoxManagementException
+	 * @throws JPSRuntimeException
 	 */
-	private void representDateOfGeneration() throws TBoxManagementException{
-		String date = appConfigOntoKin.getAnnotationPropertyDate();
+	private void representDateOfGeneration() throws JPSRuntimeException{
+		String date = tBoxConfig.getAnnotationPropertyDate();
 		if (date != null && !date.isEmpty()) {
 			OWLLiteral dateValue = dataFactory.getOWLLiteral(getCurrentDate());
 			OWLAnnotationProperty dateProperty = dataFactory.getOWLAnnotationProperty(date);
