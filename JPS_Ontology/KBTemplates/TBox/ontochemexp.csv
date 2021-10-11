@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoChemExp,TBox,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoChemExp,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoChemExp,TBox,OntoChemExp is an ontology developed for representing chemical experiments.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoChemExp,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 Experiment,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 Copyright,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
 BibliographyLink,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,EQUIVALENT-TO,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl

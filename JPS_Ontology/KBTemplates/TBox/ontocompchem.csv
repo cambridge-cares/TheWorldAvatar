@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+ontocompchem,TBox,http://theworldavatar.com/ontology/ontocompchem/ontocompchem.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+ontocompchem,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+ontocompchem,TBox,An ontology defined for representing computational calculations of species.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+ontocompchem,TBox,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl,http://www.w3.org/2002/07/owl#imports,,,,,,
 http://purl.org/gc/AuxiliaryConcept,Class,,,,,,A generic class representing Auxiliary concepts.,,
 http://purl.org/gc/Value,Class,http://purl.org/gc/AuxiliaryConcept,IS-A,,,,This is super class for the expression of various types of values.,http://ontologies.makolab.com/gc/,
 http://purl.org/gc/FloatValue,Class,http://purl.org/gc/Value,IS-A,,,,"A class for float value, containing value and unit.",http://ontologies.makolab.com/gc/,
