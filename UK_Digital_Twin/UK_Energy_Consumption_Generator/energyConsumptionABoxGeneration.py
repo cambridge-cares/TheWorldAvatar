@@ -10,7 +10,7 @@ import owlready2
 import numpy as np
 from rdflib.extras.infixowl import OWL_NS
 from rdflib import Graph, URIRef, Literal, ConjunctiveGraph
-from rdflib.namespace import RDF, XSD
+from rdflib.namespace import RDF, XSD, RDFS
 from rdflib.plugins.sleepycat import Sleepycat
 from rdflib.store import NO_STORE, VALID_STORE
 import sys
@@ -94,6 +94,7 @@ def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, *co
             # Add connection between its father node
             graph.add((URIRef(ec_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
                         URIRef(UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION))))
+            graph.add((URIRef(UKDT.nodeURIGenerator(3, dt.energyConsumption, engconsump.VERSION)), RDFS.label, Literal("UK_Energy_Consumption_" + str(engconsump.VERSION))))
         elif len(counter) > 1: # local node
             print('Local node name is: ' + elecConData[0].strip('\n'))
             ec_root_node = root_uri + SLASH + elecConDataArrays[counter[1]][0].strip('\n') + OWL + HASH + elecConData[0].strip('\n') # sub node of the graph identifying the local node
@@ -215,9 +216,6 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
             assert sl == VALID_STORE, "The underlying sleepycat store is corrupt"
     
     engconsump, elecConDataArrays, root_uri, fileNum = createEnergyConsumptionDataPropertyInstance(version)  
-    # print(elecConDataArrays)
-    #print(type(elecConDataArrays))
-    # print("The element of the list is of type of: ", type(elecConDataArrays[1]))
     
     # check the data file header
     if elecConDataArrays[0] == engconsump.headerElectricityConsumption:

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 June 2021         #
+# Last Update Date: 08 Oct 2021          #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
@@ -43,10 +43,10 @@ class UKEbusModel:
     PDGENKey = "Pd_Gen_"
     GDGENKey = "Gd_Gen_"
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
-        self.location = 'http://dbpedia.org/resource/United_Kingdom'
+        self.location = Location
         self.BUS = None
         self.TYPE = 1
         self.PD_INPUT = None
@@ -97,10 +97,10 @@ class UKElineModel:
     ANGMINKey = "AngleMin_"
     ANGMAXKey = "AngleMax_"
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
-        self.location = 'http://dbpedia.org/resource/United_Kingdom'
+        self.location =  Location
         self.FROMBUS = None
         self.TOBUS = None
         self.R = None
@@ -153,10 +153,10 @@ class UKEGenModel:
     APFKey = "APF_"
     
     
-    def __init__(self, DUKESVersion = 2019, numOfBus = 10):
+    def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
-        self.location = 'http://dbpedia.org/resource/United_Kingdom'
+        self.location = Location
         self.BUS = None
         self.PG_INPUT = None
         self.QG_INPUT = 0
@@ -194,9 +194,9 @@ class UKEGenModel_CostFunc(UKEGenModel):
     genCost_cKey = "genCostcn-2_c_"
     
     """Initialise the cost function"""
-    def __init__(self, DUKESVersion = 2019, CarbonTax = 16): # 2019 base world UK carbon tax is £16/tCO2 eq.
+    def __init__(self, DUKESVersion = 2019, CarbonTax = 16, Location = 'http://dbpedia.org/resource/United_Kingdom'): # 2019 base world UK carbon tax is £16/tCO2 eq.
             self.DUKESVersion = DUKESVersion
-            self.location = 'http://dbpedia.org/resource/United_Kingdom'
+            self.location = Location
             self.MODEL = 2
             self.STARTUP = 0
             self.SHUTDOWN = 0

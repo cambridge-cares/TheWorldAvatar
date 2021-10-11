@@ -62,6 +62,7 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
     PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoeip_system_requirement: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_requirement.owl#>
     SELECT DISTINCT ?EGen ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?PrimaryFuel
     WHERE
     {
@@ -74,6 +75,7 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
      
     ?EGen rdf:type ontopowsys_PowSysRealization:PowerGenerator .
     ?EGen ontocape_upper_level_system:isExclusivelySubsystemOf ?PowerGenerator .
+    ?PowerGenerator rdf:type ontoeip_powerplant:PowerGenerator .
     
     ?EGen ontopowsys_PowSysPerformance:hasFixedMaintenanceCost/ ontocape_upper_level_system:hasValue ?v_FixedMO .
     ?v_FixedMO ontocape_upper_level_system:numericalValue ?FixedMO .
@@ -91,8 +93,9 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
     ?PowerGeneration_EGen meta_model_topology:isConnectedTo ?Bus .
     
     ?PowerPlant ontoecape_technical_system:hasRealizationAspect ?PowerGenerator .
-    ?PowerPlant ontoecape_technical_system:hasRequirementsAspect/ontocape_upper_level_system:hasValue ?v_capa .
-    ?v_capa ontocape_upper_level_system:numericalValue ?Capacity .
+    ?PowerPlant ontoecape_technical_system:hasRequirementsAspect ?pp_capa .
+    ?pp_capa rdf:type ontoeip_system_requirement:DesignCapacity .
+    ?pp_capa ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Capacity .
     
     ?PowerGenerator ontoecape_technical_system:realizes/ontoeip_powerplant:consumesPrimaryFuel ?PrimaryFuel .
     }
@@ -122,10 +125,20 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
         PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
         PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
         PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+        PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+        PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
         PREFIX meta_model_topology: <http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>
         SELECT DISTINCT ?EGen ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus
         WHERE
         {
+            
+        ?Topology rdf:type ontocape_network_system:NetworkSystem .
+        ?Topology rdfs:label ?label .
+        FILTER regex(?label, "%s") .
+        ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerGeneration_EGen .
+        ?PowerGeneration_EGen rdf:type ontopowsys_PowSysFunction:PowerGeneration .
+        ?PowerGeneration_EGen ontoecape_technical_system:isRealizedBy ?EGen .    
+            
         ?EGen rdf:type ontopowsys_PowSysRealization:PowerGenerator .
         ?EGen ontocape_upper_level_system:isExclusivelySubsystemOf ?PowerGenerator .
         
@@ -144,7 +157,7 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
         ?PowerGeneration_EGen ontoecape_technical_system:isRealizedBy ?EGen .
         ?PowerGeneration_EGen meta_model_topology:isConnectedTo ?Bus .
         }
-        """
+        """% label
         qres = list(egen_cg.query(queryStr_Egen))
         egen_cg.close()
         
@@ -187,29 +200,49 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
             return None      
 
 # query the total electricity consumption of a UK official region 
-def queryRegionalElecConsumption(energyConsumption_Endpoint, consumption_Sleepycat, localQuery):
+def queryRegionalElecConsumption(endPoint_label, numOfBus, startTime_of_EnergyConsumption, consumption_Sleepycat, localQuery):
     queryStr = """
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    SELECT DISTINCT ?TotalELecConsumption
-    WHERE
-    {
-    ?Region ontocape_upper_level_system:hasAddress/rdf:type <https://dbpedia.org/ontology/Region> .
-    ?Region ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
+    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    SELECT DISTINCT  ?v_TotalELecConsumption
+    WHERE 
+    {   
+    ?Topology rdf:type ontocape_network_system:NetworkSystem .
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?Bus_node .
+    ?Bus_node rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?Bus_node ontocape_upper_level_system:hasAddress ?RegionName .
+    ?RegionName rdf:type <https://dbpedia.org/ontology/Region> .   
+    
+    ?Region ontoeip_system_function:consumes ?Total_ele_consumption . 
+    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
+    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
+    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+    
+    ?Region ontocape_upper_level_system:hasAddress ?RegionName .
+    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
     }
-    """
+    """% (numOfBus, startTime_of_EnergyConsumption)
     global qres
     
-    if localQuery == False and energyConsumption_Endpoint != None: 
+    if localQuery == False and endPoint_label != None: 
         print('remoteQuery')
-        res = json.loads(performQuery(energyConsumption_Endpoint, queryStr))
+        res = json.loads(performQuery(endPoint_label, queryStr))
         print('query is done')
         regionalConsumption = []
         for r in res: 
-            regionalConsumption.append(float(r['TotalELecConsumption']))           
+            regionalConsumption.append(float(r['v_TotalELecConsumption']))           
     elif consumption_Sleepycat != None and localQuery == True:  
         dt_cg = ConjunctiveGraph('Sleepycat')
         sl = dt_cg.open(consumption_Sleepycat, create = False)
@@ -268,7 +301,96 @@ def queryEBusandRegionalDemand(numOfBus, topo_Consumption_SleepycatPath, localQu
             return None        
         qres = list(ebus_cg.query(queryStr))
         ebus_cg.close()
-    return qres      
+    return qres 
+
+
+# Query the total consumption of the regions
+def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+	PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
+    SELECT DISTINCT  ?Region ?TotalELecConsumption 
+    WHERE
+    {
+    
+    ?Region rdf:type <https://dbpedia.org/ontology/Region> .    
+    ?place ontocape_upper_level_system:hasAddress ?Region .
+    ?place ontoeip_system_function:consumes ?regionalConsumption . 
+    ?regionalConsumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
+    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
+    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+    ?regionalConsumption ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
+    }
+    """ % startTime_of_EnergyConsumption  
+    global qres
+    if localQuery == False and len(endPoint_label) > 0:
+       print('remoteQuery')     
+       res = json.loads(performQuery(endPoint_label, queryStr)) 
+       return res            
+       # qres = [[ str(r['Region']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
+    elif topo_Consumption_SleepycatPath != None and localQuery == True:  
+        ebus_cg = ConjunctiveGraph('Sleepycat')
+        sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK topology sleepycat store')
+            return None        
+        qres = list(ebus_cg.query(queryStr))
+        ebus_cg.close()
+    return qres 
+         
+# query the total electricity consumption of each address area
+def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, endPoint_label):    
+    queryStr = """  
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+	PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
+    SELECT DISTINCT  ?AddressArea ?TotalELecConsumption 
+    WHERE
+    {   
+    ?AddressArea rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .    
+    ?place ontocape_upper_level_system:hasAddress ?AddressArea .
+    ?place ontoeip_system_function:consumes ?regionalConsumption . 
+    ?regionalConsumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+    ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
+    ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
+    ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
+    ?regionalConsumption ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
+    }""" % startTime_of_EnergyConsumption  
+    global qres
+    if localQuery == False and len(endPoint_label) > 0:
+       print('remoteQuery')     
+       res = json.loads(performQuery(endPoint_label, queryStr)) 
+       return res            
+       # qres = [[ str(r['Region']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
+    elif topo_Consumption_SleepycatPath != None and localQuery == True:  
+        ebus_cg = ConjunctiveGraph('Sleepycat')
+        sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
+        if sl == NO_STORE:
+            print('Cannot find the UK topology sleepycat store')
+            return None        
+        qres = list(ebus_cg.query(queryStr))
+        ebus_cg.close()
+    return qres   
 
 ###############ELine#############
 # queryStr_busConnectionAndLength: query ELine iri and its From_Bus, To_Bus and the Length_ELine.
@@ -360,8 +482,10 @@ if __name__ == '__main__':
     # sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
-    # res = queryRegionalElecConsumption('ukenergyconsumptionkg', None, False)
-    res = queryELineTopologicalInformation(10, 'ukdigitaltwin', None, False)
+    # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
+    # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
+    res = queryElectricityConsumption_LocalArea("2017-01-31", None, False, 'ukdigitaltwin')
+    # res = queryELineTopologicalInformation(10, 'ukdigitaltwin', None, False)
    
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])

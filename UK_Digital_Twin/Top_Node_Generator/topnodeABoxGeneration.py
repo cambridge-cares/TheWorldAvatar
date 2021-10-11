@@ -164,7 +164,10 @@ def addThirdLevelNode(graph):
     graph.add((URIRef(Third_Level_Node["UKPowerPlant2019"]), RDFS.label, Literal(str("UKPowerPlant2019"))))
     
     graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDF.type, URIRef(ontocape_upper_level_system.CompositeSystem.iri)))
-    graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDFS.label, Literal(str("UKEnergyConsumption2017"))))
+    # graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2017"]), RDFS.label, Literal(str("UKEnergyConsumption2017"))))
+    
+    graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2019"]), RDF.type, URIRef(ontocape_upper_level_system.CompositeSystem.iri)))
+    # graph.add((URIRef(Third_Level_Node["UKEnergyConsumption2019"]), RDFS.label, Literal(str("UKEnergyConsumption2019"))))
     
     #################### To be discard, has been assigned in the topology creator ####################
     graph.add((URIRef(Third_Level_Node["UKTopology10Bus"]), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri))) 

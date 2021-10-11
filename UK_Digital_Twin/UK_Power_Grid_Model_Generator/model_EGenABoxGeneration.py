@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 24 Sept 2021         #
+# Last Update Date: 08 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -59,7 +59,6 @@ uk_topo = UK_Topo.UKPowerGridTopology()
 ukec = UKec.UKEnergyConsumption()
 
 """Remote Endpoint lable and queryendpoint_iri"""
-UKDigitalTwin_Endpoint = dt.endpoint['lable']
 powerPlant_Endpoint = ukpp.endpoint['lable']
 topology_Endpoint = uk_topo.endpoint['lable']
 energyConsumption_Endpoint = ukec.endpoint['lable']
@@ -101,7 +100,7 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return   
@@ -137,10 +136,11 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTa
         print('EGenInfo is empty')
         return None
     
-    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, localQuery)
-    # location = query_model.queryDigitalTwinLocation(UKDigitalTwin_Endpoint, dt.SleepycatStoragePath, localQuery)
-    location = query_model.queryDigitalTwinLocation(endpoint_label, dt.SleepycatStoragePath, localQuery)
+    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, numOfBus, startTime_of_EnergyConsumption, localQuery)
     
+    # TODO: The location should be the address of the top node UK digital twin which should be specified in the level one when the power plant instance being created 
+    #  location = query_model.queryDigitalTwinLocation(endpoint_label, dt.SleepycatStoragePath, localQuery)  
+    location = 'http://dbpedia.org/resource/United_Kingdom'
     for egen in EGenInfo:         
     # if EGenInfo[0] != None: # test
     #     egen = EGenInfo[0] # test
@@ -164,15 +164,15 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTa
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'GeneratorModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
-        g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem .iri), URIRef(root_node)))
+        g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
         # link with EGen node in topology
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(egen[0])))
         g.add((URIRef(egen[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
         
         ###add cost function parameters###
         # calculate a, b, c
-        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax)
-        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location,  localQuery)
+        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax) # declear an instance of the UKEGenModel_CostFunc
+        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location, localQuery)
         
         if uk_egen_costFunc != None:
             pass
@@ -198,7 +198,7 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTa
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
         ###add EGen model parametor###
-        uk_egen_model_ = UK_PG.UKEGenModel(version = version_of_DUKES)
+        uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
         uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, egen)
         
         if uk_egen_model_ != None:
@@ -254,9 +254,9 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, numOfBus, CarbonTa
         if updateLocalOWLFile == True: 
             # Store/update the generated owl files      
             if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' + 'Model_' + node_locator + OWL
+                filepath_ = filepath + '\\' + str(numOfBus) + '_Bus_Model_' + node_locator + OWL
             else:
-                filepath_ = filepath + 'Model_' + node_locator + OWL
+                filepath_ = filepath + str(numOfBus) + '_Bus_Model_'+ node_locator + OWL
             storeGeneratedOWLs(g, filepath_)
 
     if isinstance(store, Sleepycat):  
@@ -287,18 +287,17 @@ def initialiseEGenModelVar(EGen_Model, egen):
     return EGen_Model
 
 """Calculate the sum of capacity and total demanding"""
-def capa_demand_ratio_calculator(EGenInfo, localQuery):
+def capa_demand_ratio_calculator(EGenInfo, numOfBus, startTime_of_EnergyConsumption, localQuery):
     sum_of_capa = 0
     for eg in EGenInfo:
         sum_of_capa += eg[7]
     print('sum_of_capa is: ', sum_of_capa)
-    # total_demand = sum(query_model.queryRegionalElecConsumption(energyConsumption_Endpoint, topoAndConsumpPath_Sleepycat, localQuery)) * 1000 / (24 * 365) 
-    total_demand = sum(query_model.queryRegionalElecConsumption(endpoint_label, topoAndConsumpPath_Sleepycat, localQuery)) * 1000 / (24 * 365) 
+    total_demand = sum(query_model.queryRegionalElecConsumption(endpoint_label, numOfBus, startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery)) * 1000 / (24 * 365) 
     print('total_demand is: ', total_demand)
     capa_demand_ratio = total_demand/sum_of_capa
+    print('capa_demand_ratio is: ', capa_demand_ratio)
     return capa_demand_ratio
 
-
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, None, False)    
+    createModel_EGen('default', False, 2019, "2017-01-31", 10, 50, None, True)    
     print('Terminated')

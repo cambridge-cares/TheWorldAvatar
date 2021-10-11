@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 23 Sept 2021         #
+# Last Update Date: 11 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -23,9 +23,12 @@ from UK_Digital_Twin_Package import UKPowerGridTopology as UK_Topo
 from UK_Digital_Twin_Package import UKEnergyConsumption as UKec
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
+from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryBusTopologicalInformation
 from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+from UK_Digital_Twin_Package import demandLoadAllocator as DLA
+
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -82,7 +85,7 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, OWLFileStoragePath, updateLocalOWLFile = True):
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
@@ -112,17 +115,37 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, OWLFileS
     else:
         topoAndConsumpPath_Sleepycat = None
         print('Store is IOMemery')
-    # TODO: add load clustering    
+        
+        
+    # TODO: add load clustering  
+    # Query the bus loaction
+    res_queryBusLocation = list(queryBusTopologicalInformation(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label)) # this query reused the one for creating topology
+    # Query the local electricity consumption for both region and local areas
+    res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption,topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
+    res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
+    
+    # create an instance of class demandLoadAllocator
+    dla = DLA.demandLoadAllocator()
+    # get the load allocation method via getattr function 
+    allocator = getattr(dla, loadAllocatorName)
+    # pass the arrguments to the cluster method
+    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea)
+    
+    
+    
+    
+    
+    
     EBus = list(query_model.queryEBusandRegionalDemand(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
     EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
     
-    if EBus == None:
-        print('EBus is empty')
+    if EBus_Load_List == None:
+        print('EBus_Load_List is empty')
         return None
     
-    for ebus in EBus:         
-    # if EBus[0] != None: # test
-    #     ebus = EBus[0] # test
+    for ebus in EBus_Load_List:         
+    # if EBus_Load_List[0] != None: # test
+    #     ebus = EBus_Load_List[0] # test
     
         print('################START createModel_EBus#################')
         root_uri = ebus[0].split('#')[0]

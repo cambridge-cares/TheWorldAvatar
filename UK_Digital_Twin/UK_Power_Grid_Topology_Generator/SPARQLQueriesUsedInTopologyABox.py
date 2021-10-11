@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 23 June 2021         #
+# Last Update Date: 06 Oct 2021          #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Topology A-boxes"""
@@ -95,7 +95,7 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
     ?GPS_x_coordinate_Bus  system:numericalValue ?Bus_lat .
     ?GPS_y_coordinate_Bus  system:numericalValue ?Bus_lon .    
     }
-    """%label 
+    """ %label 
     #GRAPH ?g { ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .}
 
     global qres
@@ -113,19 +113,8 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
         res = ConjunctiveGraph.query(queryStr)
         qres = [[ str(r[0]), str(r[1]), float(r[2]), float(r[3]) ] for r in res]  
         return qres
-    
-    # # check one region has at most one bus
-    # region = [ r[1] for r in qres]
-    # # duplicatesOfRegion = [ region[i] for i in range(len(region)) if i == region.index(region[i])]
-    # duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
-    
-    # if len(duplicatesOfRegion) > 0:
-    #     print("The duplicatesOfRegion are: ", duplicatesOfRegion)
-    #     raise Exception("Sorry, more than one buses located in the same region. This cluster principle cannot deal with this situation.")
-    
-    
 
-# query the iri of PowerGenerator of a power plant located in a specified location as well as its PrimaryFuel and GenerationTechnology
+# query all PowerGenerators and their located region, latitude, longitude, PrimaryFuel and GenerationTechnology
 def queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endPoint_label):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
