@@ -1,6 +1,7 @@
 from spiral import ronin
 import requests
 import json
+import logging
 import rdflib
 
 class GeoAttrFinder():
@@ -37,7 +38,7 @@ class GeoAttrFinder():
     '''
     Get all coordinates for geoNames contained in the instanceName if it is a geo name
     input instancename, string
-    output 
+    output
     '''
     def getCoordiIfGeoname(self, instanceName,country):
         if instanceName is None:
@@ -51,9 +52,12 @@ class GeoAttrFinder():
             if token in self.geoNameDict:  #already in pre-saved
                 #geoVs.extend(self.geoNameDict[token])
                 coordi = self.featureSelect(self.geoNameDict[token])
-                geoVs.extend((float(coordi[0]), float(coordi[1])))
+                if len(coordi) >= 2:
+                    geoVs.extend((float(coordi[0]), float(coordi[1])))
+                else:
+                    logging.warning('empty coordinates for token=%s, instanceName=%s', token, instanceName)
 
-            ''' 
+            '''
             else:
                 newVs = self.requestGeonameSingleToken(token, country)
                 if newVs is not None:

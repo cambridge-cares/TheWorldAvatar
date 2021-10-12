@@ -8,13 +8,14 @@ import rdflib.namespace
 from tqdm import tqdm
 
 import knowledge.geocoding
+import knowledge.geoNames
 from matchManager import matchManager
 from ontologyWrapper import Ontology
 
 
 class Agent():
 
-    def load(self, srcaddr, tgtaddr, add_knowledge=False, dump_ontology=False):
+    def load(self, srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False):
 
         logging.info('loading ontology for %s', srcaddr)
         if srcaddr.endswith('.pkl'):
@@ -53,7 +54,7 @@ class Agent():
         onto = get_ontology(tmp_file).load()
         return onto
 
-    def load_rdflib_graph(self, addr, add_knowledge=False):
+    def load_rdflib_graph(self, addr, add_knowledge=None):
 
         frmt = 'xml'
         if addr.endswith('.ttl'):
@@ -63,7 +64,7 @@ class Agent():
         graph.parse(addr, format=frmt)
         if add_knowledge:
             logging.info('adding knowledge for %s', addr)
-            self.add_knowledge_fct(graph)
+            self.add_knowledge_fct(graph, add_knowledge)
             logging.info('finished adding knowledge for %s', addr)
         return graph
 
@@ -75,7 +76,7 @@ class Agent():
         with open(pklname,'wb') as file:
             pickle.dump(onto, file, -1)
 
-    def add_knowledge_fct(self, graph):
+    def add_knowledge_fct(self, graph, agent_name):
 
         query = '''
         SELECT DISTINCT ?pred
@@ -111,12 +112,20 @@ class Agent():
             ?subj a owl:NamedIndividual .
         }'''
 
-        geocoding_agent = knowledge.geocoding.Agent()
+        if agent_name == 'knowledge.geocoding':
+            geocoding_agent = knowledge.geocoding.Agent()
+        elif agent_name == 'knowledge.geoNames':
+            geocoding_agent = knowledge.geoNames.Agent()
+        else:
+            logging.error('not found geocoding agent with name=%s', agent_name)
+
         geo = rdflib.Namespace('http://www.w3.org/2003/01/geo/wgs84_pos#')
         graph.bind('geo', geo )
 
+        count_total = 0
         count_geo = 0
         for row in tqdm(graph.query(query)):
+            count_total += 1
             #print(row.subj.n3())
             address = graph.triples((row.subj, rdflib.SDO['address'], None))
             address = [obj for _, _, obj in address][0]
@@ -133,8 +142,9 @@ class Agent():
                     zipcode = obj
 
             if location or zipcode:
-                latitude, longitude = geocoding_agent.query(location, zipcode)
-                #print('coord=', lat, long)
+                #latitude, longitude = geocoding_agent.query(location, zipcode)
+                latitude, longitude = geocoding_agent.query(location, None)
+                #print('coord=', latitude, longitude)
                 if latitude and longitude:
 
                     latitude = rdflib.Literal(latitude, datatype=rdflib.namespace.XSD.float)
@@ -146,7 +156,7 @@ class Agent():
                     #print('no coordinates found for ', row.subj.n3())
                     pass
 
-        logging.info('finished adding geographic coordinates, enhanced individuals=%s', count_geo)
+        logging.info('finished adding geographic coordinates, enhanced individuals=%s, total individuals=%s', count_geo, count_total)
 
     def start(self, params, penalize):
 
@@ -169,6 +179,7 @@ class Agent():
             params_blocking = params['blocking']
 
             # TODO-AE move more config params to dictionary / config file
+            # TODO-AE configuration of useAttrFinder
             match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
                     weight=match_weights, paras=additional_match_params,
                     matchIndividuals=True, penalize=penalize, useAttrFinder=False)

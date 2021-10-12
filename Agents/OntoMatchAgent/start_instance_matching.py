@@ -24,14 +24,14 @@ if __name__ == '__main__':
 
     # KWL vs GPPD DEU (Germany)
     # -------------------------
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
+    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_no_geo.pkl'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_geo.pkl'
     #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.pkl'
     #srcaddr = './data/kwl_geo.pkl'
 
     #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.owl'
-    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
+    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
     #tgtaddr = './data/gppd.pkl'
 
 
@@ -45,8 +45,8 @@ if __name__ == '__main__':
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/dbpedia_DEU_211010.pkl'
     #tgtaddr = './data/gppd.pkl'
 
-    srcaddr = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
-    tgtaddr = './data/gppd.pkl'
+    #srcaddr = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
+    #tgtaddr = './data/gppd.pkl'
 
     params = {
         "dataset": {
@@ -54,7 +54,9 @@ if __name__ == '__main__':
             "tgt": tgtaddr,
         },
         "pre_processing": {
-            "add_knowledge": False,
+            #"add_knowledge": None,
+            #"add_knowledge": "knowledge.geoNames",
+            "add_knowledge": "knowledge.geocoding",
             "pickle_dump": False,
         },
         "blocking": {
@@ -64,8 +66,8 @@ if __name__ == '__main__':
                  "min_token_length": 3,
                  "max_token_occurrences_src": 20,
                  "max_token_occurrences_tgt": 20,
-                 #"blocking_properties": ["name", "isOwnedBy/hasName"],
-                 "blocking_properties": ['dbp:name', 'dbp:owner', "name", "isOwnedBy/hasName"], #DBPedia
+                 "blocking_properties": ["name", "isOwnedBy/hasName"],
+                 #"blocking_properties": ['dbp:name', 'dbp:owner', "name", "isOwnedBy/hasName"], #DBPedia
                  "reset_index": False,
             }
         },

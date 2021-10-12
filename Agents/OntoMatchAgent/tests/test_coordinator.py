@@ -11,7 +11,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
                 "tgt": tgtaddr,
             },
             "pre_processing": {
-                "add_knowledge": True,
+                "add_knowledge": "knowledge.geocoding",
                 "pickle_dump": False,
             },
             "blocking": {
@@ -52,7 +52,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         srcaddr = './tests/data/KWL_20_power_plants.ttl'
 
         agent = coordinator.Agent()
-        graph = agent.load_rdflib_graph(srcaddr, add_knowledge=True)
+        graph = agent.load_rdflib_graph(srcaddr, add_knowledge="knowledge.geocoding")
 
         query = '''
         PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -63,7 +63,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         }'''
 
         result = list(graph.query(query))
-        self.assertEqual(len(result), 19)
+        self.assertEqual(len(result), 18)
 
         onto = agent.load_owlready2_ontology(graph)
         self.assertIsNotNone(onto)
