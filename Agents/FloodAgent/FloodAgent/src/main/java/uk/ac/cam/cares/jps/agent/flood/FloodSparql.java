@@ -122,50 +122,46 @@ public class FloodSparql {
 	 * original data has lat and lon on different triples
 	 * Blazegraph requires them to be in the form of lat#lon
 	 */
-	void addBlazegraphCoordinates(List<String> stations) {
+	void addBlazegraphCoordinates() {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
 		
 		int num_without_coordinates = 0;
 		
-		for (String station : stations) {
-			// first query both lat and lon for each station
-			SelectQuery query = Queries.SELECT();
-			
-			Variable lat = query.var();
-			Variable lon = query.var();
-			
-			GraphPattern queryPattern = GraphPatterns.and(iri(station).has(lat_prop,lat)
-					.andHas(lon_prop,lon));
-			
-			query.where(queryPattern).select(lat,lon);
-			
-			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-			
-			// then add the combined literal and upload it
-			String latlon;
-			try { 
-				// some stations don't have coordinates?
-				latlon = queryResult.getJSONObject(0).getString(lat.getQueryString().substring(1)) +
-						"#" + queryResult.getJSONObject(0).getString(lon.getQueryString().substring(1));
-			} catch (Exception e) {
-				num_without_coordinates += 1;
-				LOGGER.error(e.getMessage());
-				LOGGER.error("<" + station + "> does not have coordinates");
-				continue;
-			}
-			
-			ModifyQuery modify = Queries.MODIFY();
-			
-			// blazegraph's custom literal type
-			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon, iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"));
-			TriplePattern insert_tp = iri(station).has(hasCoordinates,coordinatesLiteral);
-			
-			modify.insert(insert_tp).prefix(p_station);
-			
-			storeClient.executeUpdate(modify.getQueryString());
+		// first query both lat and lon for each station
+		SelectQuery query = Queries.SELECT();
+		
+		Variable station = query.var();
+		Variable lat = query.var();
+		Variable lon = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
+				.andHas(lon_prop,lon));
+		
+		query.where(queryPattern).select(station,lat,lon);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		// then add the combined literal and upload it
+		List<String> latlon = new ArrayList<>(queryResult.length());
+		List<String> stations = new ArrayList<>(queryResult.length());
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			latlon.add(i,queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1)) +
+					"#" + queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1)));
+			stations.add(i, queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
 		}
-		LOGGER.info(Integer.toString(num_without_coordinates) + " stations do not have coordinates");
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.prefix(p_station);
+		// one triple per station
+		for (int i = 0; i < queryResult.length(); i++) {
+			// blazegraph's custom literal type
+			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"));
+			modify.insert(iri(stations.get(i)).has(hasCoordinates,coordinatesLiteral));
+		}
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**

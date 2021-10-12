@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class InitialiseStations {
 		sparqlClient.addStationRdfType(stations);
 		
 		// add coordinates required by blazegraph geospatial support
-		sparqlClient.addBlazegraphCoordinates(stations);
+		sparqlClient.addBlazegraphCoordinates();
 		
 		// add last updated date
 		sparqlClient.addLastDate();
@@ -124,8 +123,6 @@ public class InitialiseStations {
 		
 		List<String> measures = sparqlClient.getMeasures();
 		
-		for (String measure : measures) {
-			tsClient.initTimeSeries(Arrays.asList(measure), Arrays.asList(Double.class), null);
-		}
+		tsClient.bulkInitTimeSeries(measures);
 	}
 }
