@@ -18,7 +18,6 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
@@ -94,8 +93,7 @@ public class AccessAgentFileBasedStoreIntegrationTest {
 	 */
 	public static void checkStoreRouter() {
 		
-		String shortIRI = AccessAgent.getShortIRI(targetIRI);
-		StoreClientInterface storeClient = StoreRouter.getStoreClient(shortIRI, true, true);
+		StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, true, true);
 		
 		// Is a FileBasedStoreClient
 		assertEquals(FileBasedStoreClient.class, storeClient.getClass());
