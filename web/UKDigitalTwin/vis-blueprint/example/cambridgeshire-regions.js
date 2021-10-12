@@ -38,7 +38,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 			source: 'housing-data',
 			type: 'fill',
 			layout: {
-				visibility: 'none'
+				visibility: 'visible'
 			},
 			paint: {
 				'fill-color': '#36EAF4',
@@ -52,7 +52,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 			source: 'housing-data',
 			type: 'line',
 			layout: {
-				visibility: 'none'
+				visibility: 'visible'
 			},
 			paint: {
 				'line-color': '#259CA3',
@@ -66,7 +66,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 			source: 'admin-data',
 			type: 'fill',
 			layout: {
-				visibility: 'visible'
+				visibility: 'none'
 			},
 			paint: {
 				'fill-color': '#36EAF4',
@@ -86,7 +86,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 			source: 'admin-data',
 			type: 'line',
 			layout: {
-				visibility: 'visible'
+				visibility: 'none'
 			},
 			paint: {
 				'line-color': '#259CA3',

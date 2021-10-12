@@ -31,6 +31,7 @@
 	<script src='digital_twin_manager.js'></script>
 	<script src='digital_twin_module.js'></script>
 	<script src='digital_twin_controls.js'></script>
+	<script src='digital_twin_tree.js'></script>
 </head>
 
 <body>
@@ -61,6 +62,9 @@
 			[0.15282, 52.32136],
 			9
 		);
+
+		// Build the layer tree
+		manager.buildControls("./example/layer-tree.json");
 		
 		// Add modules to the controller
 		let cambPointsModule = new CambridgeshirePointsModule();
@@ -68,10 +72,6 @@
 
 		let cambRegionModule = new CambridgeshireRegionModule();
 		manager.addModule(cambRegionModule);
-
-		// Signify that the "Regions" heading should use radio buttons to ensure
-		// that only a single one of it's layers can be visible at once.
-		manager.switchToRadio("Regions");
 
 		// Fire on MapBox style change
 		map.on('style.load', function() {

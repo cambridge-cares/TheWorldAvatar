@@ -1,5 +1,10 @@
-
+/**
+ * This class handles centralised controls for the Camera, Terrain, and Layer Tree.
+ */
 class DigitalTwinControls {
+
+	// Layer tree handler
+	_treeHandler;
 
 	// HTML for controls
 	_controlHTML = `
@@ -24,9 +29,7 @@ class DigitalTwinControls {
 				<input type="radio" name="terrain" id="satellite-streets" onclick="manager.changeTerrain('satellite-streets')">
 				<label for="satellite-streets">Satellite (with Streets)</label>
 			</div>
-			<div id="layerContainer">
-				<p>Layers:</p>
-			</div>
+			<div id="layerContainer">TREE-GOES-HERE</div>
 		</div>
 	`;
 
@@ -39,11 +42,8 @@ class DigitalTwinControls {
 	// MapBox map
 	_map;
 
-	// Layer headers to enforce radio groups
-	_radioHeaders = [];
-
-	// Tree data
-	_treeData;
+	// First time loading?
+	_initialised = false;
 
 	/**
 	 * Initialise a new MapControls instance.
@@ -57,6 +57,15 @@ class DigitalTwinControls {
 	}
 
 	/**
+	 * Read the JSON defining the layer tree and build it.
+	 * 
+	 * @param {String} treeFile location of JSON defining layer tree.
+	 */
+	buildTree(treeFile, callback = null) {
+		this._treeHandler = new DigitalTwinLayerTree(this._map, treeFile, callback);
+	}
+
+	/**
 	 * Return HTML for controls.
 	 */
 	get controlHTML() {
@@ -64,265 +73,34 @@ class DigitalTwinControls {
 	}
 
 	/**
-	 * Any layers under the input heading will be forced to use RadioButton controls.
+	 * Pass-through for the group selection event logic.
 	 * 
-	 * @param {String} heading heading name 
-	 */
-	addRadioHeading(heading) {
-		this._radioHeaders.push(heading);
-	}
-
-	/**
-	 * Show or hide a single layer on the map.
-	 * 
-	 * @param {String} layerName MapBox layer name.
-	 * @param {boolean} visible desired visibility.
-	 */
-	#toggleLayer(layerName, visible) {
-		try {
-			this._map.setLayoutProperty(
-				layerName,
-				"visibility",
-				(visible ? "visible" : "none")
-			);
-			console.log("INFO: The '" + layerName + "' now has visibility '" + visible + "'.");
-		} catch(err) {
-			console.log("WARN: Could not toggle '" + layerName + "', it may have no initial 'visibility' layout property?");
-		}
-	}
-
-	/**
-	 * Combines the registered layer groups from all modules into single tree like data structure.
-	 * 
-	 * @param {DigitalTwinModule[]} modules modules loaded in DigitalTwinController
-	 */
-	buildTree(modules) {
-		// Final tree structure
-		this._treeData = {};
-
-		modules.forEach(mod => {
-	
-			for(let [heading, groups] of Object.entries(mod.layerGroups)) {
-				let headingEntry = this._treeData[heading];
-				if(headingEntry == null) {
-					headingEntry = {};
-				} 
-				
-				for(let [name, values] of Object.entries(groups)) {
-					let groupEntry = headingEntry[name];
-					if(groupEntry == null) {
-						groupEntry = {
-							"name": name,
-							"enabled": values["enabled"],
-							"layers": []
-						};
-					}
-
-					let newLayers = groupEntry["layers"].concat(values["layers"]);
-					groupEntry["layers"] = newLayers;
-					headingEntry[name] = groupEntry;
-				}
-				this._treeData[heading] = headingEntry;
-			}
-		});
-	}
-
-	/**
-	 * Render tree for HTML view.
-	 * 
-	 * @param {Object<String, Object>} treeData tree data structure
-	 */
-	renderTree() {
-		var htmlString = `<p>Layers:</p><ul class="checktree">`;
-		htmlString += "<ul class='groupList'>"	
-
-		for(let [heading, values1] of Object.entries(this._treeData)) {
-
-			// Add an item for the heading, unless it's "null"
-			if(heading != "null") {
-				htmlString += "<li>";
-				htmlString += "<input type='checkbox' onclick='manager.onGroupChange(this);' id='" + heading + "'>";
-				htmlString += "<label for='" + heading + "'>" + heading + "</label>";
-				htmlString += "</li>";
-
-				htmlString += "<ul class='layerList'>";
-			} else {
-				htmlString += "<ul class='layerList listNoIndent'>";
-			}
-
-			// Get type of control to use for layers in this heading
-			let type = (this._radioHeaders.includes(heading)) ? "radio" : "checkbox";
-
-			// For each layer set under this heading
-			for(let [name, values2] of Object.entries(values1)) {
-				htmlString += (heading === "null") ? "<li class='listNoIndent'>" : "<li>";
-
-				let checked = this._treeData[heading][name]["enabled"];
-				if(checked) {
-					htmlString += "<input type='" + type + "' onclick='manager.onLayerChange(this);' id='" + name + "' name='" + heading + "' checked>";
-				} else {
-					htmlString += "<input type='" + type + "' onclick='manager.onLayerChange(this);' id='" + name + "' name='" + heading + "'>";
-				}
-			
-				htmlString += "<label for='" + name + "'>" + name + "</label>";
-				htmlString += "</li>";
-			}
-			htmlString += "</ul>"
-		}
-		htmlString += "</ul>";
-
-		// Add to the document
-		document.getElementById("layerContainer").innerHTML = htmlString;
-
-		// Update group states based on default selections
-		this.#updateGroupStates(null);
-	}
-
-	/**
-	 * Fires when a group checkbox within the layer control is selected.
-	 * 
-	 * @param control - event source 
+	 * @param {Element} control event source 
 	 */
 	onGroupChange(control) {
-		// Update the selection state of layers in this group
-		let groupName = control.id;
-		let groupLayers = this._treeData[groupName];
+		this._treeHandler.onGroupChange(control);
+   	}
 
-		for(let [name, values] of Object.entries(groupLayers)) {
-			let layerIDs = values["layers"];
-
-			if(this._radioHeaders.includes(groupName)) {
-				// Don't change the "enabled" variable for each layer here,
-				// in this case we want to remember it.
-
-				if(control.checked) {
-					// Reset layers back to remembered state
-					this.#enableRadioGroup(groupName, true);
-					layerIDs.forEach((layerID) => {
-						this.#toggleLayer(layerID, values["enabled"]);
-					});
-				} else {
-					// Turn off layers
-					this.#enableRadioGroup(groupName, false);
-					layerIDs.forEach((layerID) => {
-						this.#toggleLayer(layerID, false);
-					});
-				}
-
-			} else {
-				values["enabled"] = control.checked;
-				layerIDs.forEach((layerID) => {
-					this.#toggleLayer(layerID, control.checked);
-				});
-			}
-		}
-
-		this.renderTree();
-		console.log("TREE WAS RE-RENDERED?");
-	}
-
-
+   /**
+	* Pass-through for the layer selection event logic.
+	* 
+	* @param {Element} control event source 
+	*/
+    onLayerChange(control) {
+		this._treeHandler.onLayerChange(control);
+    }
 
 	/**
-	 * Fires when a layer checkbox is selected.
-	 * 
-	 * @param checkbox - event source 
+	 * After re-initialising the map, force the layer visibility to 
+	 * match the existing selections in the layer tree.
 	 */
-	onLayerChange(control) {
-		let layerName = control.id;
-		
-		for(let [group, values] of Object.entries(this._treeData)) {
-			let layerEntry = values[layerName];
-
-			if(layerEntry != null) {
-
-				// If this group uses radio buttons, disable all other layers
-				let deselectOthers = this._radioHeaders.includes(group);
-				if(deselectOthers) {
-					this.#disableAllExcept(group, layerName);
-				}
-
-				// Toggle the selected layer
-				let layerIDs = layerEntry["layers"];
-				layerEntry["enabled"] = control.checked;
-
-				layerIDs.forEach(layerID => {
-					this.#toggleLayer(layerID, control.checked);
-				});
-				break;
-			}
-		}
-
-		this.#updateGroupStates();
-	}
-
-	/**
-	 * Hides all layers within the input group EXCEPT the input one.
-	 * @param {String} group group/heading name. 
-	 * @param {String} layerName layer name not to disable.
-	 */
-	#disableAllExcept(group, layerName) {
-		let groupEntry = this._treeData[group];
-
-		for(let [layer, values] of Object.entries(groupEntry)) {
-			if(layer === layerName) continue;
-
-			let layerIDs = values["layers"];
-			values["enabled"] = false;
-
-			layerIDs.forEach((layerID) => {
-				this.#toggleLayer(layerID, false);
-			});
-		}	
-	}
-
-	/**
-	 * Checks and updates heading selection state based on the state of 
-	 * their sub-items.
-	 * 
-	 * @param {String} layerName	optional layer name to filter out groups where
-	 * 								layer states have not changed.
-	 */
-	#updateGroupStates(layerName) {
-		for(let [group, values1] of Object.entries(this._treeData)) {
-			if(layerName != null && values1[layerName] == null) continue;
-
-			let total = 0;
-			let checked = 0;
-
-			for(let [layer, values2] of Object.entries(values1)) {
-				if(values2["enabled"]) {
-					checked++;
-				}
-				total++;
-			}
-			
-			let groupCheck = document.getElementById(group);
-			if(groupCheck == null) {
-				return;
-			}
-
-			if(this._radioHeaders.includes(group)) {
-				groupCheck.checked = (checked > 0);
-			} else {
-				groupCheck.checked = (total == checked);
-			}
+	forceRefreshSelections() {
+		if(!this._initialised) {
+			this._initialised = true;
+		} else {
+			this._treeHandler.forceRefreshSelections();
 		}
 	}
-
-	/**
-	 * Finds all inputs with the name attribute matching the input group name
-	 * and updates their enabled state.
-	 * 
-	 * @param {String} groupName group name.
-	 * @param {boolean} enabled desired enabled state.
-	 */
-		 #enableRadioGroup(groupName, enabled) {
-			let inputs = document.querySelectorAll("input[name='" + groupName + "']");
-			inputs.forEach(input => {
-				input.disabled = !enabled;
-			});
-		}
 
 	/**
 	 * Change the underlying MapBox style.
@@ -349,6 +127,9 @@ class DigitalTwinControls {
 		} else {
 			console.log("INFO: Unknown terrain type '" + mode + "', ignoring.");
 		}
+
+		DT.terrain = mode;
+		console.log(DT.terrain);
 	}
 
 	/**
@@ -384,5 +165,5 @@ class DigitalTwinControls {
 		}
 	}
 
-
 }
+// End of class.

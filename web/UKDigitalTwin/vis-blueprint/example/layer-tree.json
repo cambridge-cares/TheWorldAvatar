@@ -1,0 +1,50 @@
+[
+    {
+        "groupName": "Cambridgeshire Locations",
+        "layers": [
+            {
+                "groupName": "Industry",
+                "controlType": "checkbox",
+                "layers": [
+                    {
+                        "layerName": "Rail Stations",
+                        "defaultState": "visible",
+                        "layerIDs": ["rail-stations-layer"]
+                    },
+                    {
+                        "layerName": "Automatic Traffic Stations",
+                        "defaultState": "visible",
+                        "layerIDs": ["traffic-counters-layer"]
+                    }
+                ]
+            },
+            {
+                "groupName": "Natural",
+                "controlType": "checkbox",
+                "layers": [
+                    {
+                        "layerName": "Community Orchards",
+                        "defaultState": "visible",
+                        "layerIDs": ["orchards-layer"]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "groupName": "Cambridgeshire Regions",
+        "controlType": "radio",
+        "layers": [
+            {
+                "layerName": "Housing Board Area",
+                "defaultState": "visible",
+                "layerIDs":  ["housing-layer-fill", "housing-layer-outline"]
+            },
+            {
+                "layerName": "Administrative Units",
+                "defaultState": "hidden",
+                "layerIDs": ["admin-fill", "admin-outline"]
+            }
+        ]
+    }
+]

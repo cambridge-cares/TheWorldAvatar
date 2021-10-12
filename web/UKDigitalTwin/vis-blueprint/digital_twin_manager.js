@@ -1,7 +1,5 @@
 /**
  * Central controller for a single DigitalTwin visualisation.
- * 
- * @author Michael Hillman
  */
 class DigitalTwinManager {
 
@@ -18,10 +16,12 @@ class DigitalTwinManager {
 	_mapControls;
 
 	/**
-	 * 
+	 * Initialisation.
 	 */
-	get popup() {
-		return this._popup;
+	constructor() {
+		// Create a new window namespace to let us set global variables
+		window.DT = {};
+		DT.terrain = "light";
 	}
 	
 	/**
@@ -62,13 +62,14 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Tells the MapControls object that layers under the input heading should
-	 * use radio buttons rather than checkboxes.
+	 * Build the controls for the Camera, Terrain, and Layer Tree.
 	 * 
-	 * @param {String} heading group name. 
+	 * @param {String} treeFile Location of JSON defining layer tree structure.
+	 * @param {Function} callback Optional callback to fire when layer selections change.
 	 */
-	switchToRadio(heading) {
-		this._mapControls.addRadioHeading(heading);
+	buildControls(treeFile, callback = null) {
+		document.getElementById("controlsParent").innerHTML = this._mapControls.controlHTML;
+		this._mapControls.buildTree(treeFile, callback);
 	}
 
 	/**
@@ -96,36 +97,44 @@ class DigitalTwinManager {
 			dtModule.addLayers();
 		});
 
-		// Add map controls to the document
-		this._mapControls.buildTree(this._modules);
-		document.getElementById("controlsParent").innerHTML = this._mapControls.controlHTML;
-		this._mapControls.renderTree();
+		this._mapControls.forceRefreshSelections();
 	}
 
 	/**
-	 * Fires when a group checkbox within the layer control is selected.
+	 * Pass-through.
 	 * 
-	 * @param control - event source 
+	 * @param {Element} control event source 
 	 */
 	 onGroupChange(control) {
 		this._mapControls.onGroupChange(control);
 	}
 
 	/**
-	 * Fires when a layer checkbox is selected.
+	 * Pass-through.
 	 * 
-	 * @param control - event source 
+	 * @param {Element} control event source 
 	 */
 	onLayerChange(control) {
 		this._mapControls.onLayerChange(control);
 	}
 
+	/**
+	 * Pass-through.
+	 * 
+	 * @param {Element} control event source 
+	 */
 	changeTerrain(mode) {
 		this._mapControls.changeTerrain(mode);
 	}
 
+	/**
+	 * Pass-through.
+	 * 
+	 * @param {Element} control event source 
+	 */
 	changeCamera(mode) {
 		this._mapControls.changeCamera(mode);
 	}
 
 }
+// End of class.

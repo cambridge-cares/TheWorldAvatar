@@ -86,20 +86,14 @@ html, body {
 	background-color: rgba(0, 0, 0, 0.6);
 }
 
-#layerContainer ul, li {
+#layerTree {
+	padding-left: 0px;
+}
+
+#layerTree ul {
+	padding-left: 15px;
+}
+
+#layerTree ul, li {
 	list-style-type: none;
-	padding: 0px;
-	margin: 0px;
-}
-
-.groupList {
-	padding: 0px;
-}
-
-.layerList {
-	padding-left: 15px !important;
-}
-
-.listNoIndent {
-	padding-left: 0px !important;
 }
