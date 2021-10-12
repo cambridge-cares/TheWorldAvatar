@@ -40,6 +40,7 @@ def MarieQuestionLog(func):
 
 def MarieIOLog(func):
     def wrapper(*args, **kwargs):
+        logging.basicConfig(level=logging.DEBUG)
         logger = logging.getLogger('Function I/O')
         logger.setLevel(logging.INFO)
         rst = func(*args)

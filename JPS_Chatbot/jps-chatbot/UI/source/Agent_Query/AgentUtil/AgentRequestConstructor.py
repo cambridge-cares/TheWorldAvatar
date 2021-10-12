@@ -5,7 +5,11 @@ import urllib.request
 from pprint import pprint
 
 import rdflib
-from .location import AGENT_OWL_DIR, FILE_DIR
+
+if __name__ == "__main__":
+    from util.location import AGENT_OWL_DIR, FILE_DIR
+else:
+    from .util.location import AGENT_OWL_DIR, FILE_DIR
 
 
 class AgentRequestConstructor:
@@ -135,4 +139,3 @@ class AgentRequestConstructor:
             agent_url = http
 
         return {'inputs': inputs, 'url': agent_url}
-

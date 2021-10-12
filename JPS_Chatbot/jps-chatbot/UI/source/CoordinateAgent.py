@@ -1,8 +1,7 @@
-import logging
-import traceback
+import json
 
 from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
-from util.MarieLogger import MarieLog, MarieIOLog
+from util.MarieLogger import MarieIOLog
 from util.StopWords import removeStopWords
 from Wikidata_Query.WikiQueryInterface import WikiQueryInterface
 from JPS_Query.JPSQueryInterface import JPSQueryInterface
@@ -47,6 +46,10 @@ class CoordinateAgent:
             if rst is None:
                 pass
             else:
+                try:
+                    rst = json.loads(rst)
+                except:
+                    rst = rst
                 return rst
 
     @MarieIOLog
@@ -61,7 +64,7 @@ class CoordinateAgent:
     @MarieIOLog
     def agent_query(self, model, question):
         print('Doing Agent query', question)
-        return AgentQueryInterface(model).agent_query(question)
+        return AgentQueryInterface().agent_query(question)
 
 
     @MarieIOLog

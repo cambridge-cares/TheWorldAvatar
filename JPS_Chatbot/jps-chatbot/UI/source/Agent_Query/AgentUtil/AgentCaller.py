@@ -2,14 +2,14 @@ if __name__ == '__main__':
     from util.UniversalQuery import make_simple_http_request
     from util.MarieLogger import MarieIOLog
 else:
-    from util.UniversalQuery import make_simple_http_request
-    from util.MarieLogger import MarieIOLog
+    from .util.UniversalQuery import make_simple_http_request
+    from .util.MarieLogger import MarieIOLog
 
 
 @MarieIOLog
 def construct_request(inputs, outputs, _url):
     # label: e.g. species, key for key-value pair
-    # value: e.g. inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3
+    # value: e.g. inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3cls
     _data = {}
     for i in inputs:
         i_l = i['label']
@@ -39,7 +39,8 @@ class AgentCaller:
 
 
 if __name__ == '__main__':
-    inputs = [{'label': 'species', 'value': 'inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3'}]
+    # inputs = [{'label': 'species', 'value': 'inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3'}]
+    inputs = [{'label': 'species', 'value': 'co2'}]
     outputs = [{'label': 'attribute', 'value': 'entropy', 'qualifiers': [{'label': 'pressure', 'value': '1522.1 pa'},
                                                                          {'label': 'temperature',
                                                                           'value': '123245 k'}]}]

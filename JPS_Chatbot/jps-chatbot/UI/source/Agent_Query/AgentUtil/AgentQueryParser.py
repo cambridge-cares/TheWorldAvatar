@@ -4,12 +4,11 @@ import rdflib
 from rapidfuzz import process, fuzz
 
 if __name__ == '__main__':
-    from .util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
-    from .location import FILE_DIR
-
-else:
     from util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
-    from location import FILE_DIR
+    from util.location import FILE_DIR
+else:
+    from .util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
+    from .util.location import FILE_DIR
 
 
 # extract inputs from the SPARQL query
@@ -126,6 +125,7 @@ class AgentQueryParser:
     # query the OntoAgent instance via SPARQL and extract the inputs/outputs parameters of the agent
     def get_agent_request_attributes(self, agent_name):
         agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
+        print('agent dir', agent_dir)
         self.graph.parse(agent_dir)
         input_rst = self.graph.query(GET_AGENT_INPUT_PARAMETERS)
         # species fits species as the ner label

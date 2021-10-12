@@ -1,7 +1,7 @@
 from pprint import pprint
 import hashlib
 import time
-from owlready2 import *
+from owlready2 import get_ontology, DataProperty, ObjectProperty
 
 
 class OntoAgentGenerator:

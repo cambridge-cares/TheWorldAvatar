@@ -13,18 +13,23 @@ def get_parent_path(path):
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = get_parent_path(get_parent_path(this_dir))
-
-WIKIDATA_QUERY_DIR = os.path.join(parent_dir, 'Wikidata_Query')
+ROOT_DIR = get_parent_path(parent_dir)
+SUPER_ROOT_DIR = get_parent_path(ROOT_DIR)
+WIKIDATA_QUERY_DIR = os.path.join(ROOT_DIR, 'Wikidata_Query')
 WIKI_MODELS_DIR = os.path.join(WIKIDATA_QUERY_DIR, 'models')
 
-AGENT_QUERY_DIR = os.path.join(parent_dir, 'Agent_Query')
+AGENT_QUERY_DIR = os.path.join(ROOT_DIR, 'Agent_Query')
+DATA_PREPARATION_DIR = os.path.join(SUPER_ROOT_DIR, 'data_preparation')
+FILE_DIR = os.path.join(DATA_PREPARATION_DIR, 'files')
+
+
 AGENT_MODELS_DIR = os.path.join(AGENT_QUERY_DIR, 'models')
 AGENT_OWL_DIR = os.path.join(AGENT_QUERY_DIR, 'Agents')
 
-JPS_QUERY_DIR = os.path.join(parent_dir, 'JPS_Query')
+JPS_QUERY_DIR = os.path.join(ROOT_DIR, 'JPS_Query')
 JPS_MODELS_DIR = os.path.join(JPS_QUERY_DIR, 'models')
-
-# print('WIKI_MODEL_DIR', WIKI_MODELS_DIR)
-# print('AGENT_MODEL_DIR', AGENT_MODELS_DIR)
-# print('JPS_MODEL_DIR', JPS_MODELS_DIR)
+print('FILE_DIR', FILE_DIR)
+print('WIKI_MODEL_DIR', WIKI_MODELS_DIR)
+print('AGENT_MODEL_DIR', AGENT_MODELS_DIR)
+print('JPS_MODEL_DIR', JPS_MODELS_DIR)
 

@@ -1,21 +1,23 @@
-from pprint import pprint
-
 if __name__ == '__main__':
-    from AgentQueryParser import AgentQueryParser
-    from AgentCaller import AgentCaller
-    from util.MarieLogger import MarieLog, MarieIOLog, MarieQuestionLog, MarieMessage
-    from util.StopWords import removeStopWords
-    from util.ModelLoader import ModelLoader
+    from AgentUtil.AgentQueryParser import AgentQueryParser
+    from AgentUtil.AgentCaller import AgentCaller
+    from AgentUtil.util.StopWords import removeStopWords
+    from AgentUtil.util.ModelLoader import ModelLoader
+    from AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage
+
 else:
-    from .AgentCaller import AgentCaller
-    from .AgentQueryParser import AgentQueryParser
-    from .util.MarieLogger import MarieLog, MarieIOLog, MarieQuestionLog, MarieMessage
-    from .util.StopWords import removeStopWords
+    from .AgentUtil.AgentCaller import AgentCaller
+    from .AgentUtil.AgentQueryParser import AgentQueryParser
+    from .AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage
+    from .AgentUtil.util.StopWords import removeStopWords
+    from .AgentUtil.util.ModelLoader import ModelLoader
+
 
 
 class AgentQueryInterface:
-    def __init__(self, model):
-        self.agent_interpreter = model
+    def __init__(self):
+        ml = ModelLoader()
+        self.agent_interpreter = ml.AGENT_NLU_MODEL()
         self.agent_query_parser = AgentQueryParser()
         self.agent_caller = AgentCaller()
 

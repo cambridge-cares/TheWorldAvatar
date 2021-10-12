@@ -4,18 +4,18 @@ from urllib.error import HTTPError
 from rapidfuzz import process, fuzz
 
 if __name__ == "__main__":
-    from util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
-    from util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from util.MarieLogger import MarieError
-    from util.Lookup import find_nearest_match
-    from util.UnitConversion import convertPressure, convertTemperature
+    from AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
+    from AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
+    from AgentUtil.util.MarieLogger import MarieError
+    from AgentUtil.util.Lookup import find_nearest_match
+    from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from location import JPS_DICT_DIR
 else:
-    from .util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
-    from .util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from .util.MarieLogger import MarieError
-    from .util.UnitConversion import convertPressure, convertTemperature
-    from .util.Lookup import find_nearest_match
+    from .AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
+    from .AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
+    from .AgentUtil.util.MarieLogger import MarieError
+    from .AgentUtil.util.UnitConversion import convertPressure, convertTemperature
+    from .AgentUtil.util.Lookup import find_nearest_match
     from .location import JPS_DICT_DIR
 
 
@@ -99,6 +99,7 @@ def unitConversion(temperature, pressure):
     return temperature, pressure
 
 
+
 class ThermoAgent:
     def __init__(self):
         with open(os.path.join(JPS_DICT_DIR, 'ONTOSPECIES_URI_DICT')) as f:
@@ -126,11 +127,11 @@ class ThermoAgent:
                         'ontospecies_IRI': ontospecies_iri,
                         'temperature': temperature,
                         'pressure': pressure}
-                _response = json.loads(make_simple_http_request(url, data))
-                if _response is None:
+                raw_response = make_simple_http_request(url, data)
+                if raw_response is None:
                     pass
                 else:
-                    return filter_response(_response, attribute, temperature=temperature, pressure=pressure)
+                    return filter_response(json.loads(raw_response), attribute, temperature=temperature, pressure= pressure)
         return None
 
 
@@ -152,7 +153,7 @@ if __name__ == '__main__':
         for p in p_list:
             for attribute in attribute_list:
                 key = 'T {} | P {} | A {}'.format(t, p, attribute)
-                response = ta.callThermoAgent(species=_species, url=_url, temperature=t, pressure=p,
+                response = ta.callThermoAgent(species=_species, temperature=t, pressure=p,
                                               attribute=attribute)
                 tmp[key] = response
 

@@ -29,18 +29,23 @@ socketio.init_app(app, cors_allowed_origins="*")
 
 @app.route('/thermo_agent')
 def call_thermo_agent():
-    try:
-        species = request.args.get('species')
-        attribute = request.args.get('attribute')
-        temperature = request.args.get('temperature')
-        pressure = request.args.get('pressure')
-        result = thermo_agent.callThermoAgent(species=species, attribute=attribute,
-                                              temperature=temperature, pressure=pressure)
-        return result
-    except:
-        return None
-
-
+    # try:
+    #     species = request.args.get('species') if request.args.get('species') else None
+    #     attribute = request.args.get('attribute') if request.args.get('attribute') else None
+    #     temperature = request.args.get('temperature') if request.args.get('temperature') else None
+    #     pressure = request.args.get('pressure') if request.args.get('pressure') else None
+    #     result = thermo_agent.callThermoAgent(species=species, attribute=attribute,
+    #                                           temperature=temperature, pressure=pressure)
+    #     return result
+    # except:
+    #     return None
+    species = request.args.get('species') if request.args.get('species') else None
+    attribute = request.args.get('attribute') if request.args.get('attribute') else None
+    temperature = request.args.get('temperature') if request.args.get('temperature') else None
+    pressure = request.args.get('pressure') if request.args.get('pressure') else None
+    result = thermo_agent.callThermoAgent(species=species, attribute=attribute,
+                                          temperature=temperature, pressure=pressure)
+    return result
 @app.route('/start_test')
 def start_test():
     ft = FullTest()
@@ -93,6 +98,8 @@ def make_query():
     try:
         if question_type == 'worldavatar':
             result = coordinate_agent.run(question)
+            print("=========================== result from TWA ======================")
+            print(result)
             return json.dumps(result)
         elif question_type == 'google':
             # question = request.args.get('question').strip()
