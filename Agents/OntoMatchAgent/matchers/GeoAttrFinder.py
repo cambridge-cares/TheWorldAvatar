@@ -4,11 +4,19 @@ import json
 import rdflib
 
 class GeoAttrFinder():
-    def __init__(self):
+    def __init__(self, featureSelect, initialDict = None):
         self.geoNameDict = {}
+        if featureSelect == '3F':
+            self.featureSelect = self.featureSelect3F
+        else:
+            raise Exception("feature Select method not defined")
+
+        if initialDict is not None:
+            with open(initialDict) as f:
+                self.geoNameDict = json.load(f)
 
 
-    def findExtraGeoAttrSingleOnto(self, onto):
+    def findExtraGeoAttrSingleOnto(self, onto, leveled=False):
         #add new list to existing list, how?
         map = []
 
@@ -32,6 +40,8 @@ class GeoAttrFinder():
     output 
     '''
     def getCoordiIfGeoname(self, instanceName,country):
+        if instanceName is None:
+            return []
         tokens = ronin.split(instanceName)  #tokenize
         geoVs = []
         for token in tokens:
@@ -39,17 +49,33 @@ class GeoAttrFinder():
                 continue
             token = token.lower()
             if token in self.geoNameDict:  #already in pre-saved
-                geoVs.extend(self.geoNameDict[token])
+                #geoVs.extend(self.geoNameDict[token])
+                coordi = self.featureSelect(self.geoNameDict[token])
+                geoVs.extend((float(coordi[0]), float(coordi[1])))
 
+            ''' 
             else:
                 newVs = self.requestGeonameSingleToken(token, country)
                 if newVs is not None:
                     geoVs.extend(newVs)
                     self.geoNameDict[token] = newVs #add to pre-save
+            '''
         return geoVs
 
+    def featureSelect3F(self, listOfFeature):
+        for feature in listOfFeature:
+            x,y,fcode = feature
+            if "ADM" in fcode:
+                return (x,y)
+            elif "PPL" in fcode:
+                return (x,y)
+        if len(listOfFeature)>0:
+            return (listOfFeature[0][0],listOfFeature[0][1])
+        else:
+            return ()
 
-    #TODO
+
+
     '''
     find if any value in value map is a country name
     input  list of value
@@ -109,11 +135,10 @@ class GeoAttrFinder():
         if "totalResultsCount" in gNames and gNames["totalResultsCount"] is not 0:
             for geoRecord in gNames["geonames"]:
                 if FCODE_TAG in geoRecord and COUNTRY_TAG in geoRecord and "lat" in geoRecord and "lng" in geoRecord:
-                    if geoRecord[FCODE_TAG] == FEATURE_TAG and geoRecord[COUNTRY_TAG].lower() == country.lower():#same country, ADM kind of geo
+                    if FEATURE_TAG in geoRecord[FCODE_TAG] and geoRecord[COUNTRY_TAG].lower() == country.lower():#same country, ADM kind of geo
                         return geoRecord["lat"], geoRecord["lng"]
 
         return None
-
 
 
 if __name__ == "__main__":
