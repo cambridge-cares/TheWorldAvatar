@@ -15,6 +15,9 @@ class DigitalTwinManager {
 	// MapContols instance
 	_mapControls;
 
+	// Has the map been loaded at least once
+	_initialised = false;
+
 	/**
 	 * Initialisation.
 	 */
@@ -22,6 +25,11 @@ class DigitalTwinManager {
 		// Create a new window namespace to let us set global variables
 		window.DT = {};
 		DT.terrain = "light";
+
+		DT.popup = new mapboxgl.Popup({
+			closeButton: false,
+			closeOnClick: false
+		});
 	}
 	
 	/**
@@ -97,7 +105,11 @@ class DigitalTwinManager {
 			dtModule.addLayers();
 		});
 
-		this._mapControls.forceRefreshSelections();
+		if(!this._initialised) {
+			this._initialised = true;
+		} else {
+			DT.treeHandler.forceRefreshSelections();
+		}
 	}
 
 	/**
@@ -106,7 +118,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	 onGroupChange(control) {
-		this._mapControls.onGroupChange(control);
+		DT.treeHandler.onGroupChange(control);
 	}
 
 	/**
@@ -115,7 +127,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	onLayerChange(control) {
-		this._mapControls.onLayerChange(control);
+		DT.treeHandler.onLayerChange(control);
 	}
 
 	/**
@@ -124,7 +136,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeTerrain(mode) {
-		this._mapControls.changeTerrain(mode);
+		DT.treeHandler.changeTerrain(mode);
 	}
 
 	/**
@@ -133,7 +145,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeCamera(mode) {
-		this._mapControls.changeCamera(mode);
+		DT.treeHandler.changeCamera(mode);
 	}
 
 }

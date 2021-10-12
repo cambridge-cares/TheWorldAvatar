@@ -5,33 +5,26 @@
 	<title>Digital Twin Example</title>
 	<meta charset="utf-8">
 
-	<!-- External JS and CSS -->
-	<!-- Needs to be declared BEFORE other libraries -->
+	<!-- External JS and CSS, needs to be declared FIRST -->
     <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
 
-	<!-- Remote CMCL JS files for DEVELOPMENT -->
-	<!-- Needs to be declared BEFORE local libraries -->
-	
-	<!--
-		<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/mapbox-controls.js'></script>
-		<script src='http://kg.cmclinnovations.com:81/user/themes/quark/js/side-panel.js'></script>
-	-->
-
-	<!-- Remote CMCL CSS files for DEVELOPMENT -->
-	<!-- 
-		<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/mapbox-controls.css' rel='stylesheet' />
-		<link href='http://kg.cmclinnovations.com:81/user/themes/quark/css/side-panel.css' rel='stylesheet' />
-	-->
-
-	<!-- Local JS and CSS -->
-	
+	<!-- JS and CSS for Digital Twin framework -->
+	<!-- Local CSS -->
 	<link href='digital_twin_style.css' rel='stylesheet' />
+
+	<!-- Core functionality -->
 	<script src='digital_twin_manager.js'></script>
 	<script src='digital_twin_module.js'></script>
+
+	<!-- Control handlers -->
 	<script src='digital_twin_controls.js'></script>
 	<script src='digital_twin_tree.js'></script>
+	<script src="digital_twin_side_panel.js"></script>
+
+	<!-- Visualisation specific JS and CSS -->
+	<!-- ADD HERE IF REQUIRED -->
 </head>
 
 <body>
@@ -46,7 +39,7 @@
 		let manager = null;
 	</script>
 
-	<!-- Module JS blcok, variables are local (i.e. cannot access from HTML) -->
+	<!-- Module JS block, variables are local (i.e. cannot access from HTML) -->
 	<script type="module">
 		// Module imports
 		import { CambridgeshirePointsModule } from "./example/cambridgeshire-points.js";
@@ -67,11 +60,47 @@
 		manager.buildControls("./example/layer-tree.json");
 		
 		// Add modules to the controller
+		let cambRegionModule = new CambridgeshireRegionModule();
+		manager.addModule(cambRegionModule);
+
 		let cambPointsModule = new CambridgeshirePointsModule();
 		manager.addModule(cambPointsModule);
 
-		let cambRegionModule = new CambridgeshireRegionModule();
-		manager.addModule(cambRegionModule);
+		// Provide some default content for the side panel
+		DT.sideHandler.setTitle("Default Title");
+
+		var defaultContent = `
+			<div style="height: 100%; border: 1px solid grey;">
+				<p>Here is some introductory text, this should be used to detail the overall purpose of the
+				visualisation, and perhaps tell the user how they can interact with it.</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ut magna sed velit dictum varius.
+				Vestibulum magna orci, pulvinar eget quam ut, vestibulum pretium justo. Vivamus ut dignissim sem.</p>
+				<p>Quisque ut cursus dolor. Fusce vel dui luctus dolor dapibus porttitor. Vestibulum pharetra tortor dolor,
+				sit amet varius ex rhoncus convallis. Donec commodo bibendum ligula eget vulputate. Cras a velit suscipit,
+				vulputate est sodales, vulputate dui.</p>
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ut magna sed velit dictum varius.
+				Vestibulum magna orci, pulvinar eget quam ut, vestibulum pretium justo. Vivamus ut dignissim sem.</p>
+				<p>Quisque ut cursus dolor. Fusce vel dui luctus dolor dapibus porttitor. Vestibulum pharetra tortor dolor,
+				sit amet varius ex rhoncus convallis. Donec commodo bibendum ligula eget vulputate. Cras a velit suscipit,
+				vulputate est sodales, vulputate dui.</p>
+			</div>`;
+		DT.sideHandler.setContent(defaultContent);
+
+		DT.sideHandler.setLegend(`
+			<div style="border: 1px solid grey;">
+				<br><br>
+				<p>This area is designed to hold a number of legends. Each layer (as shown to 
+				the user in the layer tree) should have its own legend to explain the data
+				on the map. This could be dynamically generated HTML, or an image file.</p>
+				<br><br>
+			</div>
+		`);
+
+		DT.sideHandler.setFooter(`
+			<div style="border: 1px solid grey;">
+				Here is some footer content.
+			</div>
+		`);
 
 		// Fire on MapBox style change
 		map.on('style.load', function() {

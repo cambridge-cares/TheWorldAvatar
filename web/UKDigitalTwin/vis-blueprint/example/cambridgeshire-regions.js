@@ -78,7 +78,6 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 				]
 			}
 		});
-		this.addMouseEffects('admin-fill', true, true, true, false);
 		console.log("INFO: 'admin-fill' layer has been added.");
 
 		this._map.addLayer({
@@ -94,10 +93,6 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 			}
 		});
 		console.log("INFO: 'admin-outline' layer has been added.");
-
-		// Register each MapBox layer separately under a single heading
-		this.registerLayerGroup("Housing Board Area", ["housing-layer-fill", "housing-layer-outline"], true, "Regions");
-		this.registerLayerGroup("Administrative Units", ["admin-fill", "admin-outline"], false, "Regions");
 	}
 
 	/**

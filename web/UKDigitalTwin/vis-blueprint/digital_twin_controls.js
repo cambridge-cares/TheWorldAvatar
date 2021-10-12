@@ -3,9 +3,6 @@
  */
 class DigitalTwinControls {
 
-	// Layer tree handler
-	_treeHandler;
-
 	// HTML for controls
 	_controlHTML = `
 		<div id="controlContainer">
@@ -42,9 +39,6 @@ class DigitalTwinControls {
 	// MapBox map
 	_map;
 
-	// First time loading?
-	_initialised = false;
-
 	/**
 	 * Initialise a new MapControls instance.
 	 * 
@@ -54,6 +48,8 @@ class DigitalTwinControls {
 		this._map = map;
 		this._defaultCenter = defaultCenter;
 		this._defaultZoom = defaultZoom;
+
+		DT.sideHandler = new DigitalTwinSidePanel(this._map);
 	}
 
 	/**
@@ -62,7 +58,7 @@ class DigitalTwinControls {
 	 * @param {String} treeFile location of JSON defining layer tree.
 	 */
 	buildTree(treeFile, callback = null) {
-		this._treeHandler = new DigitalTwinLayerTree(this._map, treeFile, callback);
+		DT.treeHandler = new DigitalTwinLayerTree(this._map, treeFile, callback);
 	}
 
 	/**
@@ -70,36 +66,6 @@ class DigitalTwinControls {
 	 */
 	get controlHTML() {
 		return this._controlHTML;
-	}
-
-	/**
-	 * Pass-through for the group selection event logic.
-	 * 
-	 * @param {Element} control event source 
-	 */
-	onGroupChange(control) {
-		this._treeHandler.onGroupChange(control);
-   	}
-
-   /**
-	* Pass-through for the layer selection event logic.
-	* 
-	* @param {Element} control event source 
-	*/
-    onLayerChange(control) {
-		this._treeHandler.onLayerChange(control);
-    }
-
-	/**
-	 * After re-initialising the map, force the layer visibility to 
-	 * match the existing selections in the layer tree.
-	 */
-	forceRefreshSelections() {
-		if(!this._initialised) {
-			this._initialised = true;
-		} else {
-			this._treeHandler.forceRefreshSelections();
-		}
 	}
 
 	/**
