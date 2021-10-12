@@ -807,10 +807,10 @@ public class RemoteStoreClient implements StoreClientInterface {
 	        CloseableHttpClient httpclient = HttpClients.createDefault();
 	        CloseableHttpResponse response = httpclient.execute(postRequest);
 	        if (response.getStatusLine().getStatusCode() != 200) {
-	            throw new Exception("Upload RDF file failed");	
+	            throw new Exception("Upload RDF file failed. Response status code =" + response.getStatusLine().toString());
 	        }
 		} catch (Exception e) {
-			LOGGER.error(e.getMessage());
+			LOGGER.error(e);
 			throw new JPSRuntimeException(e);
 		}
 	}
