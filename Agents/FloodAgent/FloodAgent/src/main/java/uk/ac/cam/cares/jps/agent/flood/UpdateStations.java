@@ -186,6 +186,10 @@ public class UpdateStations {
 		Map<String, List<Double>> datavalue_map = (Map<String, List<Double>>) processed_data.get(1);
         Iterator<String> iter = datatime_map.keySet().iterator();
         int num_failures = 0;
+        
+        // collect data to upload
+        List<TimeSeries<Instant>> ts_list = new ArrayList<>();
+        
         LOGGER.info("Uploading data to postgres");
         while (iter.hasNext()) {
         	String dataIRI = iter.next();
@@ -233,15 +237,12 @@ public class UpdateStations {
         	List<List<?>> values = new ArrayList<>();
         	values.add(datavalue_map.get(dataIRI));
         	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
-        	
-        	try {
-        		tsClient.addTimeSeriesData(ts);
-        	} catch (Exception e) {
-				num_failures += 1;
-				LOGGER.error(e.getMessage());
-				LOGGER.error("Failed to upload time series <" + dataIRI + ">");
-        	}
+        	ts_list.add(ts);
         }
+        
+        // upload data in a single connection
+        tsClient.addTimeSeriesData(ts_list);
+        
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
         // consider updated if at least one was updated..
         if (num_failures < datatime_map.size()) {
