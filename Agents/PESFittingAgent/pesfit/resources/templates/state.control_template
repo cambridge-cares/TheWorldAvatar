@@ -1,0 +1,157 @@
+Automatic force filed converter
+1        		* Construct DL_POLY output files
+0        		* NOT USE 
+opls2005 		* Type of force field require (see list below for choices).
+kJ/mol   		* Energy unit: kcal/mol, kJ/mol, eV, or K.
+normal  		 * Conversion criteria (strict, normal, loose)
+1        		* Bond type (0=default, 1=harmonic , 2=Morse)
+1        		* Angle type (0=default, 1=harmonic, 2=harmonic cos)
+none     		* Include user-defined information. Put 'none' or a .udff filename
+1       		* Verbosity mode: 1 = on, 0 = off     
+state<N>.xyz 		* Configuration file.
+none     		* Output file in PDB. Put 'none' if not needed.
+off		 	* Solution Maker: on/off, density, unit, cutoff)
+1        		* Optimise FIELD output size, if possible? 1=yes  0=no
+2        		* Atom display: 1 = DL_FIELD format. 2 = Standard format
+2        		* Vdw display format: 1 = 12-6 format   2 = LJ format
+default  		* Epsilon mixing rule (organic FF only) : 1 = geometric   2 = arithmatic or default
+default  		* Sigma mixing rule (organic FF only) : 1 = geometric   2 = arithmatic or default
+1        		* Epsilon mixing rule (inorganic FF only) : 1 = geometric   2 = arithmatic
+2        		* Sigma mixing rule (inorganic FF only) : 1 = geometric   2 = arithmatic 
+1  			* Epsilon mixing rule (BETWEEN different FF) : 1 = geometric   2 = arithmatic
+1   			* Sigma mixing rule (BETWEEN different FF): 1 = geometric 2 = arithmatic
+0         		* Display additional info. for protein 1=Yes  0=No
+0         		* Freeze atoms? 1 = Yes (see below)  0 = No
+0         		* Tether atoms? 1 = Yes (see below)  0 = No
+0         		* Constrain bonds? 1 = Yes (see below) 0 = No
+0         		* Apply rigid body? 1 = Yes (see below) 0 = No
+1     			* Periodic condition ? 0=no, other number = type of box (see below)
+50.000   0.0000   0.0000 	* Cell vector a (x, y, z)
+0.0000   50.000   0.0000 	* Cell vector b (x, y, z)
+0.0000   0.0000   50.000 	* Cell vector c (x, y, z)
+default   		* 1-4 scaling for coulombic (put default or x for scaling=x)
+default   		* 1-4 scaling for vdw (put default or x for scaling=x)
+0  300.0  		* Include velocity? 1=yes, 0=no and scaling temperature.
+0         		* Position solute at origin? 1 = yes, 0=no 
+none  1.8 		* Solvate model? none or specify solvent (see below) and distance criteria.
+0  10.0   		* Add counter ions? 1=yes, 0=no,  minimum distance from solute  
+1        		* MM energy calculation. 1=Yes, 0=No
+10.0     		* Cut off for electrostatic energy calculation (angstrom)
+10.0      		* Cut off for vdw energy calculation (angstrom) 
+
+************* DL_POLY control ******************
+0          				* Run DL_POLY program
+DLPOLY.Z   				* DL_POLY executable filename
+/home/lpas01/ONTO-FF/dl_field 		* absolute path to DL_POLY program
+1          				* MM calculation 1=on  0=off
+0   3     				* Equilibration on(1)/off(0)  level (1,2 or 3)
+1000       				* Timestep for DL_POLY runs.
+10.0        				* cutoff (vdw and electrostatic)
+1000       				* Time limit for DL_POLY run (in seconds)
+
+######################################################## 
+Atom state specification:  type  Molecular_Group   filter   [value]
+
+#########################################################
+
+Please do not remove those '####' lines.
+All select atom commands must be included within the two '####' lines
+
+Available force field choices:
+(1) charmm   
+    Bond and Angle type: default
+    Default 1-4 coulombic = 1.0
+    Default 1-4 vdw = 1.0
+(2) amber     
+    Bond and Angle type: default
+(3) opls2005    
+    Bond and Angle type: default
+(4) dreiding  (general all-atom force field)
+    Bond: harmonic or morse function
+    Angle: harmonic or harmonic cosine function
+(5) pcff
+    Bond and Angle type: default
+(6) charmm19 (This is united atom model)
+    Bond and Angle type: default
+(7) cvff 
+    Bond and Angle type: default
+(8) inorganic
+(9) multiple
+    Bond and Angle type: default
+    Must specify energy unit.
+    Must specify mixing rules BETWEEN different force fields.
+
+Select atom command summary (for FREEZE and TETHER) 
+group_name       all_backbone     * For protein only. All protein backbone
+group_name       c-alpha          * For protein only. Only alpha-carbon
+group_name       all              * All atoms in group_name 
+group_name       atom_key         * Atoms with the correspond key (DL_FIELD format) 
+
+Select atom command summary (for CONSTRAIN)
+group_name       h-bond           * Constrain bonds with hydrogen atoms
+group_name       all              * Constrain all bonds
+group_name       rigid_water      * Fix water rigid (H-H constraints as well)
+
+Select atom command summary (for RIGID)
+group_name       on               * Apply rigid body if defined in MOLECULE
+(if other group_name not listed, assume rigid body is switched off)
+
+Types of solvent available:
+TIP3P_O - Original TIP3P
+TIP3P_C - TIP3P model, flexible bond (CHARMM-specific, AMBER, OPLSAA). 
+TIP3P_E - TIP3P water model optimised for ewald sum.
+TIP4P   - TIP4P water model (one pseudo point).
+TIP5P   - Five-site water model (two pseudo points).
+TIP5P_E - Five site water model optimised for ewald sum.
+MeOH    - Methanol, obtained from CHARMM FF
+IPA     - Propan-2-ol, isopropyl alcohol, obtained from CHARMM FF
+THF	- Tetrahydrofuran, obtained from CHARMM FF
+(please see solvent/solvent_list file for more solvent choices)
+
+Note: 
+(1) When apply CONSTRAIN directives (either h-bond or all) to water, all bonds 
+    in water will be constrained BUT not the angle. So the water molecules
+    are still somewhat flexible.
+    If rigid_water is used, the H-H, in addition to O-H bonds, will be 
+    constrained.
+
+(2) If the group_name cannot be matched in the user's configuration file
+    the select atom command will be ignored.
+
+(3) The third data column for TETHER directive is the spring constant.
+
+(4) the user-defined forcefield file (UDFF) contain BOTH user-defined structure
+    and potential parameters information. This prevent users from tampering
+    with the standard DL_FIELD potential library file.
+    UDFF is where you can insert new models and new potential parameters. 
+    In addition, existing atom types and/or potential parameterscan also be 
+    redefined in UDFF file. This will OVERRIDE any existing data in the 
+    standard library files of a chosen potential scheme.
+    The dl_field.user is an example of a user-defined forcefield file.
+    This must be renamed as DL_FIELD.udff
+    DO NOT use any of the examples in the file for your work. 
+
+(5) If periodic image convention is NOT selected (0), then cell vectors will be 
+    ignored. Any other number indicate type of simulation box (defined as imcon
+    in DL_POLY manual)
+    1 = Cubic box (D,0,0), (0,D,0), (0,0,D)
+    2 = Orthorhombic (D,0,0), (0,E,0), (0,0,F)
+    3 = Parallelepiped (La1,La2,La3), (Mb1,Mb2,Mb3),(Nc1,Mc2,Nc3) 
+    6 = Slab (periodic in x,y but NOT z).
+    Any other types are not available in DL_FIELD.
+
+(6) 1-4 scalings,x. 
+    For example, 1-4 Coulombic = coulombic*x
+
+(7) Epsilon and sigma mixing rule: only applicable to LJ12-6. 
+    Recommended setting is default because different FF may have different rules.
+
+(8) Solution Maker.
+    Cutoff specifies minimum distance between molecules. Adjust this value to make
+    molecules more spread out. If not all molecules can be fitted in a given
+    box size, reduce the density or decrease the cutoff values.
+    Equilibration is required (using DL_POLY) once the model is set up.
+    Units recognised: kg/m^3, g/cm^3, mol/dm^3, molecules 
+
+dl_field.control file: C.W. Yong, STFC, 2017.
+

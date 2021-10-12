@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify, make_response
-from pesfit.kgoperations.getkgdata import get_ontopesscan_data
+from pesfit.kgoperations.getkgdata import get_kg_data
 
 fitter_bp = Blueprint(
     'fitter_bp', __name__
@@ -12,7 +12,7 @@ def api():
     print(request.args)
     inputs= {}
     ontopesscan_IRI = request.args['ontopesscan_IRI']
-    opes_inputs = get_ontopesscan_data(ontopesscan_IRI)
+    opes_inputs = get_kg_data(ontopesscan_IRI)
 
     print(opes_inputs)
 

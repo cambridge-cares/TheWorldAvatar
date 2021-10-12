@@ -1,0 +1,16 @@
+Title: Single point MM calculations,
+
+ensemble nve
+zero
+
+steps 0
+timestep 0.0005
+
+evb 2
+
+cutoff 10.000000
+ewald precision 1e-6
+
+job time 100000
+close time 200
+finish

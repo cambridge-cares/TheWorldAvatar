@@ -8,12 +8,11 @@ Usage:
     pesfit  <ONTO_PES_SCAN_IRI>
 """
 
-
 def main():
     try:
         args = docopt(__doc__)
     except DocoptExit:
-        raise DocoptExit('Error: stdc called with wrong arguments.')
+        raise DocoptExit('Error: pesfit called with wrong arguments.')
 
     app.pesfit_wrapper(args)
 

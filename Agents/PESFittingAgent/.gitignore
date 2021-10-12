@@ -9,7 +9,6 @@ coverage.xml
 .coverage
 *.gv
 *.png
-resources/
 .pytest_cache
 assets
 

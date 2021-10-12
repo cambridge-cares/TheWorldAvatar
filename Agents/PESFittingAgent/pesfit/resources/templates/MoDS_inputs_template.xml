@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mods xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd" xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <algorithms>
+        <algorithm name="Initial" display_name="Experimental Data">
+            <details>
+                <detail name="algorithm_type">Initial</detail>
+                <detail name="optimisable_param_subtypes"></detail>
+                <detail name="response_param_subtypes"></detail>
+                <detail name="global">false</detail>
+            </details>
+        </algorithm>
+        <algorithm name="SamplingAlg" display_name="Model [Sampling]">
+            <details>
+                <detail name="algorithm_type">Sobol</detail>
+                <detail name="optimisable_param_subtypes">subtype_A1CaseGroup1 subtype_A2CaseGroup1 subtype_A3CaseGroup1 subtype_A4CaseGroup1</detail>
+                <detail name="response_param_subtypes">subtype_EgCaseGroup1</detail>
+                <detail name="model_name">exe</detail>
+                <detail name="objective_function">SumOfSquares</detail>
+                <detail name="output_by_case">false</detail>
+                <detail name="output_values">true</detail>
+                <detail name="global">false</detail>
+                <detail name="n_points">10000</detail>
+                <detail name="seed">1</detail>
+                <detail name="output_interval">100</detail>
+                <detail name="previous_algorithm">Initial</detail>
+            </details>
+        </algorithm>
+        <algorithm name="CalibrationAlg" display_name="Model [Calibrated]">
+            <details>
+                <detail name="algorithm_type">Hooke_Jeeves</detail>
+                <detail name="optimisable_param_subtypes">subtype_A1CaseGroup1 subtype_A2CaseGroup1 subtype_A3CaseGroup1 subtype_A4CaseGroup1</detail>
+                <detail name="response_param_subtypes">subtype_EgCaseGroup1</detail>
+                <detail name="model_name">exe</detail>
+                <detail name="objective_function">SumOfSquares</detail>
+                <detail name="output_by_case">false</detail>
+                <detail name="output_values">true</detail>
+                <detail name="global">false</detail>
+                <detail name="n_iters">5000</detail>
+                <detail name="n_initial_points">2000</detail>
+                <detail name="constrained">true</detail>
+                <detail name="rho">0.5</detail>
+                <detail name="rho_factor">0.5</detail>
+                <detail name="epsilon">0.001</detail>
+                <detail name="previous_algorithm">SamplingAlg</detail>
+            </details>
+        </algorithm>
+    </algorithms>
+    <models>
+        <model name="FormulaCaseGroup1">
+            <details>
+                <detail name="fnames_for_dependent_models"></detail>
+                <detail name="model_type">Executable</detail>
+            </details>
+        </model>
+    </models>
+    <cases>
+    </cases>
+    <files>
+        <file file_name="MODS_SIM_INITFILE__cases.csv">
+            <details>
+                <detail name="file_type">DSV</detail>
+                <detail name="delimiter">,</detail>
+            </details>
+        </file>
+        <file file_name="MODS_SIM_INITFILE__AIVarInitReadFile.csv">
+            <details>
+                <detail name="file_type">DSV</detail>
+                <detail name="delimiter">,</detail>
+            </details>
+        </file>
+    </files>
+    <functions>
+        <function name="Fun_EgCaseGroup1" usage="working_write">
+            <details>
+                <detail name="independent_variables">F1 F2 A1 A2 A3 A4</detail>
+                <detail name="independent_param_subtypes">subtype_F1CaseGroup1 subtype_F2CaseGroup1 subtype_A1CaseGroup1 subtype_A2CaseGroup1 subtype_A3CaseGroup1 subtype_A4CaseGroup1</detail>
+                <detail name="dependent_variable">EgCaseGroup1</detail>
+                <detail name="dependent_param_subtype">subtype_EgCaseGroup1</detail>
+                <detail name="expression">1/2*((F1+F2)-sqrt((F1+F2)^2-4*(F1*F2-(A1*exp(-((F1-F2-A2)/A3)^2)+A4)^2)))</detail>
+            </details>
+        </function>
+    </functions>
+    <parameters>
+        <parameter type="passive_input" subtype="subtype_F1CaseGroup1" case_detail_sep=";" name="F1CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45</detail>
+                        <detail name="column">F1</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0</detail>
+                        <detail name="ub_abs">1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="passive_input" subtype="subtype_F2CaseGroup1" case_detail_sep=";" name="F2CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45</detail>
+                        <detail name="column">F2</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0</detail>
+                        <detail name="ub_abs">1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_A1CaseGroup1" name="A1CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0</detail>
+                        <detail name="column">A1</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-5000.0</detail>
+                        <detail name="ub_abs">5000.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_A2CaseGroup1" name="A2CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0</detail>
+                        <detail name="column">A2</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-5000.0</detail>
+                        <detail name="ub_abs">5000.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_A3CaseGroup1" name="A3CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0</detail>
+                        <detail name="column">A3</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-10000.0</detail>
+                        <detail name="ub_abs">10000.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_input" subtype="subtype_A4CaseGroup1" name="A4CaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0</detail>
+                        <detail name="column">A4</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_abs">-5000.0</detail>
+                        <detail name="ub_abs">5000.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+        <parameter type="active_output" subtype="subtype_EgCaseGroup1" case_detail_sep=";" n_params_per_case="1" name="EgCaseGroup1" preserve_white_space="true">
+            <scaling>linear</scaling>
+            <cases>
+            </cases>
+            <models>
+                <model>FormulaCaseGroup1</model>
+            </models>
+            <files>
+                <initial_read>
+                    <details>
+                        <detail name="row">0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45</detail>
+                        <detail name="column">Eg</detail>
+                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
+                        <detail name="read_function">Get_DSV_double</detail>
+                        <detail name="lb_factor">1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0</detail>
+                        <detail name="ub_factor">1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0</detail>
+                        <detail name="lb_addend">-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0;-1.0</detail>
+                        <detail name="ub_addend">1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0;1.0</detail>
+                    </details>
+                </initial_read>
+            </files>
+        </parameter>
+    </parameters>
+</mods>

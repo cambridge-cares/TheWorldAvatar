@@ -1,0 +1,42 @@
+
+EVB method 
+
+--------------------------------------------------------------------------------------------------------
+
+Project folder structure:
+	- scan -> 	THIS FILES WILL BE CREATED BY EVB_AGENT.JAVA
+			scan_*.xyz files of every scan point
+			scan_data.txt: it includes state 1 and 2 numbers
+			scan.csv: R, Eg, Eshift
+			charges_state1.txt
+			charges_state2.txt
+	- dl_field -> 	\lib
+			dl_field
+			dl_f_path1
+			dl_f_path2
+			state1.control
+			state2.control
+	- state1 ->	CONTROL 
+			DLPOLY.Z										
+	- state2 ->	CONTROL 
+			DLPOLY.Z
+	- mods ->	MoDs_mpi
+			- Working_dir -> MoDS_inputs.xml
+			- Initial
+	- validation ->	CONTROL
+			DLPOLY.Z
+	
+--------------------------------------------------------------------------------------------------------
+
+ALGORITHM:
+1) The agent retrive the information from OntoPES
+2) It creates the topology files 
+3) It calculates E1 and E2
+4) It runs MoDS to find EVB parameters
+
+--------------------------------------------------------------------------------------------------------
+Things to do/improve:
+- add the isoPAHAP table if aromatic
+- fix DL_POLY warning
+- test the parameterization
+- do with ethanol (will give a error)

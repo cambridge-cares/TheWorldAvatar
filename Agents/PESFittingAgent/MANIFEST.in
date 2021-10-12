@@ -2,3 +2,5 @@ include LICENSE
 include README
 global-exclude *.py[cod] __pycache__ assets .vscode .pytest_cache *venv
 global-exclude tests
+recursive-include pesfit/resources/bash_script *
+recursive-include pesfit/resources/templates *

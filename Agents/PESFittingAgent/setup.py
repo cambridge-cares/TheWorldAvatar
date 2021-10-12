@@ -12,8 +12,9 @@ setup(
     python_requires='>=3.5',
     include_package_data=True,
     install_requires= ['docopt','py4jps', 'flask'],
-    #entry_points={
-    #    'console_scripts': [
-    #    ],
-    #}
+    entry_points={
+        'console_scripts': [
+            'pesfit=pesfit.driver:main'
+        ],
+    }
 )

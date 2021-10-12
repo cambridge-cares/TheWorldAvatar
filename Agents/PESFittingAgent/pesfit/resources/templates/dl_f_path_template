@@ -1,0 +1,12 @@
+# Directory paths for DL_FIELD version 4.4 onwards.
+# C W Yong, October 2018
+# This file must be located where DL_FIELD executable is located.
+# The directory must be changed correspondly if you move the file components.
+# All directory paths are RELATIVE to DL_FIELD home directory.
+# Do not use absolute paths.
+
+# paths
+library = <relative_dlf_lib_path>
+solvent = solvent/ 
+output  = output_<N>_<timestamp>/
+control = state<N>.control       
