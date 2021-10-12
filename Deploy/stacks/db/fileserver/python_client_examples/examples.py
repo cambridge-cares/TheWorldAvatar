@@ -28,9 +28,8 @@ text_fpath = os.path.join(base_dir,'dummy.txt')
 # Remote sub-directory used for some uploads
 remote_subdir = 'my_namespace'
 
-# Paths used to download a file and compare it to the original that was uploaded
-expected_owl_remote_fpath = "%s/%s" % (remote_subdir,os.path.basename(owl_fpath))
-downloaded_owl_fpath  = os.path.join(base_dir,'downloaded_dummy.owl')
+# Path used to download a file and compare it to the original that was uploaded
+downloaded_txt_fpath  = os.path.join(base_dir,'downloaded_dummy.txt')
 
 
 # Test multi-file upload
@@ -54,13 +53,14 @@ with open(owl_fpath,'rb') as file_obj1, open(log_fpath,'rb') as file_obj2, open(
 
 
 # Test single file upload
+text_remote_upload_path=None
 with open(text_fpath,'rb') as file_obj:
     print("\nUploading single file without a subdir")
     files={'file':file_obj}
     response = requests.post(upload_URL, auth=auth, files=files)
     if (response.status_code == status_codes.codes.OK):
-        for key in files.keys():
-            print(" %s uploaded with filename [%s]" % (key,response.headers[key]))
+        text_remote_upload_path = response.headers['file']
+        print(" Uploaded with filename [%s]" % text_remote_upload_path)
     else:
         print("  ERROR: File upload failed with code %d " % response.status_code)
 
@@ -78,18 +78,19 @@ with open(text_fpath,'rb') as file_obj:
 
 
 # Test single file download
-print("\nRe-downloading file")
-response = requests.get(download_URL+expected_owl_remote_fpath, auth=auth)
-if (response.status_code == status_codes.codes.OK):
-    with open(downloaded_owl_fpath, 'wb') as file_obj:
-        for chunk in response.iter_content(chunk_size=128):
-            file_obj.write(chunk)
-    if filecmp.cmp(owl_fpath,downloaded_owl_fpath):
-        print("  Downloaded file matches original")
+if text_remote_upload_path is not None:
+    print("\nRe-downloading file")
+    response = requests.get(download_URL+text_remote_upload_path, auth=auth)
+    if (response.status_code == status_codes.codes.OK):
+        with open(downloaded_txt_fpath, 'wb') as file_obj:
+            for chunk in response.iter_content(chunk_size=128):
+                file_obj.write(chunk)
+        if filecmp.cmp(text_fpath,downloaded_txt_fpath):
+            print("  Downloaded file matches original")
+        else:
+            print("  ERROR: Downloaded file differs from original")
     else:
-        print("  ERROR: Downloaded file differs from original")
-else:
-    print("  ERROR: File download failed with code %d " % response.status_code)
+        print("  ERROR: File download failed with code %d " % response.status_code)
 
 
 # Try GET from upload URL (should fail)
