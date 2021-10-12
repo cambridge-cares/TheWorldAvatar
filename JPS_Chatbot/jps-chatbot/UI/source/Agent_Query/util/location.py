@@ -12,7 +12,7 @@ def get_parent_path(path):
 
 
 this_dir = os.path.dirname(os.path.abspath(__file__))
-parent_dir = get_parent_path(this_dir)
+parent_dir = get_parent_path(get_parent_path(this_dir))
 
 WIKIDATA_QUERY_DIR = os.path.join(parent_dir, 'Wikidata_Query')
 WIKI_MODELS_DIR = os.path.join(WIKIDATA_QUERY_DIR, 'models')
@@ -24,7 +24,7 @@ AGENT_OWL_DIR = os.path.join(AGENT_QUERY_DIR, 'Agents')
 JPS_QUERY_DIR = os.path.join(parent_dir, 'JPS_Query')
 JPS_MODELS_DIR = os.path.join(JPS_QUERY_DIR, 'models')
 
-print('WIKI_MODEL_DIR', WIKI_MODELS_DIR)
-print('AGENT_MODEL_DIR', AGENT_MODELS_DIR)
-print('JPS_MODEL_DIR', JPS_MODELS_DIR)
+# print('WIKI_MODEL_DIR', WIKI_MODELS_DIR)
+# print('AGENT_MODEL_DIR', AGENT_MODELS_DIR)
+# print('JPS_MODEL_DIR', JPS_MODELS_DIR)
 

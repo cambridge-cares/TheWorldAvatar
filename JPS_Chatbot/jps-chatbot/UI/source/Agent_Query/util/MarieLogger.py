@@ -1,18 +1,5 @@
 import json
 import logging
-import sys
-from functools import wraps
-import os
-import warnings
-import tensorflow as tf
-import numpy as np
-
-np.warnings.filterwarnings("ignore")
-# suppress other warnings
-warnings.filterwarnings("ignore")
-# suppress tensorflow warnings
-tf.get_logger().setLevel(logging.ERROR)
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 def MarieLog(func):
@@ -38,19 +25,29 @@ def MarieQuestionLog(func):
     return wrapper
 
 
+def MarieError(err):
+    logger = logging.getLogger('Error')
+    logger.setLevel(logging.DEBUG)
+    logger.error(err)
+
+
+def MarieMessage(message):
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('Message')
+    logger.setLevel(logging.DEBUG)
+    logger.info(message)
+
+
 def MarieIOLog(func):
     def wrapper(*args, **kwargs):
+        logging.basicConfig(level=logging.DEBUG)
         logger = logging.getLogger('Function I/O')
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG)
         rst = func(*args)
         if rst is None:
             logger.warning('{} is called with input {} but returned None'.format(func.__name__, args[1:]))
         else:
-            try:
-                rst_string = json.dumps(rst, indent=4)
-            except:
-                rst_string = rst
-            logger.info('{} is called with input {} and output {}'.format(func.__name__, args[1:], rst_string))
+            logger.info('{} is called with input {} and output {}'.format(func.__name__, args[1:], rst))
         return rst
 
     return wrapper

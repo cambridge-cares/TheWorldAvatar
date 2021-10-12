@@ -5,8 +5,10 @@ import os
 
 agent = {
     "question_templates":
-        ['<attribute> of <species>', '<attribute> of <species> at <qualifier>',
-         '<attribute> of <species> at <qualifier> and <qualifier>'],
+        ['<attribute> <species>', '<attribute> <species> at <qualifier>',
+         '<attribute> <species> at <qualifier> and <qualifier>',
+         '<species> singlequotesign <attribute> at <qualifier>',
+         '<species> singlequotesign <attribute> at <qualifier> and <qualifier>'],
     "http_url": " http://127.0.0.1:5000/thermo_agent",
     "outputs": [
         {

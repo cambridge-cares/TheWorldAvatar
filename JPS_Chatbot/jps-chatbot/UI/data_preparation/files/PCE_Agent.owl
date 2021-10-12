@@ -20,7 +20,7 @@
   <MSM.:hasOutput rdf:resource="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915"/>
   <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://somewhereincmcl.com/pce</MSM.:hasHttpUrl>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
 <MSM.:MessageContent rdf:about="#MessageContent_c5aa5fff93d40c35e52164e7a18a82c85f79a77a">

@@ -5,7 +5,7 @@ from location import FILE_DIR
 agent = {
     "question_templates":
         ['<attribute> OPF with donor <species>',
-         '<attribute> of <species>'],
+         '<attribute> <species>'],
     "http_url": "http://somewhereincmcl.com/pce",
     "outputs": [
         {

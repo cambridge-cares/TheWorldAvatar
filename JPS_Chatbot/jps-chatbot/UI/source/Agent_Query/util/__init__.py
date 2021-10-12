@@ -1,3 +1,16 @@
-from .ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
-from .MarieLogger import MarieLog, MarieIOLog
-from .StopWords import removeStopWords
+if __name__ == '__main__':
+    from ModelLoader import ModelLoader, AGENT_NLU_MODEL
+    from MarieLogger import *
+    from StopWords import removeStopWords
+    from SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
+    from UniversalQuery import query_blazegraph
+    from Lookup import *
+
+else:
+    from .ModelLoader import ModelLoader
+    from .MarieLogger import *
+    from .StopWords import removeStopWords
+    from .SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY, GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
+    from .UniversalQuery import query_blazegraph
+    from .Lookup import *
+

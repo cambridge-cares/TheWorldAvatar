@@ -24,10 +24,12 @@
   <MSM.:hasOutput rdf:resource="#MessageContent_148bef5fc55527ef8df1117a2c01c07140a28f12"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_f3109b16883d21984eac7c8dc3cacccf724ccf29"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_f7c4e75626b617ef4b3da1a027b51950388741cc"/>
-  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://somewhereincmcl.com/thermal</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> http://127.0.0.1:5000/thermo_agent</MSM.:hasHttpUrl>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
 <MSM.:MessageContent rdf:about="#MessageContent_0a76efb2fc86c8b5edc4cc2c7cf4457bcf071234">

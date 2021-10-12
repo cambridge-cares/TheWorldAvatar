@@ -1,27 +1,61 @@
 from pprint import pprint
-from .AgentRequestConstructor import AgentRequestConstructor
-from util.MarieLogger import MarieLog, MarieIOLog, MarieQuestionLog
-from util.StopWords import removeStopWords
+
+if __name__ == '__main__':
+    from AgentQueryParser import AgentQueryParser
+    from AgentCaller import AgentCaller
+    from util.MarieLogger import MarieLog, MarieIOLog, MarieQuestionLog, MarieMessage
+    from util.StopWords import removeStopWords
+    from util.ModelLoader import ModelLoader
+else:
+    from .AgentCaller import AgentCaller
+    from .AgentQueryParser import AgentQueryParser
+    from .util.MarieLogger import MarieLog, MarieIOLog, MarieQuestionLog, MarieMessage
+    from .util.StopWords import removeStopWords
 
 
 class AgentQueryInterface:
     def __init__(self, model):
         self.agent_interpreter = model
-        self.agent_request_constructor = AgentRequestConstructor()
+        self.agent_query_parser = AgentQueryParser()
+        self.agent_caller = AgentCaller()
 
-    @MarieIOLog
+    # @MarieIOLog
     def agent_query(self, question):
         rst = self.parse_question(question)
-        try:
-            response = self.agent_request_constructor.call_agent(rst)
-            return response
-        except:
-            return None
+        _inputs, _outputs, _url = self.agent_query_parser.parse(rst)
+        MarieMessage(_inputs)
+        MarieMessage(_outputs)
 
+        MarieMessage('====================================================')
+
+        # try:
+        #     response = self.agent_caller.call(_inputs, _outputs, _url)
+        #     return response
+        # except:
+        #     return None
+        response = self.agent_caller.call(_inputs, _outputs, _url)
+        return response
+
+    # make NLP analysis on the question
     def parse_question(self, question):
         question = removeStopWords(question)
-        return self.agent_interpreter.parse(question)
+        result = self.agent_interpreter.parse(question)
+        MarieMessage('question {}'.format(question))
+        for e in result['entities']:
+            MarieMessage('entity {}'.format(e['entity']))
+            MarieMessage('value  {}'.format(e['value']))
+            MarieMessage('--------------')
+        return result
 
 
 if __name__ == '__main__':
-    aqi = AgentQueryInterface()
+    ml = ModelLoader()
+    agent_nlu_model = ml.AGENT_NLU_MODEL()
+    aqi = AgentQueryInterface(agent_nlu_model)
+    questions = ['enthalpy of inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3 at the temperature of 123 K and pressure of 1 atm',
+                 'heat capacity of CO2 at 123 K and 1 Pa',
+                 'internal energy of C4H10O at 901 Pascal and 3694 kelvin',
+                 'gibbs egnery of carbon dioxide at the temperature of 222 degrees celsius and 232Pa']
+    for q in questions[1:]:
+        r = aqi.agent_query(q)
+        print(r)

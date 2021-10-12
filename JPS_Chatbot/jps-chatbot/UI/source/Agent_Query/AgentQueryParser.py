@@ -1,10 +1,15 @@
 import os
 from pprint import pprint
-
 import rdflib
 from rapidfuzz import process, fuzz
-from SPARQLQueryWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS
-from location import FILE_DIR
+
+if __name__ == '__main__':
+    from .util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
+    from .location import FILE_DIR
+
+else:
+    from util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
+    from location import FILE_DIR
 
 
 # extract inputs from the SPARQL query
@@ -105,29 +110,29 @@ class AgentQueryParser:
         self.port = ""
         self.graph = rdflib.Graph()
 
-    def process_nlu_results(self, _nlu_result):
+    def parse(self, _nlu_result):
         # get the intent
         agent_name = _nlu_result['intent']['name']
         entities = _nlu_result['entities']
-        output_rst, input_rst = self.get_agent_request_attributes(agent_name)
-
+        output_rst, input_rst, url_rst = self.get_agent_request_attributes(agent_name)
         output_dict = create_output_dict(_output_rst=output_rst)
-        outputs = match_outputs(_entities=entities, _output_parameters_dict=output_dict)
-        print('outputs\n', outputs)
+        _outputs = match_outputs(_entities=entities, _output_parameters_dict=output_dict)
         input_dict = create_input_dict(_input_rst=input_rst)
-        inputs = match_inputs(_entities=entities, _input_parameters_dict=input_dict)
-        print('inputs\n', inputs)
+        _inputs = match_inputs(_entities=entities, _input_parameters_dict=input_dict)
+        for _u in url_rst:
+            _url = _u['url'].value
+        return _inputs, _outputs, _url
 
     # query the OntoAgent instance via SPARQL and extract the inputs/outputs parameters of the agent
     def get_agent_request_attributes(self, agent_name):
         agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
         self.graph.parse(agent_dir)
         input_rst = self.graph.query(GET_AGENT_INPUT_PARAMETERS)
-        for _input in input_rst:
-            print('Type: %s \nName: %s \nisArray: %s \nnerLabel: %s \n' % _input)
         # species fits species as the ner label
         output_rst = self.graph.query(GET_AGENT_OUTPUTS)
-        return output_rst, input_rst
+        # get the inputs and outputs, but also
+        url_rst = self.graph.query(GET_HTTP_URL)
+        return output_rst, input_rst, url_rst
 
 
 if __name__ == '__main__':
@@ -159,5 +164,9 @@ if __name__ == '__main__':
                   'intent_ranking': [{'confidence': 1.0, 'name': 'Thermo_Agent'},
                                      {'confidence': 5.383306859463607e-32, 'name': 'PCE_Agent'}],
                   'text': 'enthalpy inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3 at 1522.1 pa and 123245 k'}
+
     aqp = AgentQueryParser()
-    aqp.process_nlu_results(_nlu_result=nlu_result)
+    inputs, outputs, url = aqp.parse(_nlu_result=nlu_result)
+    print('inputs', inputs)
+    print('outputs', outputs)
+    print('url', url)
