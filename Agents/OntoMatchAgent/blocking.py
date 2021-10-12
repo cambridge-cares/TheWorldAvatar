@@ -122,10 +122,11 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                     length = len(links)
                     index[key][column_count] = length
 
+            df_index = pd.DataFrame.from_dict(index, orient='index')
+            logging.info('total number of tokens after processing property %s is %s', column, len(df_index))
         else:
+            df_index = pd.DataFrame.from_dict(index, orient='index')
             logging.warning('column not found:%s', column)
-
-        df_index = pd.DataFrame.from_dict(index, orient='index')
 
         return index, df_index
 
@@ -139,7 +140,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             blocking_properties = dframe.columns
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
-            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
+
 
         # add tokens for target ontology
         dframe = create_dataframe_from_ontology(tgt_onto)
@@ -147,7 +148,6 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             blocking_properties = dframe.columns
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
-            logging.info('total number of tokens after processing property %s is %s', prop, len(df_index))
 
         logging.info('columns=%s', df_index.columns)
 
@@ -204,6 +204,13 @@ def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
     it_instance = globals()[name](src_onto, tgt_onto, **params_model_specific)
     return it_instance
 
+def uri_to_string(s):
+    s = str(s).replace('http://dbpedia.org/ontology/', 'dbo:').replace('http://dbpedia.org/property/', 'dbp:')
+    s = s.replace('http://www.w3.org/2003/01/geo/', 'geo:')
+    #i = s.rfind('/')
+    #return (s if i is None else s[i+1:])
+    return s
+
 def create_dataframe_from_ontology(onto):
     rows = []
 
@@ -229,12 +236,15 @@ def create_dataframe_from_ontology(onto):
         p_o_tuples = props[1]
         for p, o in p_o_tuples:
             if isinstance(o, rdflib.Literal):
+
+                # TODO-AE this is a hack. talk to shaocong to create correct property paths
                 if isinstance(p, list):
                     # list contains the properties of a property path
                     # they are merged to get a name for the dataframe column
-                    column = '/'.join(p)
+                    p_str = [ uri_to_string(q) for q in p]
+                    column = '/'.join(p_str)
                 else:
-                    column = p
+                    column = uri_to_string(p)
 
                 row[column] = o.toPython()
             else:

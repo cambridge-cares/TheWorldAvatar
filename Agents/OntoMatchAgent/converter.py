@@ -99,14 +99,18 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
     plant_name_norm = d.get('plantnamenorm')
     if plant_name_norm:
         name = replace_special_symbols(plant_name_norm)
-        name = name.replace(' ', '_') + '_' + country_short
+        name = name.replace(' ', '_')
+        if country_short:
+            name += '_' + country_short
     elif d['plantname']:
         name = replace_special_symbols(d['plantname'])
-        name = name.replace(' ', '_') + '_' + country_short
+        name = name.replace(' ', '_')
+        if country_short:
+            name += '_' + country_short
     else:
         name = country_short
     if 'plant_id' in d:
-        name = d['plant_id'] + '_' + name
+        name = str(d['plant_id']) + '_' + name
 
     s = BASE[name]
     g.add((s, RDF.type, OWL.NamedIndividual))
@@ -178,23 +182,26 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
 
     return name
 
-def create_DUKES_plants(source_file, target_file, version, format):
+def create_DUKES_plants(source_file, target_file, version, format, coordinates):
 
     filter_strings = [] #['Pencoose', 'Goonhilly_Downs_2', 'Goonhilly_Downs_1']
 
     graph = rdflib.Graph()
     bind_prefixes(graph)
 
-    dframe = pd.read_csv(source_file)
+    dframe = pd.read_csv(source_file, index_col='dukes_id')
     #size_dbr = len('http://dbpedia.org/resource/')
 
     if version == 'v2':
         owner_dict = create_owner_dict(graph, dframe) #, filter_strings)
 
-    for _, row in dframe.iterrows():
+    for i, row in dframe.iterrows():
         # TODO
-        orig_plant_name = row['name'][:-3]
-        if filter_strings and orig_plant_name not in filter_strings:
+        #plant_name = row['name'] #[:-3]
+        plant_name = row['file_name'][:-7]
+        j = plant_name.index('_')
+        plant_name = plant_name[j+1:]
+        if filter_strings and plant_name not in filter_strings:
             continue
 
         if version == 'v2':
@@ -203,16 +210,22 @@ def create_DUKES_plants(source_file, target_file, version, format):
             owner = row['owner']
 
         row = {
-            'type': row['type'],
-            'plantname': orig_plant_name,
+            'plant_id': i,
+            'type': row['onto_type'],
+            'plantname': plant_name,
             'owner': owner,
-            'country': URIRef(row['adress']),
-            'long': row['gis_x'],
-            'lat': row['gis_y'],
+            'country': URIRef(row['address']),
             'year_built': row['year_built'],
-            'design_cap': row['design cap']
+            'design_cap': row['design_capacity']
         }
-        create_plant_from_dictionary(graph, row, version, 'UK')
+
+        if coordinates:
+            row.update({
+                'long': row['long'],
+                'lat': row['lat'],
+            })
+
+        create_plant_from_dictionary(graph, row, version, 'GBR')
 
     graph.serialize(target_file, format=format)
 
@@ -233,33 +246,41 @@ def v(row, key):
         value = None
     return value
 
-def create_GPPDB_plants(source_file, target_file, version, format):
+def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
 
     global BASE
     BASE = BASE_GPPD
 
     filter_strings = [] #['Pencoose', 'Goonhilly Downs Wind Farm', 'Goonhilly Solar']
 
-    g = rdflib.Graph()
-    bind_prefixes(g)
+    graph = rdflib.Graph()
+    bind_prefixes(graph)
 
-    df = pd.read_csv(source_file)
+    dframe = pd.read_csv(source_file, index_col='gppd_idnr')
+    dframe = dframe[dframe['country'] == country_short]
+
+    logging.info('number of rows in GPPD for country=%s is %s', country_short, len(dframe))
+
     #size_dbr = len('http://dbpedia.org/resource/')
 
     owner_dict = {}
     #if version == 'v2':
     #    owner_dict = create_owner_dict(g, df)
 
-    for _, row in df.iterrows():
+    for i, row in dframe.iterrows():
         # TODO
         orig_plant_name = v(row, 'name')
+
+        if not 'Altbach' in orig_plant_name:
+            continue
+
         if filter_strings and orig_plant_name not in filter_strings:
             continue
 
         owner = v(row, 'owner')
         if owner and version == 'v2':
             #owner = owner_dict[owner]
-            owner = get_owner(g, owner_dict, owner)
+            owner = get_owner(graph, owner_dict, owner)
 
         fuel = v(row, 'primary_fuel')
         fuel_type = convert_fuel_to_subclass(fuel)
@@ -267,7 +288,8 @@ def create_GPPDB_plants(source_file, target_file, version, format):
         if country:
             country = DBR[country.replace(' ', '_')]
 
-        d = {
+        row = {
+            'plant_id': i,
             'type': fuel_type,
             'plantname': orig_plant_name,
             'owner': owner,
@@ -277,9 +299,10 @@ def create_GPPDB_plants(source_file, target_file, version, format):
             'year_built': v(row, 'commissioning_year'),
             'design_cap': v(row, 'capacity_mw')
         }
-        create_plant_from_dictionary(g, d, version, 'UK')
 
-    g.serialize(target_file, format=format)
+        create_plant_from_dictionary(graph, row, version, country_short)
+
+    graph.serialize(target_file, format=frmt)
 
 
 def create_GPPDB_plants_single_files(source_file, target_dir, version, format, country, country_short):
@@ -672,20 +695,70 @@ def create_location_file(source_file, target_file, frmt):
         #if o:
         #    g.add((x, SDO['addressRegion'], Literal(o)))
 
-    graph.serialize(target_file, format=frmt)
+    graph.serializ
+
+def convert_dbpedia_to_ontopowsys(source_file, target_file, format):
+
+    global BASE
+    BASE = DBR
+
+    graph = rdflib.Graph()
+    bind_prefixes(graph)
+
+    dframe = pd.read_csv(source_file, delimiter=',', encoding='utf8', index_col='idx')
+    #dframe = dframe.sort_values(by='idx')
+
+    country = DBR['Germany']
+    owner_dict = {}
+
+    for i, row in tqdm(dframe.iterrows()):
+
+        plant_name = v(row, 'name')
+        plant_name_norm = plant_name.replace('http://dbpedia.org/resource/', '')
+        #plant_name_norm = normalize_plant_name(plant_name)
+
+        #if filter_strings and plant_name not in filter_strings:
+        #    continue
+
+        owner = v(row, 'owner')
+
+        fuel = v(row, 'primary_fuel')
+        fuel_type = convert_fuel_to_subclass(fuel)
+
+        d = {
+            #'plant_id': None,
+            'type': fuel_type,
+            'plantname': plant_name,
+            'plantnamenorm': plant_name_norm,
+            'owner': owner,
+            'country': country,
+            'long': v(row, 'longitude'),
+            'lat': v(row, 'latitude'),
+            'year_built': v(row, 'commissioning_year'),
+            'design_cap': v(row, 'capacity_mw')
+        }
+
+        create_plant_from_dictionary(graph, d, None, country_short='', use_schema=False)
+
+    graph.serialize(target_file, format=format)
 
 if __name__ == '__main__':
 
     util.init_logging('.', '..')
 
-    frmt = 'turtle'
-    #frmt = 'xml'
+    #frmt = 'turtle'
+    frmt = 'xml'
     #frmt = 'nt' # ntriples
-    #src_file = 'C:/my/tmp/ontomatch/dukes_tmp.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/matching_test_files/4_dukes_all.owl'
-    #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+    #src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes.owl'
+    #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=False)
+
+    #country_short='GBR'
+    #country_short='DEU'
     #src_file = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/globalpowerplantdatabasev120/global_power_plant_database.csv'
-    #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_DEU_Altbach_only.owl'
+    #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', frmt=frmt, country_short=country_short)
+
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='United Kingdom', country_short='UK')
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
@@ -697,6 +770,10 @@ if __name__ == '__main__':
     #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
     #create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
 
-    src_file = 'C:/my/tmp/ontomatch/Municipalities_Germany_UTF8.csv'
-    tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'
-    create_location_file(src_file, tgt_file, frmt)
+    src_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_v1.csv'
+    tgt_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
+    convert_dbpedia_to_ontopowsys(src_file, tgt_file, frmt)
+
+    #src_file = 'C:/my/tmp/ontomatch/Municipalities_Germany_UTF8.csv'
+    #tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'
+    #create_location_file(src_file, tgt_file, frmt)

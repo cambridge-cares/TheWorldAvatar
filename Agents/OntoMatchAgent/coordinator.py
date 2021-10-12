@@ -1,5 +1,6 @@
 import logging
 import pickle
+import traceback
 
 from owlready2 import get_ontology
 import rdflib
@@ -148,28 +149,35 @@ class Agent():
         logging.info('finished adding geographic coordinates, enhanced individuals=%s', count_geo)
 
     def start(self, params, penalize):
-        params_for_loading = {
-            'srcaddr': params['dataset']['src'],
-            'tgtaddr': params['dataset']['tgt'],
-            'add_knowledge': params['pre_processing']['add_knowledge'],
-            'dump_ontology': params['pre_processing']['pickle_dump'],
-        }
-        #srconto, tgtonto = agent.load(srcaddr, tgtaddr, add_knowledge=True, dump_ontology=True)
-        srconto, tgtonto = self.load(**params_for_loading)
 
-        params_model_specific = params['matching']['model_specific']
-        match_steps  = params_model_specific['steps']
-        match_weights = params_model_specific['weights']
-        additional_match_params = params_model_specific['params']
-        threshold = params_model_specific['threshold']
+        try:
+            params_for_loading = {
+                'srcaddr': params['dataset']['src'],
+                'tgtaddr': params['dataset']['tgt'],
+                'add_knowledge': params['pre_processing']['add_knowledge'],
+                'dump_ontology': params['pre_processing']['pickle_dump'],
+            }
+            #srconto, tgtonto = agent.load(srcaddr, tgtaddr, add_knowledge=True, dump_ontology=True)
+            srconto, tgtonto = self.load(**params_for_loading)
 
-        params_blocking = params['blocking']
+            params_model_specific = params['matching']['model_specific']
+            match_steps  = params_model_specific['steps']
+            match_weights = params_model_specific['weights']
+            additional_match_params = params_model_specific['params']
+            threshold = params_model_specific['threshold']
 
-        # TODO-AE move more config params to dictionary / config file
-        match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
-                weight=match_weights, paras=additional_match_params,
-                matchIndividuals=True, penalize=penalize, useAttrFinder=False)
+            params_blocking = params['blocking']
 
-        alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
-        #match_manager.showResult(match_manager.A,'individualList')
-        match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+            # TODO-AE move more config params to dictionary / config file
+            match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
+                    weight=match_weights, paras=additional_match_params,
+                    matchIndividuals=True, penalize=penalize, useAttrFinder=False)
+
+            alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
+            #match_manager.showResult(match_manager.A,'individualList')
+            match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+        except:
+            full_traceback = traceback.format_exc()
+            print(full_traceback)
+            logging.fatal(full_traceback)
+            raise
