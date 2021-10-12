@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -149,6 +150,49 @@ public class TimeSeriesClient<T> {
     }
     
     /**
+     * this creates one table per dataIRI in one connection, 
+     * all columns assume to use Double.class
+     * @param dataIRIs
+     */
+    public void bulkInitTimeSeries(List<String> dataIRIs) {
+    	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+    	
+    	for (int i = 0; i < dataIRIs.size(); i++) {
+    		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+    		tsIRIs.add(i, tsIRI);
+    	}
+    	
+    	// Step1: Initialise time series in knowledge base
+    	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
+    	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+   		try {
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL());
+		}
+		catch (Exception e_RdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		}
+   		
+   	    // Step2: Try to initialise time series in relational database
+    	try {
+    		rdbClient.bulkInitTimeSeriesTable(dataIRIs, tsIRIs);
+    	} catch (JPSRuntimeException e_RdbCreate) {
+    		// For exceptions thrown when initialising RDB elements in relational database,
+			// try to revert previous knowledge base instantiation
+    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+    		//		a different exception depending on what the problem was, and how it should be handled
+    		try {
+    			for (String tsIRI : tsIRIs) {
+    				rdfClient.removeTimeSeries(tsIRI);
+    			}
+    		} catch (Exception e_RdfDelete) {
+    			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series, "
+    					+ "as database related instantiation failed but KG triples were created ");
+    		}
+    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+    	}
+    }
+    
+    /**
      * Append time series data to an already instantiated time series
 	 * @param ts TimeSeries object to add
      */
@@ -167,6 +211,26 @@ public class TimeSeriesClient<T> {
     	
     	// Add time series data to respective database table
     	rdbClient.addTimeSeriesData(ts);
+    }
+    
+    /**
+     * uploads all time series in a single connection
+     * @param ts_list
+     */
+    public void addTimeSeriesData(List<TimeSeries<T>> ts_list) {
+    	// each time series has its own list
+    	for (TimeSeries<T> ts : ts_list) {
+    		List<String> ts_dataIRI = ts.getDataIRIs();
+    		for (String dataIRI : ts_dataIRI) {
+    			if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
+        			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+        					  " is not attached to any time series instance in the KG");
+        		}
+    		}
+    	}
+    	
+    	// upload data in a single connection
+    	rdbClient.addTimeSeriesData(ts_list);
     }
     
 	/**
