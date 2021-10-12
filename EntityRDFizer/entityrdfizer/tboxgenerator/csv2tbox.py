@@ -1,7 +1,6 @@
 from entityrdfizer.javagateway.gateway import jpsBaseLibGW
 from py4j.java_gateway import Py4JJavaError, Py4JError
 import textwrap
-import pathlib
 import glob
 import os
 
@@ -12,8 +11,7 @@ jpsBaseLibGW.importPackages(jpsBaseLibGW_view,'uk.ac.cam.cares.jps.base.converte
 
 def run_tbox_generator(
     csvFileOrDirPath,
-    outDir
-):
+    outDir):
 
     if os.path.isfile(csvFileOrDirPath):
         if outDir is None: outDir = os.path.dirname(csvFileOrDirPath)
@@ -33,7 +31,7 @@ def run_tbox_generator(
 
 def csv2tbox(csvFile, outDir):
     print(f"Converting tbox {csvFile} into rdf format.")
-    outFile = os.path.join(outDir,pathlib.Path(csvFile).stem+'.owl')
+    outFile = os.path.join(outDir,os.path.basename(csvFile)+'.owl')
     TBoxGenerator = jpsBaseLibGW_view.TBoxGeneration()
     try:
         # the file name is added to the outDir, as the java code expects output file path
