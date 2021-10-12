@@ -408,6 +408,12 @@
 		    <artifactId>commons-validator</artifactId>
 		    <version>1.7</version>
 		</dependency>
+        <!-- used in remote store client to upload rdf file -->
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
+        </dependency>
     </dependencies>
 
 

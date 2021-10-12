@@ -1,6 +1,6 @@
 # This configuration file should include any docker-compose options used only when deploying the
-# stack WITH the '--test' flag.
-# Its counterpart is docker-compose.live.yml.
+# stack in development mode WITH the '--test' flag.
+# Its counterpart is docker-compose.dev.live.yml.
 #
 # The expectation is that this file will contain 'ports' nodes for any services that need to map a
 # host port, but other options may be valid too - please consult CMCL admins for more details.
@@ -10,44 +10,10 @@
 
 version: "3.8"
 
-
+# Services
 services:
 
-  # Email Agent
-  email-agent:
+  # Status Agent
+  status-agent:
     ports:
-      - 49080:8080
-
-  # Gas Grid Agent
-  gas-grid-agent:
-    ports:
-      - 41081:80
-
-  # JPS Chatbot
-  jps-chatbot:
-    ports:
-      - 46000:5000
-
-  # JPS LDF Server
-  jps-ldf:
-    ports:
-      - 44000:3000
-
-  # # Kinetics Agent
-  # kinetics-agent:
-  #   ports:
-  #     - 49081:8080
-
-  # OSCML Agent
-  oscml-agent:
-    ports:
-      - 46001:5000
-
-  stdc-agent:
-    ports:
-      - 46002:5000
-
-  # Weather Agent
-  weather-agent:
-    ports:
-      - "49085:8080"
+      - 49087:8080
