@@ -5,7 +5,6 @@ __doc__ = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--url=<url>]
                              [--auth=<auth>]
-                             [--namespace=<nmsp>]
                              [--file-ext=<ext>]
                              [--log-file-name=<name>]
                              [--log-file-dir=<dir>]
@@ -19,7 +18,6 @@ Options:
 --auth=<auth>           Triple store authorization as a "username:password"
                         string. If not specified, the code will try to read
                         it from user environment variables.
---namespace=<nmsp>      Triple store namespace.                       [default: base]
 --file-ext=<ext>        List of extensions used to select files       [default: .owl]
                         that will be uploaded to the triple store.
 --log-file-name=<name>  Name of the generated log file.               [default: ts_upload.log]
@@ -41,7 +39,6 @@ def start():
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
         auth = tuple(args['--auth'].split(':')) if args['--auth'] is not None else args['--auth'],
-        namespace = args['--namespace'],
         file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],

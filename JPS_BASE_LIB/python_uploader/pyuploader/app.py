@@ -9,7 +9,6 @@ def ts_upload_wrapper(
         file_or_dir,
         url='',
         auth='',
-        namespace='base',
         file_ext='.owl',
         log_file_dir= None,
         log_file_name = 'ts_upload.log',
@@ -32,12 +31,11 @@ def ts_upload_wrapper(
                 file_or_dir,
                 url,
                 auth,
-                namespace,
                 file_ext,
                 dry_run)
     except Exception as e:
+        logger.error("Triples upload failed. Please check the log for a more detailed error description.")
         logger.exception(e)
-        raise e
 
 def fs_upload_wrapper(
         file_or_dir,
@@ -70,5 +68,5 @@ def fs_upload_wrapper(
             subdirs,
             dry_run)
     except Exception as e:
+        logger.error("File upload failed. Please check the log for a more detailed error description.")
         logger.exception(e)
-        raise e
