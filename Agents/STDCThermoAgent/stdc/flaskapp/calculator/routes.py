@@ -13,10 +13,10 @@ def api():
     # Check arguments (query parameters)
     print(request.args)
     inputs= {}
-    ontocompchem_IRI = request.args['ontocompchem_IRI']
     ontospecies_IRI = request.args['ontospecies_IRI']
+    ontocompchem_IRI = request.args['ontocompchem_IRI']
+    os_inputs, enthalpy_ref_data = get_ontospecies_data(ontospecies_IRI)
     oc_inputs = get_ontocompchem_data(ontocompchem_IRI, ontospecies_IRI)
-    os_inputs = get_ontospecies_data(ontospecies_IRI)
     inputs = {**oc_inputs,**os_inputs}
 
     if 'temperature' in request.args:
@@ -27,9 +27,9 @@ def api():
 
     try:
         # Run the model
-        ThermoData = runThermoCalculator(inputs)
-        print(ThermoData)
-        return jsonify({"result": ThermoData})
+        response = runThermoCalculator(inputs)
+        response['Energy reference point information'] = enthalpy_ref_data
+        return jsonify({"result": response})
 
     except Exception as ex:
         print(ex)

@@ -1,0 +1,34 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack WITH the '--test' flag.
+# Its counterpart is docker-compose.live.yml.
+#
+# The expectation is that this file will contain 'ports' nodes for any services that need to map a
+# host port, but other options may be valid too - please consult CMCL admins for more details.
+# For guidance in setting an appropriate port number, please see the instructions at
+# https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker:-Stacks#instructions-1
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+
+  # Blazegraph
+  blazegraph:
+    ports:
+      - 49082:8080
+
+  # Blazegraph geo
+  blazegraph-geo:
+    ports:
+      - 49083:8080
+
+  # Postgres
+  postgres:
+    ports:
+      - 46432:5432
+
+  # RDF4J
+  rdf4j:
+    ports:
+      - 49084:8080

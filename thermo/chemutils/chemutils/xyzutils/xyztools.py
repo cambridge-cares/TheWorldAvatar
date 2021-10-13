@@ -1,16 +1,10 @@
-from chemutils.xyzutils import xyzToMolToRdkitMol
-from chemutils.rdkitutils import getRdkitAtomXYZbyId, \
-                                 rdkitMatchHeavyAtoms, \
-                                 rdkitMolToInchi, \
-                                 rdkitSubstrMatches, \
-                                 rdkitSubstrAlignMatch, \
-                                 setRdkitMolBondLength, \
-                                 getRdkitMolBondLength, \
-                                 rdkitMolToXYZ, \
-                                 rdkitAlignMols
-from chemutils.mathutils import findClosestXYZPoints, getXYZPointsDistance
-from chemutils.ioutils import readFile, fileExists, removeBlankTrailingLines
-from chemutils.obabelutils import obConvert
+import chemutils.xyzutils.xyzconverters as xyzconverters
+import chemutils.rdkitutils.rdkitmolutils as rdkitmolutils
+import chemutils.rdkitutils.rdkitconverters as rdkitconverters
+import chemutils.mathutils.linalg as linalg
+import chemutils.ioutils.ioutils as ioutils
+import chemutils.obabelutils.obconverter as obconverter
+import chemutils.obabelutils.obutils as obutils
 import random
 import re
 import numpy as np
@@ -20,14 +14,6 @@ def xyzToAtomsPositions(xyzFileOrStr):
     """
     Returns atom positions (order) given a molecule in an xyz format.
     Inchi-based algorithm.
-
-    Note that the assigned positions are NOT UNIQUE and depend on the
-    order of atoms in xyz file. This is true for both, heavy atoms
-    and hydrogens. Heavy atoms positons are based on inchi, so they
-    can only change due to presence of equivalent atoms with respect
-    to connectivity. Positions of hydrogen atoms are assigned after
-    the heavy atoms, taking any non-connected hydrogens first
-    followed by hydrogens connected to heavy atoms.
 
     Use this function to set the atoms positions in a reference
     molecule. The idea is to assign the positions once and to never
@@ -45,80 +31,102 @@ def xyzToAtomsPositions(xyzFileOrStr):
         file and values to the newly assigned positions
     """
     # get inchi with extra auxiliary log
-    inchiWithAux = obConvert(inputMol=xyzFileOrStr,inputMolFormat='xyz',
+    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
+
+    xyzFileOrStr = xyzToIntertialFrame(xyzFileOrStr)
+
+    # swap all hydrogens with a heavy atom, here I picked Cl, but any other halogen atom
+    # should also work. this atom swap is to force inchi to considered all the atoms in its
+    # connectivity algorithm. note that atoms from the first group (e..g Na, Li) wont work
+    # as they produce solids and thus the inchi string is significantly changed
+    xyzFileOrStr = '\n'.join([xyz_line.replace('H','Cl') for xyz_line in xyzFileOrStr.split('\n')])
+
+    inchiWithAux = obconverter.obConvert(inputMol=xyzFileOrStr,inputMolFormat='xyz',
                             outputMolFormat='inchi', options=['-xa'])
     inchi, inchiAux = inchiWithAux.split('\n')
     # find connectivity info in the inchi string - used to detect the
     # presence of heavy atoms.
-    heavyAtomsInchiConnectivity = re.search(r'/c(\d+?\*)?(.*?/)',inchi)
+    atomsInchiConnectivity = re.search(r'/c(\d+?\*)?(.*?)(?=/|$)',inchi)
     # read the mapping between heavy atoms (+ lone hydrogens) in xyz and inchi
     # from the auxiliary log
-    heavyAtomsInchiAuxMap = re.search(r'/N:(.*?/)',inchiAux)
-    # get the chemical formula from inchi - for fragments detection
-    chemFormula = re.search(r'InChI=1S/(.*?/|\d*?H$)',inchi).groups()[0].replace('/','')
-    # detect if the molecule contains any separate fragments
-    molFragsDetect = re.search(r'(^\d+?[A-Z]|.+?\..+?)',chemFormula)
+    atomsInchiAuxMap = re.search(r'/N:(.*?)(?=/|$)',inchiAux)
+    atomsInchiAuxEquivMap = re.search(r'/E:(.*?)(?=/|$)',inchiAux)
 
-    # create the rdkit mol object which simply serves as the molecule container
-    rdkitMolFromMol = xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
+    # create the rdkit mol object
+    rdkitMolFromMol = xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
     numAtoms = rdkitMolFromMol.GetNumAtoms()
 
     # initialise the atoms position dict
     atomsPositions = {k:None for k in range(numAtoms)}
     nextAtomId = 0
 
-    # get the positions for heavy atoms
-    if heavyAtomsInchiConnectivity is not None:
-        # process the heavyAtomsInchiAuxMap and extract the atoms mapping
-        heavyAtomsInchiAuxMap= heavyAtomsInchiAuxMap.groups()[0].replace('/','').replace(';',',').split(',')
-        heavyAtomsMatch = {int(atomId)-1: i for i, atomId in enumerate(heavyAtomsInchiAuxMap)}
+    mol_frags = rdkitmolutils.rdkitMolToMolFrags(rdkitMolFromMol)
+    if mol_frags:
+        print(f'Warning: Provided xyz file contains {len(mol_frags)} molecular fragments.')
+        #return atomsPositions
 
-        if heavyAtomsMatch:
-            # add the heavy atoms positions (+lone hydrogens) to the overall atomsPosition
-            # dictionary
-            atomsPositions = {**atomsPositions, **heavyAtomsMatch}
-            nextAtomId = len(heavyAtomsMatch)
-            hydrogensMap = {}
-            # assign now positions of hydrogens that are attached to heavy atoms
-            for heavyAtomId in heavyAtomsMatch.keys():
-                heavyAtom = rdkitMolFromMol.GetAtomWithIdx(heavyAtomId)
-                heavyAtomHsIds = [atom.GetIdx() for atom in heavyAtom.GetNeighbors() if atom.GetAtomicNum() == 1]
-                # check the distance of each hydrogen to origin. I use it to select which hydrogen should have
-                # the order assigned next. This way the hydrogens positions are less dependent on their xyz file order.
-                atomDistFromOrigin = {}
-                for atomId in heavyAtomHsIds:
-                    atomPos = getRdkitAtomXYZbyId(rdkitMolFromMol,atomId)
-                    atomDistFromOrigin[atomId] = getXYZPointsDistance(atomPos, np.zeros((3,)))
-                # sort the hydrogens based on their distance to origin
-                atomDistFromOriginSorted = {k: v for k, v in sorted(atomDistFromOrigin.items(), key=lambda item: item[1])}
-                # add the hydrogen positions to the overall atoms positions
-                for atomId in atomDistFromOriginSorted.keys():
-                    hydrogensMap[atomId] = nextAtomId
-                    nextAtomId += 1
-                atomsPositions = {**atomsPositions, **hydrogensMap}
+    # get the atoms based on the inchi connectivity info
+    if atomsInchiConnectivity is not None:
+        # process the atomsInchiAuxMap and extract the atoms mapping
+        atomsInchiAuxMap= atomsInchiAuxMap.groups()[0] \
+                        .replace('/','').replace(';',',').split(',')
+        atomsInchiMatch = {int(atomId)-1: i
+                           for i, atomId in enumerate(atomsInchiAuxMap)}
+        atomsInchiMatchList = list(map(lambda x: int(x)-1, atomsInchiAuxMap))
+
+        if atomsInchiMatch:
+            # now disambiguate any equivalent atoms
+            if atomsInchiAuxEquivMap:
+                atomsInchiAuxEquivMap= atomsInchiAuxEquivMap.groups()[0] \
+                                    .replace('/','').replace(')(','#').replace(')','') \
+                                    .replace('(','').split('#')
+
+                for i in range(len(atomsInchiAuxEquivMap)):
+                    atomsInchiAuxEquivMap[i] = list(map(lambda x: int(x)-1, atomsInchiAuxEquivMap[i].split(',')))
+                    atomsInchiAuxEquivMap[i] = list(map(lambda x: atomsInchiMatchList[x], atomsInchiAuxEquivMap[i]))
+
+                for equivAtomsList in atomsInchiAuxEquivMap:
+                    atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, equivAtomsList)
+                    atomsXYZ = (atomsXYZ * 1e7).astype(int)
+                    atomsX = atomsXYZ[:,0].tolist()
+                    atomsY = atomsXYZ[:,1].tolist()
+                    atomsZ = atomsXYZ[:,2].tolist()
+                    _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, equivAtomsList)
+                    _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+                    # use four invariants to disambiguate atoms
+                    equivAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+
+                    currentAtomsOrder = sorted([atomsInchiMatch[equivAtomId] for equivAtomId in equivAtomsList])
+                    for equivAtomPos in equivAtomsOrder:
+                        atomsInchiMatch[equivAtomsList[equivAtomPos]] = currentAtomsOrder.pop(0)
+
+
+            # add the atoms positions to the overall atomsPosition dictionary
+            atomsPositions = {**atomsPositions, **atomsInchiMatch}
+            nextAtomId = len(atomsInchiMatch)
 
     # assign posititions to any atoms that are left
-    # this step assigns order to molecules with no heavy atoms (e.g. h2 or h or h.h)
     if nextAtomId < numAtoms:
-        nonHeavyAtomsIds = [atomId for atomId, refId in atomsPositions.items() if refId is None]
-        nonHeavyAtomsMap = {}
-        # similarly to hydrogens attached to heavy atoms, I order the remaining atoms with respect
-        # to their distance to origin
-        atomDistFromOrigin = {}
-        for atomId in nonHeavyAtomsIds:
-            atomPos = getRdkitAtomXYZbyId(rdkitMolFromMol,atomId)
-            atomDistFromOrigin[atomId] = getXYZPointsDistance(atomPos, np.zeros((3,)))
-        atomDistFromOriginSorted = {k: v for k, v in sorted(atomDistFromOrigin.items(), key=lambda item: item[1])}
-        for atomId in atomDistFromOriginSorted.keys():
-            nonHeavyAtomsMap[atomId] = nextAtomId
+        loneAtomsIds = [atomId
+                        for atomId, refId in atomsPositions.items()
+                        if refId is None]
+        loneAtomsMap = {}
+
+        atomsXYZ = rdkitmolutils.getAtomsXYZs(rdkitMolFromMol, loneAtomsIds)
+        atomsXYZ = (atomsXYZ * 1e7).astype(int)
+        atomsX = atomsXYZ[:,0].tolist()
+        atomsY = atomsXYZ[:,1].tolist()
+        atomsZ = atomsXYZ[:,2].tolist()
+        _atomsDist = rdkitmolutils.rdkitSumAllAtomsDistFromAtoms(rdkitMolFromMol, loneAtomsIds)
+        _atomsDist = [int(dist * 1e7) for dist in _atomsDist]
+        loneAtomsOrder = np.lexsort((atomsZ,atomsY,atomsX,_atomsDist)).tolist()
+
+        for loneAtomPos in loneAtomsOrder:
+            loneAtomsMap[loneAtomsIds[loneAtomPos]] = nextAtomId
             nextAtomId += 1
 
         # add the remaining positions to the overall atoms positions
-        atomsPositions = {**atomsPositions, **nonHeavyAtomsMap}
-
-    # print a warning in case of xyz files containing separate fragments
-    if molFragsDetect is not None:
-        print('Warning: Provided xyz file contains two molecular fragments:',chemFormula)
+        atomsPositions = {**atomsPositions, **loneAtomsMap}
 
     # check for duplicate and None values at the end
     hasDuplicates = len(atomsPositions.values()) > len(set(atomsPositions.values()))
@@ -150,8 +158,8 @@ def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
         and values to the matched reference atoms
     """
     # create ref and target molecules with hydrogens included
-    rdkitRefMol = xyzToMolToRdkitMol(xyzRefFileOrStr, removeHs=False)
-    rdkitTargetMol = xyzToMolToRdkitMol(xyzTargetFileOrStr, removeHs=False)
+    rdkitRefMol = xyzconverters.xyzToMolToRdkitMol(xyzRefFileOrStr, removeHs=False)
+    rdkitTargetMol = xyzconverters.xyzToMolToRdkitMol(xyzTargetFileOrStr, removeHs=False)
 
     # init the final atoms match dictionary to be populated
     # keys - target Mol atom ids, values - ref Mol atom ids
@@ -163,7 +171,9 @@ def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
     match = {k:None for k in range(rdkitTargetMol.GetNumAtoms())}
 
     # check if the two mols are the same
-    if rdkitMolToInchi(rdkitRefMol) == rdkitMolToInchi(rdkitTargetMol):
+    rdkitRefMol_inchi = rdkitconverters.rdkitMolToInchi(rdkitRefMol)
+    rdkitTargetMol_inchi = rdkitconverters.rdkitMolToInchi(rdkitTargetMol)
+    if rdkitRefMol_inchi == rdkitTargetMol_inchi:
         # find the best heavy atoms match first, e.g.
         # heavyAtomsMatch = {
         #  4: 2, - target heavy atom 4 matched ref heavy atom 2
@@ -171,7 +181,7 @@ def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
         # }
         # I use dict here, because we only match a subset of atoms,
         # so we can not start from 0
-        heavyAtomsMatch, _ = rdkitMatchHeavyAtoms(rdkitTargetMol, rdkitRefMol)
+        heavyAtomsMatch, _ = rdkitmolutils.rdkitMatchHeavyAtoms(rdkitTargetMol, rdkitRefMol)
 
         # match any hydrogens attached to heavy atoms
         if heavyAtomsMatch:
@@ -181,14 +191,20 @@ def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
             # distance with each other
             for targetAtomId, refAtomId in heavyAtomsMatch.items():
                 targetAtom = rdkitTargetMol.GetAtomWithIdx(targetAtomId)
-                targetAtomHsIds = [atom.GetIdx() for atom in targetAtom.GetNeighbors() if atom.GetAtomicNum() == 1]
-                targetAtomHsPos = [getRdkitAtomXYZbyId(rdkitTargetMol,atomId) for atomId in targetAtomHsIds]
+                targetAtomHsIds = [atom.GetIdx()
+                                   for atom in targetAtom.GetNeighbors()
+                                   if atom.GetAtomicNum() == 1]
+                targetAtomHsPos = [rdkitmolutils.getRdkitAtomXYZbyId(rdkitTargetMol,atomId)
+                                   for atomId in targetAtomHsIds]
 
                 refAtom = rdkitRefMol.GetAtomWithIdx(refAtomId)
-                refAtomHsIds = [atom.GetIdx() for atom in refAtom.GetNeighbors() if atom.GetAtomicNum() == 1]
-                refAtomHsPos = [getRdkitAtomXYZbyId(rdkitRefMol,atomId) for atomId in refAtomHsIds]
+                refAtomHsIds = [atom.GetIdx()
+                                for atom in refAtom.GetNeighbors()
+                                if atom.GetAtomicNum() == 1]
+                refAtomHsPos = [rdkitmolutils.getRdkitAtomXYZbyId(rdkitRefMol,atomId)
+                                for atomId in refAtomHsIds]
 
-                closestHydrogens = findClosestXYZPoints(targetAtomHsPos, refAtomHsPos)
+                closestHydrogens = linalg.findClosestXYZPoints(targetAtomHsPos, refAtomHsPos)
 
                 # add matched hydrogen indices to the overall match dict
                 for i, refId in enumerate(closestHydrogens):
@@ -198,15 +214,21 @@ def xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr):
 
         # check for any unmatched yet atoms
         # e.g any target atom ids whose ref ids are None
-        unmatchedTargetAtomIds = [targetId for targetId, refId in match.items() if refId is None]
+        unmatchedTargetAtomIds = [targetId
+                                  for targetId, refId in match.items()
+                                  if refId is None]
         if unmatchedTargetAtomIds:
             # get ref Ids not yet assigned to the target atoms
-            unmatchedRefAtomIds = [refId for refId in range(rdkitTargetMol.GetNumAtoms()) if refId not in match.values()]
+            unmatchedRefAtomIds = [refId
+                                   for refId in range(rdkitTargetMol.GetNumAtoms())
+                                   if refId not in match.values()]
 
-            unmatchedTargetAtomPos = [getRdkitAtomXYZbyId(rdkitTargetMol,atomId) for atomId in unmatchedTargetAtomIds]
-            unmatchedRefAtomPos = [getRdkitAtomXYZbyId(rdkitRefMol,atomId) for atomId in unmatchedRefAtomIds]
+            unmatchedTargetAtomPos = [rdkitmolutils.getRdkitAtomXYZbyId(rdkitTargetMol,atomId)
+                                      for atomId in unmatchedTargetAtomIds]
+            unmatchedRefAtomPos = [rdkitmolutils.getRdkitAtomXYZbyId(rdkitRefMol,atomId)
+                                   for atomId in unmatchedRefAtomIds]
 
-            fragsMatch = findClosestXYZPoints(unmatchedTargetAtomPos, unmatchedRefAtomPos)
+            fragsMatch = linalg.findClosestXYZPoints(unmatchedTargetAtomPos, unmatchedRefAtomPos)
             # add matched hydrogen indices to the overall list
             for i, refId in enumerate(fragsMatch):
                 match[unmatchedTargetAtomIds[i]] = unmatchedRefAtomIds[refId]
@@ -229,7 +251,7 @@ def xyzReshuffle(xyzFileOrStr, seed):
     xyzStr: str
         xyz string containing reshuffled atoms
     """
-    if fileExists(xyzFileOrStr): xyzFileOrStr= readFile(xyzFileOrStr)
+    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
 
     xyzFileOrStr = xyzFileOrStr.split('\n')
     # fix for xyz files containing extra empty lines at the end
@@ -254,9 +276,9 @@ def xyzReorderOnAtomsMatch(xyzFileOrStr, atomsMatch):
     xyzStr: str
         xyz string containing re-ordered atoms
     """
-    if fileExists(xyzFileOrStr): xyzFileOrStr= readFile(xyzFileOrStr)
+    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
     # take care of any trailing empty lines
-    xyzFileOrStr = removeBlankTrailingLines(xyzFileOrStr)
+    xyzFileOrStr = ioutils.removeBlankTrailingLines(xyzFileOrStr)
 
     xyzFileOrStr = xyzFileOrStr.split('\n')
     xyzHeader, xyzFileOrStr = xyzFileOrStr[:2], xyzFileOrStr[2:]
@@ -271,10 +293,10 @@ def xyzMatchWithBondAdjustment(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, 
     # WORK IN PROGRESS, FEATURE NOT FINISHED
     #
     # create ref and target molecules with hydrogens included
-    rdkitRefMol = xyzToMolToRdkitMol(xyzRefFileOrStr, removeHs=False)
-    rdkitTargetMol = xyzToMolToRdkitMol(xyzTargetFileOrStr, removeHs=False)
-    refInchi = rdkitMolToInchi(rdkitRefMol)
-    tarInchi = rdkitMolToInchi(rdkitTargetMol)
+    rdkitRefMol =xyzconverters.xyzToMolToRdkitMol(xyzRefFileOrStr, removeHs=False)
+    rdkitTargetMol = xyzconverters.xyzToMolToRdkitMol(xyzTargetFileOrStr, removeHs=False)
+    refInchi = rdkitconverters.rdkitMolToInchi(rdkitRefMol)
+    tarInchi = rdkitconverters.rdkitMolToInchi(rdkitTargetMol)
     match = {}
 
     # get the chemical formula from inchi - for fragments detection
@@ -284,36 +306,117 @@ def xyzMatchWithBondAdjustment(xyzTargetFileOrStr, xyzRefFileOrStr, refAtomId1, 
 
     rdkitRefMolLocal = copy.deepcopy(rdkitRefMol)
     rdkitTarMolLocal = copy.deepcopy(rdkitTargetMol)
-    startBondLength = getRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2)
+    startBondLength = rdkitmolutils.getRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2)
     bestRmsd = 1e9
     bestBondLength = startBondLength
     for step in range(nSteps):
-        refInchiLocal = rdkitMolToInchi(rdkitRefMolLocal)
+        refInchiLocal = rdkitconverters.rdkitMolToInchi(rdkitRefMolLocal)
         refChemFormulaLocal = re.search(r'InChI=1S/(.*?/|\d*?H$)',refInchiLocal).groups()[0].replace('/','')
         refMolFragsDetectLocal = re.search(r'(^\d+?[A-Z]|.+?\..+?)',refChemFormulaLocal)
         if not refMolFragsDetectLocal: break
 
         newBondLength = startBondLength-incrChange*(step+1)
-        setRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2, newBondLength)
-        rmsd = rdkitAlignMols(rdkitRefMolLocal, rdkitTargetMol)
+        rdkitmolutils.setRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2, newBondLength)
+        rmsd = rdkitmolutils.rdkitAlignMols(rdkitRefMolLocal, rdkitTargetMol)
         if rmsd < bestRmsd:
             bestRmsd = rmsd
             bestBondLength = newBondLength
 
     for step in range(nSteps):
         newBondLength = startBondLength+incrChange*(step+1)
-        setRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2, newBondLength)
+        rdkitmolutils.setRdkitMolBondLength(rdkitRefMolLocal, refAtomId1, refAtomId2, newBondLength)
 
-        refInchi2 = rdkitMolToInchi(rdkitRefMolLocal)
-        tarInchi = rdkitMolToInchi(rdkitTargetMol)
+        refInchi2 = rdkitconverters.rdkitMolToInchi(rdkitRefMolLocal)
+        tarInchi = rdkitconverters.rdkitMolToInchi(rdkitTargetMol)
 
         bb = rdkitRefMolLocal.GetNumAtoms()
         aa = rdkitTargetMol.GetNumAtoms()
         #rmsd = rdkitAlignMols(rdkitTarMolLocal, rdkitRefMolLocal)
-        match = rdkitSubstrAlignMatch(rdkitTargetMol, rdkitRefMolLocal)
-        match = rdkitMatchHeavyAtoms(rdkitTargetMol, rdkitRefMolLocal)
+        match = rdkitmolutils.rdkitSubstrAlignMatch(rdkitTargetMol, rdkitRefMolLocal)
+        match = rdkitmolutils.rdkitMatchHeavyAtoms(rdkitTargetMol, rdkitRefMolLocal)
         if rmsd < bestRmsd:
             bestRmsd = rmsd
             bestBondLength = newBondLength
 
     match= xyzMatch(xyzTargetFileOrStr, xyzRefFileOrStr)
+
+def getConformersXYZ(moleculeFileOrStr, inputFormat, retNumConfs, genNumConfs,
+                      maxIters=1000, mmffVariant="MMFF94"):
+
+    if ioutils.fileExists(moleculeFileOrStr): inputMol= ioutils.readFile(moleculeFileOrStr)
+
+    if inputFormat=='xyz':
+        mol = xyzconverters.xyzToMolToRdkitMol(inputMol)
+    elif inputFormat=='mol':
+        mol = rdkitconverters.molBlockToRdkitMol(inputMol)
+    elif inputFormat=='pdb':
+        mol = rdkitconverters.pdbBlockToRdkitMol(inputMol)
+    else:
+        inchi = obconverter.obConvert(inputMol=moleculeFileOrStr,inputMolFormat=inputFormat,
+                            outputMolFormat='inchi')
+        mol = rdkitconverters.inchiToRdkitMol(inchi)
+
+    conformers = rdkitmolutils.getRdkitMolOptConformers(mol,
+                        retNumConfs=retNumConfs, numConfs=genNumConfs,
+                        maxIters=maxIters, mmffVariant=mmffVariant)
+
+    conformers_with_xyz = []
+    for i, (energy, confMolBlock) in enumerate(conformers):
+        confXYZ = obconverter.obConvert(confMolBlock,'mol','xyz')
+        confXYZ = confXYZ.split('\n')
+        confXYZ[1] = f'Conformer: {i}, {mmffVariant} energy: {energy}'
+        confXYZ = '\n'.join(confXYZ)
+        conformers_with_xyz.append((energy,confXYZ))
+    return conformers_with_xyz
+
+#def canonicalizeXYZorientation(xyzFileOrStr):
+#    if ioutils.fileExists(xyzFileOrStr): xyzFileOrStr= ioutils.readFile(xyzFileOrStr)
+#    rdkitMol= xyzconverters.xyzToMolToRdkitMol(xyzFileOrStr, removeHs=False)
+#    rdkitmolutils.canonicalizeMolOrientation(rdkitMol, ignoreHs=False, normalizeCovar=True)
+#    return rdkitconverters.rdkitMolToXYZ(rdkitMol)
+
+def xyzToIntertialFrame(xyzString):
+    return obutils.obToInertialFrame(xyzString)
+
+
+def compareXYZs(tarXYZ, refXYZ, rtol=1e-5, atol=1e-8, equal_nan=False):
+    tarXYZ = ioutils.removeBlankTrailingLines(tarXYZ)
+    refXYZ = ioutils.removeBlankTrailingLines(refXYZ)
+
+    tarXYZ = tarXYZ.split('\n')
+    refXYZ = refXYZ.split('\n')
+
+    theSame = tarXYZ[0]==tarXYZ[0]
+    if not theSame: return False
+
+    tarXYZ = tarXYZ[2:]
+    refXYZ = refXYZ[2:]
+
+    for tarXYZline, refXYZline in zip(tarXYZ,refXYZ):
+        tarXYZline = tarXYZline.split()
+        refXYZline = refXYZline.split()
+        theSame= tarXYZline[0]==refXYZline[0]
+        if not theSame: return False
+        for tarCoord, refCoord in zip(tarXYZline[1:],refXYZline[1:]):
+            theSame= np.isclose(float(tarCoord), float(refCoord), rtol=rtol,
+                atol=atol, equal_nan=equal_nan)
+            if not theSame:
+                return (False, tarCoord, refCoord)
+    return True
+
+def roundXYZ(xyzString, numDigits=5):
+    xyzString = ioutils.removeBlankTrailingLines(xyzString)
+    xyzString = xyzString.split('\n')
+    xyzNumAtoms = xyzString[0]
+    xyzTitle = xyzString[1]
+    xyzAtoms = [xyzLine.split(' ')[0] for xyzLine in xyzString[2:]]
+    fspec = f'.{numDigits}f'
+    xyzRounded = [xyzNumAtoms, xyzTitle]
+    for i in range(int(xyzNumAtoms)):
+        atomType = xyzAtoms[i]
+        x = float(xyzString[i+2].split()[1])
+        y = float(xyzString[i+2].split()[2])
+        z = float(xyzString[i+2].split()[3])
+        xyzLine = f'{atomType} {x:{fspec}} {y:{fspec}} {z:{fspec}}'
+        xyzRounded.append(xyzLine)
+    return '\n'.join(xyzRounded)

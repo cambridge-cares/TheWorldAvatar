@@ -30,7 +30,7 @@ public class JPSAgentTest extends TestCase {
 
     public void testNewPSAgentMethods() {
         JPSAgent jpsa = new JPSAgent();
-        assertEquals(3, jpsa.getClass().getDeclaredMethods().length);
+        assertEquals(5, jpsa.getClass().getDeclaredMethods().length);
     }
 
     public void testProcessRequestParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {

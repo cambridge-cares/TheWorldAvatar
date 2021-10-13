@@ -31,13 +31,13 @@ Alternatively, from the command line, and in the same directory as this README, 
 docker-compose up -d
 ```
 
-The agent is reachable on [localhost port 7000]("http://localhost:7000") by default (you can change this in docker-compose.yml).
-To see instructions for making a call to the API, open your browser to `"http://localhost:7000"`.
+The agent is reachable on [localhost port 55002]("http://localhost:55002") by default (you can change this in docker-compose.yml).
+To see instructions for making a call to the API, open your browser to `"http://localhost:55002"`.
 In VSCode, you can right-click on the container in the Docker extension and choose "Open in Browser".
 
 An example query is
 ```
-http://localhost:7000/api/v1/evaluate?val=3.25&order=2
+http://localhost:55002/api/v1/evaluate?val=3.25&order=2
 ```
 which returns the result in json format
 ```
