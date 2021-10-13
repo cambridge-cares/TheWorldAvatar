@@ -132,5 +132,13 @@
         <version>1.15.3</version>
         <scope>test</scope>
     </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+    <!-- needed for testcontainers find docker environment -->
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-annotations</artifactId>
+	    <version>2.9.8</version>
+	</dependency>
   </dependencies>              
 </project>
