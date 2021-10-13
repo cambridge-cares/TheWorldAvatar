@@ -11,9 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.testcontainers.containers.FixedHostPortGenericContainer;
 import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,15 +26,15 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
 /**
  * Integration tests for the AccessAgentCaller, AccessAgent, StoreRouter and RemoteStoreClient.
- * <p> These tests require the AccessAgent and Blazegraph to be running on the localhost.
- * The local Blazegraph needs to have the test triple store accessible at <i>sparqlEndpoint</i>.  
+ * <p> These tests require the AccessAgent to be running locally on Docker. 
  * The OntoKGRouter triple store must be accessible on the www.theworldavatar.com and contain 
- * routing information consistent with the variables <i>datasetIRI</i> and <i>sparqlEndpoint</i>. 
- * <p> The tests can be run by commenting out the @Ignore annotation
+ * routing information consistent with the variables <i>datasetIRI</i> and <i>dockerSparqlEndpoint</i>.
+ * Testcontainers is used create a Blazegraph test store.  
+ * <p> The tests can be run by commenting out the @Disabled annotation.
  * @author csl37
  *
  */
-//@Ignore("Requires the AccessAgent and Blazegraph with the namespace teststorelocal to be deployed and running on localhost. Requires Internet access to OntoKGRouter on www.theworldavatar.com.")
+//@Disabled("Requires the AccessAgent to be running locally on Docker. Requires Internet access to OntoKGRouter on www.theworldavatar.com.")
 @Testcontainers
 public class AccessAgentRemoteStoreIntegrationTest {
 
@@ -45,10 +45,15 @@ public class AccessAgentRemoteStoreIntegrationTest {
 	// Test query
 	static String query = "SELECT ?o WHERE {<http://www.example.com/test/s> <http://www.example.com/test/p> ?o.}";
 
-	// Target dataset IRI and corresponding sparql endpoint returned by the StoreRouter
-	static String datasetIRI = "http://localhost:48080/kb/teststorelocal";
+	// Target dataset IRI and corresponding sparql endpoint returned by the StoreRouter.
+	// sparqlEndpoint is the endpoint accessible on the localhost to this junit test. Used to populate the test store. 
+	// dockerSparqlEndpoint is the endpoint the access agent container must use to access the Blazegraph container on the host. 
+	// 172.17.0.1 is the gateway for the default Docker bridge network, to which the Blazegraph container should be attached
+	// (note: could also use "host.docker.internal").
+	static String datasetIRI = "http://localhost:48080/teststorelocal";
 	static String sparqlEndpoint = "http://localhost:39888/blazegraph/namespace/kb/sparql";
 	static String dockerSparqlEndpoint = "http://172.17.0.1:39888/blazegraph/namespace/kb/sparql";
+	
 	RemoteStoreClient storeClient = null;
 	
 	// Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
@@ -129,20 +134,31 @@ public class AccessAgentRemoteStoreIntegrationTest {
 			throw new JPSRuntimeException("AccessAgentRemoteStoreIntegrationTest: Docker container startup failed. Please try running tests again");
 		}
 		
-		//TODO loop
-		//wait for container start up
-		try {
-			wait(10000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	
 		storeClient = new RemoteStoreClient(sparqlEndpoint, sparqlEndpoint);
-		try {
-			storeClient.insert(null, rdfcontent, contentType);
-		}catch(RuntimeException e) {
-			fail("AccessAgentRemoteStoreIntegrationTest: Failed to connect to test remote store client: "+sparqlEndpoint);
+		
+		// The Blazegraph container can take some time to start up in Docker. 
+		// We make 5 attempts to connect, waiting 5s between attempts.  
+		int maxi = 5;
+		for (int i = 1; i<=maxi; i++) {
+			//wait 5s for container start up
+			try {
+				wait(5000);
+			} catch (InterruptedException e) {
+				throw new JPSRuntimeException(e);
+			}
+			
+			//make up to 5 attempts to connect
+			try {
+				storeClient.insert(null, rdfcontent, contentType);
+				System.out.println("Attempt:"+i+"/"+maxi+". Successfully connected to test store.");
+				break;
+			}catch(RuntimeException e) {
+				if(i<maxi) {
+					System.out.println("Attempt:"+i+"/"+maxi+". Failed to connect to test store. Trying again.");
+				}else {
+					fail("AccessAgentRemoteStoreIntegrationTest: Failed to connect to test store: "+sparqlEndpoint);
+				}
+			}
 		}
 	}
 	
