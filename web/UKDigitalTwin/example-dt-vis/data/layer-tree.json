@@ -12,7 +12,7 @@
                         "layerIDs": ["rail-stations-layer"]
                     },
                     {
-                        "layerName": "Automatic Traffic Stations",
+                        "layerName": "Automatic Traffic Counters",
                         "defaultState": "visible",
                         "layerIDs": ["traffic-counters-layer"]
                     }

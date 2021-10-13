@@ -1,9 +1,17 @@
+/* Common elements */
 html, body {
 	width: 100%;
 	height: 100%;
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
+
+	font-family: "Segoe UI",Arial,sans-serif;
+	font-size: 12pt;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
 }
 
 /* MapBox Elements */
@@ -108,6 +116,7 @@ html, body {
 	background-color: white;
 	box-sizing: border-box;
 	border: 1px solid grey;
+	font-size: 11pt;
 }
 #sidePanel img {
 	margin: 6px;
@@ -137,17 +146,23 @@ html, body {
 	border-width: 1px;
 	border-radius: 2%;
 }
-#sidePanel.large img {
-	margin: 16px;
-	margin-left: calc(100% - 32px);
+#expandButton {
+	float: right;
 }
-#sidePanel.none {
+#sidePanel.large #expandButton {
+	margin-top: -8px;
+	margin-right: 20px;
+	margin-left: calc(100% - 32px);
+	width: 24px;
+	height: 24px
+}
+#sidePanel.collapsed {
 	width: 28px;
 }
-#sidePanel.none img {
+#sidePanel.collapsed img.leftButton {
 	margin: 6px;
 	-webkit-transform: rotate(90deg);
-    -moz-transform: rotate(-90deg);
+    -moz-transform: rotate(90deg);
     -o-transform: rotate(90deg);
     -ms-transform: rotate(90deg);
     transform: rotate(90deg);
@@ -189,13 +204,76 @@ html, body {
 }
 #legendContainer {
 	width: 100%;
-	height: auto;
+	height: 300px;
 	min-height: 80px;
 	margin-bottom: 10px;
+	border: 1px solid grey;
 }
 #footerContainer {
 	text-align: center;
 	width: 100%;
 	height: 40px;
 	margin-bottom: 20px;
+}
+
+/* W3 Legend component */
+#legend {
+	width: 150px !important;
+	height: 300px !important;
+	font-size: 10pt;
+
+	-webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+
+    box-shadow: none;
+}
+.legend-right {
+	height: 300px;
+	width: calc(100% - 150px);
+	float: right;
+	position: relative;
+}
+.legend-right img {
+	width: auto;
+    height: auto;
+    max-height: 100%;
+    max-width: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+	-webkit-transform: rotate(0deg) !important;
+    -moz-transform: rotate(0deg) !important;
+    -o-transform: rotate(0deg) !important;
+    -ms-transform: rotate(0deg) !important;
+    transform: rotate(0deg) !important;
+}
+
+/* Tooltip handling */
+.tooltip {
+	position: relative;
+	display: inline-block;
+}
+.tooltip .tooltiptext {
+	visibility: hidden;
+	width: 120px;
+	background-color: #808080;
+	color: #fff;
+	text-align: center;
+	padding: 5px 0;
+	border-radius: 6px;
+	font-size: 9pt;
+
+	position: absolute;
+	z-index: 1;
+	top: 80%;
+	right: 80%;
+}
+.tooltip:hover .tooltiptext {
+	visibility: visible;
 }

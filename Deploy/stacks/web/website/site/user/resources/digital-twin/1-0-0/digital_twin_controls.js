@@ -49,7 +49,7 @@ class DigitalTwinControls {
 		this._defaultCenter = defaultCenter;
 		this._defaultZoom = defaultZoom;
 
-		DT.sideHandler = new DigitalTwinSidePanel(this._map);
+		DT.sidePanelHandler = new DigitalTwinSidePanel(this._map);
 	}
 
 	/**

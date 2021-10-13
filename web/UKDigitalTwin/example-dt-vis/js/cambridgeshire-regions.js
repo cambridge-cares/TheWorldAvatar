@@ -1,5 +1,8 @@
 /**
  * Example concrete instance of a DigitalTwinModule.
+ * 
+ * This module handles loading data sources, creating layers, and handling
+ * event logic for a series of example regions with Cambridgeshire.
  */
 export class CambridgeshireRegionModule extends DigitalTwinModule {
 
@@ -18,19 +21,20 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 	 addSources() {
 		this._map.addSource("housing-data", {
 			type: "geojson",
-			data: "example/housing.geojson"
+			data: "./data/housing.geojson"
 		});
 		console.log("INFO: 'housing-data' source has been added.");
 
 		this._map.addSource("admin-data", {
 			type: "geojson",
-			data: "example/authorities.geojson"
+			data: "./data/authorities.geojson"
 		});
 		console.log("INFO: 'admin-data' source has been added.");
 	}
 
 	/**
-	 * Generate and add layers to the MapBox map.
+	 * Generate and add layers to the MapBox map. Mouse effects can 
+	 * also be turned on here by calling the addMouseEffects() method.
 	 */
 	addLayers() {
 		this._map.addLayer({
@@ -69,7 +73,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 				visibility: 'none'
 			},
 			paint: {
-				'fill-color': '#36EAF4',
+				'fill-color': '#36f475',
 				'fill-opacity': [
 					'case',
 					['boolean', ['feature-state', 'hover'], false],
@@ -88,7 +92,7 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 				visibility: 'none'
 			},
 			paint: {
-				'line-color': '#259CA3',
+				'line-color': '#36a325',
 				'line-width': 1
 			}
 		});
@@ -96,10 +100,16 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 	}
 
 	/**
-	 * @param {*} layerName 
-	 * @param {*} feature 
+	 * Fires when a mouse enters a plotted region. The logic that runs here
+	 * will likely be specific to your data sources, so you will need to 
+	 * determine what data to show/logic to run here yourself.
+	 * 
+	 * @param {?} popup popup element
+	 * @param {String} layerName name of layer containing location
+	 * @param {JSONObject} feature triggered feature
+	 * @param {MouseEvent} event mouse event
 	 */
-	onMouseMove(layerName, feature) {
+	onMouseMove(popup, layerName, feature, event) {
 		if(layerName === "admin-fill") {
 
 			if(this._hoveredRegionID !== null) {
@@ -118,20 +128,11 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 	}
 
 	/**
+	 * Fires when a mouse leaves a plotted location. This example just resets
+	 * the hoveredRegionID, but data/layer specific actions could be taken here.
 	 * 
-	 * @param {*} popup 
-	 * @param {*} layerName 
-	 * @param {*} feature 
-	 */
-	onMouseEnter(popup, layerName, feature) {
-		// Needs to be implemented in your concrete module class.
-	}
-
-	/**
-	 * 
-	 * @param {*} popup 
-	 * @param {*} layerName 
-	 * @param {*} feature 
+	 * @param {?} popup popup element
+	 * @param {String} layerName name of layer containing location
 	 */
 	onMouseExit(popup, layerName) {
 		if(layerName === "admin-fill") {
@@ -151,18 +152,11 @@ export class CambridgeshireRegionModule extends DigitalTwinModule {
 	 * Generate and return HTML content for display in the legend.
 	 */
 	getLegendContent() {
-		throw new Error("The 'getLegendContent()' method must be implemented in a concrete subclass!");
+		var legendContent = `
+			<img src="./img/legend-regions.svg" width="100" height="100" />
+		`;
+		return legendContent;
 	}
 
-	/**
-	 * If registered for selections, this triggers when an individual
-	 * item on the map is selected. 
-	 * 
-	 * @param {String} layerName the name of the layer containing the selected item.
-	 * @param {} coordinates coordinates of the selected item.
-	 * @param {*} features GeoJSON features of the selected item.
-	 */
-	onSelection(layerName, coordinates, features) {
-		throw new Error("The 'onSelection()' method must be implemented in a concrete subclass!");
-	}
 }
+// End of class.

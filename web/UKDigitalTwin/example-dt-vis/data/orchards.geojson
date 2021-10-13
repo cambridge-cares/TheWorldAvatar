@@ -1,95 +1,90 @@
 {
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Harston",
-        "Latitude": "52.13885",
-        "Longitude": "0.0868"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.0868, 52.13885] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Histon",
-        "Latitude": "52.2495",
-        "Longitude": "0.0995"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.0995, 52.2495] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Impington",
-        "Latitude": "52.2508",
-        "Longitude": "0.1135"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.1135, 52.2508] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Little Eversden",
-        "Latitude": "52.16",
-        "Longitude": "0.001"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.001, 52.16] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Oakington",
-        "Latitude": "52.26085",
-        "Longitude": "0.07515"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.07515, 52.26085] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Rampton",
-        "Latitude": "52.2895",
-        "Longitude": "0.0867"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.0867, 52.2895] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Sawston",
-        "Latitude": "52.1275",
-        "Longitude": "0.16465"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.16465, 52.1275] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Sawston",
-        "Latitude": "52.1235",
-        "Longitude": "0.1598"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.1598, 52.1235] }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "Bodyname": "South Cambridgeshire District Council",
-        "Village": "Waterbeach",
-        "Latitude": "52.2792",
-        "Longitude": "0.1716"
-      },
-      "geometry": { "type": "Point", "coordinates": [0.1716, 52.2792] }
-    }
-  ]
+	"type": "FeatureCollection",
+	"features": [
+		{
+			"type": "Feature",
+			"id": 1,
+			"properties": {
+				"Bodyname": "South Cambridgeshire District Council",
+				"Village": "Histon",
+				"Latitude": "52.2495",
+				"Longitude": "0.0995"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					0.0995,
+					52.2495
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": 2,
+			"properties": {
+				"Bodyname": "South Cambridgeshire District Council",
+				"Village": "Impington",
+				"Latitude": "52.2508",
+				"Longitude": "0.1135"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					0.1135,
+					52.2508
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": 3,
+			"properties": {
+				"Bodyname": "South Cambridgeshire District Council",
+				"Village": "Oakington",
+				"Latitude": "52.26085",
+				"Longitude": "0.07515"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					0.07515,
+					52.26085
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": 4,
+			"properties": {
+				"Bodyname": "South Cambridgeshire District Council",
+				"Village": "Rampton",
+				"Latitude": "52.2895",
+				"Longitude": "0.0867"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					0.0867,
+					52.2895
+				]
+			}
+		},
+		{
+			"type": "Feature",
+			"id": 5,
+			"properties": {
+				"Bodyname": "South Cambridgeshire District Council",
+				"Village": "Waterbeach",
+				"Latitude": "52.2792",
+				"Longitude": "0.1716"
+			},
+			"geometry": {
+				"type": "Point",
+				"coordinates": [
+					0.1716,
+					52.2792
+				]
+			}
+		}
+	]
 }

@@ -9,7 +9,14 @@ class DigitalTwinSidePanel {
 
 	// Empty side panel template
 	_sidePanelHTML = `
-		<img id="sidePanelButton" src="./img/arrow.png" width="16px" height="16px" onclick="DT.sideHandler.setVisibility()"/>
+		<div class="tooltip">
+			<img id="sidePanelButton" src="./img/arrow.png" width="16px" class="leftButton" height="16px" onclick="DT.sidePanelHandler.toggleExpansion()"/>
+			<span class="tooltiptext">Expand/Collapse</span>
+		</div>
+		<div class="tooltip">
+			<img id="expandButton" src="./img/expand.png" width="16px" height="16px" onclick="DT.sidePanelHandler.toggleMode()"/>
+			<span class="tooltiptext">Maximise/Minimise</span>
+		</div>
 		<div id="sidePanelInner">
 			<div id="titleContainer"></div>
 			<div id="propsContainer"></div>
@@ -26,15 +33,6 @@ class DigitalTwinSidePanel {
 	constructor(map) {
 		this._map = map;
 		this.#createSidePanel();
-
-		// TEST
-		document.addEventListener('keyup', (e) => {
-			if (e.code === "ArrowUp") {
-				this.setMode("large");
-			} else if (e.code === "ArrowDown") {
-				this.setMode("small");
-			}
-		});
 	}
 
 	/**
@@ -47,6 +45,7 @@ class DigitalTwinSidePanel {
 			let newDiv = document.createElement("div")
 			newDiv.id = "sidePanel";
 			newDiv.classList.add("small");
+			newDiv.classList.add("expanded");
 			newDiv.innerHTML = this._sidePanelHTML;
 			document.body.appendChild(newDiv);
 		} 
@@ -167,13 +166,50 @@ class DigitalTwinSidePanel {
 	}
 
 	/**
-	 * Set the legend content.
+	 * Override the legend content.
 	 * 
 	 * @param {String} legendHTML HTML to add. 
 	 */
 	setLegend(legendHTML) {
 		document.getElementById("sidePanel").style.visibility = "visible";
 		document.getElementById("legendContainer").innerHTML = legendHTML;
+	}
+
+	/**
+	 * Builds a legend component using the getLegendContent of each
+	 * loaded DigitalTwinModule.
+	 */
+	buildLegend() {
+		var modules = DT.modules;
+
+		var outerHTML = `
+			<div id="legend" class="w3-sidebar w3-bar-block w3-light-grey w3-card">
+				<div class="w3-bar-item legend-title"><b>Legends:</b></div>
+		`;
+
+		var innerHTML = ``;
+
+		modules.forEach(module => {
+			let moduleName = module.name;
+			let sanitisedName = moduleName.toLowerCase().replace(" ", "_");
+
+			outerHTML += `
+				<button id="` + sanitisedName + `" class="w3-bar-item w3-button tablink" onclick="manager.openLegend(event, this.id)">` + moduleName + `</button>
+			`;
+
+			innerHTML += `
+				<div id="` + sanitisedName + `" class="w3-container legend-right" style="display: none;">`
+					+ module.getLegendContent() +
+				`</div>
+			`;
+		});
+
+		outerHTML += `</div>`;
+		this.setLegend(outerHTML + innerHTML); 
+
+		// Simulate a click on the first entry
+		var firstEntry = document.getElementsByClassName("tablink w3-button")[0];
+		firstEntry.click();
 	}
 
 	/**
@@ -187,28 +223,36 @@ class DigitalTwinSidePanel {
 	}
 
 	/**
-	 * 
-	 * @param {String} mode desired mode {"small", "large"} 
+	 * Changes the mode of the side panel.
 	 */
-	setMode(mode) {
+	toggleMode() {
 		var sidePanel = document.getElementById("sidePanel");
-		var button = document.getElementById("sidePanelButton");
+		var leftButton = document.getElementById("sidePanelButton");
+		var rightButton = document.getElementById("expandButton");
 
-		if(mode === "large") {
+		if(sidePanel.classList.contains("small")) {
+			// Make large
+
 			sidePanel.classList.replace("small", "large");
-			button.src = "./img/close.png";
 			document.getElementById("map").style.width = "100%";
 			document.getElementById("controlsParent").style.visibility = "hidden";
+
+			leftButton.style.visibility = "hidden";
+			rightButton.src = "./img/collapse.png";
 
 			// Stop keyboard events
 			this._map["keyboard"].disable();
 			this._map.resize();
 
-		} else {
+		} else if(sidePanel.classList.contains("large")) {
+			// Make small
+
 			sidePanel.classList.replace("large", "small");
-			button.src = "./img/arrow.png";
 			document.getElementById("map").style.width = "calc(100% - 500px)";
 			document.getElementById("controlsParent").style.visibility = "visible";
+
+			leftButton.style.visibility = "visible";
+			rightButton.src = "./img/expand.png";
 
 			// Allow keyboard events
 			this._map["keyboard"].enable();
@@ -217,33 +261,53 @@ class DigitalTwinSidePanel {
 	}
 
 	/**
-	 * 
+	 * Updates the visibility of the side panel.
 	 */
-	setVisibility() {
+	toggleExpansion() {
 		var sidePanel = document.getElementById("sidePanel");
+		var rightButton = document.getElementById("expandButton");
 
 		if(sidePanel.classList.contains("small")) {
 
-			if(sidePanel.classList.contains("none")) {
-				sidePanel.classList.remove("none");
+			if(sidePanel.classList.contains("collapsed")) {
+				// Expand
+				sidePanel.classList.replace("collapsed", "expanded")
 				document.getElementById("map").style.width = "calc(100% - 500px)";
+				rightButton.style.visibility = "visible";
 				
-			} else {
-				sidePanel.classList.add("none");
+			} else if(sidePanel.classList.contains("expanded")) {
+				// Collapse
+				sidePanel.classList.replace("expanded", "collapsed")
 				document.getElementById("map").style.width = "calc(100% - 28px)";
+				rightButton.style.visibility = "hidden";
 			}
 
-		} else if(sidePanel.classList.contains("large")) {
-			
-			if(sidePanel.style.visibility) {
-				document.getElementById("controlsParent").style.visibility = "visible";
-				sidePanel.style.visibility = "hidden";
-			} else {
-				document.getElementById("controlsParent").style.visibility = "hidden";
-				sidePanel.style.visibility = "visible";
-			}
-		}
+		} 
 
 		this._map.resize();
+	}
+
+	/**
+	 * Opens the selected legend element
+	 * 
+	 * @param {MouseEvent} event mouse event
+	 * @param {String} legendID id of selected legend
+	 */
+	openLegend(event, legendID) {
+		var i, x, tablinks;
+
+		x = document.getElementsByClassName("legend-right");
+		for (i = 0; i < x.length; i++) {
+			x[i].style.display = "none";
+		}
+
+		tablinks = document.getElementsByClassName("tablink");
+		for (i = 0; i < x.length; i++) {
+			tablinks[i].className = tablinks[i].className.replace(" w3-blue", ""); 
+		}
+
+		var legendContent = document.querySelector("div.legend-right[id='" + legendID + "']");
+		if(legendContent != null) legendContent.style.display = "block";
+		event.currentTarget.className += " w3-blue";
 	}
 }

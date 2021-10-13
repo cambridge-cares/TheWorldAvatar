@@ -15,7 +15,9 @@
 	<?php include 'head.html'; ?>
 
 	<!-- Visualisation specific JS and CSS -->
-	<!-- ADD HERE IF REQUIRED -->
+	<!-- ANY NON-DIGITALTWINMODULE SCRIPTS GO HERE -->
+	<script src='./digital_twin_time_series.js'></script>
+
 </head>
 
 <body>
@@ -25,21 +27,19 @@
 	<!-- Element the map controls will be added to -->
 	<div id="controlsParent"></div>
 
-	<!-- Non-module JS block, variable in here are global-->
+	<!-- Non-module JS block, variables in here are global-->
 	<script>
 		let manager = null;
 	</script>
 
-	<!-- Module JS block, variables are local (i.e. cannot access from HTML) -->
+	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
 	<script type="module">
-		// Module imports
-		import { CambridgeshirePointsModule } from "./example/cambridgeshire-points.js";
-		import { CambridgeshireRegionModule } from "./example/cambridgeshire-regions.js";
 
-		// Initialise a controller (store as global variable)
+		// Initialise a DT manager (and store as a global variable)
 		manager = new DigitalTwinManager();
 
-		// Create the map
+		// Create the MapBox map
+		// Be careful not to commit your MapBox API token here!
 		let map = manager.createMap(
 			"map", 
 			"pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA",
@@ -48,18 +48,26 @@
 		);
 
 		// Build the layer tree
-		manager.buildControls("./example/layer-tree.json");
+		manager.buildControls("./data/layer-tree.json");
 		
-		// Add modules to the controller
-		let cambRegionModule = new CambridgeshireRegionModule();
-		manager.addModule(cambRegionModule);
+		// Import your custom modules
+		import { CambridgeshirePointsModule } from "./js/cambridgeshire-points.js";
+		import { CambridgeshireRegionModule } from "./js/cambridgeshire-regions.js";
 
-		let cambPointsModule = new CambridgeshirePointsModule();
-		manager.addModule(cambPointsModule);
+		// Add these modules to the manager
+		// Note that data will be added in the same order as the modules.
+		manager.addModule(new CambridgeshireRegionModule());
+		manager.addModule(new CambridgeshirePointsModule());
 
-		// Provide some default content for the side panel
-		DT.sideHandler.setTitle("Default Title");
+		// Load the time series data into memory whilst the rest of
+		// the visualisation is loading
+		DT.timeSeriesHandler = new DigitalTwinTimeSeries();
+		DT.timeSeriesHandler.readFile("orchard-data", "./data/orchards-time-series.json")
 
+		// Example side panel title
+		DT.sidePanelHandler.setTitle("Default Title");
+
+		// Example side panel content
 		var defaultContent = `
 			<div style="height: 100%; border: 1px solid grey;">
 				<p>Here is some introductory text, this should be used to detail the overall purpose of the
@@ -75,9 +83,10 @@
 				sit amet varius ex rhoncus convallis. Donec commodo bibendum ligula eget vulputate. Cras a velit suscipit,
 				vulputate est sodales, vulputate dui.</p>
 			</div>`;
-		DT.sideHandler.setContent(defaultContent);
+		DT.sidePanelHandler.setContent(defaultContent);
 
-		DT.sideHandler.setLegend(`
+		// Example legend content
+		DT.sidePanelHandler.setLegend(`
 			<div style="border: 1px solid grey;">
 				<br><br>
 				<p>This area is designed to hold a number of legends. Each layer (as shown to 
@@ -87,18 +96,33 @@
 			</div>
 		`);
 
-		DT.sideHandler.setFooter(`
+		// Example footer content
+		DT.sidePanelHandler.setFooter(`
 			<div style="border: 1px solid grey;">
 				Here is some footer content.
 			</div>
 		`);
 
-		// Fire on MapBox style change
+		// Fire on MapBox style change.
+		// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources and layers.
+		// This means that we have to listen for this event (below) and re-add sources and re-apply layers.
+		var loadedOnce = false;
+
 		map.on('style.load', function() {
 			console.log("INFO: A new style has been loaded.");
 
 			// Load all modules
 			manager.loadModules();
+
+			// Create a legend built from the now loaded modules.
+			if(!loadedOnce) {
+				DT.sidePanelHandler.buildLegend();
+				
+				var firstLegend = document.getElementsByClassName("w3-button tablink")[0];
+				if(firstLegend != null) firstLegend.click();
+
+				loadedOnce;
+			}
 		});
 	</script>
 

@@ -1,5 +1,8 @@
 /**
  * Example concrete instance of a DigitalTwinModule.
+ * 
+ * This module handles loading data sources, creating layers, and handling
+ * event logic for a series of example point locations with Cambridgeshire.
  */
 export class CambridgeshirePointsModule extends DigitalTwinModule {
 
@@ -7,7 +10,7 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	 * Initialise a new CambridgeshirePointsModule.
 	 */
 	constructor() {
-		super("Cambridgeshire Points");
+		super("Cambridgeshire Locations");
 	}
 	
 	/**
@@ -16,25 +19,26 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	 addSources() {
 		this._map.addSource("traffic-counters-data", {
 			type: "geojson",
-			data: "example/traffic-counters.geojson"
+			data: "./data/traffic-counters.geojson"
 		});
 		console.log("INFO: 'traffic-counters-data' source has been added.");
 
 		this._map.addSource("rail-stations-data", {
 			type: "geojson",
-			data: "example/rail-stations.geojson"
+			data: "./data/rail-stations.geojson"
 		});
 		console.log("INFO: 'rail-stations-data' source has been added.");
 
 		this._map.addSource("orchards-data", {
 			type: "geojson",
-			data: "example/orchards.geojson"
+			data: "./data/orchards.geojson"
 		});
 		console.log("INFO: 'orchards-data' source has been added.");
 	}
 
 	/**
-	 * Generate and add layers to the MapBox map.
+	 * Generate and add layers to the MapBox map. Mouse effects can 
+	 * also be turned on here by calling the addMouseEffects() method.
 	 */
 	addLayers() {
 		this._map.addLayer({
@@ -90,12 +94,14 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	}
 
 	/**
-	 * Fires when a mouse enters a plotted location.
+	 * Fires when a mouse enters a plotted location. The logic that runs here
+	 * will likely be specific to your data sources, so you will need to 
+	 * determine what data to show/logic to run here yourself.
 	 * 
-	 * @param {*} popup popup element
-	 * @param {*} layerName name of layer containing location
-	 * @param {*} feature triggered feature
-	 * @param {*} event mouse event
+	 * @param {?} popup popup element
+	 * @param {String} layerName name of layer containing location
+	 * @param {JSONObject} feature triggered feature
+	 * @param {MouseEvent} event mouse event
 	 */
 	onMouseEnter(popup, layerName, feature, event) {
 		this._map.getCanvas().style.cursor = 'pointer';
@@ -127,10 +133,11 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	}
 
 	/**
-	 * Fires when a mouse leaves a plotted location.
+	 * Fires when a mouse leaves a plotted location. This example just hides
+	 * the popup, but data/layer specific actions could be taken here.
 	 * 
-	 * @param {*} popup popup element
-	 * @param {*} layerName name of layer containing location
+	 * @param {?} popup popup element
+	 * @param {String} layerName name of layer containing location
 	 */
 	onMouseExit(popup, layerName) {
 		this._map.getCanvas().style.cursor = '';
@@ -138,14 +145,17 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	}
 
 	/**
+	 * Fires when the user selects a plotted location. This example picks
+	 * some properties from the data source and sends them to the Side Panel
+	 * for display, but data/layer specific actions could be taken here.
 	 * 
-	 * @param {*} layerName 
-	 * @param {*} feature 
-	 * @param {*} event 
+	 * @param {String} layerName name of layer containing location
+	 * @param {JSONObject} feature location selected
+	 * @param {MouseEvent} event mouse event
 	 */
 	 onMouseClick(layerName, feature, event) {
 		// Needs to be implemented in your concrete module class.
-		var sidePanel = DT.sideHandler;
+		var sidePanel = DT.sidePanelHandler;
 		
 		switch(layerName) {
 			case "traffic-counters-layer":
@@ -156,6 +166,14 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 			break;
 			case "orchards-layer":
 				sidePanel.setTitle(feature.properties["Village"]);
+
+				// If we're selecting an Orchard, we can also get it's 
+				// time series data via the DT.timeSeriesHandler
+				var orchardID = feature.id;
+				var dataSetName = "orchard-data";
+
+				var orchardDataEntries = DT.timeSeriesHandler.getAllData(dataSetName, orchardID);
+				
 			break;
 		}
 
@@ -177,7 +195,11 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 	 * Generate and return HTML content for display in the legend.
 	 */
 	getLegendContent() {
-		throw new Error("The 'getLegendContent()' method must be implemented in a concrete subclass!");
+		var legendContent = `
+			<img src="./img/legend-points.svg" width="100" height="100" />
+		`;
+		return legendContent;
 	}
 
 }
+// End of class.

@@ -110,6 +110,10 @@ class DigitalTwinManager {
 		} else {
 			DT.treeHandler.forceRefreshSelections();
 		}
+
+		// Make global so current modules can be
+		// accessed elsewhere.
+		DT.modules = this._modules;
 	}
 
 	/**
@@ -136,7 +140,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeTerrain(mode) {
-		DT.treeHandler.changeTerrain(mode);
+		this._mapControls.changeTerrain(mode);
 	}
 
 	/**
@@ -145,8 +149,19 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeCamera(mode) {
-		DT.treeHandler.changeCamera(mode);
+		this._mapControls.changeCamera(mode);
 	}
+
+	/**
+	 * Opens the selected legend element
+	 * 
+	 * @param {MouseEvent} event mouse event
+	 * @param {String} legendID id of selected legend
+	 */
+	openLegend(event, legendID) {
+		DT.sidePanelHandler.openLegend(event, legendID);
+	}
+
 
 }
 // End of class.
