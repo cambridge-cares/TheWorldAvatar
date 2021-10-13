@@ -3,8 +3,13 @@ from pprint import pprint
 
 from fuzzywuzzy import fuzz
 from nltk.tokenize import word_tokenize
-from .location import WIKI_DICT_DIR
-from .fuzzysearch_wiki import *
+
+if __name__ == '__main__':
+    from location import WIKI_DICT_DIR
+    from fuzzysearch_wiki import *
+else:
+    from .location import WIKI_DICT_DIR
+    from .fuzzysearch_wiki import *
 
 
 def remove_duplicated(uris):
@@ -124,37 +129,44 @@ class SearchEngine:
         # fuzz.ratio(term.lower(), Str2.lower())
 
     def parse_entities(self, entities):
-        # {'entities': {'attribute': 'molecular weight', 'entity': 'benzene'},
-        #  'type': 'item_attribute_query'}
-        question_type = entities['type']
-        list_of_entities = entities['entities']
-        results = []
-        for key, value in list_of_entities.items():
-            if key == 'comparison' or key == 'number':
-                value = filter_components(term_type=key, term=value)
-                if value is None:
-                    return None
-                obj_temp = {key: value}
-                results.append(obj_temp)
-            else:
-                if type(value) is list:
-                    for v in value:
-                        v = filter_components(term_type=key, term=v)
-                        if v is None:
-                            return None
-                        uris = self.find_matches_from_wiki(term=v, mode=key, intent=question_type)
-                        if uris == 'Error001':
-                            return 'Error001'
-                        obj_temp = {key: remove_duplicated(uris)}
-                        results.append(obj_temp)
-                else:
+        try:
+            # {'entities': {'attribute': 'molecular weight', 'entity': 'benzene'},
+            #  'type': 'item_attribute_query'}
+            question_type = entities['type']
+            list_of_entities = entities['entities']
+            results = []
+            for key, value in list_of_entities.items():
+                if key == 'comparison' or key == 'number':
                     value = filter_components(term_type=key, term=value)
                     if value is None:
                         return None
-                    uris = self.find_matches_from_wiki(term=value, mode=key, intent=question_type)
-                    if uris == 'Error001':
-                        return 'Error001'
-                    obj_temp = {key: remove_duplicated(uris)}
+                    obj_temp = {key: value}
                     results.append(obj_temp)
+                else:
+                    if type(value) is list:
+                        for v in value:
+                            v = filter_components(term_type=key, term=v)
+                            if v is None:
+                                return None
+                            uris = self.find_matches_from_wiki(term=v, mode=key, intent=question_type)
+                            if uris == 'Error001':
+                                return 'Error001'
+                            obj_temp = {key: remove_duplicated(uris)}
+                            results.append(obj_temp)
+                    else:
+                        value = filter_components(term_type=key, term=value)
+                        if value is None:
+                            return None
+                        uris = self.find_matches_from_wiki(term=value, mode=key, intent=question_type)
+                        if uris == 'Error001':
+                            return 'Error001'
+                        try:
+                            obj_temp = {key: remove_duplicated(uris)}
+                        except:
+                            print('Remove duplicate failed')
+                            return None
+                        results.append(obj_temp)
 
-        return {'intent': question_type, 'entities': results}
+            return {'intent': question_type, 'entities': results}
+        except:
+            return None

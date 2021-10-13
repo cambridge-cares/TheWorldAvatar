@@ -4,12 +4,14 @@ from .chatbot_interface import Chatbot
 
 class JPSQueryInterface:
 
-    def __init__(self):
+    def __init__(self, model_dir):
         self.jps_interface = Chatbot(None)
 
     def jps_query(self, question):
 
         result = self.jps_interface.analyse_questions(question)
+        if result is None:
+            return None
         if 'result' in result:
             result_obj = json.loads(result)
             result_list = result_obj['result']

@@ -98,8 +98,6 @@ def make_query():
     try:
         if question_type == 'worldavatar':
             result = coordinate_agent.run(question)
-            print("=========================== result from TWA ======================")
-            print(result)
             return json.dumps(result)
         elif question_type == 'google':
             # question = request.args.get('question').strip()

@@ -31,7 +31,6 @@ class JPSQuestionClassifier:
         # model_path = os.path.join(temp_dir_path, "nlu")
         self.interpreter = Interpreter.load(self.nlu_model_directory)
 
-
     def extract_nlu_model(self, extract_dir):
         # Identify the newest trained nlu model
         path = self.nlu_model_directory

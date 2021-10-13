@@ -209,11 +209,8 @@ def get_instance_labels(ID):
 
 def get_class_labels():
     class_labels = []
-<<<<<<< Updated upstream:JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/create_questions_for_wiki.py
-    with open('C:/data/instance_info/instance_info/%s' % ID) as f:
-=======
+
     with open('C:/data/instance_info/%s' % ID) as f:
->>>>>>> Stashed changes:JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/03_create_training_question/create_questions_for_wiki.py
         data = json.loads(f.read())['results']['bindings']
         for b in data:
             if 'classLabel' in b:

@@ -32,7 +32,11 @@ class Chatbot:
     def analyse_questions(self, question):
         question = self.simple_replace(question)
         result = self.jps_classifier.interpret(question)
-        answer = self.jps_query_constructor.construct_query(result)
+        try:
+            answer = self.jps_query_constructor.construct_query(result)
+        except:
+            print('JPS failed to answer the question')
+            return None
         if type(answer) == tuple:
             answer = answer[0]
 

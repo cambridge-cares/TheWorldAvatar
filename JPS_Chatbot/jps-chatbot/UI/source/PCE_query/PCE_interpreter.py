@@ -4,7 +4,6 @@ from openbabel import pybel
 from rasa.nlu.model import Interpreter
 from SPARQLWrapper import SPARQLWrapper, POST, DIGEST, JSON
 
-
 class OtherInterpreter:
 
     def __init__(self):

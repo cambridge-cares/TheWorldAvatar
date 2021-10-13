@@ -6,14 +6,14 @@ from rapidfuzz import process, fuzz
 if __name__ == "__main__":
     from AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
     from AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from AgentUtil.util.MarieLogger import MarieError
+    from AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
     from AgentUtil.util.Lookup import find_nearest_match
     from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from location import JPS_DICT_DIR
 else:
     from .AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
     from .AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from .AgentUtil.util.MarieLogger import MarieError
+    from .AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
     from .AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from .AgentUtil.util.Lookup import find_nearest_match
     from .location import JPS_DICT_DIR
@@ -48,8 +48,9 @@ def select_data(temperature, pressure, multi_point_result, single_point_result, 
             selected_result = single_point_result
 
     if _attribute is None:
-        filtered_response = selected_result
-        filtered_response['attribute'] = 'all'
+        return None
+        # filtered_response = selected_result
+        # filtered_response['attribute'] = 'all'
     else:
         _attribute = _attribute.capitalize()
 
@@ -99,7 +100,6 @@ def unitConversion(temperature, pressure):
     return temperature, pressure
 
 
-
 class ThermoAgent:
     def __init__(self):
         with open(os.path.join(JPS_DICT_DIR, 'ONTOSPECIES_URI_DICT')) as f:
@@ -117,46 +117,78 @@ class ThermoAgent:
         return _IRI
 
     def callThermoAgent(self, species=None, attribute=None, temperature=None, pressure=None):
+        if attribute is None:
+            return None
         url = 'http://kg.cmclinnovations.com:81/stdc-agent/api/thermoagent/calculate'
         temperature, pressure = unitConversion(temperature, pressure)
+        MarieMessage('temperature :{}, pressure: {}'.format(temperature, pressure))
         ontospecies_iri_list = self.findOntoSpecies(species)
+        if len(ontospecies_iri_list) == 0:
+            MarieError('No ontospecies iri found for this species {}'.format(species))
+        else:
+            MarieMessage('ontospecies list {}'.format(ontospecies_iri_list))
         for ontospecies_iri in ontospecies_iri_list:
             ontocompchem_iri_list = find_ontocompchem_IRI(ontospecies_iri)
+            if len(ontocompchem_iri_list) == 0:
+                MarieError('No ontocompchem iri found for this species {}'.format(species))
+            else:
+                MarieMessage('ontocompchem list {}'.format(ontocompchem_iri_list))
+
             for ontocompchem_iri in ontocompchem_iri_list:
                 data = {'ontocompchem_IRI': ontocompchem_iri,
                         'ontospecies_IRI': ontospecies_iri,
                         'temperature': temperature,
                         'pressure': pressure}
+                MarieMessage(json.dumps(data, indent=4))
                 raw_response = make_simple_http_request(url, data)
                 if raw_response is None:
                     pass
                 else:
-                    return filter_response(json.loads(raw_response), attribute, temperature=temperature, pressure= pressure)
+                    return filter_response(json.loads(raw_response), attribute, temperature=temperature,
+                                           pressure=pressure)
         return None
 
 
 # findOntoSpecies(species)
 if __name__ == '__main__':
     ta = ThermoAgent()
-    _species = 'inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3'
+    # _species = 'inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3'
     _url = 'http://kg.cmclinnovations.com:81/stdc-agent/api/thermoagent/calculate'
     # t_list = [0, 300, 1232, 212, -323, 32555, 9999, None]
     # p_list = [0, 123219, 1210000, 1232334, -232343, None]
-    # attribute_list = ['heat capacity', 'gibbs energy', 'internal energy', 'enthalpy', 'entropy']
+    # # attribute_list = ['heat capacity', 'gibbs energy', 'internal energy', 'enthalpy', 'entropy']
+    # _species = 'c1cccc1'
+    # _species = 'co2'
+    # _species = 'benzene'
+    # t = 'roomtemperature'
+    t = None
+    #p = '100000 Pa'
+    #attribute = 'entropy'
+    # attribute = None
+    # p = None
+    # _species = 'geometry c=c=c'
+    # attribute = 'HeatCapacity'
 
-    t_list = ['300 K', -232, None]
-    p_list = [100000, '100kpa', '-232343 Pa', None]
-    attribute_list = [None, 'heat capacity']
+    _species = 'methane'
+    t = '100 k'
+    p = None
+    attribute = 'Internal Energy'
 
-    tmp = {}
-    for t in t_list:
-        for p in p_list:
-            for attribute in attribute_list:
-                key = 'T {} | P {} | A {}'.format(t, p, attribute)
-                response = ta.callThermoAgent(species=_species, temperature=t, pressure=p,
-                                              attribute=attribute)
-                tmp[key] = response
-
-    # ideally, species, attribute, qualifiers
-    with open('thermo_result', 'w') as f:
-        f.write(json.dumps(tmp, indent=4))
+    response = ta.callThermoAgent(species=_species, temperature=t, pressure=p, attribute=attribute)
+    print('response', response)
+    # t_list = ['300 K', -232, None]
+    # p_list = [100000, '100kpa', '-232343 Pa', None]
+    # attribute_list = [None, 'heat capacity']
+    #
+    # tmp = {}
+    # for t in t_list:
+    #     for p in p_list:
+    #         for attribute in attribute_list:
+    #             key = 'T {} | P {} | A {}'.format(t, p, attribute)
+    #             response = ta.callThermoAgent(species=_species, temperature=t, pressure=p,
+    #                                           attribute=attribute)
+    #             tmp[key] = response
+    #
+    # # ideally, species, attribute, qualifiers
+    # with open('thermo_result', 'w') as f:
+    #     f.write(json.dumps(tmp, indent=4))

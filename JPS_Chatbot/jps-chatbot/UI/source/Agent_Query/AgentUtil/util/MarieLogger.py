@@ -26,6 +26,7 @@ def MarieQuestionLog(func):
 
 
 def MarieError(err):
+    logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('Error')
     logger.setLevel(logging.DEBUG)
     logger.error(err)

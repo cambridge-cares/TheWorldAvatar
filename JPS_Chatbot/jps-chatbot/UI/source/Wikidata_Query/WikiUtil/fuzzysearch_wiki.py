@@ -1,7 +1,14 @@
 from rapidfuzz import process, fuzz
-from .load_dicts import FORMULA_URI_DICT, SMILES_URI_DICT, NAME_URI_DICT, \
-    FORMULA_KEYS, NAME_KEYS, SMILES_KEYS, ATTRIBUTE_URI_DICT, \
-    ATTRIBUTE_KEYS, CLASS_URI_DICT, CLASS_KEYS, process_species, process_species_reversed
+
+if __name__ == '__main__':
+    from load_dicts import FORMULA_URI_DICT, SMILES_URI_DICT, NAME_URI_DICT, \
+        FORMULA_KEYS, NAME_KEYS, SMILES_KEYS, ATTRIBUTE_URI_DICT, \
+        ATTRIBUTE_KEYS, CLASS_URI_DICT, CLASS_KEYS, process_species, process_species_reversed
+
+else:
+    from .load_dicts import FORMULA_URI_DICT, SMILES_URI_DICT, NAME_URI_DICT, \
+        FORMULA_KEYS, NAME_KEYS, SMILES_KEYS, ATTRIBUTE_URI_DICT, \
+        ATTRIBUTE_KEYS, CLASS_URI_DICT, CLASS_KEYS, process_species, process_species_reversed
 
 
 def find_nearest_match(entity_value, entity_type):

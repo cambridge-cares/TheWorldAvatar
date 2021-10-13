@@ -2,8 +2,10 @@ import re
 
 if __name__ == '__main__':
     from Lookup import find_nearest_match
+    from MarieLogger import MarieMessage
 else:
     from .Lookup import find_nearest_match
+    from .MarieLogger import MarieMessage
 
 
 def c_k(t):  # celsius to kelvin
@@ -81,7 +83,7 @@ def convertPressure(pressure):
 
 def number_conversion(t_unit, t_numerical, d, default_unit, keys, default_number):
     for unit_key in d:
-        if t_unit == '':
+        if t_unit == '' or t_unit == 'room':
             t_unit = default_unit
         matched_unit, score = find_nearest_match(keys=keys, term=t_unit)
         try:
@@ -99,7 +101,7 @@ def convertTemperature(temperature):
     default_unit = 'k'
     c = ['c', 'celsius', 'degrees celsius']
     f = ['f', 'fahrenheit', 'degrees fahrenheit']
-    k = ['k', 'kelvin', 'degrees kelvin', '']
+    k = ['k', 'kelvin', 'degrees kelvin', '', 'room']
     keys = c + f + k
     t_dict = {'c': {'keys': c, 'func': c_k},
               'f': {'keys': f, 'func': f_k},

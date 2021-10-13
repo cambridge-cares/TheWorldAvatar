@@ -1,5 +1,8 @@
 import json
-from .location import WIKI_DICT_DIR
+if __name__ == '__main__':
+    from location import WIKI_DICT_DIR
+else:
+    from .location import WIKI_DICT_DIR
 
 FOLDER = './WIKI_DICTS'
 

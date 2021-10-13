@@ -12,7 +12,8 @@ class ModelLoader:
         self.jps_nlu_model_directory = os.path.join(JPS_MODELS_DIR, 'nlu')
 
     def AGENT_NLU_MODEL(self):
-        return Interpreter.load(self.agent_nlu_model_directory)
+        return self.agent_nlu_model_directory
+        # return Interpreter.load(self.agent_nlu_model_directory)
 
     def WIKI_NLU_MODEL(self):
         return Interpreter.load(self.wiki_nlu_model_directory)

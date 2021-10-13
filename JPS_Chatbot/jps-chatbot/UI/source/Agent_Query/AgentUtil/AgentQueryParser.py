@@ -6,10 +6,11 @@ from rapidfuzz import process, fuzz
 if __name__ == '__main__':
     from util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
     from util.location import FILE_DIR
+    from util.MarieLogger import MarieError, MarieMessage
 else:
     from .util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
     from .util.location import FILE_DIR
-
+    from .util.MarieLogger import MarieError, MarieMessage
 
 # extract inputs from the SPARQL query
 def create_input_dict(_input_rst):
@@ -81,6 +82,8 @@ def match_outputs(_entities, _output_parameters_dict):  # _output_parameters_dic
         _e_name = _e['value']
         _e_label = _e['entity']
         rst = process.extractOne(_e_name, candidate_names, scorer=fuzz.ratio)
+        if rst is None:
+            return None
         output_name = rst[0]
         score = rst[1]
         output_label = _output_parameters_dict[output_name]['label']
@@ -88,6 +91,10 @@ def match_outputs(_entities, _output_parameters_dict):  # _output_parameters_dic
         valid_qualifier_labels = []
         # score larger than 80, attributes match
         if score > 80 and (_e_label == output_label):
+            MarieMessage('entity label {}'.format(_e_label))
+            MarieMessage('output label {}'.format(output_label))
+            MarieMessage('score        {}'.format(score))
+
             # here is a match, this is an output
             # find the qualifiers
             for _q_name in qualifier_labels:
@@ -116,6 +123,8 @@ class AgentQueryParser:
         output_rst, input_rst, url_rst = self.get_agent_request_attributes(agent_name)
         output_dict = create_output_dict(_output_rst=output_rst)
         _outputs = match_outputs(_entities=entities, _output_parameters_dict=output_dict)
+        if _outputs is None:
+            return None, None, None
         input_dict = create_input_dict(_input_rst=input_rst)
         _inputs = match_inputs(_entities=entities, _input_parameters_dict=input_dict)
         for _u in url_rst:
@@ -124,9 +133,13 @@ class AgentQueryParser:
 
     # query the OntoAgent instance via SPARQL and extract the inputs/outputs parameters of the agent
     def get_agent_request_attributes(self, agent_name):
-        agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
-        print('agent dir', agent_dir)
-        self.graph.parse(agent_dir)
+        try:
+            agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
+            MarieMessage('Loading agent instance from {} {}'.format(FILE_DIR, agent_name))
+            self.graph = rdflib.Graph()
+            self.graph.parse(agent_dir)
+        except TypeError:
+            MarieError('Failed to load an agent owl file {}'.format(agent_name))
         input_rst = self.graph.query(GET_AGENT_INPUT_PARAMETERS)
         # species fits species as the ner label
         output_rst = self.graph.query(GET_AGENT_OUTPUTS)

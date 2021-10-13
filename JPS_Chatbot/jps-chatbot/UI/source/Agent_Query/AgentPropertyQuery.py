@@ -7,7 +7,9 @@ import rdflib
 class AgentPropertyQuery:
 
     def __init__(self):
-        self.label_mapping = {'http://fake_concept_for_GibbsEnergy': ['gibbs energy'],
+        self.label_mapping = {'http://fake_concept_for_general_thermal_property': ['thermal data', 'thermal property',
+                                                                                   'thermal kinetic'],
+                              'http://fake_concept_for_GibbsEnergy': ['gibbs energy'],
                               'http://fake_concept_for_entropy': ['entropy'],
                               'http://fake_concept_for_enthalpy': ['enthalpy'],
                               'http://fake_concept_for_InternalEnergy': ['internal energy'],

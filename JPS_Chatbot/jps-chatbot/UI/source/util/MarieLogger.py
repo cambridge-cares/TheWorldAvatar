@@ -37,6 +37,17 @@ def MarieQuestionLog(func):
 
     return wrapper
 
+def MarieError(err):
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('Error')
+    logger.setLevel(logging.DEBUG)
+    logger.error(err)
+
+def MarieMessage(message):
+    logging.basicConfig(level=logging.DEBUG)
+    logger = logging.getLogger('Message')
+    logger.setLevel(logging.DEBUG)
+    logger.info(message)
 
 def MarieIOLog(func):
     def wrapper(*args, **kwargs):

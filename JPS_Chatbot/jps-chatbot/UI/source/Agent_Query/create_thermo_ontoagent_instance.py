@@ -12,6 +12,13 @@ agent = {
     "http_url": " http://127.0.0.1:5000/thermo_agent",
     "outputs": [
         {
+            "data_name": "ThermalProperty",
+            "data_type": "http://fake_concept_for_general_thermal_property",
+            "is_array": True,
+            "ner_label": "attribute",
+            "has_qualifier": ["temperature"]
+        },
+        {
             "data_name": "HeatCapacity",
             "data_type": "http://fake_concept_for_heat_capacity",
             "is_array": True,

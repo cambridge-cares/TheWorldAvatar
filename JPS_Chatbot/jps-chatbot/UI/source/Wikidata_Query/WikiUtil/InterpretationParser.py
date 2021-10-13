@@ -1,4 +1,5 @@
 from pprint import pprint
+from rasa.nlu.model import Interpreter
 
 
 def make_confidence_map(result):
@@ -13,8 +14,8 @@ def make_confidence_map(result):
 
 class InterpretationParser:
 
-    def __init__(self, socketio):
-        self.interpreter = None
+    def __init__(self, model_dir):
+        self.interpreter = Interpreter.load(model_dir)
         self.entity_intent_map = {'attribute_batch_attribute_query_numerical': {'attribute': [],
                                                                                 'class': None, 'comparison': None,
                                                                                 'number': None},
@@ -27,7 +28,6 @@ class InterpretationParser:
                                   'batch_query': {'class': None},
                                   'about_query': {'species': None}
                                   }
-        self.socketio = socketio
 
     def parse_question_interpretation(self, question):
         result = self.interpreter.parse(question)
