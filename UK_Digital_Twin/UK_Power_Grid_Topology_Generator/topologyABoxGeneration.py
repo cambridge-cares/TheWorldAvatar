@@ -454,10 +454,10 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', None, True)
+    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', None, False)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', None, True)
-    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', None, True) 
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', None, False) 
     
     print('**************Terminated**************')

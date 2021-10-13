@@ -19,13 +19,9 @@ class EnergyConsumptionData:
         self.headerElectricityConsumption = ["RegionAndArea", "LACode", "IndustrialAndCommercial", "Domestic", "Total\n"]
         
         """Official regions"""
-        # if  self.VERSION == 2017:
         self.GovernmentOfficeRegions = ["Wales", "Scotland", "North_East_England", "North_West_England", "Yorkshire_and_the_Humber", "East_Midlands",\
                                "West_Midlands_(county)", "East_of_England", "London", "South_East_England", "South_West_England"]
-        # if  self.VERSION == 2019:
-        #     self.GovernmentOfficeRegions = ["Wales", "Scotland", "North_East_England", "North_West_England", "Yorkshire_and_the_Humber", "East_Midlands",\
-        #                            "West_Midlands_(county)", "East_of_England", "Inner_London", "Outer_London", "South_East_England", "South_West_England"]
-        
+       
         """Start Time"""
         self.startTime_NHH = str(self.VERSION) + '-01-31' # Non-Half Hourly
         self.startTime_HH = str(self.VERSION)+ '-01-01' # Half Hourly
