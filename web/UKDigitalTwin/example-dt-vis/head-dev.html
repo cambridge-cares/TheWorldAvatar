@@ -1,0 +1,39 @@
+<!--
+    This file lists the imports required when creating a Digital Twin visualisation
+    for the Development environment. During the Docker build process, this file should be
+    copied to 'head.html' so that it is picked up by the main PHP file.
+-->
+
+
+<!--
+    External CSS
+-->
+<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+
+
+<!--
+    External JS
+-->
+<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+
+
+<!--
+    CMCL CSS
+-->
+<link href='http://kg.cmclinnovations.com:81/user/resources/digital_twin_style.css' rel='stylesheet' />
+
+
+<!--
+    CMCL Core functionality
+-->
+<script src='http://kg.cmclinnovations.com:81/user/resources/digital_twin_manager.js'></script>
+<script src='http://kg.cmclinnovations.com:81/user/resources/digital-twin/1-0-0/digital_twin_module.js'></script>
+
+
+<!--
+    CMCL Control handlers
+-->
+<script src='http://kg.cmclinnovations.com:81/user/resources/digital-twin/1-0-0/digital_twin_controls.js'></script>
+<script src='http://kg.cmclinnovations.com:81/user/resources/digital-twin/1-0-0/digital_twin_tree.js'></script>
+<script src="http://kg.cmclinnovations.com:81/user/resources/digital-twin/1-0-0/digital_twin_side_panel.js"></script>

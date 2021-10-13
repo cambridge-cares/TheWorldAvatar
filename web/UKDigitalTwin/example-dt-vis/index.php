@@ -5,23 +5,14 @@
 	<title>Digital Twin Example</title>
 	<meta charset="utf-8">
 
-	<!-- External JS and CSS, needs to be declared FIRST -->
-    <script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
-	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
-	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+	<!--
+		JS and CSS files are loaded from another file that is populated when building a Docker Image;
+		this is because the imports differ for development and production environments, so a different
+		version of 'head.html' can be generated depending on the target environment.
 
-	<!-- JS and CSS for Digital Twin framework -->
-	<!-- Local CSS -->
-	<link href='digital_twin_style.css' rel='stylesheet' />
-
-	<!-- Core functionality -->
-	<script src='digital_twin_manager.js'></script>
-	<script src='digital_twin_module.js'></script>
-
-	<!-- Control handlers -->
-	<script src='digital_twin_controls.js'></script>
-	<script src='digital_twin_tree.js'></script>
-	<script src="digital_twin_side_panel.js"></script>
+		If running locally (without Docker), copy 'head-dev.html' or 'head-prod.html' to 'head.html' temporarily.
+	-->
+	<?php include 'head.html'; ?>
 
 	<!-- Visualisation specific JS and CSS -->
 	<!-- ADD HERE IF REQUIRED -->
