@@ -5,6 +5,7 @@ services:
     image: access-agent:1.0.0-SNAPSHOT
     build: .
     container_name: access-agent
+    pull_policy: if_not_present
     ports:
       - "48080:8080"
 
