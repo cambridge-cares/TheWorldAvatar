@@ -53,7 +53,7 @@ class AgentQueryInterface:
 if __name__ == '__main__':
     ml = ModelLoader()
     agent_nlu_model = ml.AGENT_NLU_MODEL()
-    aqi = AgentQueryInterface(agent_nlu_model)
+    aqi = AgentQueryInterface()
     questions = ['enthalpy of inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3 at the temperature of 123 K and pressure of 1 atm',
                  'heat capacity of CO2 at 123 K and 1 Pa',
                  'internal energy of C4H10O at 901 Pascal and 3694 kelvin',
