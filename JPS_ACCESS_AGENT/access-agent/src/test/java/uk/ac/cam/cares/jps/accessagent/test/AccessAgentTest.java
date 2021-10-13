@@ -294,29 +294,6 @@ public class AccessAgentTest{
         agent.post(jo);								
 	}	
 	
-	@Test
-	public void testGetShortIRI() {
-		
-		String testUrl;
-		String result;
-		
-		testUrl = "http://kb/ontokin";
-		result = AccessAgent.getShortIRI(testUrl);
-		assertEquals("http://kb/ontokin",result);
-		
-		testUrl = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl";
-		result = AccessAgent.getShortIRI(testUrl);
-		assertEquals("http://kb/sgp/singapore/SGTemperatureSensor-001.owl",result);
-		
-		testUrl = "http://www.theworldavatar.com/kb/ontokin";
-		result = AccessAgent.getShortIRI(testUrl);
-		assertEquals("http://kb/ontokin",result);
-		
-		testUrl = "http://localhost:8080/kb/ontokin";
-		result = AccessAgent.getShortIRI(testUrl);
-		assertEquals("http://kb/ontokin",result);
-	}
-	
 	///////////////////////////////////////////////
 	
 	/**

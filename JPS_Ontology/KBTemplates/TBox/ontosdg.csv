@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoSDG,TBox,http://www.theworldavatar.com/ontology/ontosdg/OntoSDG.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoSDG,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoSDG,TBox,An ontology developed for representing the United Stations (UN) Sustainable Development Goals (SDGs).,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoSDG,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 Goal,Class,http://purl.unep.org/sdg/SDGIO_00000000,EQUIVALENT-TO,,,,"An objective specification which describes the endpoint of a development process following the Sustainable Development Agenda for 2030 [SDGIO Ontology, Accessed on 29 October 2020]",http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 Target,Class,http://purl.unep.org/sdg/SDGIO_00000001,EQUIVALENT-TO,,,,"A threshold value of a sustainable development indicator value or a set of threshold values of several such indicators towards or beyond which corresponding indicator values from a socio-economic-environmental system should tend in order to meet a sustainable development goal [SDGIO ontology, Accessed 29 October 2020]",http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
 Indicator,Class,http://purl.unep.org/sdg/SDGIO_00000003,EQUIVALENT-TO,,,,"A data item which represents a sustainable development goal indicator in some quantitative or qualitative system of measurement [SDGIO ontology, Accessed on 29 October 2020]",http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl
