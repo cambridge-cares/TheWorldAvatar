@@ -110,3 +110,11 @@ if (response.status_code != status_codes.codes.bad_request):
     print("  ERROR: POST to download URL: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
 else:
     print("  Rejected, as expected")
+
+# Try an empty file request
+print("\nTesting empty file request")
+response = requests.post(upload_URL, auth=auth, files={})
+if (response.status_code != status_codes.codes.bad_request):
+    print("  ERROR: Empty file request: expected status code %d, but got %d" % (status_codes.codes.bad_request,response.status_code) )
+else:
+    print("  Rejected, as expected")

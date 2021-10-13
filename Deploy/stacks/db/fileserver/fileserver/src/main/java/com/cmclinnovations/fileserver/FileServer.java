@@ -39,6 +39,10 @@ public class FileServer extends HttpServlet {
     static final int ONE_HUNDRED_MB_IN_B = 100 * ONE_MB_IN_B;
     static final int ONE_GB_IN_B = 1000 * ONE_MB_IN_B;
 
+    // Content type prefixes
+    private static final String MULTIPART_FORM_TYPE_PREFIX = "multipart/form-data";
+    private static final String MULTIPART_MIXED_TYPE_PREFIX = "multipart/mixed";
+
     private static final Logger LOGGER = LogManager.getLogger(FileServer.class);
 
     private synchronized String writeFilePart(Part filePart, String subDirStr_in) {
@@ -125,6 +129,14 @@ public class FileServer extends HttpServlet {
         final String downloadPath = DOWNLOAD_URL_PATTERN.substring(0, servletPath.length());
         if (servletPath.contentEquals(downloadPath)) {
             LOGGER.error("Rejecting POST request to " + downloadPath);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Reject requests with the wrong Content-Type
+        String contentType = request.getContentType();
+        if (contentType == null || !contentType.startsWith(MULTIPART_FORM_TYPE_PREFIX) && !contentType.contentEquals(MULTIPART_MIXED_TYPE_PREFIX)) {
+            LOGGER.error("Rejecting POST request with invalid content type " + ((contentType == null) ? "NULL" : contentType));
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
