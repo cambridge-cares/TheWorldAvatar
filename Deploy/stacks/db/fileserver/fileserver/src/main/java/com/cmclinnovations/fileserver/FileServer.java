@@ -97,10 +97,11 @@ public class FileServer extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // Reject GET requests to upload URL
+        // Reject GET requests to anything but the download URL
         String servletPath = request.getServletPath();
-        if (servletPath.contentEquals(UPLOAD_URL_PATTERN)) {
-            LOGGER.error("Rejecting GET request to " + UPLOAD_URL_PATTERN);
+        final String downloadURLPrefix = DOWNLOAD_URL_PATTERN.substring(0, DOWNLOAD_URL_PATTERN.length() - 2);
+        if (!request.getServletPath().startsWith(downloadURLPrefix)) {
+            LOGGER.error("Rejecting GET request to " + servletPath);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -108,7 +109,7 @@ public class FileServer extends HttpServlet {
         // Extract the path following the servlet URL, minus the leading slash
         String fPath = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
 
-        LOGGER.info("Received a request for file " + fPath);
+        LOGGER.info("Received a request to GET file " + fPath);
         File file = new File(fPath);
         if (file.exists()) {
             response.setHeader("Content-Type", getServletContext().getMimeType(fPath));
@@ -124,11 +125,10 @@ public class FileServer extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-        // Reject POST requests to download URL
+        // Reject POST requests to anything but the upload URL
         String servletPath = request.getServletPath();
-        final String downloadPath = DOWNLOAD_URL_PATTERN.substring(0, servletPath.length());
-        if (servletPath.contentEquals(downloadPath)) {
-            LOGGER.error("Rejecting POST request to " + downloadPath);
+        if (!request.getServletPath().startsWith(UPLOAD_URL_PATTERN)) {
+            LOGGER.error("Rejecting POST request to " + servletPath);
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
