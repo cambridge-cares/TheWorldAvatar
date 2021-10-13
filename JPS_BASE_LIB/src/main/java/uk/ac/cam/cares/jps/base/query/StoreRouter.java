@@ -106,12 +106,13 @@ public class StoreRouter{
 				String relativePath = getPathComponent(targetResourceID);
 				String rootPath = getPathComponent(storeRouter.getLocalFilePath(STOREROUTER_ENDPOINT, TOMCAT_ROOT_LABEL));
 				String filePath =  joinPaths(rootPath, relativePath);
-				LOGGER.debug("file path: "+filePath);
+				LOGGER.info("File based resource. file path="+filePath);
 				
 				kbClient = new FileBasedStoreClient(filePath);	
 			}else if(isRemoteTargetResourceID(targetResourceID)){
 				
 				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
+				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
 				if (isQueryOperation) {
 					queryIRI = storeRouter.getQueryIRI(STOREROUTER_ENDPOINT, targetResourceLabel);
