@@ -13,6 +13,31 @@
       <version>1.0.0-SNAPSHOT</version>
   </parent>
   
+  <!-- Profiles are used to switch between building for development and production 
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+	<profiles>
+		<!-- This profile should be used for development builds. -->
+		<profile>
+			<id>dev-profile</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- Set property to download development logging config -->
+				<log.artifact>java-logging-dev</log.artifact>
+			</properties>
+		</profile>
+		
+		<!-- This profile should be used for production builds. -->
+		<profile>
+			<id>prod-profile</id>
+			<properties>
+				<!-- Set property to download production logging config -->
+				<log.artifact>java-logging-prod</log.artifact>
+			</properties>
+		</profile>
+	</profiles>
+  
   <!-- Build settings -->
   <build>
 	  <plugins>
@@ -38,10 +63,6 @@
             <artifactId>maven-war-plugin</artifactId>
             <!-- Version, configuration, and executions should be pulled from the 
             parent POM unless overridden here. -->
-            <configuration>
-			  <warName>${project.artifactId}##${project.version}</warName>
-			  <outputDirectory>${tomcatPath}/webapps</outputDirectory>
-			</configuration>
         </plugin>
         
         <!-- Downloads and extracts ZIP archives from Maven repository -->
@@ -99,5 +120,17 @@
 		<version>3.5.7</version>
 		<scope>test</scope>
 	</dependency>
+	<dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>1.15.3</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>1.15.3</version>
+        <scope>test</scope>
+    </dependency>
   </dependencies>              
 </project>
