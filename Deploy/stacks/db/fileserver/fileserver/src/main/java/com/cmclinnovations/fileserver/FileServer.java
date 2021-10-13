@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Owen Parry {@literal <oparry@cmclinnovations.com>}
  */
-@WebServlet(name = "FileServer", urlPatterns = {FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN})
+@WebServlet(name = "FileServer", urlPatterns = {FileServer.DELETE_URL_PATTERN, FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN})
 @MultipartConfig(
 fileSizeThreshold = FileServer.ONE_MB_IN_B,
 location = "/app/fs_root/",
@@ -31,6 +31,7 @@ maxRequestSize = FileServer.ONE_GB_IN_B
 public class FileServer extends HttpServlet {
 
     // URL Patterns
+    static final String DELETE_URL_PATTERN = "/delete/*";
     static final String DOWNLOAD_URL_PATTERN = "/download/*";
     static final String UPLOAD_URL_PATTERN = "/upload";
 
@@ -92,6 +93,38 @@ public class FileServer extends HttpServlet {
             LOGGER.error("writeFilePart: (Thread)InterruptedException whilst pausing at the end of the method", ex);
         }
         return destPath.toString();
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Reject DELETE requests to anything but the delete URL
+        String servletPath = request.getServletPath();
+        final String deleteURLPrefix = DELETE_URL_PATTERN.substring(0, DELETE_URL_PATTERN.length() - 2);
+        if (!request.getServletPath().startsWith(deleteURLPrefix)) {
+            LOGGER.error("Rejecting DELETE request to " + servletPath);
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        // Extract the path following the servlet URL, minus the leading slash
+        String fPath = URLDecoder.decode(request.getPathInfo().substring(1), "UTF-8");
+
+        LOGGER.info("Received request to DELETE file " + fPath);
+        boolean fileDeleted = false;
+        try {
+            fileDeleted = Files.deleteIfExists(Paths.get(fPath));
+            if (!fileDeleted) {
+                LOGGER.error("No file found at " + fPath);
+            }
+        } catch (IOException ex) {
+            LOGGER.error("IOException while trying to delete file " + fPath, ex);
+        }
+
+        if (fileDeleted) {
+            LOGGER.info("Deleted file at " + fPath);
+        } else {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        }
     }
 
     @Override

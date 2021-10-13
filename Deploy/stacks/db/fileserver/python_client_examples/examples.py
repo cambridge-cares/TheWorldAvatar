@@ -15,6 +15,7 @@ from requests import status_codes
 server_URL = 'http://localhost:58090/FileServer/'
 upload_URL = server_URL+'upload'
 download_URL = server_URL+'download/'
+delete_URL = server_URL+'delete/'
 
 # Default credentials for authentication. If you supply a different password via a secret, modify 'fs_pass' on the next line accordingly
 auth=('fs_user', 'fs_pass')
@@ -91,6 +92,23 @@ if text_remote_upload_path is not None:
             print("  ERROR: Downloaded file differs from original")
     else:
         print("  ERROR: File download failed with code %d " % response.status_code)
+
+# Test delete file
+if text_remote_upload_path is not None:
+    print("\nTesting file deletion")
+    response = requests.delete(delete_URL+text_remote_upload_path, auth=auth)
+    if (response.status_code == status_codes.codes.OK):
+        print(" Deleted "+text_remote_upload_path)
+    else:
+        print("  ERROR: File deletion failed with code %d " % response.status_code)
+
+    # Try GET deleted file (should fail)
+    print("\nAttempting to GET the deleted file")
+    response = requests.get(download_URL+text_remote_upload_path, auth=auth)
+    if (response.status_code != status_codes.codes.not_found):
+        print("  ERROR: GET deleted file: expected status code %d, but got %d" % (status_codes.codes.not_found,response.status_code) )
+    else:
+        print("  Fails, as expected")
 
 
 # Try GET from upload URL (should fail)
