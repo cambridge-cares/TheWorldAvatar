@@ -223,15 +223,16 @@ public class UpdateStations {
         	// avoid adding duplicate data
         	// this may happen when the previous update was terminated halfway
         	// extract date from the latest timestamp
-        	try {
-	        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
-	        	if (!date.isAfter(lastUpdateDate)) {
-	        		LOGGER.info(dataIRI + " is already up-to-date");
-	        		continue;
-	        	}
-        	} catch (Exception e) {
-        		// dataIRI is initialised but contains no data yet
-        	}
+        	// this makes many connections to postgres and slows down the code
+//        	try {
+//	        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
+//	        	if (!date.isAfter(lastUpdateDate)) {
+//	        		LOGGER.info(dataIRI + " is already up-to-date");
+//	        		continue;
+//	        	}
+//        	} catch (Exception e) {
+//        		// dataIRI is initialised but contains no data yet
+//        	}
         	
         	// create time series object to upload to the client
         	List<List<?>> values = new ArrayList<>();
