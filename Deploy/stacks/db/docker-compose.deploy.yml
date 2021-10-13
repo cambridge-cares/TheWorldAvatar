@@ -107,13 +107,8 @@ secrets:
 # Volumes
 volumes:
   blazegraph_data:
-    name: "blazegraph_data"
   blazegraph_geo_data:
-    name: "blazegraph_geo_data"
   file_server_data:
   postgres_data:
-    name: "postgres_data"
   rdf4j_data:
-    name: "rdf4j_data"
   rdf4j_logs:
-    name: "rdf4j_logs"

@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoPESScan,TBox,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoPESScan,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoPESScan,TBox,An ontology developed for representing potential energy surface scans.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoPESScan,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 PotentialEnergySurfaceScan,Class,,,,,,A scan of potential energy surface on a molecular system along defined scan coordinates.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,PESScan
 ScanPoint,Class,,,,,,A single point on potential energy surface.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 ScanCoordinate,Class,,,,, ,The atoms defining a path along the potential energy surface.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
