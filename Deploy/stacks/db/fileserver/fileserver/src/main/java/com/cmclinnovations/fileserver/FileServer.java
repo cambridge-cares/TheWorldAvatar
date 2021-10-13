@@ -21,7 +21,7 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Owen Parry {@literal <oparry@cmclinnovations.com>}
  */
-@WebServlet(name = "FileServer", urlPatterns = {FileServer.DELETE_URL_PATTERN, FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN})
+@WebServlet(name = "FileServer", urlPatterns = {FileServer.DELETE_URL_PATTERN, FileServer.DOWNLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN, FileServer.UPLOAD_URL_PATTERN + "/"})
 @MultipartConfig(
 fileSizeThreshold = FileServer.ONE_MB_IN_B,
 location = "/app/fs_root/",
