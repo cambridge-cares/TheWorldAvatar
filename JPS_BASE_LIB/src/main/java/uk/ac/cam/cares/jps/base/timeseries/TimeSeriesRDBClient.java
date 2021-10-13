@@ -282,17 +282,16 @@ public class TimeSeriesRDBClient<T> {
      */
 	protected void addTimeSeriesData(List<TimeSeries<T>> tslist) {
 		connect();
+		// Check if central database lookup table exists
+		if (context.meta().getTables(dbTableName).size() == 0) {
+			throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
+		}
 		
 		for (TimeSeries<T> ts : tslist) {
 			List<String> dataIRI = ts.getDataIRIs();
 			
 			// All database interactions in try-block to ensure closure of connection
 			try {
-				// Check if central database lookup table exists
-				if (context.meta().getTables(dbTableName).size() == 0) {
-					throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-				}
-		    	
 		    	// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
 				for (String s : dataIRI) {
 					if(!checkDataHasTimeSeries(s)) {
