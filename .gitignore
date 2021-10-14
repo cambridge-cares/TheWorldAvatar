@@ -101,3 +101,7 @@ JPS_Chatbot/jps-chatbot/UI/question-log.txt
 JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/fingerprint.json
 JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/checkpoint
 JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/metadata.json
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/source/JPS_Query/models/nlu/component_6_EmbeddingIntentClassifier.entity_tag_specs.json
