@@ -34,8 +34,9 @@ The integration tests are designed to test the AccessAgentCaller class together 
 Requirements to run the AccessAgentRemoteStoreIntegrationTest:
 1. 	AccessAgent running on Docker
 2.	Comment out the "\@Disabled" annotation applied to the AccessAgentRemoteStoreIntegrationTest class
-3.	Internet connection to the OntoKGRouter triple store (currently at `http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql`)
-4. 	OntoKGROuter is expected to contain routing to endpoint `http://172.17.0.1:39888/blazegraph/namespace/kb/sparql` for the resource "teststorelocal"
+3.	Pull access to the CMCL Docker image registry (https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
+4.	Internet connection to the OntoKGRouter triple store (currently at `http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql`)
+5. 	OntoKGROuter is expected to contain routing to endpoint `http://172.17.0.1:39888/blazegraph/namespace/kb/sparql` for the resource "teststorelocal"
 
 To run the test from the command line
 ```
