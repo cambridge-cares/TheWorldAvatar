@@ -18,7 +18,6 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    SMILES, \
                                                    GEOM_STRING, \
                                                    BOND_STRING, \
-                                                   ATOMS_CAN_POSITIONS, \
                                                    PUBCHEM_ALT_LABEL, \
                                                    PUBCHEM_CID, \
                                                    CAS_NUMBER, \
@@ -44,14 +43,14 @@ def os_csvwriter(data):
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
-                            quotechar='"', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     out_id = data[commonv.ENTRY_IRI]
 
     label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 
     spamwriter = csv.writer(csvfile, delimiter=',',
-                                quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                                quotechar='"', quoting=csv.QUOTE_MINIMAL)
     spamwriter.writerow(['Source', 'Type', 'Target', 'Relation','Value','Data Type'])
 
     write_prelim(spamwriter,out_id,label)
@@ -73,13 +72,14 @@ def write_prelim(spamwriter,out_id,label):
     spamwriter.writerow(['http://www.w3.org/2000/01/rdf-schema#label','Data Property',out_id,'',label,'String'])
 
 def write_identifier_geom(spamwriter,out_id,data):
-    if data[PUBCHEM_ALT_LABEL] is not None:
+    if PUBCHEM_ALT_LABEL in data:
         spamwriter.writerow(['http://www.w3.org/2004/02/skos/core#altLabel','Data Property',out_id,'',data[PUBCHEM_ALT_LABEL],'String'])
-    if data[CAS_NUMBER] is not None:
+    if CAS_NUMBER in data:
         spamwriter.writerow([onto_spec + '#casRegistryID','Data Property',out_id,'',data[CAS_NUMBER],'String'])
     spamwriter.writerow([onto_spec + '#SMILES','Data Property',out_id,'',data[SMILES],'String'])
     spamwriter.writerow([onto_spec + '#inChI','Data Property',out_id,'',data[INCHI],'String'])
-    spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
+    if PUBCHEM_CID in data:
+        spamwriter.writerow([onto_spec + '#pubChemCID','Data Property',out_id,'', data[PUBCHEM_CID],'String'])
     spamwriter.writerow([onto_spec + '#hasAtomicBond','Data Property',out_id,'',data[BOND_STRING],'String'])
     spamwriter.writerow([onto_spec + '#hasGeometry','Data Property',out_id,'',data[GEOM_STRING],'String'])
     spamwriter.writerow([onto_spec + '#spinMultiplicity','Data Property',out_id,'',data[SPIN_MULT],'String'])
@@ -101,8 +101,6 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',gain_pref + 'Atom','','',''])
         spamwriter.writerow([out_id,'Instance','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),gain_pref + 'hasAtom',
                                 '',''])
-        spamwriter.writerow([onto_spec + '#hasCanonicalPosition','Data Property','Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
-                                '',data[ATOMS_CAN_POSITIONS][str(k)],'Integer'])
         spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
                                 table_pref + '#' + data[ATOM_TYPES][k],gain_pref + 'isElement','',''])
         for i in range(3): #Write the atom coordinates.

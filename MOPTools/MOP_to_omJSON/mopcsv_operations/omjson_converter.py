@@ -76,7 +76,7 @@ def mopCSVtoJSON(mopCSVFilePath, cbuJSONFilePath, mopJSONFilePath):
                     "Mops_Reference_DOI": row['Mops_Reference_DOI'],
                     "Mops_Chemical_Building_Units": row['Mops_Chemical_Building_Units']}
                     out = json.dumps(outMOPs, indent=4)
-                    jsonoutput = open(mopJSONFilePath+str(lcount)+'.om.json', 'w') 
+                    jsonoutput = open(mopJSONFilePath+str(lcount)+'.ominp.json', 'w') 
                     jsonoutput.write(out)
                     lcount+=1
             if decision is False:

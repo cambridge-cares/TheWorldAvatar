@@ -3,7 +3,7 @@ from pathlib import Path
 
 def io_dirs(cbuCSVFilePath):  
     dir = os.path.dirname(cbuCSVFilePath) 
-    xyzInputCBU = dir
+    xyzInputCBU = dir+"\\CBUs_XYZ_20211014"
     json_outNamePath = Path(cbuCSVFilePath).stem
     speciesJSONFilePath = dir+"\\osJSON_"+json_outNamePath
     try:

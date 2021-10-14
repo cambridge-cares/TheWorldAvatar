@@ -29,14 +29,9 @@
     "Formal charge": 0,
     "GeometryString": "H -1.165511 -0.84079 0.0 H 0.348322 -0.858139 0.0 O -0.401791 -0.255822 0.0",
     "BondString": "1 3 1 2 3 1",
-    "AtomsCanonicalPositions": {
-        "0": 0,
-        "1": 1,
-        "2": 2
-    },
-    "PubchemAlternativeLabel": "water",
-    "CAS": "7732-18-5",
-    "PubchemCID": 962,
+    "PubchemAlternativeLabel": null,
+    "CAS": null,
+    "PubchemCID": null,
     "AtomsList": [
         "H",
         "O"
