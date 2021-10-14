@@ -24,22 +24,22 @@ services:
     volumes:
       - blazegraph_geo_data:/data
 
-  # Postgres
-  postgres:
-    image: docker.cmclinnovations.com/postgres:13.3-alpine
-    container_name: "postgres${CONTAINER_NAME_SUFFIX}"
-    ports:
-      - 5432:5432
-    pull_policy: if_not_present
+  # PostGIS
+  postgis:
+    image: postgis/postgis:14-3.1-alpine
+    container_name: "postgis${CONTAINER_NAME_SUFFIX}"
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    ports:
+      - 5432:5432
+    pull_policy: if_not_present
     restart: unless-stopped
     secrets:
       - postgres_password
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgis_data:/var/lib/postgresql/data
 
   # QGIS
   qgis:
@@ -64,4 +64,4 @@ secrets:
 # Volumes to handle triplestore data and logging
 volumes:
   blazegraph_geo_data:
-  postgres_data:
+  postgis_data:
