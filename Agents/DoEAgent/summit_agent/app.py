@@ -1,12 +1,20 @@
 from flask import Flask, jsonify, request
-# from summit_doe import DoEModel
 from urllib.parse import unquote
 from .kgUtils import *
+from .summit_doe import *
 import json
 import agentlogging
-
+from flask_apscheduler import APScheduler
+import random
 # Create the Flask app object
 app = Flask(__name__)
+
+# Initialise the scheduler
+# scheduler = APScheduler()
+# scheduler.init_app(app)
+# scheduler.start()
+
+INTERVAL_TASK_ID = 'interval-task-id'
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")
@@ -20,85 +28,29 @@ def default():
     msg += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
     return msg
 
-# # Define a route for API requests
-# @app.route('/api/v1/evaluate', methods=['GET'])
-# def api():
-    
-#     # Check arguments (query parameters)
-#     logger.info("Checking arguments...")
-#     if 'val' in request.args:
-#         try:
-#             val = float(request.args['val'])
-#         except ValueError:
-#             logger.error("Unable to parse number.")
-#             return "Unable to interpret val ('%s') as a float." % request.args['val']
-#     else:
-#         return "Error: No 'val' parameter provided."
-
-#     if 'order' in request.args:
-#         try:
-#             order = int(request.args['order'])
-#         except ValueError:
-#             logger.error("Unable to parse integer.")
-#             return "Unable to interpret order ('%s') as an integer." % request.args['order']
-#     else:
-#         # Default to 2nd order
-#         order = 2
-
-#     try:
-#         # Construct and evaluate the model
-#         model = PolyModel(order)
-#         result = model.evaluate(val)
-#         # Return the result in JSON format
-#         return jsonify({"result": result})
-#     except ValueError as ex:
-#         return str(ex)
-
 @app.route('/doe/summit/suggest', methods=['GET'])
 def api():
-    
     # Check arguments (query parameters)
     logger.info("Checking arguments...")
     input_decoded = unquote(request.url[len(request.base_url)+1:])
     input_json = json.loads(input_decoded)
-    strategy, domain, system_response, historical_data = checkInputParameters(input_json)
-    logger.info(str(type(historical_data)))
+    strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
+    new_exp = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
+    # logger.info(str(type(historical_data_instances)))
+    return new_exp
 
+def suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
+    endpoint = SPARQL_QUERY_ENDPOINT
 
+    strategy_dict = getDoEStrategy(endpoint, strategy_instance)
+    designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
+    historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
+    
+    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict}
 
-    response1 = performQuery("ontokin", "PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
-                                      PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>   SELECT ?mechanismIRI \
-                                      WHERE   { ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10")
+    next_exp = proposeNewExperiment(doe_info)
+    return next_exp.to_dict()
 
-    # if 'val' in request.args:
-    #     try:
-    #         val = float(request.args['val'])
-    #     except ValueError:
-    #         logger.error("Unable to parse number.")
-    #         return "Unable to interpret val ('%s') as a float." % request.args['val']
-    # else:
-    #     return "Error: No 'val' parameter provided."
-
-    # if 'order' in request.args:
-    #     try:
-    #         order = int(request.args['order'])
-    #     except ValueError:
-    #         logger.error("Unable to parse integer.")
-    #         return "Unable to interpret order ('%s') as an integer." % request.args['order']
-    # else:
-    #     # Default to 2nd order
-    #     order = 2
-
-    # try:
-    #     # Construct and evaluate the model
-    #     model = DoEModel()
-    #     result = model.suggest()
-    #     # Return the result in JSON format
-    #     return jsonify({"result": result})
-    # except ValueError as ex:
-    #     return str(ex)
-    # return str(strategy) + str(domain) + str(system_response) + str(historical_data)
-    return response1
 
 def checkInputParameters(input_json):
     if "agent_input" in input_json:

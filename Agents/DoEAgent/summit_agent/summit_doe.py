@@ -2,107 +2,62 @@ from summit.utils.dataset import DataSet
 from summit.domain import ContinuousVariable, Domain
 from summit.strategies import TSEMO
 
-
-# options:
-# 1. strategy type (algorithm): TSEMO
-# 2. optimisation variables, with constraints
-# 3. objective functions
-# 4. number of experiment to be suggested
-# 5. historical data
-
-# strategy = TSEMO(domain, n_spectral_points=30, generations=20, pop_size=20)
-#                         experimentsdf = strategy.suggest_experiments(1, data)
-
-# # Create domain to host the optimisation variables, corresponding constraints, and objective function
-
-
-class DoEModel():
-    def __init__(self):
-        self.domain = Domain()
-        self.strategy = TSEMO(self.domain)
-        # self.historical_data = 
-
-    def add_optimisation_variables():
-        self.domain += ContinuousVariable(name="var", description="", bounds=[5, 10])
-
-    def add_objective_functions():
-        self.domain += ContinuousVariable(name="obj", description="", bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
+def proposeNewExperiment(doe):
+    """
+    The input doe should have below structure (the string at value part of a key-value pair indicates the desired datatype):
+    {
+        "TSEMO": {"nSpectralPoints": int, "nGenerations": int, "nRetries": int, "populationSize": int}, 
+        "continuousVariables": [{"name": str, "description": str, "lower": str or float, "upper": str or float}, {"name": str, "description": str, "lower": str or float, "upper": str or float} ...],
+        "systemResponses": [{"name": str, "direction": str (maximise or minimise)}, {"name": str, "direction": str (maximise or minimise)} ...],
+        "historicalData": dataframe,
+        "numOfExp": str or int
+    }
+    e.g.
+    doe = { \
+                "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
+                "continuousVariables": [{"name": "ContinuousVariable_1", "lower": 1, "upper": 10}, 
+                {"name": "ContinuousVariable_2", "lower": 0.02, "upper": 0.2},
+                {"name": "ContinuousVariable_3", "lower": 5, "upper": 15},
+                {"name": "ContinuousVariable_4", "lower": 30, "upper": 70}], \
+                "systemResponses": [{"name": "SystemResponse_1", "direction": "maximise"}, 
+                {"name": "SystemResponse_2", "direction": "minimise"}], \
+                "historicalData": previous_results, \
+                "numOfExp": 1}
+    The previous_results is a dataframe looks like below:
+        ContinuousVariable_1  ContinuousVariable_2  ContinuousVariable_3  ContinuousVariable_4  SystemResponse_1  SystemResponse_2
+    0                  5.19                  0.10                  14.7                  42.0              47.9              7.44
+    1                  1.59                  0.07                  13.3                  35.0               8.7              7.74
+    2                  8.44                  0.16                   7.9                  62.0              54.1              6.96
+    3                  8.83                  0.04                  11.8                  67.0              40.0              8.10
+    4                  5.01                  0.17                   8.1                  56.0              47.7              6.83
+    """
+    domain = Domain()
     
-    def load_strategy():
-        self.strategy = TSEMO(self.domain)
+    # Add all optimisation variables to domain
+    for var in doe['continuousVariables']:
+        domain += ContinuousVariable(name=str(var['name']), description=str(var['description'])  if 'description' in var else "", \
+            bounds=[float(var['lower']), float(var['upper'])])
+    # Add all system responses to domain
+    for var in doe['systemResponses']:
+        if "max" in var['direction']:
+            domain += ContinuousVariable(name=str(var['name']), description=str(var['description']) if 'description' in var else "", \
+                bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
+        else:
+            domain += ContinuousVariable(name=str(var['name']), description=str(var['description']) if 'description' in var else "", \
+                bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=False)
     
-    def suggest():
-        self.add_optimisation_variables()
-        self.add_objective_functions()
-        self.load_strategy()
-        next_exp = TSEMO(self.domain).suggest_experiments(1)
-        # next_exp = self.strategy.suggest_experiments(1, self.historical_data)
-        return next_exp.to_json()
+    # Create strategy (only supporting TSEMO at the moment)
+    if 'TSEMO' in doe:
+        tse = doe['TSEMO']
+        strategy = TSEMO(domain, \
+            n_spectral_points=int(tse['nSpectralPoints']) if 'nSpectralPoints' in tse else 1500, \
+                generations=int(tse['nGenerations']) if 'nGenerations' in tse else 100, \
+                    n_retries=int(tse['nRetries']) if 'nRetries' in tse else 10, \
+                        pop_size=int(tse['populationSize']) if 'populationSize' in tse else 100)
+    
+    # Load historical data
+    previous_results = DataSet.from_df(doe['historicalData'])
 
-# domain = Domain()
-
-#                 for ivarnum in range(0, totvar):
-#                     tmpvarname = "var{}"
-#                     tmpvarname = tmpvarname.format(ivarnum)
-#                     varname[ivarnum] = tmpvarname
-#                     domain += ContinuousVariable(varname[ivarnum], description='', bounds=[optlb[ivarnum], optub[ivarnum]])
-
-#                 optobj = copy.copy(stepobj)
-#                 optobj = optobj.astype(np.object, copy=True)
-#                 mloutputs = []
-
-#                 # creating domains within SUMMIT
-
-#                 for istpnum in range(0, stepnum):
-#                     tmplen = len(optobj[istpnum])
-#                     for iobjnum in range(0, tmplen):
-#                         if "Space-Time Yield" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "STY" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
-#                         elif "Materials Cost" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "Cost" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=False)
-#                         elif "Impurity Minimisation" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "Impurities" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=False)
-#                         elif "Conversion" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "Conversion" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=False)
-#                         elif "E-Factor" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "E-Factor" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
-#                         elif "EcoScore" in optobj[istpnum][iobjnum]:
-#                             optobj[istpnum][iobjnum] = "EcoScore" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
-#                         else:
-#                             optobj[istpnum][iobjnum] = "Yield" + "-" + str(istpnum + 1)
-#                             domain += ContinuousVariable(optobj[istpnum][iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=True)
-
-#                         mloutputs.append(optobj[istpnum][iobjnum])
-
-#                 for iobjnum in range(0, len(processobj)):
-#                     if "Cost" in processobj[iobjnum]:
-#                         processobj[iobjnum] = "Process-Cost"
-#                         domain += ContinuousVariable(processobj[iobjnum], description='', bounds=[-1000000000000000000000, 100000000000000000000], is_objective=True, maximize=False)
-
-#                         mloutputs.append(processobj[iobjnum])
-
-#                     mlvar = varname.tolist()
-
-
-
-# datastore["mldata"] = pd.read_excel(xlspath, sheet_name="TSEMO Data")
-#                 data = DataSet.from_df(datastore["mldata"])
-#                 datastore["mldataX"] = datastore["mldata"].iloc[:,0:(datastore["mldataX"].shape[1])]
-#                 datastore["mldataY"] = datastore["mldata"].iloc[:, (datastore["mldataX"].shape[1]):]
-
-
-# # runs TSEMO to generate experimental variables for execution
-
-#                         strategy = TSEMO(domain, n_spectral_points=30, generations=20, pop_size=20)
-#                         experimentsdf = strategy.suggest_experiments(1, data)
-
-#                         # finds discrete variables from descriptors based on minimum euclidean distance
-
-#                         newcond = DataSet.data_to_numpy(experimentsdf)
-#                         newvar[istpnum] = newcond[0][varstart[istpnum]:varend[istpnum]] # Added [0] to newcond
+    # Suggest the next experiment
+    next_exp = strategy.suggest_experiments(int(doe['numOfExp']) if 'numOfExp' in doe else 1, prev_res=previous_results)
+    return next_exp
