@@ -13,15 +13,12 @@ RUN sed -i "s|REPO_URL|${repo_url}|g;s|REPO_USERNAME|$(cat ../credentials/repo_u
 
 # Download Maven dependencies
 WORKDIR /root/
-RUN mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
+RUN --mount=type=cache,target=/root/.m2/repository mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
 
 # Download geckodriver
 RUN apt-get update && apt-get install wget -y
 RUN wget -q https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
 RUN tar -xvzf geckodriver*.gz
-RUN apt-get install -y default-libmysqlclient-dev
-RUN apt-get install -y mariadb-server
-
 #==================================================================================================
 
 # Second stage: Build app, copying in dependency from first stage
@@ -30,18 +27,14 @@ FROM python:3.7-slim-buster as app
 
 WORKDIR /app
 
-#RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /etc/apt/sources.list.d/debian.list \
-#    && apt-get update --yes \
-#  	 && apt-get upgrade --yes \
-#    && apt-get install -y libmysqlclient-dev \
-#    && apt-get install -y mysql-server
-
-
+# Install packages required for mysql
+RUN apt-get update \
+ && apt-get install -y default-libmysqlclient-dev \
+ && apt-get install -y default-mysql-server
 
 # Copy in dependencies from first stage
 COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikidata_Query
 COPY --from=dependency_fetcher /root/dependencies/model_jps ./UI/source/JPS_Query
-COPY --from=dependency_fetcher /root/dependencies/models_agent ./UI/source/Agent_Query
 COPY --from=dependency_fetcher /root/geckodriver /usr/local/bin
 
 # Setup venv

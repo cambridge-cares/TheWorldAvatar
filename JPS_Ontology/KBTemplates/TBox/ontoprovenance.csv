@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoProvenance,TBox,http://www.theworldavatar.com/ontology/ontoprovenance/OntoProvenance.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoProvenance,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoProvenance,TBox,An ontology developed for representing provenance of entities and data.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoProvenance,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 http://www.w3.org/2002/07/owl#Thing,Class,,,,,,,http://www.w3.org/2002/07/owl#
 http://www.w3.org/ns/prov#Entity,Class,,,,,,"An entity can be a physical existing object, its digital representation, or conceptual ideas. [The World Avatar]",http://www.w3.org/ns/prov-o#
 http://www.w3.org/ns/prov#Bundle,Class,,,,,,A bundle is a collection of provenance information related to a given entity. Note that a provenance bundle itself is an entity. [The World Avatar],http://www.w3.org/ns/prov-o#

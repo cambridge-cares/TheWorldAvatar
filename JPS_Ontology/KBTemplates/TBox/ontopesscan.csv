@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoPESScan,TBox,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoPESScan,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoPESScan,TBox,An ontology developed for representing potential energy surface scans.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoPESScan,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 PotentialEnergySurfaceScan,Class,,,,,,A scan of potential energy surface on a molecular system along defined scan coordinates.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,PESScan
 ScanPoint,Class,,,,,,A single point on potential energy surface.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 ScanCoordinate,Class,,,,, ,The atoms defining a path along the potential energy surface.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
@@ -16,5 +20,6 @@ hasScanPoint,Object Property,,,ScanCoordinate,ScanPoint,only,Defines the relatio
 hasScanCoordinateValue,Object Property,,,ScanPoint,ScanCoordinateValue,only,Defines the relationship between the ScanPoint and ScanCoordinateValue.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 hasScanAtom,Object Property,,,ScanCoordinate,http://purl.org/gc/Atom,only,Defines the relationship between the ScanCoordinate and an atom.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 hasCalculation,Object Property,,,ScanPoint,http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GaussianCalculation,only,Defines a relationship between a given ScanPoint and associated calculation results.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
+hasInputAtomIds,Data Property,,,ScanPoint,String,,Defines a relationship between a given ScanPoint and the atom IDs in the input file used for the scan.,http://www.theworldavatar.com/ontology/ontopesscan/OntoPESScan.owl,
 http://purl.org/gc/hasValue,Data Property,,,ScanCoordinateValue,String,,,http://purl.org/gc/,
 http://purl.org/gc/hasUnit,Object Property,,,ScanCoordinateValue,http://data.nasa.gov/qudt/owl/LengthUnit UNION http://data.nasa.gov/qudt/owl/PlaneAngleUnit,,,http://purl.org/gc/,

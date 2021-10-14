@@ -15,37 +15,17 @@ from functools import lru_cache
 
 # sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 # sys.path.append('/source')
-from wolfram_alpha_and_google.GoogleAPI import GoogleAPI
-from wolfram_alpha_and_google.WolframGoogle import WolframGoogle
-from CoordinateAgent import CoordinateAgent
-from full_test import FullTest
-from Agent_Query.ThermoAgent import ThermoAgent
+from UI.source.CoordinateAgent import CoordinateAgent
+from UI.source.full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 
+# Instantiate Coordinate Agent
+coordinate_agent = CoordinateAgent(socketio)
 
-@app.route('/thermo_agent')
-def call_thermo_agent():
-    # try:
-    #     species = request.args.get('species') if request.args.get('species') else None
-    #     attribute = request.args.get('attribute') if request.args.get('attribute') else None
-    #     temperature = request.args.get('temperature') if request.args.get('temperature') else None
-    #     pressure = request.args.get('pressure') if request.args.get('pressure') else None
-    #     result = thermo_agent.callThermoAgent(species=species, attribute=attribute,
-    #                                           temperature=temperature, pressure=pressure)
-    #     return result
-    # except:
-    #     return None
-    species = request.args.get('species') if request.args.get('species') else None
-    attribute = request.args.get('attribute') if request.args.get('attribute') else None
-    temperature = request.args.get('temperature') if request.args.get('temperature') else None
-    pressure = request.args.get('pressure') if request.args.get('pressure') else None
-    result = thermo_agent.callThermoAgent(species=species, attribute=attribute,
-                                          temperature=temperature, pressure=pressure)
-    return result
 @app.route('/start_test')
 def start_test():
     ft = FullTest()
@@ -95,33 +75,20 @@ def make_query():
     question_type = request.args.get('type')
     question = request.args.get('question')
 
+    # N.B. It's possible to have different 'type' values, but only 'worldavatar' is currently used
     try:
         if question_type == 'worldavatar':
             result = coordinate_agent.run(question)
             return json.dumps(result)
-        elif question_type == 'google':
-            # question = request.args.get('question').strip()
-            # r = google_api.run(question)
-            # return str(r)
-            return 'Nothing'
-
-        elif question_type == 'wolfram':
-            result = wolfram_and_google.get_result_from_wolfram(question)
-            return json.dumps(result)
-
+        else: 
+            raise ValueError("%s isn't a valid value for the 'type' parameter." % question_type)
     except:
         return 'Nothing'
 
 
 @app.route('/')
 def hello_world():
-    return render_template('index_dln22.html')
-
-
-# google_api = GoogleAPI()
-coordinate_agent = CoordinateAgent()
-wolfram_and_google = WolframGoogle()
-thermo_agent = ThermoAgent()
+    return render_template('index.html')
 
 if __name__ == '__main__':
     app.run(host='https://kg.cmclinnovations.com/', port=8080, debug=True)

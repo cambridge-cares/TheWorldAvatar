@@ -1,0 +1,187 @@
+html,
+body {
+    margin: 0px;
+    height: 100%;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0px;
+} 
+
+#preamble-dashboard{
+    height: 125px;
+    font-size: 11pt;
+    padding: 20px;
+}
+.content-dashboard {
+    width: 100%;
+    height: calc(100% - 125px - 50px);
+    display: flex;
+   
+}
+.all-tests-container {
+    height: calc(100% - 60px);
+    min-height: 500px;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    display: inline-flex;
+    overflow-x: auto;
+}
+
+#preamble-summary{
+    height: 250px;
+    font-size: 11pt;
+    padding: 20px;
+}
+.content-summary {
+    width: 100%;
+    height: calc(100% - 250px - 40px);
+    display: flex;
+}
+.all-records-container {
+    height: calc(100% - 70px);
+    min-height: 500px;
+    width: 400px;
+    margin-left: 20px;
+    margin-right: 20px;
+    float: left;
+}
+
+.record-container,
+.test-container {
+    width: 400px;
+    min-width: 400px;
+    border: 1px solid lightgrey;
+    height: 99%;
+    overflow-y: scroll;
+    float: left;
+    margin-right: 10px;
+}
+
+.record-container-title,
+.test-container-title {
+    height: 50px;
+    width: 100%;
+    text-align: center;
+}
+
+.summary-count {
+    height: 20px;
+    margin-top: -10px;
+    width: calc(100% - 80px);
+    border: 1px solid grey;
+    border-width: 0px 0px 1px 0px;
+    margin-left: 40px;
+    margin-right: 40px;
+    margin-bottom: 10px;
+    font-size: 80%;
+    color: grey;
+}
+
+.test-result-stub {
+    height: 75px;
+    background-color: rgb(245, 245, 245);
+    margin: 10px;
+    cursor: pointer;
+}
+
+.test-result-box {
+    width: calc(40% - 20px);
+    height: calc(100% - 20px);
+    float: left;
+    test-align: center;
+    margin: 10px;
+}
+
+.summary-stub {
+    width: calc(100% - 20px);
+}
+
+.center-text {
+    display: table; 
+}
+.center-text p {
+    text-align:center; 
+    vertical-align: middle;
+    display: table-cell;  
+}
+.center-text h1,h2,h3,h4,h5,h6 {
+    text-align:center; 
+    vertical-align: middle;
+    display: table-cell;  
+}
+
+.test-result-name {
+    width: 60%;
+    height: 100%;
+    float: right;
+    text-align: center;
+}
+
+.success {
+    background-color: #519E8A;
+}
+
+.failure {
+    background-color: #ED4D6E;
+}
+
+.not-yet-run {
+    background-color: #9D8DF1;
+}
+
+.log-container {
+    border: 1px solid lightgrey;
+    height: calc(100% - 70px);
+    width: calc(100% - 430px - 40px);
+    min-height: 500px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+    float: right;
+
+    overflow-y: scroll; /* Show vertical scrollbar */
+    overflow-x: scroll; /* Show horizontal scrollbar */
+
+    white-space: nowrap;
+}
+.button-container {
+    width: calc(100% - 40px);
+    height: 50px;
+    margin-right: 20px;
+    margin-left: 20px;
+    margin-top: 10px; 
+    position: absolute;
+    bottom: 10px;
+}
+
+hr {
+    border-style: solid;
+    border-width: 0px 0px 1px 0px;
+    color: lightgrey;
+}
+
+.dashboard-button {
+    height: calc(100% - 10px);
+    width: 200px;
+    margin: 5px;
+    float: left;
+    background-color: rgb(245, 245, 245);
+    cursor: pointer;
+}
+
+.run-test-button {
+    height: calc(100% - 10px);
+    width: 200px;
+    margin: 5px;
+    float: right;
+    background-color: rgb(245, 245, 245);
+    cursor: pointer;
+}
+
+.log-placehold {
+    background-color: rgb(245, 245, 245);
+    color: grey;
+    height: 100%;
+    width: 100%;
+}
