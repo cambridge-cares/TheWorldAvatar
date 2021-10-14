@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 Oct 2021          #
+# Last Update Date: 13 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -46,7 +46,7 @@ t_box = T_BOX.UKDigitalTwinTBox()
 ukpp = UKpp.UKPowerPlant()
 
 """Create an object of Class UKEbusModel"""
-uk_ebus_model = UK_PG.UKEbusModel()
+# uk_ebus_model = UK_PG.UKEbusModel()
 
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
@@ -60,15 +60,17 @@ energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
 
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable'] # remote query
+endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
+ONS_JSON =  endpointList.ONS['endpoint_iri']
 
 """Sleepycat storage path"""
-defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
+# defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
 topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
 """OWL file storage path"""
-defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs # default path
+# defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs # default path
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -86,11 +88,14 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
 def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, OWLFileStoragePath, updateLocalOWLFile = True):
+    uk_ebus_model = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
+    defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs
+    defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
     store = LocalGraphStore(storeType)
-    global defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
+    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat 
     if isinstance(store, Sleepycat): 
         print('The store is Sleepycat')
         cg_model_EBus = ConjunctiveGraph(store=store, identifier = model_EBus_cg_id)
@@ -116,38 +121,29 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
         topoAndConsumpPath_Sleepycat = None
         print('Store is IOMemery')
         
-        
-    # TODO: add load clustering  
     # Query the bus loaction
     res_queryBusLocation = list(queryBusTopologicalInformation(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label)) # this query reused the one for creating topology
     # Query the local electricity consumption for both region and local areas
     res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption,topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
-    res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
+    res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, endpoint_iri, ONS_JSON))
     
     # create an instance of class demandLoadAllocator
     dla = DLA.demandLoadAllocator()
     # get the load allocation method via getattr function 
     allocator = getattr(dla, loadAllocatorName)
     # pass the arrguments to the cluster method
-    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea)
+    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: TotalELecConsumption 
     
-    
-    
-    
-    
-    
-    EBus = list(query_model.queryEBusandRegionalDemand(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
-    EBus = checkAggregatedBus(EBus) # sum up the demand of an AggregatedBus
+    # EBus = list(query_model.queryEBusandRegionalDemand(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
+    EBus_Load_List = checkAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
     
     if EBus_Load_List == None:
-        print('EBus_Load_List is empty')
-        return None
-    
+        raise Exception('EBus_Load_List is empty')
+        
+    print('################START createModel_EBus#################')
     for ebus in EBus_Load_List:         
     # if EBus_Load_List[0] != None: # test
-    #     ebus = EBus_Load_List[0] # test
-    
-        print('################START createModel_EBus#################')
+    #     ebus = EBus_Load_List[0] # test           
         root_uri = ebus[0].split('#')[0]
         namespace = root_uri + HASH
         node_locator = ebus[0].split('#')[1]
@@ -173,8 +169,8 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
         g.add((URIRef(ebus[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
         ###add EBus model parametor###
-        uk_ebus_model_ = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
-        uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model_, ebus) 
+        # uk_ebus_model_ = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
+        uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model, ebus) 
         print('the bus type is ',uk_ebus_model_.TYPE)
         
         if uk_ebus_model_ != None:
@@ -251,14 +247,18 @@ def initialiseEBusModelVar(EBus_Model, EBus):
         print('The first argument should be an instence of UKEbusModel')
         return None
     EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
-    #TODO: assigning slack bus is different
+    # TODO: assigning slack bus is different, how to assign the bus type to the 29 bus model
     if EBus_Model.BUS == 1: # assign slack bus
         EBus_Model.TYPE = 3
     
+    # initialise Pd
     EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
+    
+    # TODO: how to initialise Gd for 29_bus model, baseKV, vmax and vmin???
+    
     
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, 10, None, True)       
-    print('Terminated')
+    createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", None, True)       
+    print('*****************Terminated*****************')

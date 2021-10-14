@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 Oct 2021          #
+# Last Update Date: 14 Oct 2021          #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
@@ -13,10 +13,6 @@ valueKey = "value_"
 endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
 
 class UKEbusModel:
-    
-    """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EBus\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EBus\\Sleepycat_EBus"
     
     """EBus Node keys"""
     EBusKey = "EBus-"
@@ -44,6 +40,8 @@ class UKEbusModel:
     GDGENKey = "Gd_Gen_"
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
+        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location = Location
@@ -70,10 +68,6 @@ class UKEbusModel:
 
 class UKElineModel:
     
-    """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\ELine\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\ELine\\Sleepycat_ELine"
-     
     """ELine Node keys"""
     ELineKey = "ELine-"
     ModelELineKey = "Model_ELine-"
@@ -98,6 +92,9 @@ class UKElineModel:
     ANGMAXKey = "AngleMax_"
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
+        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
+        
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location =  Location
@@ -118,10 +115,6 @@ class UKElineModel:
         
 
 class UKEGenModel:
-    
-    """Default path of storing owl file """
-    StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EGen\\"
-    SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\10_bus\\EGen\\Sleepycat_EGen"
     
     """EGen Node keys"""
     EGenKey = "EGen-"
@@ -154,6 +147,9 @@ class UKEGenModel:
     
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
+        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
+        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
+        
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location = Location
@@ -203,10 +199,6 @@ class UKEGenModel_CostFunc(UKEGenModel):
             self.NCOST = 3
             self.CarbonTax = CarbonTax
 
-# if __name__ == '__main__':    
-#     test = UKEGenModel(2019)
-#     print(test.EGenKey)    
-#     print('Terminated')
 
 
 

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 16 Sept 2021         #
+# Last Update Date: 13 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK energy consumption graph."""
@@ -75,6 +75,14 @@ def createEnergyConsumptionDataPropertyInstance(version):
     
     return engconsump, elecConDataArrays, root_uri, fileNum
 
+def test_returnLACode(version):
+    engconsump, elecConDataArrays, root_uri, fileNum = createEnergyConsumptionDataPropertyInstance(version)
+    n = 1
+    LACode = []
+    while n < len(elecConDataArrays):
+        LACode.append(str(elecConDataArrays[n][1]))        
+        n+=1
+    return LACode
 
 """Add Triples to the target nodes""" 
 def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, indexOfLocalArea, indexOfRegion):
@@ -179,9 +187,9 @@ def addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, ind
                 graph.add((URIRef(t_box.dbr + elecConDataArrays[indexOfRegion][0].strip('\n')), URIRef(t_box.dbo + 'subdivision'), URIRef(t_box.dbr + elecConData[0])))
             graph.add((URIRef(t_box.dbr + elecConData[0]), URIRef(t_box.dbo + 'areaCode'), Literal(str(elecConData[index_LACode]))))
             graph.add((URIRef(t_box.dbr + elecConData[0]), URIRef('https://zeitkunst.org/bibtex/0.2/bibtex.owl#hasURL'), URIRef(ONSNamespace.ons_id + str(elecConData[index_LACode]))))  
-        
         indexOfLocalArea += 1
-        return graph, indexOfLocalArea
+        
+    return graph, indexOfLocalArea
 
 # Take the first element of the tuple (employed in addUKElectricityConsumptionTriples)
 def takeFirst(elem):
@@ -247,21 +255,21 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
         #while (counter <= region[1]):
             print('*********************************************************') 
             print('The counter is:', counter) # starts from 1          
-            print('The region is:', region[2])
+            print('The region is:', region[1])
             # the name of the named graph, will be applied as the identifier in method Graph(), without '#' 
-            regional_base_uri = root_uri + SLASH + str(region[2]) + OWL 
+            regional_base_uri = root_uri + SLASH + str(region[1]) + OWL 
             
             # Create rdf graph with identifier, regional nodes are named graphs including its local nodes
             graph = Graph(store = store, identifier = URIRef(regional_base_uri)) # graph(store='default', identifier)
-            graph, counter = addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, counter, region[1]) # The first counter is the index of local area while the second one is the region       
+            graph, counter = addRegionalAndLocalNodes(graph, engconsump, elecConDataArrays, root_uri, counter, region[0]) # The first counter is the index of local area while the second one is the region       
             
             # generate/update OWL files
             if updateLocalOWLFile == True:
                  # Store/update the generated owl files      
                 if filepath[-2:] != "\\": 
-                    filepath_ = filepath + '\\' 'UK_energy_consumption_' + region[2] + '_UK_' + str(version) + OWL
+                    filepath_ = filepath + '\\' 'UK_energy_consumption_' + region[1] + '_UK_' + str(version) + OWL
                 else:
-                    filepath_ = filepath + 'UK_energy_consumption_' + region[2] + '_UK_' + str(version) + OWL
+                    filepath_ = filepath + 'UK_energy_consumption_' + region[1] + '_UK_' + str(version) + OWL
                 storeGeneratedOWLs(graph, filepath_)
     
     print('####################################The total counter of the area is: ', counter)
@@ -271,5 +279,6 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
 
 if __name__ == '__main__':
     path = "C:\\Users\\wx243\\Desktop\\test\\new_elec_consump\\"
-    addUKElectricityConsumptionTriples('default', 2019, None, False)
+    addUKElectricityConsumptionTriples('default', 2017, None, True)
+    # res = test_returnLACode(2019)
     print('terminated')

@@ -1,7 +1,10 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 06 Oct 2021                   #
+# Last Update Date: 14 Oct 2021                   #
 ###################################################
+import sys, os
+BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from collections import Counter
 
@@ -21,9 +24,7 @@ class generatorCluster(object):
             raise Exception("Sorry, more than one buses located in the same region. This cluster principle cannot deal with this situation.")
         
         print('****The cluster principle is sameRegionWithBus****')
-        
-        powerPlantAndBusPairList = []
-        
+        powerPlantAndBusPairList = []        
         for pp in res_queryPowerPlantAttributes:   
             if str(pp['Region']) in region:
                 indexOfBus = region.index(str(pp['Region']))
@@ -35,8 +36,7 @@ class generatorCluster(object):
                 powerPlantAndBusPair.append(pp['GenerationTechnology'])
                 powerPlantAndBusPairList.append(powerPlantAndBusPair)  
             else:
-                continue
-        
+                continue        
         return powerPlantAndBusPairList
         
     
@@ -47,11 +47,11 @@ class generatorCluster(object):
     def closestBus(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes):  
       print('****The cluster principle is closestBus****')
       region = [ str(r['Region']) for r in res_queryBusTopologicalInformation ]
-      distances = [65534]*len(res_queryBusTopologicalInformation) # the large number is the earth's circumference
-      powerPlantAndBusPairList = [] 
-      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1))
       
+      powerPlantAndBusPairList = [] 
+      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1))     
       for pp in res_queryPowerPlantAttributes: 
+          distances = [65534]*len(res_queryBusTopologicalInformation) # the large number is the earth's circumference
           if str(pp['Region']) in region:
               j = 0
               for bus in res_queryBusTopologicalInformation:
@@ -72,8 +72,7 @@ class generatorCluster(object):
                 bn = int(connectedBusNode.split("EBus-")[1])
                 busNumberArray.remove(bn)
           else:
-              continue
-          
+              continue          
       if len(busNumberArray) != 0:
             print("WARNING: There are buses not being connected by the generators, which are number:", busNumberArray)
       else:

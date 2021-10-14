@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 24 Sept 2021         #
+# Last Update Date: 14 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -47,7 +47,7 @@ dt = UKDT.UKDigitalTwin()
 t_box = T_BOX.UKDigitalTwinTBox()
 
 """Create an object of Class UKPowerGridTopology"""
-uk_topo = UK_Topo.UKPowerGridTopology()
+# uk_topo = UK_Topo.UKPowerGridTopology()
 
 """Create an object of Class UKPowerPlant"""
 ukpp = UKpp.UKPowerPlant()
@@ -64,10 +64,10 @@ uk_eline_model = UK_PG.UKElineModel()
 uk_egen_model = UK_PG.UKEGenModel()
 
 """OWL file storage path"""
-defaultStoredPath = uk_topo.StoreGeneratedOWLs
+#defaultStoredPath = uk_topo.StoreGeneratedOWLs
 
 """Sleepycat storage path"""
-defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
+#defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
 
 # """Remote Endpoint lable"""
 # powerPlant_Endpoint = ukpp.endpoint['lable']
@@ -114,8 +114,6 @@ userSpecified = False
 """Topology Conjunctive graph identifier"""
 topo_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model"
 
-#counter = 1 
-
 ### Functions ### 
 
 """ Create the TopologicalInformationProperty Instance by specifying its numOfBus and numOfBranch"""
@@ -130,6 +128,9 @@ def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch):
 
 """Main function: create the sub graph represents the Topology"""
 def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, generatorClusterFunctionName, OWLFileStoragePath, updateLocalOWLFile = True):
+    uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
+    defaultStoredPath = uk_topo.StoreGeneratedOWLs
+    defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return
@@ -139,7 +140,6 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     # specify the top node and name space
     root_node, root_uri, tp_namespace, gridModelNodeSegment = rootNodeAndNameSpace(numOfBus)
     print('Create the graph for ', topo_info.EBus_num, ' buses and ', topo_info.ELine_num, ' branches topology' )
-    global defaultPath_Sleepycat
     if isinstance(store, Sleepycat): 
         cg_topo_ukec = ConjunctiveGraph(store=store, identifier = topo_cg_id)
         sl = cg_topo_ukec.open(defaultPath_Sleepycat, create = False)
@@ -163,11 +163,11 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus")))  
     
     if addEBusNodes != None:
-        g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace)
+        g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace, uk_topo)
     if addELineNodes != None:    
-        g, nodeName = addELineNodes(g, numOfBranch, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment)
+        g, nodeName = addELineNodes(g, numOfBranch, branchTopoInfoArrays, branchPropArrays, topo_info.headerBranchTopologicalInformation, topo_info.headerBranchProperty, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment, uk_topo)
     if addEGenNodes != None:
-        g, nodeName = addEGenNodes(g, numOfBus, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace)
+        g, nodeName = addEGenNodes(g, numOfBus, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -181,16 +181,14 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
         cg_topo_ukec.close()       
     return
 
-
 """Add nodes represent Buses"""
-def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_namespace): 
+def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_namespace, uk_topo): 
     print('****************Start adding bus node triples in the topology graph****************')
     nodeName = "EBus"
     if dataArray[0] == header:
         pass
     else:
-        print('The bus topoinfo data header is not matched, please check the data file')
-        return None
+        raise Exception('The bus topoinfo data header is not matched, please check the data file')       
     counter = 1
     while counter < len(dataArray):   
         # print('Counter is ', counter)
@@ -214,7 +212,7 @@ def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_nam
         if busTopoData[5].strip('\n') != 'None': 
            graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[5].strip('\n').strip('&')))) # Agrregated bus node
         graph.add((URIRef(bus_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + busTopoData[2]))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
-        graph.add((URIRef(t_box.dbr + busTopoData[2]), URIRef(t_box.dbo + 'areaCode'), Literal(busTopoData[6].strip('\n')))) #the LA code of the local authority of where the bus located
+        # graph.add((URIRef(t_box.dbr + busTopoData[2]), URIRef(t_box.dbo + 'areaCode'), Literal(busTopoData[6].strip('\n')))) #the LA code of the local authority of where the bus located
         graph.add((URIRef(t_box.dbr + busTopoData[2]), RDF.type, URIRef(ontoecape_space_and_time_extended.AddressArea.iri))) 
         
         graph.add((URIRef(bus_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(tp_namespace + uk_topo.CoordinateSystemKey + bus_context_locator)))
@@ -244,14 +242,14 @@ def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_nam
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
                    URIRef(ontocape_SI_units.m.iri)))
         graph.add((URIRef(tp_namespace + uk_topo.valueKey + uk_topo.LongitudeKey + bus_context_locator), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                   Literal(float(busTopoData[3].strip('\n')))))    
-            
+                   Literal(float(busTopoData[3].strip('\n')))))          
         
         counter += 1
+        
     return graph, nodeName
 
 """Add nodes represent Branches"""
-def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment):  
+def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTopoHeader, branchPropHeader, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment, uk_topo):  
     print("****************Adding the triples of ELine of the grid topology.****************")
     nodeName = "ELine"
     if branchTopoArray[0] == branchTopoHeader and branchPropArray[0] == branchPropHeader:
@@ -299,6 +297,8 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTo
             # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
             gpsArray = []
             gpsArray = list(query_topo.queryConnectedBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
+            if len(gpsArray) == 0:
+                raise Exception('The gpsArray is empty. Please check whether the query is performanced successflly or whether the bus topology graphs are uploaded to Blazegraph.')
             Eline_length = DistanceBasedOnGPSLocation(gpsArray[0])
             # print(Eline_length)      
             # ELine ShapeRepresentation node uri
@@ -345,7 +345,7 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchPropArray, branchTo
 
 """Add nodes represent Branches"""
 #generatorClusterFunctionName is the name of the cluster function in the class generatorCluster 
-def addEGenNodes(graph, numOfBus, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace): 
+def addEGenNodes(graph, numOfBus, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo): 
     print("Adding the triples of EGen of the grid topology.")
     print('#########START addEGenNodes for', numOfBus, '-bus model##############')
     nodeName = "EGen"
@@ -385,14 +385,14 @@ def addEGenNodes(graph, numOfBus, generatorClusterFunctionName, ConjunctiveGraph
         graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
         graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen[0])))
         # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-        graph = AddCostAttributes(graph, counter, busGen[2].split('#')[1], busGen[3].split('#')[1], modelFactorArrays, numOfBus)
+        graph = AddCostAttributes(graph, counter, busGen[2].split('#')[1], busGen[3].split('#')[1], modelFactorArrays, numOfBus, uk_topo)
         
         counter += 1               
     return graph, nodeName   
 
 
 """This function is designed for added the attributes to the generator cost function"""
-def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numOfBus): 
+def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numOfBus, uk_topo): 
     if fuelType in ukmf.Renewable:
         fuelTypeIndex = 1     # fuelTypeIndex, 1: Renewable, 2: Nuclear, 3: Bio, 4: Coal, 5: CCGT, 6: OCGT, 7: OtherPeaking
     elif fuelType == 'Nuclear':
@@ -454,10 +454,10 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', None, True)
-    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', None, False)
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', None, True)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', None, True)
-    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', None, False) 
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', None, True) 
     
     print('**************Terminated**************')

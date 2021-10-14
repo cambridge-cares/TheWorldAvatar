@@ -50,7 +50,7 @@ ukpp = UKpp.UKPowerPlant()
 ukmf = ModelFactor.ModelFactor()
 
 """Create an object of Class UKPowerGridModel"""
-uk_egen_model = UK_PG.UKEGenModel()
+# uk_egen_model = UK_PG.UKEGenModel()
 
 """Create an object of Class UKPowerGridTopology"""
 uk_topo = UK_Topo.UKPowerGridTopology()
@@ -72,14 +72,13 @@ endpoint_label = endpointList.ukdigitaltwin['lable']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Sleepycat storage path"""
-defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
 topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 powerPlant_Sleepycat = ukpp.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 
 """OWL file storage path"""
-defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
+# defaultStoredPath = uk_egen_model.StoreGeneratedOWLs # default path
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -101,11 +100,14 @@ capa_demand_ratio = 0
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
+    uk_egen_model = UK_PG.UKEGenModel(version_of_DUKES, numOfBus)
+    defaultStoredPath = uk_egen_model.StoreGeneratedOWLs
+    defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return   
     store = LocalGraphStore(storeType)
-    global defaultPath_Sleepycat, userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
+    global userSpecifiePath_Sleepycat, userSpecified_Sleepycat, EGenInfo, capa_demand_ratio  
     if isinstance(store, Sleepycat):
         print('The store is Sleepycat')
         cg_model_EGen = ConjunctiveGraph(store=store, identifier = model_EGen_cg_id)
@@ -198,8 +200,8 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
         ###add EGen model parametor###
-        uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
-        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model_, egen)
+        # uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
+        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen)
         
         if uk_egen_model_ != None:
             pass
@@ -299,5 +301,6 @@ def capa_demand_ratio_calculator(EGenInfo, numOfBus, startTime_of_EnergyConsumpt
     return capa_demand_ratio
 
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, "2017-01-31", 10, 50, None, True)    
+    # createModel_EGen('default', False, 2019, "2017-01-31", 29, 50, None, True)    
+    createModel_EGen('default', False, 2019, "2017-01-31", 10, 50, None, True) 
     print('Terminated')

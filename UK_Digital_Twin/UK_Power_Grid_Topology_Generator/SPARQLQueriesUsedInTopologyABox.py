@@ -76,7 +76,8 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    SELECT DISTINCT ?Bus_node ?Region ?Bus_lat ?Bus_lon
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    SELECT DISTINCT ?Bus_node ?EBus ?Region ?Bus_lat ?Bus_lon
     WHERE
     {
     ?Topology rdf:type ontocape_network_system:NetworkSystem .
@@ -84,6 +85,7 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
     FILTER regex(?label, "%s") .
     ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?Bus_node .
     ?Bus_node rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+    ?Bus_node ontoecape_technical_system:isRealizedBy ?EBus . 
     ?Bus_node ontocape_upper_level_system:hasAddress ?Region .  
     ?Region rdf:type <https://dbpedia.org/ontology/Region> .   
     
@@ -92,8 +94,8 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
     ?CoordinateSystem_Bus  space_and_time_extended:hasProjectedCoordinate_y ?y_coordinate_Bus .
     ?x_coordinate_Bus  system:hasValue ?GPS_x_coordinate_Bus .
     ?y_coordinate_Bus  system:hasValue ?GPS_y_coordinate_Bus . 
-    ?GPS_x_coordinate_Bus  system:numericalValue ?Bus_lat .
-    ?GPS_y_coordinate_Bus  system:numericalValue ?Bus_lon .    
+    ?GPS_x_coordinate_Bus  system:numericalValue ?Bus_lon .
+    ?GPS_y_coordinate_Bus  system:numericalValue ?Bus_lat .    
     }
     """ %label 
     #GRAPH ?g { ?Location_region rdf:type <https://dbpedia.org/ontology/Region> .}
@@ -105,8 +107,7 @@ def queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endPo
         res = json.loads(performQuery(endPoint, queryStr))
         print('queryBusLocatedRegion is done')
         return res
-        # qres = [[ str(r['Bus_node']), str(r['Region']), float(r['Bus_lat']), float(r['Bus_lon'])] for r in res]
-       
+        
     elif ConjunctiveGraph != None and localQuery == True:  
         print('localQuery queryBusLocatedRegion')
         print('##################WARNING: The returen will be an array instead of a dictionary.###################')
@@ -345,11 +346,12 @@ if __name__ == '__main__':
     # scot_iri = 'http://dbpedia.org/resource/Scotland'
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    # res = queryBusTopologicalInformation(10, None, False, 'ukdigitaltwin')
+    res = queryBusTopologicalInformation(29, None, False, 'ukdigitaltwin')
     # print(res)
-    res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
-    print(res)
+    # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
+    
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
+    print(res, len(res))
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
 
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"

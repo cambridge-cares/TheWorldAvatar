@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 24 Sept 2021         #
+# Last Update Date: 13 Oct 2021          #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -10,6 +10,11 @@ from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+# import numpy as np 
+from shapely.wkt import loads
+from shapely.geometry import mapping
+import geojson
+import ast
 
 
 qres = []
@@ -343,18 +348,22 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Cons
         ebus_cg = ConjunctiveGraph('Sleepycat')
         sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
         if sl == NO_STORE:
-            print('Cannot find the UK topology sleepycat store')
-            return None        
+            raise Exception('Cannot find the UK topology sleepycat store')
+                 
         qres = list(ebus_cg.query(queryStr))
         ebus_cg.close()
     return qres 
          
 # query the total electricity consumption of each address area
-def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, endPoint_label):    
+def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ONS):    
     queryStr = """  
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX bibtex: <https://zeitkunst.org/bibtex/0.2/bibtex.owl#> 
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
+    PREFIX db: <https://dbpedia.org/ontology/>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
@@ -363,10 +372,12 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topo_C
     PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
     PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
 	PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
-    SELECT DISTINCT  ?AddressArea ?TotalELecConsumption 
+    SELECT DISTINCT  ?Area_LACode ?TotalELecConsumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
     WHERE
     {   
-    ?AddressArea rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .    
+    ?AddressArea rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
+    ?AddressArea bibtex:hasURL ?Area_id_url .   
+    ?AddressArea db:areaCode ?Area_LACode .
     ?place ontocape_upper_level_system:hasAddress ?AddressArea .
     ?place ontoeip_system_function:consumes ?regionalConsumption . 
     ?regionalConsumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
@@ -375,22 +386,31 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, topo_C
     ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
     ?regionalConsumption ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
     ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
-    }""" % startTime_of_EnergyConsumption  
-    global qres
-    if localQuery == False and len(endPoint_label) > 0:
-       print('remoteQuery')     
-       res = json.loads(performQuery(endPoint_label, queryStr)) 
-       return res            
-       # qres = [[ str(r['Region']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
-    elif topo_Consumption_SleepycatPath != None and localQuery == True:  
-        ebus_cg = ConjunctiveGraph('Sleepycat')
-        sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the UK topology sleepycat store')
-            return None        
-        qres = list(ebus_cg.query(queryStr))
-        ebus_cg.close()
-    return qres   
+    
+    OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area_id_url ont:hasGeometry ?geometry . 
+    ?geometry ont_sparql:asWKT ?Geo_Info . }      
+    
+    } GROUP BY ?TotalELecConsumption ?Area_LACode
+    """ % startTime_of_EnergyConsumption  
+      
+    res = json.loads(performFederatedQuery(queryStr, ukdigitaltwin_iri, ONS)) 
+    for r in res:
+      for key in r.keys():
+          if '\"^^' in  r[key] :
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+       
+    for r in res: 
+        if len(r["Geo_InfoList"]) == 0:
+            raise Exception(r["Area_id_url"], "does't have the geographical attributes.")
+        elif "***" in r['Geo_InfoList']:
+            r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]            
+        # geojson_string = geojson.dumps(mapping(loads(r['Geo_InfoList'])))
+        # r['Geo_InfoList'] = ast.literal_eval(geojson_string)         
+        r['Geo_InfoList'] = loads(r['Geo_InfoList'])
+    # res = [[ r['Geo_InfoList'], float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]   
+    return res            
+    
 
 ###############ELine#############
 # queryStr_busConnectionAndLength: query ELine iri and its From_Bus, To_Bus and the Length_ELine.
@@ -480,11 +500,13 @@ def testLabel():
 if __name__ == '__main__': 
     # sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
     # sl_path_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"   
-    # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'    
+    # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'   
+    ONS_json = "http://statistics.data.gov.uk/sparql.json"
+    ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
-    res = queryElectricityConsumption_LocalArea("2017-01-31", None, False, 'ukdigitaltwin')
+    res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
+    # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryELineTopologicalInformation(10, 'ukdigitaltwin', None, False)
    
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
@@ -492,8 +514,9 @@ if __name__ == '__main__':
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
+    # geo = res[0]['Geo_InfoList']
+    #print(geo.geom_type)
+    
     print(res)
-    # for r in res:
-    #     print(res)
     #testLabel()
 
