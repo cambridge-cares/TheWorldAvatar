@@ -14,12 +14,36 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
+/**
+ * The purpose of the AccessAgent is to handle HTTP requests to perform SPARQL query 
+ * and update operations on RDF resources in the knowledge graph. The agent will also 
+ * perform requests to "get" and "insert" entire graphs. 
+ * This agent extends the JPSAgent framework and can be called using methods in the 
+ * AccessAgentCaller class in jps_base_lib.
+ *  
+ * <p> All requests must provide a "targetresourceiri" {@link JPSConstants.TARGETIRI} and use one of the following HTTP methods 
+ * with request parameters: 
+ * 	<p>HTTP GET: perform a SPARQL query or "get" (if no sparql query is provided) 
+ * 		<br> (for query operation) sparql query {@link JPSConstants.QUERY_SPARQL_QUERY}
+ * 		<br> (for get operation, optional) target graph {@link JPSConstants.TARGETGRAPH}
+ * 		<br> (for get operation, optional) accept {@link JPSConstants.HEADERS}, see {@link MediaType}
+ * 	<p>HTTP POST: perform a SPARQL update
+ * 		<br> sparql update {@link JPSConstants.QUERY_SPARQL_UPDATE}
+ * <p>HTTP PUT: "insert" graph  
+ * 		<br> rdf content {@link JPSConstants.CONTENT}
+ * 		<br> content type {@link JPSConstants.CONTENTTYPE}
+ * 		<br> target graph {@link JPSConstants.TARGETGRAPH}
+ * 
+ * @author csl37
+ *
+ */
 @WebServlet(urlPatterns = {"/access"})
 public class AccessAgent extends JPSAgent{
 
@@ -258,4 +282,4 @@ public class AccessAgent extends JPSAgent{
 			LOGGER.info(b.toString());
 		}
 	}
-			}
+}
