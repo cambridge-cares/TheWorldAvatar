@@ -276,6 +276,15 @@ public class AccessAgentCaller{
 			String scheme = uri.getScheme();
 			String authority = uri.getAuthority();
 			
+			//If no scheme is provided then default to HTTP
+			if(scheme == null) {
+				scheme = "http";
+			}
+			//If no authority is given then use the default host 
+			if(authority == null) {
+				authority = JPSConstants.ACCESS_AGENT_HOST;
+			}
+			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
 			
 		} catch (UnsupportedEncodingException e) {
