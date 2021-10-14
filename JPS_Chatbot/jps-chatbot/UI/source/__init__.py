@@ -1,1 +1,1 @@
-import location
+from .location import *
