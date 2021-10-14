@@ -36,6 +36,7 @@ RUN echo "deb http://deb.debian.org/debian/ unstable main contrib non-free" >> /
 # Copy in dependencies from first stage
 COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikidata_Query
 COPY --from=dependency_fetcher /root/dependencies/model_jps ./UI/source/JPS_Query
+COPY --from=dependency_fetcher /root/dependencies/models_agent ./UI/source/Agent_Query
 COPY --from=dependency_fetcher /root/geckodriver /usr/local/bin
 
 # Setup venv
