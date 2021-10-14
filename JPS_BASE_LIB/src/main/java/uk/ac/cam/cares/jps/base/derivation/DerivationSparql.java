@@ -34,6 +34,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  * SPARQL queries/updates for instances related to derived quantities
  * These functions are called by the DerivationClient class
  * @author Kok Foong Lee
+ * @author Jiaru Bai
  *
  */
 public class DerivationSparql{
@@ -49,6 +50,10 @@ public class DerivationSparql{
     private static Iri TimePosition = p_time.iri("TimePosition");
     private static Iri Derivation = p_derived.iri("Derivation");
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
+    private static Iri Status = p_derived.iri("Status");
+    private static Iri Requested = p_derived.iri("Requested");
+    private static Iri InProgress = p_derived.iri("InProgress");
+    private static Iri Finished = p_derived.iri("Finished");
     private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
@@ -57,10 +62,14 @@ public class DerivationSparql{
 	private static Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
 	private static Iri belongsTo = p_derived.iri("belongsTo");
+	private static Iri hasStatus = p_derived.iri("hasStatus");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	private static Iri hasTRS = p_time.iri("hasTRS");
 	private static Iri inTimePosition = p_time.iri("inTimePosition");
+	
+	// data properties
+	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
 	
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
@@ -199,6 +208,160 @@ public class DerivationSparql{
 		}
 	}
 	
+	public static boolean isRequested(StoreClientInterface storeClient, String derivation) {
+		String statusQueryKey = "status";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		SelectQuery query = Queries.SELECT();
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(Requested);
+		query.prefix(p_derived).where(queryPattern, queryPattern2);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static boolean isInProgress(StoreClientInterface storeClient, String derivation) {
+		String statusQueryKey = "status";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		SelectQuery query = Queries.SELECT();
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(InProgress);
+		query.prefix(p_derived).where(queryPattern, queryPattern2);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static boolean isFinished(StoreClientInterface storeClient, String derivation) {
+		String statusQueryKey = "status";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		SelectQuery query = Queries.SELECT();
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(Finished);
+		query.prefix(p_derived).where(queryPattern, queryPattern2);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	public static void markAsRequested(StoreClientInterface storeClient, String derivation) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		String statusIRI = Requested.toString() + UUID.randomUUID().toString();
+		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
+		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
+		
+		modify.prefix(p_derived).insert(insert_tp);
+		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	public static void markAsInProgress(StoreClientInterface storeClient, String derivation) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		String statusIRI = InProgress.toString() + UUID.randomUUID().toString();
+		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
+		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(InProgress);
+		
+		modify.prefix(p_derived).insert(insert_tp);
+		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	public static String markAsFinished(StoreClientInterface storeClient, String derivation) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		String statusIRI = Finished.toString() + UUID.randomUUID().toString();
+		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
+		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Finished);
+		
+		modify.prefix(p_derived).insert(insert_tp);
+		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+		return statusIRI;
+	}
+	
+	public static boolean hasStatus(StoreClientInterface storeClient, String derivation) {
+		SelectQuery query = Queries.SELECT();
+		
+		TriplePattern queryPattern = iri(derivation).has(hasStatus, query.var());
+		query.prefix(p_derived).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	static String getStatus(StoreClientInterface storeClient, String derivation) {
+		if (hasStatus(storeClient, derivation)) {
+			String statusQueryKey = "status";
+			Variable status = SparqlBuilder.var(statusQueryKey);
+			SelectQuery query = Queries.SELECT();
+			
+			GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+			query.prefix(p_derived).where(queryPattern).select(status);
+			
+			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+			
+			return queryResult.getJSONObject(0).getString(statusQueryKey);
+		} else {
+			throw new JPSRuntimeException("Unable to retrieve the status of derivation <" + derivation + ">.");
+		}
+	}
+	
+	static List<String> getNewDerivedIRI(StoreClientInterface storeClient, String derivation) {
+		if (isFinished(storeClient, derivation)) {
+			String statusQueryKey = "status";
+			String derivedQueryKey = "newDerivedIRI";
+			
+			SelectQuery query = Queries.SELECT();
+			
+			Variable status = SparqlBuilder.var(statusQueryKey);
+			Variable newDerivedIRI = SparqlBuilder.var(derivedQueryKey);
+			
+			GraphPattern statusPattern = GraphPatterns.and(iri(derivation).has(hasStatus, status));
+			GraphPattern derivedPattern = status.has(hasNewDerivedIRI, newDerivedIRI);
+			
+			query.prefix(p_derived).where(statusPattern, derivedPattern).select(newDerivedIRI);
+			JSONArray queryResult = storeClient.executeQuery();
+			
+			List<String> newDerived = new ArrayList<>();
+			
+			for (int i = 0; i < queryResult.length(); i++) {
+				newDerived.add(queryResult.getJSONObject(i).getString(derivedQueryKey));
+			}
+			
+			return newDerived;			
+		} else {
+			throw new JPSRuntimeException("Unable to retrieve the new derived IRI as derivation <" + derivation + "> is not finished.");
+		}
+	}
+	
 	/**
 	 * returns true of given instance exists
 	 * @param storeClient
@@ -317,6 +480,24 @@ public class DerivationSparql{
 		}
 		
 		return inputs;
+	}
+	
+	static List<String> getDerivations(StoreClientInterface kbClient, String agentIRI) {
+		String queryKey = "derivation";
+		Variable derivation = SparqlBuilder.var(queryKey);
+		GraphPattern queryPattern = derivation.has(isDerivedUsing, iri(agentIRI));
+		SelectQuery query = Queries.SELECT();
+		
+		query.prefix(p_derived, p_agent).select(derivation).where(queryPattern);
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		
+		List<String> derivations = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			derivations.add(queryResult.getJSONObject(i).getString(queryKey));
+		}
+		
+		return derivations;
 	}
 	
 	/**
@@ -485,6 +666,11 @@ public class DerivationSparql{
 		}
 	}
 	
+	static void deleteStatus(StoreClientInterface kbClient, String instance) {
+		String status = getStatus(kbClient, instance);
+		deleteInstances(kbClient, Arrays.asList(status));
+	}
+	
 	static long getTimestamp(StoreClientInterface kbClient, String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -592,6 +778,33 @@ public class DerivationSparql{
 		return classOfInstances;
 	}
 	
+	static String getInstanceClass(StoreClientInterface kbClient, String instance) {
+		String queryKey = "class";
+		
+		SelectQuery query = Queries.SELECT();
+		Variable type = SparqlBuilder.var(queryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
+		}
+		GraphPattern queryPattern = iri(instance).isA(type).filter(Expressions.and(filters));
+		
+		query.select(type).where(queryPattern);
+		kbClient.setQuery(query.getQueryString());
+		
+		JSONArray queryResult = kbClient.executeQuery();
+		// not having an rdf:type may be fine, but having more than 1 is an issue
+		if (queryResult.length() > 1) {
+			throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instance);
+		} else if (queryResult.length() == 1) {
+			return queryResult.getJSONObject(0).getString(queryKey);
+		} else {
+			return "";
+		}
+	}
+	
 	/**
 	 * this is used to reconnect a newly created instance to an existing derived instance
 	 * @param kbClient
@@ -641,6 +854,16 @@ public class DerivationSparql{
 		
 		for (String newEntity : newEntities) {
 			modify.insert(iri(newEntity).has(belongsTo, iri(instance)));
+		}
+		
+		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
+	}
+	
+	static void addNewDerivedIRIToFinishedStatus(StoreClientInterface storeClient, String finishedStatus, List<String> newDerivedIRI) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		for (String newIRI : newDerivedIRI) {
+			modify.insert(iri(finishedStatus).has(hasNewDerivedIRI, iri(newIRI)));
 		}
 		
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
