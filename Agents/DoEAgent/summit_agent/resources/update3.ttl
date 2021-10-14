@@ -1,0 +1,22 @@
+PREFIX OntoCAPERxn:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX OntoCAPEMat:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
+PREFIX OntoSpecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX OntoKin:	<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoRxn:	<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX om:			<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX OntoUoM:	<http://theworldavatar.com/resource/ontouom/>
+PREFIX SinglePhase:<https://theworldavatar.com/kb/ontorxn/SinglePhase/>
+PREFIX ChemRxn:	<https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
+PREFIX exp1:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
+PREFIX exp2:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
+PREFIX exp3:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
+PREFIX exp4:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
+PREFIX exp5:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
+PREFIX :			<https://theworldavatar.com/kb/ontodoe/DoE_1/>
+
+INSERT DATA {
+	:SystemResponse_1 OntoDoE:maximise "true"^^xsd:boolean .
+
+	:SystemResponse_2 OntoDoE:maximise "false"^^xsd:boolean . 
+}

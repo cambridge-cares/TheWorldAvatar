@@ -1,0 +1,80 @@
+PREFIX OntoCAPERxn:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX OntoSpecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX OntoKin:	<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX OntoRxn:	<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX skos:		<http://www.w3.org/2004/02/skos/core#>
+PREFIX exp1:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
+PREFIX exp2:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
+PREFIX exp3:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
+PREFIX exp4:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
+PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
+PREFIX SinglePhase:<https://theworldavatar.com/kb/ontorxn/SinglePhase/>
+PREFIX :			<https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
+
+INSERT DATA {
+	:ChemRxn_1
+		rdf:type OntoCAPERxn:ChemicalReaction;
+		OntoRxn:isRealisedAs exp1:RxnExp_1;
+		OntoRxn:isRealisedAs exp2:RxnExp_1;
+		OntoRxn:isRealisedAs exp3:RxnExp_1;
+		OntoRxn:isRealisedAs exp4:RxnExp_1;
+		OntoRxn:isRealisedAs exp5:RxnExp_1;
+		OntoKin:hasEquiation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
+		OntoCAPERxn:hasReactant :Species_1;
+		OntoCAPERxn:hasReactant :Species_2;
+		OntoCAPERxn:hasProduct :Species_3;
+		OntoCAPERxn:hasProduct :Species_4;
+		OntoCAPERxn:hasCatalyst :Species_5;
+		OntoRxn:hasSolvent :Species_6;
+		OntoRxn:hasSolvent :Species_7;
+	.
+
+	:Species_1
+		rdf:type OntoKin:Reactant;
+		OntoSpecies:pubChemCID "240"^^xsd:string;
+		skos:altLabel "benzaldehyde"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_1;
+	.
+
+	:Species_2
+		rdf:type OntoKin:Reactant;
+		OntoSpecies:pubChemCID "180"^^xsd:string;
+		skos:altLabel "acetone"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_2;
+	.
+
+	:Species_3
+		rdf:type OntoRxn:TargetProduct;
+		OntoSpecies:pubChemCID "637759"^^xsd:string;
+		skos:altLabel "benzalacetone"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_3;
+	.
+
+	:Species_4
+		rdf:type OntoRxn:Impurity;
+		OntoSpecies:pubChemCID "640180"^^xsd:string;
+		skos:altLabel "dibenzylideneacetone"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_4;
+	.
+
+	:Species_5
+		rdf:type OntoRxn:Catalyst;
+		OntoSpecies:pubChemCID "14798"^^xsd:string;
+		skos:altLabel "NaOH"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_5;
+	.
+
+	:Species_6
+		rdf:type OntoRxn:Solvent;
+		OntoSpecies:pubChemCID "6342"^^xsd:string;
+		skos:altLabel "acetonitrile"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_6;
+	.
+
+	:Species_7
+		rdf:type OntoRxn:Solvent;
+		OntoSpecies:pubChemCID "702"^^xsd:string;
+		skos:altLabel "ethanol"^^xsd:string;
+		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_7;
+	.
+}

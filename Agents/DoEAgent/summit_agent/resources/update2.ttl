@@ -1,0 +1,37 @@
+PREFIX OntoCAPERxn:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX OntoCAPEMat:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
+PREFIX OntoSpecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX OntoKin:	<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoRxn:	<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX om:			<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX OntoUoM:	<http://theworldavatar.com/resource/ontouom/>
+PREFIX SinglePhase:<https://theworldavatar.com/kb/ontorxn/SinglePhase/>
+PREFIX ChemRxn:	<https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
+PREFIX exp1:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
+PREFIX exp2:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
+PREFIX exp3:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
+PREFIX exp4:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
+PREFIX exp5:	<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
+
+INSERT DATA {
+	exp1:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime . 
+	exp1:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature . 
+	exp1:RxnPressure_1 rdf:type OntoRxn:ReactionPressure . 
+	
+	exp2:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime . 
+	exp2:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature . 
+	exp2:RxnPressure_1 rdf:type OntoRxn:ReactionPressure . 
+	
+	exp3:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime . 
+	exp3:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature . 
+	exp3:RxnPressure_1 rdf:type OntoRxn:ReactionPressure . 
+	
+	exp4:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime . 
+	exp4:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature . 
+	exp4:RxnPressure_1 rdf:type OntoRxn:ReactionPressure . 
+	
+	exp5:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime . 
+	exp5:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature . 
+	exp5:RxnPressure_1 rdf:type OntoRxn:ReactionPressure . 
+}

@@ -1,0 +1,234 @@
+PREFIX OntoCAPERxn:<http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX OntoCAPEMat:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
+PREFIX OntoCAPEPha:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
+PREFIX OntoCAPEUpp:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+PREFIX OntoSpecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+PREFIX OntoKin:	<http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
+PREFIX OntoRxn:	<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX om:			<http://www.ontology-of-units-of-measure.org/resource/om-2/>
+PREFIX OntoUoM:	<http://theworldavatar.com/resource/ontouom/>
+PREFIX exp1:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
+PREFIX exp2:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
+PREFIX exp3:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
+PREFIX exp4:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
+PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
+PREFIX ChemRxn:	<https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
+PREFIX :			<https://theworldavatar.com/kb/ontorxn/SinglePhase/>
+
+INSERT DATA {
+	:PhaseComponent_1
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_1;
+		OntoCAPEUpp:hasProperty :PhaseComponent_1_Property_1;
+	.
+
+
+	:PhaseComponent_2
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_2;
+		OntoCAPEUpp:hasProperty :PhaseComponent_2_Property_1;
+	.
+
+	:PhaseComponent_3
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_3;
+		OntoCAPEUpp:hasProperty :PhaseComponent_3_Property_1;
+	.
+
+	:PhaseComponent_4
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_4;
+		OntoCAPEUpp:hasProperty :PhaseComponent_4_Property_1;
+	.
+
+	:PhaseComponent_5
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_5;
+		OntoCAPEUpp:hasProperty :PhaseComponent_5_Property_1;
+	.
+
+	:PhaseComponent_6
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+		OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_1;
+	.
+
+	:PhaseComponent_6_2
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+		OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_2;
+	.
+
+	:PhaseComponent_7
+		rdf:type OntoCAPEPha:PhaseComponent;
+		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_7;
+		OntoCAPEUpp:hasProperty :PhaseComponent_7_Property_1;
+	.
+
+	:PhaseComponent_1_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_1_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_1_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "0.5"^^xsd:double;
+	.
+
+	:PhaseComponent_2_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_2_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_2_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "6.73"^^xsd:double;
+	.
+
+	:PhaseComponent_3_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_3_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_3_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue ""^^xsd:double;
+	.
+
+	:PhaseComponent_4_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_4_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_4_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue ""^^xsd:double;
+	.
+
+	:PhaseComponent_5_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_5_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_5_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "0.1"^^xsd:double;
+	.
+
+	:PhaseComponent_6_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_6_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_6_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "18.1"^^xsd:double;
+	.
+
+	:PhaseComponent_6_Property_2
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_6_Property_2_ScalarValue_1;
+	.
+
+	:PhaseComponent_6_Property_2_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "9.6"^^xsd:double;
+	.
+
+	:PhaseComponent_7_Property_1
+		rdf:type OntoCAPEPha:Molarity;
+		OntoCAPEUpp:hasValue :PhaseComponent_7_Property_1_ScalarValue_1;
+	.
+
+	:PhaseComponent_7_Property_1_ScalarValue_1
+		rdf:type OntoCAPEUpp:ScalarValue;
+		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+		OntoCAPEUpp:numericalValue "17.1"^^xsd:double;
+	.
+
+
+
+	:Phase_1
+		rdf:type OntoCAPEPha:SinglePhase;
+		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_1;
+		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_1;
+		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_1;
+		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_1;
+		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_1;
+		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+		OntoCAPEPha:has_composition :Composition_1;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_1;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_6;
+	.
+
+	:Composition_1
+		rdf:type OntoCAPEPha:Composition;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_1_Property_1;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_6_Property_1;
+	.
+
+	:Phase_2
+		rdf:type OntoCAPEPha:SinglePhase;
+		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_2;
+		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_2;
+		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_2;
+		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_2;
+		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_2;
+		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+		OntoCAPEPha:has_composition :Composition_2;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_2;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_6_2;
+	.
+
+	:Composition_2
+		rdf:type OntoCAPEPha:Composition;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_2_Property_1;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_6_Property_2;
+	.
+
+	:Phase_3
+		rdf:type OntoCAPEPha:SinglePhase;
+		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_3;
+		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_3;
+		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_3;
+		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_3;
+		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_3;
+		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+		OntoCAPEPha:has_composition :Composition_3;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_5;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_7;
+	.
+
+	:Composition_3
+		rdf:type OntoCAPEPha:Composition;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_5_Property_1;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_7_Property_1;
+	.
+
+	:Phase_4
+		rdf:type OntoCAPEPha:SinglePhase;
+		OntoCAPEMat:representsThermodynamicBehavior exp1:OutputChemical_4;
+		OntoCAPEMat:representsThermodynamicBehavior exp2:OutputChemical_4;
+		OntoCAPEMat:representsThermodynamicBehavior exp3:OutputChemical_4;
+		OntoCAPEMat:representsThermodynamicBehavior exp4:OutputChemical_4;
+		OntoCAPEMat:representsThermodynamicBehavior exp5:OutputChemical_4;
+		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+		OntoCAPEPha:has_composition :Composition_4;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_3;
+		OntoCAPEUpp:isComposedOfSubsystem :PhaseComponent_4;
+	.
+
+	:Composition_4
+		rdf:type OntoCAPEPha:Composition;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_3_Property_1;
+		OntoCAPEUpp:comprisesDirectly :PhaseComponent_4_Property_1;
+	.
+
+}

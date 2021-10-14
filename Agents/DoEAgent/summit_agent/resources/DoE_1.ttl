@@ -1,0 +1,91 @@
+PREFIX OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoRxn:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
+PREFIX exp1:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
+PREFIX exp2:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
+PREFIX exp3:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
+PREFIX exp4:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
+PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
+PREFIX exp6:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_6/>
+PREFIX :			<https://theworldavatar.com/kb/ontodoe/DoE_1/>
+
+INSERT DATA {
+	:DoE_1
+		rdf:type OntoDoE:DesignOfExperiment;
+		OntoDoE:usesStrategy :Strategy_1;
+		OntoDoE:hasDomain :Domain_1;
+		OntoDoE:hasSystemResponse :SystemResponse_1;
+		OntoDoE:hasSystemResponse :SystemResponse_2;
+		OntoDoE:utilisesHistoricalData :HistoricalData_1;
+		OntoDoE:proposesNewExperiment :NewExperiment_1;
+	.
+
+	:Strategy_1
+		rdf:type OntoDoE:TSEMO;
+		OntoDoE:nRetries "10"^^xsd:integer;
+		OntoDoE:nSpectralPoints "30"^^xsd:integer;
+		OntoDoE:nGenerations "20"^^xsd:integer;
+		OntoDoE:populationSize "20"^^xsd:integer;
+	.
+
+	:Domain_1
+		rdf:type OntoDoE:Domain;
+		OntoDoE:hasDesignVariable :ContinuousVariable_1;
+		OntoDoE:hasDesignVariable :ContinuousVariable_2;
+		OntoDoE:hasDesignVariable :ContinuousVariable_3;
+		OntoDoE:hasDesignVariable :ContinuousVariable_4;
+	.
+
+	:ContinuousVariable_1
+		rdf:type OntoDoE:ContinuousVariable;
+		OntoDoE:refersTo OntoRxn:StoichiometryRatio;
+		OntoDoE:positionalID "2"^^xsd:integer;
+		OntoDoE:upperLimit "10"^^xsd:double;
+		OntoDoE:lowerLimit "1"^^xsd:double;
+	.
+
+	:ContinuousVariable_2
+		rdf:type OntoDoE:ContinuousVariable;
+		OntoDoE:refersTo OntoRxn:StoichiometryRatio;
+		OntoDoE:positionalID "3"^^xsd:integer;
+		OntoDoE:upperLimit "0.2"^^xsd:double;
+		OntoDoE:lowerLimit "0.02"^^xsd:double;
+	.
+
+	:ContinuousVariable_3
+		rdf:type OntoDoE:ContinuousVariable;
+		OntoDoE:refersTo OntoRxn:ResidenceTime;
+		OntoDoE:upperLimit "15"^^xsd:double;
+		OntoDoE:lowerLimit "5"^^xsd:double;
+	.
+
+	:ContinuousVariable_4
+		rdf:type OntoDoE:ContinuousVariable;
+		OntoDoE:refersTo OntoRxn:ReactionTemperature;
+		OntoDoE:upperLimit "70"^^xsd:double;
+		OntoDoE:lowerLimit "30"^^xsd:double;
+	.
+
+	:SystemResponse_1
+		rdf:type OntoDoE:SystemResponse;
+		OntoDoE:refersTo OntoRxn:Yield;
+	.
+
+	:SystemResponse_2
+		rdf:type OntoDoE:SystemResponse;
+		OntoDoE:refersTo OntoRxn:RunMaterialCost;
+	.
+
+	:HistoricalData_1
+		rdf:type OntoDoE:HistoricalData;
+		OntoDoE:refersTo exp1:RxnExp_1;
+		OntoDoE:refersTo exp2:RxnExp_1;
+		OntoDoE:refersTo exp3:RxnExp_1;
+		OntoDoE:refersTo exp4:RxnExp_1;
+		OntoDoE:refersTo exp5:RxnExp_1;
+	.
+
+	:NewExperiment_1
+		rdf:type OntoDoE:NewExperiment;
+		OntoDoE:refersTo exp6:RxnExp_1;
+	.
+}
