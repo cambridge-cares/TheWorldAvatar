@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -23,10 +24,10 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -38,17 +39,17 @@ import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
 
-	@Rule
-	public TemporaryFolder tempFolder = new TemporaryFolder();
+	@TempDir
+	File tempFolder;
 	
 	private String filePath;
 	private String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
 	
-	@Before
+	@BeforeEach
 	public void setUp() throws URISyntaxException, IOException {
 		// Test rdf file				
 		Path testResourcePath = Paths.get(this.getClass().getResource("/testRDF.rdf").toURI());
-		Path tempFilePath = Paths.get(tempFolder.getRoot().toString() + "/testRDF.rdf");		
+		Path tempFilePath = Paths.get(tempFolder.getPath() + "/testRDF.rdf");		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();
 	}
@@ -145,7 +146,6 @@ public class AccessAgentTest{
 		assertEquals("OH",jo.get("o").toString());
 	}
 	
-	@Test(expected = JPSRuntimeException.class)
 	public void testGetWithSparqlUpdate() throws ParseException {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -158,8 +158,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 
-        @SuppressWarnings("unused")
-		JSONObject result = agent.get(jo);		
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.get(jo);});		
 	}
 	
 	@Test
@@ -167,7 +166,7 @@ public class AccessAgentTest{
 		
 		// write a test file to temporary folder
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
-		String folderPath = tempFolder.getRoot().toString();
+		String folderPath = tempFolder.getPath();
 		String testFilePath = folderPath + "/TestGet.nt";
 		FileUtil.writeFileLocally(testFilePath, content); 
 		
@@ -191,7 +190,7 @@ public class AccessAgentTest{
 		
 		String content = "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";			
 		
-		String folderPath = tempFolder.getRoot().toString();
+		String folderPath = tempFolder.getPath();
 		String testFilePath = folderPath + "/TestPut.nt"; 
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -211,7 +210,6 @@ public class AccessAgentTest{
 		assertEquals(content, strResult);		
 	}
 	
-	@Test(expected = JPSRuntimeException.class)
 	public void testPutWithSparqlUpdate() throws ParseException {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -225,10 +223,9 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_UPDATE, testUpdate );
 		
-        agent.put(jo);
+        Assertions.assertThrows( JPSRuntimeException.class, ()->{agent.put(jo);});
 	}
 	
-	@Test(expected = JPSRuntimeException.class)
 	public void testPutWithSparqlQuery() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -240,7 +237,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-		agent.put(jo);								
+		Assertions.assertThrows(JPSRuntimeException.class,  ()->{agent.put(jo);});								
 	}
 	
 	@Test
@@ -265,7 +262,6 @@ public class AccessAgentTest{
 		assertEquals("TEST",result.get("o").toString());      
 	}
 	
-	@Test(expected = JPSRuntimeException.class)
 	public void testPostWithSparqlQuery() {
 		
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -277,10 +273,9 @@ public class AccessAgentTest{
 			.put(JPSConstants.TARGETIRI, filePath)
 			.put(JPSConstants.QUERY_SPARQL_QUERY, queryString );
 		
-        agent.post(jo);								
+        Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.post(jo);});								
 	}
 	
-	@Test(expected = JPSRuntimeException.class)
 	public void testPostWithoutSparqlUpdate() {
 				
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
@@ -291,7 +286,7 @@ public class AccessAgentTest{
 			.put(JPSConstants.METHOD, "POST")
 			.put(JPSConstants.TARGETIRI, filePath);
 		
-        agent.post(jo);								
+        Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.post(jo);});								
 	}	
 	
 	///////////////////////////////////////////////

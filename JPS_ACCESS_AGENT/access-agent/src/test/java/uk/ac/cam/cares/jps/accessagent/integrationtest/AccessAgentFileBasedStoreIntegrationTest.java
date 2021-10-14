@@ -12,11 +12,11 @@ import org.apache.jena.riot.RDFLanguages;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -35,7 +35,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
  * @author csl37
  *
  */
-@Ignore("Requires the AccessAgent to be deployed and running on localhost. Requires Internet access to OntoKGRouter on www.theworldavatar.com. The tomcat root path must correspond to that on OntoKGRouter.")
+@Disabled("Requires the AccessAgent to be deployed and running on localhost. Requires Internet access to OntoKGRouter on www.theworldavatar.com. The tomcat root path must correspond to that on OntoKGRouter.")
 public class AccessAgentFileBasedStoreIntegrationTest {
 
 	// Test targetIRI and corresponding file path
@@ -57,7 +57,7 @@ public class AccessAgentFileBasedStoreIntegrationTest {
 	//Initial checks
 	///////////////////////////////////////////////////////////////
 	
-	@BeforeClass
+	@BeforeAll
 	public static void initialChecks() {
 		checkOntoKGRouter();
 		checkStoreRouter();
@@ -116,13 +116,13 @@ public class AccessAgentFileBasedStoreIntegrationTest {
 	//Set up and clean up test environment
 	///////////////////////////////////////////////////////////////	
 	
-	@Before
+	@BeforeEach
 	public void setupTestStore() {
 		cleanup();
 		FileUtil.writeFileLocally(filePath, content);
 	}
 	
-	@After
+	@AfterEach
 	public void cleanup() {
 		deleteFile(filePath);
 	}
