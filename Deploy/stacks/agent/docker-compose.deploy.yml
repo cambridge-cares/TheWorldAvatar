@@ -1,0 +1,134 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'agent' stack, with the exception of the 'ports' node which should be set in
+# docker-compose.deploy.live.yml and docker-compose.deploy.test.yml (see those files for details).
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+
+  # Email Agent
+  email-agent:
+    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
+    container_name: "email-agent${CONTAINER_NAME_SUFFIX}"
+    hostname: email-agent
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Gas Grid Agent
+  gas-grid-agent:
+    image: docker.cmclinnovations.com/gas-grid-agent-$MODE:1.0.0-SNAPSHOT
+    container_name: "gas-grid-agent${CONTAINER_NAME_SUFFIX}"
+    mem_limit: 2g
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # JPS Chatbot
+  jps-chatbot:
+    image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
+    container_name: "jps-chatbot${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # JPS LDF Server
+  jps-ldf:
+    image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
+    container_name: "jps-ldf${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # # Kinetics Agent.
+  # # Note: This Image mounts a volume so that it can access the SRM Driver and
+  # #       Intel MPI files stored within the 'srm-driver' Image.
+  # kinetics-agent:
+  #   image: "docker.cmclinnovations.com/kinetics-agent:0.0.1-SNAPSHOT"
+  #   container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
+  #   depends_on:
+  #     - "srm-driver"
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
+
+  # Daniel N's 'Organic Solar Cell Machine Learning' agent.
+  # The source code for this agent is in a different repository, so no configuration is included in docker-compose.build.yml, for now.
+  oscml-agent:
+    image: docker.cmclinnovations.com/oscml_agent:1.0.0-SNAPSHOT
+    container_name: "oscml-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # # Slurm compute node.
+  # # Note: This Image exists as a generic job queue/executor for any other
+  # #       services submitting Slurm jobs (such as the KineticsAgent).
+  # slurm:
+  #   image: "docker.cmclinnovations.com/slurm:1.0.0-SNAPSHOT"
+  #   cap_add:
+  #     - ALL
+  #   container_name: "slurm${CONTAINER_NAME_SUFFIX}"
+  #   depends_on:
+  #     - "srm-driver"
+  #   env_file:
+  #     - Slurm/slurm-variables.env
+  #   privileged: true
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
+  #     - mpi:/usr/local/intel-mpi
+
+  # Local execution environment for SRM Driver.
+  # Note: This Image contains the SRM Driver and Intel MPI files (without
+  #       any queueing functionality).
+  # srm-driver:
+  #   image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
+  #   container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
+  #   hostname: "srm-driver"
+  #   mac_address: "1a:2b:3c:4d:5e:6f"
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   volumes:
+  #     - driver:/usr/local/srm-driver
+  #     - mpi:/usr/local/intel-mpi
+
+  stdc-agent:
+    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
+    container_name: "stdc-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Weather Agent
+  weather-agent:
+    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
+    container_name: "weather-agent${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    secrets:
+      - weather_agent_credentials
+    volumes:
+      - WAlogs:/root/.jps
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+
+# Secrets
+secrets:
+  weather_agent_credentials:
+    file: WeatherAgent/secrets/credentials.properties.${MODE}
+
+volumes:
+  driver:
+  mpi:
+  WAlogs:
