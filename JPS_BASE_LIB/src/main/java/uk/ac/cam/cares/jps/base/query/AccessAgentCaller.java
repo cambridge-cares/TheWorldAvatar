@@ -176,6 +176,10 @@ public class AccessAgentCaller{
 		//	  the targetUrl may optionally request a graph at the datasetUrl
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
+		//
+		// If no host is provided as part of the datasetUrl (case 2) or targetUrl (case1),
+		// a requestUrl will be constructed using the host stored in JPSConstants
+		
 		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
 		
@@ -265,6 +269,8 @@ public class AccessAgentCaller{
 	 * Get the base world Access Agent url.
 	 * The scheme, host and port of the target or dataset url are preserved, while
 	 * the path is changed to the Access Agent Path. 
+	 * If no scheme, host or port is provided then url will default to the values 
+	 * provided by JPSConstants e.g. "http://www.theworldavatar.com/access-agent/access"
 	 * @param url
 	 * @return
 	 */
