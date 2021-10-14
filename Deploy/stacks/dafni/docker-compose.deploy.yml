@@ -1,0 +1,61 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'dafni' stack
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+  # Blazegraph geo
+  blazegraph-geo:
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    ports:
+      - 8081:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    volumes:
+      - blazegraph_geo_data:/data
+
+  # Postgres
+  postgres:
+    image: docker.cmclinnovations.com/postgres:13.3-alpine
+    container_name: "postgres${CONTAINER_NAME_SUFFIX}"
+    ports:
+      - 5432:5432
+    pull_policy: if_not_present
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}
+
+
+# Secrets used to set runtime passwords
+secrets:
+  postgres_password:
+    file: postgres/secrets/postgres_password
+
+
+# Volumes to handle triplestore data and logging
+volumes:
+  blazegraph_geo_data:
+  postgres_data:
