@@ -3,7 +3,7 @@ import json
 import re
 from cbuCSVtoJSON.printJSONdecision import printJSON
 
-def cbuCSVtoJSON(cbuCSVFilePath, xyzInputCBU, speciesJSONFilePath):
+def cbuCSVtoQCJSON(cbuCSVFilePath, xyzInputCBU, speciesJSONFilePath):
     '''This function converts every row of the CBU.csv file into separate JSON file.'''
     data = {}
     rowoutSpecies = {}
@@ -44,8 +44,9 @@ def parseXYZ(xyzCBU):
     data = {}
     atoms = []
     atoms_coordinates = [] 
-    with open(xyzCBU, "r", encoding='utf-8-sig') as xyzf: 
-        for row in xyzf:  
+    with open(xyzCBU, "r", encoding='utf-8-sig') as xyzf:
+        xyzrows = xyzf.readlines()[2:]
+        for row in xyzrows:  
             rowCoordinates = re.split('\s+', row)
             atom = str(rowCoordinates[0])
             atoms.append(atom)
