@@ -34,7 +34,7 @@ import uk.ac.cam.cares.jps.base.query.StoreRouter;
  * @author csl37
  *
  */
-//@Disabled("Requires the AccessAgent to be running locally on Docker and internet access to OntoKGRouter on www.theworldavatar.com.")
+@Disabled("Requires the AccessAgent to be running locally on Docker and internet access to OntoKGRouter on www.theworldavatar.com.")
 @Testcontainers
 public class AccessAgentRemoteStoreIntegrationTest {
 

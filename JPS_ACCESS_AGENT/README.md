@@ -21,7 +21,6 @@ repo_username.txt should contain your github username, and repo_password.txt you
 To build and start the agent, you simply need to spin up a container/
 In Visual Studio Code, ensure the Docker extension is installed, then right-click docker-compose.yml and select 'Compose Up'.
 Alternatively, from the command line, and in the same directory as this README, run
-
 ```
 docker-compose up -d
 ```
@@ -34,12 +33,11 @@ The integration tests are designed to test the AccessAgentCaller class together 
 
 Requirements to run the AccessAgentRemoteStoreIntegrationTest:
 1. 	AccessAgent running on Docker
-2.	Comment out the "@Disabled" annotation at the top of AccessAgentRemoteStoreIntegrationTest class
-3.	Internet connection to the OntoKGRouter triple store (currently at "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql")
-4. 	OntoKGROuter is expected to contain routing to endpoint "http://172.17.0.1:39888/blazegraph/namespace/kb/sparql" for the resource "teststorelocal"
+2.	Comment out the "\@Disabled" annotation applied to the AccessAgentRemoteStoreIntegrationTest class
+3.	Internet connection to the OntoKGRouter triple store (currently at "\http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql")
+4. 	OntoKGROuter is expected to contain routing to endpoint "\http://172.17.0.1:39888/blazegraph/namespace/kb/sparql" for the resource "teststorelocal"
 
-Requirements to run the AccessAgentFileBasedStoreIntegrationTest:
-1. 	AccessAgent deployed on "http://localhost:8080"
-2.	The tomcat root path is assumed to be "C:/TOMCAT/webapps/ROOT" (consistent with Claudius and OntoKGROuter routing information)
-3.	Internet connection to the OntoKGRouter triple store (currently at "http://www.theworldavatar.com/blazegraph/namespace/ontokgrouter/sparql")
-4. 	OntoKGRouter is assumed to contain "tomcatrootpath" with the value "file:///C:/TOMCAT/webapps/ROOT", for filebased routing (see #2.)
+To run the test from the command line
+```
+mvn -Dtest=AccessAgentRemoteStoreIntegrationTest test
+```
