@@ -36,7 +36,6 @@ import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.moo.MooResultsProcess;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.moo.MoDSFileMagtMoo;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
-import uk.ac.cam.cares.jps.agent.mechanism.moo.MoDSMooAgentException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;

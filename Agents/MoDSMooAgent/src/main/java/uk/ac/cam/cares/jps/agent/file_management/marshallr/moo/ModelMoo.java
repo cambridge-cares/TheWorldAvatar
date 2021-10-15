@@ -1,8 +1,5 @@
 package uk.ac.cam.cares.jps.agent.file_management.marshallr.moo;
 
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -42,6 +39,8 @@ import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.moo.MoDSMooAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.moo.Property;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
