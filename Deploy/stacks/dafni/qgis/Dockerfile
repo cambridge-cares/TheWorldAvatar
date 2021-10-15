@@ -10,8 +10,8 @@ RUN ssh-keygen -A \
 
 EXPOSE 22
 
-# Overwrite ssh options
-COPY sshd_config /etc/ssh/
+# Modify some sshd options
+COPY sshd_config_overrides.conf /etc/ssh/sshd_config.d/
 
 # Create privilege separation directory
 RUN mkdir -p /run/sshd
