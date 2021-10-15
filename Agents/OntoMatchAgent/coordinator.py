@@ -143,7 +143,7 @@ class Agent():
 
             if location or zipcode:
                 #latitude, longitude = geocoding_agent.query(location, zipcode)
-                latitude, longitude = geocoding_agent.query(location, None)
+                latitude, longitude = geocoding_agent.query(location, "germany")
                 #print('coord=', latitude, longitude)
                 if latitude and longitude:
 
@@ -155,9 +155,10 @@ class Agent():
                 else:
                     #print('no coordinates found for ', row.subj.n3())
                     pass
-
         logging.info('finished adding geographic coordinates, enhanced individuals=%s, total individuals=%s', count_geo, count_total)
 
+        if agent_name == 'knowledge.geoNames':
+            geocoding_agent.onclose()
     def start(self, params, penalize):
 
         try:
