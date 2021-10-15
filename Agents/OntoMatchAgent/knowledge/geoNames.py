@@ -5,7 +5,7 @@ class Agent():
     def __init__(self, featureSelect = '3F'):
         logging.info('initializing geoNames agent')
         #Import global file
-        addr = "../data/geoName_dict_All_Feature.json"
+        addr = "./data/geoName_dict_All_Feature.json"
         self.attrFinder = GeoAttrFinder(featureSelect, addr)
 
 

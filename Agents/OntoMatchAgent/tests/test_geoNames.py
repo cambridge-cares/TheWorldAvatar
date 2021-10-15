@@ -1,7 +1,9 @@
 import unittest
-import knowledge.geoNames
 
-class TestAgent(unittest.TestCase):
+import knowledge.geoNames
+import utils_for_testing
+
+class TestAgent(utils_for_testing.TestCaseOntoMatch):
     def test_query(self):
         agent = knowledge.geoNames.Agent()
         lat, long = agent.query(None, None)#Country feature not implemented yet

@@ -1,16 +1,7 @@
-import pickle
-
 import blocking
 import utils_for_testing
 
 class TestBlocking(utils_for_testing.TestCaseOntoMatch):
-
-    def load_kwl_gppd_ontologies(self):
-        with open('./data/kwl.pkl','rb') as file:
-            src_onto = pickle.load(file)
-        with open('./data/gppd.pkl','rb') as file:
-            tgt_onto = pickle.load(file)
-        return src_onto, tgt_onto
 
     def test_fullpairiterator(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
