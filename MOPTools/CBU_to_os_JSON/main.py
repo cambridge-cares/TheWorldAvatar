@@ -1,12 +1,27 @@
-from cbuCSVtoJSON.osJSONwrapper import cbuOperations
+from docopt import docopt, DocoptExit
+from CBU_to_os_JSON.cbuCSVtoJSON.osJSONwrapper import cbuOperations
 
-doc = """This program generates os_json files.
-The input files of for this program are single CBU.csv files and XYZ cbu files.
-The files are then converted to owl files with the help of A-box writers."""
+doc = """cbutojson
+Usage: cbutojson <csvfile> <xyzrelpath> [--outFilePath = <path>]
+
+Options:
+-h --help  Show this screen.
+--outFilePath = <path> Output directory to write the
+                       species JSON files to. 
+                       By default, it writes to a folder 
+                       in the run directory with the 
+                       stem name osJSON_. 
+"""
 
 def start():
-    cbuCSVFilePath = input("Path to the csv file:")
-    cbuOperations(cbuCSVFilePath)
+    try:
+        args = docopt(doc)
+    except DocoptExit:
+        raise DocoptExit('Error: cbutojson called with wrong arguments.')
+    cbuCSVFilePath = args['<csvfile>']
+    xyzpathstem = args['<xyzrelpath>']
+    outFilePath = args['--outFilePath']
+    cbuOperations(cbuCSVFilePath,xyzpathstem,outFilePath)
 
 if __name__ == '__main__':
     start()
