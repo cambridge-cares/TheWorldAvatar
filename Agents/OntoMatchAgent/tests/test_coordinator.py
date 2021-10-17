@@ -1,3 +1,4 @@
+from ssl import get_default_verify_paths
 from alignment import Alignment
 import coordinator
 import utils_for_testing
@@ -25,8 +26,10 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
                     "reset_index": False,
                 }
             },
+            "mapping": {
+            },
             "matching": {
-                "name": "matchManager",
+                "name": "matchManager.matchManager",
                 "model_specific": {
                     "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
                     "weights": [0.5, 0.4, 0.1],
@@ -36,13 +39,34 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
             }
         }
 
-    def get_default_penalize_params(self):
-        clist = [('PowerStation', 'PowerPlant', 0.9)]
-        sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
-        for subc in sublist:
-            #for subc in sublist:
-            clist.append((subc,subc,0.9))
-        return {'class':True,'align':Alignment(clist)}
+    def get_params_for_property_mapping_with_auto_calibration(self, srcaddr, tgtaddr):
+        params = self.get_default_params(srcaddr, tgtaddr)
+
+        params_sim_fcts = [{
+                    "name": "dist_nltk_edit",
+                    "cut_off_mode": "fixed",
+                    "cut_off_value": 3
+                },{
+                    "name": "dist_absolute",
+                    "cut_off_mode": "fixed",
+                    "cut_off_value": 10
+                },{
+                    "name": "dist_relative",
+                    "cut_off_mode": "fixed"
+                }
+        ]
+
+        params['mapping'] =  {
+                "mode": "auto",
+                "similarity_functions": params_sim_fcts
+        }
+
+        params['matching'] = {
+            "name": "coordinator.InstanceMatcherWithAutoCalibration",
+            "model_specific": {
+            }
+        }
+        return params
 
     def test_coordinator_load_add_knowledge(self):
 
@@ -78,15 +102,14 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         agent = coordinator.Agent()
         agent.load(srcaddr, tgtaddr)
 
-    def test_coordinator_start_with_pickle_files(self):
+    def test_coordinator_start_with_pickle_files_and_score_manager(self):
 
         srcaddr = './data/kwl_geo.pkl'
         tgtaddr = './data/gppd.pkl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
-        penalize = self.get_default_penalize_params()
         agent = coordinator.Agent()
-        agent.start(params, penalize)
+        agent.start(params)
 
     def xxxtest_coordinator_start_with_owl_and_adding_knowledge(self):
 
@@ -98,6 +121,5 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         tgtaddr = directory + 'gppd0722.owl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
-        penalize = self.get_default_penalize_params()
         agent = coordinator.Agent()
-        agent.start(params, penalize)
+        agent.start(params)

@@ -3,14 +3,18 @@ import pickle
 import traceback
 
 from owlready2 import get_ontology
+import pandas as pd
 import rdflib
 import rdflib.namespace
 from tqdm import tqdm
 
+from alignment import Alignment
+import blocking
 import knowledge.geocoding
 import knowledge.geoNames
 from matchManager import matchManager
 from ontologyWrapper import Ontology
+import scoring
 
 
 class Agent():
@@ -158,7 +162,7 @@ class Agent():
 
         logging.info('finished adding geographic coordinates, enhanced individuals=%s, total individuals=%s', count_geo, count_total)
 
-    def start(self, params, penalize):
+    def start(self, params):
 
         try:
             params_for_loading = {
@@ -167,28 +171,88 @@ class Agent():
                 'add_knowledge': params['pre_processing']['add_knowledge'],
                 'dump_ontology': params['pre_processing']['pickle_dump'],
             }
-            #srconto, tgtonto = agent.load(srcaddr, tgtaddr, add_knowledge=True, dump_ontology=True)
+
             srconto, tgtonto = self.load(**params_for_loading)
 
-            params_model_specific = params['matching']['model_specific']
-            match_steps  = params_model_specific['steps']
-            match_weights = params_model_specific['weights']
-            additional_match_params = params_model_specific['params']
-            threshold = params_model_specific['threshold']
-
             params_blocking = params['blocking']
+            params_mapping = params['mapping']
+            matching_name = params['matching']['name']
+            params_model_specific = params['matching']['model_specific']
 
-            # TODO-AE move more config params to dictionary / config file
-            # TODO-AE configuration of useAttrFinder
-            match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
-                    weight=match_weights, paras=additional_match_params,
-                    matchIndividuals=True, penalize=penalize, useAttrFinder=False)
 
-            alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
-            #match_manager.showResult(match_manager.A,'individualList')
-            match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+            if matching_name == 'matchManager.matchManager':
+                self.__start_match_manager(params_model_specific, params_blocking, srconto, tgtonto)
+            elif matching_name == 'coordinator.InstanceMatcherWithAutoCalibration':
+                self.__start_matching_with_auto_calibration(srconto, tgtonto, params_blocking, params_mapping)
+            else:
+                raise RuntimeError('unknown matcher', matching_name)
+
         except:
             full_traceback = traceback.format_exc()
             print(full_traceback)
             logging.fatal(full_traceback)
             raise
+
+    def __start_matching_with_auto_calibration(self, srconto, tgtonto, params_blocking, params_mapping):
+        matcher = InstanceMatcherWithAutoCalibrationAgent()
+        matcher.start(srconto, tgtonto, params_blocking, params_mapping)
+
+    def __start_match_manager(self, params_model_specific, params_blocking, srconto, tgtonto):
+
+        match_steps  = params_model_specific['steps']
+        match_weights = params_model_specific['weights']
+        additional_match_params = params_model_specific['params']
+        threshold = params_model_specific['threshold']
+
+        # TODO-AE Do we need the penalize object for instance matching?
+        '''
+        clist = [('PowerStation', 'PowerPlant', 0.9)]
+        sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
+        for subc in sublist:
+            #for subc in sublist:
+            clist.append((subc,subc,0.9))
+        '''
+        clist = []
+        sublist = ['PowerStation', 'PowerPlant', 'RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant']
+        for subc in sublist:
+            for subc2 in sublist:
+                #for subc in sublist:
+                clist.append((subc,subc2,0.9))
+
+        penalize = {'class':True,'align':Alignment(clist)}
+
+
+        # TODO-AE move more config params to dictionary / config file
+        # TODO-AE configuration of useAttrFinder
+        match_manager = matchManager(match_steps, srconto, tgtonto, thre=threshold,
+                weight=match_weights, paras=additional_match_params,
+                matchIndividuals=True, penalize=penalize, useAttrFinder=False)
+
+        alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
+        #match_manager.showResult(match_manager.A,'individualList')
+        match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+
+
+class InstanceMatcherWithAutoCalibrationAgent():
+
+    def __init__(self):
+        pass
+
+    def start(self, srconto, tgtonto, params_blocking, params_mapping):
+
+        mode = params_mapping['mode']
+
+        logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
+
+        manager = scoring.create_score_manager(srconto, tgtonto, params_blocking)
+
+        # TODO-AE: We start with automatic property mapping
+        # --> configurable, also: fixed property mapping (e.g. geo coordinates)
+        # TODO-AE: symmetrical mapping (with max value for entities of dataset 2)
+
+
+        if mode == 'auto':
+
+            params_sim_fcts = params_mapping['similarity_functions']
+            sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+            property_mapping = scoring.find_property_mapping(manager, sim_fcts)
