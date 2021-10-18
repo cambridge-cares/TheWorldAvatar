@@ -4,7 +4,7 @@ import pyuploader.errorhandling.appexceptions as appexcept
 
 logger = logging.getLogger(__name__)
 
-def get_striple_store_url():
+def get_triple_store_url():
     logger.info("Reading triple store endpoint from the environment variables.")
     try:
         tstore_url = os.environ['TRIPLE_STORE_URL']

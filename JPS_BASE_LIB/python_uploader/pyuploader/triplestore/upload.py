@@ -18,7 +18,7 @@ def upload_to_triple_store(
         file_ext='owl',
         dry_run= False):
 
-    if not url: url = tsbase.get_striple_store_url()
+    if not url: url = tsbase.get_triple_store_url()
     if not auth: auth = tsbase.get_user_credentials()
     if file_ext != '.owl': raise NotImplementedError('Only owl files are currently supported.')
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
