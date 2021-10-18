@@ -29,7 +29,7 @@ if [ "$#" -lt 2 ]; then
   exit 1
 fi
 
-default_build_args="--progress auto"
+default_build_args=""
 
 # Load common helper functions
 if [ -e ./common_funcs.sh ]; then
