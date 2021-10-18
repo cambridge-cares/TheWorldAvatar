@@ -451,9 +451,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -472,9 +470,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -493,9 +489,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -511,9 +505,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -529,9 +521,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -547,9 +537,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -565,9 +553,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -583,9 +569,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
     
@@ -601,9 +585,7 @@ public class TimeSeriesClientTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
         }
     }
 
