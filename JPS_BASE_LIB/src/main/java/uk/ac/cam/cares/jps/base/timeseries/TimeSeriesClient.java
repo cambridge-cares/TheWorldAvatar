@@ -218,6 +218,17 @@ public class TimeSeriesClient<T> {
      * @param ts_list
      */
     public void addTimeSeriesData(List<TimeSeries<T>> ts_list) {
+    	// each time series has its own list
+    	for (TimeSeries<T> ts : ts_list) {
+    		List<String> ts_dataIRI = ts.getDataIRIs();
+    		for (String dataIRI : ts_dataIRI) {
+    			if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
+        			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
+        					  " is not attached to any time series instance in the KG");
+        		}
+    		}
+    	}
+    	
     	// upload data in a single connection
     	rdbClient.addTimeSeriesData(ts_list);
     }
