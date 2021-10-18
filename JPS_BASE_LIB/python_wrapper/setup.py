@@ -3,7 +3,7 @@ import os.path
 
 setup(
     name='py4jps',
-    version='1.0.5',
+    version='1.0.6',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
