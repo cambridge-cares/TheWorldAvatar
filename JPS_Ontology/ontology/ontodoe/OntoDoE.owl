@@ -9,10 +9,10 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">14 October 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 October 2021</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">115713101183be21913a981408b4786543bf3e4a</gitCommitHash>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">e2ecde3a9b847c73a013a764cf657921d683de18</gitCommitHash>
     </owl:Ontology>
     
 
@@ -204,9 +204,16 @@
 
 
     <owl:DatatypeProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#positionalID">
-        <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#ContinuousVariable"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#ContinuousVariable"/>
+                    <rdf:Description rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute to provide unique identification of a design variable within a domain. It should be used when multiple design variables in one domain are instantiated from the same concept. </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An attribute to provide unique identification of a design variable within a domain or a system response within a design of experiment exercise. It should be used when multiple design variables in one domain or multiple system responses within one design of experiment exercise are instantiated from the same concept. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
