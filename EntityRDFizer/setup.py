@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='entityrdfizer', # Required
-    version='1.0.2', # Required
+    version='1.0.3', # Required
     # This should be your name or the name of the organization which owns the
     # project.
     author='Feroz Farazi', # Optional
