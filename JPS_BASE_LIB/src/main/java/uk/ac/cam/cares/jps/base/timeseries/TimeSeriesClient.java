@@ -196,18 +196,6 @@ public class TimeSeriesClient<T> {
 	 * @param ts TimeSeries object to add
      */
     public void addTimeSeriesData(TimeSeries<T> ts) {
-		
-    	// Retrieve relevant dataIRIs
-    	List<String> dataIRIs = ts.getDataIRIs();
-    	
-    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
-    	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
-    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
-    					  " is not attached to any time series instance in the KG");
-    		}    		
-    	}
-    	
     	// Add time series data to respective database table
     	rdbClient.addTimeSeriesData(ts);
     }
@@ -219,13 +207,6 @@ public class TimeSeriesClient<T> {
 	 * @param upperBound end timestamp until which to delete data (inclusive)
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Delete RDB time series table rows between lower and upper Bound
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
@@ -353,15 +334,6 @@ public class TimeSeriesClient<T> {
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
-		
-    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
-    	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
-    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
-    					  " is not attached to any time series instance in the KG");
-    		}    		
-    	}
-    	
     	// Retrieve time series data from respective database table
     	return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
     }
@@ -374,7 +346,6 @@ public class TimeSeriesClient<T> {
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
-		
     	return getTimeSeriesWithinBounds(dataIRIs, null, null);
     }
 	
@@ -384,13 +355,6 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getAverage(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
 		return rdbClient.getAverage(dataIRI);
 	}
@@ -401,13 +365,6 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMaxValue(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
 		return rdbClient.getMaxValue(dataIRI);
 	}
@@ -418,13 +375,6 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMinValue(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
 		return rdbClient.getMinValue(dataIRI);
 	}
@@ -435,13 +385,6 @@ public class TimeSeriesClient<T> {
 	 * @return The maximum (latest) timestamp of the corresponding data series
 	 */
 	public T getMaxTime(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve latest time entry from database
 		return rdbClient.getMaxTime(dataIRI);
 	}
@@ -452,13 +395,6 @@ public class TimeSeriesClient<T> {
 	 * @return The minimum (earliest) timestamp of the corresponding data series
 	 */
 	public T getMinTime(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve earliest time entry from database
 		return rdbClient.getMinTime(dataIRI);
 	}
@@ -478,7 +414,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
     public boolean checkDataHasTimeSeries(String dataIRI) {
-    	return rdfClient.checkDataHasTimeSeries(dataIRI);
+    	return rdbClient.checkDataHasTimeSeries(dataIRI);
     }
     
 	/**

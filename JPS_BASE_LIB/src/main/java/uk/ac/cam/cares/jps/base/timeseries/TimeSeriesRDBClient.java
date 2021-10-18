@@ -202,19 +202,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-			
-			// Check if central database lookup table exists
-			if (context.meta().getTables(dbTableName).size() == 0) {
-				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-			}
-	    	
-	    	// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
-			for (String s : dataIRI) {
-				if(!checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> does not have a time series instance (i.e. tsIRI)"); 
-				}
-			}
-	    	
 			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
 			checkDataIsInSameTable(dataIRI);
 	    	
@@ -256,19 +243,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-			
-			// Check if central database lookup table exists
-			if (context.meta().getTables(dbTableName).size() == 0) {
-				throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-			}
-
-			// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
-			for (String s : dataIRI) {
-				if(!checkDataHasTimeSeries(s)) {
-					throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> does not have a time series instance (i.e. tsIRI)");
-				}
-			}
-	    	
 			// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
 			checkDataIsInSameTable(dataIRI);
 
@@ -371,12 +345,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
-			}
-
 			// Retrieve table corresponding to the time series connected to the data IRI
 	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
@@ -408,12 +376,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
-			}
-
 			// Retrieve table corresponding to the time series connected to the data IRI
 	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
@@ -725,7 +687,8 @@ public class TimeSeriesRDBClient<T> {
 	 * @param dataIRI data IRI provided as string
 	 * @return True if the data IRI exists in central lookup table's dataIRI column, false otherwise
 	 */
-	private boolean checkDataHasTimeSeries(String dataIRI) {
+	boolean checkDataHasTimeSeries(String dataIRI) {
+		connect();
 		// Look for the entry dataIRI in dbTable
 		Table<?> table = DSL.table(DSL.name(dbTableName));
 		return context.fetchExists(selectFrom(table).where(dataIRIcolumn.eq(dataIRI)));
@@ -823,12 +786,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance");
-			}
-
 			// Retrieve table corresponding to the time series connected to the data IRI
 			Table<?> table = getTimeseriesTable(dataIRI);
 
