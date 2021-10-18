@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -122,7 +124,15 @@ public class InitialiseStations {
 		LOGGER.info("Initialising time series tables");
 		
 		List<String> measures = sparqlClient.getMeasures();
+		List<List<String>> ts_list = new ArrayList<>(measures.size());
+		List<List<Class<?>>> classes = new ArrayList<>(measures.size());
 		
-		tsClient.bulkInitTimeSeries(measures);
+		for (int i = 0; i < measures.size(); i++) {
+			ts_list.add(Arrays.asList(measures.get(i)));
+			classes.add(Arrays.asList(Double.class));
+		}
+		
+		tsClient.bulkInitTimeSeries(ts_list, classes, null);
+		tsClient.disconnectRDB();
 	}
 }
