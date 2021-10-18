@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,38 +190,6 @@ public class TimeSeriesRDBClient<T> {
 		
 	}
 	
-	/**
-	 * creates one table per dataIRI
-	 * 
-	 * @param dataIRI
-	 * @param tsIRI
-	 */
-	protected void bulkInitTimeSeriesTable(List<String> dataIRI, List<String> tsIRI) {
-		// Initialise connection and set jOOQ DSL context
-		connect();
-		
-		// Check if central database lookup table exists and create if not
-		if (context.meta().getTables(dbTableName).size() == 0) {
-			initCentralTable();
-		}
-		
-		for (int i = 0; i < dataIRI.size(); i++) {
-			// Generate UUID as unique RDB table name
-			String tsTableName = UUID.randomUUID().toString();
-			
-			Map<String,String> dataColumnNames = new HashMap<>();
-			dataColumnNames.put(dataIRI.get(i), "column1");
-			
-			// Add corresponding entries in central lookup table
-			populateCentralTable(tsTableName, Arrays.asList(dataIRI.get(i)), dataColumnNames, tsIRI.get(i));
-			
-			// Initialise RDB table for storing time series data
-			createEmptyTimeSeriesTable(tsTableName, dataColumnNames, Arrays.asList(dataIRI.get(i)), Arrays.asList(Double.class));
-		}
-			
-		disconnect();
-	}
-	
     /**
      * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
@@ -273,52 +240,6 @@ public class TimeSeriesRDBClient<T> {
 			disconnect();
 		}
 		
-	}
-	
-	/**
-     * Similar to the above method, but upload everything in 1 connection
-     * Useful for uploading huge amounts of data
-	 * @param ts TimeSeries object to add
-     */
-	protected void addTimeSeriesData(List<TimeSeries<T>> tslist) {
-		connect();
-		
-		for (TimeSeries<T> ts : tslist) {
-			List<String> dataIRI = ts.getDataIRIs();
-			
-			// All database interactions in try-block to ensure closure of connection
-			try {
-				// Check if central database lookup table exists
-				if (context.meta().getTables(dbTableName).size() == 0) {
-					throw new JPSRuntimeException(exceptionPrefix + "Central RDB lookup table has not been initialised yet");
-				}
-		    	
-		    	// Check if all data IRIs have an entry in the central table, i.e. are attached to a timeseries
-				for (String s : dataIRI) {
-					if(!checkDataHasTimeSeries(s)) {
-						throw new JPSRuntimeException(exceptionPrefix + "<" + s + "> does not have a time series instance (i.e. tsIRI)"); 
-					}
-				}
-		    	
-				// Ensure that all provided dataIRIs/columns are located in the same RDB table (throws Exception if not)
-				checkDataIsInSameTable(dataIRI);
-		    	
-		    	String tsTableName = getTimeseriesTableName(dataIRI.get(0));
-		    	// Assign column name for each dataIRI; name for time column is fixed
-				Map<String,String> dataColumnNames = new HashMap<>();
-				for (String s : dataIRI) {
-					dataColumnNames.put(s, getColumnName(s));
-				}
-				
-				// Append time series data to time series table
-				populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
-			} catch (Exception e) {
-				// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
-				disconnect();
-				throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
-			}
-		}
-		disconnect();
 	}
 	
     /** 
