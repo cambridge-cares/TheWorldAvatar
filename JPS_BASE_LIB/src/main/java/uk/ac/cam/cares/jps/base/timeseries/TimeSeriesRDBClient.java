@@ -409,12 +409,6 @@ public class TimeSeriesRDBClient<T> {
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
-
-			// Check that the data IRI has an entry in the central table, i.e. is attached to a timeseries
-			if(!checkDataHasTimeSeries(dataIRI)) {
-				throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have a time series instance  (i.e. tsIRI)");
-			}
-			
 			// Retrieve RDB table for dataIRI
 	    	Table<?> table = getTimeseriesTable(dataIRI);
 	    	
