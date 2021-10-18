@@ -15,7 +15,7 @@ Usage:
 Options:
 --file-ext=<ext>        List of extensions used to select files
                         that will be uploaded to the file server.
-                        Example: --file-ext='.log,.txt'             [default: .log]
+                        Example: --file-ext='.log,.txt'             [default: log]
 --url=<url>             File server upload url. If not specified,
                         the code will try to read it from user
                         environment variables.

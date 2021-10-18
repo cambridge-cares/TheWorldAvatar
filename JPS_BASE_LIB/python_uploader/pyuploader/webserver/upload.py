@@ -10,7 +10,7 @@ def upload_to_web_server(
         file_or_dir,
         url='',
         auth='',
-        file_ext='.log',
+        file_ext='log',
         subdirs= '',
         dry_run= False):
 

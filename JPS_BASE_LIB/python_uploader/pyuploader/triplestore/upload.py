@@ -15,7 +15,7 @@ def upload_to_triple_store(
         file_or_dir,
         url='',
         auth='',
-        file_ext='.owl',
+        file_ext='owl',
         dry_run= False):
 
     if not url: url = tsbase.get_striple_store_url()
