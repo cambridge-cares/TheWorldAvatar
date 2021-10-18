@@ -61,7 +61,7 @@
                             <!-- Adds the copied dependencies to the classpath so the .jar can find them at runtime. -->
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>./lib/</classpathPrefix>
-                            <classpathLayoutType>repository</classpathLayoutType>
+                            <classpathLayoutType>simple</classpathLayoutType>
                             <useUniqueVersions>false</useUniqueVersions>
                         </manifest>
                     </archive>
@@ -86,7 +86,7 @@
                         </goals>
                         <configuration>
                             <includeScope>runtime</includeScope>
-                            <useRepositoryLayout>true</useRepositoryLayout>
+                            <useRepositoryLayout>false</useRepositoryLayout>
                             <outputDirectory>${project.build.directory}/lib</outputDirectory>
                         </configuration>
                     </execution>
