@@ -35,12 +35,33 @@ RUN mkdir -p /var/www/html/
 RUN chown -R apache:apache /var/www/
 RUN chmod -R 775 /var/www/
 
+#==================================================================================================
+
+# default configuration that runs the scheduled updater and writes output files
+# to be executed at CMCL
+# docker build --target default -t [TAGNAME] .
+#==================================================================================================
+FROM agent as default
 # Copy in start up script
 COPY ./start-up.sh /app/start-up.sh
 RUN dos2unix /app/start-up.sh
 RUN chmod -R 775 /app/start-up.sh
 
-
 # Run the jar to start the agent
 ENTRYPOINT bash /app/start-up.sh
+
+#==================================================================================================
+
+# only writes output files (to be executed on DAFNI)
+# docker build --target write-only -t [TAGNAME] .
+#==================================================================================================
+FROM agent as write-only
+# Copy in start up script
+COPY ./start-up-writer-only.sh /app/start-up-writer-only.sh
+RUN dos2unix /app/start-up-writer-only.sh
+RUN chmod -R 775 /app/start-up-writer-only.sh
+
+# Run the jar to start the agent
+ENTRYPOINT bash /app/start-up-writer-only.sh
+
 #==================================================================================================
