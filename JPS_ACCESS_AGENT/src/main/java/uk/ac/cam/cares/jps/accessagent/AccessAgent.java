@@ -1,12 +1,5 @@
 package uk.ac.cam.cares.jps.accessagent;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.util.Arrays;
-import java.util.stream.Collectors;
-
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -175,11 +168,13 @@ public class AccessAgent extends JPSAgent{
 	 * @param isUpdate
 	 * @return
 	 */
-	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {
-		String shortIRI = getShortIRI(targetIRI);
-		
+	public StoreClientInterface getStoreClient(String targetIRI, boolean isQuery, boolean isUpdate) {		
 		try {
-			return StoreRouter.getStoreClient(shortIRI, isQuery, isUpdate);
+			StoreClientInterface storeClient = StoreRouter.getStoreClient(targetIRI, isQuery, isUpdate);
+			if (storeClient == null) {
+				throw new RuntimeException();
+			}
+			return storeClient;
 		}catch (RuntimeException e) {
 			LOGGER.error("Failed to instantiate StoreClient");
 			throw new JPSRuntimeException("Failed to instantiate StoreClient");
@@ -198,10 +193,11 @@ public class AccessAgent extends JPSAgent{
 	        if (method == null) {
 	        	return false;
 	        }
-	    	
-	        String targetiri = requestParams.getString(JPSConstants.TARGETIRI);
-	        boolean v = InputValidator.checkIfURLpattern(targetiri);
-	        if(!v) {return false;}
+	    		        
+	        String targetiri = MiscUtil.optNullKey(requestParams,JPSConstants.TARGETIRI);
+	        if (targetiri == null) {
+	        	return false;
+	        }
 	        
 	        boolean q = InputValidator.checkIfURLpattern(requestParams.getString(JPSConstants.REQUESTURL));
 	        if(!q) {return false;};
@@ -261,30 +257,5 @@ public class AccessAgent extends JPSAgent{
 			b.append(", sparql (short)=" + sparql);
 			LOGGER.info(b.toString());
 		}
-	}
-	
-	/**
-	 * Create short iri required by the StoreRouter. Remove host from uri.
-	 * @param url
-	 * @return
-	 */
-	public static String getShortIRI(String url) {
-		URI uri = null;
-		try {
-			uri = new URI(URLDecoder.decode(url,"UTF-8"));
-			String authority = uri.getAuthority();
-			// A host should contain either a "." or be the "localhost", otherwise this is already a short iri
-			if(authority.contains(".") || authority.contains("localhost")) { 
-				final String host = authority;
-				return Arrays.stream(uri.toString().split("/"))
-						.filter(a -> !(host.equals(a)))
-						.collect(Collectors.joining("/"));
-			}
-		} catch (UnsupportedEncodingException e) {
-			throw new JPSRuntimeException(e);
-		} catch (URISyntaxException e) {
-			throw new JPSRuntimeException(e);
-		}
-		return url;
 	}
 }

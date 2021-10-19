@@ -1,7 +1,9 @@
-from chemutils.obabelutils import obConvert, obGetMolBonds
-from chemutils.xyzutils import xyzToAtomsPositions
+from chemutils.obabelutils.obconverter import obConvert
+from chemutils.obabelutils.obutils import obGetMolBonds
+from chemutils.xyzutils.xyztools import xyzToAtomsPositions
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
 from chemaboxwriters.common.randomidgenerator import get_random_id
+from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import ATOM_MASSES, \
                                                      FORMAL_CHARGE, \
                                                      ATOM_TYPES, \
@@ -15,7 +17,6 @@ from collections import Counter
 import json
 import re
 import chemaboxwriters.common.commonvars as commonv
-from chemaboxwriters.ontospecies.prefixes import species_entry_prefix
 
 cas_re = re.compile('\d{2,7}-\d\d-\d')
 
@@ -31,7 +32,9 @@ PUBCHEM_CID='PubchemCID'
 ATOM_LIST='AtomsList'
 ATOM_COUNTS='AtomsCounts'
 
-def os_jsonwriter(data, calc_id=""):
+spec_pref = PREFIXES["spec_pref"]
+
+def os_jsonwriter(data, random_id=""):
     data = json.loads(data)
 
     data_out = {}
@@ -85,11 +88,11 @@ def os_jsonwriter(data, calc_id=""):
     data_out[ATOM_LIST] = atom_list
     data_out[ATOM_COUNTS] = atom_counts
 
-    if not calc_id:
-        calc_id = get_random_id()
+    if not random_id:
+        random_id = get_random_id()
 
-    data_out[commonv.ENTRY_UUID] = calc_id
-    data_out[commonv.ENTRY_IRI] = species_entry_prefix+calc_id
+    data_out[commonv.ENTRY_UUID] = random_id
+    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+random_id
 
     return [json.dumps(data_out)]
 
