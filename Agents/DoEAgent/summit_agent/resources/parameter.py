@@ -12,6 +12,16 @@ OM_HASVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasValu
 OM_HASNUMERICALVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue'
 OM_HASUNIT = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit'
 
+###--- Common IRI for OntoAgent ---###
+ONTOAGENT_HASOPERATION = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation'
+ONTOAGENT_HASINPUT = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasInput'
+ONTOAGENT_HASMANDATORYPART = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasMandatoryPart'
+ONTOAGENT_HASTYPE = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType'
+ONTOAGENT_HASNAME = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasName'
+
+###--- Common IRI for OntoDerivation ---###
+ONTODERIVATION_ISDERIVEDFROM = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom'
+
 ###--- IRIs for OntoDoE ---###
 ONTODOE_DESIGNOFEXPERIMENT = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment'
 ONTODOE_STRATEGY = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy'

@@ -11,3 +11,9 @@ PERIODIC_TIMESCALE = 5
 
 # Common NAMESPACE for creating OntoRxn ABoxes
 NAMESPACE_KB_ONTORXN = 'https://theworldavatar.com/kb/ontorxn/'
+
+# OntoAgent:Service IRI of DoEAgent
+DOEAGENT_ONTOAGENT_SERVICE = 'http://www.theworldavatar.com/kb/agents/Service__DoE#Service'
+
+# DoEAgent input JSON key for evaluating the inputs
+DOEAGENT_INPUT_JSON_KAY = 'agent_input'

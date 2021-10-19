@@ -23,29 +23,30 @@ import uuid
     #             "historicalData": previous_results, \
     #             "numOfExp": 1}
 
-def createReactionVariation() -> Graph:
-    g = Graph()
-
-    rxn = URIRef(NAMESPACE_KB_ONTORXN + getShortName(ONTORXN_REACTIONVARIATION) + '_' + str(uuid.uuid4()))
-
-    g.add((rxn, RDF.type, ONTORXN_REACTIONVARIATION))
-
-    # exp1:RxnExp_1
-	# 	OntoRxn:hasVariation :RxnExp_1;
-	# .
-
-	# :RxnExp_1
-	# 	rdf:type OntoRxn:ReactionVariation;
-	# 	OntoRxn:isVariationOf exp1:RxnExp_1;
-	# 	OntoRxn:hasResTime :ResidenceTime_1;
-	# 	OntoRxn:hasRxnTemperature :RxnTemperature_1;
-	# 	OntoRxn:hasStoichiometryRatio :StoiRatio_2;
-	# 	OntoRxn:hasStoichiometryRatio :StoiRatio_3;
-	# 	OntoRxn:hasPerformanceIndicator :Yield_1;
-	# 	OntoRxn:hasPerformanceIndicator :RunMaterialCost_1;
-	# .
-
-    return g
+def getDoEAgentInputs(endpoint, derivation):
+    derivation = trimIRI(derivation)
+    query = PREFIX_RDF + \
+            """SELECT DISTINCT ?name ?type ?input \
+            WHERE { \
+            <%s> <%s> ?operation . \
+            ?operation <%s> ?mc . \
+            ?mc <%s> ?part . \
+            ?part <%s> ?type ; \
+                  <%s> ?name . \
+            <%s> <%s> ?input . \
+            ?input rdf:type+ ?type . \
+            }""" % (DOEAGENT_ONTOAGENT_SERVICE, ONTOAGENT_HASOPERATION, ONTOAGENT_HASINPUT, ONTOAGENT_HASMANDATORYPART, ONTOAGENT_HASTYPE, ONTOAGENT_HASNAME, derivation, ONTODERIVATION_ISDERIVEDFROM)
+    response = performQuery(endpoint, query)
+    inputs = {}
+    for r in response:
+        if r['type'] in inputs:
+            if isinstance(inputs[r['type']], list):
+                inputs[r['type']].append(r['input'])
+            else:
+                inputs[r['type']] = [inputs[r['type']]]
+        else:
+            inputs[r['type']] = r['input']
+    return {DOEAGENT_INPUT_JSON_KAY: inputs}
 
 def getIndicatesInputChemical(endpoint, rxn_instance, clz, positionalID: int):
     rxn_instance = trimIRI(rxn_instance)

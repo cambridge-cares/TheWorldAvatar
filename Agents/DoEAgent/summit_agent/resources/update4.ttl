@@ -1,0 +1,5 @@
+PREFIX OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+
+INSERT DATA {
+    OntoDoE:TSEMO rdf:type OntoDoE:Strategy .
+}

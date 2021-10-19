@@ -1,0 +1,75 @@
+PREFIX ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+PREFIX ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX :                    <http://www.theworldavatar.com/kb/agents/Service__DoE#>
+
+INSERT DATA {
+    :Service
+        rdf:type ontoagent:Service;
+        ontoagent:hasOperation :Operation;
+    .
+
+    :Operation
+        rdf:type ontoagent:Operation;
+        ontoagent:hasInput :MessageContent_input;
+        ontoagent:hasOutput :MessageContent_output;
+        ontoagent:hasInvocation :Invocation;
+    .
+
+    :Invocation
+        rdf:type ontoagent:Invocation;
+        ontoagent:hasHttpUrl "http://localhost:7000/doe/summit/suggest"^^xsd:string;
+        ontoagent:hasKey "strategy"^^xsd:string;
+        ontoagent:hasKey "domain"^^xsd:string;
+        ontoagent:hasKey "systemResponse"^^xsd:string;
+        ontoagent:hasKey "historicalData"^^xsd:string;
+    .
+
+    :MessageContent_input
+        rdf:type ontoagent:MessageContent;
+        ontoagent:hasMandatoryPart :MessagePart_stra;
+        ontoagent:hasMandatoryPart :MessagePart_domain;
+        ontoagent:hasMandatoryPart :MessagePart_response;
+        ontoagent:hasMandatoryPart :MessagePart_histdata;
+    .
+
+    :MessageContent_output
+        rdf:type ontoagent:MessageContent;
+        ontoagent:hasMandatoryPart :MessagePart_newexp;
+    .
+
+    :MessagePart_stra
+        rdf:type ontoagent:MessagePart;
+        ontoagent:isArray "false"^^xsd:boolean;
+        ontoagent:hasType ontodoe:Strategy;
+        ontoagent:hasName "strategy"^^xsd:string;
+    .
+
+    :MessagePart_domain
+        rdf:type ontoagent:MessagePart;
+        ontoagent:isArray "false"^^xsd:boolean;
+        ontoagent:hasType ontodoe:Domain;
+        ontoagent:hasName "domain"^^xsd:string;
+    .
+
+    :MessagePart_response
+        rdf:type ontoagent:MessagePart;
+        ontoagent:isArray "true"^^xsd:boolean;
+        ontoagent:hasType ontodoe:SystemResponse;
+        ontoagent:hasName "systemResponse"^^xsd:string;
+    .
+
+    :MessagePart_histdata
+        rdf:type ontoagent:MessagePart;
+        ontoagent:isArray "false"^^xsd:boolean;
+        ontoagent:hasType ontodoe:HistoricalData;
+        ontoagent:hasName "historicalData"^^xsd:string;
+    .
+
+    :MessagePart_newexp
+        rdf:type ontoagent:MessagePart;
+        ontoagent:isArray "false"^^xsd:boolean;
+        ontoagent:hasType ontodoe:NewExperiment;
+        ontoagent:hasName "newExperiment"^^xsd:string;
+    .
+}

@@ -12,14 +12,35 @@ import random
 app = Flask(__name__)
 
 # Initialise the scheduler
-# scheduler = APScheduler()
-# scheduler.init_app(app)
-# scheduler.start()
+scheduler = APScheduler()
+scheduler.init_app(app)
+scheduler.start()
 
 INTERVAL_TASK_ID = 'interval-task-id'
 
+def interval_task():
+    monitorDerivation()
+
+def monitorDerivation():
+    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT)
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
+    list_of_derivation = jpsBaseLib_view.DerivationSparql.getDerivations(storeClient, DOEAGENT_ONTOAGENT_SERVICE)
+
+    for d in list_of_derivation:
+        if (jpsBaseLib_view.DerivationSparql.isRequested(storeClient, d)):
+            agent_inputs = getDoEAgentInputs(SPARQL_QUERY_ENDPOINT, d)
+            jpsBaseLib_view.DerivationSparql.markAsInProgress(storeClient, d)
+            newexp_iri = setUpJob(agent_inputs)
+            derivationClient.updateStatusAtJobCompletion(storeClient, newexp_iri if isinstance(newexp_iri, list) else [newexp_iri])
+        elif (jpsBaseLib_view.DerivationSparql.isInProgress(storeClient, d)):
+            pass
+        elif (jpsBaseLib_view.DerivationSparql.isFinished(storeClient, d)):
+            derivationClient.cleanUpFinishedDerivationUpdate(d)
+
 # Initialise logger
 logger = agentlogging.get_logger("dev")
+
+scheduler.add_job(id=INTERVAL_TASK_ID, func=interval_task, trigger='interval', seconds=10)
 
 # Show an instructional message at the app root
 @app.route('/')
@@ -35,10 +56,14 @@ def api():
     # Check arguments (query parameters)
     logger.info("Checking arguments...")
     input_decoded = unquote(request.url[len(request.base_url)+1:])
+    new_exp = setUpJob(input_decoded)
+    # logger.info(str(type(historical_data_instances)))
+    return new_exp
+
+def setUpJob(input_decoded):
     input_json = json.loads(input_decoded)
     strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
     new_exp = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
-    # logger.info(str(type(historical_data_instances)))
     return new_exp
 
 def suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
@@ -62,31 +87,31 @@ def suggest(strategy_instance, domain_instance, systemResponse_instances, histor
 
 
 def checkInputParameters(input_json):
-    if "agent_input" in input_json:
-        if "strategy" in input_json["agent_input"]:
+    if DOEAGENT_INPUT_JSON_KAY in input_json:
+        if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                strategy = input_json["agent_input"]["strategy"]
+                strategy = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY]
             except ValueError:
                 logger.error("Unable to parse IRI.")
-                return "Unable to interpret strategy ('%s') as an IRI." % input_json["agent_input"]["strategy"]
-        if "domain" in input_json["agent_input"]:
+                return "Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY]
+        if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                domain = input_json["agent_input"]["domain"]
+                domain = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN]
             except ValueError:
                 logger.error("Unable to parse IRI.")
-                return "Unable to interpret domain ('%s') as an IRI." % input_json["agent_input"]["domain"]
-        if "systemResponse" in input_json["agent_input"]:
+                return "Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN]
+        if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                system_response = input_json["agent_input"]["systemResponse"]
+                system_response = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE]
             except ValueError:
                 logger.error("Unable to parse IRI.")
-                return "Unable to interpret systemResponse ('%s') as an IRI." % input_json["agent_input"]["systemResponse"]
-        if "historicalData" in input_json["agent_input"]:
+                return "Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE]
+        if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                historical_data = input_json["agent_input"]["historicalData"]
+                historical_data = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA]
             except ValueError:
                 logger.error("Unable to parse IRI.")
-                return "Unable to interpret historicalData ('%s') as an IRI." % input_json["agent_input"]["historicalData"]
+                return "Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA]
     else:
         return "Error: Inputs are not provided in correct form."
     
