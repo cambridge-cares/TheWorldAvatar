@@ -52,7 +52,7 @@ public class LaunchScheduledWriterOnly {
             	input[0] = lastUpdate.toString();
             	WriteOutputs.main(input);
             	
-            	LOGGER.info("Next update will be at " + nextUpdate);
+            	LOGGER.info("Next run will be at " + nextUpdate);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }

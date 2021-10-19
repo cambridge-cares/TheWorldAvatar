@@ -80,7 +80,7 @@ public class InitialiseStations {
 		sparqlClient.addStationRdfType(stations);
 		
 		// add coordinates required by blazegraph geospatial support
-		sparqlClient.addBlazegraphCoordinates();
+		sparqlClient.addBlazegraphCoordinatesAndVisID();
 		
 		// add last updated date
 		sparqlClient.addLastDate();

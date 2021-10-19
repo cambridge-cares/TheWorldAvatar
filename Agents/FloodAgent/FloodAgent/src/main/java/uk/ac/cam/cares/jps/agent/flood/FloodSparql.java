@@ -53,6 +53,8 @@ public class FloodSparql {
     private static Iri hasTime = p_time.iri("hasTime");
     private static Iri inXSDDate = p_time.iri("inXSDDate");
     private static Iri stationReference = iri("http://environment.data.gov.uk/flood-monitoring/def/core/stationReference");
+    // made up by KFL, purely for mapbox requirement
+    private static Iri hasVisID = iri("http://environment.data.gov.uk/flood-monitoring/def/core/visID"); 
     
     // Logger for reporting info/errors
     private static final Logger LOGGER = LogManager.getLogger(FloodSparql.class);
@@ -121,12 +123,11 @@ public class FloodSparql {
 	/**
 	 * original data has lat and lon on different triples
 	 * Blazegraph requires them to be in the form of lat#lon
+	 * visID is purely for visualisation purpose
 	 */
-	void addBlazegraphCoordinates() {
+	void addBlazegraphCoordinatesAndVisID() {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
 		Iri lon_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#long");
-		
-		int num_without_coordinates = 0;
 		
 		// first query both lat and lon for each station
 		SelectQuery query = Queries.SELECT();
@@ -145,11 +146,13 @@ public class FloodSparql {
 		// then add the combined literal and upload it
 		List<String> latlon = new ArrayList<>(queryResult.length());
 		List<String> stations = new ArrayList<>(queryResult.length());
+		List<Integer> visID = new ArrayList<>(queryResult.length());
 		
 		for (int i = 0; i < queryResult.length(); i++) {
 			latlon.add(i,queryResult.getJSONObject(i).getString(lat.getQueryString().substring(1)) +
 					"#" + queryResult.getJSONObject(i).getString(lon.getQueryString().substring(1)));
 			stations.add(i, queryResult.getJSONObject(i).getString(station.getQueryString().substring(1)));
+			visID.add(i,i);
 		}
 		
 		ModifyQuery modify = Queries.MODIFY();
@@ -159,6 +162,7 @@ public class FloodSparql {
 			// blazegraph's custom literal type
 			StringLiteral coordinatesLiteral = Rdf.literalOfType(latlon.get(i), iri("http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"));
 			modify.insert(iri(stations.get(i)).has(hasCoordinates,coordinatesLiteral));
+			modify.insert(iri(stations.get(i)).has(hasVisID,visID.get(i)));
 		}
 		
 		storeClient.executeUpdate(modify.getQueryString());
