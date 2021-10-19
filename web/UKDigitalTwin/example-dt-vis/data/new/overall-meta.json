@@ -1,0 +1,16 @@
+{
+    "name": "Example Visualisation",
+    "description": "This is an example visualisation to detail the expected data structure for all visualisations using the central framework.",
+
+    "apiKey": "pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA",
+    "defaultCenter": [0.3976, 52.7543],
+    "defaultZoom": 8,
+
+    "fixedDirectory": "fixed",
+    "additionalDirectory": "additional",
+    "additionalSubdirectories": [
+        "scenario-0/time-0",
+        "scenario-1/time-0",
+        "scenario-1/time-1"
+    ]
+}

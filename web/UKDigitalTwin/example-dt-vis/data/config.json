@@ -1,0 +1,87 @@
+{
+    "rootDirectory": "./",
+    "visualisationTitle": "Digital Twin Example",
+
+    "dataGroups": [
+        {
+            "groupName": "Assets",
+            "groupDirectory": "assets",
+            "locations": [
+                {
+                    "geojsonFile": "assets-1.geojson",
+                    "geojsonType": "points",
+                    "jsonLinks": [
+                        "assets-1-meta.json"
+                    ]
+                },
+                {
+                    "geojsonFile": "assets-2.geojson",
+                    "geojsonType": "points",
+                    "jsonLinks": [
+                        "assets-2-meta.json"
+                    ]
+                },
+                {
+                    "geojsonFile": "assets-3.geojson",
+                    "geojsonType": "points",
+                    "jsonLinks": [
+                        "assets-3-meta.json"
+                    ]
+                }
+            ]
+        },
+        {
+            "groupName": "Scenario 1",
+            "groupDirectory": "scenario-1",
+            "locations": [
+                {
+                    "geojsonFile": "scenario-1.geojson",
+                    "geojsonType": "polygons"
+                }
+            ],
+            "dataGroups": [
+                {
+                    "groupName": "Timestamp 1",
+                    "groupDirectory": "timestamp-1",
+                    "locations": [
+                        {
+                            "geojsonFile": "additional-assets-1.geojson",
+                            "geojsonType": "points"
+                        },
+                        {
+                            "geojsonFile": "additional-assets-2.geojson",
+                            "geojsonType": "points"
+                        },
+                        {
+                            "geojsonFile": "additional-assets-3.geojson",
+                            "geojsonType": "points"
+                        }
+                    ],
+                    "timeseries": [
+                        {
+                            "jsonFile": "assets-1-timeseries-1.json",
+                            "geojsonLinks": [
+                                "assets-1.geojson",
+                                "additional-assets-1.geojson"
+                            ]
+                        },
+                        {
+                            "jsonFile": "assets-2-timeseries-1.json",
+                            "geojsonLinks": [
+                                "assets-2.geojson",
+                                "additional-assets-2.geojson"
+                            ]
+                        },
+                        {
+                            "jsonFile": "assets-3-timeseries-1.json",
+                            "geojsonLinks": [
+                                "assets-3.geojson",
+                                "additional-assets-3.geojson"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

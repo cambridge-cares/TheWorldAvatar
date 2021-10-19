@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "isStatusD": true,
+        "isStatusE": false,
+        "isStatusF": false
+    },
+    {
+        "id": 2,
+        "isStatusD": true,
+        "isStatusE": false,
+        "isStatusF": false
+    },    {
+        "id": 3,
+        "isStatusD": true,
+        "isStatusE": false,
+        "isStatusF": false
+    },    {
+        "id": 4,
+        "isStatusD": true,
+        "isStatusE": false,
+        "isStatusF": false
+    }
+]

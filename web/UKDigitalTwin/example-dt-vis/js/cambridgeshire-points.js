@@ -157,6 +157,12 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 		// Needs to be implemented in your concrete module class.
 		var sidePanel = DT.sidePanelHandler;
 		
+		// Clear existing side panel content
+		sidePanel.setContent("");
+
+		// Show the legend (in case it had been hidden before)
+		sidePanel.toggleLegend(true);
+		
 		switch(layerName) {
 			case "traffic-counters-layer":
 				sidePanel.setTitle(feature.properties["Road Name"]);
@@ -170,22 +176,12 @@ export class CambridgeshirePointsModule extends DigitalTwinModule {
 				// If we're selecting an Orchard, we can also get it's 
 				// time series data via the DT.timeSeriesHandler
 				var orchardID = feature.id;
-				var dataSetName = "orchard-data";
 
-				var orchardDataEntries = DT.timeSeriesHandler.getAllData(dataSetName, orchardID);
-				
+				// Show Time Series data for this entry
+				DT.timeSeriesHandler.showData(layerName, "daily-data", orchardID);
+
 			break;
 		}
-
-		// Set some content
-		sidePanel.setContent(`
-			<div style="border: 1px solid grey; height: 100%;">
-				In this area, general HTML content can be added. This could be a paragraph
-				explaining the location the user has selected, data loaded from an external
-				source, an image, or even an element generated from another JavaScript file 
-				(like a chart or a diagram).
-			</div>
-		`);
 
 		// Show the metadata
 		sidePanel.setProperties(feature.properties);

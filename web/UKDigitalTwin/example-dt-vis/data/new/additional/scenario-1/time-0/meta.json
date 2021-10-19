@@ -1,0 +1,20 @@
+{
+    "scenario": {
+        "name": "scenario-1",
+        "locationType": "polygon",
+        "locationFile": "scenario-1.geojson",
+        "metaFiles": ["scenario-1-meta.json"]
+    },
+    "dataSets": [
+        {
+            "name": "assets-1",
+            "metaFiles": ["assets-1-meta.json"],
+            "timeseriesFiles": ["assets-1-timeseries.json"]
+        },
+        {
+            "name": "assets-2",
+            "metaFiles": ["assets-2-meta.json"],
+            "timeseriesFiles": ["assets-2-timeseries.json"]
+        }
+    ]
+}

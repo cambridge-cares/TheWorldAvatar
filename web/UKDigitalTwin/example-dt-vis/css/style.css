@@ -1,0 +1,10 @@
+#time-series-chart-container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 300px;
+}
+
+#chart-canvas {
+    height: 100% !important;
+    width: 100% !important;
+}
