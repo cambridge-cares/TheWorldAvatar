@@ -5,6 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -488,5 +491,56 @@ public class TimeSeriesClient<T> {
 	 */
 	public void disconnectRDB() {
 		rdbClient.disconnect();
+	}
+	
+	/**
+	 * converts list of time series into required format for visualisation
+	 * please do not modify without consulting the visualisation team at CMCL
+	 * @param ts_list
+	 * @param id
+	 * @param units
+	 * @param table_header
+	 * @return
+	 */
+	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
+			List<List<String>> units, List<List<String>> table_header) {
+		JSONArray ts_array = new JSONArray();
+		
+		for (int i = 0; i < ts_list.size(); i++) {
+			TimeSeries<T> ts = ts_list.get(i);
+			
+			JSONObject ts_jo = new JSONObject();
+			
+			// to link this time series to a station
+			// in this application there is only 1 data per ts
+			List<String> dataIRIs = ts.getDataIRIs();
+			ts_jo.put("id", id.get(i));
+			
+			// for table headers
+			if (table_header != null) {
+				ts_jo.put("data", table_header.get(i));
+			} else {
+				ts_jo.put("data", ts.getDataIRIs());
+			}
+	    	
+	    	ts_jo.put("units", units.get(i));
+	    	
+	    	// time column
+	    	ts_jo.put("time", ts.getTimes());
+	    	
+	    	// values columns
+	    	// values columns, one array for each data
+	    	JSONArray values = new JSONArray();
+	    	
+	    	for (int j = 0; j < dataIRIs.size(); j++) {
+	    		values.put(ts.getValuesAsDouble(dataIRIs.get(j)));
+	    	}
+	    	
+	    	ts_jo.put("values", values);
+			
+			ts_array.put(ts_jo);
+		}
+		
+		return ts_array;
 	}
 }
