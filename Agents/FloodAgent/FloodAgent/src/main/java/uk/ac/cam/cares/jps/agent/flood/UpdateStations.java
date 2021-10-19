@@ -202,10 +202,27 @@ public class UpdateStations {
 					JSONObject response_jo = new JSONObject(EntityUtils.toString(response));
 					
 					// get the station that measures this quantity
-					String station = response_jo.getJSONObject("items").getString("station");
+					JSONObject items = response_jo.getJSONObject("items");
+					String station = items.getString("station");
+					String unit = items.getString("unitName");
+					String parameterName = items.getString("parameterName");
+					String qualifier = items.getString("parameter");
 					
 					// add this missing information in blazegraph and rdb
-					sparqlClient.addMeasureToStation(station, dataIRI);
+					sparqlClient.addMeasureToStation(station, dataIRI,unit,parameterName,qualifier);
+					
+					// check if station exists, if not, instantiate
+					if (!sparqlClient.checkStationExists(station)) {
+						response = new APIConnector(station).getData();
+						response_jo = new JSONObject(EntityUtils.toString(response));
+						items = response_jo.getJSONObject("items");
+						double lat = items.getDouble("lat");
+						double lon = items.getDouble("long");
+						String stationRef = items.getString("stationReference");
+						
+						sparqlClient.addNewStation(station, lat, lon, stationRef);
+					}
+					
 					tsClient.initTimeSeries(Arrays.asList(dataIRI), Arrays.asList(Double.class), null);
 					
 					LOGGER.info("Created new table successfully");

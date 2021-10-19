@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -115,7 +116,7 @@ public class WriteOutputs {
 			try {
 				file.createNewFile();
 				FileOutputStream outputStream = new FileOutputStream(file);
-				byte[] strToBytes = featureCollection.toString().getBytes();
+				byte[] strToBytes = featureCollection.toString(4).getBytes();
 				outputStream.write(strToBytes);
 				outputStream.close();
 				LOGGER.info("Created " + file.getAbsolutePath());
@@ -141,38 +142,46 @@ public class WriteOutputs {
 			Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 			Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
 			
-			JSONArray ts_array = new JSONArray();
+			// collect time series into a list first
+			List<TimeSeries<Instant>> ts_list = new ArrayList<>();
 			
-			// collect objects into an array
-			for (String measure : measures) {
-				TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measure), lowerbound, upperbound);
-				List<Instant> time = ts.getTimes();
-				
-				// ignore blank tables
-				if (time.size() > 0) {
-					JSONObject ts_jo = new JSONObject();
+			for (int i = 0; i < measures.size(); i++) {
+				try {
+					TimeSeries<Instant> ts = tsClient.getTimeSeriesWithinBounds(Arrays.asList(measures.get(i)), lowerbound, upperbound);
 					
-					// to link this time series to a station
-					ts_jo.put("label", sparqlClient.getStationNameFromMeasure(measure));
+					List<Instant> time = ts.getTimes();
 					
-					// for table headers
-					String tablename = sparqlClient.getMeasureName(measure);
-					String unit = sparqlClient.getUnitOfMeasure(measure);
-			    	ts_jo.put("data", Arrays.asList(tablename));
-			    	ts_jo.put("units", Arrays.asList(unit));
-			    	
-			    	// time column
-			    	ts_jo.put("time", ts.getTimes());
-			    	
-			    	// values columns
-			    	// values columns, one array for each data
-			    	JSONArray values = new JSONArray();
-			    	values.put(ts.getValuesAsDouble(measure));
-			    	ts_jo.put("values", values);
-					
-					ts_array.put(ts_jo);
+					// ignore blank time series
+					if(time.size() > 0) {
+						ts_list.add(ts);
+					}
+				} catch (Exception e) {
+					LOGGER.error(e.getMessage());
+					LOGGER.error("Failed to query time series for " + measures.get(i));
 				}
 			}
+			
+			// prepare JSON output
+			//index 0: data name, list 1: unit, list 2: vis ID
+			List<String> measuresToPlot = new ArrayList<>();
+			for (TimeSeries<Instant> ts : ts_list) {
+				measuresToPlot.add(ts.getDataIRIs().get(0));
+			}
+			
+			List<List<?>> measureProps = sparqlClient.getMeasurePropertiesForVis(measuresToPlot);
+			
+			List<List<String>> table_header = new ArrayList<>();
+			for (String header : (List<String>) measureProps.get(0)) {
+				table_header.add(Arrays.asList(header));
+			}
+			
+			List<List<String>> units = new ArrayList<>();
+			for (String unit : (List<String>) measureProps.get(1)) {
+				units.add(Arrays.asList(unit));
+			}
+			
+			JSONArray ts_array = tsClient.convertToJSON(ts_list, 
+					(List<Integer>) measureProps.get(2), units, table_header);
 			
 			// write to file
 			try {
