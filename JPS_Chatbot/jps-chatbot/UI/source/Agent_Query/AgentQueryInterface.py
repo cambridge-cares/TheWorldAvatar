@@ -4,6 +4,7 @@ if __name__ == '__main__':
     from AgentUtil.util.StopWords import removeStopWords
     from AgentUtil.util.ModelLoader import ModelLoader
     from AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage
+    from ThermoAgent import ThermoAgent
 
 else:
     from .AgentUtil.AgentCaller import AgentCaller
@@ -11,6 +12,7 @@ else:
     from .AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage
     from .AgentUtil.util.StopWords import removeStopWords
     from .AgentUtil.util.ModelLoader import ModelLoader
+    from .ThermoAgent import ThermoAgent
 
 from rasa.nlu.model import Interpreter
 
@@ -19,6 +21,7 @@ class AgentQueryInterface:
     def __init__(self, model_dir):
         self.agent_interpreter = Interpreter.load(model_dir)
         self.agent_query_parser = AgentQueryParser()
+        t_a = ThermoAgent()
         self.agent_caller = AgentCaller()
 
     # @MarieIOLog
@@ -37,7 +40,8 @@ class AgentQueryInterface:
         #     return response
         # except:
         #     return None
-        response = self.agent_caller.call(_inputs, _outputs, _url)
+        t_a = ThermoAgent()
+        response = self.agent_caller.call(_inputs, _outputs, _url, t_a)
         return response
 
     # make NLP analysis on the question
@@ -60,7 +64,7 @@ if __name__ == '__main__':
                  'heat capacity of CO2 at 123 K and 1 Pa',
                  'internal energy of C4H10O at 901 Pascal and 3694 kelvin',
                  'gibbs egnery of carbon dioxide at the temperature of 222 degrees celsius and 232Pa']
-    questions = ['geometry c=c=c', 'what is the internal energy of methane at 100 K']
+    questions = ['what is the power conversion efficiency of CC', 'pce of CC', 'geometry c=c=c', 'what is the internal energy of methane at 100 K']
     for q in questions:
         r = aqi.agent_query(q)
         print(r)

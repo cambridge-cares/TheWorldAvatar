@@ -32,7 +32,10 @@ def construct_http_request(_url, _data):
         if _data[key] is not None:
             value = _data[key]
             if isinstance(value, list):
+                if 'http://kg.cmclinnovations.com:5001/api/model/predict' in _url:
+                    value = [v.upper() for v in value]
                 value = key + '=[' + ','.join(value) + ']'
+
             else:
                 try:
                     if ' ' in value or '=' in value:
@@ -46,13 +49,19 @@ def construct_http_request(_url, _data):
     MarieMessage(full_url)
     return full_url
 
-
-# @MarieIOLog
-def make_simple_http_request(_url, _data):
+@MarieIOLog
+def make_simple_http_request(_url, _data, _thermo_agent):
+    MarieMessage('Requesting URL {}'.format(_url))
     full_url = construct_http_request(_url, _data)
     # req = urllib.request.Request(full_url)
     # return urllib.request.urlopen(req).read()
-
+    # OVERRIDE THE REQUEST THING IF full_url is requesting thermo_agent
+    if 'thermo_agent' in _url:
+        _species = _data['species'] if 'species' in _data else None
+        t = _data['temperature'] if 'temperature' in _data else None
+        p = _data['pressure'] if 'pressure' in _data else None
+        attribute = _data['attribute'] if 'attribute' in _data else None
+        return _thermo_agent.callThermoAgent(species=_species, temperature=t, pressure=p, attribute=attribute)
     try:
         req = urllib.request.Request(full_url)
         return urllib.request.urlopen(req).read()

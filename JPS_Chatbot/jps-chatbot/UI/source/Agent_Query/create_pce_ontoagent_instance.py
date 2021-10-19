@@ -6,25 +6,35 @@ agent = {
     "question_templates":
         ['<attribute> OPF with donor <species>',
          '<attribute> <species>'],
-    "http_url": "http://somewhereincmcl.com/pce",
+    "http_url": "http://kg.cmclinnovations.com:5001/api/model/predict",
     "outputs": [
         {
             "data_name": "pce",
             "data_type": "http://fake_concept_for_power_conversion_efficiency",
             "is_array": False,
             "ner_label": "attribute",
-            "has_qualifier": ['None']
+            "has_qualifier": ['']
 
         }
     ],
     "inputs": [
         {
-            "data_name": "species",
+            "data_name": "smiles",
             "data_type": "http://fake_concept_for_species",
-            "is_array": False,
+            "is_array": True,
             "ner_label": "species"
         }
+    ],
+
+    "qualifiers": [
+        {
+            "data_name": "x",
+            "data_type": "http://fake_concept_for_Nothing",
+            "is_array": False,
+            "ner_label": "x"
+        }
     ]
+
 }
 # inchi (I) PCE (O)
 

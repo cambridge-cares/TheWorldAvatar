@@ -16,23 +16,23 @@
 
 <MSM.:Operation rdf:about="#Operation_ea5f33013a95f51b9a8cc9a987b638aacc49e870">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasInput rdf:resource="#MessageContent_c5aa5fff93d40c35e52164e7a18a82c85f79a77a"/>
+  <MSM.:hasInput rdf:resource="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915"/>
-  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://somewhereincmcl.com/pce</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://kg.cmclinnovations.com:5001/api/model/predict</MSM.:hasHttpUrl>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
-<MSM.:MessageContent rdf:about="#MessageContent_c5aa5fff93d40c35e52164e7a18a82c85f79a77a">
+<MSM.:MessageContent rdf:about="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasMandatoryPart rdf:resource="#MessagePart_b7aa9c3e6ac7d0165f991db484fcddb76ed972fe"/>
+  <MSM.:hasMandatoryPart rdf:resource="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e"/>
 </MSM.:MessageContent>
 
-<MSM.:MessagePart rdf:about="#MessagePart_b7aa9c3e6ac7d0165f991db484fcddb76ed972fe">
+<MSM.:MessagePart rdf:about="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasName>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smiles</MSM.:hasName>
   <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_species</MSM.:hasType>
-  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
+  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
 </MSM.:MessagePart>
 

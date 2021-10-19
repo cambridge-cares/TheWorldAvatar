@@ -6,6 +6,7 @@ if __name__ == '__main__':
     from UniversalQuery import query_blazegraph
     from Lookup import *
     from location import FILE_DIR
+    from SPARQLWarehouse import *
 
 else:
     from .ModelLoader import ModelLoader
@@ -15,5 +16,6 @@ else:
     from .UniversalQuery import query_blazegraph
     from .Lookup import *
     from .location import FILE_DIR
+    from .SPARQLWarehouse import *
 
 

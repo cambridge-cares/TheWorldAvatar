@@ -11,12 +11,12 @@ if __name__ == "__main__":
     from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from location import JPS_DICT_DIR
 else:
-    from .AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
-    from .AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from .AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
-    from .AgentUtil.util.UnitConversion import convertPressure, convertTemperature
-    from .AgentUtil.util.Lookup import find_nearest_match
-    from .location import JPS_DICT_DIR
+    from AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
+    from AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
+    from AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
+    from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
+    from AgentUtil.util.Lookup import find_nearest_match
+    from location import JPS_DICT_DIR
 
 
 def find_ontocompchem_IRI(ontospecies_iri):
@@ -140,7 +140,7 @@ class ThermoAgent:
                         'temperature': temperature,
                         'pressure': pressure}
                 MarieMessage(json.dumps(data, indent=4))
-                raw_response = make_simple_http_request(url, data)
+                raw_response = make_simple_http_request(url, data, None)
                 if raw_response is None:
                     pass
                 else:

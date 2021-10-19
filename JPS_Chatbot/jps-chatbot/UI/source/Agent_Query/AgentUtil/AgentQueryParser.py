@@ -7,19 +7,27 @@ if __name__ == '__main__':
     from util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
     from util.location import FILE_DIR
     from util.MarieLogger import MarieError, MarieMessage
+    from util.RDFReader import RDFReader
 else:
     from .util.SPARQLWarehouse import GET_AGENT_INPUT_PARAMETERS, GET_AGENT_OUTPUTS, GET_HTTP_URL
     from .util.location import FILE_DIR
     from .util.MarieLogger import MarieError, MarieMessage
+    from .util.RDFReader import RDFReader
+
 
 # extract inputs from the SPARQL query
 def create_input_dict(_input_rst):
+    # this produces a mapping between the NLU label and the SPARQL label of an input
+    # e.g. {'species': 'smiles'}
+    # so that the script can construct the http request with a correct key
+
     # ?type ?name ?isArray ?nerLabel ?qualifiers)
     input_dict = {}
-    for _o in _input_rst:
-        name = _o['name'].value
-        label = _o['nerLabel'].value
-        input_dict[label] = name
+    for _i in _input_rst:
+        name = _i['name'].value
+        label = _i['nerLabel'].value
+        is_array = _i['isArray'].value
+        input_dict[label] = {'name': name, 'isArray': is_array}
     return input_dict
 
 
@@ -44,6 +52,11 @@ def create_output_dict(_output_rst):
         name = _o['name'].value
         label = _o['nerLabel'].value
         qualifiers = _o['qualifiers'].value
+        MarieMessage('============= Parsing an output =================')
+        MarieMessage('Name      {}'.format(name))
+        MarieMessage('Label     {}'.format(label))
+        MarieMessage('Qualifier {}'.format(qualifiers))
+
         if '; ' in qualifiers:
             qualifiers = qualifiers.split('; ')
         else:
@@ -55,7 +68,7 @@ def create_output_dict(_output_rst):
 # match between the inputs from the SPARQL query and the entities from the NLU result
 # e.g. the input from the SPARQL is "species", then you need to find the entity in the NLU result, where the
 # label of the entity is "species"
-def match_inputs(_entities, _input_parameters_dict):  # _output_parameters_dict {'species': 'species'}
+def match_inputs(_entities, _input_parameters_dict):  # _input_parameters_dict {'species': 'species'}
     # inputs are simpler, just match the exact labels
     inputs = []  # you need the nerlabel: value
     candidate_names = _input_parameters_dict.keys()
@@ -64,7 +77,9 @@ def match_inputs(_entities, _input_parameters_dict):  # _output_parameters_dict 
         _e_label = _e['entity']
         # if you have one of the nerlabels, you input
         if _e_label in candidate_names:
-            tmp = {'label': _e_label, 'value': _e_value}
+            # use the name from the SPARQL and the value from NLU
+            tmp = {'label': _input_parameters_dict[_e_label]['name'], 'value': _e_value,
+                   'isArray': _input_parameters_dict[_e_label]['isArray']}
             inputs.append(tmp)
     return inputs
 
@@ -114,38 +129,29 @@ class AgentQueryParser:
     def __init__(self):
         self.base_url = "http://cmclinnovations.com"
         self.port = ""
-        self.graph = rdflib.Graph()
+        self.rdf_reader = RDFReader()
 
     def parse(self, _nlu_result):
         # get the intent
         agent_name = _nlu_result['intent']['name']
         entities = _nlu_result['entities']
-        output_rst, input_rst, url_rst = self.get_agent_request_attributes(agent_name)
+        output_rst, input_rst, url_rst = self.rdf_reader.get_agent_request_attributes(agent_name)
         output_dict = create_output_dict(_output_rst=output_rst)
         _outputs = match_outputs(_entities=entities, _output_parameters_dict=output_dict)
+        # for _o in _outputs:
+        #     print('output', _o)
         if _outputs is None:
             return None, None, None
         input_dict = create_input_dict(_input_rst=input_rst)
         _inputs = match_inputs(_entities=entities, _input_parameters_dict=input_dict)
+        _url = None
         for _u in url_rst:
             _url = _u['url'].value
+            MarieMessage('The URL of the Agent is {}'.format(_url))
         return _inputs, _outputs, _url
 
     # query the OntoAgent instance via SPARQL and extract the inputs/outputs parameters of the agent
-    def get_agent_request_attributes(self, agent_name):
-        try:
-            agent_dir = os.path.join(FILE_DIR, agent_name) + '.owl'
-            MarieMessage('Loading agent instance from {} {}'.format(FILE_DIR, agent_name))
-            self.graph = rdflib.Graph()
-            self.graph.parse(agent_dir)
-        except TypeError:
-            MarieError('Failed to load an agent owl file {}'.format(agent_name))
-        input_rst = self.graph.query(GET_AGENT_INPUT_PARAMETERS)
-        # species fits species as the ner label
-        output_rst = self.graph.query(GET_AGENT_OUTPUTS)
-        # get the inputs and outputs, but also
-        url_rst = self.graph.query(GET_HTTP_URL)
-        return output_rst, input_rst, url_rst
+
 
 
 if __name__ == '__main__':
@@ -177,6 +183,8 @@ if __name__ == '__main__':
                   'intent_ranking': [{'confidence': 1.0, 'name': 'Thermo_Agent'},
                                      {'confidence': 5.383306859463607e-32, 'name': 'PCE_Agent'}],
                   'text': 'enthalpy inchi=1s/c2h6o/c1-2-3/h3h,2h2,1h3 at 1522.1 pa and 123245 k'}
+
+    nlu_result = {'intent': {'name': 'PCE_Agent', 'confidence': 1.0}, 'entities': [{'entity': 'attribute', 'start': 0, 'end': 3, 'confidence_entity': 0.9993287530600579, 'value': 'pce', 'extractor': 'CRFEntityExtractor'}, {'entity': 'species', 'start': 4, 'end': 9, 'confidence_entity': 0.9978231112962211, 'value': 'CC', 'extractor': 'CRFEntityExtractor'}], 'intent_ranking': [{'name': 'PCE_Agent', 'confidence': 1.0}, {'name': 'Thermo_Agent', 'confidence': 3.8614201843297094e-32}], 'text': 'pce c=c=c'}
 
     aqp = AgentQueryParser()
     inputs, outputs, url = aqp.parse(_nlu_result=nlu_result)

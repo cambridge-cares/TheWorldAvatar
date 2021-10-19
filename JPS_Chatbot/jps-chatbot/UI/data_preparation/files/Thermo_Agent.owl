@@ -17,6 +17,7 @@
 <MSM.:Operation rdf:about="#Operation_dac78a5beaf3b6530f2335669b296cf239e10ad4">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasInput rdf:resource="#MessageContent_0a76efb2fc86c8b5edc4cc2c7cf4457bcf071234"/>
+  <MSM.:hasOutput rdf:resource="#MessageContent_fa3b5e3570fec6b15dc4aa85be75f3880e174524"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_0bf6f9cd724831182cabd861b02034bb5748aea9"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_60bc5056ad171cefe519df20ceb974150ad37d4b"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_71d46c8645b8312a95a7a566b8a8749cbf8ec948"/>
@@ -25,11 +26,11 @@
   <MSM.:hasOutput rdf:resource="#MessageContent_f3109b16883d21984eac7c8dc3cacccf724ccf29"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_f7c4e75626b617ef4b3da1a027b51950388741cc"/>
   <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> http://127.0.0.1:5000/thermo_agent</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
 <MSM.:MessageContent rdf:about="#MessageContent_0a76efb2fc86c8b5edc4cc2c7cf4457bcf071234">
@@ -45,6 +46,28 @@
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
 </MSM.:MessagePart>
 
+<MSM.:MessageContent rdf:about="#MessageContent_fa3b5e3570fec6b15dc4aa85be75f3880e174524">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasMandatoryPart rdf:resource="#MessagePart_5017afd2502b431198853c00d61557291c6b8597"/>
+</MSM.:MessageContent>
+
+<MSM.:MessagePart rdf:about="#MessagePart_5017afd2502b431198853c00d61557291c6b8597">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ThermalProperty</MSM.:hasName>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_general_thermal_property</MSM.:hasType>
+  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
+</MSM.:MessagePart>
+
+<MSM.:MessagePart rdf:about="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasName>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_temperature</MSM.:hasType>
+  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasNerLabel>
+</MSM.:MessagePart>
+
 <MSM.:MessageContent rdf:about="#MessageContent_0bf6f9cd724831182cabd861b02034bb5748aea9">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasMandatoryPart rdf:resource="#MessagePart_a966b3ebd12bb3dbd3b29cb1515d75fc7f8e1baf"/>
@@ -57,14 +80,6 @@
   <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_heat_capacity</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
-</MSM.:MessagePart>
-
-<MSM.:MessagePart rdf:about="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_temperature</MSM.:hasType>
-  <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
-  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasNerLabel>
 </MSM.:MessagePart>
 
 <MSM.:MessageContent rdf:about="#MessageContent_60bc5056ad171cefe519df20ceb974150ad37d4b">
@@ -102,8 +117,8 @@
 
 <MSM.:MessagePart rdf:about="#MessagePart_5871c6d2ea8ff580bb857a2e8a1ebf4aaec3de84">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
+  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">InternalEnergy</MSM.:hasName>
   <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_InternalEnergy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
@@ -139,8 +154,8 @@
 
 <MSM.:MessagePart rdf:about="#MessagePart_85aae90a196075a3469da10b2d1f0dfb2402b8a3">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
+  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">entropy</MSM.:hasName>
   <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_entropy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
@@ -154,8 +169,8 @@
 
 <MSM.:MessagePart rdf:about="#MessagePart_e8e03681d9be214cdef7aff6f4f74d1a419b04f4">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
+  <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GibbsEnergy</MSM.:hasName>
   <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_GibbsEnergy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>

@@ -57,8 +57,12 @@ GET_AGENT_OUTPUTS = """
           ?MessagePart msm:hasType ?type ;
                        msm:hasName ?name ; 
                        msm:isArray ?isArray ;
-                       msm:hasNerLabel ?nerLabel ;
-                       msm:hasQualifier ?qualifier_node .
+                       msm:hasNerLabel ?nerLabel .
+                       
+          OPTIONAL {
+            ?MessagePart msm:hasQualifier ?qualifier_node .
+          }
+                       
 
           ?qualifier_node msm:hasName ?qualifier .  
        }  GROUP BY ?type ?name 
