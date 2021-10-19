@@ -2,7 +2,7 @@ from summit.utils.dataset import DataSet
 from summit.domain import ContinuousVariable, Domain
 from summit.strategies import TSEMO
 
-def proposeNewExperiment(doe):
+def proposeNewExperiment(doe) -> DataSet:
     """
     The input doe should have below structure (the string at value part of a key-value pair indicates the desired datatype):
     {

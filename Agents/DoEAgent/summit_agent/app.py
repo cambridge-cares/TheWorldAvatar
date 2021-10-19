@@ -47,16 +47,17 @@ def suggest(strategy_instance, domain_instance, systemResponse_instances, histor
     strategy_dict = getDoEStrategy(endpoint, strategy_instance)
     designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
     historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
+    first_experiment_dict = getFirstInstanceOfExperiment(endpoint, historicalData_instance)
     
-    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict}
+    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict}
 
     next_exp = proposeNewExperiment(doe_info)
-    exp_kg = uploadNewExpToKG(next_exp)
+    new_exp_iri = uploadNewExpToKG(doe_info, next_exp)
 
     logger.info(DataSet.data_to_numpy(next_exp))
     logger.info(next_exp.to_dict())
     logger.info(next_exp['ContinuousVariable_1'])
-    return next_exp.to_json()
+    return new_exp_iri
     # return DataSet.data_to_numpy(next_exp)
 
 

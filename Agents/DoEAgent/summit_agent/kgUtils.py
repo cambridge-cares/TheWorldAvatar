@@ -2,9 +2,9 @@
 # to interact with the knowledge graph
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
-from jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
-from resources.parameter import *
-from resources.doeagent_properties import *
+from .jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
+from .resources.parameter import *
+from .resources.doeagent_properties import *
 from functools import reduce
 import pandas as pd
 import json
@@ -124,6 +124,17 @@ def getObjectRelationship(endpoint, rxn_instance, clz):
     res = [list(r.values())[0] for r in response]
     return res
 
+def getFirstInstanceOfExperiment(endpoint, historicalData_instance):
+    historicalData_instance = trimIRI(historicalData_instance)
+    query = PREFIX_RDF + \
+            """SELECT ?first_exp \
+            WHERE { \
+            <%s> <%s> ?first_exp . \
+            ?first_exp rdf:type <%s> . \
+            } LIMIT 1""" % (historicalData_instance, ONTODOE_REFERSTO, ONTORXN_REACTIONEXPERIMENT)
+    response = performQuery(endpoint, query)
+    return response[0]
+
 def constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance):
     """
     systemResponse_instance is expected to be a list of system responses, i.e. even there's only one system response we are interested in, 
@@ -142,9 +153,12 @@ def constructHistoricalDataTable(endpoint, domain_instance, systemResponse_insta
         # Prepare data for dictionary of design variable
         des_var = {}
         des_var['name'] = getShortName(var['var'])
-        des_var['description'] = getShortName(var['clz']) + "_" + ( str(var['id'] if 'id' in var else None) )
+        des_var['description'] = getShortName(var['clz']) + "_" + ( str(var['id'] if 'id' in var else 'Only') )
         des_var['lower'] = var['lower'] if 'lower' in var else None
         des_var['upper'] = var['upper'] if 'upper' in var else None
+        des_var['clz'] = var['clz']
+        if 'id' in var:
+            des_var['id'] = var['id']
         list_of_designVariable_dict.append(des_var)
         # Prepare data for the historical data table
         data = getHistoricalDataOfVariable(endpoint, historicalData_instance, var['var'], var['clz'], var['id'] if 'id' in var else None)
@@ -159,8 +173,11 @@ def constructHistoricalDataTable(endpoint, domain_instance, systemResponse_insta
         # Prepare data for dictionary of system response
         sys_res = {}
         sys_res['name'] = getShortName(res['res'])
-        sys_res['description'] = getShortName(res['clz']) + "_" + ( str(res['id'] if 'id' in res else None) )
+        sys_res['description'] = getShortName(res['clz']) + "_" + ( str(res['id'] if 'id' in res else 'Only') )
         sys_res['direction'] = 'maximise' if 'true' in res['maximise'] else "minimise"
+        sys_res['clz'] = res['clz']
+        if 'id' in res:
+            sys_res['id'] = res['id']
         list_of_systemResponse_dict.append(sys_res)
         # Prepare data for the historical data table
         data = getHistoricalDataOfVariable(endpoint, historicalData_instance, res['res'], res['clz'], res['id'] if 'id' in res else None)

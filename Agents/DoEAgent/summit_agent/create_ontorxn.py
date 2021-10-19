@@ -35,6 +35,8 @@ class ReactionVariation:
             self.addReactionCondition(**con)
         for ind in self.indicators:
             self.addPerformanceIndicator(**ind)
+        
+        return str(self.rxnvar)
 
     def addReactionCondition(self, clz, num, id=None, **kwargs):
         """
@@ -78,11 +80,27 @@ class ReactionVariation:
         if id is not None:
             self.g.add((indicator_iri, URIRef(ONTODOE_POSITIONALID), Literal(int(id))))
 
-def uploadNewExpToKG(next_exp):
+def uploadNewExpToKG(doe, next_exp: DataSet):
     """The next_exp is expected to be a DataSet
     """
-    df = DataSet.from_dict(dict_)
-    print(type(df['ContinuousVariable_1'][0]))
+    # print(type(df['ContinuousVariable_1'][0]))
+
+    for var in doe['continuousVariables']:
+        var['num'] = next_exp[var['name']][0]
     
-    createOntoRxnInstance(next_exp)
+    # createOntoRxnInstance(next_exp)
     # return string
+
+    # rxn_conditions = [{"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio', "id": 2, "num": 3}, \
+    # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio', "id": 2, "num": 0.05}, \
+    # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionTemperature', "num": 60}, \
+    # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ResidenceTime', "num": 5}, ]
+    # perf_indicators = [{"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Yield'}, \
+    # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost', "id": 7}, \
+    # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#SpaceTimeYield', "id": 8, "num": 0.5}]
+    # endpoint = "http://theworldavatar.com/blazegraph/namespace/textontorxn/sparql"
+    
+    new_exp_ = ReactionVariation(doe['first_exp'], doe['continuousVariables'], doe['systemResponses'], SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
+    new_exp_iri = new_exp_.createOntoRxnInstance()
+    new_exp_.uploadOntoRxnInstanceToKG()
+    return new_exp_iri
