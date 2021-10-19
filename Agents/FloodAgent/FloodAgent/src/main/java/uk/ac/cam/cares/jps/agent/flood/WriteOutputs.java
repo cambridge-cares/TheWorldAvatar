@@ -178,7 +178,7 @@ public class WriteOutputs {
 			try {
 				file.createNewFile();
 				FileOutputStream outputStream = new FileOutputStream(file);
-				byte[] strToBytes = ts_array.toString().getBytes();
+				byte[] strToBytes = ts_array.toString(4).getBytes();
 				outputStream.write(strToBytes);
 				outputStream.close();
 				LOGGER.info("Created " + file.getAbsolutePath());

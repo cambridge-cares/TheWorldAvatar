@@ -12,9 +12,9 @@ import org.apache.logging.log4j.Logger;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class LaunchScheduledUpdater {
+public class LaunchScheduledWriterOnly {
 	// Logger for reporting info/errors
-    private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledUpdater.class);
+    private static final Logger LOGGER = LogManager.getLogger(LaunchScheduledWriterOnly.class);
     
     private final static ScheduledExecutorService scheduler = Executors
     		.newScheduledThreadPool(1);
@@ -30,36 +30,29 @@ public class LaunchScheduledUpdater {
         // initialise stations in blazegraph and time series in postgres
         if (!sparqlClient.areStationsInitialised()) {
         	// arguments are not needed for the below function
-        	LOGGER.info("Initialising stations");
-        	InitialiseStations.main(args);
+        	LOGGER.error("Stations are not initialised, cannot write output files");
+        } else {
+        	startScheduledTask();
         }
-        
-        startScheduledTask();
     }
     
     static void startScheduledTask() {
     	scheduler.scheduleAtFixedRate(() -> {
             try {
             	Instant nextUpdate = Instant.now().plus(1, ChronoUnit.DAYS);
-            	LOGGER.info("Launching scheduled task to update stations");
+            	LOGGER.info("Launching scheduled task to write output files");
+            	
             	// date to query
-                LocalDate yesterday = LocalDate.now().minusDays(1);
                 LocalDate lastUpdate = sparqlClient.getLastDate();
+                LOGGER.info("Last update is on " + lastUpdate);
                 
-                if (yesterday.isAfter(lastUpdate)) {
-                	LOGGER.info("Updating stations for " + yesterday.toString());
-	            	String[] input = new String[1];
-	            	input[0] = yesterday.toString();
-	            	UpdateStations.main(input);
-	            	LOGGER.info("Stations are up-to-date");
-	            	LOGGER.info("Next update will be at " + nextUpdate);
-	            	
-	            	// write output files for visualisation
-	            	LOGGER.info("Writing output files");
-	            	WriteOutputs.main(input);
-                } else {
-                	LOGGER.info("Stations are up-to-date, ignoring update request");
-                }
+                // write output files for visualisation
+            	LOGGER.info("Writing output files for " + lastUpdate);
+            	String[] input = new String[1];
+            	input[0] = lastUpdate.toString();
+            	WriteOutputs.main(input);
+            	
+            	LOGGER.info("Next update will be at " + nextUpdate);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }
