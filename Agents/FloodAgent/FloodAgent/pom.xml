@@ -132,7 +132,7 @@
                             <classpathPrefix>lib</classpathPrefix>
                             <!-- java -jar [jarname] will launch this class by default -->
                             <!-- use java -jar -cp [jarname] [classname] to launch other classes manually -->
-                            <mainClass>uk.ac.cam.cares.jps.agent.flood.LaunchScheduledUpdater</mainClass>
+                            <mainClass>uk.ac.cam.cares.jps.agent.flood.LaunchScheduledUpdaterAndWriter</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
