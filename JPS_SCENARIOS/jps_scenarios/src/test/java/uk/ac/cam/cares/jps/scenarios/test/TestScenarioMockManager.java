@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.scenarios.test;
 import java.util.List;
 
 import org.json.JSONObject;
+import org.junit.Ignore;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -11,6 +12,7 @@ import uk.ac.cam.cares.jps.scenario.ScenarioLog.ScenarioLogEntry;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 import uk.ac.cam.cares.jps.scenario.ScenarioMockManager;
 
+@Ignore("This test sends HTTP requests. Cannot run without correct environment setup.")
 public class TestScenarioMockManager extends TestCase {
 	
 	public void testCallEmissionAgentTwice() {
