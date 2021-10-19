@@ -80,7 +80,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>1.4.0-accessagent-SNAPSHOT</version>
         </dependency>
 
         <dependency>
