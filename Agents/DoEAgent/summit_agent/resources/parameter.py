@@ -5,6 +5,13 @@ PREFIX_XSD = 'PREFIX xsd:    <http://www.w3.org/2001/XMLSchema#> '
 PREFIX_OWL = 'PREFIX owl:    <http://www.w3.org/2002/07/owl#> '
 PREFIX_OM = 'PREFIX om:     <http://www.ontology-of-units-of-measure.org/resource/om-2/> '
 
+###--- Common IRI for units of measure ---###
+OM_MEASURE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/Measure'
+OM_HASPHENOMENON = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasPhenomenon'
+OM_HASVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue'
+OM_HASNUMERICALVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue'
+OM_HASUNIT = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit'
+
 ###--- IRIs for OntoDoE ---###
 ONTODOE_DESIGNOFEXPERIMENT = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment'
 ONTODOE_STRATEGY = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy'

@@ -5,3 +5,4 @@ summit
 py4jps
 Flask-APScheduler
 pandas
+rdflib

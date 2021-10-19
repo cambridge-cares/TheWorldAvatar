@@ -1,5 +1,7 @@
 from flask import Flask, jsonify, request
 from urllib.parse import unquote
+
+from .create_ontorxn import uploadNewExpToKG
 from .kgUtils import *
 from .summit_doe import *
 import json
@@ -49,7 +51,13 @@ def suggest(strategy_instance, domain_instance, systemResponse_instances, histor
     doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict}
 
     next_exp = proposeNewExperiment(doe_info)
-    return next_exp.to_dict()
+    exp_kg = uploadNewExpToKG(next_exp)
+
+    logger.info(DataSet.data_to_numpy(next_exp))
+    logger.info(next_exp.to_dict())
+    logger.info(next_exp['ContinuousVariable_1'])
+    return next_exp.to_json()
+    # return DataSet.data_to_numpy(next_exp)
 
 
 def checkInputParameters(input_json):

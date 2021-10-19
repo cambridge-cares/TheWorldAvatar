@@ -2,13 +2,15 @@
 # to interact with the knowledge graph
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
-from .jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
-from .resources.parameter import *
-from .resources.doeagent_properties import *
+from jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
+from resources.parameter import *
+from resources.doeagent_properties import *
 from functools import reduce
 import pandas as pd
 import json
-
+from rdflib import Graph, URIRef, Namespace, Literal, BNode
+from rdflib.namespace import RDF
+import uuid
 
     # doe = { \
     #             "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
@@ -20,6 +22,107 @@ import json
     #             {"name": "SystemResponse_2", "direction": "minimise"}], \
     #             "historicalData": previous_results, \
     #             "numOfExp": 1}
+
+def createReactionVariation() -> Graph:
+    g = Graph()
+
+    rxn = URIRef(NAMESPACE_KB_ONTORXN + getShortName(ONTORXN_REACTIONVARIATION) + '_' + str(uuid.uuid4()))
+
+    g.add((rxn, RDF.type, ONTORXN_REACTIONVARIATION))
+
+    # exp1:RxnExp_1
+	# 	OntoRxn:hasVariation :RxnExp_1;
+	# .
+
+	# :RxnExp_1
+	# 	rdf:type OntoRxn:ReactionVariation;
+	# 	OntoRxn:isVariationOf exp1:RxnExp_1;
+	# 	OntoRxn:hasResTime :ResidenceTime_1;
+	# 	OntoRxn:hasRxnTemperature :RxnTemperature_1;
+	# 	OntoRxn:hasStoichiometryRatio :StoiRatio_2;
+	# 	OntoRxn:hasStoichiometryRatio :StoiRatio_3;
+	# 	OntoRxn:hasPerformanceIndicator :Yield_1;
+	# 	OntoRxn:hasPerformanceIndicator :RunMaterialCost_1;
+	# .
+
+    return g
+
+def getIndicatesInputChemical(endpoint, rxn_instance, clz, positionalID: int):
+    rxn_instance = trimIRI(rxn_instance)
+    clz = trimIRI(clz)
+    if positionalID is not None:
+        positionalID = int(positionalID)
+        query = PREFIX_RDF + \
+                """SELECT DISTINCT ?o ?indicates ?inputChem \
+                WHERE { \
+                <%s> ?p ?o . \
+                ?o rdf:type <%s>; \
+                   <%s> %d; \
+                   ?indicates ?inputChem . \
+                ?inputChem rdf:type <%s> . \
+                }""" % (rxn_instance, clz, ONTODOE_POSITIONALID, positionalID, ONTORXN_INPUTCHEMICAL)
+        response = performQuery(endpoint, query)
+        if (len(response) > 1):
+            raise Exception("InputChemical should be uniquely identified within <%s>, given <%s> and unique positionalID %d." % (rxn_instance, clz, positionalID))
+        return response[0]
+    else:
+        query = PREFIX_RDF + \
+                """SELECT DISTINCT ?o ?indicates ?inputChem \
+                WHERE { \
+                <%s> ?p ?o . \
+                ?o rdf:type <%s>; \
+                   ?indicates ?inputChem . \
+                ?inputChem rdf:type <%s> . \
+                }""" % (rxn_instance, clz, ONTORXN_INPUTCHEMICAL)
+        response = performQuery(endpoint, query)
+        if (len(response) > 1):
+            raise Exception("InputChemical should be uniquely identified within <%s>, given <%s> when positionalID is unnecessary." % (rxn_instance, clz, positionalID))
+        return response[0]
+
+def getQuantityUnit(endpoint, rxn_instance, clz, positionalID: int):
+    rxn_instance = trimIRI(rxn_instance)
+    clz = trimIRI(clz)
+    if positionalID is not None:
+        positionalID = int(positionalID)
+        query = PREFIX_RDF + \
+                """SELECT DISTINCT ?o ?unit \
+                WHERE { \
+                <%s> ?p ?o . \
+                ?o rdf:type <%s>; \
+                   <%s> %d; \
+                   <%s> ?v . \
+                ?v <%s> ?unit . \
+                }""" % (rxn_instance, clz, ONTODOE_POSITIONALID, positionalID, OM_HASVALUE, OM_HASUNIT)
+        response = performQuery(endpoint, query)
+        if (len(response) > 1):
+            raise Exception("Instance of <%s> with a positionalID %d should be uniquely identified within reaction experiment <%s>." % (clz, positionalID, rxn_instance))
+        return response[0]['unit']
+    else:
+        query = PREFIX_RDF + \
+                """SELECT DISTINCT ?o ?unit \
+                WHERE { \
+                <%s> ?p ?o . \
+                ?o rdf:type <%s>; \
+                   <%s> ?v . \
+                ?v <%s> ?unit . \
+                }""" % (rxn_instance, clz, OM_HASVALUE, OM_HASUNIT)
+        response = performQuery(endpoint, query)
+        if (len(response) > 1):
+            raise Exception("Instance of <%s> should be uniquely identified within reaction experiment <%s> when positionalID is unnecessary." % (clz, rxn_instance))
+        return response[0]['unit']
+
+def getObjectRelationship(endpoint, rxn_instance, clz):
+    rxn_instance = trimIRI(rxn_instance)
+    clz = trimIRI(clz)
+    query = PREFIX_RDF + \
+            """SELECT DISTINCT ?p \
+            WHERE { \
+            <%s> ?p ?o . \
+            ?o rdf:type <%s> . \
+            }""" % (rxn_instance, clz)
+    response = performQuery(endpoint, query)
+    res = [list(r.values())[0] for r in response]
+    return res
 
 def constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance):
     """
@@ -233,6 +336,11 @@ def performQuery(endpoint, query):
     KGClient = jpsBaseLib_view.RemoteStoreClient(endpoint)
     response = KGClient.execute(query)
     return json.loads(response)
+
+# This function performs update to knowledge graph
+def uploadOntology(filePath):
+    KRClient = jpsBaseLib_view.KnowledgeRepository()
+    KRClient.uploadOntology(TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY, filePath)
 
 def getShortName(iri):
     iri = trimIRI(iri)
