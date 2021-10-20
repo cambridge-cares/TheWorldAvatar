@@ -557,18 +557,18 @@ public class TimeSeriesRDBClient<T> {
 	 * Establish connection to RDB and set DSL context
 	 */
 	private void connect() {
-		if (this.conn == null) {
-			try {
+		try {
+			if (this.conn == null || this.conn.isClosed()) {
 				// Load required driver
 				Class.forName("org.postgresql.Driver");
 				// Connect to DB (using static connection and context properties)
 	        	this.conn = DriverManager.getConnection(this.rdbURL, this.rdbUser, this.rdbPassword);
 	        	this.context = DSL.using(this.conn, dialect); 
-	        	System.out.println("Connecting successful: " + this.rdbURL);        	
-			} catch (Exception e) {
-				System.out.println("Connecting failed: " + this.rdbURL);
-				throw new JPSRuntimeException(exceptionPrefix + "Establishing database connection failed");
+	        	System.out.println("Connecting successful: " + this.rdbURL); 
 			}
+		} catch (Exception e) {
+			System.out.println("Connecting failed: " + this.rdbURL);
+			throw new JPSRuntimeException(exceptionPrefix + "Establishing database connection failed");
 		}
     }
 	
