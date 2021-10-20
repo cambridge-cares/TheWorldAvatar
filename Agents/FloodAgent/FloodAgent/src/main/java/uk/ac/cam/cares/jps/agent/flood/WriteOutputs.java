@@ -73,7 +73,7 @@ public class WriteOutputs {
 	 * name of file  - stations.geojson
 	 */
 	static void writeStationsToGeojson() {
-		File file = new File(Paths.get(Config.outputdir,"stations.geojson").toString());
+		File file = new File(Paths.get(Config.outputdir,"flood-stations.geojson").toString());
 		
 		if (!file.exists()) {
 			// create geojson file
@@ -135,7 +135,7 @@ public class WriteOutputs {
 	 */
 	static void writeTimeSeriesJson(LocalDate date) {
 		// write to file 
-		File file = new File(Paths.get(Config.outputdir,"flood_" + date + ".json").toString());
+		File file = new File(Paths.get(Config.outputdir,"flood-" + date + "-timeseries.json").toString());
 		
 		if (!file.exists()) {
 			List<String> measures = sparqlClient.getMeasures();
