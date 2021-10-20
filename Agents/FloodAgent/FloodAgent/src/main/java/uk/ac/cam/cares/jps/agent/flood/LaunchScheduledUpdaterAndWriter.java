@@ -50,13 +50,14 @@ public class LaunchScheduledUpdaterAndWriter {
 	            	String[] input = new String[1];
 	            	input[0] = yesterday.toString();
 	            	UpdateStations.main(input);
-	            	LOGGER.info("Next update will be at " + nextUpdate);
 	            	
 	            	LOGGER.info("Writing output files for "+ yesterday);
 	            	WriteOutputs.main(input);
                 } else {
                 	LOGGER.info("Data for requested date exists, ignoring update request");
                 }
+                
+                LOGGER.info("Next update will be at " + nextUpdate);
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());
             }
