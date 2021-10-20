@@ -290,6 +290,7 @@ public class FloodSparql {
 	/**
 	 * station with its lat/lon in 3 lists
 	 * index 1 = station name (List<String>), 2 = lat (List<Double>), 3 = lon (List<Double>)
+	 * 4 = id (for visualisation
 	 */
 	List<List<?>> getStationsWithCoordinates() {
 		Iri lat_prop = iri("http://www.w3.org/2003/01/geo/wgs84_pos#lat");
@@ -298,6 +299,7 @@ public class FloodSparql {
 		List<String> stations = new ArrayList<>();
 		List<Double> latval = new ArrayList<>();
 		List<Double> lonval = new ArrayList<>();
+		List<Integer> ids = new ArrayList<>();
 		
 		SelectQuery query = Queries.SELECT();
 		
@@ -305,11 +307,12 @@ public class FloodSparql {
 		Variable lon = query.var();
 		Variable station = query.var();
 		Variable ref = query.var();
+		Variable id = query.var();
 		
 		GraphPattern queryPattern = GraphPatterns.and(station.has(lat_prop,lat)
-				.andHas(lon_prop,lon),station.has(stationReference,ref).optional());
+				.andHas(lon_prop,lon).andHas(stationReference,ref).andHas(hasVisID, id));
 		
-		query.where(queryPattern).select(lat,lon,ref);
+		query.where(queryPattern).select(lat,lon,ref,id);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -317,11 +320,12 @@ public class FloodSparql {
 			stations.add(queryResult.getJSONObject(i).getString(ref.getQueryString().substring(1)));
 			latval.add(queryResult.getJSONObject(i).getDouble(lat.getQueryString().substring(1)));
 			lonval.add(queryResult.getJSONObject(i).getDouble(lon.getQueryString().substring(1)));
+			ids.add(queryResult.getJSONObject(i).getInt(id.getQueryString().substring(1)));
 		}
 		
-		List<List<?>> station_coord = Arrays.asList(stations,latval,lonval);
+		List<List<?>> station_info = Arrays.asList(stations,latval,lonval,ids);
 		
-		return station_coord;
+		return station_info;
 	}
     
     /**

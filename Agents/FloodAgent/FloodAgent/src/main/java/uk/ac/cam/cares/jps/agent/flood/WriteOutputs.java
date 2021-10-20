@@ -81,19 +81,23 @@ public class WriteOutputs {
 			featureCollection.put("type", "FeatureCollection");
 			JSONArray features = new JSONArray();
 			
-			// List with three lists, 1 - station names, 2 - lat, 3 - lon
+			// List with three lists, 0 - station names, 1 - lat, 2 - lon, 3 - id
 			List<List<?>> queryResults = sparqlClient.getStationsWithCoordinates();
+			
+			List<String> station_names = (List<String>) queryResults.get(0);
+			List<Double> lat_values = (List<Double>) queryResults.get(1);
+			List<Double> lon_values = (List<Double>) queryResults.get(2);
+			List<Integer> ids = (List<Integer>) queryResults.get(3);
 			
 			for (int i = 0; i < queryResults.get(0).size(); i++) {
 				// each station will be a feature within FeatureCollection
 				JSONObject feature = new JSONObject();
 				
-				List<String> station_names = (List<String>) queryResults.get(0);
-				List<Double> lat_values = (List<Double>) queryResults.get(1);
-				List<Double> lon_values = (List<Double>) queryResults.get(2);
-				
 				//type
 				feature.put("type", "Feature");
+				
+				//id for mapbox
+				feature.put("id", ids.get(i));
 				
 				//properties
 				JSONObject property = new JSONObject();
