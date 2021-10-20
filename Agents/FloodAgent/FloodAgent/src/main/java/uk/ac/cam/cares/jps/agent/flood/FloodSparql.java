@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
+import org.eclipse.rdf4j.sparqlbuilder.core.OrderCondition;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -21,12 +22,12 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral.StringLiteral;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
@@ -221,57 +222,69 @@ public class FloodSparql {
 	}
 	
 	/**
-	 * Initialise last update date with an empty string
+	 * adds triples to say the database contains data of this date
 	 * @param date
 	 */
-	void addLastDate() {
+	void addUpdateDate(LocalDate date) {
 		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
 		Iri instant = iri("http://environment.data.gov.uk/flood-monitoring/id/stations/time");
 		
 		ModifyQuery modify = Queries.MODIFY();
 		modify.insert(stations.has(hasTime,instant));
-		// set an arbitrary old date (10 years ago)
-		modify.insert(instant.isA(Instant).andHas(inXSDDate, Rdf.literalOfType(LocalDate.now().minusYears(10).toString(), XSD.DATE)));
+		modify.insert(instant.isA(Instant).andHas(inXSDDate, Rdf.literalOfType(date.toString(), XSD.DATE)));
 		modify.prefix(p_time);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
-	/**
-	 * update the last updated date
-	 * @param newdate
-	 */
-	void updateLastDate(LocalDate newdate) {
-		ModifyQuery modify = Queries.MODIFY();
-		Variable instant = SparqlBuilder.var("instant");
-		Variable olddate = SparqlBuilder.var("date");
-		
-		TriplePattern delete_tp = instant.has(inXSDDate,olddate);
-		TriplePattern insert_tp = instant.has(inXSDDate, Rdf.literalOfType(newdate.toString(), XSD.DATE));
-		
-		modify.insert(insert_tp).delete(delete_tp).prefix(p_time).where(delete_tp);
-		
-		storeClient.executeUpdate(modify.getQueryString());
-	}
-	
-	/**
-	 * returns the last updated date for the data set
-	 * @return
-	 */
-	LocalDate getLastDate() {
+	LocalDate getLatestUpdate() {
+		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
 		SelectQuery query = Queries.SELECT();
-		Variable instant = query.var();
-		Variable date = query.var();
+        Variable instant = query.var();
+        Variable date = query.var();
 		
-		GraphPattern queryPattern = instant.has(inXSDDate,date);
+		GraphPattern queryPattern = GraphPatterns.and(stations.has(hasTime,instant),
+				instant.has(inXSDDate, date));
 		
-		query.prefix(p_time).select(date).where(queryPattern);
+		// descending date
+		OrderCondition dateDesc = SparqlBuilder.desc(date);
+		
+		query.select(date).prefix(p_time).where(queryPattern).orderBy(dateDesc).limit(1);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		LocalDate queriedDate = LocalDate.parse(queryResult.getJSONObject(0).getString(date.getQueryString().substring(1)));
+		try {
+			String latestDate = queryResult.getJSONObject(0).getString(date.getQueryString().substring(1));
+			return LocalDate.parse(latestDate);
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to query latest update date");
+			throw new JPSRuntimeException(e);
+		}
+	}
+	
+	/**
+	 * returns true if provided data on the given date exists
+	 * @param date
+	 * @return
+	 */
+	boolean checkUpdateDateExists(LocalDate date) {
+		Iri stations = iri("http://environment.data.gov.uk/flood-monitoring/id/stations");
+		SelectQuery query = Queries.SELECT();
+		Variable instant = query.var();
 		
-		return queriedDate;
+		GraphPattern queryPattern = GraphPatterns.and(stations.has(hasTime,instant),
+				instant.has(inXSDDate, Rdf.literalOfType(date.toString(), XSD.DATE)));
+		
+		query.prefix(p_time).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() == 1)
+			return true;
+		else {
+			return false;
+		}
 	}
 	
 	/**

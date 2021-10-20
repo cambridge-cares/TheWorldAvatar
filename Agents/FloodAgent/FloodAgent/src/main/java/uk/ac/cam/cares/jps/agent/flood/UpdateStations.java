@@ -103,7 +103,7 @@ public class UpdateStations {
         uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
         
         // update last updated date
-        sparqlClient.updateLastDate(date);
+        sparqlClient.addUpdateDate(date);
 	}
 	
 	/**

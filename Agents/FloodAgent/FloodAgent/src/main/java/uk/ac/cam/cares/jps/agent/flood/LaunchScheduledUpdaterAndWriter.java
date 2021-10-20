@@ -44,9 +44,8 @@ public class LaunchScheduledUpdaterAndWriter {
             	LOGGER.info("Launching scheduled task to update stations");
             	// date to query
                 LocalDate yesterday = LocalDate.now().minusDays(1);
-                LocalDate lastUpdate = sparqlClient.getLastDate();
                 
-                if (yesterday.isAfter(lastUpdate)) {
+                if (!sparqlClient.checkUpdateDateExists(yesterday)) {
                 	LOGGER.info("Updating stations for " + yesterday.toString());
 	            	String[] input = new String[1];
 	            	input[0] = yesterday.toString();
@@ -57,7 +56,7 @@ public class LaunchScheduledUpdaterAndWriter {
 	            	LOGGER.info("Writing output files for "+ yesterday);
 	            	WriteOutputs.main(input);
                 } else {
-                	LOGGER.info("Stations are up-to-date, ignoring update request");
+                	LOGGER.info("Data for requested date exists, ignoring update request");
                 }
             } catch (Exception ex) {
                 LOGGER.error(ex.getMessage());

@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.flood;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -82,8 +83,8 @@ public class InitialiseStations {
 		// create a table for each measure uploaded to Blazegraph
     	initTimeSeriesTables(sparqlClient, tsClient);
 		
-		// add last updated date
-		sparqlClient.addLastDate();
+		// add last updated date, an arbitrary date 100 years ago
+		sparqlClient.addUpdateDate(LocalDate.now().minusYears(100));
     }
     
 	/** 

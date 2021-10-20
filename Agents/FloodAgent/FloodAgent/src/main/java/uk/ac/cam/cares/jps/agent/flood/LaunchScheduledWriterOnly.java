@@ -43,7 +43,7 @@ public class LaunchScheduledWriterOnly {
             	LOGGER.info("Launching scheduled task to write output files");
             	
             	// date to query
-                LocalDate lastUpdate = sparqlClient.getLastDate();
+                LocalDate lastUpdate = sparqlClient.getLatestUpdate();
                 LOGGER.info("Last update is on " + lastUpdate);
                 
                 // write output files for visualisation
