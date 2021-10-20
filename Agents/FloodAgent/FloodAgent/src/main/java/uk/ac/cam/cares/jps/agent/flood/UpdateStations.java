@@ -89,21 +89,27 @@ public class UpdateStations {
     		UpdateStations.tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, Config.dburl, Config.dbuser, Config.dbpassword);
     	}
     	
-		List<Map<?,?>> processed_data;
-    	try {            
-            // process data into tables before upload
-            processed_data = processAPIResponse(api);
-    	} catch (Exception e) {
-    		LOGGER.error(e.getMessage());
-    		throw new JPSRuntimeException(e);
+    	if (!sparqlClient.checkUpdateDateExists(date)) {
+    		LOGGER.info("Updating data for " + date);
+    		
+			List<Map<?,?>> processed_data;
+	    	try {            
+	            // process data into tables before upload
+	            processed_data = processAPIResponse(api);
+	    	} catch (Exception e) {
+	    		LOGGER.error(e.getMessage());
+	    		throw new JPSRuntimeException(e);
+	    	}
+	        
+	        updated = false;
+	        // upload to postgres
+	        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
+	        
+	        // update last updated date
+	        sparqlClient.addUpdateDate(date);
+    	} else {
+    		LOGGER.info("Data for " + date + " exists, ignoring update request");
     	}
-        
-        updated = false;
-        // upload to postgres
-        uploadDataToRDB(date, tsClient, sparqlClient, processed_data);
-        
-        // update last updated date
-        sparqlClient.addUpdateDate(date);
 	}
 	
 	/**
@@ -233,20 +239,6 @@ public class UpdateStations {
 					continue;
 				} 
         	}
-        	
-        	// avoid adding duplicate data
-        	// this may happen when the previous update was terminated halfway
-        	// extract date from the latest timestamp
-        	try {
-	        	LocalDate lastUpdateDate = LocalDateTime.ofInstant(tsClient.getMaxTime(dataIRI), ZoneId.of("UTC")).toLocalDate();
-	        	if (!date.isAfter(lastUpdateDate)) {
-	        		LOGGER.info(dataIRI + " is already up-to-date");
-	        		continue;
-	        	}
-        	} catch (Exception e) {
-        		// dataIRI is initialised but contains no data yet
-        	}
-        	
         	// create time series object to upload to the client
         	List<List<?>> values = new ArrayList<>();
         	values.add(datavalue_map.get(dataIRI));

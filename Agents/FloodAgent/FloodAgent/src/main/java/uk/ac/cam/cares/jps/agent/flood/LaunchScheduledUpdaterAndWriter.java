@@ -46,11 +46,10 @@ public class LaunchScheduledUpdaterAndWriter {
                 LocalDate yesterday = LocalDate.now().minusDays(1);
                 
                 if (!sparqlClient.checkUpdateDateExists(yesterday)) {
-                	LOGGER.info("Updating stations for " + yesterday.toString());
+                	LOGGER.info("Calling UpdateStations with " + yesterday.toString());
 	            	String[] input = new String[1];
 	            	input[0] = yesterday.toString();
 	            	UpdateStations.main(input);
-	            	LOGGER.info("Stations are up-to-date");
 	            	LOGGER.info("Next update will be at " + nextUpdate);
 	            	
 	            	LOGGER.info("Writing output files for "+ yesterday);
