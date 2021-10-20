@@ -317,7 +317,7 @@ public class DerivationSparql{
 		}
 	}
 	
-	static String getStatus(StoreClientInterface storeClient, String derivation) {
+	public static String getStatus(StoreClientInterface storeClient, String derivation) {
 		if (hasStatus(storeClient, derivation)) {
 			String statusQueryKey = "status";
 			Variable status = SparqlBuilder.var(statusQueryKey);
@@ -334,7 +334,7 @@ public class DerivationSparql{
 		}
 	}
 	
-	static List<String> getNewDerivedIRI(StoreClientInterface storeClient, String derivation) {
+	public static List<String> getNewDerivedIRI(StoreClientInterface storeClient, String derivation) {
 		if (isFinished(storeClient, derivation)) {
 			String statusQueryKey = "status";
 			String derivedQueryKey = "newDerivedIRI";
@@ -436,7 +436,7 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
-	static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
+	public static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
 		SelectQuery query = Queries.SELECT();
 		
 		String queryKey = "url";
@@ -482,7 +482,7 @@ public class DerivationSparql{
 		return inputs;
 	}
 	
-	static List<String> getDerivations(StoreClientInterface kbClient, String agentIRI) {
+	public static List<String> getDerivations(StoreClientInterface kbClient, String agentIRI) {
 		String queryKey = "derivation";
 		Variable derivation = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = derivation.has(isDerivedUsing, iri(agentIRI));
@@ -546,7 +546,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
+	public static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "derived";
 		Variable derived = SparqlBuilder.var(queryKey);
