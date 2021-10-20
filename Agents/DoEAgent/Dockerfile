@@ -26,6 +26,15 @@ ENV PYTHONUNBUFFERED=1
 COPY requirements.txt .
 RUN python -m pip install -r requirements.txt
 
+# Re-install the version of JPS_BASE_LIB that is been developing
+# (sinse the newly added code is not in the release version of py4jps)
+# TO BE REMOVED WHEN MERGE TO DEVELOP
+RUN jpsrm uninstall JpsBaseLib
+RUN mkdir /jpstemp
+COPY jps-base-lib.jar ./jpstemp/jps-base-lib.jar
+COPY lib ./jpstemp/lib
+RUN jpsrm install JpsBaseLib ./jpstemp/
+
 # Set the default working directory, then copy the Python source code into it
 WORKDIR /app
 ADD summit_agent /app/summit_agent
