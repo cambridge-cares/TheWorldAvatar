@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/java_agent
-RUN mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 
 # Second stage: copy the downloaded dependency into a new image and build into an app

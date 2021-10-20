@@ -3,7 +3,7 @@ from compchemparser.helpers.utils import jsonStringToFile
 from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.ontospecies.csvwriter import os_csvwriter
 from chemaboxwriters.ontospecies.jsonwriter import os_jsonwriter
-from chemutils.ioutils import writeFile
+import chemutils.ioutils.ioutils as ioutils
 from chemaboxwriters.common.handlers import CSV_TO_OWL
 import copy
 
@@ -16,7 +16,7 @@ QC_JSON_TO_OS_JSON = StageHandler(handlerFunc=os_jsonwriter,
 OS_JSON_TO_CSV = StageHandler(handlerFunc=os_csvwriter,
                             inStage=aboxStages.OS_JSON,
                             outStage=aboxStages.CSV,
-                            fileWriter= writeFile,
+                            fileWriter= ioutils.writeFile,
                             fileWriterKwargs={'newline':''},
                             fileExt='.os.csv')
 

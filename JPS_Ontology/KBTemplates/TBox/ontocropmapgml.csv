@@ -1,4 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoCropMapGML,TBox,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoCropMapGML,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoCropMapGML,TBox,An ontology developed for representing crop maps.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoCropMapGML,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType,Class,,,,,,"EnvelopeType defines an extent using a pair of positions defining opposite corners in arbitrary dimensions. Here, the lower left corner point and upper right corner point are used.",http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl
 CropMap,Class,,,,,,A geomtrical object which has a Land Use Code (LUcode).,http://www.theworldavatar.com/ontology/ontocropmapgml/OntoCropMapGML.owl
 http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#lowerCornerPoint,Data Property,,,http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#EnvelopeType,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,,The lowermost vertex of the EnvelopeType.,http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl

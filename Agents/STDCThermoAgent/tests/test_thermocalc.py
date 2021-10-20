@@ -57,6 +57,12 @@ def test_thermocalc(inp_file,regenerateResult,regenerateAllResults=False):
   'http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111', \
   'http://www.theworldavatar.com/kb/ontospecies/s00009360.owl/Species_7258652483811000', \
    False
+),
+(
+    'C9H20_out_web.json_ref', \
+    'http://www.theworldavatar.com/kb/ontocompchem/G09_34486bee-f786-4bd2-ba1b-f7d82cadb88a', \
+    'http://www.theworldavatar.com/kb/ontospecies/s00008729.owl/Species_7258559357316100', \
+    False
 )
 ]
 )

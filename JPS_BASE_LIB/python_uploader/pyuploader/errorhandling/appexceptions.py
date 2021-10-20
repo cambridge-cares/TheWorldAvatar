@@ -1,0 +1,2 @@
+class EnvironmentVarError(Exception):
+    pass

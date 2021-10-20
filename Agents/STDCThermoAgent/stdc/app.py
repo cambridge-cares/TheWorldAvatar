@@ -4,16 +4,12 @@ import stdc.unitconverter.unitconverter as unitconv
 
 def runThermoCalculator(args):
     args = _preprocessArgs(args)
+
     ChemSpeciesData = chs.ChemSpecies(**args)
     ChemSpeciesData.getThermoData()
     if ChemSpeciesData.DevOutFile is not None:
         ChemSpeciesData.outputDiagnosticFile()
-    ThermoData = {
-        'RequestedTPPointData': ChemSpeciesData.RequestedTPPointData,
-        'RequestedTrangeData': ChemSpeciesData.RequestedTrangeData,
-        'NasaPolynomialsData': ChemSpeciesData.NasaPolynomialsData
-    }
-    return ThermoData
+    return ChemSpeciesData.ThermoData
 
 def _preprocessArgs(args):
     args = _removeNoneArgs(args)
