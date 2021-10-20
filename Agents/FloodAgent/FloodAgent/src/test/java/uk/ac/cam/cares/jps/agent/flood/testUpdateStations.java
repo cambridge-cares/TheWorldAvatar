@@ -126,9 +126,6 @@ public class testUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData()).thenReturn(entity);
 		
-		// a fudge, connection to the test container gets reset very quickly
-		tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
-		
 		List<Map<?,?>> processed_data = UpdateStations.processAPIResponse(api);
 		UpdateStations.uploadDataToRDB(LocalDate.now(), tsClient, sparqlClient, processed_data);
 	}
