@@ -1,5 +1,5 @@
 # Flood Agent
-This agent downloads data from https://environment.data.gov.uk/flood-monitoring/doc/reference and stores them in Blazegraph (station info) and PostgreSQL (time series data).
+This agent downloads data from https://environment.data.gov.uk/flood-monitoring/doc/reference and stores them in Blazegraph (station info) and PostgreSQL (time series data). After updating the databases, the code writes a time series json file for visualisation (in addition to a geojson file containing locations of the stations that is written once).
 
 ## Building and running
 This section specifies the minimum requirement to build the docker image. 
@@ -14,21 +14,31 @@ credentials/
 
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in `FloodAgent/src/main/resources/credentials.properties`. User and password for Blazegraph can be left empty if not required. A template `credentials.properties.template` is provided in the same folder. To access Blazegraph and Postgres on your local machine, but not within the same docker network, the host name to use is `host.docker.internal`.
+Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in `FloodAgent/src/main/resources/credentials.properties`. A template `credentials.properties.template` is provided in the same folder. To access Blazegraph and Postgres on your local machine, but not within the same docker network, the host name to use is `host.docker.internal`. User and password for Blazegraph can be left empty if not required. 
 
-To build the image, you can run 
+In addition to the credentials for the databases, a directory to write the geojson and flood needs to be specified.
+
+There are two images that can be built, depending on the requirements and where it's being deployed
+
+### Option 1
+Updating the database and writing a time series JSON file daily
+
 ```
-docker build -f Dockerfile -t flood .
+docker build --target default -t [TAGNAME]
 ```
 
-The tag name after -t can be different, but you need to use the same name in the docker run command.
-
-To start the process, run 
+### Option 2
+Skip update and only write the output files
 ```
-docker run -d flood
+docker build --target write-only -t [TAGNAME]
+```
+### Execution
+To run
+```
+docker run -d [TAGNAME]
 ```
 
-This will run the container in detached mode. This application is designed to be left in the background, it runs a scheduler that updates the database once a day by downloading data from http://environment.data.gov.uk/flood-monitoring/data/readings.
+This will run the container in detached mode. This application is designed to be left in the background, there is a scheduler that runs the process once a day.
 
 Logs are saved at `root/.jps/` by default, you can copy the logs into your local environment by using the following command
 ```
