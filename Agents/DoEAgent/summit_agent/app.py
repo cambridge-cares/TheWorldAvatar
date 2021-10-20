@@ -40,7 +40,7 @@ def monitorDerivation():
 # Initialise logger
 logger = agentlogging.get_logger("dev")
 
-scheduler.add_job(id=INTERVAL_TASK_ID, func=interval_task, trigger='interval', seconds=10)
+scheduler.add_job(id=INTERVAL_TASK_ID, func=interval_task, trigger='interval', seconds=PERIODIC_TIMESCALE)
 
 # Show an instructional message at the app root
 @app.route('/')
