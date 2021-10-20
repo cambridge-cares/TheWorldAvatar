@@ -6,7 +6,7 @@ import configparser
 import pkg_resources
 import os
 
-ENTRDF_PROP_FILE = pkg_resources.resource_filename(__name__,os.path.join('conf','EntityRDFizer.properties'))
+ENTRDF_PROP_FILE = pkg_resources.resource_filename(__name__,os.path.join('..','conf','EntityRDFizer.properties'))
 
 config = configparser.RawConfigParser()
 config.read(ENTRDF_PROP_FILE)

@@ -6,7 +6,7 @@
 """This module is designed and developed to allow users to create and link
 instances and add data properties to instances."""
 
-from rdflib import Graph, FOAF, URIRef, BNode, Literal
+from rdflib import URIRef, Literal
 from rdflib.namespace import RDF, RDFS, XSD
 
 """Creates an instance"""
