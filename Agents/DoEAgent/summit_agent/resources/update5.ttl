@@ -1,0 +1,88 @@
+PREFIX ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+PREFIX ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX ontoderivation:      <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX doeagent:            <http://www.theworldavatar.com/kb/agents/Service__DoE#>
+PREFIX doe:                 <https://theworldavatar.com/kb/ontodoe/DoE_1/>
+PREFIX derivation_doe:      <http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/>
+PREFIX time:                <http://www.w3.org/2006/time#>
+
+INSERT DATA {
+    derivation_doe:Derivation_doe time:hasTime derivation_doe:Time_derivation . 
+    
+    derivation_doe:Time_derivation 
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_derivation_unix;
+    .
+
+    derivation_doe:Time_derivation_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1540054530;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+
+    doe:Strategy_1 time:hasTime derivation_doe:Time_strategy . 
+    
+    derivation_doe:Time_strategy 
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_strategy_unix;
+    .
+
+    derivation_doe:Time_strategy_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1542875179;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+
+    doe:Domain_1 time:hasTime derivation_doe:Time_domain . 
+    
+    derivation_doe:Time_domain 
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_domain_unix;
+    .
+
+    derivation_doe:Time_domain_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1542875179;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+
+    doe:SystemResponse_1 time:hasTime derivation_doe:Time_systemresponse_1 . 
+    
+    derivation_doe:Time_systemresponse_1
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_systemresponse_1_unix;
+    .
+
+    derivation_doe:Time_systemresponse_1_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1542875179;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+
+    doe:SystemResponse_2 time:hasTime derivation_doe:Time_systemresponse_2 . 
+    
+    derivation_doe:Time_systemresponse_2
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_systemresponse_2_unix;
+    .
+
+    derivation_doe:Time_systemresponse_2_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1542875179;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+
+    doe:HistoricalData_1 time:hasTime derivation_doe:Time_historicaldata_1 . 
+    
+    derivation_doe:Time_historicaldata_1 
+        rdf:type time:Instance;
+        time:inTimePosition derivation_doe:Time_historicaldata_1_unix;
+    .
+
+    derivation_doe:Time_historicaldata_1_unix
+        rdf:type time:TimePosition;
+        time:numericPosition 1542875179;
+        time:hasTRS <http://dbpedia.org/resource/Unix_time>;
+    .
+}

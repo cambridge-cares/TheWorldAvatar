@@ -1,0 +1,13 @@
+PREFIX ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
+PREFIX ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX ontoderivation:      <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX doeagent:            <http://www.theworldavatar.com/kb/agents/Service__DoE#>
+PREFIX doe:                 <https://theworldavatar.com/kb/ontodoe/DoE_1/>
+PREFIX derivation_doe:      <http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/>
+PREFIX time:                <http://www.w3.org/2006/time#>
+
+INSERT DATA {
+    derivation_doe:Derivation_doe ontoderivation:hasStatus derivation_doe:Requested_1 . 
+    derivation_doe:Requested_1 rdf:type ontoderivation:Requested . 
+}
