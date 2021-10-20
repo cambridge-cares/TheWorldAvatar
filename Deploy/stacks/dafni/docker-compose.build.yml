@@ -11,17 +11,6 @@ version: "3.8"
 
 services:
 
-  # Blazegraph geo (see db stack for config)
-  blazegraph-geo:
-    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
-    build:
-      context: ../db/blazegraph_geo
-      labels:
-        authors: "msff2@cam.ac.uk, support@cmclinnovations"
-        builder: "${BUILDER}"
-        description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
-        hash: "${HASH}"
-
   # QGIS
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
