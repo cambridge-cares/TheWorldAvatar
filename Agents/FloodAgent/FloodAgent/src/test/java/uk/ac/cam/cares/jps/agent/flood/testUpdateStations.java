@@ -113,13 +113,21 @@ public class testUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData()).thenReturn(entity);
 		
-		InitialiseStations.initFloodStationsWithAPI(api, storeClient);
+		InitialiseStations.setAPIConnector(api);
+		InitialiseStations.setSparqlClient(sparqlClient);
+		InitialiseStations.setStoreClient(storeClient);
+		InitialiseStations.setTsClient(tsClient);
+		
+		InitialiseStations.main(new String[0]);
 		
 		// mock response for update API
 		is = getClass().getClassLoader().getResourceAsStream("sample_response.txt");
 		entity = new StringEntity(IOUtils.toString(is,StandardCharsets.UTF_8),ContentType.APPLICATION_JSON);
 		api = mock(APIConnector.class);
 		when(api.getData()).thenReturn(entity);
+		
+		// a fudge, connection to the test container gets reset very quickly
+		tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
 		
 		List<Map<?,?>> processed_data = UpdateStations.processAPIResponse(api);
 		UpdateStations.uploadDataToRDB(LocalDate.now(), tsClient, sparqlClient, processed_data);
