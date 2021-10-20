@@ -247,6 +247,7 @@ public class UpdateStations {
             	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
             	tsClient.addTimeSeriesData(ts);
         	} catch (Exception e) {
+        		num_failures += 1;
         	    LOGGER.error(e.getMessage());
         	    LOGGER.error("Failed to upload time series for " + dataIRI);
         	}
