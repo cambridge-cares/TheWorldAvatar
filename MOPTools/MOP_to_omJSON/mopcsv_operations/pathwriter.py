@@ -1,4 +1,3 @@
-from _typeshed import FileDescriptorLike
 import os
 from pathlib import Path
 

@@ -1,7 +1,7 @@
 import csv 
 import json
 import re
-from cbuCSVtoJSON.printJSONdecision import printJSON
+from CBU_to_os_JSON.cbuCSVtoJSON.printJSONdecision import printJSON
 
 def cbuCSVtoQCJSON(cbuCSVFilePath, xyzInputCBU, speciesJSONFilePath):
     '''This function converts every row of the CBU.csv file into separate JSON file.'''

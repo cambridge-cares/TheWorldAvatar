@@ -1,6 +1,6 @@
 import csv 
 import json
-from mopcsv_operations.query_functions import printJSON, run_iri_query
+from MOP_to_omJSON.mopcsv_operations.query_functions import printJSON, run_iri_query
 
 doc = """This is a converter of CSV files containing CBUs and MOPs.
 Each individual entry is assigned a UUID. In the case of CBUs, parsing 

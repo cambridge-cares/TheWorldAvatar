@@ -1,11 +1,14 @@
 import os
 from pathlib import Path
 
-def io_dirs(cbuCSVFilePath):  
+def io_dirs(cbuCSVFilePath,xyzpathstem,outFilePath=None):  
     dir = os.path.dirname(cbuCSVFilePath) 
-    xyzInputCBU = dir+"\\CBUs_XYZ_20211014"
+    xyzInputCBU = dir+"\\"+xyzpathstem
     json_outNamePath = Path(cbuCSVFilePath).stem
-    speciesJSONFilePath = dir+"\\osJSON_"+json_outNamePath
+    if outFilePath:
+        speciesJSONFilePath = outFilePath
+    else:
+        speciesJSONFilePath = dir+"\\osJSON_"+json_outNamePath
     try:
         os.makedirs(speciesJSONFilePath)
     except FileExistsError: 
