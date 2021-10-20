@@ -4,6 +4,7 @@ import os
 import shutil
 from chemutils.ioutils.ioutils import readFile, fileExists
 from CBU_to_os_JSON.cbuCSVtoJSON.osJSONwrapper import cbuOperations
+from MOP_to_omJSON.mopcsv_operations.omjson_operations import mopCSVOperations
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -56,19 +57,19 @@ def cleanup_test_data(outFileDir,fileExts):
         if remove_file:
             os.remove(file)
 
-@pytest.mark.parametrize("inp_file_or_dir, inp_file_type,  \
+@pytest.mark.parametrize("inp_file, inp_file_type,  \
                           regenerateResult",
 [('CBUtest', 'csv' , False)]
 )
-def test_cbutojson(inp_file_or_dir, inp_file_type, regenerateResult):
+def test_cbutojson(inp_file, inp_file_type, regenerateResult,clean_tests=None):
     print('========================================================')
-    print('TEST INPUT FILE: ', inp_file_or_dir)
+    print('TEST INPUT FILE: ', inp_file)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
     print()
     print()
 
-    inp_file_or_dir = os.path.join(THIS_DIR,inp_file_or_dir + '.' + inp_file_type)
-    outFilestring = cbuOperations(inp_file_or_dir,'CBUs_XYZ_20211014')
+    inp_file_to_run = os.path.join(THIS_DIR,inp_file + '.' + inp_file_type)
+    outFilestring = cbuOperations(inp_file_to_run,'CBUs_XYZ_20211014')
     pipeline = os.path.join(THIS_DIR, outFilestring)
     print(pipeline)
     fileExts = ['.qc.json']
@@ -76,11 +77,39 @@ def test_cbutojson(inp_file_or_dir, inp_file_type, regenerateResult):
     compare_results(pipeline,regenerateResult,
                     fileExts=fileExts)
     
-    # if clean_tests:
-    #     cleanup_test_data(pipeline, fileExts=fileExts)
+    if clean_tests:
+        cleanup_test_data(pipeline, fileExts=fileExts)
 
     print('========================================================')
     print()
     print()
 
 
+@pytest.mark.parametrize("inp_file_1, inp_file_2, inp_file_type,  \
+                          regenerateResult",
+[('CBUtest', 'MOPTest', 'csv' , True)]
+)
+def test_moptojson(inp_file_1, inp_file_2, inp_file_type, regenerateResult,clean_tests=None):
+    print('========================================================')
+    print('TEST INPUT FILE 1: ', inp_file_1)
+    print('TEST INPUT FILE 2: ', inp_file_2)
+    print('TEST INPUT FILE TYPE: ', inp_file_type)
+    print()
+    print()
+
+    inp_file_run_1 = os.path.join(THIS_DIR,inp_file_1 + '.' + inp_file_type)
+    inp_file_run_2 = os.path.join(THIS_DIR,inp_file_2 + '.' + inp_file_type)
+    outFilestring = mopCSVOperations(inp_file_run_1,inp_file_run_2)
+    pipeline = os.path.join(THIS_DIR, outFilestring)
+    print(pipeline)
+    fileExts = ['.ominp.json']
+
+    compare_results(pipeline,regenerateResult,
+                    fileExts=fileExts)
+    
+    if clean_tests:
+        cleanup_test_data(pipeline, fileExts=fileExts)
+
+    print('========================================================')
+    print()
+    print()

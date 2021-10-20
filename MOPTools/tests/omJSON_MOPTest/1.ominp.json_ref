@@ -1,0 +1,47 @@
+{
+    "Mops_Molecular_Weight": "3820.77",
+    "Mops_Molecular_Weight_Unit": "g/mol",
+    "Mops_Polyhedral_Shape": "Tetrahedron",
+    "Mops_Polyhedral_Shape_Symbol": "tet",
+    "Mops_Symmetry_Point_Group": "Th",
+    "Mops_Geometry": "FILESERVER#273613.xyz",
+    "Mops_Charge": "-8",
+    "Mops_Charge_Unit": "e",
+    "Mops_Formula": "[Fe3O(SO4)3(C5H5N)3]4[(C6H4)(CO2)2]6",
+    "Mops_Label": "None",
+    "Mops_CavityVolume": "0",
+    "Mops_CCDC_Number": "273613",
+    "Mops_Reference_DOI": "10.1021/ja042802q",
+    "Mops_Chemical_Building_Units": [
+        {
+            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_78a425be-01fa-41de-9937-ea45cb5c5ed0",
+            "CBU_Formula": "[Fe3O(SO4)3(C5H5N)3]",
+            "Binding_Site": "Inorganic",
+            "Binding_Site_Label": "Metal",
+            "Binding_SiteCoordNumber": "2",
+            "CoreLabel": "Fe3O(SO4)3",
+            "CoreSubstituentLabel": "(C5H5N)3]",
+            "SpacerLabel": "None",
+            "SpacerSubstituentLabel": "None",
+            "BindingDirection": "Direct",
+            "GenericUnitPlanarity": "pyramidal",
+            "GenericUnitModularity": "3",
+            "GenericUnitNumber": "4"
+        },
+        {
+            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_9cc790f5-5836-4227-8507-a01fcc3209e4",
+            "CBU_Formula": "[C6H4(CO2)2]",
+            "Binding_Site": "Organic",
+            "Binding_Site_Label": "CO2",
+            "Binding_SiteCoordNumber": "2",
+            "CoreLabel": "C6H4",
+            "CoreSubstituentLabel": "None",
+            "SpacerLabel": "None",
+            "SpacerSubstituentLabel": "None",
+            "BindingDirection": "Direct",
+            "GenericUnitPlanarity": "linear",
+            "GenericUnitModularity": "2",
+            "GenericUnitNumber": "6"
+        }
+    ]
+}
