@@ -82,9 +82,6 @@ public class InitialiseStations {
 		
 		// create a table for each measure uploaded to Blazegraph
     	initTimeSeriesTables(sparqlClient, tsClient);
-		
-		// add last updated date, an arbitrary date 100 years ago
-		sparqlClient.addUpdateDate(LocalDate.now().minusYears(100));
     }
     
 	/** 
