@@ -70,9 +70,6 @@ public class InitialiseStations {
     	// this retrieves the high level information and uploads it to Blazegraph
     	initFloodStationsWithAPI(InitialiseStations.api, InitialiseStations.storeClient);
     	
-    	// create a table for each measure uploaded to Blazegraph
-    	initTimeSeriesTables(sparqlClient, tsClient);
-    	
     	// obtain stations added to blazegraph
         List<String> stations = sparqlClient.getStations();
         
@@ -81,6 +78,9 @@ public class InitialiseStations {
 		
 		// add coordinates required by blazegraph geospatial support
 		sparqlClient.addBlazegraphCoordinatesAndVisID();
+		
+		// create a table for each measure uploaded to Blazegraph
+    	initTimeSeriesTables(sparqlClient, tsClient);
 		
 		// add last updated date
 		sparqlClient.addLastDate();
