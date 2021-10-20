@@ -10,3 +10,4 @@ def mopCSVOperations(cbuIRICSVFilePath, mopCSVFilePath):
     print(mopJSONFilePath)
     cbuCSVtoJSON(cbuIRICSVFilePath, cbuJSONFilePath)
     mopCSVtoJSON(mopCSVFilePath, cbuJSONFilePath, mopJSONFilePath)
+    return mopJSONFilePath

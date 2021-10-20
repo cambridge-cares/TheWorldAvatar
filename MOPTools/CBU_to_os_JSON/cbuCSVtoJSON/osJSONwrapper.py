@@ -10,4 +10,5 @@ def cbuOperations(cbuCSVFilePath,xyzpathstem,outFilePath=None):
     xyzInputCBU = args[1] # Allocates the folder with the xyz files
     speciesJSONFilePath = args[2] # Allocates output path folder 
     cbuCSVtoQCJSON(cbuCSVFilePath, xyzInputCBU, speciesJSONFilePath)
+    return speciesJSONFilePath
     
