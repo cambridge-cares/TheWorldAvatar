@@ -1,0 +1,37 @@
+[
+    {
+        "id": 1,
+        "assetNumber": "AN0001",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 2,
+        "assetNumber": "AN0002",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 3,
+        "assetNumber": "AN0003",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 4,
+        "assetNumber": "AN0004",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 5,
+        "assetNumber": "AN0005",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    }
+]

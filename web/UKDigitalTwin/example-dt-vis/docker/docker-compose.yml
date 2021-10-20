@@ -1,0 +1,19 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DT Visualisation
+  example-dt-vis:
+    image: example-dt-vis:1.0.0
+    container_name: example-dt-vis
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+      target: "dev"
+      labels:
+        authors: "support@cmclinnovations"
+        description: "Example Digital Twin Visualisation"
+    ports:
+      - "80:80"
+ 

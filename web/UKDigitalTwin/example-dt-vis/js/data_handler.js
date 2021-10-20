@@ -3,7 +3,7 @@
  * to read the location GeoJSON files and add them to the MapBox
  * map object as a new data source.
  */
-class DigitalTwinDataHandler {
+class SourceHandler {
 
     /**
      * DigitalTwinDataRegistry instance.
@@ -57,11 +57,11 @@ class DigitalTwinDataHandler {
         let result = this._dataRegistry.getAdditionalGroup(groups);
 
         if(result != null) {
-            let scenario = result["scenario"];
-            let name = scenario["name"];
+            let group = result["group"];
+            let name = group["name"];
 
             let directory = this._dataRegistry.getAdditionalDirectory(groups);
-            let locationFile = scenario["locationFile"];
+            let locationFile = group["locationFile"];
             locationFile = directory + "/" + locationFile;
 
             if(this._map.getSource(name) == null) {
@@ -84,8 +84,8 @@ class DigitalTwinDataHandler {
         let result = this._dataRegistry.getAdditionalGroup(groups);
 
         if(result != null) {
-            let scenario = result["scenario"];
-            let name = scenario["name"];
+            let group = result["group"];
+            let name = group["name"];
             
             if(this._map.getSource(name) != null) {
                 this.#removeLayersWithSource(name, this._map);

@@ -1,49 +1,32 @@
 [
     {
-        "groupName": "Cambridgeshire Locations",
-        "layers": [
+        "groupName": "Assets",
+        "layers": [               
             {
-                "groupName": "Industry",
-                "controlType": "checkbox",
-                "layers": [
-                    {
-                        "layerName": "Rail Stations",
-                        "defaultState": "visible",
-                        "layerIDs": ["rail-stations-layer"]
-                    },
-                    {
-                        "layerName": "Automatic Traffic Counters",
-                        "defaultState": "visible",
-                        "layerIDs": ["traffic-counters-layer"]
-                    }
-                ]
+                "layerName": "Asset Owner #1",
+                "defaultState": "visible",
+                "layerIDs": ["assets-1"]
             },
             {
-                "groupName": "Natural",
-                "controlType": "checkbox",
-                "layers": [
-                    {
-                        "layerName": "Community Orchards",
-                        "defaultState": "visible",
-                        "layerIDs": ["orchards-layer"]
-                    }
-                ]
+                "layerName": "Asset Owner #2",
+                "defaultState": "visible",
+                "layerIDs": ["assets-2"]
             }
         ]
     },
     {
-        "groupName": "Cambridgeshire Regions",
-        "controlType": "radio",
+        "groupName": "Scenarios",
+        "controlType": "checkbox",
         "layers": [
             {
-                "layerName": "Housing Board Area",
+                "layerName": "Base World",
                 "defaultState": "visible",
-                "layerIDs":  ["housing-layer-fill", "housing-layer-outline"]
+                "layerIDs":  ["scenario-0"]
             },
             {
-                "layerName": "Administrative Units",
-                "defaultState": "hidden",
-                "layerIDs": ["admin-fill", "admin-outline"]
+                "layerName": "Scenario #1",
+                "defaultState": "visible",
+                "layerIDs":  ["scenario-1"]
             }
         ]
     }

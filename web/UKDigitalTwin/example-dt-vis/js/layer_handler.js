@@ -1,7 +1,27 @@
 /**
  * TODO
  */
-class DigitalTwinLayerHandler {
+class LayerHandler {
+    
+    /**
+     * Colors for point locations.
+     */
+    #POINT_COLORS = ["#EF1919", "#1966EF", "#51EF19", "#EF19E8", "#EF8719", "#19EFBD", "#E6EF19"];
+
+    /**
+     * Outline colors for point locations.
+     */
+    #POINT_OUTLINES = ["#FFFFFF", "#000000"];
+
+    /**
+     * Colors for region fills.
+     */
+    #FILL_COLORS = ["#EF1919", "#1966EF", "#51EF19", "#EF19E8", "#EF8719", "#19EFBD", "#E6EF19"];
+
+    /**
+     * Outline colors for regions.
+     */
+    #FILL_OUTLINES = ["#B11616", "#114196", "#349512", "#920F8E", "#9F5C14", "#0D8D6F", "#949A13"];
 
     /**
      * DigitalTwinDataRegistry instance.
@@ -52,12 +72,12 @@ class DigitalTwinLayerHandler {
         let result = this._dataRegistry.getAdditionalGroup(groups);
 
         if(result != null) {
-            let scenario = result["scenario"]; 
+            let group = result["group"]; 
 
-            if(scenario["locationType"] === "point") {
-                this.#addPointLayer(scenario, false);
-            } else if(scenario["locationType"] === "polygon") {
-                this.#addPolygonLayer(scenario);
+            if(group["locationType"] === "point") {
+                this.#addPointLayer(group, false);
+            } else if(group["locationType"] === "polygon") {
+                this.#addPolygonLayer(group);
             }
         }
     }
@@ -74,8 +94,8 @@ class DigitalTwinLayerHandler {
             layer => this.#findLayers(layer, "circle")
         ).length;
 
-        let pointColor = POINT_COLORS[existingPoints % POINT_COLORS.length];
-        let pointOutline = (isDarkStyle) ? POINT_OUTLINES[0] : POINT_OUTLINES[1];
+        let pointColor = this.#POINT_COLORS[existingPoints % this.#POINT_COLORS.length];
+        let pointOutline = (isDarkStyle) ? this.#POINT_OUTLINES[0] : this.#POINT_OUTLINES[1];
 
         this._map.addLayer({
 			id: layerName,
@@ -111,8 +131,8 @@ class DigitalTwinLayerHandler {
             layer => this.#findLayers(layer, "fill")
         ).length;
 
-        let regionColor = FILL_COLORS[existingFills % FILL_COLORS.length];
-        let regionOutline = FILL_OUTLINES[existingFills % FILL_OUTLINES.length];
+        let regionColor = this.#FILL_COLORS[existingFills % this.#FILL_COLORS.length];
+        let regionOutline = this.#FILL_OUTLINES[existingFills % this.#FILL_OUTLINES.length];
 
         this._map.addLayer({
 			id: layerName,
