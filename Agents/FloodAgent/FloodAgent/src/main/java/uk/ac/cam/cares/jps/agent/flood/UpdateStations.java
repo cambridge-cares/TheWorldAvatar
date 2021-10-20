@@ -239,11 +239,17 @@ public class UpdateStations {
 					continue;
 				} 
         	}
-        	// create time series object to upload to the client
-        	List<List<?>> values = new ArrayList<>();
-        	values.add(datavalue_map.get(dataIRI));
-        	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
-        	tsClient.addTimeSeriesData(ts);
+        	
+        	try {
+        		// create time series object to upload to the client
+            	List<List<?>> values = new ArrayList<>();
+            	values.add(datavalue_map.get(dataIRI));
+            	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+            	tsClient.addTimeSeriesData(ts);
+        	} catch (Exception e) {
+        	    LOGGER.error(e.getMessage());
+        	    LOGGER.error("Failed to upload time series for " + dataIRI);
+        	}
         }
         
         LOGGER.info("Failed to add " + Integer.toString(num_failures) + " data set out of the processed data");
