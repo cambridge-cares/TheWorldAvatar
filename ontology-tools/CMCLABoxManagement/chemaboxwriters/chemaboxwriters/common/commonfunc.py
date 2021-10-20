@@ -2,7 +2,7 @@ from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.base import NotSupportedStage
 from chemaboxwriters.common.commonvars import CC_LOG_EXT
 from chemutils.ioutils.ioutils import getFilesWithExtensions
-from entityrdfizer.ABoxTemplateCSVFileToRDF import convert_csv_string_into_rdf
+from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import convert_csv_string_into_rdf
 import textwrap
 
 def get_inStage(inpFileType):
