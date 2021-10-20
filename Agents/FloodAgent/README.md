@@ -27,11 +27,15 @@ Updating the database and writing a time series JSON file daily
 docker build --target default -t [TAGNAME]
 ```
 
+This docker image runs the `LaunchScheduledUpdaterAndWriter` class.
+
 ### Option 2
 Skip update and only write the output files
 ```
 docker build --target write-only -t [TAGNAME]
 ```
+
+This docker image runs the `LaunchScheduledWriterOnly` class.
 ### Execution
 To run
 ```
@@ -46,9 +50,12 @@ docker cp flood:/root/.jps .
 ```
 
 ## Main entrypoint
-The main entrypoint is the `LaunchScheduledUpdater` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
+The main entrypoint is the `LaunchScheduledUpdaterAndWriter` class, it is set as the main class in the manifest, i.e. running the `java -jar FloodAgent-1.0.0-SNAPSHOT.jar` command will launch this by default.
 
 When launched, it will initialise the flood monitoring stations if they are not initialised, and start a scheduled task that runs once a day. The code will always download readings from the day before and upload the data to the time series tables in PostgreSQL.
+
+## LaunchScheduledWriterOnly
+This class launches a scheduled process that writes a time series JSON file once a day.
 
 ## Initialisation
 To initialise manually, it is possible to run the `InitialiseStations` class directly. It has a `main` function that does not need any inputs.
@@ -61,9 +68,12 @@ java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.Initialis
 ## Updating the stations
 To manually add data from a specific date, run the `UpdateStations` class with a date as its input in ISO-8601 format, e.g. `2021-09-30`.
 
-To run it on the command line:
+This class can be useful to populate the database with historical data, e.g. you can run the following in your script
 ```
 java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.UpdateStations 2021-09-30
+java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.UpdateStations 2021-10-01
+java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.UpdateStations 2021-10-02
+java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.UpdateStations 2021-10-03
 ```
 
 ## Resetting endpoints
@@ -72,3 +82,5 @@ Run the `ResetEndpoints` class to reset both the Blazegraph and Postgres databas
 java -cp FloodAgent-1.0.0-SNAPSHOT.jar uk.ac.cam.cares.jps.agent.flood.ResetEndpoints
 ```
 
+## Outputs
+The `WriteOutput` takes in a date in its input, e.g. `2021-09-30`, and writes out a JSON file containing the time series, and a GeoJSON file containing the station locations for visualisation.
