@@ -1,5 +1,6 @@
 from docopt import docopt, DocoptExit
 import entityrdfizer.app as app
+import os
 
 
 __doc__ = """csv2rdf
@@ -20,7 +21,7 @@ def main():
         raise DocoptExit('Error: parser called with wrong arguments.')
 
     app.csv2rdf_wrapper(
-        csvFileOrDirPath = args['<csvFileOrDirPath>'],
+        csvFileOrDirPath = os.path.abspath(args['<csvFileOrDirPath>']),
         csvType = args['--csvType'],
         outDir = args['--outDir'])
 
