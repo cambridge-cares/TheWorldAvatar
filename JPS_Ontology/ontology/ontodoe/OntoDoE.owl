@@ -9,10 +9,10 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 October 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 October 2021</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">e2ecde3a9b847c73a013a764cf657921d683de18</gitCommitHash>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.3</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">61e1ab14b85359747df6eb626744f5d07653768b</gitCommitHash>
     </owl:Ontology>
     
 
@@ -183,6 +183,18 @@
         <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#TSEMO"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of spectral points used in spectral sampling. Default is 1500. Note that the Matlab TSEMO version uses 4000 which will improve accuracy but significantly slow down optimisation speed. [https://gosummit.readthedocs.io/en/latest/strategies.html#tsemo]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#numOfNewExp -->
+
+
+    <owl:DatatypeProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#numOfNewExp">
+        <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The number of new experiments to be suggested based on the historical data in a design of experiment exercise. Defualt is 1. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
