@@ -251,6 +251,7 @@ public class UpdateStations {
                 	values.add(datavalue_map.get(dataIRI));
                 	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
                 	tsClient.addTimeSeriesData(ts);
+                	LOGGER.debug("Uploaded data for " + dataIRI);
     			} else {
     				LOGGER.info("Skipping " + dataIRI + ", data for " + date + " exists");
     			}
