@@ -276,6 +276,7 @@ public class DerivationSparql{
 	}
 	
 	public static void markAsInProgress(StoreClientInterface storeClient, String derivation) {
+		deleteStatus(storeClient, derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = InProgress.toString() + UUID.randomUUID().toString();
@@ -289,6 +290,7 @@ public class DerivationSparql{
 	}
 	
 	public static String markAsFinished(StoreClientInterface storeClient, String derivation) {
+		deleteStatus(storeClient, derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = Finished.toString() + UUID.randomUUID().toString();
