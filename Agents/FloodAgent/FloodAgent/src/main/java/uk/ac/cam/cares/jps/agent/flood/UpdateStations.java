@@ -168,8 +168,8 @@ public class UpdateStations {
 	        	}
         	} catch (Exception e) {
         		num_fail += 1;
-        		LOGGER.error(readings.getJSONObject(i));
-        		LOGGER.error(e.getMessage());
+        		LOGGER.warn(readings.getJSONObject(i));
+        		LOGGER.warn(e.getMessage());
         	}
         }
         
