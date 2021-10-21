@@ -22,7 +22,7 @@ def interval_task():
     monitorDerivation()
 
 def monitorDerivation():
-    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT)
+    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
     list_of_derivation = jpsBaseLib_view.DerivationSparql.getDerivations(storeClient, DOEAGENT_ONTOAGENT_SERVICE)
 
