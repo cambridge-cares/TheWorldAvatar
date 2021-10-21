@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -241,11 +240,20 @@ public class UpdateStations {
         	}
         	
         	try {
-        		// create time series object to upload to the client
-            	List<List<?>> values = new ArrayList<>();
-            	values.add(datavalue_map.get(dataIRI));
-            	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
-            	tsClient.addTimeSeriesData(ts);
+        		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
+    			Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
+    			TimeSeries<Instant> ts_query = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRI), lowerbound, upperbound);
+    			
+    			// ensure that we do not upload duplicate data
+    			if (ts_query.getTimes().size() == 0) {
+    				// create time series object to upload to the client
+                	List<List<?>> values = new ArrayList<>();
+                	values.add(datavalue_map.get(dataIRI));
+                	TimeSeries<Instant> ts = new TimeSeries<Instant>(datatime_map.get(dataIRI), Arrays.asList(dataIRI), values);
+                	tsClient.addTimeSeriesData(ts);
+    			} else {
+    				LOGGER.info("Skipping " + dataIRI + ", data for " + date + " exists");
+    			}
         	} catch (Exception e) {
         		num_failures += 1;
         	    LOGGER.error(e.getMessage());
