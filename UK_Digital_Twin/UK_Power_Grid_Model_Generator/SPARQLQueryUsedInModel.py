@@ -405,10 +405,8 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
             raise Exception(r["Area_id_url"], "does't have the geographical attributes.")
         elif "***" in r['Geo_InfoList']:
             r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]            
-        # geojson_string = geojson.dumps(mapping(loads(r['Geo_InfoList'])))
-        # r['Geo_InfoList'] = ast.literal_eval(geojson_string)         
         r['Geo_InfoList'] = loads(r['Geo_InfoList'])
-    # res = [[ r['Geo_InfoList'], float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]   
+    
     return res            
     
 

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 13 Oct 2021          #
+# Last Update Date: 21 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -87,7 +87,7 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, defaultInitialisation, OWLFileStoragePath, updateLocalOWLFile = True):
     uk_ebus_model = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
     defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs
     defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
@@ -134,7 +134,6 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
     # pass the arrguments to the cluster method
     EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: TotalELecConsumption 
     
-    # EBus = list(query_model.queryEBusandRegionalDemand(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
     EBus_Load_List = checkAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
     
     if EBus_Load_List == None:
@@ -170,7 +169,7 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
             
         ###add EBus model parametor###
         # uk_ebus_model_ = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
-        uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model, ebus) 
+        uk_ebus_model_ = initialiseEBusModelVar(uk_ebus_model, ebus, defaultInitialisation) 
         print('the bus type is ',uk_ebus_model_.TYPE)
         
         if uk_ebus_model_ != None:
@@ -201,9 +200,9 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
                                  ontopowsys_PowerSystemModel.baseKV.iri, ontocape_mathematical_model.Parameter.iri)    
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.ZONEKey, int(uk_ebus_model_.ZONE), None, \
                                  ontopowsys_PowerSystemModel.Zone.iri, ontocape_mathematical_model.Parameter.iri)   
-        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMAXKey, int(uk_ebus_model_.VMAX), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMAXKey, float(uk_ebus_model_.VMAX), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.VmMax.iri, ontocape_mathematical_model.Parameter.iri) 
-        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMINKey, int(uk_ebus_model_.VMIN), ontocape_derived_SI_units.kV.iri, \
+        g = AddModelVariable(g, root_node, namespace, node_locator, uk_ebus_model_.VMINKey, float(uk_ebus_model_.VMIN), ontocape_derived_SI_units.kV.iri, \
                                  ontopowsys_PowerSystemModel.VmMin.iri, ontocape_mathematical_model.Parameter.iri)
         
         # print(g.serialize(format="pretty-xml").decode("utf-8"))
@@ -240,25 +239,44 @@ def checkAggregatedBus(EBus):
             bus_node.append(ebus[0])
     return EBus_
 
-def initialiseEBusModelVar(EBus_Model, EBus):
+def initialiseEBusModelVar(EBus_Model, EBus, defaultInitialisation):
     if isinstance (EBus_Model, UK_PG.UKEbusModel):
         pass
     else:
-        print('The first argument should be an instence of UKEbusModel')
+        print('The first argument should be an instence of UKEbusModel.')
         return None
-    EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
-    # TODO: assigning slack bus is different, how to assign the bus type to the 29 bus model
-    if EBus_Model.BUS == 1: # assign slack bus
-        EBus_Model.TYPE = 3
+    
+    if defaultInitialisation == True:
+        EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
+        if EBus_Model.BUS == 1: # assign slack bus
+            EBus_Model.TYPE = 3
+    elif defaultInitialisation == False and os.path.exists(EBus_Model.BusModelInitialisation):
+          BusModelInitialisationArrays = readFile(EBus_Model.BusModelInitialisation)  
+          if BusModelInitialisationArrays[0] != EBus_Model.headerBusModel:
+            print('The Bus Model Initialisation header is not matched, please check the data file')
+            return None   
+          EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
+          EBus_Model.TYPE = BusModelInitialisationArrays[EBus_Model.BUS][1]
+          EBus_Model.PD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][2]
+          EBus_Model.GD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][3]
+          EBus_Model.GS = BusModelInitialisationArrays[EBus_Model.BUS][4]
+          EBus_Model.BS = BusModelInitialisationArrays[EBus_Model.BUS][5]
+          EBus_Model.AREA = BusModelInitialisationArrays[EBus_Model.BUS][6]
+          EBus_Model.VM_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][7]
+          EBus_Model.VA_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][8]
+          EBus_Model.BASEKV = BusModelInitialisationArrays[EBus_Model.BUS][9]
+          EBus_Model.ZONE = BusModelInitialisationArrays[EBus_Model.BUS][10]
+          EBus_Model.VMAX = BusModelInitialisationArrays[EBus_Model.BUS][11]
+          EBus_Model.VMIN = BusModelInitialisationArrays[EBus_Model.BUS][12]     
+    else:
+        raise NotImplementedError('When the defaultInitialisation flag turns off, the assigment of sluck bus needs more information.')
     
     # initialise Pd
     EBus_Model.PD_INPUT = round((float(EBus[1]) * 1000 / (24 * 365)), 3) 
     
-    # TODO: how to initialise Gd for 29_bus model, baseKV, vmax and vmin???
-    
-    
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", None, True)       
+    createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", True, None, True)  
+    createModel_EBus('default', False, 2019, 29, "2017-01-31", "closestDemandLoad", False, None, True)            
     print('*****************Terminated*****************')

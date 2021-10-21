@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 14 Oct 2021          #
+# Last Update Date: 21 Oct 2021          #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
@@ -13,6 +13,9 @@ valueKey = "value_"
 endpoint = EndPointConfigAndBlazegraphRepoLabel.UKPowerGridModelKG
 
 class UKEbusModel:
+    
+    """Data path"""
+    DataPath = '../Data files/PowerGridModelInitialisation/'
     
     """EBus Node keys"""
     EBusKey = "EBus-"
@@ -39,8 +42,13 @@ class UKEbusModel:
     PDGENKey = "Pd_Gen_"
     GDGENKey = "Gd_Gen_"
     
+    """Data file header"""
+    headerBusModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
+    
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
+        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
+        self.BusModelInitialisation = UKEbusModel.DataPath + str(numOfBus) + '_bus/BusModelInitialisation.csv'        
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
@@ -90,6 +98,10 @@ class UKElineModel:
     STATUSKey = "Status_"
     ANGMINKey = "AngleMin_"
     ANGMAXKey = "AngleMax_"
+    
+    """Data file header"""
+    # TODO: to be modified
+    headerBranchModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
