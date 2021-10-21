@@ -35,7 +35,7 @@ services:
 
   # File server
   fileserver:
-    image: docker.cmclinnovations.com/fileserver-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/fileserver:1.0.0-SNAPSHOT
     build:
       args:
         mvn_profile: ${MODE}-profile
