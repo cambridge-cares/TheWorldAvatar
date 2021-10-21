@@ -13,14 +13,16 @@ Usage:
 
 Options:
 --url=<url>             Triple store upload endpoint. If not specified,
-                        the code will try to read it from user
-                        environment variables.
---auth=<auth>           Triple store authorization as a "username:password"
-                        string. If not specified, the code will try to read
-                        it from user environment variables.
---file-ext=<ext>        List of extensions used to select files       [default: owl]
+                        the code will try to read it from a file whose
+                        location should be specified in user environment
+                        variables.
+--auth=<auth>           Triple store authorization string given as a
+                        "username:password". If not specified, the code
+                        will try to read it from a file whose location
+                        should be specified in user environment variables.
+--file-ext=<ext>        List of extensions used to select files             [default: owl]
                         that will be uploaded to the triple store.
---log-file-name=<name>  Name of the generated log file.               [default: ts_upload.log]
+--log-file-name=<name>  Name of the generated log file.                     [default: ts_upload.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <fileOrDir> directory.

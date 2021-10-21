@@ -15,17 +15,18 @@ Usage:
 Options:
 --file-ext=<ext>        List of extensions used to select files
                         that will be uploaded to the file server.
-                        Example: --file-ext='.log,.txt'             [default: log]
---url=<url>             File server upload url. If not specified,
-                        the code will try to read it from user
-                        environment variables.
---auth=<auth>           File server authorization as a "username:password"
-                        string. If not specified, the code will try to read
-                        it from user environment variables.
+                        Example: --file-ext='.log,.txt'                     [default: log]
+--url=<url>             File server upload url. If not specified, the code
+                        will try to read it from a file whose location
+                        should be specified in user environment variables.
+--auth=<auth>           File server authorization string given as a
+                        "username:password". If not specified, the code
+                        will try to read it from a file whose location
+                        should be specified in user environment variables.
 --subdirs=<dir>         Optional subdirectories to be created on
                         the file server to upload your files into.
-                        Example: --subdirs='dir1/dir2/'   [default: ]
---log-file-name=<name>  Name of the generated log file.               [default: fs_upload.log]
+                        Example: --subdirs='dir1/dir2/'                     [default: ]
+--log-file-name=<name>  Name of the generated log file.                     [default: fs_upload.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <fileOrDir> directory.

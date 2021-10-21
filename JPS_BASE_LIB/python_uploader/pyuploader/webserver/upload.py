@@ -16,10 +16,9 @@ def upload_to_web_server(
         dry_run: bool= False) -> Dict[str,str]:
 
     if url is None: url= webservbase.get_fserver_url_from_envar()
-    if auth_str is None:
-        auth = webservbase.get_fserver_credentials_from_envar()
-    else:
-        auth = utils.get_credentials_from_str(auth_str)
+    if auth_str is None: auth_str = webservbase.get_fserver_credentials_from_envar()
+
+    auth = utils.get_credentials_from_str(auth_str)
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
     server_file_locations: Dict[str,str] = {}
@@ -27,8 +26,7 @@ def upload_to_web_server(
     logger.info(f"FILE SERVER UPLOAD")
     logger.info(f"---------------------------------------------------------------------------")
     if files:
-        logger.info(f"Uploading files to the file server.")
-
+        logger.info(f"Uploading files to the file server...")
         for f in files:
             basenf = pathlib.Path(f).name
             logger.info(f"Uploading file: {basenf} to the file server.")
@@ -36,6 +34,7 @@ def upload_to_web_server(
                 location = upload_file_to_web_server(f, url, auth, subdirs)
                 logger.info(f"File: {basenf} successfully uploaded to: {location}.")
                 server_file_locations[f] = location
+        logger.info(f"Uploading files to the file server finished.")
     else:
         logger.info('No files to upload')
     logger.info(f"---------------------------------------------------------------------------")

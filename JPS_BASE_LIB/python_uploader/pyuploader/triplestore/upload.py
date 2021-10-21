@@ -18,10 +18,9 @@ def upload_to_triple_store(
         dry_run: bool= False) -> None:
 
     if url is None: url = tsbase.get_tstore_url()
-    if auth_str is None:
-        auth = tsbase.get_tstore_credentials_from_envar()
-    else:
-        auth = utils.get_credentials_from_str(auth_str)
+    if auth_str is None:  auth_str = tsbase.get_tstore_credentials_from_envar()
+
+    auth = utils.get_credentials_from_str(auth_str)
     if file_ext != 'owl': raise NotImplementedError('Only owl files are currently supported.')
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
@@ -29,12 +28,13 @@ def upload_to_triple_store(
     logger.info(f"TRIPLE STORE UPLOAD")
     logger.info(f"---------------------------------------------------------------------------")
     if files:
-        logger.info(f"Uploading files to the triple store: {url}.")
+        logger.info(f"Uploading files to the triple store...")
         for f in files:
             basenf = pathlib.Path(f).name
             logger.info(f"Uploading file: {basenf}")
             if not dry_run:
                 upload_rdf_file_to_triple_store(url, auth, f)
+        logger.info(f"Uploading files to the triple store finished.")
     else:
         logger.info('No files to upload')
     logger.info(f"---------------------------------------------------------------------------")

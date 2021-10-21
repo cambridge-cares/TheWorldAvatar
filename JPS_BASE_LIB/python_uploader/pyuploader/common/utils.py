@@ -24,3 +24,8 @@ def get_credentials_from_str(
     if len(auth_parts)>2:
         raise ValueError('Wrong authorisation string format.')
     return (auth_parts[0], auth_parts[1])
+
+def read_file_content(file_path: str) -> str:
+    with open(file_path) as f:
+        content = f.read()
+    return content
