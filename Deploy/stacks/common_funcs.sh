@@ -181,8 +181,17 @@ write_env_file()
   if [ $use_test_config -eq $TRUE ]; then
     container_name_suffix="$container_name_suffix-test"
   fi
-  
+
   echo "Generating environment variables file..."
+
+  # Use default env file if it exists
+  local default_env_filename=".env"
+  if [ -e "$default_env_filename" ]; then
+    cp $default_env_filename "$env_filename"
+    # Handle the case where .env doesn't end with a newline
+    echo "" >> "$env_filename"
+  fi
+
   local hash="$(git rev-parse --short=6 HEAD)"
   local builder="$(git config user.name)"
   echo "HASH=$hash" >> "$env_filename"
