@@ -5,10 +5,10 @@
 # from summit.domain import ContinuousVariable, Domain
 # from summit.strategies import TSEMO, SOBO
 
-# from jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
+from jpsSingletons import jpsBaseLibGW
 from resources.parameter import *
 from resources.doeagent_properties import *
-from kgUtils import *
+# from kgUtils import *
 
 import pandas as pd
 import json
@@ -35,6 +35,7 @@ def main():
     historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
     
     doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict}
+    print(doe_info)
     # doe = { \
     #             "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
     #             "continuousVariables": [{"name": "ContinuousVariable_1", "lower": 1, "upper": 10}, 
@@ -45,8 +46,8 @@ def main():
     #             {"name": "SystemResponse_2", "direction": "minimise"}], \
     #             "historicalData": previous_results, \
     #             "numOfExp": 1}
-    next_exp = proposeNewExperiment(doe_info)
-    print(next_exp)
+    # next_exp = proposeNewExperiment(doe_info)
+    # print(next_exp)
 
     # endpoint = "http://theworldavatar.com/blazegraph/namespace/textontorxn/sparql"
     # variable_instance = trimIRI("https://theworldavatar.com/kb/ontodoe/DoE_1/ContinuousVariable_1")
@@ -188,6 +189,7 @@ def createReactionVariation(rxnexp: str, reaction_conditions, performance_indica
 class ReactionVariation:
     def __init__(self, rxnIRI, rxn_conditions: list, perf_indicators: list, query_endpoint, update_endpoint):
         self.rIRI = URIRef(rxnIRI)
+        self.rxnvar = ""
         self.conditions = rxn_conditions
         self.indicators = perf_indicators
         self.g = Graph()
@@ -214,19 +216,19 @@ class ReactionVariation:
     #     self.up_str = self.up_str + ' }'
     
     def createOntoRxnInstance(self):
-        rxnvar = URIRef(NAMESPACE_KB_ONTORXN + getShortName(ONTORXN_REACTIONVARIATION) + '_' + str(uuid.uuid4()))
+        self.rxnvar = URIRef(NAMESPACE_KB_ONTORXN + getShortName(ONTORXN_REACTIONVARIATION) + '_' + str(uuid.uuid4()))
         
-        self.g.add((rxnvar, RDF.type, URIRef(ONTORXN_REACTIONVARIATION)))
-        self.g.add((rxnvar, URIRef(ONTORXN_ISVARIATIONOF), self.rIRI))
-        self.g.add((self.rIRI, URIRef(ONTORXN_HASVARIATION), rxnvar))
+        self.g.add((self.rxnvar, RDF.type, URIRef(ONTORXN_REACTIONVARIATION)))
+        self.g.add((self.rxnvar, URIRef(ONTORXN_ISVARIATIONOF), self.rIRI))
+        self.g.add((self.rIRI, URIRef(ONTORXN_HASVARIATION), self.rxnvar))
 
         for con in self.conditions:
             self.addReactionCondition(**con)
         for ind in self.indicators:
             self.addPerformanceIndicator(**ind)
         
-        filePath = uuid.uuid4()
-        self.g.serialize(f'{filePath}.ttl')
+        filePath = f'{str(uuid.uuid4())}.xml'
+        self.g.serialize(filePath, format='xml')
         return filePath
 
     def addReactionCondition(self, clz, num, id=None, **kwargs):
@@ -239,10 +241,10 @@ class ReactionVariation:
         measure_iri = URIRef(NAMESPACE_KB_ONTORXN + getShortName(OM_MEASURE) + '_' + str(uuid.uuid4()))
 
         for pred in getObjectRelationship(self.query, self.rIRI, clz):
-            self.g.add((self.rIRI, URIRef(pred), condition_iri))
+            self.g.add((self.rxnvar, URIRef(pred), condition_iri))
         
         self.g.add((condition_iri, RDF.type, URIRef(clz)))
-        self.g.add((condition_iri, URIRef(OM_HASPHENOMENON), self.rIRI))
+        self.g.add((condition_iri, URIRef(OM_HASPHENOMENON), self.rxnvar))
         self.g.add((condition_iri, URIRef(OM_HASVALUE), measure_iri))
         # Only add positionalID if it exists
         if id is not None:
@@ -263,8 +265,8 @@ class ReactionVariation:
         # Create performance indicator instance
         indicator_iri = URIRef(NAMESPACE_KB_ONTORXN + getShortName(clz) + '_' + str(uuid.uuid4()))
         # Add performance indicator to reaction experiment (or variation)
-        self.g.add((self.rIRI, URIRef(ONTORXN_HASPERFORMANCEINDICATOR), indicator_iri))
-        self.g.add((indicator_iri, URIRef(OM_HASPHENOMENON), self.rIRI))
+        self.g.add((self.rxnvar, URIRef(ONTORXN_HASPERFORMANCEINDICATOR), indicator_iri))
+        self.g.add((indicator_iri, URIRef(OM_HASPHENOMENON), self.rxnvar))
         # Add rdf:type to created performance indicator instance
         self.g.add((indicator_iri, RDF.type, URIRef(ONTORXN_PERFORMANCEINDICATOR)))
         self.g.add((indicator_iri, RDF.type, URIRef(clz)))
@@ -297,6 +299,50 @@ def main5():
     new_exp_ = ReactionVariation('https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1', rxn_conditions, perf_indicators, endpoint, endpoint)
     filePath = new_exp_.createOntoRxnInstance()
     uploadOntology(filePath)
+# doe = { \
+    #             "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
+    #             "continuousVariables": [{"name": "ContinuousVariable_1", "lower": 1, "upper": 10}, 
+    #             {"name": "ContinuousVariable_2", "lower": 0.02, "upper": 0.2},
+    #             {"name": "ContinuousVariable_3", "lower": 5, "upper": 15},
+    #             {"name": "ContinuousVariable_4", "lower": 30, "upper": 70}], \
+    #             "systemResponses": [{"name": "SystemResponse_1", "direction": "maximise"}, 
+    #             {"name": "SystemResponse_2", "direction": "minimise"}], \
+    #             "historicalData": previous_results, \
+    #             "numOfExp": 1}
+def main6():
+    g = Graph()
+    g.parse("/home/jb2197/code/TheWorldAvatar/Agents/DoEAgent/summit_agent/11c6c7b0-14da-48af-bf3a-a8474042b693.xml")
+    # g.serialize(format='turtle')
+    up_str = 'INSERT DATA { '
+    for s, p, o in g:
+        up_str = up_str + f'<{s}> <{p}> <{o}> . \n'
+    up_str = up_str + ' }'
+    print(up_str)
+
+def main7():
+    print(trimIRI(['https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1']))
+
+def main8():
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
+    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT)
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
+    # test_derivationClient = derivationClient.addTimeInstance('https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1')
+
+    
+    derivationSparql = jpsBaseLib_view.DerivationSparql
+    boo = jpsBaseLib_view.DerivationSparql.isFinished(storeClient, 'http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe')
+    print(boo)
+    # test = derivationSparql.addTimeInstance(storeClient, 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1')
+    
+    # KGRouter = jpsBaseLib_view.StoreRouter
+    # KGClient = KGRouter.getStoreClient(SPARQL_UPDATE_ENDPOINT, True, False)
+    # getStoreClient(targetResourceID, True, False)
+    # derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
+    # derivationSparql = jpsBaseLib_view.DerivationSparql
+    # test = derivationSparql.addTimeInstance(storeClient, DOEAGENT_ONTOAGENT_SERVICE)
+    # print(test)
 
 if __name__ == "__main__":
-    main5()
+    main8()
