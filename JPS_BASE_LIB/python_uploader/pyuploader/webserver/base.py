@@ -1,10 +1,11 @@
 import os
 import logging
 import pyuploader.errorhandling.appexceptions as appexcept
+from typing import Tuple
 
 logger = logging.getLogger(__name__)
 
-def get_user_credentials():
+def get_fserver_credentials_from_envar() -> Tuple[str,str]:
     logger.info("Reading user file server credentials from the environment variables.")
     try:
         user_login = os.environ['KG_FILE_SERVER_USER']
@@ -14,7 +15,7 @@ def get_user_credentials():
 
     return (user_login, user_passwd)
 
-def get_server_url():
+def get_fserver_url_from_envar() -> str:
     logger.info("Reading file server url from the user environment variables.")
     try:
         server_url = os.environ['KG_FILE_SERVER_URL']

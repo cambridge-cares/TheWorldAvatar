@@ -1,7 +1,7 @@
 import docopt
 import pyuploader.app as app
 
-__doc__ = """pyuploader
+__doc__: str = """pyuploader
 Usage:
     fs_upload <file_or_dir>  [--url=<url>]
                              [--auth=<auth>]
@@ -33,16 +33,16 @@ Options:
 --dry-run               Run the triple store uploader tool in a dry
                         run without uploading any triples.
 """
-def start():
+def start() -> None:
     try:
         args = docopt.docopt(__doc__)
-    except docopt.DocoptExit:
-        raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.')
+    except docopt.DocoptExit: #type: ignore
+        raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.') #type: ignore
 
     app.fs_upload_wrapper(
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth = tuple(args['--auth'].split(':')) if args['--auth'] is not None else args['--auth'],
+        auth_str = args['--auth'],
         file_ext = args['--file-ext'],
         subdirs = args['--subdirs'],
         log_file_dir = args['--log-file-dir'],

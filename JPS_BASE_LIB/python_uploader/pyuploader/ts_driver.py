@@ -1,7 +1,7 @@
 import docopt
 import pyuploader.app as app
 
-__doc__ = """pyuploader
+__doc__: str = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--url=<url>]
                              [--auth=<auth>]
@@ -29,21 +29,21 @@ Options:
                         run without uploading any triples.
 """
 
-def start():
+def start() -> None:
     try:
         args = docopt.docopt(__doc__)
-    except docopt.DocoptExit:
-        raise docopt.DocoptExit('Error: ts_upload called with wrong arguments.')
+    except docopt.DocoptExit: #type: ignore
+        raise docopt.DocoptExit('Error: ts_upload called with wrong arguments.') #type: ignore
 
     app.ts_upload_wrapper(
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth = tuple(args['--auth'].split(':')) if args['--auth'] is not None else args['--auth'],
+        auth_str = args['--auth'],
         file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],
         no_file_logging = args['--no-file-logging'],
-        dry_run = args['--dry-run']
+         dry_run = args['--dry-run']
     )
 
 if __name__ == '__main__':

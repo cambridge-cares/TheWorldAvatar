@@ -1,10 +1,9 @@
-from py4j.protocol import Py4JError, Py4JJavaError
-import textwrap
 import pyuploader.triplestore.base as tsbase
 import pyuploader.common.utils as utils
 from pyuploader.common.gateways import jpsBaseLibGW
 import logging
 import pathlib
+from typing import Union, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -12,14 +11,17 @@ jpsBaseLib_view = jpsBaseLibGW.createModuleView()
 jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
 
 def upload_to_triple_store(
-        file_or_dir,
-        url='',
-        auth='',
-        file_ext='owl',
-        dry_run= False):
+        file_or_dir: str,
+        url: Union[str, None]=None,
+        auth_str: Union[str, None]=None,
+        file_ext: str='owl',
+        dry_run: bool= False) -> None:
 
-    if not url: url = tsbase.get_triple_store_url()
-    if not auth: auth = tsbase.get_user_credentials()
+    if url is None: url = tsbase.get_tstore_url()
+    if auth_str is None:
+        auth = tsbase.get_tstore_credentials_from_envar()
+    else:
+        auth = utils.get_credentials_from_str(auth_str)
     if file_ext != 'owl': raise NotImplementedError('Only owl files are currently supported.')
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
@@ -38,7 +40,11 @@ def upload_to_triple_store(
     logger.info(f"---------------------------------------------------------------------------")
 
 
-def upload_rdf_file_to_triple_store(url, auth, f):
+def upload_rdf_file_to_triple_store(
+    url: str,
+    auth: Tuple[str, str],
+    f: str) -> None:
+
     client = jpsBaseLib_view.RemoteStoreClient(url, url, auth[0], auth[1])
     rdfFile = jpsBaseLib_view.java.io.File(f)
     client.uploadRDFFile(rdfFile)
