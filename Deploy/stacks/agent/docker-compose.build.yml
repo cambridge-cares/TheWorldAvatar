@@ -57,9 +57,10 @@ services:
       dockerfile: "Dockerfile"
       labels:
         authors: "support@cmclinnovations.com"
+        description: "Flood Agent that scrapes data, updates the KG, and write JSON files daily."
         builder: "${BUILDER}"
-        description: "Flood Agent."
         hash: "${HASH}"
+      target: "default"
 
   # JPS Chatbot
   jps-chatbot:
