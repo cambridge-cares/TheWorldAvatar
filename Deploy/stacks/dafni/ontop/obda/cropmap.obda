@@ -1,0 +1,19 @@
+[PrefixDeclaration]
+:		http://example.org/crops/
+ex:		http://example.org/
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xml:		http://www.w3.org/XML/1998/namespace
+xsd:		http://www.w3.org/2001/XMLSchema#
+foaf:		http://xmlns.com/foaf/0.1/
+obda:		https://w3id.org/obda/vocabulary#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+gsp:		http://www.opengis.net/ont/geosparql#
+
+
+[MappingDeclaration] @collection [[
+mappingId	crops-cell
+target		:cropmap/cell/{id} a :Cell ; :id {id}^^xsd:int ; :location {loc}^^gsp:wktLiteral .
+source		SELECT id, ST_ASTEXT(ST_Transform(geom,4269)) loc FROM "Crop_Map_of_England_2020_Worcestershire"
+]]
+

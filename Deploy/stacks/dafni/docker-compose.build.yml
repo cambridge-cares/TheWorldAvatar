@@ -10,14 +10,37 @@ version: "3.8"
 
 
 services:
+  geoserver:
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
+    build:
+      args:
+        GEOSERVER_VERSION: ${GEOSERVER_VERSION}
+      context: geoserver
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Customised version of the geoserver image to allow a password to be set via a secret."
+        hash: "${HASH}"
 
-  # QGIS
+  ontop-pgsql:
+    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+    build:
+      args:
+        ONTOP_POSTGRES_VERSION: ${ONTOP_POSTGRES_VERSION}
+        ONTOP_VERSION: ${ONTOP_VERSION}
+      context: ontop
+      labels:
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "The ontop image to allow a password to be set via a secret."
+        hash: "${HASH}"
+
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
     build:
       context: qgis
       labels:
-        authors: "oparry@cmclinnovations, support@cmclinnovations"
+        authors: "gbrownbridge@cmclinnovations, oparry@cmclinnovations, support@cmclinnovations"
         builder: "${BUILDER}"
         description: "Customised version of the QGIS image with an ssh server installed."
         hash: "${HASH}"

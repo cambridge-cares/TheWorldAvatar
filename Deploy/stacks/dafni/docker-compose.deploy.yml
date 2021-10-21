@@ -13,18 +13,68 @@ version: "3.8"
 
 
 services:
-  # Blazegraph geo
+  adminer:
+    image: adminer
+    container_name: "adminer${CONTAINER_NAME_SUFFIX}"
+    ports:
+      - ${ADMINER_PORT}:8080
+    restart: unless-stopped
+
   blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
     ports:
-      - 8081:8080
+      - ${BLAZEGRAPH_PORT}:8080
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
       - blazegraph_geo_data:/data
 
-  # PostGIS
+  geoserver:
+    image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
+    container_name: "geoserver${CONTAINER_NAME_SUFFIX}"
+    environment:
+      ADMIN_PASSWORD_FILE: "/run/secrets/geoserver_admin_password"
+    env_file: 
+      - .env
+      - geoserver/geoserver.env
+    ports:
+     - ${GEOSERVER_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    secrets:
+      - geoserver_admin_password
+    volumes:
+      - ./geoserver/logs:${GEOSERVER_LOG_DIR}
+      - ./geoserver/datadir:${GEOSERVER_DATA_DIR}
+      - ./geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - ./geoserver/gwc:${GEOWEBCACHE_CACHE_DIR}
+      - ./geoserver/netcfd:${NETCDF_DATA_DIR}
+      - ./geoserver/grib_cache:${GRIB_CACHE_DIR}
+      - ./geoserver/webapps/geoserver/WEB-INF/web.xml:/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
+
+  ontop-pgsql:
+    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+    container_name: "ontop${CONTAINER_NAME_SUFFIX}"
+    depends_on:
+      - postgis
+    environment:
+      ONTOP_CORS_ALLOWED_ORIGINS: '*'
+      ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
+      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password      
+      POSTGRES_PORT: ${POSTGRES_PORT}
+    env_file:
+      - ontop/ontop.env
+    ports:
+      - ${ONTOP_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    secrets:
+      - postgres_password
+    volumes:
+      - ./ontop/obda:/opt/ontop/input
+      - ./ontop/wait-for-it:/opt/wait-for-it
+
   postgis:
     image: postgis/postgis:14-3.1-alpine
     container_name: "postgis${CONTAINER_NAME_SUFFIX}"
@@ -32,21 +82,28 @@ services:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+    env_file:
+      - postgis/postgis.env
     ports:
-      - 5432:5432
-    pull_policy: if_not_present
+      - ${POSTGRES_PORT}:5432
     restart: unless-stopped
     secrets:
       - postgres_password
     volumes:
       - postgis_data:/var/lib/postgresql/data
 
-  # QGIS
   qgis:
       image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
       container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+      pull_policy: if_not_present
       restart: unless-stopped
 
+  webvowl:
+    image: ukparliament/webvowl
+    container_name: "webvowl${CONTAINER_NAME_SUFFIX}"
+    ports:
+      - ${WEBVOWL_PORT}:8080
+    restart: unless-stopped
 
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
@@ -55,13 +112,15 @@ networks:
     name: ${NETWORK_NAME}
 
 
-# Secrets used to set runtime passwords
 secrets:
+  geoserver_admin_password:
+    # N.B. If you change the contents of this file, it will only propogate to
+    # the server if you delete geoserver/datadir/security before (re)deploying!
+    file: geoserver/secrets/admin_password
   postgres_password:
     file: postgres/secrets/postgres_password
 
 
-# Volumes to handle triplestore data and logging
 volumes:
   blazegraph_geo_data:
   postgis_data:
