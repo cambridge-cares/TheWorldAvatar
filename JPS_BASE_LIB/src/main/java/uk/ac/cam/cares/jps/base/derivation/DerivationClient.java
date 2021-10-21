@@ -152,8 +152,6 @@ public class DerivationClient {
 	}
 	
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
-		// delete InProgress status
-		DerivationSparql.deleteStatus(this.kbClient, derivation);
 		// mark as Finished
 		String statusIRI = DerivationSparql.markAsFinished(this.kbClient, derivation);
 		// add newDerivedIRI to Finished status
