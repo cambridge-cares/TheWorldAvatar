@@ -71,6 +71,7 @@ Detailed integration tests for the `TimeSeriesClient` as well as the (underlying
    
 - **Agent examples**:
    Several agents provide working examples of how to use the `TimeSeriesClient`, e.g.  
+   (in case the provided links do not work, please replace "XXX-dev-..." in the URLs with "develop")
    * [AQMeshInputAgent] queries and stores time series data from AQ Mesh sensor in Singapore
    * [FloodAgent] queries water level data from the Environment Agency, stores it in the KG, and retrieves it for visualisation
    * [GasGridAgent] queries instantaneous gas flow data from the National Grid, stores it in the KG, and retrieves it for visualisation (via py4jps)
