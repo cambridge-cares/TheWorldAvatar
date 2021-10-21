@@ -21,3 +21,14 @@ services:
         builder: "${BUILDER}"
         description: "Customised version of Blazegraph, optimised for particular geospatial queries. Based on the official Tomcat 9 image."
         hash: "${HASH}"
+
+  # QGIS
+  qgis:
+    image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+    build:
+      context: qgis
+      labels:
+        authors: "oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Customised version of the QGIS image with an ssh server installed."
+        hash: "${HASH}"

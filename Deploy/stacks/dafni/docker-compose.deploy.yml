@@ -41,6 +41,12 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  # QGIS
+  qgis:
+      image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+      container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+      restart: unless-stopped
+
 
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
