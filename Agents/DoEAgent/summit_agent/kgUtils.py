@@ -44,6 +44,7 @@ def getDoEAgentInputs(endpoint, derivation):
                 inputs[r['type']].append(r['input'])
             else:
                 inputs[r['type']] = [inputs[r['type']]]
+                inputs[r['type']].append(r['input'])
         else:
             inputs[r['type']] = r['input']
     return {DOEAGENT_INPUT_JSON_KAY: inputs}
