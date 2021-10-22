@@ -61,7 +61,7 @@ def api():
     return '; '.join(new_exp_iri_list)
 
 def setUpJob(input_decoded):
-    input_json = json.loads(input_decoded)
+    input_json = json.loads(input_decoded) if not isinstance(input_decoded, dict) else input_decoded
     strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
     new_exp_iri_list = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
     return new_exp_iri_list
