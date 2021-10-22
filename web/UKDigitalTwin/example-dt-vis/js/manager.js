@@ -43,7 +43,7 @@ class DigitalTwinManager {
 	 * @param {function} callback optional function to run once all metadata has been read.
 	 */
 	readMetadata(overallMeta, callback = null) {
-		this._dataRegistry = new DigitalTwinDataRegistry();
+		this._dataRegistry = new DataRegistry();
 		this._dataRegistry.loadMetaData(overallMeta, callback);
 	}
 
@@ -66,6 +66,8 @@ class DigitalTwinManager {
 	plotAdditionalData(groups) {
 		this._sourceHandler.addAdditionalSources(groups);
 		this._layerHandler.addAdditionalLayers(groups);
+		
+		// TODO - Rebuild tree?
 	}
 
 	/**
@@ -79,6 +81,17 @@ class DigitalTwinManager {
 		this._sourceHandler.removeAdditionalSources(groups);
 		
 		// TODO - Remove layers
+		// TODO - Rebuild tree?
+	}
+
+	/**
+	 * Will remove all Additional Data sets that are currently shown 
+	 * on the map.
+	 */
+	 removeAllAdditionalData() {
+		// TODO - Remove sources		
+		// TODO - Remove layers
+		// TODO - Rebuild tree?
 	}
 	
 	/**
@@ -112,8 +125,7 @@ class DigitalTwinManager {
 		this._layerHandler = new LayerHandler(this._dataRegistry, this._map);
 		this._panelHandler = new PanelHandler(this._map);
 
-		// TEST - Hide the side panel for now - TEST
-		this.togglePanelExpansion();
+		this._panelHandler.toggleExpansion();
 
 		return this._map;
 	}
@@ -121,19 +133,21 @@ class DigitalTwinManager {
 	/**
 	 * Build the controls for the Camera, Terrain, and Layer Tree.
 	 * 
-	 * @param {String} treeFile Location of JSON defining layer tree structure.
-	 * @param {Function} callback Optional callback to fire when layer selections change.
+	 * @param {string} treeFile Location of JSON defining layer tree structure.
+	 * @param {function} treeCallback Optional callback to fire when tree selections change.
+	 * @param {function} treeCallback Optional callback to fire when dropdown selections change.
 	 */
-	 showControls(treeFile, callback = null) {
+	 showControls(treeFile, treeCallback = null, selectCallback = null) {
 		// Initialise map controls
 		this._controlHandler = new ControlHandler(
 			this._map, 
+			this._dataRegistry,
 			this._map.getCenter(), 
 			this._map.getZoom(), 
-			callback
+			treeCallback
 		);
 
-		this._controlHandler.showControls(treeFile);
+		this._controlHandler.showControls(treeFile, selectCallback);
 	}
 
 	/**
@@ -149,8 +163,8 @@ class DigitalTwinManager {
 	 * 
 	 * @param {Element} control event source 
 	 */
-	 onGroupChange(control) {
-		this._controlHandler.onGroupChange(control);
+	 onLayerGroupChange(control) {
+		this._controlHandler.onLayerGroupChange(control);
 	}
 
 	/**
@@ -202,6 +216,10 @@ class DigitalTwinManager {
 	 */
 	togglePanelMode() {
 		this._panelHandler.toggleMode();
+	}
+
+	onGroupSelectChange(selectID, selectValue) {
+		this._controlHandler.onGroupSelectChange(selectID, selectValue);
 	}
 
 

@@ -2,7 +2,7 @@
  * This class handles finding, reading, and storing the metadata that outlines
  * the standard format for Digital Twin visualisations.
  */
-class DigitalTwinDataRegistry {
+class DataRegistry {
 
     /**
      * Overall meta data.
@@ -17,7 +17,7 @@ class DigitalTwinDataRegistry {
     /**
      * Metadata for additional data.
      */
-    _additionalMeta = {};
+    _additionalMeta = [];
 
     /**
      * Returns the metadata for the entire visualisation.
@@ -70,7 +70,9 @@ class DigitalTwinDataRegistry {
      * @returns metadata
      */
     getAdditionalGroup(groups) {
-        return this.#recurseAdditional(this._additionalMeta, 0, groups);
+        var result = [];
+        this.#recurseAdditional(this._additionalMeta, 0, groups, result);
+        return result[0];
     }
 
     /**
@@ -80,14 +82,27 @@ class DigitalTwinDataRegistry {
      * @param {*} groups 
      * @returns 
      */
-    #recurseAdditional(currentGroup, i, groups) {
-        if(i >= groups.length) return currentGroup;
+    #recurseAdditional(currentGroup, i, groups, result) {
+        if(result.length > 0) return;
 
-        if(currentGroup[groups[i]] != null) {
-            return this.#recurseAdditional(currentGroup[groups[i]], i + 1, groups);
-        } else {
-            return null;
-        }
+        if(currentGroup["name"] === groups[i]) {
+            if(i == (groups.length - 1)) {
+                result[0] = currentGroup;
+
+            } else if(currentGroup["groups"]["groups"]) {
+               for(var j = 0; j < currentGroup["groups"]["groups"].length; j++) {
+                    this.#recurseAdditional(currentGroup["groups"]["groups"][j], i + 1, groups, result);
+                }
+            }
+        } else if(currentGroup["groups"]) {
+           for(var j = 0; j < currentGroup["groups"].length; j++) {
+                this.#recurseAdditional(currentGroup["groups"][j], i, groups, result);
+            }
+        } else if(currentGroup.length > 0) {
+            for(var j = 0; j < currentGroup.length; j++) {
+                this.#recurseAdditional(currentGroup[j], i, groups, result);
+            }
+         }
     }
 
     /**
@@ -111,15 +126,24 @@ class DigitalTwinDataRegistry {
 
         promise.then(
             function() {
+                var promises = [];
                 var fixedPromise = registry.#loadFixedMeta(registry, rootDir);
-                var additionalPromises = registry.#loadAdditionalMeta(registry, rootDir);
-
-                var allPromises = additionalPromises.concat([fixedPromise]);
-                Promise.all(allPromises).then(() => {
-                    console.log("INFO: All metadata has now been loaded.");
+                promises.push(fixedPromise);
+                
+                if(registry._overallMeta["additionalDirectory"]) {
+                    var additionalDir = rootDir + registry._overallMeta["additionalDirectory"];
+                    var additionalPromise = registry.#loadAdditionalMeta(registry, additionalDir, registry._additionalMeta);
+                    promises.push(additionalPromise);
+                } else {
+                    // No additional data sets, hide the selection controls
+                    document.getElementById("selectionsContainer").style.display = "none";
+                }
+            
+                Promise.all([promises]).then(() => {
+                    console.log("INFO: Metadata for the Fixed Data sets has been loaded.");
+                    console.log("INFO: Metadata for the Additional Data sets has been loaded.");
                     if(callback != null) callback();
-                });
-              
+                });              
             },
             function(error) {
                 console.log("ERROR: Could not load metadata!");
@@ -137,58 +161,49 @@ class DigitalTwinDataRegistry {
         let fixedDirectory = self._overallMeta["fixedDirectory"];
         let fixedMetaFile = rootDir + fixedDirectory + "/meta.json";
 
-        var promise = $.getJSON(fixedMetaFile, function(json) {
+        return $.getJSON(fixedMetaFile, function(json) {
             self._fixedMeta = json;
-            console.log("INFO: Metadata for the Fixed Data sets has been loaded.");
-        });
-
-        return promise;     
-    }
-   
-    /**
-     * Loads the metadata that describes the additional data sets.
-     * 
-     * @param {DigitalTwinDataLoader} self 
-     * @param {string} rootDir root directory of data structures.
-     */
-    #loadAdditionalMeta(self, rootDir) {
-        let additionalRoot = self._overallMeta["additionalDirectory"];
-        let additionalDirectories = self._overallMeta["additionalSubdirectories"];
-
-        var promises = []
-        additionalDirectories.forEach(additionalDirectory => {
-            let additionalMeta = rootDir + additionalRoot + "/" + additionalDirectory + "/meta.json";
-            let directories = additionalDirectory.split("/");
-
-            try {
-                promises.push($.getJSON(additionalMeta, function(json) {
-                    var additionalMeta = json;
-                    self.#buildAdditionalTree(self._additionalMeta, directories, 0, additionalMeta);
-                    console.log("INFO:  Metadata for Additional Data set at '" + additionalDirectory + "' has been loaded.");
-                }));
-            } catch(error) {
-                console.log("ERROR: Could not find/read 'meta.json' files for additional directory.");
-            }       
-        });
-        return promises;
+        }).promise();
     }
 
+
     /**
-     * Recursively builds a tree structure for the additional
-     * data directories.
      * 
-     * @param {array} parent target array
-     * @param {string[]} directories directory stucture
-     * @param {int} i current level
-     * @param {*} last object to store at final level
+     * @param {*} self 
+     * @param {*} parentDir 
+     * @param {*} parentEntry 
+     * @returns 
      */
-    #buildAdditionalTree(parent, directories, i, last) {
-        if(i == (directories.length - 1)) {
-            if(!parent[directories[i]]) parent[directories[i]] = last;
-        } else {
-            if(!parent[directories[i]]) parent[directories[i]] = {};
-            this.#buildAdditionalTree(parent[directories[i]], directories, i + 1, last);
-        }
+    #loadAdditionalMeta(self, parentDir, parentEntry) {
+        let metaFile = parentDir + "/meta.json";
+        var promise = $.getJSON(metaFile, function(json) {
+            return json;
+        });
+
+        return promise.then(
+            function(json) {
+               
+                if(json["dataSets"]) {
+                    parentEntry["dataSets"] = json["dataSets"];    
+
+                } else if(json["groups"]) {
+                    if(parentEntry.length == 0) {
+                        parentEntry.push(json);
+                    } else {
+                        parentEntry["groups"] = json;
+                    }
+
+                    var promises = [];
+                    for(var i = 0; i < json["groups"].length; i++) {
+                        let groupEntry = json["groups"][i];
+                        let groupDir = parentDir + "/" + groupEntry["directory"];
+                        
+                        promises.push(self.#loadAdditionalMeta(self, groupDir, groupEntry));
+                    }
+                    return Promise.all(promises);
+                } 
+            }
+        );
     }
 
 

@@ -37,8 +37,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Digital Twin Controls */
 #controlContainer {
 	width: 250px;
-	height: 300px;
-
+	height: calc(100% - 40px);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -144,7 +143,7 @@ h1, h2, h3, h4, h5, h6 {
 	width: calc(100% - 100px);
 	height: calc(100% - 100px);
 	border-width: 1px;
-	border-radius: 2%;
+	border-radius: 8px;
 }
 #expandButtonContainer {
 	float: right;
@@ -353,4 +352,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .time-series-table tr:nth-child(even) {
 	background-color: #FAFAFA;
+}
+
+
+/* Group controls */
+#selectionsContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	padding: 10px;
+	margin-top: 10px;
+	width: 100%;
+	min-height: 150px;
+}
+#selectionsContainer p {
+	margin-bottom: 10px;
+}
+#selectContainer {
+	height: 25px;
+	margin-top: 5px;
+}
+#selectContainer label {
+	display: inline-block;
+	width: 29%;
+	height: 25px;
+}
+#selectContainer select {
+	width: 69%;
+	height: 25px;
+	font-size: 9pt;
 }

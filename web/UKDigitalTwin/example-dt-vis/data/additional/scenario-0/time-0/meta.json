@@ -1,11 +1,11 @@
 {
-    "group": {
-        "name": "scenario-0",
-        "locationType": "polygon",
-        "locationFile": "scenario-0.geojson",
-        "metaFiles": ["scenario-0-meta.json"]
-    },
     "dataSets": [
+        {
+            "name": "boundary",
+            "locationFile": "bounary.geojson",
+            "locationType": "polygon",
+            "metaFiles": ["boundary-meta.json"]
+        },
         {
             "name": "assets-1",
             "metaFiles": ["assets-1-meta.json"],

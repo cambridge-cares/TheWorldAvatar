@@ -6,11 +6,7 @@
     "defaultCenter": [0.3976, 52.7543],
     "defaultZoom": 8,
 
+    "selectionsTitle": "Current Group:",
     "fixedDirectory": "fixed",
-    "additionalDirectory": "additional",
-    "additionalSubdirectories": [
-        "scenario-0/time-0",
-        "scenario-1/time-0",
-        "scenario-1/time-1"
-    ]
+    "additionalDirectory": "additional"
 }

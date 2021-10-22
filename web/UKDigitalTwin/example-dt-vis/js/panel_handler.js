@@ -270,7 +270,7 @@ class PanelHandler {
 
 			sidePanel.classList.replace("small", "large");
 			document.getElementById("map").style.width = "100%";
-			document.getElementById("controlsParent").style.visibility = "hidden";
+			document.getElementById("controlsContainer").style.visibility = "hidden";
 
 			leftButton.style.visibility = "hidden";
 			rightButton.src = "./img/collapse.png";
@@ -288,7 +288,7 @@ class PanelHandler {
 
 			sidePanel.classList.replace("large", "small");
 			document.getElementById("map").style.width = "calc(100% - 500px)";
-			document.getElementById("controlsParent").style.visibility = "visible";
+			document.getElementById("controlsContainer").style.visibility = "visible";
 
 			leftButton.style.visibility = "visible";
 			rightButton.src = "./img/expand.png";

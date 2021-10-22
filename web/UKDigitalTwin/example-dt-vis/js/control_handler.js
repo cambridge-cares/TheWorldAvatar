@@ -31,11 +31,15 @@ class ControlHandler {
 				<label for="satellite-streets">Satellite (with Streets)</label>
 			</div>
 			<div id="layerContainer">TREE-GOES-HERE</div>
+			<div id="selectionsContainer"></div>
 		</div>
 	`;
 
 	// MapBox map
 	_map;
+
+	//
+	_datRegistry;
 	
 	// JSON metadata defining tree structure
 	_treeSpecification;
@@ -47,7 +51,10 @@ class ControlHandler {
 	_defaultZoom;
 
 	// Optional callback to fire when layer selections change
-	_callback;
+	_treeCallback;
+
+	//
+	_selectCallback;
 
 	// HTML string of rendered tree.
 	_treeHTML;
@@ -56,16 +63,17 @@ class ControlHandler {
 	 * Initialise a new MapControls instance.
 	 * 
 	 * @param {MapBox Map} map MapBox map 
-
+	 * @param {DataRegistry} dataRegistry
 	 * @param {float[]} defaultCenter default center of map
 	 * @param {float} defaultZoom default zoom level of map
-	 * @param {function} callback Optional callback to fire when tree selections change
+	 * @param {function} treeCallback Optional callback to fire when tree selections change
 	 */
-	constructor(map, defaultCenter, defaultZoom, callback = null) {
+	constructor(map, dataRegistry, defaultCenter, defaultZoom, treeCallback = null) {
 		this._map = map;
+		this._dataRegistry = dataRegistry;
 		this._defaultCenter = defaultCenter;
 		this._defaultZoom = defaultZoom;
-		this._callback = callback;
+		this._treeCallback = treeCallback;
 	}
 
 	/**
@@ -74,16 +82,88 @@ class ControlHandler {
 	 * 
 	 * @param {string} treeFile JSON file defining layer tree
 	 */
-	showControls(treeFile) {
+	showControls(treeFile, selectCallback) {
+		this._selectCallback = selectCallback;
+
 		var that = this;
 		let callback = function() {
 			console.log("INFO: Tree specification should now have been read.");
 			document.getElementById("controlsContainer").innerHTML = that.#controlHTML;
 			that.rebuildTree();
+
+			// Build the initial dropdown selections
+			let selectString = that.buildDropdown(that._dataRegistry.additionalMeta[0]);
+			document.getElementById("selectionsContainer").innerHTML += `
+				<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`
+			    + selectString
+			;
+
 		};
 
 		// Read the tree file then run the callback
 		this.#readTreeFile(treeFile, callback);
+	}
+
+	/**
+	 * 
+	 * @param {*} currentMeta 
+	 * @param {*} parentDivID 
+	 * @returns 
+	 */
+	buildDropdown(currentMeta, parentDivID) {
+		if(currentMeta["label"]) {
+			let label = currentMeta["label"];
+			let groups = currentMeta["groups"];
+
+			var htmlString = `
+				<div id="selectContainer">
+				<label for="` + label + `">` + label + `:</label>
+				<select id="` + label + `" onchange="manager.onGroupSelectChange(this.id, this.value)">
+				<option value="" disabled selected hidden>Select an option...</option>
+			`;
+
+			for(var i = 0; i < groups.length; i++) {
+				let groupName = groups[i]["name"];
+				let value = (parentDivID == null) ? groupName : parentDivID + "/" + groupName;
+
+				htmlString += `
+					<option value="` + value + `">` + groupName + `</option>
+				`;
+			}
+
+			htmlString += `
+				</select>
+				<div id="select-` + label + `"></div>
+				</div>
+			`;
+		}
+
+		return htmlString;
+	}
+
+	/**
+	 * 
+	 * @param {*} groupID 
+	 * @param {*} value 
+	 */
+	onGroupSelectChange(groupID, value) {
+		console.log("INFO: Changed selection of '" + groupID + "' to '" + value + "'.");
+
+		let groupNames = value.split("/");
+		let metaGroup = this._dataRegistry.getAdditionalGroup(groupNames);
+
+		if(metaGroup["groups"]) {
+			// This group has subgroups, need to build more dropdowns
+			let selectString = this.buildDropdown(metaGroup["groups"], value);
+			document.getElementById("select-" + groupID).innerHTML = selectString;
+
+		} else if(metaGroup["dataSets"]) {
+			// Lowest level group, can show data now
+			console.log("INFO: The following leaf group has been selected, '" + groupNames + "'.");
+			if(this._selectCallback != null) {
+				this._selectCallback(groupNames);
+			}
+		}
 	}
 
 	/**
@@ -162,7 +242,7 @@ class ControlHandler {
 	 * 
 	 * @param {Element} control event source 
 	 */
-	onGroupChange(control) {
+	 onLayerGroupChange(control) {
 		var groupName = control.id;
 		var newState = control.checked;
 
@@ -301,7 +381,7 @@ class ControlHandler {
 			var groupName = treeEntry["groupName"];
 
 			this._treeHTML += `<li>`;
-			this._treeHTML += "<input type='checkbox' onclick='manager.onGroupChange(this);' id='" + groupName + "'>";
+			this._treeHTML += "<input type='checkbox' onclick='manager.onLayerGroupChange(this);' id='" + groupName + "'>";
 			this._treeHTML += "<label for='" + groupName + "'>" + groupName + "</label>";
 			this._treeHTML += `<ul class="nested">`;
 
@@ -452,9 +532,9 @@ class ControlHandler {
 						layers[i]["currentState"] = "hidden";
 						console.log("Layer '" + layers[i]["layerName"] + "' is now hidden");
 
-						if(this._callback != null) {
+						if(this._treeCallback != null) {
 							// Fire callback instead of default layer changing code
-							this._callback(layers[i]["layerName"], false);
+							this._treeCallback(layers[i]["layerName"], false);
 
 						} else {
 							// Get MapBox to actually change visibility
@@ -470,9 +550,9 @@ class ControlHandler {
 			treeEntry["currentState"] = (newState) ? "visible" : "hidden";
 			console.log("Layer '" + layerName + "' is now " + treeEntry["currentState"]);
 
-			if(this._callback != null) {
+			if(this._treeCallback != null) {
 				// Fire callback instead of default layer changing code
-				this._callback(layerName, newState);
+				this._treeCallback(layerName, newState);
 				
 			} else {
 				// Get MapBox to actually change visibility

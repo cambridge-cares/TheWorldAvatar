@@ -15,6 +15,8 @@ class SourceHandler {
      */
     _map;
 
+    _currentAdditionals = [];
+
 
     /**
      * Initialise a new DigitalTwinDataHandler.
@@ -54,8 +56,16 @@ class SourceHandler {
      * @param {string[]} groups
      */
     addAdditionalSources(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
+        if(this._currentAdditionals.includes(groups)) {
+            // Already plotted, skip
+            return;
+        }
 
+        console.log("Plotting: " + groups);
+        this._currentAdditionals.push(groups);
+        let result = this._dataRegistry.getAdditionalGroup(groups);
+        console.log(result);
+        
         if(result != null) {
             let group = result["group"];
             let name = group["name"];
@@ -81,6 +91,10 @@ class SourceHandler {
      * @param {string[]} groups
      */
      removeAdditionalSources(groups) {
+        if(this._currentAdditionals.includes(groups)) {
+            this._currentAdditionals.remove(groups);
+        }
+
         let result = this._dataRegistry.getAdditionalGroup(groups);
 
         if(result != null) {

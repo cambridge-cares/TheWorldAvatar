@@ -73,13 +73,20 @@
 				// Plot the Fixed Data locations
 				manager.plotFixedData();
 
-				// TEST - Plot some Additional Data - TEST
-				manager.plotAdditionalData(["scenario-0", "time-0"]);
-
 				// On first load only
 				if(!loadedOnce) {
 					// Build and show the controls
-					manager.showControls("./data/layer-tree.json");
+
+					// This callback will be fired when a selection in the layer tree changes
+					let treeCallback = null;
+					
+					// This callback will be fired when a final group is selected in the dropdowns
+					let selectCallback = function(selectedGroups) {
+						manager.removeAllAdditionalData();
+						manager.plotAdditionalData(selectedGroups);
+					};
+
+					manager.showControls("./data/layer-tree.json", treeCallback, selectCallback);
 					loadedOnce = true;
 				}
 			});
