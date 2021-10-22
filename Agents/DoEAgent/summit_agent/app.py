@@ -31,7 +31,8 @@ def monitorDerivation():
             agent_inputs = getDoEAgentInputs(SPARQL_QUERY_ENDPOINT, d)
             jpsBaseLib_view.DerivationSparql.markAsInProgress(storeClient, d)
             newexp_iri = setUpJob(agent_inputs)
-            derivationClient.updateStatusAtJobCompletion(storeClient, newexp_iri if isinstance(newexp_iri, list) else [newexp_iri])
+            logger.info("The suggested experiments are: " + '; '.join(newexp_iri))
+            derivationClient.updateStatusAtJobCompletion(d, newexp_iri)
         elif (jpsBaseLib_view.DerivationSparql.isInProgress(storeClient, d)):
             pass
         elif (jpsBaseLib_view.DerivationSparql.isFinished(storeClient, d)):
