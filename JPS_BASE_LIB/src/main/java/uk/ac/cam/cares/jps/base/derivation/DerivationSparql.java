@@ -346,11 +346,11 @@ public class DerivationSparql{
 			Variable status = SparqlBuilder.var(statusQueryKey);
 			Variable newDerivedIRI = SparqlBuilder.var(derivedQueryKey);
 			
-			GraphPattern statusPattern = GraphPatterns.and(iri(derivation).has(hasStatus, status));
+			GraphPattern statusPattern = iri(derivation).has(hasStatus, status);
 			GraphPattern derivedPattern = status.has(hasNewDerivedIRI, newDerivedIRI);
 			
 			query.prefix(p_derived).where(statusPattern, derivedPattern).select(newDerivedIRI);
-			JSONArray queryResult = storeClient.executeQuery();
+			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 			
 			List<String> newDerived = new ArrayList<>();
 			
