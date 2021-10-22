@@ -22,6 +22,42 @@ import uuid
     #             {"name": "SystemResponse_2", "direction": "minimise"}], \
     #             "historicalData": previous_results, \
     #             "numOfExp": 1}
+def createOntoDoENewExperimentIRI(endpoint, doe_instance, new_exp_iri_list):
+    new_exp_iri_list = trimIRI(new_exp_iri_list)
+    ontodoe_new_exp_iri = getNameSpace(doe_instance) + getShortName(ONTODOE_NEWEXPERIMENT) + '_' + str(uuid.uuid4())
+
+    update = """INSERT DATA { \
+             <%s> <%s> <%s> . """ % (doe_instance, ONTODOE_PROPOSESNEWEXPERIMENT, ontodoe_new_exp_iri)
+    for new_exp_iri in new_exp_iri_list:
+        update = update + """<%s> <%s> <%s> . """ % (ontodoe_new_exp_iri, ONTODOE_REFERSTO, new_exp_iri)
+    update = update + """}"""
+    performUpdate(endpoint, update)
+    return ontodoe_new_exp_iri
+
+def getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
+    historicalData_instance = trimIRI(historicalData_instance)
+    query = """SELECT ?doe_instance \
+            WHERE { \
+            ?doe_instance <%s> <%s> ; \
+                <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance, ONTODOE_HASDOMAIN, domain_instance)
+    for sysres in systemResponse_instances:
+        query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres)
+    query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historicalData_instance)
+    response = performQuery(endpoint, query)
+    if (len(response) == 0 ):
+        raise Exception("""Unable to identify the OntoDoE:DesignOfExperiment instance given input: \
+            OntoDoE:Strategy <%s>; \
+            OntoDoE:Domain <%s>; \
+            OntoDoE:SystemResponse <%s>; \
+            OntoDoE:HistoricalData <%s>.""" % (strategy_instance, domain_instance, ">, <".join(systemResponse_instances), historicalData_instance))
+    elif (len(response) > 1):
+        raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
+            OntoDoE:Strategy <%s>; \
+            OntoDoE:Domain <%s>; \
+            OntoDoE:SystemResponse <%s>; \
+            OntoDoE:HistoricalData <%s>. \
+            The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance, domain_instance, ">, <".join(systemResponse_instances), historicalData_instance, ">, <".join([list(r.values())[0] for r in response])))
+    return response[0]
 
 def getDoEAgentInputs(endpoint, derivation):
     derivation = trimIRI(derivation)
@@ -366,6 +402,12 @@ def performQuery(endpoint, query):
     return json.loads(response)
 
 # This function performs update to knowledge graph
+def performUpdate(endpoint, update):
+    KGClient = jpsBaseLib_view.RemoteStoreClient()
+    KGClient.setUpdateEndpoint(endpoint)
+    KGClient.executeUpdate(update)
+
+# This function performs update to knowledge graph
 def uploadOntology(filePath):
     KRClient = jpsBaseLib_view.KnowledgeRepository()
     KRClient.uploadOntology(TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY, filePath)
@@ -377,9 +419,20 @@ def getShortName(iri):
     else:
         return iri[iri.rfind('/')+1:]
 
+def getNameSpace(iri):
+    iri = trimIRI(iri)
+    if '#' in iri:
+        return iri[:iri.rfind('#')+1]
+    else:
+        return iri[:iri.rfind('/')+1]
+
 def trimIRI(iri):
-    if iri.startswith("<"):
-        iri = iri[1:]
-    if iri.endswith(">"):
-        iri = iri[:-1]
+    if isinstance(iri, list):
+        for i in range(len(iri)):
+            iri[i] = trimIRI(iri[i])
+    else:
+        if iri.startswith("<"):
+            iri = iri[1:]
+        if iri.endswith(">"):
+            iri = iri[:-1]
     return iri

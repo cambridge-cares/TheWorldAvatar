@@ -344,5 +344,33 @@ def main8():
     # test = derivationSparql.addTimeInstance(storeClient, DOEAGENT_ONTOAGENT_SERVICE)
     # print(test)
 
+def main9():
+    iri = ['http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe>', '<http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe', '<http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe>']
+    iri = trimIRI(iri)
+    print(iri)
+
+def main10():
+    iri = ['http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe>', '<http://www.theworldavatar.com/kb/ontoderivation/derivation_doe#Derivation_doe', '<http://www.theworldavatar.com/kb/ontoderivation/derivation_doe/Derivation_doe/>']
+    for i in iri:
+        print(getNameSpace(i))
+
+def trimIRI(iri):
+    if isinstance(iri, list):
+        for i in range(len(iri)):
+            iri[i] = trimIRI(iri[i])
+    else:
+        if iri.startswith("<"):
+            iri = iri[1:]
+        if iri.endswith(">"):
+            iri = iri[:-1]
+    return iri
+
+def getNameSpace(iri):
+    iri = trimIRI(iri)
+    if '#' in iri:
+        return iri[:iri.rfind('#')+1]
+    else:
+        return iri[:iri.rfind('/')+1]
+
 if __name__ == "__main__":
-    main8()
+    main10()

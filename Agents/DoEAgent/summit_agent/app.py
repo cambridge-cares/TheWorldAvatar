@@ -30,9 +30,9 @@ def monitorDerivation():
         if (jpsBaseLib_view.DerivationSparql.isRequested(storeClient, d)):
             agent_inputs = getDoEAgentInputs(SPARQL_QUERY_ENDPOINT, d)
             jpsBaseLib_view.DerivationSparql.markAsInProgress(storeClient, d)
-            newexp_iri = setUpJob(agent_inputs)
-            logger.info("The suggested experiments are: " + '; '.join(newexp_iri))
-            derivationClient.updateStatusAtJobCompletion(d, newexp_iri)
+            ontodoe_new_exp_iri = setUpJob(agent_inputs)
+            logger.info("The newly suggested experiments are referred by: " + ontodoe_new_exp_iri)
+            derivationClient.updateStatusAtJobCompletion(d, [ontodoe_new_exp_iri])
         elif (jpsBaseLib_view.DerivationSparql.isInProgress(storeClient, d)):
             pass
         elif (jpsBaseLib_view.DerivationSparql.isFinished(storeClient, d)):
@@ -57,18 +57,20 @@ def api():
     # Check arguments (query parameters)
     logger.info("Checking arguments...")
     input_decoded = unquote(request.url[len(request.base_url)+1:])
-    new_exp_iri_list = setUpJob(input_decoded)
+    ontodoe_new_exp_iri = setUpJob(input_decoded)
     # logger.info(str(type(historical_data_instances)))
-    return '; '.join(new_exp_iri_list)
+    return ontodoe_new_exp_iri
 
 def setUpJob(input_decoded):
     input_json = json.loads(input_decoded) if not isinstance(input_decoded, dict) else input_decoded
     strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
-    new_exp_iri_list = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
-    return new_exp_iri_list
+    ontodoe_new_exp_iri = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
+    return ontodoe_new_exp_iri
 
 def suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
     endpoint = SPARQL_QUERY_ENDPOINT
+
+    doe_instance_dict = getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
 
     strategy_dict = getDoEStrategy(endpoint, strategy_instance)
     designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
@@ -76,15 +78,15 @@ def suggest(strategy_instance, domain_instance, systemResponse_instances, histor
     first_experiment_dict = getFirstInstanceOfExperiment(endpoint, historicalData_instance)
     numOfNewExp_dict = getNumOfNewExpToGenerate(endpoint, historicalData_instance)
     
-    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict, **numOfNewExp_dict}
+    doe_info = {**doe_instance_dict, **strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict, **numOfNewExp_dict}
 
     next_exp = proposeNewExperiment(doe_info)
-    new_exp_iri_list = uploadNewExpToKG(doe_info, next_exp)
+    ontodoe_new_exp_iri = uploadNewExpToKG(doe_info, next_exp)
 
     logger.info(DataSet.data_to_numpy(next_exp))
     logger.info(next_exp.to_dict())
     logger.info(next_exp['ContinuousVariable_1'])
-    return new_exp_iri_list
+    return ontodoe_new_exp_iri
     # return DataSet.data_to_numpy(next_exp)
 
 

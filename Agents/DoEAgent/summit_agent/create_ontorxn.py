@@ -103,5 +103,7 @@ def uploadNewExpToKG(doe, next_exp: DataSet):
         new_exp_iri = new_exp_.createOntoRxnInstance()
         new_exp_.uploadOntoRxnInstanceToKG()
         new_exp_iri_list.append(new_exp_iri)
-
-    return new_exp_iri_list
+    
+    ontodoe_new_exp_iri = createOntoDoENewExperimentIRI(SPARQL_UPDATE_ENDPOINT, doe['doe_instance'], new_exp_iri_list)
+    
+    return ontodoe_new_exp_iri
