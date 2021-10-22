@@ -125,6 +125,15 @@ def getObjectRelationship(endpoint, rxn_instance, clz):
     res = [list(r.values())[0] for r in response]
     return res
 
+def getNumOfNewExpToGenerate(endpoint, historicalData_instance):
+    historicalData_instance = trimIRI(historicalData_instance)
+    query = """SELECT ?numOfExp \
+            WHERE {
+            <%s> <%s> ?numOfExp . \
+            }""" % (historicalData_instance, ONTODOE_NUMOFNEWEXP)
+    response = performQuery(endpoint, query)
+    return response[0]
+
 def getFirstInstanceOfExperiment(endpoint, historicalData_instance):
     historicalData_instance = trimIRI(historicalData_instance)
     query = PREFIX_RDF + \

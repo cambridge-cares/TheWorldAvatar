@@ -56,15 +56,15 @@ def api():
     # Check arguments (query parameters)
     logger.info("Checking arguments...")
     input_decoded = unquote(request.url[len(request.base_url)+1:])
-    new_exp = setUpJob(input_decoded)
+    new_exp_iri_list = setUpJob(input_decoded)
     # logger.info(str(type(historical_data_instances)))
-    return new_exp
+    return '; '.join(new_exp_iri_list)
 
 def setUpJob(input_decoded):
     input_json = json.loads(input_decoded)
     strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
-    new_exp = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
-    return new_exp
+    new_exp_iri_list = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
+    return new_exp_iri_list
 
 def suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
     endpoint = SPARQL_QUERY_ENDPOINT
@@ -73,16 +73,17 @@ def suggest(strategy_instance, domain_instance, systemResponse_instances, histor
     designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
     historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
     first_experiment_dict = getFirstInstanceOfExperiment(endpoint, historicalData_instance)
+    numOfNewExp_dict = getNumOfNewExpToGenerate(endpoint, historicalData_instance)
     
-    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict}
+    doe_info = {**strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict, **numOfNewExp_dict}
 
     next_exp = proposeNewExperiment(doe_info)
-    new_exp_iri = uploadNewExpToKG(doe_info, next_exp)
+    new_exp_iri_list = uploadNewExpToKG(doe_info, next_exp)
 
     logger.info(DataSet.data_to_numpy(next_exp))
     logger.info(next_exp.to_dict())
     logger.info(next_exp['ContinuousVariable_1'])
-    return new_exp_iri
+    return new_exp_iri_list
     # return DataSet.data_to_numpy(next_exp)
 
 

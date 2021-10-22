@@ -84,13 +84,6 @@ def uploadNewExpToKG(doe, next_exp: DataSet):
     """The next_exp is expected to be a DataSet
     """
     # print(type(df['ContinuousVariable_1'][0]))
-
-    for var in doe['continuousVariables']:
-        var['num'] = next_exp[var['name']][0]
-    
-    # createOntoRxnInstance(next_exp)
-    # return string
-
     # rxn_conditions = [{"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio', "id": 2, "num": 3}, \
     # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio', "id": 2, "num": 0.05}, \
     # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionTemperature', "num": 60}, \
@@ -99,8 +92,16 @@ def uploadNewExpToKG(doe, next_exp: DataSet):
     # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost', "id": 7}, \
     # {"clz": 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#SpaceTimeYield', "id": 8, "num": 0.5}]
     # endpoint = "http://theworldavatar.com/blazegraph/namespace/textontorxn/sparql"
+
+    new_exp_iri_list = []
     
-    new_exp_ = ReactionVariation(doe['first_exp'], doe['continuousVariables'], doe['systemResponses'], SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
-    new_exp_iri = new_exp_.createOntoRxnInstance()
-    new_exp_.uploadOntoRxnInstanceToKG()
-    return new_exp_iri
+    for i in range(len(next_exp)):
+        for var in doe['continuousVariables']:
+            var['num'] = next_exp[var['name']][i]
+        
+        new_exp_ = ReactionVariation(doe['first_exp'], doe['continuousVariables'], doe['systemResponses'], SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
+        new_exp_iri = new_exp_.createOntoRxnInstance()
+        new_exp_.uploadOntoRxnInstanceToKG()
+        new_exp_iri_list.append(new_exp_iri)
+
+    return new_exp_iri_list

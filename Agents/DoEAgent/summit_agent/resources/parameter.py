@@ -50,6 +50,7 @@ ONTODOE_UPPERLIMIT = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/dev
 ONTODOE_LOWERLIMIT = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#lowerLimit'
 ONTODOE_POSITIONALID = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#positionalID'
 ONTODOE_MAXIMISE = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#maximise'
+ONTODOE_NUMOFNEWEXP = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#numOfNewExp'
 ONTODOE_NRETRIES = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nRetries'
 ONTODOE_NSPECTRALPOINTS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nSpectralPoints'
 ONTODOE_NGENERATIONS = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#nGenerations'
