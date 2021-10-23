@@ -1,3 +1,6 @@
+import logging
+import pickle
+
 import blocking
 import utils_for_testing
 
@@ -5,7 +8,6 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
 
     def test_fullpairiterator(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #iter = blocking.FullPairIterator(src_onto, tgt_onto)
         params = {'name': 'FullPairIterator'}
         iterator = blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
@@ -16,15 +18,13 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
 
     def test_tokenbasedpairiterator_max20(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #iter = blocking.TokenBasedPairIterator(src_onto, tgt_onto,
-        #        min_token_length=3, max_token_occurrences_src=20, max_token_occurrences_tgt=20, reset_index=True)
         params = {
             'name': 'TokenBasedPairIterator',
             'model_specific': {
                 'min_token_length': 3,
                 'max_token_occurrences_src': 20,
                 'max_token_occurrences_tgt': 20,
-                'blocking_properties': ['name', 'isOwnedBy'],
+                'blocking_properties': ['name', 'isOwnedBy/hasName'],
                 'reset_index': True,
             }
         }
@@ -32,20 +32,18 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         count = 0
         for _, _ in iterator:
             count += 1
-        self.assertEqual(count, 2432)
+        self.assertEqual(count, 4726)
         self.assertEqual(len(iterator), count)
 
     def test_tokenbasedpairiterator_max30(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #it = blocking.TokenBasedPairIterator(src_onto, tgt_onto,
-        #        min_token_length=3, max_token_occurrences_src=30, max_token_occurrences_tgt=30, reset_index=True)
         params = {
             'name': 'TokenBasedPairIterator',
             'model_specific': {
                 'min_token_length': 3,
                 'max_token_occurrences_src': 30,
                 'max_token_occurrences_tgt': 30,
-                'blocking_properties': ['name', 'isOwnedBy'],
+                'blocking_properties': ['name', 'isOwnedBy/hasName'],
                 'reset_index': True,
             }
         }
@@ -53,5 +51,44 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
         count = 0
         for _, _ in iterator:
             count += 1
-        self.assertEqual(count, 3083)
+        self.assertEqual(count, 7326)
         self.assertEqual(len(iterator), count)
+
+    def test_create_dataframe_assert_Windplant(self):
+        ontosrc, _ = self.load_kwl_gppd_ontologies()
+        dfsrc = blocking.create_dataframe_from_ontology(ontosrc)
+        columns =  [ str(c) for c in dfsrc.columns ]
+        logging.info('columns=%s', columns)
+        self.assertIn('isOwnedBy/hasName', columns)
+        self.assertIn('type', columns)
+        rdf_types = []
+        for _, row in dfsrc.iterrows():
+            for t in row['type']:
+                for c in t.split(' '):
+                    if c not in rdf_types:
+                        rdf_types.append(c)
+        logging.info('unique rdf types=%s', rdf_types)
+        self.assertIn('WindPlant', rdf_types)
+
+    def test_create_token_index_assert_Sandhofer(self):
+        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+
+        params = {
+            'name': 'TokenBasedPairIterator',
+            'model_specific': {
+                'min_token_length': 3,
+                'max_token_occurrences_src': 20,
+                'max_token_occurrences_tgt': 20,
+                'blocking_properties': ['name', 'isOwnedBy/hasName'],
+                'reset_index': True,
+            }
+        }
+
+        blocking.create_iterator(src_onto, tgt_onto, params)
+        df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens
+
+        #logging.info(df_index_tokens.to_string())
+
+        logging.info('\n%s', df_index_tokens.loc['berlin'])
+        logging.info('\n%s', df_index_tokens.loc['medienversorgung'])
+        logging.info('\n%s', df_index_tokens.loc['sandhofer'])

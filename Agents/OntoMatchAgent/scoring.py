@@ -1,4 +1,5 @@
 import logging
+import math
 
 import nltk
 import numpy as np
@@ -43,6 +44,16 @@ def dist_equal(v1, v2):
     if v1 is None or v2 is None:
         return
     return (0 if v1 == v2 else 1)
+
+def dist_cosine_with_tfidf(v1, v2):
+    if not check_str(v1, v2):
+        return None
+    # TODO-AE URGENT 211021 replaced by unpruned (original) index to get same tfidf weights as in jupyter notebook
+    #df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens
+    df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens_unpruned
+    #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
+    n_max_idf = 30
+    return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
 
 def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, decrease = 'linear'):
     #TODO-AE
@@ -147,9 +158,9 @@ class ScoreManager():
 
         return result
 
-    def calculate_scores_between_datasets(self):
+    def calculate_similarities_between_datasets(self):
 
-        logging.info('calculating scores')
+        logging.info('calculating similarities')
         count = 0
         rows = []
         for pos1, pos2 in tqdm(self.pair_iterator):
@@ -160,7 +171,12 @@ class ScoreManager():
             row1 = self.data1.loc[idx1]
             row2 = self.data2.loc[idx2]
             assert row1['pos'] == pos1
-            assert row2['pos'] == pos2
+            try:
+                assert row2['pos'] == pos2
+            except ValueError as err:
+                logging.debug('%s', err)
+                logging.debug('\n%s', row2.to_string())
+                raise err
             row = [idx1, idx2, pos1, pos2]
             scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples)
             row.extend(scores)
@@ -196,8 +212,10 @@ class ScoreManager():
 
         #TODO-AE store the position of column in score_fct ...
         columns = []
+        str_column_prop = ''
         for c in range(len(self.prop_prop_fct_tuples)):
             columns.append(c)
+            str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
 
         index_column_name = 'idx_' + str(dataset_id)
 
@@ -224,16 +242,17 @@ class ScoreManager():
 
         df_result = pd.DataFrame(result_rows)
         df_result.set_index([index_column_name], inplace=True)
+
         logging.info('calculated maximum scores, number of entities=%s, number of pairs=%s', len(df_result), count)
+        logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 
 def create_score_manager(srconto, tgtonto, params_blocking):
-    dframe1 = blocking.create_dataframe_from_ontology(srconto)
-    dframe2 = blocking.create_dataframe_from_ontology(tgtonto)
-    logging.info('columns of dataset 1 =%s', dframe1.columns)
-    logging.info('columns of dataset 2 =%s', dframe2.columns)
-
+    #dframe1 = blocking.create_dataframe_from_ontology(srconto)
+    #dframe2 = blocking.create_dataframe_from_ontology(tgtonto)
     it = blocking.create_iterator(srconto, tgtonto, params_blocking)
+    dframe1 = blocking.TokenBasedPairIterator.df_src
+    dframe2 = blocking.TokenBasedPairIterator.df_tgt
     manager = ScoreManager(dframe1, dframe2, it)
 
     return manager
@@ -259,16 +278,13 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
 
     logging.info('added prop prop sim tuples, number=%s', len(manager.get_prop_prop_fct_tuples()))
 
-    manager.calculate_scores_between_datasets()
+    manager.calculate_similarities_between_datasets()
 
     df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
 
-    logging.info('\nmax scores for dataset 1:\n------------------')
-    logging.info('\n%s', df_max_scores_1)
-    logging.info('\n%s', df_max_scores_1.describe())
+    logging.info('\nmax scores for dataset 1:\n------------------\n%s', df_max_scores_1)
 
     means = df_max_scores_1.describe().loc['mean']
-    logging.info('means=\n%s', means)
 
     pos_sim_fcts = {}
     for i, s in enumerate(similarity_functions):
@@ -313,3 +329,93 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
 
     logging.info('found property mapping=%s', property_mapping)
     return property_mapping
+
+def get_tfidf(frequencies, n):
+    tfidf = {}
+    for t, freq in frequencies.items():
+        max_inverse = max(1, n / freq)
+        tfidf[t] = math.log(max_inverse)
+    return tfidf
+
+def calculate_dot_product(a, b):
+    dot = 0
+    tokens = set(a.keys()).intersection(set(b.keys()))
+    for t in tokens:
+        dot += a[t] * b[t]
+    return dot
+
+def calculate_norm(a):
+    norm = 0
+    for _, v in a.items():
+        norm += math.pow(v, 2)
+    return math.pow(norm, 0.5)
+
+def get_frequencies(tokens, df_index_tokens):
+    #TODO-AE get_frequences:
+    # a) df_index_token is global / class variable
+    # b) not very efficient because vectors are calculated more than once
+    # c) different modi: count_2 only and count_1 and count_2....
+    frequencies = {}
+    for t in tokens:
+        freq_sum = 0
+        for c in ['count_1', 'count_2']:
+            try:
+                row = df_index_tokens.loc[t]
+            except KeyError:
+                continue
+
+            freq = row[c]
+            if freq and not np.isnan(freq):
+                freq_sum += freq
+        if freq_sum > 0:
+            frequencies.update({t: freq_sum})
+    return frequencies
+
+def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
+
+    # n_max_idf = cutoff, idf becomes zero if token frequency is above
+
+    if not s1 and not s2:
+        return 0
+    if not s1 or not s2:
+        return 1
+
+    tokens1 = blocking.tokenize(s1)
+    tokens2 = blocking.tokenize(s2)
+
+    # TODO-AE move this to index token generation (which solves also problems such as pant-y-..., bigrams), also very inefficient here
+    # this is only a hack: it is not symmetric (e.g. with respect to 'count_1' instead of 'count_2' -> None ...!
+    # consider edit distance == 1 between tokens
+
+    for t1 in tokens1.copy():
+        for t2 in tokens2:
+            edit_dist = nltk.edit_distance(t1, t2)
+            if edit_dist == 1:
+                tokens1.remove(t1)
+                tokens1.append(t2)
+                break
+
+    freq1 = get_frequencies(tokens1, df_index_tokens)
+    freq2 = get_frequencies(tokens2, df_index_tokens)
+
+    if log:
+        print(freq1)
+        print(freq2)
+
+    tfidf1 = get_tfidf(freq1, n_max_idf)
+    tfidf2 = get_tfidf(freq2, n_max_idf)
+
+    dot = calculate_dot_product(tfidf1, tfidf2)
+    if dot == 0:
+        return 1 - 0
+
+    norm1 = calculate_norm(tfidf1)
+    norm2 = calculate_norm(tfidf2)
+
+    #TODO-AE 211019 URGENT
+    cosine_distance = 1 - round(dot / (norm1 * norm2), 4)
+
+    if log:
+        print(tfidf1, tfidf2, dot, norm1, norm2, cosine_distance)
+
+    return cosine_distance

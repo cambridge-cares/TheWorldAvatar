@@ -7,6 +7,7 @@ import nltk
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from owlready2 import * #get_ontology, default_world
 from spiral import ronin
+from tqdm import tqdm
 
 from valueMap import *
 from matchers.UnitConverter import UnitConverter
@@ -89,12 +90,12 @@ class Ontology():
             xcomment = list(default_world.sparql("""
                SELECT ?v
                {{ <{}> rdfs:comment ?v. }}""".format(x.iri)))
-            if len(xcomment)is not 0:
+            if len(xcomment) != 0:
                 self.comments.append(' '.join(xcomment[0]))
             else:
                 self.comments.append('')
 
-            if len(x.label.en) is not 0:
+            if len(x.label.en) != 0:
                 xlabels =x.name+' '+' '.join(x.label.en)
                 self.labels.append(xlabels)
             else:
@@ -170,9 +171,24 @@ class Ontology():
         instanceDict = corpora.Dictionary()
         li = self.getAllLiteralInstances(g)#search first for all triples with literal value
         ##############################################################################
-        vset = set()
-        for s,p,v in li:
-            if isinstance(v, rdflib.term.Literal) and len(str(v.value))<60:#filter in only Literal and string that is not too long
+
+        #TODO-AE 211021 HACK missing literal values (such as Bremen) if same value is object for different properties
+        #vset = set()
+        # vset_dict = {prop : set of values}
+        vset_dict = {}
+        count = 0
+        for s,p,v in tqdm(li):
+
+            #TODO-AE 211021 HACK missing literal values
+            vset = vset_dict.get(p)
+            if vset is None:
+                vset = set()
+                vset_dict[p] = vset
+                logging.debug('added value set for prop=%s', p)
+
+            #TODO-AE: BNA1866 - ask Shaocong why < 60 was required
+            #if isinstance(v, rdflib.term.Literal) and len(str(v.value))<60:#filter in only Literal and string that is not too long
+            if isinstance(v, rdflib.term.Literal):
                 if hasattr(v,'language') and v.language is not None and v.language!='en':
                     continue
                 if p == rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#label'):
@@ -220,8 +236,7 @@ class Ontology():
                         ipmap[id] = [pproperty]
                     id = idlist.index(parent)
                     if(pproperty, v) not in valuemap[id]:
-                       valuemap[id].append((pproperty, v))
-
+                        valuemap[id].append((pproperty, v))
 
         return idlist,namelist,instanceDict,instanceTokenDict,icmap, ipmap, valueMap(idlist,valuemap)
 
@@ -304,7 +319,6 @@ class Ontology():
             ##print(len(t),*t)
 
         re.extend([(s,p,v) for s,p,v in list(tere)])
-
 
         return re
 

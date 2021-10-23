@@ -24,6 +24,7 @@ CPSYSV1 = Namespace('http://www.theworldavatar.com/ontology/ontoeip/upper_level/
 CPSPACEEXT = Namespace('http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#')
 CPUNIT = Namespace('http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#')
 EIPREAL = Namespace('http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#')
+CPTECSYS = Namespace('http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#')
 
 def bind_prefixes(g):
     g.bind('rdf', RDF)
@@ -40,6 +41,7 @@ def bind_prefixes(g):
     g.bind('cpspaceext', CPSPACEEXT)
     g.bind('cpunit', CPUNIT)
     g.bind('eipreal', EIPREAL)
+    g.bind('cptecsys', CPTECSYS)
 
 def uri(prefix, entity):
     return URIRef(prefix + entity)
@@ -99,12 +101,10 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
     plant_name_norm = d.get('plantnamenorm')
     if plant_name_norm:
         name = replace_special_symbols(plant_name_norm)
-        name = name.replace(' ', '_')
         if country_short:
             name += '_' + country_short
     elif d['plantname']:
         name = replace_special_symbols(d['plantname'])
-        name = name.replace(' ', '_')
         if country_short:
             name += '_' + country_short
     else:
@@ -179,6 +179,13 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
             x = rdflib.BNode()
             g.add((s, CPSYSV1['isOwnedBy'], x))
             g.add((x, CPSYSV1['hasName'], Literal(o)))
+
+    o = d['primary_fuel']
+    if o:
+        x = rdflib.BNode()
+        g.add((s, CPTECSYS['realizes'], x))
+        #TODO-AE URGENT 211022 use URL instead of string
+        g.add((x, POW['consumesPrimaryFuel'], Literal(o)))
 
     return name
 
@@ -269,12 +276,10 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
 
     for i, row in dframe.iterrows():
         # TODO
-        orig_plant_name = v(row, 'name')
+        plant_name = v(row, 'name')
+        plant_name_norm = normalize_plant_name(plant_name)
 
-        if not 'Altbach' in orig_plant_name:
-            continue
-
-        if filter_strings and orig_plant_name not in filter_strings:
+        if filter_strings and plant_name not in filter_strings:
             continue
 
         owner = v(row, 'owner')
@@ -291,7 +296,9 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
         row = {
             'plant_id': i,
             'type': fuel_type,
-            'plantname': orig_plant_name,
+            'primary_fuel': fuel,
+            'plantname': plant_name,
+            'plantnamenorm': plant_name_norm,
             'owner': owner,
             'country': country,
             'long': v(row, 'longitude'),
@@ -475,15 +482,14 @@ def get_kwl(df):
 def normalize_plant_name(plant_name):
     plant_name_norm = plant_name
     if plant_name_norm:
-        plant_name_norm = plant_name_norm.replace('�', '')
-        plant_name_norm = plant_name_norm.replace('&', '')
-        plant_name_norm = plant_name_norm.replace('.', '')
-        plant_name_norm = plant_name_norm.replace('"', '')
-        plant_name_norm = plant_name_norm.replace('#', '')
-        plant_name_norm = plant_name_norm.replace(',', '_')
-        plant_name_norm = plant_name_norm.replace('-', '_')
-        plant_name_norm = plant_name_norm.replace('\n', '_')
-    return plant_name_norm
+        symbols = [',', '-', '–', '\n', ' ', u'\xa0']
+        for s in symbols:
+            plant_name_norm = plant_name_norm.replace(s, '_')
+        symbols = ['�', '&', '?', '+', '.', '"', '#', '(', ')', '\\', '/']
+        for s in symbols:
+            plant_name_norm = plant_name_norm.replace(s, '')
+        return plant_name_norm.strip()
+    return plant_name
 
 def create_KWL_plants_single_files(source_file, target_dir, version, format):
 
@@ -584,9 +590,9 @@ def create_KWL_plants(source_file, target_file, version, format):
         fuel_type = convert_fuel_to_subclass(fuel)
 
         region = v(row, 'federal_state')
-        if region in ['Luxemburg', 'Österreich', 'Schweiz']:
-            logging.warning('the record is skipped since the country is not Germany, index=%s, region=%s', i, region)
-            continue
+        #if region in ['Luxemburg', 'Österreich', 'Schweiz']:
+        #    logging.warning('the record is skipped since the country is not Germany, index=%s, region=%s', i, region)
+        #    continue
 
         try:
             zip_code = v(row, 'zip_code')
@@ -600,6 +606,7 @@ def create_KWL_plants(source_file, target_file, version, format):
         d = {
             'plant_id': i,
             'type': fuel_type,
+            'primary_fuel': fuel,
             'plantname': plant_name,
             'plantnamenorm': plant_name_norm,
             'owner': owner,
@@ -608,12 +615,11 @@ def create_KWL_plants(source_file, target_file, version, format):
             'zip_code': zip_code,
             'street': v(row, 'street'),
             'region': region,
-            #'long': v(row, 'longitude'),
-            #'lat': v(row, 'latitude'),
+            'long': v(row, 'longitude'),
+            'lat': v(row, 'latitude'),
             'year_built': v(row, 'commissioning_year'),
             'design_cap': v(row, 'capacity_mw')
         }
-
 
         name = create_plant_from_dictionary(graph, d, version, 'DE', use_schema=True)
 
@@ -746,8 +752,9 @@ if __name__ == '__main__':
 
     util.init_logging('.', '..')
 
-    #frmt = 'turtle'
-    frmt = 'xml'
+    frmt = 'turtle'
+    #frmt = 'owl'
+    #frmt = 'xml'
     #frmt = 'nt' # ntriples
     #src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes.owl'
@@ -756,23 +763,23 @@ if __name__ == '__main__':
     #country_short='GBR'
     #country_short='DEU'
     #src_file = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/globalpowerplantdatabasev120/global_power_plant_database.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_DEU_Altbach_only.owl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_DEU_211022.ttl'
     #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', frmt=frmt, country_short=country_short)
 
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='United Kingdom', country_short='UK')
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
-    #src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
+    src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_kwl_files'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.ttl'
+    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_211022.ttl'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.nt'
     #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
-    #create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+    create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
 
-    src_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_v1.csv'
-    tgt_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
-    convert_dbpedia_to_ontopowsys(src_file, tgt_file, frmt)
+    #src_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_v1.csv'
+    #tgt_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
+    #convert_dbpedia_to_ontopowsys(src_file, tgt_file, frmt)
 
     #src_file = 'C:/my/tmp/ontomatch/Municipalities_Germany_UTF8.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'

@@ -1,4 +1,5 @@
 import logging
+import pickle
 
 import blocking
 import scoring
@@ -29,6 +30,9 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
     def get_params_similarity_functions(self):
         return [{
+                    "name": "dist_equal",
+                    "cut_off_mode": "fixed"
+                },{
                     "name": "dist_nltk_edit",
                     "cut_off_mode": "fixed",
                     "cut_off_value": 3
@@ -57,13 +61,13 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         # test case 1
         self.assertRaises(RuntimeError, manager.add_prop_prop_fct_tuples, 'name', 'some unknown property name', sim_fcts)
         len_tuples = len(manager.get_prop_prop_fct_tuples())
-        self.assertEquals(len_tuples, 0)
+        self.assertEqual(len_tuples, 0)
 
         # test case 2
         manager.add_prop_prop_fct_tuples('name', 'name', sim_fcts)
         manager.add_prop_prop_fct_tuples('name', 'isOwnedBy/hasName', sim_fcts)
         len_tuples = len(manager.get_prop_prop_fct_tuples())
-        self.assertEquals(len_tuples, 4)
+        self.assertEqual(len_tuples, 4)
 
     def test_configure_score_fct_nltk_edit(self):
         params_sim_fcts = [{
@@ -82,16 +86,16 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0]('power station', 'power1 station2')
-        self.assertEquals(score, 0)
+        self.assertEqual(score, 0)
 
         score = sim_fcts[1]('power station', 'power1 station2')
-        self.assertEquals(score, 0)
+        self.assertEqual(score, 0)
 
         score = sim_fcts[2]('power station', 'power1 station2')
-        self.assertAlmostEquals(score, 1/3, places=4)
+        self.assertAlmostEqual(score, 1/3, places=4)
 
         score = sim_fcts[2]('power station', 'power station')
-        self.assertEquals(score, 1)
+        self.assertEqual(score, 1)
 
     def test_configure_score_fct_absolute(self):
         params_sim_fcts = [{
@@ -106,16 +110,16 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0](10.5, 10.8)
-        self.assertAlmostEquals(score, 0.7, places=4)
+        self.assertAlmostEqual(score, 0.7, places=4)
 
         score = sim_fcts[0](10.5, 11.6)
-        self.assertEquals(score, 0.)
+        self.assertEqual(score, 0.)
 
         score = sim_fcts[1](10.5, 15.5)
-        self.assertAlmostEquals(score, 0.5, places=4)
+        self.assertAlmostEqual(score, 0.5, places=4)
 
         score = sim_fcts[1](10.5, 25.5)
-        self.assertEquals(score, 0.)
+        self.assertEqual(score, 0.)
 
     def test_configure_score_fct_relative(self):
         params_sim_fcts = [{
@@ -130,19 +134,64 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0](10, 9)
-        self.assertAlmostEquals(score, 0.9, places=4)
+        self.assertAlmostEqual(score, 0.9, places=4)
 
         score = sim_fcts[0](10, 9.7)
-        self.assertAlmostEquals(score, 0.97, places=4)
+        self.assertAlmostEqual(score, 0.97, places=4)
 
         score = sim_fcts[0](10, 20)
-        self.assertAlmostEquals(score, 0.5, places=4)
+        self.assertAlmostEqual(score, 0.5, places=4)
 
         score = sim_fcts[1](10, 9)
-        self.assertAlmostEquals(score, 0., places=4)
+        self.assertAlmostEqual(score, 0., places=4)
 
         score = sim_fcts[1](10, 9.7)
-        self.assertAlmostEquals(score, 0.7, places=4)
+        self.assertAlmostEqual(score, 0.7, places=4)
+
+    def test_configure_score_fct_cosine_with_tfidf(self):
+        params_sim_fcts = [{
+                "name": "dist_cosine_with_tfidf",
+                "cut_off_mode": "fixed"
+            }
+        ]
+        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+
+        # prepare df_index_tokens before using cosine_with_tfidf
+        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params_blocking = self.get_params_blocking()
+        blocking.create_iterator(src_onto, tgt_onto, params_blocking)
+
+        df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens_unpruned
+        logging.debug('number of index tokens=%s', len(df_index_tokens))
+        logging.debug('token counts in dataset 1 and 2:')
+        for t in ['altbach', 'berlin', 'power', 'station', 'kraftwerk', 'müllheizkraftwerk', 'wuppertal', 'offenbach']:
+            try:
+                row = df_index_tokens.loc[t]
+                logging.debug('%s, %s, %s', t, row['count_1'], row['count_2'])
+            except KeyError:
+                logging.debug('%s Key Error', t)
+
+        examples = [
+            ('Altbach', 'Altbach'),
+            ('power station', 'power station'),
+            ('station', 'station'),
+            ('Altbach power station', 'Altbach power station'),
+            ('Berlin', 'Berlin'),
+            ('Berlin power station', 'Berlin power station'),
+            ('Altbach Berlin', 'Altbach'),
+            ('Altbach Berlin', 'Berlin'),
+            ('Altbach', 'Berlin'),
+            ('Müllheizkraftwerk', 'Müllheizkraftwerk Wuppertal'),
+            ('Müllheizkraftwerk', 'Müllheizkraftwerk Offenbach')
+        ]
+
+        # scores for n_max_idf = 30
+        expected_similarity_scores = [1, 0, 0, 1, 1, 1, 0.993, 0.1184, 0, 0.4062, 0.5577]
+
+        for i, (s1, s2) in enumerate(examples):
+            score = sim_fcts[0](s1, s2)
+            logging.debug('score for (%s, %s)=%s',s1, s2, score)
+            self.assertAlmostEqual(score, expected_similarity_scores[i])
 
     def test_calculate_between_entities_with_equal_values(self):
 
@@ -190,13 +239,14 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         for i, actual in enumerate(result):
             self.assertAlmostEqual(actual, expected[i], places=4)
 
-    def test_calculate_scores_between_datasets(self):
+    def test_calculate_similarities_between_datasets(self):
 
         prop_prop_dist_tuples = [
             ('name', 'name', scoring.dist_bounded_edit(2)),
             ('isOwnedBy/hasName', 'isOwnedBy/hasName', scoring.dist_nltk_edit),
             ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', scoring.dist_absolute),
             ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', scoring.dist_relative),
+            ('type', 'type', scoring.dist_equal),
         ]
 
         prop_prop_sim_tuples = self.convert_to_similarity_fcts(prop_prop_dist_tuples)
@@ -207,8 +257,8 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         for prop1, prop2, sim_fct in prop_prop_sim_tuples:
             manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
 
-        df_scores = manager.calculate_scores_between_datasets()
-        self.assertEquals(len(df_scores), 4666)
+        df_scores = manager.calculate_similarities_between_datasets()
+        self.assertEqual(len(df_scores), 4726)
 
     def test_calculate_maximum_scores_and_assert_means(self):
 
@@ -238,7 +288,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
         # run
 
-        manager.calculate_scores_between_datasets()
+        manager.calculate_similarities_between_datasets()
         df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
 
         # assert
@@ -247,7 +297,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         logging.info('\n%s', df_max_scores_1)
         logging.info('\n%s', df_max_scores_1.describe())
 
-        self.assertEquals(len(df_max_scores_1), 1096)
+        self.assertEqual(len(df_max_scores_1), 1146)
 
         means = df_max_scores_1.describe().loc['mean']
         logging.info('means=\n%s', means)
@@ -256,7 +306,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         self.assertGreater(means[4], means[5])
         self.assertGreater(means[6], means[7])
 
-    def test_property_mapping_2_props(self):
+    def test_property_mapping_props_name_owner(self):
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
@@ -269,21 +319,50 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         expected = {
-            'name': ('name', 0.588, 0),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.577, 0)
+            'name': ('name', 0.58945, 1),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54737, 1)
         }
 
-        self.assertEquals(len(property_mapping), len(expected))
+        self.assertEqual(len(property_mapping), len(expected))
         for mapping in property_mapping:
             prop1 = mapping['prop1']
             prop2, mean, pos_sfct = expected[prop1]
-            self.assertEquals(mapping['prop2'], prop2)
-            self.assertAlmostEquals(mapping['mean'], mean, places=2)
-            self.assertEquals(mapping['pos_sfct'], pos_sfct)
+            self.assertEqual(mapping['prop2'], prop2)
+            self.assertAlmostEqual(mapping['mean'], mean, places=2)
+            self.assertEqual(mapping['pos_sfct'], pos_sfct)
 
-    def test_property_mapping_6_props(self):
+    def test_property_mapping_props_name_fuel(self):
+
+        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params_blocking = self.get_params_blocking()
+        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+
+        params_sim_fcts = self.get_params_similarity_functions()
+        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        props1 = ['name', 'realizes/consumesPrimaryFuel']
+        props2 = ['name', 'realizes/consumesPrimaryFuel']
+        property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
+
+        expected = {
+            'name': ('name', 0.58945, 1),
+            # score function 0 and 1 got the same mean result, thus the first score function wins
+            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0)
+        }
+
+        self.assertEqual(len(property_mapping), len(expected))
+        for mapping in property_mapping:
+            prop1 = mapping['prop1']
+            prop2, mean, pos_sfct = expected[prop1]
+            self.assertEqual(mapping['prop2'], prop2)
+            self.assertAlmostEqual(mapping['mean'], mean, places=2)
+            self.assertEqual(mapping['pos_sfct'], pos_sfct)
+
+    def test_property_mapping_5_props_5_score_fcts(self):
 
         params_sim_fcts = [{
+                    "name": "dist_equal",
+                    "cut_off_mode": "fixed"
+                },{
                     "name": "dist_nltk_edit",
                     "cut_off_mode": "fixed",
                     "cut_off_value": 3
@@ -294,10 +373,14 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                 },{
                     "name": "dist_relative",
                     "cut_off_mode": "fixed"
-                }
+                },{
+                    "name": "dist_cosine_with_tfidf",
+                    "cut_off_mode": "fixed"
+            }
         ]
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        #src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
         params_blocking = self.get_params_blocking()
         manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
@@ -305,18 +388,23 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         property_mapping = scoring.find_property_mapping(manager, sim_fcts)
 
         expected = {
-            'name' : ('name',  0.5886178861788618, 0),
-            'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.9977108613593972, 2),
-            'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.7234157194326809, 2),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.5775978407557356, 0),
-            #'geo:wgs84_pos#long': ('hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', 0.9708340665506993, 2),
-            #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 2)
+            'name' : ('name', 0.797, 4),
+            'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.997, 3),
+            'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.703, 3),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.557, 4),
+            # for OwnedBy/hasName score function 1 is slightly behind 4
+            #'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.547, 1),
+            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.852, 0),
+            #both fuel and type have been identified for property mapping
+            'type': ('type', 0.876, 0)
+            #'geo:wgs84_pos#long': ('hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', 0.9708340665506993, 3),
+            #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 3)
         }
 
-        self.assertEquals(len(property_mapping), len(expected))
+        self.assertEqual(len(property_mapping), len(expected))
         for mapping in property_mapping:
             prop1 = mapping['prop1']
             prop2, mean, pos_sfct = expected[prop1]
-            self.assertEquals(mapping['prop2'], prop2)
-            self.assertAlmostEquals(mapping['mean'], mean, places=2)
-            self.assertEquals(mapping['pos_sfct'], pos_sfct)
+            self.assertEqual(mapping['prop2'], prop2)
+            self.assertAlmostEqual(mapping['mean'], mean, places=2)
+            self.assertEqual(mapping['pos_sfct'], pos_sfct)

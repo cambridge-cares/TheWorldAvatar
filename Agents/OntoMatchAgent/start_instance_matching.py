@@ -22,15 +22,12 @@ if __name__ == '__main__':
 
     # KWL vs GPPD DEU (Germany)
     # -------------------------
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_no_geo.pkl'
-    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_geo.pkl'
-    #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.pkl'
-    #srcaddr = './data/kwl_geo.pkl'
 
-    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.owl'
-    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
-    #tgtaddr = './data/gppd.pkl'
+    #srcaddr = './data/kwl_address_211022.ttl'
+    srcaddr = './data/kwl_address_211022.pkl'
+
+    #tgtaddr = './data/gppd_DEU_211022.ttl'
+    tgtaddr = './data/gppd_DEU_211022.pkl'
 
 
     # DBPEDIA DEU vs GPPD DEU (Germany)
@@ -41,10 +38,10 @@ if __name__ == '__main__':
 
     #srcaddr = 'C:/Users/freig/Downloads/sparql_2021-10-11_13-06-46Z.rdf'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/dbpedia_DEU_211010.pkl'
-    #tgtaddr = './data/gppd.pkl'
+    #tgtaddr = './data/gppd_DEU_211022.pkl'
 
     #srcaddr = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
-    #tgtaddr = './data/gppd.pkl'
+    #tgtaddr = './data/gppd_DEU_211022.pkl'
 
     params = {
         "dataset": {
@@ -82,7 +79,13 @@ if __name__ == '__main__':
                 },{
                     "name": "dist_relative",
                     "cut_off_mode": "fixed"
-                }
+                },{
+                    "name": "dist_equal",
+                    "cut_off_mode": "fixed"
+                },{
+                    "name": "dist_cosine_with_tfidf",
+                    "cut_off_mode": "fixed"
+            }
         ]},
         "matching": {
             #"name": "matchManager.matchManager",

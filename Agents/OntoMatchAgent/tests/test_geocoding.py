@@ -1,4 +1,4 @@
-import pickle
+import logging
 
 import blocking
 import knowledge.geocoding
@@ -32,6 +32,6 @@ class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
         ontosrc, ontotgt = self.load_kwl_gppd_ontologies()
         dfsrc = blocking.create_dataframe_from_ontology(ontosrc)
         columns =  [ str(c) for c in dfsrc.columns ]
-        print(columns)
+        logging.info('columns=%s', columns)
         self.assertIn('address/postalCode', columns)
 

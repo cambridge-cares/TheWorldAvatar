@@ -2,14 +2,14 @@ import logging
 import pickle
 import traceback
 
-from owlready2 import get_ontology
+import numpy as np
 import pandas as pd
+from owlready2 import get_ontology, prop
 import rdflib
 import rdflib.namespace
 from tqdm import tqdm
 
 from alignment import Alignment
-import blocking
 import knowledge.geocoding
 import knowledge.geoNames
 from matchManager import matchManager
@@ -19,6 +19,7 @@ import scoring
 
 class Agent():
 
+    '''
     def load(self, srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False):
 
         logging.info('loading ontology for %s', srcaddr)
@@ -49,6 +50,27 @@ class Agent():
         logging.info('finished loading ontology for %s', tgtaddr)
 
         return srconto, tgtonto
+    '''
+
+    def load(self, srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False):
+        srconto = self.load_ontology(srcaddr, add_knowledge, dump_ontology)
+        tgtonto = self.load_ontology(tgtaddr, add_knowledge, dump_ontology)
+        return srconto, tgtonto
+
+    def load_ontology(self, addr, add_knowledge=None, dump_ontology=False):
+        logging.info('loading ontology for %s', addr)
+        if addr.endswith('.pkl'):
+            with open(addr,'rb') as file:
+                onto = pickle.load(file)
+        else:
+            graph = self.load_rdflib_graph(addr, add_knowledge)
+            owlready2onto = self.load_owlready2_ontology(graph)
+            onto = Ontology(addr, ontology=owlready2onto, graph=graph)
+            if dump_ontology:
+                self.dump(addr, onto)
+
+        logging.info('finished loading ontology for %s', addr)
+        return onto
 
     def load_owlready2_ontology(self, graph):
         # TODO-AE This is a hack to convert the rdflib graph into owlready2
@@ -75,7 +97,7 @@ class Agent():
     def dump(self, addr, onto):
         onto.ontology = None
         onto.graph = None
-        pklname = addr.replace('rdf','pkl').replace('owl','pkl').replace('xml','pkl')
+        pklname = addr.replace('rdf','pkl').replace('owl','pkl').replace('xml','pkl').replace('ttl', 'pkl')
         logging.info('dumping ontology to file=%s', pklname)
         with open(pklname,'wb') as file:
             pickle.dump(onto, file, -1)
@@ -195,6 +217,7 @@ class Agent():
 
     def __start_matching_with_auto_calibration(self, srconto, tgtonto, params_blocking, params_mapping):
         matcher = InstanceMatcherWithAutoCalibrationAgent()
+        #TODO-AE URGENT 211023 Must be continued ... matcher has to write back matching results ...
         matcher.start(srconto, tgtonto, params_blocking, params_mapping)
 
     def __start_match_manager(self, params_model_specific, params_blocking, srconto, tgtonto):
@@ -233,26 +256,169 @@ class Agent():
         match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
 
 
+#TODO-AE move instance matcher to another module
 class InstanceMatcherWithAutoCalibrationAgent():
 
     def __init__(self):
-        pass
+        self.score_manager = None
 
-    def start(self, srconto, tgtonto, params_blocking, params_mapping):
+    def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
 
-        mode = params_mapping['mode']
-
-        logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
-
-        manager = scoring.create_score_manager(srconto, tgtonto, params_blocking)
+        self.score_manager = scoring.create_score_manager(srconto, tgtonto, params_blocking)
 
         # TODO-AE: We start with automatic property mapping
         # --> configurable, also: fixed property mapping (e.g. geo coordinates)
         # TODO-AE: symmetrical mapping (with max value for entities of dataset 2)
 
+        if params_mapping:
+            mode = params_mapping['mode']
+            logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
 
-        if mode == 'auto':
+            if mode == 'auto':
+                params_sim_fcts = params_mapping['similarity_functions']
+                sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+                property_mapping = scoring.find_property_mapping(self.score_manager, sim_fcts)
+            else:
+                raise RuntimeError('unknown mode', mode)
 
-            params_sim_fcts = params_mapping['similarity_functions']
-            sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
-            property_mapping = scoring.find_property_mapping(manager, sim_fcts)
+        else:
+            logging.info('starting InstanceMatcherWithAutoCalibrationAgent with prop_prop_sim_tumples=%s', len(prop_prop_sim_tuples))
+            property_mapping = []
+            for pos, t in enumerate(prop_prop_sim_tuples):
+                prop1, prop2, sim_fct = t
+                self.score_manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
+                row = {
+                    'key': str(pos) + '_max',
+                    'prop1': prop1,
+                    'prop2': prop2,
+                    'score_fct': sim_fct
+                }
+                property_mapping.append(row)
+            logging.info('added prop prop sim tuples, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
+
+            self.score_manager.calculate_similarities_between_datasets()
+            self.score_manager.calculate_maximum_scores()
+
+        df_scores = self.score_manager.get_scores()
+        #TODO-AE asymmetry
+        df_max_scores = self.score_manager.get_max_scores_1()
+        df_total_scores, df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
+        return df_total_scores, df_total_best_scores
+
+    def calculate_auto_calibrated_total_scores_for_index(self, df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = 1):
+        best_score = 0
+        best_pos = None
+        total_score_rows = []
+
+        for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
+            score = 0
+            number_columns = len(property_mapping)
+            for propmap  in property_mapping:
+
+                c_max = propmap['key']
+                c = int(c_max.split('_')[0])
+                value = row[c]
+
+                #TODO-AE changed at 210926
+                #if (not value is None) and (type(value) is float and not np.isnan(value)):
+                if not (value is None or type(value) is str or np.isnan(value)):
+                    # TODO-AE check: <= in line 1 and 3 leads to worse results than <
+                    # TODO-AE experimental idea: problem with just a few 'discrete values' (e.g. 0 and 1 for match and mismatch fuel, or 0, 1, 2 edit distance)
+                    # is: matches are penalized when using <= (around 0) but when using < instead nonmatches benefit (around 1)
+                    # idea: use <= around 0 and < around 1 and "interpolate" in between
+                    # this idea should not have much effect if there are many 'discrete values' and there is no lumping on values around 0
+                    mask = (df_scores[c] > value)
+                    count_m_plus_n = len(df_scores[mask])
+                    mask = (df_max_scores[c_max] > value)
+                    count_m = len(df_max_scores[mask])
+                    if count_m_plus_n == 0:
+                        column_score = 1
+                    else:
+
+                        #TODO-AE URGENT 211022
+                        column_score = count_m / count_m_plus_n
+
+                        '''
+                        mask = (df_scores[c] == value)
+                        count_m_plus_n_equal = len(df_scores[mask])
+                        mask = (df_scores[c] < value)
+                        count_m_plus_n_greater = len(df_scores[mask])
+                        if count_m_plus_n_equal == 1:
+                            denom = count_m_plus_n
+                        else:
+                            denom = count_m_plus_n + count_m_plus_n_equal * (count_m_plus_n / (count_m_plus_n + count_m_plus_n_greater))
+
+
+                        mask = (df_max_scores[c_max] == value)
+                        count_m_equal = len(df_max_scores[mask])
+                        mask = (df_max_scores[c_max] < value)
+                        count_m_greater = len(df_max_scores[mask])
+                        if count_m_equal == 1:
+                            nom = count_m
+                        else:
+                            #TODO-AE: better (count_m_equal - 1)
+                            nom = count_m + count_m_equal * (count_m / (count_m + count_m_greater))
+                        column_score = nom / denom
+
+
+                        column_score = count_m / denom
+                        '''
+                    '''
+                    if log:
+                        if count_m_plus_n == 0:
+                            print(c, value, 'ZERO', column_score)
+                        else:
+                            print(c, value, count_m, count_m_plus_n, 'orginal score=', count_m / count_m_plus_n, 'new score=', column_score)
+                            print('\t', count_m, count_m_equal, count_m_greater, 'nom=', nom)
+                            print('\t', count_m_plus_n, count_m_plus_n_equal, count_m_plus_n_greater, 'denom=', denom)
+                    '''
+                    score += column_score
+                else:
+                    #TODO-AE how to score missing data?
+                    number_columns = number_columns - 1
+
+            if number_columns <= skip_column_number:
+                score = 0.
+                print('score = 0 since number columns=', number_columns, idx_1, idx_2)
+            else:
+                score = score / number_columns
+
+            total_score_row = {
+                'idx_1': idx_1,
+                'idx_2': idx_2,
+                'score': score,
+                'best': False
+            }
+
+            total_score_rows.append(total_score_row)
+
+            # TODO-AE what about equality?
+            if score > best_score or best_pos is None:
+                best_score = score
+                best_pos = pos
+
+        total_score_rows[best_pos]['best'] = True
+
+        return total_score_rows
+
+    def calculate_auto_calibrated_total_scores(self, df_scores, df_max_scores, property_mapping):
+
+        logging.info('calculating auto calibrated total scores')
+
+        df_scores['score'] = 0.
+
+        rows = []
+        for idx_1, _ in tqdm(df_max_scores.iterrows()):
+            #TODO-AE URGENT
+            skip_column_number = 1
+            total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = skip_column_number)
+            rows.extend(total_score_rows)
+
+        df_total_scores = pd.DataFrame(rows)
+        df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)
+        mask = (df_total_scores['best'] == True)
+        df_total_best_scores = df_total_scores[mask]
+
+        logging.info('calculated auto calibrated total scores')
+
+        return df_total_scores, df_total_best_scores
