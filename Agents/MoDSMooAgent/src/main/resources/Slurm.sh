@@ -6,21 +6,16 @@
 
 #SBATCH -p como
 #SBATCH -A COMO-SL2-CPU
-#SBATCH --mem=64000
-#SBATCH --time=96:00:00
-#SBATCH --nodes=3
-#SBATCH --ntasks-per-node=16
+##SBATCH --mem=64000
+#SBATCH --time=00:05:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)  
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 
-# Read parameters about MoDS executable path and cantera conda environment from input.json
+# Read parameters about MoDS executable path from input.json
 MODS_MPI=$(cat input.json|jq -r .json.mods.executable.path)
-CANTERA_ENV=$(cat input.json|jq -r .json.cantera.environment)
-
-# Load the environment seen by the application
-eval "$(conda shell.bash hook)"
-conda activate $CANTERA_ENV                     #REQUIRED - loads the cantera environment
 
 #! Number of nodes and tasks per node allocated by SLURM (do not change):
 numnodes=$SLURM_JOB_NUM_NODES
