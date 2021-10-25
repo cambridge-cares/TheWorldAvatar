@@ -31,6 +31,8 @@ public class ScenarioStoreClientTest {
 	@Rule
 	public TemporaryFolder tempFolder = new TemporaryFolder();
 	
+	private String testFile = "/testRDF.rdf";
+	
 	private String scenarioFolderPath; 
 	private String filePath;
 	private String scenarioUrl = "http://example.com/test";
@@ -38,19 +40,15 @@ public class ScenarioStoreClientTest {
 	private String testResourceUrlDoesNotExist = "testResourceUrlDoesNotExist";
 
 	String queryString = "SELECT ?o WHERE {<http://www.theworldavatar.com/kb/species/species.owl#species_1> <http://www.w3.org/2008/05/skos#altLabel> ?o.}";
-	
-	//TODO test getFilePath?
-	
+		
 	@Before
 	public void setUp() throws URISyntaxException, IOException {
 		
 		scenarioFolderPath = tempFolder.getRoot().toString();
 		
 		// Test rdf file
-		String filePathDir = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" ;
-		
-		Path testResourcePath = Paths.get(filePathDir+"/testRDF.rdf");
-		Path tempFilePath = Paths.get(scenarioFolderPath + "/testRDF.rdf");		
+		Path testResourcePath = Paths.get(this.getClass().getResource(testFile).toURI());
+		Path tempFilePath = Paths.get(scenarioFolderPath + testFile);		
 		Files.copy(testResourcePath, tempFilePath, StandardCopyOption.REPLACE_EXISTING);
 		filePath = tempFilePath.toString();	
 	}

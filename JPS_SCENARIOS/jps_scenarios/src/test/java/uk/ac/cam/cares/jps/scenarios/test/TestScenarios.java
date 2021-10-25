@@ -5,12 +5,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONStringer;
+import org.junit.Ignore;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
+@Ignore("This test sends HTTP requests. Cannot run without correct environment setup.")
 public class TestScenarios extends TestCase {
 	
 	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";

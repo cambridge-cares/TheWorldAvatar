@@ -4,23 +4,17 @@
 	<groupId>uk.ac.cam.cares.jps</groupId>
 	<artifactId>jps-scenarios</artifactId>
 	<version>6.0.0-SNAPSHOT</version>
-
 	<packaging>war</packaging>
 
+	<!-- Parent POM -->
+  	<parent>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-parent-pom</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+  	</parent>
+
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>src</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</resource>
-		</resources>
-
 		<plugins>
-
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.7.0</version>
@@ -42,7 +36,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.2</version>
 				<configuration>
 					<webResources>
 						<resource>
@@ -67,11 +60,8 @@
 					<failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>WebContent\WEB-INF\web.xml</webXml>
                     <warName>jps##${project.version}</warName>
-                    <!-- outputDirectory>D:\myPrograms\Tomcat 9.0\webapps</outputDirectory-->
-                    <outputDirectory>${tomcatPath}/webapps</outputDirectory>
 				</configuration>
 			</plugin>
-
         </plugins>
     </build>
 
@@ -79,13 +69,12 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>1.4.0-accessagent-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
 
@@ -96,23 +85,19 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.11.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
-        </dependency>
+		<!-- Logging, versions pulled from parent POM -->
+	     <dependency>
+	         <groupId>org.apache.logging.log4j</groupId>
+	         <artifactId>log4j-api</artifactId>
+	     </dependency>
+	     <dependency>
+	         <groupId>org.apache.logging.log4j</groupId>
+	         <artifactId>log4j-core</artifactId>
+	     </dependency>
+	    <dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-web</artifactId>
+		</dependency>
 
         <dependency>
             <groupId>org.json</groupId>
