@@ -124,7 +124,9 @@ class ControlHandler {
 
 			for(var i = 0; i < groups.length; i++) {
 				let groupName = groups[i]["name"];
-				let value = (parentDivID == null) ? groupName : parentDivID + "/" + groupName;
+				let groupDir = groups[i]["directory"];
+
+				let value = (parentDivID == null) ? groupDir : parentDivID + "/" + groupDir;
 
 				htmlString += `
 					<option value="` + value + `">` + groupName + `</option>
@@ -180,6 +182,8 @@ class ControlHandler {
 			this.#countSelections(treeEntry, totals);
 
 			let inputBox = document.querySelector("input[id='" + treeEntry["groupName"] + "']");
+			if(inputBox == null) continue;
+
 			if((totals[0] == totals[1]) || (treeEntry["controlType"] === "radio" && totals[1] > 0)) {
 				inputBox.checked = true;
 			} else if(totals[1] == 0) {
@@ -286,6 +290,8 @@ class ControlHandler {
 			this.#countSelections(treeEntry, totals);
 
 			let inputBox = document.querySelector("input[id='" + treeEntry["groupName"] + "']");
+			if(inputBox == null) continue;
+
 			if((totals[0] == totals[1]) || (treeEntry["controlType"] === "radio" && totals[1] > 0)) {
 				inputBox.checked = true;
 			} else if(totals[1] == 0) {
@@ -501,7 +507,6 @@ class ControlHandler {
 			// If re-enabling a radio group, don't just switch all layers, use the default state
 			if(newState && parentEntry["controlType"] === "radio") {
 				newState = treeEntry["defaultState"] === "visible";
-				console.log("Default state for '" + treeEntry["layerName"] + " is " + newState);
 			} 
 
 			console.log(newState);
@@ -530,7 +535,6 @@ class ControlHandler {
 					if(layers[i]["layerName"] != layerName) {
 
 						layers[i]["currentState"] = "hidden";
-						console.log("Layer '" + layers[i]["layerName"] + "' is now hidden");
 
 						if(this._treeCallback != null) {
 							// Fire callback instead of default layer changing code
@@ -548,7 +552,6 @@ class ControlHandler {
 
 			// Change the state of just this layer
 			treeEntry["currentState"] = (newState) ? "visible" : "hidden";
-			console.log("Layer '" + layerName + "' is now " + treeEntry["currentState"]);
 
 			if(this._treeCallback != null) {
 				// Fire callback instead of default layer changing code

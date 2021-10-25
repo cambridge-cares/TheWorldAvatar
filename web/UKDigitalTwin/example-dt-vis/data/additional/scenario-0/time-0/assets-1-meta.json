@@ -2,8 +2,18 @@
     {
         "id": 1,
         "isStatusA": false,
-        "isStatusB": false,
-        "isStatusC": false
+        "isStatusB": true,
+        "isStatusC": false,
+        "subGroup1": {
+            "isSubStatusA": false,
+            "isSubStatusB": true,
+            "isSubStatusC": false,
+            "subsubGroup1": {
+                "isSubSubStatusA": false,
+                "isSubSubStatusB": true,
+                "isSubSubStatusC": false
+            }
+        }
     },
     {
         "id": 2,

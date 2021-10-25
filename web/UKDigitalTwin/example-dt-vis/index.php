@@ -22,6 +22,8 @@
 	<!-- Local CSS -->
 	<link href='./css/digital_twin_style.css' rel='stylesheet' />
 	<link href="./css/style.css" rel="stylesheet"> 
+	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
+	<link href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" rel="stylesheet"  integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
 	<!-- Local JS -->
 	<script src='./js/manager.js'></script>
@@ -30,6 +32,8 @@
 	<script src='./js/layer_handler.js'></script>
 	<script src='./js/control_handler.js'></script>
 	<script src='./js/panel_handler.js'></script>
+	<script src='./js/interaction_handler.js'></script>
+	<script src='./js/jsonview.bundle.js'></script>
 
 	<!--<script src='./js/digital_twin_time_series.js'></script>-->
 </head>
@@ -56,12 +60,34 @@
 		manager.readMetadata("./data/overall-meta.json", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
-		})
-		
+		});
+
 		// Will run once metadata is loaded asynchronously
 		function startUp() {
 			// Create the MapBox map
 			let map = manager.createMap("map");
+
+			// Provide some default content for the side panel
+			manager.setPanelContent(
+				"Example Visualisation",
+				`
+					This section of default text should be used to give a brief introduction on the purpose of the
+					visualisation, and to detail how the user can interact with it. For the purpose of this example,
+					some junk content to pad it out has been added.
+					<br/><br/>
+					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mi turpis, posuere a nibh in, tincidunt
+					mollis eros. Cras imperdiet ornare enim, et luctus augue iaculis at. Ut tellus ex, auctor non sagittis quis,
+					feugiat vitae turpis. Cras efficitur, arcu sed condimentum mattis, quam est tempus lectus, eu faucibus.
+				`,
+				`	
+					<b>Example Legend:</b>
+					<br/>
+					<div style="display: flex; justify-content: center;">
+						<img src="./img/sample-legend.png" width="350px"/>
+					</div>
+				`,
+				"Here is an example footer."
+			)
 
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources and layers.
 			// This means that we have to listen for this event (below) and re-add sources and re-apply layers.
@@ -73,10 +99,11 @@
 				// Plot the Fixed Data locations
 				manager.plotFixedData();
 
+				// Re-plot any previously plotted Additional Data sources
+				manager.restoreAllAdditionalData();
+
 				// On first load only
 				if(!loadedOnce) {
-					// Build and show the controls
-
 					// This callback will be fired when a selection in the layer tree changes
 					let treeCallback = null;
 					

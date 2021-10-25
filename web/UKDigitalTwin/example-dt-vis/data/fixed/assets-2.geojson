@@ -5,7 +5,8 @@
         "type": "Feature",
         "id": 1,
         "properties": {
-            "name": "Asset 2.1",
+            "displayName": "Asset 2.1",
+            "description": "This is a sample description field for Asset 2.1",
             "type": "Large Asset"
         },
         "geometry": {
@@ -20,7 +21,8 @@
         "type": "Feature",
         "id": 2,
         "properties": {
-            "name": "Asset 2.2",
+            "displayName": "Asset 2.2",
+            "description": "This is a sample description field for Asset 2.2",
             "type": "Large Asset"
         },
         "geometry": {
@@ -35,7 +37,8 @@
         "type": "Feature",
         "id": 3,
         "properties": {
-            "name": "Asset 2.3",
+            "displayName": "Asset 2.3",
+            "description": "This is a sample description field for Asset 2.3",
             "type": "Small Asset"
         },
         "geometry": {
@@ -50,7 +53,8 @@
         "type": "Feature",
         "id": 4,
         "properties": {
-            "name": "Asset 2.4",
+            "displayName": "Asset 2.4",
+            "description": "This is a sample description field for Asset 2.4",
             "type": "Small Asset"
         },
         "geometry": {

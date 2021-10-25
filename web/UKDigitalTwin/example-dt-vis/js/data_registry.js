@@ -85,7 +85,7 @@ class DataRegistry {
     #recurseAdditional(currentGroup, i, groups, result) {
         if(result.length > 0) return;
 
-        if(currentGroup["name"] === groups[i]) {
+        if(currentGroup["directory"] === groups[i]) {
             if(i == (groups.length - 1)) {
                 result[0] = currentGroup;
 
@@ -109,7 +109,7 @@ class DataRegistry {
      * Automatically idenfiy and load data if that meets the standard
      * format outlined for Digital Twin visualisations.
      * 
-     * Note that this method is asynchronus, so a callback should be 
+     * Note that this method is asynchronous, so a callback should be 
      * passed if action needs to be taken after the data is loaded.
      * 
      * @param {string} overallMeta location of "overall-meta.json". 

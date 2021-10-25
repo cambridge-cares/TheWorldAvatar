@@ -4,7 +4,9 @@
     {
       "type": "Feature",
       "id": 1,
-      "properties": {},
+      "properties": {
+        "displayName": "Boundary"
+      },
       "geometry": {
         "type": "Polygon",
         "coordinates": [

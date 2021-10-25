@@ -1,5 +1,10 @@
 [
     {
+        "layerName": "Current Scenario",
+        "defaultState": "visible",
+        "layerIDs": ["boundary"]
+    },
+    {
         "groupName": "Assets",
         "layers": [               
             {
@@ -11,22 +16,6 @@
                 "layerName": "Asset Owner #2",
                 "defaultState": "visible",
                 "layerIDs": ["assets-2"]
-            }
-        ]
-    },
-    {
-        "groupName": "Scenarios",
-        "controlType": "checkbox",
-        "layers": [
-            {
-                "layerName": "Base World",
-                "defaultState": "visible",
-                "layerIDs":  ["scenario-0"]
-            },
-            {
-                "layerName": "Scenario #1",
-                "defaultState": "visible",
-                "layerIDs":  ["scenario-1"]
             }
         ]
     }

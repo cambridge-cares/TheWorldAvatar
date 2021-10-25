@@ -5,7 +5,7 @@
         "type": "Feature",
         "id": 1,
         "properties": {
-            "name": "Asset #1",
+            "displayName": "Asset #1",
             "type": "Large Asset"
         },
         "geometry": {
@@ -20,7 +20,7 @@
         "type": "Feature",
         "id": 2,
         "properties": {
-            "name": "Asset #2",
+            "displayName": "Asset #2",
             "type": "Large Asset"
         },
         "geometry": {
@@ -35,7 +35,7 @@
         "type": "Feature",
         "id": 3,
         "properties": {
-            "name": "Asset #3",
+            "displayName": "Asset #3",
             "type": "Small Asset"
         },
         "geometry": {
@@ -50,7 +50,7 @@
         "type": "Feature",
         "id": 4,
         "properties": {
-            "name": "Asset #4",
+            "displayName": "Asset #4",
             "type": "Small Asset"
         },
         "geometry": {
@@ -65,7 +65,7 @@
         "type": "Feature",
         "id": 5,
         "properties": {
-            "name": "Asset #5",
+            "displayName": "Asset #5",
             "type": "Small Asset"
         },
         "geometry": {

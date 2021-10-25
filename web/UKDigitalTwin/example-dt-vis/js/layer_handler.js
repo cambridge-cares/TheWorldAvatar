@@ -2,7 +2,7 @@
  * TODO
  */
 class LayerHandler {
-    
+
     /**
      * Colors for point locations.
      */
@@ -26,12 +26,12 @@ class LayerHandler {
     /**
      * DigitalTwinDataRegistry instance.
      */
-     _dataRegistry;
+    _dataRegistry;
 
     /**
       * MapBox map
       */
-     _map;
+    _map;
 
 
     /**
@@ -53,13 +53,20 @@ class LayerHandler {
         let fixedMeta = this._dataRegistry.fixedMeta;
         let fixedDataSets = fixedMeta["dataSets"];
 
+        let layerNames = [];
+
         fixedDataSets.forEach(fixedDataSet => {
             if(fixedDataSet["locationType"] === "point") {
-                this.#addPointLayer(fixedDataSet, false);
+                let layerName = this.#addPointLayer(fixedDataSet, false);
+                layerNames.push(layerName);
+
             } else if(fixedDataSet["locationType"] === "polygon") {
-                this.#addPolygonLayer(fixedDataSet);
+                let layerName = this.#addPolygonLayer(fixedDataSet);
+                layerNames.push(layerName);
             }
         });
+
+        return layerNames;
     }
 
     /**
@@ -70,16 +77,28 @@ class LayerHandler {
      */
     addAdditionalLayers(groups) {
         let result = this._dataRegistry.getAdditionalGroup(groups);
+        let layerNames = [];
 
         if(result != null) {
-            let group = result["group"]; 
 
-            if(group["locationType"] === "point") {
-                this.#addPointLayer(group, false);
-            } else if(group["locationType"] === "polygon") {
-                this.#addPolygonLayer(group);
+            let dataSets = result["dataSets"];
+
+            for(var i = 0; i < dataSets.length; i++) {
+                let dataSet = dataSets[i];
+                if(!dataSet["locationType"]) continue;
+
+                if(dataSet["locationType"] === "polygon") {
+                    let layerName = this.#addPolygonLayer(dataSet);
+                    layerNames.push(layerName);
+
+                } else {
+                    let layerName = this.#addPointLayer(dataSet, false);
+                    layerNames.push(layerName);
+                }
             }
         }
+
+        return layerNames;
     }
 
     /**
@@ -115,8 +134,8 @@ class LayerHandler {
 			}
 		});
 
-        //console.log(this._map.getStyle().layers);
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        return layerName;
     }
 
     /**
@@ -152,20 +171,30 @@ class LayerHandler {
 		});
         
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        return layerName;
     }
     
     /**
-     * Remove all layers currently on the map that use the input source name.
+     * Removes the MapBox layers corresponding to the Additional Data sets
+     * represented by the input groups.
      * 
-     * @param {*} sourceName source name
+     * @param {string[]} groups
      */
-    removeLayersWithSource(sourceName) {
-        let allLayers = this._map.getStyle().layers;
+    removeAdditionalLayers(groups) {
+        let result = this._dataRegistry.getAdditionalGroup(groups);
+        if(result != null) {
+            let dataSets = result["dataSets"];
 
-        for(var i = (layers.length - 1); i >= 0; i--) {
-            let layerSource = allLayers[i]["source"];
+            for(var i = 0; i < dataSets.length; i++) {
+                let dataSet = dataSets[i];
+                if(!dataSet["locationFile"]) continue;
 
-            if(layerSource === sourceName) this._map.removeLayer(allLayers[i]["id"]);
+                let name = dataSet["name"];
+                if(this._map.getLayer(name) != null) {
+                    this._map.removeLayer(name);
+                    console.log("INFO: Layer '" + name + "' has been removed.");
+                }
+            }
         }
     }
 

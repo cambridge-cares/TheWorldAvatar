@@ -20,7 +20,10 @@ class DigitalTwinManager {
 
 	// Handles the right-hand side panel
 	_panelHandler;
-	
+
+	// Handles MapBox interactions
+	_interactionHandler;
+
 	/**
 	 * Initialisation.
 	 */
@@ -28,7 +31,7 @@ class DigitalTwinManager {
 		// Create a new window namespace to let us set global variables
 		window.DT = {};
 		DT.terrain = "light";
-
+		DT.currentAdditionals = [];
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
@@ -53,7 +56,11 @@ class DigitalTwinManager {
 	 */
 	plotFixedData() {
 		this._sourceHandler.addFixedSources();
-		this._layerHandler.addFixedLayers();
+
+		let newLayerNames = this._layerHandler.addFixedLayers();
+		newLayerNames.forEach(newLayerName => {
+			this._interactionHandler.registerInteractions(newLayerName);
+		})
 	}
 
 	/**
@@ -64,10 +71,22 @@ class DigitalTwinManager {
 	 * @param {string[]} groups group selection (e.g. ["scenario-0", "time-0"]) 
 	 */
 	plotAdditionalData(groups) {
+		if(!DT.currentAdditionals.includes(groups)) {
+			DT.currentAdditionals.push(groups);
+        }
+
 		this._sourceHandler.addAdditionalSources(groups);
 		this._layerHandler.addAdditionalLayers(groups);
 		
-		// TODO - Rebuild tree?
+		this._controlHandler.rebuildTree();
+
+		if(DT.currentFeature != null) {
+			// A location was already selected, update the side panel
+			this._interactionHandler.mouseClick(
+				DT.currentFeature.layer["id"],
+				DT.currentFeature
+			);
+		}
 	}
 
 	/**
@@ -78,10 +97,15 @@ class DigitalTwinManager {
 	 * @param {*} groups group selection (e.g. ["scenario-0", "time-0"]) 
 	 */
 	removeAdditionalData(groups) {
+		if(DT.currentAdditionals.includes(groups)) {
+            let index = DT.currentAdditionals.indexOf(groups);
+            DT.currentAdditionals.splice(index, 1);
+        }
+
+		this._layerHandler.removeAdditionalLayers(groups);
 		this._sourceHandler.removeAdditionalSources(groups);
 		
-		// TODO - Remove layers
-		// TODO - Rebuild tree?
+		this._controlHandler.rebuildTree();
 	}
 
 	/**
@@ -89,9 +113,15 @@ class DigitalTwinManager {
 	 * on the map.
 	 */
 	 removeAllAdditionalData() {
-		// TODO - Remove sources		
-		// TODO - Remove layers
-		// TODO - Rebuild tree?
+		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
+            this.removeAdditionalData(DT.currentAdditionals[i]);
+        }
+	}
+
+	restoreAllAdditionalData() {
+		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
+            this.plotAdditionalData(DT.currentAdditionals[i]);
+        }
 	}
 	
 	/**
@@ -124,10 +154,18 @@ class DigitalTwinManager {
 		this._sourceHandler = new SourceHandler(this._dataRegistry, this._map);
 		this._layerHandler = new LayerHandler(this._dataRegistry, this._map);
 		this._panelHandler = new PanelHandler(this._map);
-
-		this._panelHandler.toggleExpansion();
+		this._interactionHandler = new InteractionHandler(this._map, this._dataRegistry, this._panelHandler);
 
 		return this._map;
+	}
+
+	setPanelContent(title, content, legend, footer) {
+		this._panelHandler.setTitle(title);
+		this._panelHandler.setContent(content);
+		this._panelHandler.setLegend(legend);
+		this._panelHandler.setFooter(footer);
+
+		this._panelHandler.storeDefault();
 	}
 
 	/**
@@ -218,9 +256,22 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	goToDefaultPanel() {
+		this._panelHandler.returnToDefault();
+	}
+
+	/**
+	 * 
+	 * @param {*} selectID 
+	 * @param {*} selectValue 
+	 */
 	onGroupSelectChange(selectID, selectValue) {
 		this._controlHandler.onGroupSelectChange(selectID, selectValue);
 	}
+
+	openTreeTab(event, tabName) {
+		this._interactionHandler.openTreeTab(event, tabName);
+	};
 
 
 }

@@ -15,8 +15,6 @@ class SourceHandler {
      */
     _map;
 
-    _currentAdditionals = [];
-
 
     /**
      * Initialise a new DigitalTwinDataHandler.
@@ -56,30 +54,28 @@ class SourceHandler {
      * @param {string[]} groups
      */
     addAdditionalSources(groups) {
-        if(this._currentAdditionals.includes(groups)) {
-            // Already plotted, skip
-            return;
-        }
-
-        console.log("Plotting: " + groups);
-        this._currentAdditionals.push(groups);
         let result = this._dataRegistry.getAdditionalGroup(groups);
-        console.log(result);
-        
+
         if(result != null) {
-            let group = result["group"];
-            let name = group["name"];
+            let dataSets = result["dataSets"];
 
-            let directory = this._dataRegistry.getAdditionalDirectory(groups);
-            let locationFile = group["locationFile"];
-            locationFile = directory + "/" + locationFile;
+            for(var i = 0; i < dataSets.length; i++) {
+                let dataSet = dataSets[i];
+                if(!dataSet["locationFile"]) continue;
 
-            if(this._map.getSource(name) == null) {
-                this._map.addSource(name, {
-                    type: "geojson",
-                    data: locationFile
-                });
-                console.log("INFO: Added additional '" + name + "' source to MapBox.");
+                let name = dataSet["name"];
+                let directory = this._dataRegistry.getAdditionalDirectory(groups);
+
+                let locationFile = dataSet["locationFile"];
+                locationFile = directory + "/" + locationFile;
+    
+                if(this._map.getSource(name) == null) {
+                    this._map.addSource(name, {
+                        type: "geojson",
+                        data: locationFile
+                    });
+                    console.log("INFO: Added additional '" + name + "' source to MapBox.");
+                }
             }
         }
     }
@@ -91,36 +87,21 @@ class SourceHandler {
      * @param {string[]} groups
      */
      removeAdditionalSources(groups) {
-        if(this._currentAdditionals.includes(groups)) {
-            this._currentAdditionals.remove(groups);
-        }
-
         let result = this._dataRegistry.getAdditionalGroup(groups);
-
         if(result != null) {
-            let group = result["group"];
-            let name = group["name"];
-            
-            if(this._map.getSource(name) != null) {
-                this.#removeLayersWithSource(name, this._map);
-                mapBox.removeSource(name);
+            let dataSets = result["dataSets"];
+
+            for(var i = 0; i < dataSets.length; i++) {
+                let dataSet = dataSets[i];
+                if(!dataSet["locationFile"]) continue;
+
+                let name = dataSet["name"];
+                if(this._map.getSource(name) != null) {
+                    this._map.removeSource(name);
+                    console.log("INFO: Source '" + name + "' has been removed.");
+                }
             }
         }
     }
 
-    /**
-     * Remove all layers currently on the map that use the input source name.
-     * 
-     * @param {*} sourceName source name
-     */
-    #removeLayersWithSource(sourceName) {
-        let allLayers = this._map.getStyle().layers;
-
-        for(var i = (layers.length - 1); i >= 0; i--) {
-            let layerSource = allLayers[i]["source"];
-            if(layerSource === sourceName) this._map.removeLayer(allLayers[i]["id"]);
-        }
-    }
-
-   
 }

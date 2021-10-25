@@ -1,0 +1,28 @@
+/* misc, prep */
+.xmltree { font-family: 'courier new'; font-size: 1rem; box-sizing: border-box; }
+.xmltree a:hover { color: #d00; }
+.xmltree .tree_node, .xmltree .attr span, .xmltree .LIText { display: inline !important; }
+
+/* sub-trees */
+.xmltree ul { margin: 1rem 0 0 0; padding: 0; border: none; margin-left: 1rem; border-left: solid 1px #ccc !important; }
+.xmltree.startExpanded ul { display: block; }
+.xmltree li { padding: 0 0 0 1rem; display: block; position: relative; margin-bottom: 1rem; border: none; }
+.xmltree ul { display: none; }
+.xmltree ul, .xmltree.xmltree li { list-style: none; }
+
+/* node names */
+.xmltree .tree_node { margin-right: 8px; background: #e5e5e5; padding: .3rem .6rem; color: #c50; border-radius: 3px; }
+.xmltree.hideNodeNames .tree_node { display: none !important; }
+
+/* attributes */
+.xmltree .attr { margin: -3px 0 7px 0; }
+.xmltree .attr span { color: #1770e3; }
+.xmltree .attrValue { margin-left: 8px; }
+.xmltree.hideAttrs .attr { display: none !important; }
+.xmltree .currSel { display: none; }
+
+/* expand/collapse buttons */
+.xmltree .plusMin { position: absolute; width: 20px; height: 20px; top: -2px; left: calc(-20px / 2); background: #666; color: white; text-align: center; line-height: 20px; cursor: pointer; font-size: 1.1rem; font-weight: bold; }
+.xmltree .plusMin:hover { background: #777; }
+.xmltree .noKids .plusMin { display: none; }
+.xmltree.subTreeRequestsOnAllNodes .plusMin, .xmltree .subTreeNode .plusMin { display: block; }

@@ -19,10 +19,14 @@ class PanelHandler {
 		</div>
 		<div id="sidePanelInner">
 			<div id="titleContainer"></div>
-			<div id="propsContainer"></div>
 			<div id="contentContainer"></div>
 			<div id="legendContainer"></div>
-			<div id="footerContainer"></div>
+			<div id="footerContainer">
+				<div id="footerContent"></div>
+				<div id="returnContainer">
+					<a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
+				</div>
+			</div>
 		</div>
 	`;
 
@@ -64,15 +68,6 @@ class PanelHandler {
 	 */
 	toggleTitle(visible) {
 		document.getElementById("titleContainer").style.display = (visible) ? "block" : "none";
-	}
-
-		/**
-	 * Toggles the visibility of the properties element.
-	 * 
-	 * @param {boolean} visible 
-	 */
-	toggleProperties(visible) {
-		document.getElementById("propsContainer").style.display = (visible) ? "block" : "none";
 	}
 
 	/**
@@ -125,40 +120,6 @@ class PanelHandler {
 	}
 
 	/**
-	 * Set the properties to show in a table within the side panel.
-	 * 
-	 * @param {Map<String, String>} data dictionary of properties 
-	 */
-	setProperties(data) {
-		document.getElementById("sidePanel").style.visibility = "visible";
-
-		var tableHTML = `
-			<table width="100%">
-				<tr>
-					<td colspan="3" style="border-bottom: 1px solid lightgrey; height: 25px;"><b>Location Properties</b></td>
-				</tr>
-				<tr>
-					<td colspan="3" height="10px"></td>
-				</tr>
-		`;
-		for (const [key, value] of Object.entries(data)) {
-			tableHTML += `<tr>`;
-			tableHTML += `<td width="5px"></td>`;
-			tableHTML += `<td width="35%"><b>` + key + ":</b></td>";
-			tableHTML += `<td width="calc(65% - 5px)">` + value + "</td>";
-			tableHTML += "</tr>";
-		}
-		tableHTML += `
-				<tr>
-					<td colspan="3" height="10px"></td>
-				</tr>
-			</table>
-		`;
-
-		document.getElementById("propsContainer").innerHTML = tableHTML;
-	}
-
-	/**
 	 * Sets the title of the side panel.
 	 * 
 	 * @param {Stirng} title desired title HTML
@@ -176,11 +137,13 @@ class PanelHandler {
 	setContent(contentHTML) {
 		document.getElementById("sidePanel").style.visibility = "visible";
 		document.getElementById("contentContainer").innerHTML = contentHTML;
-
+		
 		var sidePanel = document.getElementById("sidePanel");
 		if(sidePanel.classList.contains("large")) {
 			document.getElementById("controlsParent").style.visibility = "hidden";
 		}
+
+		
 	}
 
 	/**
@@ -238,7 +201,7 @@ class PanelHandler {
 	setFooter(footerHTML) {
 		var newHTML = `
 			<div id="returnContainer">
-				<a href="#" onclick="DT.sidePanelHandler.returnToDefault()">&lt; Return</a>
+				<a href="#" onclick="manager.goToDefaultPanel()">&lt; Return</a>
 			</div>
 			<div id="footerContent">
 				` + footerHTML + `
@@ -254,6 +217,9 @@ class PanelHandler {
 
 	returnToDefault() {
 		document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
+
+		// Clear currently selected feature
+		DT.currentFeature = null;
 	}
 
 	/**

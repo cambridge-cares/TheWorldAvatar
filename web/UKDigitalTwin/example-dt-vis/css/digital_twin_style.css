@@ -25,9 +25,9 @@ h1, h2, h3, h4, h5, h6 {
 .mapboxgl-popup-content {
 	text-align: center;
 	font-size: 9pt;
-	min-width: 150px;
-	max-width: 300px;
-	height: 65px;
+	min-width: 100px;
+	max-width: 350px;
+	min-height: 50px;
 }
 .mapboxgl-popup-content p {
 	font-style: italic;
@@ -117,7 +117,7 @@ h1, h2, h3, h4, h5, h6 {
 	border: 1px solid grey;
 	font-size: 11pt;
 }
-#sidePanel img {
+#slideButtonContainer img {
 	margin: 6px;
 	-webkit-transform: rotate(-90deg);
     -moz-transform: rotate(-90deg);
@@ -125,7 +125,14 @@ h1, h2, h3, h4, h5, h6 {
     -ms-transform: rotate(-90deg);
     transform: rotate(-90deg);
 }
-#sidePanel img:hover {
+#expandButtonContainer img {
+	margin: 6px;
+}
+#slideButtonContainer img:hover {
+	opacity: 50%;
+	cursor: pointer;
+}
+#expandButtonContainer img:hover {
 	opacity: 50%;
 	cursor: pointer;
 }
@@ -195,7 +202,7 @@ h1, h2, h3, h4, h5, h6 {
 	border-bottom: 1px solid lightgrey;
 }
 #contentContainer {
-	margin-top: 30px;
+	margin-top: 10px;
 	width: 100%;
 	flex-grow: 1;
 	margin-bottom: 10px;
