@@ -45,12 +45,12 @@ services:
     secrets:
       - geoserver_admin_password
     volumes:
-      - ./geoserver/logs:${GEOSERVER_LOG_DIR}
-      - ./geoserver/datadir:${GEOSERVER_DATA_DIR}
-      - ./geoserver/gwc_config:${GEOWEBCACHE_CONFIG_DIR}
-      - ./geoserver/gwc:${GEOWEBCACHE_CACHE_DIR}
-      - ./geoserver/netcfd:${NETCDF_DATA_DIR}
-      - ./geoserver/grib_cache:${GRIB_CACHE_DIR}
+      - geoserver_data:${GEOSERVER_DATA_DIR}
+      - geoserver_grib_cache:${GRIB_CACHE_DIR}
+      - geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
+      - geoserver_gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - geoserver_logs:${GEOSERVER_LOG_DIR}
+      - geoserver_netcfd:${NETCDF_DATA_DIR}
       - ./geoserver/webapps/geoserver/WEB-INF/web.xml:/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
 
   ontop-pgsql:
@@ -123,4 +123,10 @@ secrets:
 
 volumes:
   blazegraph_geo_data:
+  geoserver_data:
+  geoserver_grib_cache:
+  geoserver_gwc:
+  geoserver_gwc_config:
+  geoserver_logs:
+  geoserver_netcfd:
   postgis_data:
