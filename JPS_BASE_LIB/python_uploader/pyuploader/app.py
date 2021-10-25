@@ -10,6 +10,7 @@ def ts_upload_wrapper(
         file_or_dir: str,
         url: Union[str, None]=None,
         auth_str: Union[str, None]=None,
+        no_auth: bool= False,
         file_ext: str='owl',
         log_file_dir: Union[str, None]= None,
         log_file_name: str= 'ts_upload.log',
@@ -32,6 +33,7 @@ def ts_upload_wrapper(
                 file_or_dir,
                 url,
                 auth_str,
+                no_auth,
                 file_ext,
                 dry_run)
     except Exception as e:
@@ -42,8 +44,9 @@ def fs_upload_wrapper(
         file_or_dir: str,
         url: Union[str, None]=None,
         auth_str: Union[str, None]=None,
+        no_auth: bool= False,
         file_ext: str='log',
-        subdirs: str='',
+        subdirs: Union[str, None]=None,
         log_file_dir:  Union[str, None]= None,
         log_file_name: str='ts_upload.log',
         no_file_logging: bool= False,
@@ -65,6 +68,7 @@ def fs_upload_wrapper(
             file_or_dir,
             url,
             auth_str,
+            no_auth,
             file_ext,
             subdirs,
             dry_run)

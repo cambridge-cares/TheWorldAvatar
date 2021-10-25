@@ -11,14 +11,19 @@ def upload_to_web_server(
         file_or_dir: str,
         url: Union[str, None]=None,
         auth_str: Union[str, None]=None,
+        no_auth: bool = False,
         file_ext: str='log',
-        subdirs: str= '',
+        subdirs: Union[str, None]=None,
         dry_run: bool= False) -> Dict[str,str]:
 
     if url is None: url= webservbase.get_fserver_url_from_envar()
-    if auth_str is None: auth_str = webservbase.get_fserver_credentials_from_envar()
+    if not no_auth:
+        if auth_str is None: auth_str = webservbase.get_fserver_credentials_from_envar()
+        auth = utils.get_credentials_from_str(auth_str)
+    else:
+        # the file server will simply ignore the auth if it doesnt require it
+        auth = ('','')
 
-    auth = utils.get_credentials_from_str(auth_str)
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
     server_file_locations: Dict[str,str] = {}
@@ -44,7 +49,7 @@ def upload_file_to_web_server(
         file_path: str,
         url: str,
         auth: Tuple[str,str],
-        subdirs: Union[str, None]='') -> str:
+        subdirs: Union[str, None]=None) -> str:
 
     headers = {}
     if subdirs is not None:

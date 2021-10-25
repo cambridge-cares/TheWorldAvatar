@@ -5,6 +5,7 @@ __doc__: str = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--url=<url>]
                              [--auth=<auth>]
+                             [--no-auth]
                              [--file-ext=<ext>]
                              [--log-file-name=<name>]
                              [--log-file-dir=<dir>]
@@ -20,6 +21,8 @@ Options:
                         "username:password". If not specified, the code
                         will try to read it from a file whose location
                         should be specified in user environment variables.
+--no-auth               Disables reading credentials from the environment
+                        variables and sending it to the triple store.
 --file-ext=<ext>        List of extensions used to select files             [default: owl]
                         that will be uploaded to the triple store.
 --log-file-name=<name>  Name of the generated log file.                     [default: ts_upload.log]
@@ -41,11 +44,12 @@ def start() -> None:
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
         auth_str = args['--auth'],
+        no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],
         no_file_logging = args['--no-file-logging'],
-         dry_run = args['--dry-run']
+        dry_run = args['--dry-run']
     )
 
 if __name__ == '__main__':

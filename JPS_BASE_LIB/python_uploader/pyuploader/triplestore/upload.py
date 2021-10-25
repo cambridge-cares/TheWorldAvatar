@@ -14,13 +14,18 @@ def upload_to_triple_store(
         file_or_dir: str,
         url: Union[str, None]=None,
         auth_str: Union[str, None]=None,
+        no_auth: bool= False,
         file_ext: str='owl',
         dry_run: bool= False) -> None:
 
     if url is None: url = tsbase.get_tstore_url()
-    if auth_str is None:  auth_str = tsbase.get_tstore_credentials_from_envar()
+    if not no_auth:
+        if auth_str is None:  auth_str = tsbase.get_tstore_credentials_from_envar()
+        auth = utils.get_credentials_from_str(auth_str)
+    else:
+        # this is required as the current java method always accepts sth
+        auth = ('','')
 
-    auth = utils.get_credentials_from_str(auth_str)
     if file_ext != 'owl': raise NotImplementedError('Only owl files are currently supported.')
     files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
