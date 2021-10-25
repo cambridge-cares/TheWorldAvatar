@@ -36,6 +36,15 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
+/**
+ *  The purpose of the ScenarioAccessAgent is to handle HTTP requests to perform 
+ *  SPARQL query and update operations on RDF resources, as well as requests to 
+ *  "get" and "insert" entire graphs in the knowledge graph in a scenario
+ *  (parallel world) context. The agent will also handle calls to other agents 
+ *  within a scenario context. This agent extends the JPSAgent framework and
+ *  can be called using methods in the AccessAgentCaller class in jps_base_lib.
+ *
+ */
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAccessAgent  extends JPSAgent{ 
 
