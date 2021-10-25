@@ -51,7 +51,7 @@ class InteractionHandler {
             }
 
             // Get appropriate description for layer
-            if(!feature.properties["displayName"] || !feature.properties["name"]) return;
+            if(!feature.properties["displayName"] && !feature.properties["name"]) return;
             var description = feature.properties["displayName"];
             if(description == null) description = feature.properties["name"];
 
