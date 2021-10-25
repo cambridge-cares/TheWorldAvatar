@@ -90,18 +90,17 @@ services:
     environment:
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
       - postgis/postgis.env
     ports:
       - ${POSTGRES_PORT}:5432
     restart: unless-stopped
-    secrets:
-      - postgres_password
     security_opt:
       - label=disable
     volumes:
       - postgis_data:/var/lib/postgresql/data
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password
 
   qgis:
       image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
