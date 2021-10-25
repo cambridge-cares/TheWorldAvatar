@@ -1077,15 +1077,15 @@ public class JobSubmission{
 	 * Indicates if a server is online.
 	 * 
 	 * @param server refers to the server address
-	 * @param port referes to the port number
+	 * @param port refers to the port number
 	 * @return
 	 */
 	public boolean hostAvailabilityCheck(String server, int port) throws IOException {
 		boolean available = true;
-		try (final Socket dummy = new Socket(server, port)){
-		} catch (UnknownHostException | IllegalArgumentException e) {
-			available = false;
-		}
+//		try (final Socket dummy = new Socket(server, port)){
+//		} catch (UnknownHostException | IllegalArgumentException e) {
+//			available = false;
+//		}
 		return available;
 	}
 }
