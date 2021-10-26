@@ -344,20 +344,21 @@ if __name__ == '__main__':
     iri = "http://dbpedia.org/resource/West_Midlands_(county)"  
     test_region = "http://dbpedia.org/resource/North_West_England"
     # scot_iri = 'http://dbpedia.org/resource/Scotland'
+    #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    res = queryBusTopologicalInformation(29, None, False, 'ukdigitaltwin')
+    # res = queryBusTopologicalInformation(29, None, False, 'ukdigitaltwin')
     # print(res)
     # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
-    
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
-    print(res, len(res))
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
-
+    
+    FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-001"
+    ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-002"
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
-    # res = queryBusGPS('ukpowergridtopology', None, FromBus_iri, ToBus_iri, False)
-    #print(res, len(res))
+    res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, False)
+    print(res, len(res))
     
    
    

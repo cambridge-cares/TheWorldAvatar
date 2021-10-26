@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 23 Sept 2021         #
+# Last Update Date: 21 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_ELine."""
@@ -27,6 +27,7 @@ from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import createTopologicalInformationPropertyInstance
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
+from UK_Digital_Twin_Package import BranchPropertyInitialisation as BPI
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -80,7 +81,7 @@ model_ELine_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_g
 
 ### Functions ###
 """Main function: create the named graph Model_EBus and their sub graphs each ELine"""
-def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_DUKES, OWLFileStoragePath, updateLocalOWLFile = True): 
+def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_DUKES, initialiserMethod, OWLFileStoragePath, updateLocalOWLFile = True): 
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
         return    
@@ -114,8 +115,8 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
     
     
     # TODO: skip the shape geo of elins
-    # ELineTopoInfo = list(query_model.queryELineTopologicalInformation(topology_Endpoint, topoAndConsumpPath_Sleepycat, localQuery))
-    ELineTopoInfo = list(query_model.queryELineTopologicalInformation(numOfBus, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery))
+    # ELineTopoInfo = list(query_model.queryELineTopologicalInformation(numOfBus, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery))
+    ELineTopoInfo = query_model.queryELineTopologicalInformation(numOfBus, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery)
     
     if ELineTopoInfo == None:
         print('ELineTopoInfo is empty')
@@ -126,9 +127,9 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
     #     eline = ELineTopoInfo[0] # test
     
         print('################START createModel_ELine#################')
-        root_uri = eline[0].split('#')[0]
+        root_uri = eline['ELine'].split('#')[0]
         namespace = root_uri + HASH
-        node_locator = eline[0].split('#')[1]
+        node_locator = eline['ELine'].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
         father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "ELine")
         
@@ -147,11 +148,22 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem .iri), URIRef(root_node)))
         # link with ELine node in topology
-        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline[0])))
-        g.add((URIRef(eline[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
-            
-        ###add ELine model parameter###
+        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(eline['ELine'])))
+        g.add((URIRef(eline['ELine']), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
+        
+        # specify the initialisation method for each branch instance of branch model
+        ###1. create the instance of the ELine(branch) model
         uk_eline_model_ = UK_PG.UKElineModel(version_of_DUKES, numOfBus)
+        ###2. create an instance of the BranchPropertyInitialisation class and get the initialiser method by applying the 'getattr' function 
+        initialisation = BPI.BranchPropertyInitialisation()
+        initialiser = getattr(initialisation, initialiserMethod)
+        ###3. execute the initialiser with the branch model instance as the function argument  
+        uk_eline_model_ = initialiser(uk_eline_model_, eline) 
+        
+        ###add ELine model parameter###
+        #  uk_eline_model_ = UK_PG.UKElineModel(version_of_DUKES, numOfBus)
+        
+        # TODO: the BranchPropertyInitialisation has redefined the initialisation of the branch model variables 
         uk_eline_model_ = initialiseELineModelVar(topo_info, branchPropertyArrays, uk_eline_model_, eline) 
         
         if uk_eline_model_ != None:
@@ -202,7 +214,8 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
         cg_model_ELine.close()       
     return
 
-# TODO: skip the calculation of B, R,X of 29_bus model
+# TODO: skip the calculation of B, R, X of 29_bus model
+# check the header of the eline propery
 # Eline = ['http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-001.owl#ELine-001', 1, 2, 184.8475, 3, 0] , 400kv, 275kv
 def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine):
     if isinstance (ELine_Model, UK_PG.UKElineModel):
@@ -212,6 +225,7 @@ def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine)
         return None
     ELine_Model.FROMBUS = ELine[1]
     ELine_Model.TOBUS = ELine[2]
+    if len(branchPropertyArrays) != 0:
     
     if branchPropertyArrays[0] != topo_info.headerBranchProperty or int(branchPropertyArrays[1][0]) != 275 or int(branchPropertyArrays[2][0]) != 400:
         print('The branch property data header is not matched, please check the data file')

@@ -437,6 +437,7 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
     ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
     ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
     
+    OPTIONAL{
     ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
     ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
     
@@ -450,6 +451,7 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
     ?OHL_275kV ontopowsys_PowSysRealization:hasVoltageLevel "275kV" .
     ?OHL_275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_275kV .       
     }
+    }
     """% label
     
     global qres 
@@ -458,9 +460,14 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
         print('remoteQuery')
         res = json.loads(performQuery(topology_Endpoint, queryStr))
         print('query is done')
-        qres = [[ str(r['ELine']), int(r['From_Bus'].split('EBus-')[1]), int(r['To_Bus'].split('EBus-')[1]), \
-                 float((r['Value_Length_ELine'].split('\"^^')[0]).replace('\"','')), int((r['Num_OHL_400kV'].split('\"^^')[0]).replace('\"','')),\
-                     int((r['Num_OHL_275kV'].split('\"^^')[0]).replace('\"',''))] for r in res]
+        for r in res:
+          for key in r.keys():
+              if '\"^^' in  r[key] :
+                r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+        # qres = [[ str(r['ELine']), int(r['From_Bus'].split('EBus-')[1]), int(r['To_Bus'].split('EBus-')[1]), \
+        #          float((r['Value_Length_ELine'].split('\"^^')[0]).replace('\"','')), int((r['Num_OHL_400kV'].split('\"^^')[0]).replace('\"','')),\
+        #              int((r['Num_OHL_275kV'].split('\"^^')[0]).replace('\"',''))] for r in res]
+        return res 
     elif topology_Sleepycat != None and localQuery == True:  
         eline_cg = ConjunctiveGraph('Sleepycat')
         sl = eline_cg.open(topology_Sleepycat, create = False)
@@ -469,31 +476,8 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
             return None
         qres = list(eline_cg.query(queryStr))
         eline_cg.close()
-    return qres 
+        return qres 
 
-def testLabel():
-    qstr = """
-    PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> 
-    PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> 
-    PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> 
-    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#> 
-    PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> 
-    SELECT DISTINCT ?Model_EGen ?b_value 
-    WHERE
-    {
-    ?Model_EGen   j5:hasModelVariable ?b .
-	?b  a  j3:genCostcn-2  .
-	?b  rdfs:label  "Parameter_b"  .
-	?b  j2:hasValue ?v_bcostn2 .
-	?v_bcostn2   j2:numericalValue ?b_value .
-    }
-    
-    """
-    res = json.loads(performQuery('ukpowergridmodel', qstr))
-    print(len(res))
-    print(res)
-    return
 
 if __name__ == '__main__': 
     # sl_path = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
@@ -503,9 +487,9 @@ if __name__ == '__main__':
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
     # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
+    # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
-    # res = queryELineTopologicalInformation(10, 'ukdigitaltwin', None, False)
+    res = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
    
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
@@ -516,5 +500,5 @@ if __name__ == '__main__':
     #print(geo.geom_type)
     
     print(res)
-    #testLabel()
+    
 

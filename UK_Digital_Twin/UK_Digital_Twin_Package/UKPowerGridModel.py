@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 Oct 2021          #
+# Last Update Date: 25 Oct 2021          #
 ##########################################
 
 """This module declare the properties of generating UK power grid model A-boxes"""
@@ -76,6 +76,9 @@ class UKEbusModel:
 
 class UKElineModel:
     
+    """Data path"""
+    DataPath = '../Data files/PowerGridModelInitialisation/'
+    
     """ELine Node keys"""
     ELineKey = "ELine-"
     ModelELineKey = "Model_ELine-"
@@ -83,6 +86,7 @@ class UKElineModel:
     LengthKey = "Length_"
     OHL400kVKey = "OHL_400kV_" # Over head line (OHL) with 400kV level
     OHL275kVKey = "OHL_275kV_" # Over head line (OHL) with 275kV level
+    OHLKey = "OHL_"
     
     """Model variable keys"""
     FROMBUSKey = "FromBusNumber_"
@@ -100,13 +104,18 @@ class UKElineModel:
     ANGMAXKey = "AngleMax_"
     
     """Data file header"""
-    # TODO: to be modified
-    headerBranchModel = ["Bus", "Type", "Pd", "Gd", "Gs", "Bs", "area", "Vm", "Va", "basekV", "zone", "Vmax", "Vmin\n"]
+    headerBranchModel = ["Bus1", "Bus2", "R", "X", "B", "RateA", "RateB", "RateC", "ratio", "angle", "status", "angmin", "angmax\n"]
+    
+    # """Branch property"""
+    # if numOfBus == 10:
+    #     self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
+    #     self.voltageLevel = ["275", "400"]
     
     def __init__(self, DUKESVersion = 2019, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
         self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
         self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
-        
+        self.BranchProperty =  UKElineModel.DataPath + str(numOfBus) + '_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
+        self.BranchModelInitialisation = UKElineModel.DataPath + str(numOfBus) + '_bus/BranchModelInitialisation.csv'        
         self.DUKESVersion = DUKESVersion
         self.numOfBus = numOfBus
         self.location =  Location
