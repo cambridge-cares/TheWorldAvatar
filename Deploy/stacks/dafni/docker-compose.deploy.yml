@@ -60,29 +60,29 @@ services:
       - geoserver_netcfd:${NETCDF_DATA_DIR}
       - ./geoserver/webapps/geoserver/WEB-INF/web.xml:/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
 
-  ontop-pgsql:
-    image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
-    container_name: "ontop${CONTAINER_NAME_SUFFIX}"
-    depends_on:
-      - postgis
-    environment:
-      ONTOP_CORS_ALLOWED_ORIGINS: '*'
-      ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
-      POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-      POSTGRES_PORT: ${POSTGRES_PORT}
-    env_file:
-      - ontop/ontop.env
-    ports:
-      - ${ONTOP_PORT}:8080
-    pull_policy: if_not_present
-    restart: unless-stopped
-    secrets:
-      - postgres_password
-    security_opt:
-      - label=disable
-    volumes:
-      - ./ontop/obda:/opt/ontop/input
-      - ./ontop/wait-for-it:/opt/wait-for-it
+  # ontop-pgsql:
+  #   image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
+  #   container_name: "ontop${CONTAINER_NAME_SUFFIX}"
+  #   depends_on:
+  #     - postgis
+  #   environment:
+  #     ONTOP_CORS_ALLOWED_ORIGINS: '*'
+  #     ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
+  #     POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
+  #     POSTGRES_PORT: ${POSTGRES_PORT}
+  #   env_file:
+  #     - ontop/ontop.env
+  #   ports:
+  #     - ${ONTOP_PORT}:8080
+  #   pull_policy: if_not_present
+  #   restart: unless-stopped
+  #   secrets:
+  #     - postgres_password
+  #   security_opt:
+  #     - label=disable
+  #   volumes:
+  #     - ./ontop/obda:/opt/ontop/input
+  #     - ./ontop/wait-for-it:/opt/wait-for-it
 
   postgis:
     image: postgis/postgis:14-3.1-alpine
