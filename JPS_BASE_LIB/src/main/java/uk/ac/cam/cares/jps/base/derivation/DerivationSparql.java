@@ -131,6 +131,60 @@ public class DerivationSparql{
 	    
 	    return derivedQuantity;
 	}
+
+	/**
+	 * This method creates a new instance of derived quantity, grouping the given entities under this instance,
+	 * whenever this derived quantity gets updated, the provided entities will get deleted by the client.
+	 * This method primarily follows createDerivation(StoreClientInterface kbClient, List<String> entities,
+	 * String agentIRI, String agentURL, List<String> inputs), except that this method does NOT create statements
+	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl> <URL>}
+	 * already exist in respective OntoAgent instances.
+	 * @param kbClient
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputs
+	 * @return
+	 */
+	static String createDerivation(StoreClientInterface kbClient, List<String> entities, String agentIRI, List<String> inputs) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// create a unique IRI for this new derived quantity
+		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		while (checkInstanceExists(kbClient, derivedQuantity)) {
+			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		}
+
+		Iri derived_iri = iri(derivedQuantity);
+
+		modify.insert(derived_iri.isA(Derivation));
+
+		for (String entity : entities) {
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(kbClient, entity)) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			} else {
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
+			}
+		}
+
+		// link to agent
+		// here it is assumed that an agent only has one operation
+		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		
+		// link to each input
+		for (String input : inputs) {
+			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+		}
+	    
+		modify.prefix(p_time,p_derived,p_agent);
+		
+		kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+		kbClient.executeUpdate();
+		return derivedQuantity;
+	}
 	
 	/**
 	 * same method as above, but for instances with time series and these instances do not get deleted

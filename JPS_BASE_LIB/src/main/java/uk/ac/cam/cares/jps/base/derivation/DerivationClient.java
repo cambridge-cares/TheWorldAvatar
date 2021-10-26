@@ -55,6 +55,25 @@ public class DerivationClient {
     	return createdDerivation;
     }
     
+	/**
+	 * This method creates a new derived instance and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
+     * Use this for instances that get replaced by agents, also when the information about agent exists already
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @return
+	 */
+	public String createDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
+		String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, inputsIRI);
+		DerivationSparql.addTimeInstance(this.kbClient, createdDerivation);
+		LOGGER.info("Instantiated derivation for asynchronous operation <" + createdDerivation + ">");
+		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
+		return createdDerivation;
+	}
+
     /**
      * use this if all the agent does to the instance is appending time series data, entity do not get replaced
      * @param entity
