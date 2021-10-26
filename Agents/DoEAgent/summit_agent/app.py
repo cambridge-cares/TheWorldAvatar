@@ -24,18 +24,18 @@ def interval_task():
 def monitorDerivation():
     storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
-    list_of_derivation = jpsBaseLib_view.DerivationSparql.getDerivations(storeClient, DOEAGENT_ONTOAGENT_SERVICE)
+    list_of_derivation = derivationClient.getDerivations(DOEAGENT_ONTOAGENT_SERVICE)
 
     for d in list_of_derivation:
-        if (jpsBaseLib_view.DerivationSparql.isRequested(storeClient, d)):
+        if (derivationClient.isRequested(d)):
             agent_inputs = getDoEAgentInputs(SPARQL_QUERY_ENDPOINT, d)
-            jpsBaseLib_view.DerivationSparql.markAsInProgress(storeClient, d)
+            derivationClient.markAsInProgress(d)
             ontodoe_new_exp_iri = setUpJob(agent_inputs)
             logger.info("The newly suggested experiments are referred by: " + ontodoe_new_exp_iri)
             derivationClient.updateStatusAtJobCompletion(d, [ontodoe_new_exp_iri])
-        elif (jpsBaseLib_view.DerivationSparql.isInProgress(storeClient, d)):
+        elif (derivationClient.isInProgress(d)):
             pass
-        elif (jpsBaseLib_view.DerivationSparql.isFinished(storeClient, d)):
+        elif (derivationClient.isFinished(d)):
             derivationClient.cleanUpFinishedDerivationUpdate(d)
 
 # Initialise logger
