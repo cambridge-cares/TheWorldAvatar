@@ -53,17 +53,19 @@ public interface ITBoxManagement {
 	 * Creates an ontological data property.
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological object property.
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
@@ -71,7 +73,7 @@ public interface ITBoxManagement {
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
+	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
 	
 	/**
 	 * Adds the definition as a comment to the OWL class.

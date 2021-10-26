@@ -360,11 +360,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			addDomain(dataProperty, domain);
@@ -387,12 +390,15 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * range are provided, it creates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
+	 * @param targetName
+	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
 		addDomain(objectProperty, domain, quantifier);
