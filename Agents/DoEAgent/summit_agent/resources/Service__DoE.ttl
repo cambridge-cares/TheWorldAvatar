@@ -13,16 +13,7 @@ INSERT DATA {
         rdf:type ontoagent:Operation;
         ontoagent:hasInput :MessageContent_input;
         ontoagent:hasOutput :MessageContent_output;
-        ontoagent:hasInvocation :Invocation;
-    .
-
-    :Invocation
-        rdf:type ontoagent:Invocation;
         ontoagent:hasHttpUrl "http://localhost:7000/doe/summit/suggest"^^xsd:string;
-        ontoagent:hasKey "strategy"^^xsd:string;
-        ontoagent:hasKey "domain"^^xsd:string;
-        ontoagent:hasKey "systemResponse"^^xsd:string;
-        ontoagent:hasKey "historicalData"^^xsd:string;
     .
 
     :MessageContent_input
