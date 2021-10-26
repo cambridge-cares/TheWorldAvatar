@@ -55,6 +55,25 @@ public class DerivationClient {
     	return createdDerivation;
     }
     
+	/**
+	 * This method creates a new derived instance and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
+     * Use this for instances that get replaced by agents, also when the information about agent exists already
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputsIRI
+	 * @return
+	 */
+	public String createDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
+		String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, inputsIRI);
+		DerivationSparql.addTimeInstance(this.kbClient, createdDerivation);
+		LOGGER.info("Instantiated derivation for asynchronous operation <" + createdDerivation + ">");
+		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+		LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
+		return createdDerivation;
+	}
+
     /**
      * use this if all the agent does to the instance is appending time series data, entity do not get replaced
      * @param entity
@@ -151,6 +170,11 @@ public class DerivationClient {
 		}
 	}
 	
+	/**
+	 * This method updates the status of the Derivation at job completion: the status of the derivation will be marked as "Finished" and the newDerivedIRI will be attached to the status. 
+	 * @param derivation
+	 * @param newDerivedIRI
+	 */
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		// mark as Finished
 		String statusIRI = DerivationSparql.markAsFinished(this.kbClient, derivation);
@@ -158,6 +182,10 @@ public class DerivationClient {
 		DerivationSparql.addNewDerivedIRIToFinishedStatus(this.kbClient, statusIRI, newDerivedIRI);
 	}
 	
+	/**
+	 * This method cleans up the "Finished" derivation by reconnecting the new generated derived IRI with derivations and deleting all status. 
+	 * @param derivation
+	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
 		// this method largely follows the part of code after obtaining the response from Agent in method updateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph)
 		// the additional part in this method (compared to the above mentioned method) is: (1) how we get newDerivedIRI; (2) we delete all triples connected to the status of the derivation
@@ -472,5 +500,101 @@ public class DerivationClient {
 	 */
 	public String getDerivationOf(String entity) {
 		return DerivationSparql.getDerivedIRI(kbClient, entity);
+	}
+
+	/**
+	 * Checks if the derivation status is "Requested".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isRequested(String derivation) {
+		return DerivationSparql.isRequested(this.kbClient, derivation);
+	}
+
+	/**
+	 * Checks if the derivation status is "InProgress".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isInProgress(String derivation) {
+		return DerivationSparql.isInProgress(this.kbClient, derivation);
+	}
+
+	/**
+	 * Checks if the derivation status is "Finished".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isFinished(String derivation) {
+		return DerivationSparql.isFinished(this.kbClient, derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "Requested".
+	 * @param derivation
+	 */
+	public void markAsRequested(String derivation) {
+		DerivationSparql.markAsRequested(this.kbClient, derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "InProgress".
+	 * @param derivation
+	 */
+	public void markAsInProgress(String derivation) {
+		DerivationSparql.markAsInProgress(this.kbClient, derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "Finished".
+	 * @param derivation
+	 */
+	public void markAsFinished(String derivation) {
+		DerivationSparql.markAsFinished(this.kbClient, derivation);
+	}
+
+	/**
+	 * Checks if a derivation has status.
+	 * @param derivation
+	 * @return
+	 */
+	public boolean hasStatus(String derivation) {
+		return DerivationSparql.hasStatus(this.kbClient, derivation);
+	}
+
+	/**
+	 * Gets the status of a derivation.
+	 * @param derivation
+	 * @return
+	 */
+	public String getStatus(String derivation) {
+		return DerivationSparql.getStatus(this.kbClient, derivation);
+	}
+
+	/**
+	 * Gets the new derived IRI at derivation update (job) completion.
+	 * @param derivation
+	 * @return
+	 */
+	public List<String> getNewDerivedIRI(String derivation) {
+		return DerivationSparql.getNewDerivedIRI(this.kbClient, derivation);
+	}
+
+	/**
+	 * Gets the agent IRI that is used to update the derivation.
+	 * @param derivedQuantity
+	 * @return
+	 */
+	public String getAgentUrl(String derivedQuantity) {
+		return DerivationSparql.getAgentUrl(this.kbClient, derivedQuantity);
+	}
+
+	/**
+	 * Gets a list of derivations that is derived using a given agent IRI.
+	 * @param agentIRI
+	 * @return
+	 */
+	public List<String> getDerivations(String agentIRI) {
+		return DerivationSparql.getDerivations(this.kbClient, agentIRI);
 	}
 }

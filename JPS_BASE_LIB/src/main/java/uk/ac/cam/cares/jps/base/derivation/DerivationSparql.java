@@ -131,6 +131,60 @@ public class DerivationSparql{
 	    
 	    return derivedQuantity;
 	}
+
+	/**
+	 * This method creates a new instance of derived quantity, grouping the given entities under this instance,
+	 * whenever this derived quantity gets updated, the provided entities will get deleted by the client.
+	 * This method primarily follows createDerivation(StoreClientInterface kbClient, List<String> entities,
+	 * String agentIRI, String agentURL, List<String> inputs), except that this method does NOT create statements
+	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl> <URL>}
+	 * already exist in respective OntoAgent instances.
+	 * @param kbClient
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputs
+	 * @return
+	 */
+	static String createDerivation(StoreClientInterface kbClient, List<String> entities, String agentIRI, List<String> inputs) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// create a unique IRI for this new derived quantity
+		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		while (checkInstanceExists(kbClient, derivedQuantity)) {
+			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		}
+
+		Iri derived_iri = iri(derivedQuantity);
+
+		modify.insert(derived_iri.isA(Derivation));
+
+		for (String entity : entities) {
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(kbClient, entity)) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			} else {
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
+			}
+		}
+
+		// link to agent
+		// here it is assumed that an agent only has one operation
+		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		
+		// link to each input
+		for (String input : inputs) {
+			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+		}
+	    
+		modify.prefix(p_time,p_derived,p_agent);
+		
+		kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+		kbClient.executeUpdate();
+		return derivedQuantity;
+	}
 	
 	/**
 	 * same method as above, but for instances with time series and these instances do not get deleted
@@ -208,7 +262,13 @@ public class DerivationSparql{
 		}
 	}
 	
-	public static boolean isRequested(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method checks if the status of the derivation is marked as "Requested".
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static boolean isRequested(StoreClientInterface storeClient, String derivation) {
 		String statusQueryKey = "status";
 		Variable status = SparqlBuilder.var(statusQueryKey);
 		SelectQuery query = Queries.SELECT();
@@ -225,8 +285,14 @@ public class DerivationSparql{
 			return true;
 		}
 	}
-	
-	public static boolean isInProgress(StoreClientInterface storeClient, String derivation) {
+
+	/**
+	 * This method checks if the status of the derivation is marked as "InProgress".
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static boolean isInProgress(StoreClientInterface storeClient, String derivation) {
 		String statusQueryKey = "status";
 		Variable status = SparqlBuilder.var(statusQueryKey);
 		SelectQuery query = Queries.SELECT();
@@ -244,7 +310,13 @@ public class DerivationSparql{
 		}
 	}
 	
-	public static boolean isFinished(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method checks if the status of the derivation is marked as "Finished".
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static boolean isFinished(StoreClientInterface storeClient, String derivation) {
 		String statusQueryKey = "status";
 		Variable status = SparqlBuilder.var(statusQueryKey);
 		SelectQuery query = Queries.SELECT();
@@ -262,10 +334,18 @@ public class DerivationSparql{
 		}
 	}
 	
-	public static void markAsRequested(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method marks the status of the derivation as "Requested".
+	 * @param storeClient
+	 * @param derivation
+	 */
+	static void markAsRequested(StoreClientInterface storeClient, String derivation) {
 		ModifyQuery modify = Queries.MODIFY();
 		
-		String statusIRI = Requested.toString() + UUID.randomUUID().toString();
+		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		while (checkInstanceExists(storeClient, statusIRI)) {
+			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		}
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
 		
@@ -275,11 +355,19 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
-	public static void markAsInProgress(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method marks the status of the derivation as "InProgress".
+	 * @param storeClient
+	 * @param derivation
+	 */
+	static void markAsInProgress(StoreClientInterface storeClient, String derivation) {
 		deleteStatus(storeClient, derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
-		String statusIRI = InProgress.toString() + UUID.randomUUID().toString();
+		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		while (checkInstanceExists(storeClient, statusIRI)) {
+			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		}
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(InProgress);
 		
@@ -289,11 +377,20 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
-	public static String markAsFinished(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method marks the status of the derivation as "Finished".
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static String markAsFinished(StoreClientInterface storeClient, String derivation) {
 		deleteStatus(storeClient, derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
-		String statusIRI = Finished.toString() + UUID.randomUUID().toString();
+		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		while (checkInstanceExists(storeClient, statusIRI)) {
+			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		}
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Finished);
 		
@@ -304,7 +401,13 @@ public class DerivationSparql{
 		return statusIRI;
 	}
 	
-	public static boolean hasStatus(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method checks if the derivation has any status assigned to it.
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static boolean hasStatus(StoreClientInterface storeClient, String derivation) {
 		SelectQuery query = Queries.SELECT();
 		
 		TriplePattern queryPattern = iri(derivation).has(hasStatus, query.var());
@@ -319,7 +422,13 @@ public class DerivationSparql{
 		}
 	}
 	
-	public static String getStatus(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method retrieves the status of a derivation.
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static String getStatus(StoreClientInterface storeClient, String derivation) {
 		if (hasStatus(storeClient, derivation)) {
 			String statusQueryKey = "status";
 			Variable status = SparqlBuilder.var(statusQueryKey);
@@ -336,7 +445,13 @@ public class DerivationSparql{
 		}
 	}
 	
-	public static List<String> getNewDerivedIRI(StoreClientInterface storeClient, String derivation) {
+	/**
+	 * This method retrieves the new derived IRI of a derivation after the job completed.
+	 * @param storeClient
+	 * @param derivation
+	 * @return
+	 */
+	static List<String> getNewDerivedIRI(StoreClientInterface storeClient, String derivation) {
 		if (isFinished(storeClient, derivation)) {
 			String statusQueryKey = "status";
 			String derivedQueryKey = "newDerivedIRI";
@@ -415,6 +530,11 @@ public class DerivationSparql{
 	    kbClient.executeUpdate();
 	}
 	
+	/**
+	 * This method removes the time instance of the given entity. 
+	 * @param kbClient
+	 * @param entity
+	 */
 	static void removeTimeInstance(StoreClientInterface kbClient, String entity) {
 		ModifyQuery modify = Queries.MODIFY();
 		
@@ -438,7 +558,7 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
-	public static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
+	static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
 		SelectQuery query = Queries.SELECT();
 		
 		String queryKey = "url";
@@ -464,7 +584,6 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
-	
 	static List<String> getInputs(StoreClientInterface kbClient, String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
@@ -484,7 +603,13 @@ public class DerivationSparql{
 		return inputs;
 	}
 	
-	public static List<String> getDerivations(StoreClientInterface kbClient, String agentIRI) {
+	/**
+	 * This method retrieves a list of derivations that <isDerivedUsing> a given <agentIRI>. 
+	 * @param kbClient
+	 * @param agentIRI
+	 * @return
+	 */
+	static List<String> getDerivations(StoreClientInterface kbClient, String agentIRI) {
 		String queryKey = "derivation";
 		Variable derivation = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = derivation.has(isDerivedUsing, iri(agentIRI));
@@ -548,7 +673,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	public static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
+	static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "derived";
 		Variable derived = SparqlBuilder.var(queryKey);
@@ -668,11 +793,21 @@ public class DerivationSparql{
 		}
 	}
 	
+	/**
+	 * This methods deletes the status of a derivation instance. 
+	 * @param kbClient
+	 * @param instance
+	 */
 	static void deleteStatus(StoreClientInterface kbClient, String instance) {
 		String status = getStatus(kbClient, instance);
 		deleteInstances(kbClient, Arrays.asList(status));
 	}
 	
+	/**
+	 * This methods retrieves the timestamp of a derivation instance. 
+	 * @param kbClient
+	 * @param instance
+	 */
 	static long getTimestamp(StoreClientInterface kbClient, String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -780,6 +915,12 @@ public class DerivationSparql{
 		return classOfInstances;
 	}
 	
+	/**
+	 * This method retrieves the rdf:type of a given instance, whereas ignoring certain perdefined rdf:type. 
+	 * @param kbClient
+	 * @param instance
+	 * @return
+	 */
 	static String getInstanceClass(StoreClientInterface kbClient, String instance) {
 		String queryKey = "class";
 		
@@ -916,5 +1057,35 @@ public class DerivationSparql{
     	}
     	
     	return CombinedGP;
+    }
+
+	/**
+	 * This method chunks the given iri and returns its namespace. 
+	 * @param iri
+	 * @return
+	 */
+	private static String getNameSpace(String iri) {
+    	iri = trimIRI(iri);
+    	if (iri.contains("#")) {
+    		iri = iri.substring(0, iri.lastIndexOf("#")+1);
+    	} else if (iri.contains("/")) {
+    		iri = iri.substring(0, iri.lastIndexOf("/")+1);
+    	}
+    	return iri;
+    }
+    
+	/**
+	 * This method trims the given iri by removing the "<" at the start and the ">" at the end.
+	 * @param iri
+	 * @return
+	 */
+    private static String trimIRI(String iri) {
+    	if (iri.startsWith("<")) {
+    		iri = iri.substring(1);
+    	}
+    	if (iri.endsWith(">")) {
+    		iri = iri.substring(0, iri.length()-1);
+    	}
+    	return iri;
     }
 }
