@@ -9,6 +9,9 @@ PREFIX exp6:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_6/>
 PREFIX :			<https://theworldavatar.com/kb/ontodoe/DoE_1/>
 
 INSERT DATA {
+	####################################
+    ## Design of Experiment instances ##
+    ####################################
 	:DoE_1
 		rdf:type OntoDoE:DesignOfExperiment;
 		OntoDoE:usesStrategy :Strategy_1;
@@ -25,6 +28,12 @@ INSERT DATA {
 		OntoDoE:nSpectralPoints "30"^^xsd:integer;
 		OntoDoE:nGenerations "20"^^xsd:integer;
 		OntoDoE:populationSize "20"^^xsd:integer;
+	.
+
+	# This statement is actually part of OntoDoE TBox
+	# just added here to enable query by property paths
+	OntoDoE:TSEMO 
+		rdf:type OntoDoE:Strategy;
 	.
 
 	:Domain_1
@@ -68,11 +77,13 @@ INSERT DATA {
 	:SystemResponse_1
 		rdf:type OntoDoE:SystemResponse;
 		OntoDoE:refersTo OntoRxn:Yield;
+		OntoDoE:maximise "true"^^xsd:boolean;
 	.
 
 	:SystemResponse_2
 		rdf:type OntoDoE:SystemResponse;
 		OntoDoE:refersTo OntoRxn:RunMaterialCost;
+		OntoDoE:maximise "false"^^xsd:boolean;
 	.
 
 	:HistoricalData_1
@@ -82,6 +93,7 @@ INSERT DATA {
 		OntoDoE:refersTo exp3:RxnExp_1;
 		OntoDoE:refersTo exp4:RxnExp_1;
 		OntoDoE:refersTo exp5:RxnExp_1;
+		OntoDoE:numOfNewExp 2;
 	.
 
 	:NewExperiment_1
