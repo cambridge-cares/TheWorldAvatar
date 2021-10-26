@@ -35,6 +35,15 @@ services:
     volumes:
       - blazegraph_geo_data:/data
 
+  csvkit:
+    image: docker.io/jdkelley/csvkit
+    container_name: "csvkit${CONTAINER_NAME_SUFFIX}"
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - csvkit_data:/data
+
   geoserver:
     image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
     container_name: "geoserver${CONTAINER_NAME_SUFFIX}"
@@ -135,6 +144,7 @@ secrets:
 
 volumes:
   blazegraph_geo_data:
+  csvkit_data:
   geoserver_data:
   geoserver_grib_cache:
   geoserver_gwc:
