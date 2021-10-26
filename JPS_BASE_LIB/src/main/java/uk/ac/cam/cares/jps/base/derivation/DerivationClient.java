@@ -151,6 +151,11 @@ public class DerivationClient {
 		}
 	}
 	
+	/**
+	 * This method updates the status of the Derivation at job completion: the status of the derivation will be marked as "Finished" and the newDerivedIRI will be attached to the status. 
+	 * @param derivation
+	 * @param newDerivedIRI
+	 */
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		// mark as Finished
 		String statusIRI = DerivationSparql.markAsFinished(this.kbClient, derivation);
@@ -158,6 +163,10 @@ public class DerivationClient {
 		DerivationSparql.addNewDerivedIRIToFinishedStatus(this.kbClient, statusIRI, newDerivedIRI);
 	}
 	
+	/**
+	 * This method cleans up the "Finished" derivation by reconnecting the new generated derived IRI with derivations and deleting all status. 
+	 * @param derivation
+	 */
 	public void cleanUpFinishedDerivationUpdate(String derivation) {
 		// this method largely follows the part of code after obtaining the response from Agent in method updateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph)
 		// the additional part in this method (compared to the above mentioned method) is: (1) how we get newDerivedIRI; (2) we delete all triples connected to the status of the derivation
