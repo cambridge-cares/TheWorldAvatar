@@ -61,6 +61,36 @@ def api():
     # logger.info(str(type(historical_data_instances)))
     return ontodoe_new_exp_iri
 
+@app.route('/example', methods=['GET'])
+def exampleEntryPoint():
+    """As the monitorDerivation() is set to be running periodically once the DoE agent is deployed
+    this page should serve as the entry point for creating a working example, i.e. it creates the 
+    derivation instance.
+    """
+    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient)
+    
+    derived = ['https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_1']
+    agentIRI = DOEAGENT_ONTOAGENT_SERVICE
+    inputs = ['https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1', 
+    'https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1', 
+    'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1', 
+    'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_2', 
+    'https://theworldavatar.com/kb/ontodoe/DoE_1/HistoricalData_1']
+    
+    # Create derivation instance given above information, the timestamp of this derivation is 0
+    derivationIRI = derivationClient.createDerivation(derived, agentIRI, inputs)
+
+    for input in inputs:
+        derivationClient.addTimeInstance(input)
+        # Update timestamp is needed as the timestamp added using addTimeInstance is 0
+        derivationClient.updateTimestamp(input)
+    
+    # Update the derivation asynchronous, it will only mark as "Requested"
+    # The actual update will be handled by monitorDerivation method periodically run by DoE agent
+    derivationClient.updateDerivationAsyn(derivationIRI)
+    return 'Initialised successfully, created derivation instance <{derivationIRI}>'
+
 def setUpJob(input_decoded):
     input_json = json.loads(input_decoded) if not isinstance(input_decoded, dict) else input_decoded
     strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
