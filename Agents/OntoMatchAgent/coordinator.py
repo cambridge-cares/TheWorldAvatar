@@ -313,6 +313,7 @@ class InstanceMatcherWithAutoCalibrationAgent():
         for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
             score = 0
             number_columns = len(property_mapping)
+            prop_score = {}
             for propmap  in property_mapping:
 
                 c_max = propmap['key']
@@ -373,6 +374,12 @@ class InstanceMatcherWithAutoCalibrationAgent():
                             print('\t', count_m_plus_n, count_m_plus_n_equal, count_m_plus_n_greater, 'denom=', denom)
                     '''
                     score += column_score
+
+
+                    #TODO-AE 211015 calibrated score for each prop
+                    prop_score.update({c: column_score})
+
+
                 else:
                     #TODO-AE how to score missing data?
                     number_columns = number_columns - 1
@@ -387,8 +394,12 @@ class InstanceMatcherWithAutoCalibrationAgent():
                 'idx_1': idx_1,
                 'idx_2': idx_2,
                 'score': score,
-                'best': False
+                'best': False,
+                'pos_1': row['pos_1'],
+                'pos_2': row['pos_2'],
             }
+
+            total_score_row.update(prop_score)
 
             total_score_rows.append(total_score_row)
 

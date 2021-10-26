@@ -136,7 +136,7 @@ class ScoreManager():
 
         try:
             iter(fcts)
-        except:
+        except TypeError:
             fcts = [fcts]
 
         for p1 in props1:
