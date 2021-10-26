@@ -5,8 +5,9 @@ import uk.ac.cam.cares.jps.base.slurm.job.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Scanner;
 
 
@@ -15,19 +16,36 @@ class PostProcessingTest {
     @Test
     void testupdateJobOutputStatus() throws IOException {
         String thisdir = System.getProperty("user.dir"); //Returns JPS_BASE_LIB
-        String newdir = thisdir + "\\src\\test\\resources"; //Now amend directory to JPS_BASE_LIB\src\test\resources, which is where we put the test file. Notably the test only works if the test file is named "status.txt"
+        String newdir = thisdir + "\\src\\test\\resources"; //Amend directory to JPS_BASE_LIB\src\test\resources, which is where we put the test file.
+
+        File tempstatusfile = new File(newdir + "\\status.txt"); //Create the status.txt file in JPS_BASE_LIB\src\test\resources. This file will be deleted at the end
+        FileWriter writer = new FileWriter(tempstatusfile);
+        writer.write("JobOutput: processed"); //Then write "JobOutput: processed into status.txt
+        writer.close();
+
         File falseinput = new File(thisdir); //If we feed only JPS_BASE_LIB, getStatusFile should NOT work, and therefore updateJobOutputStatus should not run. In this case the expected output is false.
-        File trueinput = new File(newdir); //This is if we feed JPS_BASE_LIB\src\test\resources, in which case status.txt should be detected and updateJobOutputStatus should run.
+        File trueinput = new File(newdir); //If we feed JPS_BASE_LIB\src\test\resources, status.txt should be detected and updateJobOutputStatus should run.
         boolean testres = PostProcessing.updateJobOutputStatus(trueinput);
         assertEquals(true, testres); //The code returns "true" if updateJobOutputStatus successfully runs, so this is the only thing we can test
         boolean testres2 = PostProcessing.updateJobOutputStatus(falseinput);
         assertEquals(false,testres2);
+        tempstatusfile.delete(); //Delete the created status.txt file. This returns the folder to its original state
     }
 
     @Test
     void testmodifyOutputStatus() throws IOException {
         String thisdir = System.getProperty("user.dir"); //Returns JPS_BASE_LIB
-        String newdir = thisdir + "\\src\\test\\resources\\status.txt"; //Amend directory to JPS_BASE_LIB\src\test\resources, which is where we put the test file. Unlike the above, openSourceFile in modifyOutputStatus requires the name of the file
+        String newdir = thisdir + "\\src\\test\\resources"; //Amend directory to JPS_BASE_LIB\src\test\resources, which is where we put the test file.
+
+        File tempstatusfile = new File(newdir + "\\status.txt"); //Create the status.txt file in JPS_BASE_LIB\src\test\resources. This file will be deleted at the end
+        FileWriter writer = new FileWriter(tempstatusfile);
+        writer.write("JobOutput: processed"); //Then write "JobOutput: processed into status.txt
+        writer.close();
+
+        //Unlike updateJobOutputStatus, openSourceFile in modifyOutputStatus requires the name of the file. Therefore, we need to redefine the string newdir again.
+        newdir = newdir + "\\status.txt";
+
+        //Define this file as the input for the Scanner method called later
         File input = new File(newdir);
 
         PostProcessing.modifyOutputStatus(newdir,"Try!!");
@@ -35,9 +53,7 @@ class PostProcessingTest {
         String outputstring = output.nextLine(); //Get the text in file. modifyOutputStatus actually sets *all* the JobOutputs to "Try!!", so it doesn't really matter where the pointer currently is
         assertEquals(" Try!!", outputstring.substring(outputstring.lastIndexOf(":") + 1)); //We defined the new status as "Hello world" earlier, so we make this assertion. There is an extra space in the expected result because there's a space after : in status.txt
 
-        PostProcessing.modifyOutputStatus(newdir,"Hello? World"); //We modify OutputStatus again, because if we don't, it could be that OutputStatus isn't changing but the test passes anyway because a previous test had already modified status.txt to the correct result. The code is the same as previous.
-        Scanner output2 = new Scanner(input);
-        outputstring = output2.nextLine();
-        assertEquals(" Hello? World", outputstring.substring(outputstring.lastIndexOf(":") + 1));
+        output.close(); //Need to close Scanner or there's a compilation error
+        tempstatusfile.delete(); //Delete the created status.txt file. This returns the folder to its original state
     }
 }
