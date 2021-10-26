@@ -597,13 +597,4 @@ public class DerivationClient {
 	public List<String> getDerivations(String agentIRI) {
 		return DerivationSparql.getDerivations(this.kbClient, agentIRI);
 	}
-
-	/**
-	 * Gets the IRI of derivation.
-	 * @param instance
-	 * @return
-	 */
-	public String getDerivedIRI(String instance) {
-		return DerivationSparql.getDerivedIRI(this.kbClient, instance);
-	}
 }
