@@ -10,6 +10,19 @@ version: "3.8"
 
 
 services:
+  
+  csvkit:
+    image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
+    build:
+      args:
+        PYTHON_VERSION: 3.7.12
+      context: csvkit
+      labels:
+        authors: "oparry@cmclinnovations, gbrownbridge@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Python with the 'csvkit' and 'psycopg2' packages installed."
+        hash: "${HASH}"
+
   geoserver:
     image: docker.cmclinnovations.com/geoserver:${GEOSERVER_VERSION}
     build:

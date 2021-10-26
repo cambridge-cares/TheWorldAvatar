@@ -36,9 +36,8 @@ services:
       - blazegraph_geo_data:/data
 
   csvkit:
-    image: docker.io/jdkelley/csvkit
+    image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
     container_name: "csvkit${CONTAINER_NAME_SUFFIX}"
-    entrypoint: ["tail", "-f", "/dev/null"]
     restart: unless-stopped
     security_opt:
       - label=disable
