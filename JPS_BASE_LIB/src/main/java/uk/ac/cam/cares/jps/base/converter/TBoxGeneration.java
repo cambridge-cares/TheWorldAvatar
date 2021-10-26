@@ -403,9 +403,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * @throws IOException
 	 * @throws JPSRuntimeException
 	 */
-	private void generateProperty(int propertyType, String[] tokens) throws IOException, JPSRuntimeException {
+	private void generateProperty(int propertyTypeID, String[] tokens) throws IOException, JPSRuntimeException {
 		int i = 0;
 		String propertyName = "";
+		String type = "";
 		String targetName = "";
 		String relation = "";
 		String domain = "";
@@ -414,6 +415,8 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		for(String token: tokens){
 			if(++i==1){
 				propertyName = token;
+			} if(i==2){
+				type = token;
 			} if(i==3){
 				targetName = token;
 			} if(i==4){
@@ -426,7 +429,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				quantifier = token;
 			}
 		}
-		callPropertyGenerateor(propertyType, propertyName, targetName, relation, domain, range, quantifier);
+		callPropertyGenerateor(propertyTypeID, propertyName, type, targetName, relation, domain, range, quantifier);
 	}
 
 	/**
@@ -474,10 +477,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 */
 	private void callPropertyGenerateor(int propertyType, String...strings) throws IOException, JPSRuntimeException {
 		if(propertyType==1){
-			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4]);
+			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]);
 		}
 		if(propertyType==2){
-			generateObjectProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]);
+			generateObjectProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5], strings[6]);
 		}
 	}
 
@@ -593,13 +596,14 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * property and relation are provided, it creates the relation. 
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
 	 * @param range
 	 */
-	public void generateDataProperty(String propertyName, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException{
-		iTBoxManagement.createOWLDataProperty(propertyName, targetName, relation, domain, range);
+	public void generateDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException{
+		iTBoxManagement.createOWLDataProperty(propertyName, type, targetName, relation, domain, range);
 	}
 	
 	/**
@@ -608,13 +612,14 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * generates them as well.
 	 * 
 	 * @param propertyName
+	 * @param type
 	 * @param targetName
 	 * @param relation
 	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 */
-	public void generateObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException{
-		iTBoxManagement.createOWLObjectProperty(propertyName, targetName, relation, domain, range, quantifier);
+	public void generateObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException{
+		iTBoxManagement.createOWLObjectProperty(propertyName, type, targetName, relation, domain, range, quantifier);
 	}
  }
