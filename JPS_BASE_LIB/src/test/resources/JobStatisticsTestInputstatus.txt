@@ -1,0 +1,55 @@
+JobStatus: completed
+JobStatus: completing
+JobStatus: completing
+JobStatus: failed
+JobStatus: failed
+JobStatus: failed
+JobStatus: pending
+JobStatus: pending
+JobStatus: pending
+JobStatus: pending
+JobStatus: preempted
+JobStatus: preempted
+JobStatus: preempted
+JobStatus: preempted
+JobStatus: preempted
+JobStatus: running
+JobStatus: running
+JobStatus: running
+JobStatus: running
+JobStatus: running
+JobStatus: running
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: suspended
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: stopped
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: error termination
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
+JobStatus: not started
