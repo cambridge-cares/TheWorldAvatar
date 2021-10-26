@@ -26,8 +26,10 @@ def createOntoDoENewExperimentIRI(endpoint, doe_instance, new_exp_iri_list):
     new_exp_iri_list = trimIRI(new_exp_iri_list)
     ontodoe_new_exp_iri = getNameSpace(doe_instance) + getShortName(ONTODOE_NEWEXPERIMENT) + '_' + str(uuid.uuid4())
 
-    update = """INSERT DATA { \
-             <%s> <%s> <%s> . """ % (doe_instance, ONTODOE_PROPOSESNEWEXPERIMENT, ontodoe_new_exp_iri)
+    update = PREFIX_RDF + \
+             """INSERT DATA { \
+             <%s> rdf:type <%s> . \
+             <%s> <%s> <%s> . """ % (ontodoe_new_exp_iri, ONTODOE_NEWEXPERIMENT, doe_instance, ONTODOE_PROPOSESNEWEXPERIMENT, ontodoe_new_exp_iri)
     for new_exp_iri in new_exp_iri_list:
         update = update + """<%s> <%s> <%s> . """ % (ontodoe_new_exp_iri, ONTODOE_REFERSTO, new_exp_iri)
     update = update + """}"""
