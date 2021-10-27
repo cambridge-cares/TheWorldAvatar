@@ -1,10 +1,7 @@
 /**
  * Handles reading and plotting standard Time Series data.
  */
-class DigitalTwinTimeSeries {
-
-    // Loaded time series data
-    _data = [];
+class TimeseriesHandler {
 
     // Current data set for the selected layer, set, and location
     _selectedData;
@@ -13,42 +10,17 @@ class DigitalTwinTimeSeries {
     _currentChart;
 
     /**
-     * Reads the input data file and stores it under the input set name.
-     * 
-     * @param {String} layerName what mapbox layer is this data for
-     * @param {String} setName name to give this data set
-     * @param {String} jsonFile JSON file containing data
-     */
-    readFile(layerName, setName, jsonFile) {
-        var that = this;
-
-		var rawFile = new XMLHttpRequest();
-		rawFile.onreadystatechange = function() {
-
-			if (rawFile.readyState == 4 && rawFile.status == "200") {
-
-				console.log("INFO: Reading TimeSeries data from file at: " + jsonFile);
-                that.parseData(layerName, setName, JSON.parse(rawFile.responseText));
-				console.log("INFO: TimeSeries data has been read.");
-			} 
-		}
-		rawFile.open("GET", jsonFile, true);
-		rawFile.send();
-    }
-
-    /**
      * Expands the raw time series JSON and stores it in a format that easier to
      * pipe into tables and charts later.
      * 
-     * @param {*} setName 
-     * @param {*} rawJSON 
+     * @param {JSONObject[]} entries 
      */
-    parseData(layerName, setName, rawJSON) {
-        var allNewData = [];
+    parseData(entries) {
+        this._selectedData = [];
 
         // Parse raw JSON into expanded form
-        for(var i = 0; i < rawJSON.length; i++) {
-            var entry = rawJSON[i];
+        for(var i = 0; i < entries.length; i++) {
+            var entry = entries[i];
 
             // May have multiple data sets with differing units
             var tableNames = entry["data"];
@@ -72,7 +44,7 @@ class DigitalTwinTimeSeries {
                 var tableValues = entry["values"][j];
 
                 // Store
-                allNewData.push({
+                this._selectedData.push({
                     "name": tableName,
                     "id": entry["id"],
                     "unit": tableUnit,
@@ -81,101 +53,53 @@ class DigitalTwinTimeSeries {
                 });
             }            
         }
-
-        // Store 
-        if(!this._data[layerName]) {
-            this._data[layerName] = {};
-        } 
-        this._data[layerName][setName] = allNewData;
     }
 
     /**
      * 
-     * @param {String} dataSetName name of data set to look within.
-     * @param {Integer} locationID value of the 'id' field within the JSON
-     * 
-     * @returns {JSONObject[]} JSON objects for that location.
+     * @param {*} containerElement 
      */
-    getAllData(layerName, setName, locationID) {
-        if(!this._data[layerName]) return null;
-        var results = [];
-
-        for(var i = 0; i < this._data[layerName][setName].length; i++) {
-
-            var entry = this._data[layerName][setName][i];
-            if(entry["label"] === locationID || entry["id"] === locationID) {
-                // Correct location 
-                results.push(entry);
-            }
-        }
-        return results;
-    }
-
-    showData(layerName, setName, locationID) {
-        // All data entries for this layer an set
-        this._selectedData = this.getAllData(layerName, setName, locationID);
-
+    showData(containerElement) {
         // Create dropdowns to change between tables
         var selectHTML = this.buildComboBox();
 
         // Setup HTML for results
-        DT.sidePanelHandler.setContent(`
-            <div id="time-series-container">
-                <div id="time-series-title"><b>Location Data</b>
-                </div>
-                <div id="time-series-control">
-                    ` + selectHTML + `
-                </div>
-                <div id="time-series-chart-container">
-                    <canvas id="chart-canvas"></canvas>
-                </div>
-                <div id="time-series-table-container">
-                </div>
+        document.getElementById(containerElement).innerHTML = `
+            <div id="time-series-control">
+                ` + selectHTML + `
             </div>
-        `);
+            <div id="time-series-chart-container">
+                <canvas id="chart-canvas"></canvas>
+            </div>
+            <div id="time-series-table-container">
+            </div>
+        `;
 
-        // Show the table
-        this.updateTable();
-
-        // Show the chart
-        this.updateChart();
-
-        // Hide the legend and footer whilst viewing data
-        DT.sidePanelHandler.toggleLegend(false);
-
-        // Hide the footer content, show return link
-        var footerContent = document.getElementById("footerContent");
-        footerContent.style.display = "none";
-        var returnContainer = document.getElementById("returnContainer");
-        returnContainer.style.display = "block";
+        // Auto-select the first option in the dropdown
+        document.getElementById("time-series-select").onchange();
     }
 
     /**
      * 
      */
-    updateTable() {
-        var select = document.getElementById("time-series-select");
-        var tableName = select.value;
-
+    updateTable(setName) {
         var tableContainer = document.getElementById("time-series-table-container");
-        tableContainer.innerHTML = this.buildTable(tableName);
+        tableContainer.innerHTML = this.buildTable(setName);
     }
 
     /**
      * 
      */
-    updateChart() {
-        var select = document.getElementById("time-series-select");
-        var tableName = select.value;
-        this.buildChart(tableName);
+    updateChart(setName) {
+        this.buildChart(setName);
     }
 
     /**
      * 
      */
-    updateBoth() {
-        this.updateTable();
-        this.updateChart();
+    update(setName) {
+        this.updateTable(setName);
+        this.updateChart(setName);
     }
 
     /**
@@ -329,7 +253,7 @@ class DigitalTwinTimeSeries {
     buildComboBox() {
         var selectHTML = `
             <label for="time-series-select">Select a data set:</label>
-            <select name="time-series-select" id="time-series-select" onchange="DT.timeSeriesHandler.updateBoth()">
+            <select name="time-series-select" id="time-series-select" onchange="manager.updateTimeseries(this.value)">
         `;
 
         this._selectedData.forEach(entry => {

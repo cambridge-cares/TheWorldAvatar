@@ -5,7 +5,10 @@
       "type": "Feature",
       "id": 1,
       "properties": {
-        "displayName": "Boundary"
+        "displayName": "Boundary",
+        "fill-color": "#00FF00",
+        "fill-outline-color": "#028E02",
+        "fill-opacity": 0.33
       },
       "geometry": {
         "type": "Polygon",

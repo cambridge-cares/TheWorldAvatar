@@ -24,6 +24,8 @@ class DigitalTwinManager {
 	// Handles MapBox interactions
 	_interactionHandler;
 
+	_timeseriesHandler;
+
 	/**
 	 * Initialisation.
 	 */
@@ -154,8 +156,14 @@ class DigitalTwinManager {
 		this._sourceHandler = new SourceHandler(this._dataRegistry, this._map);
 		this._layerHandler = new LayerHandler(this._dataRegistry, this._map);
 		this._panelHandler = new PanelHandler(this._map);
-		this._interactionHandler = new InteractionHandler(this._map, this._dataRegistry, this._panelHandler);
-
+		this._timeseriesHandler = new TimeseriesHandler();
+		this._interactionHandler = new InteractionHandler(
+			this._map, 
+			this._dataRegistry, 
+			this._panelHandler,
+			this._timeseriesHandler
+		);
+		
 		return this._map;
 	}
 
@@ -269,10 +277,15 @@ class DigitalTwinManager {
 		this._controlHandler.onGroupSelectChange(selectID, selectValue);
 	}
 
+
 	openTreeTab(event, tabName) {
 		this._interactionHandler.openTreeTab(event, tabName);
 	};
 
+
+	updateTimeseries(setName) {
+		this._timeseriesHandler.update(setName);
+	}
 
 }
 // End of class.

@@ -21,7 +21,9 @@ class InteractionHandler {
 
     _popup;
 
-    _previousTab;
+    _previousTab = "meta-tree-button";
+
+    _timeseriesHandler;
 
     /**
      * Initialise a new interaction handler.
@@ -29,10 +31,11 @@ class InteractionHandler {
      * @param {*} map 
      * @param {*} dataRegistry 
      */
-    constructor(map, dataRegistry, panelHandler) {
+    constructor(map, dataRegistry, panelHandler, timeseriesHandler) {
         this._map = map;
         this._dataRegistry = dataRegistry;
         this._panelHandler = panelHandler;
+        this._timeseriesHandler = timeseriesHandler;
 
         this._popup = DT.popup;
     }
@@ -74,7 +77,7 @@ class InteractionHandler {
         // Mouse click
         this._map.on("click", layerName, (event) => {
             let feature = event.features[0];
-            this.mouseClick(layerName, feature);
+            this.mouseClick(feature);
         });
 
         console.log("INFO: Interactions for layer '" + layerName + "' have been registered.");
@@ -85,7 +88,7 @@ class InteractionHandler {
      * @param {*} layerName 
      * @param {*} feature 
      */
-    mouseClick(layerName, feature) {
+    mouseClick(feature) {
         // Clear existing side panel content
         this._panelHandler.setContent("");
 
@@ -94,58 +97,108 @@ class InteractionHandler {
         
         // Show the title
         var title = feature.properties["displayName"];
-        if(title == null) feature.properties["name"];
+        if(title == null) title = feature.properties["name"];
+        if(title == null) title = "ID " + feature.id;
         this._panelHandler.setTitle(title);
 
-        // Build containers for metadata trees
-        this.#buildMetadataContainers();
+        // Handle the metadata
+        this.#handleMetadata(feature);
 
-        // Add the fixed data
-        var fixedTree = JsonView.renderJSON(feature.properties, document.getElementById("fixed-tree"));
-        JsonView.expandChildren(fixedTree);
+        // Handle the timeseries data
+        this.#handleTimeseries(feature);
 
-        if(DT.currentAdditionals.length > 0) {
-            // Find additional metadata for the currently selected additional group
-            this.#findAdditionalMeta(layerName, feature, function(additionalMeta) {
-                var additionalTree = JsonView.renderJSON(additionalMeta, document.getElementById("additional-tree"));
-                JsonView.expandChildren(additionalTree);
-            });
-        } else {
-            document.getElementById("additional-tree").innerHTML = this.#NO_ADDITIONAL;
+        // Ensure the previously opened tab is open
+        document.getElementById(this._previousTab).click();
+
+        // Expand the side panel if it's collapsed
+        var sidePanel = document.getElementById("sidePanel");
+        if(sidePanel.classList.contains("collapsed")) {
+            this._panelHandler.toggleMode();
         }
 
-        // Restore previously open tab 
-        if(this._previousTab != null) {
-            this.openTreeTab(this._previousTab + "-button", this._previousTab);
-        } else {
-            this.openTreeTab("fixed-tree-button", "fixed-tree");
-        }
-
-        // Remember the current feature
+        // Remember the currently selected feature
         DT.currentFeature = feature;
     }
 
-    #buildMetadataContainers() {
-        var html = `<div class="json-tree-tabs">`;
+    /**
+     * Finds and displays the correct metadata for the input GeoJSON feature.
+     * 
+     * @param {JSONObject} feature selected GeoJSON feature.
+     */
+    #handleMetadata(feature) {
+        // Build containers for metadata trees
+        this.#buildMetadataContainers();
 
-        if(this._dataRegistry.additionalMeta == null) {
-            html += `
-                <button id="fixed-tree-button" class="tablinks" onclick="manager.openTreeTab(this.id, 'fixed-tree')">Fixed Metadata</button>
-            `;
+        var beforeContainer = document.getElementById("content-before");
+        if(feature.properties["description"]) {
+            beforeContainer.style.display = "block";
+            beforeContainer.innerHTML = `<p>` + feature.properties["description"] + `</p>`;
         } else {
-            html += `
-                <button id="fixed-tree-button" class="tablinks" onclick="manager.openTreeTab(this.id, 'fixed-tree')">Fixed Metadata</button>
-                <button id="additional-tree-button" class="tablinks" onclick="manager.openTreeTab(this.id, 'additional-tree')">Additional Metadata</button>
-            `;
+            beforeContainer.style.display = "none";
         }
 
-        html += `
+        // Get the metadata
+        var allMetadata = [];
+
+        // Read the fixed metadata
+        var fixedPromises = this.#findFixedMeta(feature);
+        var finalFixedPromise = Promise.all(fixedPromises).then((values) => {
+            var fixedMeta = [];
+            values.forEach(jsonEntry => {
+                Object.keys(jsonEntry).forEach(function(key) {
+                    if(key !== "id") fixedMeta[key] = jsonEntry[key];
+                });
+            });
+            allMetadata["Properties"] = fixedMeta;
+        });
+
+        // Read the additional metadata
+        var additionalPromises = this.#findAdditionalMeta(feature);
+        var finalAdditionalPromise = Promise.all(additionalPromises).then((values) => {
+            var transientMeta = [];
+            values.forEach(jsonEntry => {
+                Object.keys(jsonEntry).forEach(function(key) {
+                    if(key !== "id") transientMeta[key] = jsonEntry[key];
+                });
+            });
+            allMetadata["Transient Properties"] = transientMeta;
+        });
+
+        // Build tree once all metadata is added
+        Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
+            var metaTree = JsonView.renderJSON(allMetadata, document.getElementById("meta-tree"));
+            JsonView.expandChildren(metaTree);
+        });
+    }
+
+    /**
+     * Finds and displays the correct timeseries data for the input GeoJSON feature.
+     * 
+     * @param {JSONObject} feature selected GeoJSON feature.
+     */
+    #handleTimeseries(feature) {
+        var fixedPromises = this.#findFixedTimeSeries(feature);
+        var additionalPromises = this.#findAdditionalTimeSeries(feature);
+        var allPromises = fixedPromises.concat(additionalPromises);
+
+        var self = this;
+        Promise.all(allPromises).then((values) => {
+            self._timeseriesHandler.parseData(values);
+            self._timeseriesHandler.showData("time-series-container");
+        });
+    }
+
+    #buildMetadataContainers() {
+        var html = `
+            <div id="content-before"></div>
+            <div class="json-tree-tabs">
+                <button id="meta-tree-button" class="tablinks" onclick="manager.openTreeTab(this.id, 'meta-tree')">Metadata</button>
+                <button id="time-series-button" class="tablinks" onclick="manager.openTreeTab(this.id, 'time-series-container')">Time Series</button>
             </div>
-            <div id="fixed-tree" style="margin-top: 10px;" class="tabcontent"></div>
-            <div id="additional-tree" style="margin-top: 10px;" class="tabcontent"></div>
+            <div id="meta-tree" style="margin-top: 10px;" class="tabcontent"></div>
+            <div id="time-series-container" style="margin-top: 10px;" class="tabcontent"></div>
         `;
         this._panelHandler.setContent(html);
-      
     }
 
     openTreeTab(tabButtonName, tabName) {
@@ -168,62 +221,178 @@ class InteractionHandler {
         document.getElementById(tabName).style.display = "block";
         document.getElementById(tabButtonName).className += " active";
 
-        this._previousTab = tabName;
-      }
+        this._previousTab = tabButtonName;
+    }
+
+    /**
+     * 
+     * @param {*} layerName 
+     * @param {*} feature 
+     * @param {*} callback 
+     */
+    #findFixedMeta(feature) {
+        let metaDir = this._dataRegistry.getFixedDirectory();
+        let datasets = this._dataRegistry.fixedMeta["dataSets"];
+        let allPromises = [];
+
+        for(var i = 0; i < datasets.length; i++) {
+            // Check if the layer name is the same
+            if(datasets[i]["name"] === feature.layer["id"]) {
+                let metaFiles = datasets[i]["metaFiles"];
+                
+                // Load each listed meta file
+                for(var j = 0; j < metaFiles.length; j++) {
+                    let metaFile = metaDir + "/" + metaFiles[j];
+                    console.log("INFO: Reading Fixed metadata JSON at " + metaFile);
+
+                    // Load file asynchronously
+                    var promise = $.getJSON(metaFile).then(json => {
+
+                        // Once read, only return the node with the matching feature id
+                        for(var i = 0; i < json.length; i++) {
+                            if(json[i]["id"] == feature.id) {
+                                return json[i];
+                            }
+                        }
+                    });
+
+                    // Pool promise
+                    allPromises.push(promise);
+                }
+            }
+        }
+        return allPromises;
+    }
 
     /**
      * 
      * @param {*} layerName 
      * @param {*} feature 
      */
-    #findAdditionalMeta(layerName, feature, callback) {
-        var resultingMeta = {};
+    #findAdditionalMeta(feature) {
+        var allPromises = [];
 
+        // For each currently selected leaf group
         DT.currentAdditionals.forEach(groupListing => {
+
             let metaDir = this._dataRegistry.getAdditionalDirectory(groupListing);
             let metaGroup = this._dataRegistry.getAdditionalGroup(groupListing);
             if(metaDir == null || metaGroup == null) return;
            
             metaGroup["dataSets"].forEach(dataSet => {
-                if(dataSet["name"] === layerName) {
+                // Check if the layer name is the same
+                if(dataSet["name"] === feature.layer["id"]) {
+                    let metaFiles = dataSet["metaFiles"];
 
-                    // JSON Metadata
-                    if(dataSet["metaFiles"]) {
-                        let metaFiles = dataSet["metaFiles"];
-                        let metaPromises = [];
+                     // Load each listed meta file
+                    for(var j = 0; j < metaFiles.length; j++) {
+                        let metaFile = metaDir + "/" + metaFiles[j];
+                        console.log("INFO: Reading Additional metadata JSON at " + metaFile);
 
-                        metaFiles.forEach(metaFilename => {
-                            let metaFile = metaDir + "/" + metaFilename;
-                            console.log("INFO: Reading Additional metadata JSON at " + metaFile);
+                        // Load file asynchronously
+                        var promise = $.getJSON(metaFile).then(json => {
 
-                            metaPromises.push($.getJSON(metaFile, function(json) {
-                                return json;
-                            }));
-                        });
-
-                        // After all JSON are loaded
-                        Promise.all(metaPromises).then((jsons) => {
-                            jsons.forEach(json => {
-
-                                for(var i = 0; i < json.length; i++) {
-                                    var entry = json[i];
-
-                                    if(entry["id"] == feature.id) {
-                                        Object.keys(entry).forEach(function(key){
-                                            resultingMeta[key] = entry[key];
-                                        });
-                                    }
+                            // Once read, only return the node with the matching feature id
+                            for(var i = 0; i < json.length; i++) {
+                                if(json[i]["id"] == feature.id) {
+                                    return json[i];
                                 }
-                            });
-
-                            if(callback != null) {
-                                callback(resultingMeta);
                             }
                         });
+
+                        // Pool promise
+                        allPromises.push(promise);
                     }
                 }
             });
         });
+
+        return allPromises;
+    }
+
+    /**
+     * 
+     * @param {*} layerName 
+     * @param {*} feature 
+     * @param {*} callback 
+     */
+    #findFixedTimeSeries(feature) {
+        let metaDir = this._dataRegistry.getFixedDirectory();
+        let datasets = this._dataRegistry.fixedMeta["dataSets"];
+        var allPromises = [];
+
+        for(var i = 0; i < datasets.length; i++) {
+            // Check if the layer name is the same
+            if(datasets[i]["name"] === feature.layer["id"]) {
+                let timeFiles = datasets[i]["timeseriesFiles"];
+
+                for(var j = 0; j < timeFiles.length; j++) {
+                    let timeFile = metaDir + "/" + timeFiles[j];
+                    console.log("INFO: Reading Fixed timeseries JSON at " + timeFile);
+
+                    // Load file asynchronously
+                    var promise = $.getJSON(timeFile).then(json => {
+
+                        // Once read, only return the node with the matching feature id
+                        for(var i = 0; i < json.length; i++) {
+                            if(json[i]["id"] == feature.id) {
+                                return json[i];
+                            }
+                        }
+                    });
+
+                    // Pool promise
+                    allPromises.push(promise);
+                }
+            }
+        }
+        return allPromises;
+    }
+
+     /**
+     * 
+     * @param {*} layerName 
+     * @param {*} feature 
+     * @param {*} callback 
+     */
+      #findAdditionalTimeSeries(feature) {
+        var allPromises = [];
+
+         // For each currently selected leaf group
+        DT.currentAdditionals.forEach(groupListing => {
+
+            let metaDir = this._dataRegistry.getAdditionalDirectory(groupListing);
+            let metaGroup = this._dataRegistry.getAdditionalGroup(groupListing);
+            if(metaDir == null || metaGroup == null) return;
+        
+            metaGroup["dataSets"].forEach(dataSet => {
+                // Check if the layer name is the same
+                if(dataSet["name"] === feature.layer["id"]) {
+                    let timeFiles = dataSet["timeseriesFiles"];
+
+                    for(var j = 0; j < timeFiles.length; j++) {
+                        let timeFile = metaDir + "/" + timeFiles[j];
+                        console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
+
+                        // Load file asynchronously
+                        var promise = $.getJSON(timeFile).then(json => {
+
+                            // Once read, only return the node with the matching feature id
+                            for(var i = 0; i < json.length; i++) {
+                                if(json[i]["id"] == feature.id) {
+                                    return json[i];
+                                }
+                            }
+                        });
+                    
+
+                        // Pool promise
+                        allPromises.push(promise);
+                    }
+                }
+            });
+        });
+        return allPromises;
     }
 
 

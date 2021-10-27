@@ -8,34 +8,31 @@
 	<!-- External CSS -->
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
 	<link href="https://www.w3schools.com/w3css/4/w3.css" rel="stylesheet">
+	<link href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" rel="stylesheet"  integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
 	<!-- External JS -->
 	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
 
-	<!--
 	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
-	-->
 
 	<!-- Local CSS -->
 	<link href='./css/digital_twin_style.css' rel='stylesheet' />
 	<link href="./css/style.css" rel="stylesheet"> 
 	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
-	<link href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" rel="stylesheet"  integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
 
 	<!-- Local JS -->
 	<script src='./js/manager.js'></script>
 	<script src='./js/data_registry.js'></script>
-	<script src='./js/data_handler.js'></script>
+	<script src='./js/source_handler.js'></script>
 	<script src='./js/layer_handler.js'></script>
 	<script src='./js/control_handler.js'></script>
 	<script src='./js/panel_handler.js'></script>
 	<script src='./js/interaction_handler.js'></script>
+	<script src='./js/timeseries_handler.js'></script>
 	<script src='./js/jsonview.bundle.js'></script>
-
-	<!--<script src='./js/digital_twin_time_series.js'></script>-->
 </head>
 
 <body>

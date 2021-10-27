@@ -94,9 +94,9 @@ var JsonView = (function (exports) {
     var el = document.createElement('div');
 
     var getSizeString = function getSizeString(node) {
+      return "";
       var len = node.children.length;
-
-      return `<span style="color: grey;">[` + len + "]</span>";
+      //return `<span style="color: grey;">[` + len + "]</span>";
 
 
       //if (node.type === 'array') return "[".concat(len, "]");
@@ -181,6 +181,7 @@ var JsonView = (function (exports) {
 
   function createTree(jsonData, rootName = "All entries") {
     var data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
+
     var rootNode = createNode({
       value: data,
       key: rootName,

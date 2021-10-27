@@ -15,7 +15,6 @@ class SourceHandler {
      */
     _map;
 
-
     /**
      * Initialise a new DigitalTwinDataHandler.
      * 

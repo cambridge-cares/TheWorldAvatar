@@ -5,7 +5,6 @@ html, body {
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
-
 	font-family: "Segoe UI",Arial,sans-serif;
 	font-size: 12pt;
 }
@@ -175,6 +174,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Side Panel Components */
+#content-before {
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	margin-bottom: 20px;
+}
 #sidePanelInner {
 	width: calc(100% - 56px);
 	margin-left: 28px;
@@ -204,9 +210,18 @@ h1, h2, h3, h4, h5, h6 {
 #contentContainer {
 	margin-top: 10px;
 	width: 100%;
-	flex-grow: 1;
+	
 	margin-bottom: 10px;
 	overflow-y: hidden;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+}
+
+#meta-tree{
+	flex:1 0 auto;
 }
 #legendContainer {
 	width: 100%;
@@ -297,13 +312,27 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Time Series components */
 #time-series-container {
+	flex: 1;
 	font-size: 10pt;
-	box-sizing: border-box;
-	height: 100%;
-
 }
-#time-series-title {
+#time-series-table-container {
+	margin-top: 10px;
+	height: calc(100% - 40px - 340px);
 	position: relative;
+	border: 1px solid grey;
+}
+#time-series-chart-container {
+  margin-top: 20px;
+  margin-bottom: 20px;
+  height: 300px;
+}
+#time-series-control {
+	margin-top: 15px;
+	width: 100%;
+	height: 25px;
+}
+
+#time-series-title {
 	width: 100%;
 	height: 25px;
 	margin-bottom: 10px;
@@ -313,7 +342,6 @@ h1, h2, h3, h4, h5, h6 {
 	width: calc(35% - 10px);
 	height: 25px !important;
 	float: left;
-
 	text-align: right;
 }
 #time-series-container select {
@@ -323,17 +351,8 @@ h1, h2, h3, h4, h5, h6 {
 	font-size: 9pt;
 	text-align: right;
 }
-#time-series-control {
-	margin-top: 15px;
-	width: 100%;
-	height: 30px;
-}
-#time-series-table-container {
-	overflow: scroll;
-	margin-top: 10px;
-	border: 1px solid grey;
-	height: calc(100% - 410px);
-}
+
+
 .time-series-table {
 	width: 100%;
 	border-spacing: 0px;

@@ -6,8 +6,11 @@
         "id": 1,
         "properties": {
             "displayName": "Asset 2.1",
-            "description": "This is a sample description field for Asset 2.1",
-            "type": "Large Asset"
+            "description": "This is a sample description field for Asset 2.1; I'm making it annoyingly long so that I can test the layout of the HTML elements in this scenario.",
+            "circle-color": "#0000FF",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -23,7 +26,10 @@
         "properties": {
             "displayName": "Asset 2.2",
             "description": "This is a sample description field for Asset 2.2",
-            "type": "Large Asset"
+            "circle-color": "#0000FF",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -39,7 +45,10 @@
         "properties": {
             "displayName": "Asset 2.3",
             "description": "This is a sample description field for Asset 2.3",
-            "type": "Small Asset"
+            "circle-color": "#0000FF",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -55,7 +64,10 @@
         "properties": {
             "displayName": "Asset 2.4",
             "description": "This is a sample description field for Asset 2.4",
-            "type": "Small Asset"
+            "circle-color": "#0000FF",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",

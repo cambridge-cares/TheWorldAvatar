@@ -105,16 +105,12 @@ class LayerHandler {
      * 
      * @param {JSONObject} dataSet 
      */
-    #addPointLayer(dataSet, isDarkStyle) {
+    #addPointLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
-        let existingPoints = this._map.getStyle().layers.filter(
-            layer => this.#findLayers(layer, "circle")
-        ).length;
-
-        let pointColor = this.#POINT_COLORS[existingPoints % this.#POINT_COLORS.length];
-        let pointOutline = (isDarkStyle) ? this.#POINT_OUTLINES[0] : this.#POINT_OUTLINES[1];
+        let backupFillColor = this.#getRandomColor();
+        let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
         this._map.addLayer({
 			id: layerName,
@@ -127,15 +123,27 @@ class LayerHandler {
 				'visibility': 'visible'
 			},
 			paint: {
-				'circle-radius': 5,
-				'circle-color': pointColor,
-				'circle-stroke-width': 1,
-				'circle-stroke-color': pointOutline,
+				'circle-radius': ["case", ["has", "circle-radius"], ["get", "circle-radius"], 5],
+				'circle-color':  ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
+                'circle-opacity': ["case", ["has", "circle-opacity"], ["get", "circle-opacity"], 0.75],
+				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
+				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
+                'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 0.75]
 			}
 		});
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
+    }
+
+    #getRandomColor() {
+        let hue = Math.floor(Math.random() * 12) * 30;
+        let sat = 50 + Math.floor(Math.random() * 51);
+        return "hsl(" + hue + ", " + sat + ", 50%)";
+    }
+
+    #getOutlineColor(fillColor) {
+        return fillColor.replace("50%)", "25%)");
     }
 
     /**
@@ -146,12 +154,8 @@ class LayerHandler {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
-        let existingFills = this._map.getStyle().layers.filter(
-            layer => this.#findLayers(layer, "fill")
-        ).length;
-
-        let regionColor = this.#FILL_COLORS[existingFills % this.#FILL_COLORS.length];
-        let regionOutline = this.#FILL_OUTLINES[existingFills % this.#FILL_OUTLINES.length];
+        let backupFillColor = this.#getRandomColor();
+        let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
         this._map.addLayer({
 			id: layerName,
@@ -164,9 +168,9 @@ class LayerHandler {
 				'visibility': 'visible'
 			},
 			paint: {
-                'fill-color': regionColor,
-				'fill-opacity': 0.33,
-                'fill-outline-color': regionOutline
+                'fill-color': ["case", ["has", "fill-color"], ["get", "fill-color"], backupFillColor],
+				'fill-opacity': ["case", ["has", "fill-opacity"], ["get", "fill-opacity"], 0.33],
+                'fill-outline-color': ["case", ["has", "fill-outline-color"], ["get", "fill-outline-color"], backupStrokeColor],
 			}
 		});
         

@@ -1,6 +1,6 @@
 [
     {
-        "data": ["Measurement #1", "Measurement #2","Measurement #3"],
+        "data": ["Measurement #1", "Measurement #2", "Measurement #3"],
         "id": 1,
         "units": ["-", "mm^2/s", "cm^2/s"],
         "values": [

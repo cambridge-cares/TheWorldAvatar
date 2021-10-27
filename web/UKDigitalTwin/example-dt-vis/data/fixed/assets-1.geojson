@@ -6,7 +6,11 @@
         "id": 1,
         "properties": {
             "displayName": "Asset #1",
-            "type": "Large Asset"
+            "circle-color": "#FF0000",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-stroke-opacity": 0.75,
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -21,7 +25,11 @@
         "id": 2,
         "properties": {
             "displayName": "Asset #2",
-            "type": "Large Asset"
+            "circle-radius": 5,
+            "circle-color": "#FF0000",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#0000FF",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -36,7 +44,11 @@
         "id": 3,
         "properties": {
             "displayName": "Asset #3",
-            "type": "Small Asset"
+            "circle-radius": 5,
+            "circle-color": "#FF0000",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -51,7 +63,11 @@
         "id": 4,
         "properties": {
             "displayName": "Asset #4",
-            "type": "Small Asset"
+            "circle-radius": 5,
+            "circle-color": "#FF0000",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
@@ -66,7 +82,11 @@
         "id": 5,
         "properties": {
             "displayName": "Asset #5",
-            "type": "Small Asset"
+            "circle-radius": 5,
+            "circle-color": "#FF0000",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "#000000",
+            "circle-opacity": 0.75
         },
         "geometry": {
           "type": "Point",
