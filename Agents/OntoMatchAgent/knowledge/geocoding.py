@@ -64,7 +64,6 @@ class Agent():
             for row in result:
                 lat = row['lat']
                 long = row['long']
-                #print('MY COORD', lat, long)
                 if lat and long:
                     return lat.toPython(), long.toPython()
 

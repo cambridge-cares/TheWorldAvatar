@@ -9,7 +9,7 @@ formatters:
 handlers:
   console:
     class: logging.StreamHandler
-    level: INFO
+    level: DEBUG
     formatter: simple
 #  file_handler:
 #    class: logging.FileHandler
@@ -21,7 +21,7 @@ handlers:
     filename: ../logs/ontomatch.log
     maxBytes: 5000000
     backupCount: 5
-    level: INFO
+    level: DEBUG
     formatter: extended
 #loggers:
 #  dev:
@@ -33,5 +33,5 @@ handlers:
 #    level: INFO
 #    handlers: [console]
 root:
-  level: INFO
+  level: DEBUG
   handlers: [console, file_handler]

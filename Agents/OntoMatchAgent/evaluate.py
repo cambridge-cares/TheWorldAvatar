@@ -1,0 +1,97 @@
+import logging
+
+import numpy as np
+import pandas as pd
+
+import readAlignment
+import util
+
+def read_alignment_file_as_dataframe(filename):
+    reader = readAlignment.AReader(filename)
+    reader.readAlignment(-1.)
+
+    rows = []
+    for iri1, iri2, score in reader.a.map:
+        idx1 = getID(iri1)
+        idx2 = getID(iri2)
+        row = {'idx_1': idx1, 'idx_2': idx2, 'score': score}
+        rows.append(row)
+
+    dframe = pd.DataFrame(rows)
+    dframe.set_index(['idx_1', 'idx_2'], inplace=True)
+    return dframe
+
+def getID(iri):
+    if iri.startswith('http://dbpedia.org/resource/'):
+        return iri.replace('http://dbpedia.org/resource/', 'dbr:')
+    i = iri.rfind('/')
+    strs = iri[i+1:].split('_')
+    return strs[0]
+
+def read_match_file_as_index_set(filename, linktypes):
+    dframe = pd.read_csv(filename, index_col=['idx_1', 'idx_2'])
+    idx0 = dframe.index.levels[0].astype(str)
+    idx1 = dframe.index.levels[1]
+    dframe.index = dframe.index.set_levels([idx0, idx1])
+
+    mask = (dframe['link'] >= 0) & False
+    for t in linktypes:
+        mask = (mask | (dframe['link'] == t))
+
+    mi_match_pairs = dframe[mask].index
+    #remove duplicates
+    mi_match_pairs = mi_match_pairs.intersection(mi_match_pairs)
+    logging.info('file=%s, link types=%s, number of matches=%s', filename, linktypes, len(mi_match_pairs))
+    return mi_match_pairs
+
+def calculate_precision_recall(predicted_matches, matches):
+
+    true_matches = matches.intersection(predicted_matches)
+    false_matches = predicted_matches.difference(matches)
+    false_nonmatches = matches.difference(predicted_matches)
+    tm = len(true_matches)
+    fm = len(false_matches)
+    fn = len(false_nonmatches)
+
+    precision = 1.
+    recall = 0.
+    if tm > 0:
+        precision = tm / (tm + fm)
+        recall = tm / (tm + fn)
+
+    #logging.debug('number predicted matches=%s', len(predicted_matches))
+    #logging.debug('TP=%s, FP=%s, FN=%s', tm, fm, fn)
+    #logging.debug('precision=%s, recall=%s', precision, recall)
+
+    return true_matches, false_matches, false_nonmatches, precision, recall
+
+def evaluate(df_alignment, matches, number_of_thresholds=41):
+
+    # TODO-AE: check scores < 0 or > 1
+    result = []
+    thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
+    for t in thresholds:
+        #logging.debug('threshold=%s', t)
+        mask = (df_alignment['score'] >= t)
+        predicted_matches =  df_alignment[mask].index
+        # TODO-AE remove duplicates?
+        true_matches, false_matches, false_nonmatches, precision, recall = calculate_precision_recall(
+            predicted_matches, matches)
+        entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches)]
+        result.append(entry)
+    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN):\n%s', result)
+    return result
+
+
+if __name__ == '__main__':
+
+    util.init_logging('.', '..')
+
+    alignmentfile = './2109xx.owl'
+    df_alignment = read_alignment_file_as_dataframe(alignmentfile)
+    matchfile = 'C:/my/tmp/ontomatch/scores_kwl_20210720_8.csv'
+    #matchfile = 'C:/my/tmp/ontomatch/20210914_scores_dukes_gppd_v3.csv'
+    #matchfile = 'C:/my/tmp/ontomatch/scores_dbp_DEU_v2.csv'
+    index_set_matches = read_match_file_as_index_set(matchfile, linktypes = [1, 3, 4, 5])
+    logging.info('lenght of alignment file=%s, ground truth matches=%s', len(df_alignment), len(index_set_matches))
+    evaluate(df_alignment, index_set_matches)

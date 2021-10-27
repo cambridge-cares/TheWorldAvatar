@@ -1,9 +1,7 @@
 import logging
 import time
 
-from alignment import Alignment
 import coordinator
-from matchManager import matchManager
 import util
 
 if __name__ == '__main__':
@@ -24,15 +22,12 @@ if __name__ == '__main__':
 
     # KWL vs GPPD DEU (Germany)
     # -------------------------
-    srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address.owl'
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_no_geo.pkl'
-    #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_geo.pkl'
-    #srcaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/kwl.pkl'
-    #srcaddr = './data/kwl_geo.pkl'
 
-    #tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.owl'
-    tgtaddr = 'C:/my/tmp/ontomatch/20210923_testdata_from_shaocong/kwlVSgppd/gppd0722.pkl'
-    #tgtaddr = './data/gppd.pkl'
+    #srcaddr = './data/kwl_address_211022.ttl'
+    srcaddr = './data/kwl_address_211022.pkl'
+
+    #tgtaddr = './data/gppd_DEU_211022.ttl'
+    tgtaddr = './data/gppd_DEU_211022.pkl'
 
 
     # DBPEDIA DEU vs GPPD DEU (Germany)
@@ -43,10 +38,10 @@ if __name__ == '__main__':
 
     #srcaddr = 'C:/Users/freig/Downloads/sparql_2021-10-11_13-06-46Z.rdf'
     #srcaddr = 'C:/my/tmp/ontomatch/tmp_kwl_files/dbpedia_DEU_211010.pkl'
-    #tgtaddr = './data/gppd.pkl'
+    #tgtaddr = './data/gppd_DEU_211022.pkl'
 
     #srcaddr = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'
-    #tgtaddr = './data/gppd.pkl'
+    #tgtaddr = './data/gppd_DEU_211022.pkl'
 
     params = {
         "dataset": {
@@ -71,37 +66,45 @@ if __name__ == '__main__':
                  "reset_index": False,
             }
         },
+        "mapping": {
+                "mode": "auto",
+                'similarity_functions': [{
+                    "name": "dist_nltk_edit",
+                    "cut_off_mode": "fixed",
+                    "cut_off_value": 3
+                },{
+                    "name": "dist_absolute",
+                    "cut_off_mode": "fixed",
+                    "cut_off_value": 10
+                },{
+                    "name": "dist_relative",
+                    "cut_off_mode": "fixed"
+                },{
+                    "name": "dist_equal",
+                    "cut_off_mode": "fixed"
+                },{
+                    "name": "dist_cosine_with_tfidf",
+                    "cut_off_mode": "fixed"
+            }
+        ]},
         "matching": {
-            "name": "matchManager",
+            #"name": "matchManager.matchManager",
+            #"model_specific": {
+            #    "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
+            #    "weights": [0.5, 0.4, 0.1],
+            #    "params": [None, None, None],
+            #    "threshold": -1.,
+            #},
+
+            "name": "coordinator.InstanceMatcherWithAutoCalibration",
             "model_specific": {
-                "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
-                "weights": [0.5, 0.4, 0.1],
-                "params": [None, None, None],
-                "threshold": -1.,
             },
         }
     }
 
-    # TODO-AE Do we need this for instance matching?
-    '''
-    clist = [('PowerStation', 'PowerPlant', 0.9)]
-    sublist = ['RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant','PowerPlant']
-    for subc in sublist:
-        #for subc in sublist:
-        clist.append((subc,subc,0.9))
-    '''
-
-    clist = []
-    sublist = ['PowerStation', 'PowerPlant', 'RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant']
-    for subc in sublist:
-        for subc2 in sublist:
-            #for subc in sublist:
-            clist.append((subc,subc2,0.9))
-
-    penalize = {'class':True,'align':Alignment(clist)}
 
     agent = coordinator.Agent()
-    agent.start(params, penalize)
+    agent.start(params)
 
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)

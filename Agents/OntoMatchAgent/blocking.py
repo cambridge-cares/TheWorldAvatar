@@ -52,6 +52,10 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
     considering only pairs of individuals that have at least one token in common.
     """
 
+    df_src = None
+    df_tgt = None
+    df_index_tokens_unpruned = None
+    df_index_tokens = None
     candidate_matching_pairs = None
 
     def __init__(self, src_onto:Ontology, tgt_onto:Ontology,
@@ -74,16 +78,19 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
-            logging.info('creating inverted index')
+            logging.info('creating index')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
-            dframe = self._create_index(src_onto, tgt_onto, blocking_properties)
+            df_index, df_src, df_tgt = self._create_index(src_onto, tgt_onto, blocking_properties)
+            TokenBasedPairIterator.df_src = df_src
+            TokenBasedPairIterator.df_tgt = df_tgt
+            TokenBasedPairIterator.df_index_tokens_unpruned = df_index
             # discard tokens that are too small or too frequent
-            mask = (dframe['len'] >= min_token_length) & (dframe['count_1'] <= max_token_occurrences_src) & (dframe['count_2'] <= max_token_occurrences_tgt)
-            dframe = dframe[mask]
+            mask = (df_index['len'] >= min_token_length) & (df_index['count_1'] <= max_token_occurrences_src) & (df_index['count_2'] <= max_token_occurrences_tgt)
+            TokenBasedPairIterator.df_index_tokens = df_index[mask]
             logging.info('finished creating index')
-            logging.info('number of tokens in inverted index=%s', len(dframe))
-            TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(dframe)
+            TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(TokenBasedPairIterator.df_index_tokens)
+            logging.info('number of tokens in inverted index=%s', len(TokenBasedPairIterator.df_index_tokens))
             logging.info('number of candidate matching pairs=%s', len(TokenBasedPairIterator.candidate_matching_pairs))
 
     def __iter__(self):
@@ -135,23 +142,25 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
         index = {}
 
         # create token index for source ontology
-        dframe = create_dataframe_from_ontology(src_onto)
+        dframe_src = create_dataframe_from_ontology(src_onto)
+        logging.info('columns dataset 1 = %s', [ str(c) for c in dframe_src.columns ])
         if blocking_properties is None:
-            blocking_properties = dframe.columns
+            blocking_properties = dframe_src.columns
         for prop in blocking_properties:
-            index, df_index = self._create_index_internal(dframe, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
+            index, df_index = self._create_index_internal(dframe_src, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
 
 
         # add tokens for target ontology
-        dframe = create_dataframe_from_ontology(tgt_onto)
+        dframe_tgt = create_dataframe_from_ontology(tgt_onto)
+        logging.info('columns dataset 1 = %s', [ str(c) for c in dframe_tgt.columns ])
         if blocking_properties is None:
-            blocking_properties = dframe.columns
+            blocking_properties = dframe_tgt.columns
         for prop in blocking_properties:
-            index, df_index = self._create_index_internal(dframe, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
+            index, df_index = self._create_index_internal(dframe_tgt, prop, dataset_id=2, tokenize_fct=tokenize, index=index)
 
         logging.info('columns=%s', df_index.columns)
 
-        return df_index
+        return df_index, dframe_src, dframe_tgt
 
     def _get_candidate_matching_pairs(self, df_index):
         # reorder the data in the inverted index dataframe such that
@@ -190,7 +199,7 @@ def preprocess_string(s:str) -> str:
     return s.lower().strip()
 
 def tokenize(s:str) -> typing.List[str]:
-    if isinstance(s, str):
+    if isinstance(s, str) and s != '':
         s = preprocess_string(s)
         return s.split(' ')
     return []
@@ -222,6 +231,22 @@ def create_dataframe_from_ontology(onto):
 
         # get the position of the subject
         pos = props[0]
+
+        rdf_types = onto.icmap[pos]
+        if isinstance(rdf_types, str):
+            rdf_types = [rdf_types]
+        # discard general types
+        for general_type in ['NamedIndividual', 'Thing']:
+            if rdf_types is None:
+                logging.warning('an individual is skipped since no rdf types found, individual=%s', props)
+                #TODO-AE: this is a hack, e.g. '.../Germany' is an indiviual of its own and is value of 'hasAddress'
+                continue
+            for rdf_type in rdf_types.copy():
+                if rdf_type.endswith(general_type):
+                    rdf_types.remove(rdf_type)
+        row['type'] = rdf_types
+
+
         subj = onto.individualNames[pos]
         first = subj.find('_')
         last = subj.rfind('_')
@@ -230,7 +255,11 @@ def create_dataframe_from_ontology(onto):
 
         row['pos'] = pos
         row['idx'] = idx
-        row['name'] = subj
+        if subj:
+            row['name'] = subj
+        else:
+            # empty name as None
+            row['name'] = None
 
         # predicate object tuples
         p_o_tuples = props[1]
@@ -247,13 +276,14 @@ def create_dataframe_from_ontology(onto):
                     column = uri_to_string(p)
 
                 row[column] = o.toPython()
+
             else:
                 raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
+
 
         rows.append(row)
 
     dframe = pd.DataFrame(rows)
     dframe.set_index(['idx'], inplace=True)
     logging.info('number of rows=%s', len(dframe))
-    logging.info('columns=%s', dframe.columns)
     return dframe
