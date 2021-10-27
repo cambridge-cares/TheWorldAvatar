@@ -157,7 +157,7 @@ networks:
 secrets:
   geoserver_admin_password:
     # N.B. If you change the contents of this file, it will only propogate to
-    # the server if you delete geoserver/datadir/security before (re)deploying!
+    # the server if you delete <geoserver_data volume>/datadir/security before (re)deploying!
     file: geoserver/secrets/admin_password
   postgres_password:
     file: postgres/secrets/postgres_password
