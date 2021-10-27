@@ -371,6 +371,16 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
+			
+			for (String singleType : type.split(",")) {
+				switch (singleType.toLowerCase().trim()) {
+				case "functional property":
+					manager.applyChange(
+							new AddAxiom(ontology, dataFactory.getOWLFunctionalDataPropertyAxiom(dataProperty)));
+					break;
+				}
+			}
+			
 			addDomain(dataProperty, domain);
 			addRange(dataProperty, range);
 			OWLDataProperty parentProperty = null;
@@ -404,7 +414,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
 
 		for (String singleType : type.split(",")) {
-			switch (singleType.trim()) {
+			switch (singleType.toLowerCase().trim()) {
 			case "reflexive property":
 				manager.applyChange(
 						new AddAxiom(ontology, dataFactory.getOWLReflexiveObjectPropertyAxiom(objectProperty)));
