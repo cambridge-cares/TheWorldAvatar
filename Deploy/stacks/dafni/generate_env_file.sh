@@ -1,5 +1,7 @@
 #!/bin/bash
 
+script_dir="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Read user ID from input
 read -p "Enter the last two numbers in your dafni user ID, or '10' if you're running this elsewhere: " user_id
 
@@ -13,4 +15,4 @@ if [[ -n ${user_id//[0-9]/} ]]; then
   exit 2
 fi
 
-sed -e "s/USER_PORT_BASE/1$user_id/g" < .env_template > .env
+sed -e "s/USER_PORT_BASE/1$user_id/g" < "$script_dir/.env_template" > "$script_dir/.env"
