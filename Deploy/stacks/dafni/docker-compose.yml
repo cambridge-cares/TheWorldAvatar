@@ -122,12 +122,12 @@ services:
       - ./postgres/secrets/postgres_password:/tmp/postgres_password
 
   qgis:
-      image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
-      container_name: "qgis${CONTAINER_NAME_SUFFIX}"
-      pull_policy: if_not_present
-      restart: unless-stopped
-      security_opt:
-        - label=disable
+    image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+    container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
 
   webvowl:
     image: ukparliament/webvowl
