@@ -141,6 +141,8 @@ services:
     image: ukparliament/webvowl
     container_name: "webvowl${CONTAINER_NAME_SUFFIX}"
     network_name: ${NETWORK_NAME}
+    ports:
+      - ${WEBVOWL_PORT}:8080
     restart: unless-stopped
     security_opt:
       - label=disable
