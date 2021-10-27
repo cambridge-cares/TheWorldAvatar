@@ -17,6 +17,7 @@ services:
   adminer:
     image: adminer
     container_name: "adminer${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     ports:
       - ${ADMINER_PORT}:8080
     restart: unless-stopped
@@ -26,6 +27,7 @@ services:
   blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     ports:
       - ${BLAZEGRAPH_PORT}:8080
     pull_policy: if_not_present
@@ -38,6 +40,7 @@ services:
   csvkit:
     image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
     container_name: "csvkit${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     restart: unless-stopped
     security_opt:
       - label=disable
@@ -47,6 +50,7 @@ services:
   flood-vis:
     image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev
     container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     ports:
       - ${FLOODVIS_PORT}:80
     pull_policy: if_not_present
@@ -62,6 +66,7 @@ services:
     env_file:
       - .env
       - geoserver/geoserver.env
+    network_name: ${NETWORK_NAME}
     ports:
      - ${GEOSERVER_PORT}:8080
     pull_policy: if_not_present
@@ -91,6 +96,7 @@ services:
   #     POSTGRES_PORT: ${POSTGRES_PORT}
   #   env_file:
   #     - ontop/ontop.env
+  #   network_name: ${NETWORK_NAME}
   #   ports:
   #     - ${ONTOP_PORT}:8080
   #   pull_policy: if_not_present
@@ -112,6 +118,7 @@ services:
       POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
       - postgis/postgis.env
+    network_name: ${NETWORK_NAME}
     ports:
       - ${POSTGRES_PORT}:5432
     restart: unless-stopped
@@ -124,6 +131,7 @@ services:
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
     container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     pull_policy: if_not_present
     restart: unless-stopped
     security_opt:
@@ -132,6 +140,7 @@ services:
   webvowl:
     image: ukparliament/webvowl
     container_name: "webvowl${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
     restart: unless-stopped
     security_opt:
       - label=disable
