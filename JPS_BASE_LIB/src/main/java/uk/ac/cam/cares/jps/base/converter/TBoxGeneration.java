@@ -379,10 +379,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				generateClass(tokens[tokenNumber-1], null, null);
 			}
 			generateClassMetadata(tokens);
-		} else if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("data property")){
+		} else if(tokens[tokenNumber].toLowerCase().split(",")[0].equalsIgnoreCase("data property")){
 			generateProperty(1, tokens);
 			generateDataPropertyMetadata(tokens);
-		} else if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("object property")){
+		} else if(tokens[tokenNumber].toLowerCase().split(",")[0].equalsIgnoreCase("object property")){
 			generateProperty(2, tokens);
 			generateObjectPropertyMetadata(tokens);
 		} else if(tokens[tokenNumber].toLowerCase().equalsIgnoreCase("tbox")){

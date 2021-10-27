@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
+import org.semanticweb.owlapi.model.OWLReflexiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWL2Datatype;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -401,6 +402,40 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	public void createOWLObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 		OWLObjectProperty objectProperty = createObjectProperty(propertyName);
+
+		for (String singleType : type.split(",")) {
+			switch (singleType.trim()) {
+			case "reflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLReflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "transitive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLTransitiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "symmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLSymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "asymmetric property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLAsymmetricObjectPropertyAxiom(objectProperty)));
+				break;
+			case "irreflexive property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLIrreflexiveObjectPropertyAxiom(objectProperty)));
+				break;
+			case "functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			case "inverse functional property":
+				manager.applyChange(
+						new AddAxiom(ontology, dataFactory.getOWLInverseFunctionalObjectPropertyAxiom(objectProperty)));
+				break;
+			}
+		}
+
 		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
