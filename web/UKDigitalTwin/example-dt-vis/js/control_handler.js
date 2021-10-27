@@ -59,6 +59,8 @@ class ControlHandler {
 	// HTML string of rendered tree.
 	_treeHTML;
 
+	_legendTargets;
+
 	/**
 	 * Initialise a new MapControls instance.
 	 * 

@@ -166,8 +166,16 @@ class InteractionHandler {
 
         // Build tree once all metadata is added
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
-            var metaTree = JsonView.renderJSON(allMetadata, document.getElementById("meta-tree"));
-            JsonView.expandChildren(metaTree);
+
+            if(allMetadata == null || allMetadata.length == 0) {
+                // Fallback to the GeoJSON properties
+                var metaTree = JsonView.renderJSON(feature.properties, document.getElementById("meta-tree"));
+                JsonView.expandChildren(metaTree);
+            } else {
+                // Show the metadata tree
+                var metaTree = JsonView.renderJSON(allMetadata, document.getElementById("meta-tree"));
+                JsonView.expandChildren(metaTree);
+            }
         });
     }
 
@@ -183,8 +191,23 @@ class InteractionHandler {
 
         var self = this;
         Promise.all(allPromises).then((values) => {
-            self._timeseriesHandler.parseData(values);
-            self._timeseriesHandler.showData("time-series-container");
+
+            console.log(values);
+
+            if(values == null || values.length == 0) {
+                // No time series data
+                console.log("A");
+
+                document.getElementById("time-series-button").style.display = "none";
+                this.openTreeTab("meta-tree-button", "meta-tree");
+            } else {
+                // Data present, show it
+                console.log("B");
+                
+                document.getElementById("time-series-button").style.display = "block";
+                self._timeseriesHandler.parseData(values);
+                self._timeseriesHandler.showData("time-series-container");
+            }
         });
     }
 
