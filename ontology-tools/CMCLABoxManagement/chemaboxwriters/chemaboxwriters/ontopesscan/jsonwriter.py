@@ -53,10 +53,12 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
         elif ndegrees==4:
             scanAtomsPos =  xyz[oc_atoms_pos]
             scanCoordinateValue.append(getDihedralAngle(scanAtomsPos[0],scanAtomsPos[1],scanAtomsPos[2],scanAtomsPos[3]))
+    
+    scanCoordinateValue, ontoCompChemJobs = zip(*sorted(zip(scanCoordinateValue, ontoCompChemJobs)))
+    scanCoordinateValue = list(scanCoordinateValue)
+    ontoCompChemJobs = list(ontoCompChemJobs)
 
     data_out[SCAN_COORDINATE_VALUE]=scanCoordinateValue
     data_out[SCAN_POINTS_JOBS]=ontoCompChemJobs
-
-    #list1, list2 = zip(*sorted(zip(list1, list2)))
-
+   
     return [json.dumps(data_out)]

@@ -147,7 +147,9 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
 [
 ('OPS_oc_json_test', 'oc_json', False),
 ('OPS_qc_json_test\\co2_cbsapno_g09.log.qc.json', 'qc_json', False),
-('OPS_qc_log_test', 'qc_log', False)
+('OPS_qc_log_test', 'qc_log', False),
+('OPS_qc_log_angle_test', 'qc_log', True),
+('OPS_qc_log_dihedral_test', 'qc_log', True)
 ]
 )
 def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
@@ -160,14 +162,34 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR,inp_file_or_dir)
 
-    OPS_handlerFuncKwargs= {
+    if 'angle' in inp_file_or_dir:
+        OPS_handlerFuncKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
-                 'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
-                 'oc_atoms_pos': '1,2',
+                 'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1',
+                 'oc_atoms_pos': '2,3,9',
                  'random_id': 'OPStestID-111-111-11'
                 }
             }
+    
+    elif 'dihedral' in inp_file_or_dir:
+        OPS_handlerFuncKwargs= {
+        'OC_JSON_TO_OPS_JSON':
+                {'os_iris': 'Species_11-111-111',
+                 'os_atoms_iris': 'Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2',
+                 'oc_atoms_pos': '4,1,2,8',
+                 'random_id': 'OPStestID-111-111-11'
+                }
+            }
+    else:
+        OPS_handlerFuncKwargs= {
+            'OC_JSON_TO_OPS_JSON':
+                    {'os_iris': 'Species_11-111-111',
+                    'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
+                    'oc_atoms_pos': '1,2',
+                    'random_id': 'OPStestID-111-111-11'
+                    }
+                }
 
     OC_handlerFuncKwargs={
         'QC_JSON_TO_OC_JSON':{'random_id':'OCtestID-111-111-111'}}

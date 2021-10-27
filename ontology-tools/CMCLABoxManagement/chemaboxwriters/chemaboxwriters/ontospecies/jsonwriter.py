@@ -15,6 +15,7 @@ import pubchempy as pcp
 from collections import Counter
 import json
 import re
+import time
 import chemaboxwriters.common.commonvars as commonv
 
 cas_re = re.compile('\d{2,7}-\d\d-\d')
@@ -85,13 +86,17 @@ def os_jsonwriter(data, random_id="",
     casid = None
     cid = None
 
-    pubchem_compound = pcp.get_compounds(data_out[INCHI], 'inchi')
-    if pubchem_compound:
-        cid = pubchem_compound[0].cid
-        if pubchem_compound[0].synonyms:
-            alt_labels = pubchem_compound[0].synonyms[0]
-            casid = get_substructure_cas(pubchem_compound[0].synonyms)
-            if casid: casid= casid[0]
+    try:
+        pubchem_compound = pcp.get_compounds(data_out[INCHI], 'inchi')
+        time.sleep(5) #We will wait for 5 seconds to try and avoid hitting PubChem's limit.
+        if pubchem_compound:
+            cid = pubchem_compound[0].cid
+            if pubchem_compound[0].synonyms:
+                alt_labels = pubchem_compound[0].synonyms[0]
+                casid = get_substructure_cas(pubchem_compound[0].synonyms)
+                if casid: casid= casid[0]
+    except pcp.BadRequestError:
+        print("Issue with PubChem request")
 
     data_out[PUBCHEM_ALT_LABEL] = alt_labels
     data_out[CAS_NUMBER] = casid
