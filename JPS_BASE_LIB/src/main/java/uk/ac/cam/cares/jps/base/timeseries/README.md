@@ -67,7 +67,8 @@ This table contains all information for `time series 2`.
 
 ## Examples on how to use the TimeSeriesClient
 - **Integration tests**:
-Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed.
+Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images.  
+You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'
    
 - **Agent examples**:
    Several agents provide working examples of how to use the `TimeSeriesClient`, e.g.  
