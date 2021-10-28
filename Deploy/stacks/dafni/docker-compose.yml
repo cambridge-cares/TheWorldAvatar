@@ -128,7 +128,7 @@ services:
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
-      - postgis/postgis.env
+      - postgres/postgres.env
     network_name: ${NETWORK_NAME}
     ports:
       - ${POSTGRES_PORT}:5432
@@ -140,15 +140,15 @@ services:
       - ./postgres/secrets/postgres_password:/tmp/postgres_password
 
   qgis:
-      image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
-      container_name: "qgis${CONTAINER_NAME_SUFFIX}"
+    image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
+    container_name: "qgis${CONTAINER_NAME_SUFFIX}"
     network_name: ${NETWORK_NAME}
     ports:
       - ${QGIS_SSH_PORT}:22
-      pull_policy: if_not_present
-      restart: unless-stopped
-      security_opt:
-        - label=disable
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
 
   webvowl:
     image: ukparliament/webvowl
@@ -174,7 +174,6 @@ secrets:
     file: geoserver/secrets/admin_password
   postgres_password:
     file: postgres/secrets/postgres_password
-
 
 volumes:
   blazegraph_geo_data:
