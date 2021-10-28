@@ -77,6 +77,7 @@ services:
     security_opt:
       - label=disable
     volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
       - geoserver_data:${GEOSERVER_DATA_DIR}
       - geoserver_grib_cache:${GRIB_CACHE_DIR}
       - geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
@@ -137,6 +138,7 @@ services:
     security_opt:
       - label=disable
     volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
       - postgis_data:/var/lib/postgresql/data
       - ./postgres/secrets/postgres_password:/tmp/postgres_password
 
@@ -150,6 +152,8 @@ services:
     restart: unless-stopped
     security_opt:
       - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
 
   webvowl:
     image: ukparliament/webvowl
