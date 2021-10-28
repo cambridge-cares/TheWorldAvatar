@@ -63,6 +63,7 @@ services:
     container_name: "geoserver${CONTAINER_NAME_SUFFIX}"
     environment:
       ADMIN_PASSWORD_FILE: "/run/secrets/geoserver_admin_password"
+      PLUGIN_DYNAMIC_URLS: "http://sourceforge.net/projects/geoserver/files/GeoServer/${GEOSERVER_VERSION}/extensions/geoserver-${GEOSERVER_VERSION}-vectortiles-plugin.zip"
     env_file:
       - .env
       - geoserver/geoserver.env
