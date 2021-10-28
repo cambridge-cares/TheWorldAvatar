@@ -60,4 +60,31 @@ TheWorldAvatar/Agents/DoEAgent/summit_agent/resources/doe.ttl
 TheWorldAvatar/Agents/DoEAgent/summit_agent/resources/rxn_data.ttl
 TheWorldAvatar/Agents/DoEAgent/summit_agent/resources/Service__DoE.ttl
 ```
-Then the developer can access `http://localhost:7000/example` in a browser. This will trigger the creation of a derivation in the knowledge graph and checks if it is out-of-date. As the derivation is initialised with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be marked as `Requested`. The update will be taken care of by DoE Agent and a response will be given stating the IRI of the suggested instance of `OntoDoE:NewExperiment`.
+Then the developer can access `http://localhost:7000/example` in a browser, an HTTP response should be expected similar to the one below (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
+```
+Initialised successfully, created derivation instance: https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derivede72edb7e-d0ac-429d-9557-257d3e31d92b
+```
+The URLPattern triggers the creation of a derivation in the knowledge graph and checks if it is out-of-date. As the derivation is initialised with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be marked as `Requested`. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoDoE:NewExperiment` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
+```
+PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDoE:            <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+
+SELECT ?ontodoe_new_exp ?ontorxn_new_exp
+WHERE {
+  ?ontodoe_new_exp OntoDerivation:belongsTo <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#derivede72edb7e-d0ac-429d-9557-257d3e31d92b> .
+  OPTIONAL {?ontodoe_new_exp OntoDoE:refersTo ?ontorxn_new_exp}
+}
+```
+If the update was successful, the results of above query will be changed from:
+  | ontodoe_new_exp | ontorxn_new_exp |
+  | --------------- | --------------- |
+  | `<https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_1>` | |
+
+to something similar to below in a few minutes:
+
+  | ontodoe_new_exp | ontorxn_new_exp |
+  | --------------- | --------------- |
+  | `<https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_44ac0be0-5019-456a-99ac-e25658f133f9>` | `<https://theworldavatar.com/kb/ontorxn/ReactionVariation_fa5d622f-7646-44a6-801c-7baf4d4d7a72>` |
+  | `<https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_44ac0be0-5019-456a-99ac-e25658f133f9>` | `<https://theworldavatar.com/kb/ontorxn/ReactionVariation_b6b6409b-cf4c-428a-b1cc-a7693797717c>` |
+
+where the IRIs in `ontorxn_new_exp` column indicate the new suggested instances of `OntoRxn:ReactionVariation`.

@@ -144,6 +144,8 @@ def exampleEntryPoint():
     
     # Create derivation instance given above information, the timestamp of this derivation is 0
     derivationIRI = derivationClient.createDerivation(derived, agentIRI, inputs)
+    logger.info(f'Initialised successfully, created derivation instance <{derivationIRI}>')
+    msg = f'Initialised successfully, created derivation instance: {derivationIRI}'
 
     # Iterate over the list of inputs to add and update the timestamp
     for input in inputs:
@@ -154,7 +156,7 @@ def exampleEntryPoint():
     # Update the derivation asynchronous, it will only mark as "Requested"
     # The actual update will be handled by monitorDerivation method periodically run by DoE agent
     derivationClient.updateDerivationAsyn(derivationIRI)
-    return f'Initialised successfully, created derivation instance <{derivationIRI}>'
+    return msg
 
 def setUpJob(input_decoded):
     """
