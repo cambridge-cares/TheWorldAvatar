@@ -185,6 +185,25 @@ services:
     volumes:
       - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
 
+  # RDF4J
+  rdf4j:
+    image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
+    container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
+    environment:
+      RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
+      RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+    ports:
+      - ${RDF4J_PORT}:8080
+    pull_policy: if_not_present
+    restart: unless-stopped
+    # Add secrets to set BASIC authentication passwords for both the workbench and server
+    secrets:
+      - rdf4j_admin_password
+      - rdf4j_user_password
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - ./rdf4j/logs:/usr/local/tomcat/logs
+  
   webvowl:
     image: ukparliament/webvowl
     container_name: "webvowl${CONTAINER_NAME_SUFFIX}"
@@ -209,6 +228,10 @@ secrets:
     file: geoserver/secrets/admin_password
   postgres_password:
     file: postgres/secrets/postgres_password
+  rdf4j_admin_password:
+    file: rdf4j/secrets/rdf4j_admin_password
+  rdf4j_user_password:
+    file: rdf4j/secrets/rdf4j_user_password
 
 volumes:
   blazegraph_geo_data:
@@ -220,3 +243,4 @@ volumes:
   geoserver_netcfd:
   lib_off_home:
   postgis_data:
+  rdf4j_data:
