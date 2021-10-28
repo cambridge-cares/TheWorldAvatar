@@ -84,6 +84,18 @@ services:
       - geoserver_netcfd:${NETCDF_DATA_DIR}
       - ./geoserver/webapps/geoserver/WEB-INF/web.xml:/usr/local/tomcat/webapps/geoserver/WEB-INF/web.xml
 
+  libreoffice:
+    image: linuxserver/libreoffice:latest
+    container_name: "libre-office${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
+    ports:
+      - ${LIB_OFF_PORT}:3000
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - lib_off_home:/config
+
   # ontop-pgsql:
   #   image: docker.cmclinnovations.com/ontop_endpoint:${ONTOP_VERSION}
   #   container_name: "ontop${CONTAINER_NAME_SUFFIX}"
@@ -174,4 +186,5 @@ volumes:
   geoserver_gwc_config:
   geoserver_logs:
   geoserver_netcfd:
+  lib_off_home:
   postgis_data:
