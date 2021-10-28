@@ -166,8 +166,7 @@ class InteractionHandler {
 
         // Build tree once all metadata is added
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
-
-            if(allMetadata == null || allMetadata.length == 0) {
+            if(allMetadata == null || Object.keys(allMetadata).length == 0) {
                 // Fallback to the GeoJSON properties
                 var metaTree = JsonView.renderJSON(feature.properties, document.getElementById("meta-tree"));
                 JsonView.expandChildren(metaTree);
@@ -203,7 +202,7 @@ class InteractionHandler {
             } else {
                 // Data present, show it
                 console.log("B");
-                
+
                 document.getElementById("time-series-button").style.display = "block";
                 self._timeseriesHandler.parseData(values);
                 self._timeseriesHandler.showData("time-series-container");
