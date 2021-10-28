@@ -23,6 +23,11 @@ services:
     ports:
       - 41081:80
 
+  # Flood Agent
+  flood-agent:
+    ports:
+      - 41082:80
+      
   # JPS Chatbot
   jps-chatbot:
     ports:

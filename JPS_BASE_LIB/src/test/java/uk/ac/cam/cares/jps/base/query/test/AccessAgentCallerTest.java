@@ -20,8 +20,8 @@ public class AccessAgentCallerTest {
 	@Test
 	public void testCreateRequestUrlCase1() throws UnsupportedEncodingException, URISyntaxException {
 			
-		String expectedPath = "/jps/kb"; //JPSConstants.ACCESS_AGENT_PATH
-		String expectedRequestUrl = "http://www.theworldavatar.com/jps/kb";
+		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
+		String expectedRequestUrl = "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
 		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
 		
 		String datasetUrl = null; 
@@ -38,6 +38,22 @@ public class AccessAgentCallerTest {
 		JSONObject joparams = (JSONObject) result[1];
 		assertEquals("http://www.theworldavatar.com/kb/ontokin/ABF.owl",joparams.getString(JPSConstants.TARGETIRI));
 		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
+		
+		//////////////////////
+		//targetUrl is a namespace
+		targetUrl = "teststore";
+		
+		result =  AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
+		assertNotNull(result);
+		
+		requestUrl = (String) result[0];
+		assertEquals(expectedRequestUrlConverted,requestUrl);
+		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
+		assertEquals(expectedPath,uri.getPath());
+		
+		joparams = (JSONObject) result[1];
+		assertEquals(targetUrl,joparams.getString(JPSConstants.TARGETIRI));
+		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
 	}
 
 	@Test
@@ -50,8 +66,8 @@ public class AccessAgentCallerTest {
 		URI uri;
 		JSONObject joparams;
 		
-		String expectedPath = "/jps/kb"; //JPSConstants.ACCESS_AGENT_PATH
-		String expectedRequestUrl = "http://www.theworldavatar.com/jps/kb";
+		String expectedPath = JPSConstants.ACCESS_AGENT_PATH;
+		String expectedRequestUrl =  "http://"+JPSConstants.ACCESS_AGENT_HOST+expectedPath;
 		String expectedRequestUrlConverted = ResourcePathConverter.convert(expectedRequestUrl);
 		
 		//////////////////////
@@ -85,6 +101,22 @@ public class AccessAgentCallerTest {
 		joparams = (JSONObject) result[1];
 		assertEquals(datasetUrl,joparams.getString(JPSConstants.TARGETIRI));
 		assertEquals(targetUrl,joparams.getString(JPSConstants.TARGETGRAPH));
+		
+		//////////////////////
+		//dataset is a namespace, no target/graph
+		datasetUrl = "teststore"; 
+		targetUrl = null;
+		result = AccessAgentCaller.createRequestUrl(datasetUrl, targetUrl);
+		assertNotNull(result);
+		
+		requestUrl = (String) result[0];
+		assertEquals(expectedRequestUrlConverted,requestUrl);
+		uri = new URI(URLDecoder.decode(requestUrl,"UTF-8"));
+		assertEquals(expectedPath,uri.getPath());
+		
+		joparams = (JSONObject) result[1];
+		assertEquals(datasetUrl,joparams.getString(JPSConstants.TARGETIRI));
+		assertTrue(joparams.isNull(JPSConstants.TARGETGRAPH));
 	}
 	
 	@Test
@@ -191,8 +223,8 @@ public class AccessAgentCallerTest {
 		
 		String url;
 		String result;
-		String expected = "http://www.theworldavatar.com/jps/kb";
-		String expectedLocal = "http://localhost:8080/jps/kb";
+		String expected = "http://www.theworldavatar.com"+JPSConstants.ACCESS_AGENT_PATH;
+		String expectedLocal = "http://localhost:8080"+JPSConstants.ACCESS_AGENT_PATH;
 		
 		url = "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
@@ -205,5 +237,9 @@ public class AccessAgentCallerTest {
 		url = "http://localhost:8080/kb/ontokin";
 		result = AccessAgentCaller.getBaseWorldUrl(url);
 		assertEquals(expectedLocal,result);
+		
+		url = "ontokin";
+		result = AccessAgentCaller.getBaseWorldUrl(url);
+		assertEquals(expected,result);
 	}
 }

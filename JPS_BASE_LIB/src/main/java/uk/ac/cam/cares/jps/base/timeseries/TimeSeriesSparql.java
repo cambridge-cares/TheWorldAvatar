@@ -198,6 +198,33 @@ public class TimeSeriesSparql {
     	kbClient.executeUpdate(modify.getQueryString());
     }
     
+    void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	// set prefix declarations
+    	modify.prefix(prefix_ontology, prefix_kb);
+    	
+    	for (int i = 0; i < tsIRIs.size(); i++) {
+    		Iri ts = iri(tsIRIs.get(i));
+    		modify.insert(ts.isA(TimeSeries));
+    		// relational database URL
+        	modify.insert(ts.has(hasRDB, literalOf(rdbURL)));
+        	
+        	// link each data to time series
+        	for (String data : dataIRIs.get(i)) {
+        		modify.insert(iri(data).has(hasTimeSeries,ts));
+        	}
+        	
+        	if (timeUnit != null) {
+        		if (timeUnit.get(i) != null) {
+        			modify.insert(ts.has(hasTimeUnit, literalOf(timeUnit.get(i))));
+        		}
+        	}
+    	}
+    	
+    	kbClient.executeUpdate(modify.getQueryString());
+	}
+    
     /**
      * Count number of time series IRIs in kb
      * @return Total number of time series instances in the knowledge base as int
