@@ -185,10 +185,25 @@ services:
     volumes:
       - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
 
+  # Copies the RDF4J repository config files into the "rdf4j_data" volume
+  rdf4j_config_file_copier:
+    image: busybox
+    container_name: "rdf4j_config_file_copier${CONTAINER_NAME_SUFFIX}"
+    entrypoint: ["cp", "-rf", "/in/server", "/out/"]
+    pull_policy: if_not_present
+    restart: "no"
+    volumes:
+      - ./rdf4j/server:/in/server
+      - rdf4j_data:/out
+
   # RDF4J
   rdf4j:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
+    depends_on:
+      # Need to ensure the config files are already in the volume before running
+      rdf4j_config_file_copier:
+        condition: service_completed_successfully
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
