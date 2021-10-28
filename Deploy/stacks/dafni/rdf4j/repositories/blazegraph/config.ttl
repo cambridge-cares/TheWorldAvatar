@@ -1,0 +1,13 @@
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rep: <http://www.openrdf.org/config/repository#> .
+@prefix sparql: <http://www.openrdf.org/config/repository/sparql#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<#blazegraph> a rep:Repository;
+  rep:repositoryID "blazegraph";
+  rep:repositoryImpl [
+      rep:repositoryType "openrdf:SPARQLRepository";
+      sparql:query-endpoint <http://blazegraph-geo:8080/blazegraph/namespace/kb/sparql>;
+      sparql:update-endpoint <http://blazegraph-geo:8080/blazegraph/namespace/kb/sparql>
+    ];
+  rdfs:label "Blazegraph triplestore" .
