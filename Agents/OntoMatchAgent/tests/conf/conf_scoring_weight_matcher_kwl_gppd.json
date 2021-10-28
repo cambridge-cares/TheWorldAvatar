@@ -1,0 +1,54 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/kwl_address_211022.pkl",
+	"tgt": "./data/gppd_DEU_211022.pkl"
+},
+"pre_processing":{
+	"add_knowledge": null,
+	"pickle_dump": false
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		 "min_token_length": 3,
+		 "max_token_occurrences_src": 20,
+		 "max_token_occurrences_tgt": 20,
+		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "reset_index": false
+	}
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithScoringWeights",
+	"model_specific": {
+		"weights": [0.8, 0.0, 0.1, 0.0, 0.1]
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [{
+		"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 3
+	},{
+		"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10
+	},{
+		"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1
+	},{
+		"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1
+	},{
+		"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1
+	}],
+	"triples": [{
+		"prop1": "name", "prop2": "name", "sim": 4
+	},{
+		"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 0
+	},{
+		"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 1
+	},{
+		"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2
+	},{
+		"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3
+	}]
+}
+}

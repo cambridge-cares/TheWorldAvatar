@@ -1,4 +1,5 @@
-import logging
+import collections
+import json
 import pickle
 import unittest
 
@@ -23,3 +24,9 @@ class TestCaseOntoMatch(unittest.TestCase):
         with open('./data/gppd_DEU_geo_211022.pkl','rb') as file:
             tgt_onto = pickle.load(file)
         return src_onto, tgt_onto
+
+    def read_conf_kwl(self):
+        config_file = './tests/conf/conf_scoring_weight_matcher_kwl_gppd.json'
+        with open(config_file) as json_config:
+            params = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+        return params

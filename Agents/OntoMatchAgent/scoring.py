@@ -1,7 +1,11 @@
+import collections
+import json
 import logging
 import math
+import random
 
 import nltk
+from nltk.metrics.distance import jaro_similarity, edit_distance, jaro_winkler_similarity
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -38,6 +42,8 @@ def dist_absolute(v1, v2):
 def dist_relative(v1, v2):
     if not check_numerical(v1, v2):
         return None
+    if v1 == 0. and v2 == 0.:
+        return 0.
     return abs(v1 - v2) / max(abs(v1), abs(v2))
 
 def dist_equal(v1, v2):
@@ -55,6 +61,11 @@ def dist_cosine_with_tfidf(v1, v2):
     n_max_idf = 30
     return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
 
+def dist_cosine_binary(v1, v2):
+    if not check_str(v1, v2):
+        return None
+    return compare_strings_with_tfidf(v1, v2, None, None, log=False)
+
 def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, decrease = 'linear'):
     #TODO-AE
     # parameters to describe a monotone decreasing conversion fct c:[0, oo) --> [0,1] with c(0) = 1
@@ -68,6 +79,11 @@ def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, de
         return None
 
     return similarity_from_dist_fct_internal
+
+def sim_jaro_winkler(v1, v2):
+    if not check_str(v1, v2):
+        return None
+    return jaro_winkler_similarity(v1, v2)
 
 def create_similarity_functions_from_params(params_sim_fcts):
 
@@ -88,6 +104,21 @@ def create_similarity_functions_from_params(params_sim_fcts):
         sim_fcts.append(sim_fct)
 
     return sim_fcts
+
+def create_prop_prop_sim_triples_from_params(params_mapping):
+
+    params_sim_fcts = params_mapping['similarity_functions']
+    sim_fcts = create_similarity_functions_from_params(params_sim_fcts)
+
+    triples = []
+    params_triples = params_mapping['triples']
+    for p in params_triples:
+        sim_fct_number = p['sim']
+        triple = (p['prop1'], p['prop2'], sim_fcts[sim_fct_number])
+        triples.append(triple)
+
+    return triples
+
 
 class ScoreManager():
 
@@ -337,11 +368,11 @@ def get_tfidf(frequencies, n):
         tfidf[t] = math.log(max_inverse)
     return tfidf
 
-def calculate_dot_product(a, b):
+def calculate_dot_product(v1, v2):
     dot = 0
-    tokens = set(a.keys()).intersection(set(b.keys()))
+    tokens = set(v1.keys()).intersection(set(v2.keys()))
     for t in tokens:
-        dot += a[t] * b[t]
+        dot += v1[t] * v2[t]
     return dot
 
 def calculate_norm(a):
@@ -395,27 +426,69 @@ def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
                 tokens1.append(t2)
                 break
 
-    freq1 = get_frequencies(tokens1, df_index_tokens)
-    freq2 = get_frequencies(tokens2, df_index_tokens)
+    if df_index_tokens is not None:
+        freq1 = get_frequencies(tokens1, df_index_tokens)
+        freq2 = get_frequencies(tokens2, df_index_tokens)
+        v1 = get_tfidf(freq1, n_max_idf)
+        v2 = get_tfidf(freq2, n_max_idf)
+    else:
+        # binary frequency i.e. 1 is token occurs one ore more times
+        v1 = { t:1 for t in tokens1 }
+        v2 = { t:1 for t in tokens2 }
 
     if log:
         print(freq1)
         print(freq2)
 
-    tfidf1 = get_tfidf(freq1, n_max_idf)
-    tfidf2 = get_tfidf(freq2, n_max_idf)
-
-    dot = calculate_dot_product(tfidf1, tfidf2)
+    dot = calculate_dot_product(v1, v2)
     if dot == 0:
         return 1 - 0
 
-    norm1 = calculate_norm(tfidf1)
-    norm2 = calculate_norm(tfidf2)
+    norm1 = calculate_norm(v1)
+    norm2 = calculate_norm(v2)
 
     #TODO-AE 211019 URGENT
     cosine_distance = 1 - round(dot / (norm1 * norm2), 4)
 
     if log:
-        print(tfidf1, tfidf2, dot, norm1, norm2, cosine_distance)
+        print(v1, v2, dot, norm1, norm2, cosine_distance)
 
     return cosine_distance
+
+class ScoringWeightIterator(collections.Iterable, collections.Sized):
+
+    def __init__(self, number_weights, max_weight=10, sample_count=None):
+        self.number_weights = number_weights
+        self.max_weight = max_weight
+        self.all_weight_arrays = []
+
+        self.collect_weights([])
+
+        if sample_count:
+            self.weight_arrays = random.sample(self.all_weight_arrays, sample_count)
+        else:
+            self.weight_arrays = self.all_weight_arrays
+
+
+    def collect_weights(self, current_weight_array):
+
+        current_sum = sum(current_weight_array)
+
+        if len(current_weight_array) == self.number_weights - 1:
+            w = self.max_weight - current_sum
+            current_weight_array.append(w)
+            normalized = [ cw/self.max_weight for cw in current_weight_array]
+            self.all_weight_arrays.append(normalized)
+            return
+
+        for w in range(self.max_weight + 1 - current_sum):
+            extended_copy = current_weight_array.copy()
+            extended_copy.append(w)
+            self.collect_weights(extended_copy)
+
+
+    def __iter__(self):
+        return iter(self.weight_arrays)
+
+    def __len__(self):
+        return len(self.weight_arrays)

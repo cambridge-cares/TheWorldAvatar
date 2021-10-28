@@ -1,5 +1,4 @@
 import logging
-import pickle
 
 import blocking
 import scoring
@@ -27,25 +26,6 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                     "reset_index": False,
                 }
         }
-
-    def get_params_similarity_functions(self):
-        return [{
-                    "name": "dist_equal",
-                    "cut_off_mode": "fixed"
-                },{
-                    "name": "dist_nltk_edit",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 3
-                },{
-                    "name": "dist_absolute",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 10
-                },{
-                    "name": "dist_relative",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 0.1
-                }
-        ]
 
     def test_add_similarity_functions(self):
 
@@ -193,6 +173,36 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
             logging.debug('score for (%s, %s)=%s',s1, s2, score)
             self.assertAlmostEqual(score, expected_similarity_scores[i])
 
+    def test_configure_score_fct_cosine_binary(self):
+        params_sim_fcts = [{
+                "name": "dist_cosine_binary",
+                "cut_off_mode": "fixed"
+            }
+        ]
+        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+
+        examples = [
+            ('Altbach', 'Altbach'),
+            ('power station', 'power station'),
+            ('Altbach power station Altbach', 'Altbach power station'),
+            ('Berlin power station natural gas', 'Berlin gas'),
+            ('Altbach Berlin', 'Altbach'),
+            ('Berlin', 'Altbach Berlin'),
+            ('Altbach', 'Berlin'),
+            ('Müllheizkraftwerk', 'Müllheizkraftwerk Wuppertal'),
+            ('Berlin Kraftwerk Müll', 'Müllheizkraftwerk Offenbach'),
+            ('Berlin', 'unknown_token')
+        ]
+
+        # scores for n_max_idf = 30
+        expected_similarity_scores = [1, 1, 1, 0.6325, 0.7071, 0.7071, 0., 0.7071, 0., 0.]
+
+        for i, (s1, s2) in enumerate(examples):
+            score = sim_fcts[0](s1, s2)
+            logging.debug('score for (%s, %s)=%s',s1, s2, score)
+            self.assertAlmostEqual(score, expected_similarity_scores[i])
+
+
     def test_calculate_between_entities_with_equal_values(self):
 
         c1 = ['name1', 'owner1', 'year1', 'capacity1', 'fuel1']
@@ -308,19 +318,23 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_owner(self):
 
+        params = self.read_conf_kwl()
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        params_blocking = self.get_params_blocking()
+        params_blocking = params['blocking']
+        params_sim_fcts = params['mapping']['similarity_functions']
+
         manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        params_sim_fcts = self.get_params_similarity_functions()
         sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
         props1 = ['name', 'isOwnedBy/hasName']
         props2 = ['name', 'isOwnedBy/hasName']
         property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
+        logging.debug('property_mapping=%s', property_mapping)
+
         expected = {
-            'name': ('name', 0.58945, 1),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54737, 1)
+            'name': ('name', 0.79765, 4),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.55746, 4)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -333,18 +347,22 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_fuel(self):
 
+        params = self.read_conf_kwl()
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        params_blocking = self.get_params_blocking()
+        params_blocking = params['blocking']
+        params_sim_fcts = params['mapping']['similarity_functions']
+
         manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        params_sim_fcts = self.get_params_similarity_functions()
         sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
         props1 = ['name', 'realizes/consumesPrimaryFuel']
         props2 = ['name', 'realizes/consumesPrimaryFuel']
         property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
+        logging.debug('property_mapping=%s', property_mapping)
+
         expected = {
-            'name': ('name', 0.58945, 1),
+            'name': ('name', 0.79765, 4),
             # score function 0 and 1 got the same mean result, thus the first score function wins
             'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0)
         }
@@ -408,3 +426,38 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
             self.assertEqual(mapping['prop2'], prop2)
             self.assertAlmostEqual(mapping['mean'], mean, places=2)
             self.assertEqual(mapping['pos_sfct'], pos_sfct)
+
+    def test_scoringweightiterator(self):
+
+        it = scoring.ScoringWeightIterator(3, 1)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 3)
+
+        it = scoring.ScoringWeightIterator(10, 1)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 10)
+
+        it = scoring.ScoringWeightIterator(3, 2)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 6)
+
+        it = scoring.ScoringWeightIterator(3, 3)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 10)
+
+        it = scoring.ScoringWeightIterator(4, 3)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 20)
+
+    def test_scoringweightiterator_with_sample_count(self):
+        it = scoring.ScoringWeightIterator(10, 1, sample_count=4)
+        logging.debug(it.all_weight_arrays)
+        self.assertEqual(len(it), 4)
+
+    def test_create_prop_prop_sim_triples_from_params(self):
+        params = self.read_conf_kwl()
+        params_mapping = params['mapping']
+        triples = scoring.create_prop_prop_sim_triples_from_params(params_mapping)
+        self.assertEqual(len(triples), 5)
+        self.assertEqual(triples[0][0], 'name')
+        self.assertEqual(triples[2][1], 'hasYearOfBuilt/hasValue/numericalValue')

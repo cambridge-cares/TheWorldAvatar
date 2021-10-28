@@ -1,14 +1,20 @@
+import argparse
+import collections
+import json
 import logging
+import os
+import random
 import time
+
+import numpy as np
 
 import coordinator
 import util
 
-if __name__ == '__main__':
-
+#TODO-AE remove this old method
+'''
+def start_OLD():
     util.init_logging('.', '..')
-
-    starttime = time.time()
 
     # DUKES vs. GPPD GBR (United Kingdom)
     # -----------------------------------
@@ -88,23 +94,57 @@ if __name__ == '__main__':
             }
         ]},
         "matching": {
-            #"name": "matchManager.matchManager",
-            #"model_specific": {
-            #    "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
-            #    "weights": [0.5, 0.4, 0.1],
-            #    "params": [None, None, None],
-            #    "threshold": -1.,
-            #},
-
-            "name": "coordinator.InstanceMatcherWithAutoCalibration",
+            "name": "matchManager.matchManager",
             "model_specific": {
+                "steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
+                "weights": [0.5, 0.4, 0.1],
+                "params": [None, None, None],
+                "threshold": -1.,
             },
+
+            #"name": "coordinator.InstanceMatcherWithAutoCalibration",
+            #"model_specific": {
+            #},
         }
     }
 
-
+    starttime = time.time()
     agent = coordinator.Agent()
     agent.start(params)
-
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)
+'''
+
+def start(config_dev=None):
+
+    print('current working directory=', os.getcwd())
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default=None)
+    args = parser.parse_args()
+
+    if args.config:
+        with open(args.config) as json_config:
+            config = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+    else:
+        config = config_dev
+
+    seed = config['numerical_settings'].get('seed')
+    np.random.seed(seed)
+    random.seed(seed)
+
+    util.init_logging('.', '..')
+    logging.info('current working directory=%s', os.getcwd())
+    logging.info('args=%s', args)
+    logging.info('config=%s', config)
+
+    starttime = time.time()
+    agent = coordinator.Agent()
+    agent.start(config)
+    timenow = time.time()-starttime
+    logging.info('elapsed time in seconds=%s', timenow)
+
+
+if __name__ == '__main__':
+    start()
+

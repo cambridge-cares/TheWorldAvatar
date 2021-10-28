@@ -1,0 +1,32 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/kwl_address_211022.pkl",
+	"tgt": "./data/gppd_DEU_211022.pkl"
+},
+"pre_processing":{
+	"add_knowledge": null,
+	"pickle_dump": false
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		 "min_token_length": 3,
+		 "max_token_occurrences_src": 20,
+		 "max_token_occurrences_tgt": 20,
+		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "reset_index": false
+	}
+},
+"matching":{
+	"name": "matchManager.matchManager",
+	"model_specific": {
+		"steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
+		"weights": [0.5, 0.4, 0.1],
+		"params": [null, null, null],
+		"threshold": -1.0
+	}
+}
+}
