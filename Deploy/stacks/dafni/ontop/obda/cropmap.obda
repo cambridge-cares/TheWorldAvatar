@@ -13,7 +13,7 @@ gsp:		http://www.opengis.net/ont/geosparql#
 
 [MappingDeclaration] @collection [[
 mappingId	crops-cell
-target		:cropmap/cell/{id} a :Cell ; :id {id}^^xsd:int ; :location {loc}^^gsp:wktLiteral .
-source		SELECT id, ST_ASTEXT(ST_Transform(geom,4269)) loc FROM "Crop_Map_of_England_2020_Worcestershire"
+target		:cropmap/cell/{gid} a :Cell ; :id {gid}^^xsd:int ; :location {loc}^^gsp:wktLiteral .
+source		SELECT gid, ST_ASTEXT(ST_Transform(geom,4269)) loc FROM "cropmap"
 ]]
 
