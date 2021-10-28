@@ -589,15 +589,24 @@ def uploadOntology(triple_store_server, triple_store_repo, filePath):
 
 def getShortName(iri):
     """
-        This function gets the part after the last '#' or '/' of an IRI. 
+        This function gets the final part after the last '#' or '/' of an IRI.
         For example, it will return 'RxnExp_1' given 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1#RxnExp_1' or 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1'.
         
         Arguments:
             iri - IRI of interest
     """
     iri = trimIRI(iri)
+    # Raise exception if the provided IRI ends with '#' or '/'
+    if iri.endswith('#') or iri.endswith('/'):
+        raise Exception(f"The IRI <{iri}> is not provided in correct format. It should NOT end with '#' or '/' when retrieving its shortname.")
     if '#' in iri:
-        return iri[iri.rfind('#')+1:]
+        temp_iri = iri[iri.rfind('#')+1:]
+        # Check if the parts after '#' is one string without separation, i.e. it should be 'shortname', instead of 'short/name'
+        if not '/' in temp_iri:
+            return temp_iri
+        else:
+            # Make sure return only the final part of the shortname
+            return temp_iri[temp_iri.rfind('/')+1:]
     else:
         return iri[iri.rfind('/')+1:]
 
