@@ -132,6 +132,8 @@ services:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
     container_name: "qgis${CONTAINER_NAME_SUFFIX}"
     network_name: ${NETWORK_NAME}
+    ports:
+      - ${QGIS_SSH_PORT}:22
     pull_policy: if_not_present
     restart: unless-stopped
     security_opt:
