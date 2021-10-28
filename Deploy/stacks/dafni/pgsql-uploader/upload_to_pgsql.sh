@@ -38,12 +38,38 @@ chmod 0600 $PGPASSFILE
 
 # Read in the configuration files
 for c in ${CONFIG_DIR}/*${c}.conf; do
-
+  
+  CSV_ENABLED=0
   SHP_ENABLED=0
   TIF_ENABLED=0
 
   echo $c
   . $c
+
+  if [ $g_CSV_ENABLED -eq 1 ] && [ $CSV_ENABLED -eq 1 ]; then
+    echo loading csv files
+    
+    create_postgres_database $CSV_DB 
+
+    if [ -z "$CSV_SQL_STATEMENT_TRANSFORM" ]; then
+      CSV_SQL_STATEMENT_TRANSFORM=cat
+    else
+      CSV_SQL_STATEMENT_TRANSFORM=${CONFIG_DIR}/$CSV_SQL_STATEMENT_TRANSFORM
+    fi
+
+    for xls in {${DATA_DIR}/${DATASET_DIR}/*.{xls,xlsx,XLS,XLSX}; do
+      echo $xls
+      # https://csvkit.readthedocs.io/en/1.0.6/scripts/in2csv.html
+      in2csv $xls
+    done
+
+    #
+    for csv in ${DATA_DIR}/${DATASET_DIR}/*.csv; do
+      echo $csv
+      # https://csvkit.readthedocs.io/en/1.0.6/scripts/csvsql.html
+      csvsql --overwrite --insert --db-schema $CSV_SCHEMA --db "postgresql://${POSTGRES_USER}:$(cat ${POSTGRES_PASSWORD_FILE})@${POSTGRES_HOST}/${CSV_DB}" $csv
+    done
+  fi
 
   if [ $g_SHP_ENABLED -eq 1 ] && [ $SHP_ENABLED -eq 1 ]; then
     echo loading shp files

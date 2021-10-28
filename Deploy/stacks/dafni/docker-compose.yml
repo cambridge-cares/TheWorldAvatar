@@ -40,12 +40,19 @@ services:
   csvkit:
     image: docker.cmclinnovations.com/csvkit:1.0.0-SNAPSHOT
     container_name: "csvkit${CONTAINER_NAME_SUFFIX}"
+    environment:
+      g_CSV_ENABLED: 1
+      CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
+      DATA_DIR: ${SHARED_DATA_DIR}
+    env_file:
+      - postgres/postgres.env
     network_name: ${NETWORK_NAME}
     restart: unless-stopped
     security_opt:
       - label=disable
     volumes:
-      - csvkit_data:/data
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh
 
   flood-vis:
     image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev
@@ -205,7 +212,6 @@ secrets:
 
 volumes:
   blazegraph_geo_data:
-  csvkit_data:
   geoserver_data:
   geoserver_grib_cache:
   geoserver_gwc:
