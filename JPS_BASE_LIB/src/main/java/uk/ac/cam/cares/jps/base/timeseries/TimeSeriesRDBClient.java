@@ -461,11 +461,10 @@ public class TimeSeriesRDBClient<T> {
 			String columnName = getColumnName(dataIRI);
 			String tsTableName = getTimeseriesTableName(dataIRI);
 			
-			// Get meta information for RDB table (column fields, etc.)
-			Table<?> tsTable = context.meta().getTables(tsTableName).get(0);
-			
-			if (tsTable.fields().length > 2) {
-
+			// Retrieve number of columns of time series table (i.e. number of dataIRI + time column)
+			String condition = String.format("table_name = '%s'", tsTableName);
+			if (context.select(count()).from("information_schema.columns").where(condition).fetchOne(0, int.class) > 2) {
+				
 				// Delete only column for dataIRI from RDB table if further columns are present
 				context.alterTable(tsTableName).drop(columnName).execute();
 		    	
@@ -537,7 +536,8 @@ public class TimeSeriesRDBClient<T> {
 		try {
 	    	
 			// Check if central database lookup table exists
-			if (context.meta().getTables(dbTableName).size() > 0) {
+			String condition = String.format("table_name = '%s'", dbTableName);
+			if (context.select(count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1) {
 	    	
 		    	// Retrieve all time series table names from central lookup table
 		    	Table<?> dbTable = DSL.table(DSL.name(dbTableName));		
