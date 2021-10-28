@@ -241,13 +241,11 @@ def addUKElectricityConsumptionTriples(storeType, version, OWLFileStoragePath, u
         region = engconsump.GovernmentOfficeRegions[counter_region]
         # find the index of region in the data file
         _elecConDataArrays = np.array(elecConDataArrays, dtype = object)
-        # print(_elecConDataArrays, type(_elecConDataArrays))
         index_targetRegion = np.argwhere(_elecConDataArrays == region)[0][0] 
         regionAndIndexPair = (int(index_targetRegion), str(region)) 
         regionAndIndexPairList.append(regionAndIndexPair)
         counter_region += 1 
     regionAndIndexPairList.sort(key=takeFirst)
-    # print(regionAndIndexPairList)
     
     # Add the official region node    
     counter = 1 

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 21 Oct 2021          #
+# Last Update Date: 27 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -45,18 +45,12 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKPowerPlantDataProperty"""
 ukpp = UKpp.UKPowerPlant()
 
-"""Create an object of Class UKEbusModel"""
-# uk_ebus_model = UK_PG.UKEbusModel()
-
-"""Create an object of Class UKPowerGridTopology"""
-uk_topo = UK_Topo.UKPowerGridTopology()
-
 """Create an object of Class UKEnergyConsumption"""
 ukec = UKec.UKEnergyConsumption()
 
-"""Remote Endpoint lable and queryendpoint_iri"""
-topology_federated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
-energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
+# """Remote Endpoint lable and queryendpoint_iri"""
+# topology_federated_query_Endpoint = uk_topo.endpoint['queryendpoint_iri']
+# energyConsumption_federated_query_Endpoint = ukec.endpoint['queryendpoint_iri']
 
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable'] # remote query
@@ -64,13 +58,8 @@ endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
 ONS_JSON =  endpointList.ONS['endpoint_iri']
 
 """Sleepycat storage path"""
-# defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
-topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
-
-"""OWL file storage path"""
-# defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs # default path
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -89,7 +78,9 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
 def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, defaultInitialisation, OWLFileStoragePath, updateLocalOWLFile = True):
     uk_ebus_model = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
+    uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
     defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs
+    topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
     defaultPath_Sleepycat = uk_ebus_model.SleepycatStoragePath
     filepath = specifyValidFilePath(defaultStoredPath, OWLFileStoragePath, updateLocalOWLFile)
     if filepath == None:
@@ -256,18 +247,18 @@ def initialiseEBusModelVar(EBus_Model, EBus, defaultInitialisation):
             print('The Bus Model Initialisation header is not matched, please check the data file')
             return None   
           EBus_Model.BUS = int((EBus[0].split('#EBus-')[1]).split('_')[0])
-          EBus_Model.TYPE = BusModelInitialisationArrays[EBus_Model.BUS][1]
-          EBus_Model.PD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][2]
-          EBus_Model.GD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][3]
-          EBus_Model.GS = BusModelInitialisationArrays[EBus_Model.BUS][4]
-          EBus_Model.BS = BusModelInitialisationArrays[EBus_Model.BUS][5]
-          EBus_Model.AREA = BusModelInitialisationArrays[EBus_Model.BUS][6]
-          EBus_Model.VM_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][7]
-          EBus_Model.VA_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][8]
-          EBus_Model.BASEKV = BusModelInitialisationArrays[EBus_Model.BUS][9]
-          EBus_Model.ZONE = BusModelInitialisationArrays[EBus_Model.BUS][10]
-          EBus_Model.VMAX = BusModelInitialisationArrays[EBus_Model.BUS][11]
-          EBus_Model.VMIN = BusModelInitialisationArrays[EBus_Model.BUS][12]     
+          EBus_Model.TYPE = BusModelInitialisationArrays[EBus_Model.BUS][1].strip('\n')
+          EBus_Model.PD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][2].strip('\n')
+          EBus_Model.GD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][3].strip('\n')
+          EBus_Model.GS = BusModelInitialisationArrays[EBus_Model.BUS][4].strip('\n')
+          EBus_Model.BS = BusModelInitialisationArrays[EBus_Model.BUS][5].strip('\n')
+          EBus_Model.AREA = BusModelInitialisationArrays[EBus_Model.BUS][6].strip('\n')
+          EBus_Model.VM_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][7].strip('\n')
+          EBus_Model.VA_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][8].strip('\n')
+          EBus_Model.BASEKV = BusModelInitialisationArrays[EBus_Model.BUS][9].strip('\n')
+          EBus_Model.ZONE = BusModelInitialisationArrays[EBus_Model.BUS][10].strip('\n')
+          EBus_Model.VMAX = BusModelInitialisationArrays[EBus_Model.BUS][11].strip('\n')
+          EBus_Model.VMIN = BusModelInitialisationArrays[EBus_Model.BUS][12].strip('\n')     
     else:
         raise NotImplementedError('When the defaultInitialisation flag turns off, the assigment of sluck bus needs more information.')
     
@@ -277,6 +268,6 @@ def initialiseEBusModelVar(EBus_Model, EBus, defaultInitialisation):
     return EBus_Model
 
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", True, None, True)  
+    # createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", True, None, True)  
     createModel_EBus('default', False, 2019, 29, "2017-01-31", "closestDemandLoad", False, None, True)            
     print('*****************Terminated*****************')

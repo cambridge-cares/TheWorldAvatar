@@ -119,16 +119,10 @@ topo_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_top
 
 """ Create the TopologicalInformationProperty Instance by specifying its numOfBus and numOfBranch"""
 def createTopologicalInformationPropertyInstance(numOfBus, numOfBranch, voltageLevel):
-    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch, voltageLevel)
-    
+    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch, voltageLevel)   
     busInfoArrays = readFile(topo_info.BusInfo)
     branchTopoInfoArrays = readFile(topo_info.BranchInfo)
-    # if os.path.exists(topo_info.BranchProperty):
-    #     branchPropArrays = readFile(topo_info.BranchProperty)
-    # else:
-    #     branchPropArrays = []
-    
-    return topo_info, busInfoArrays, branchTopoInfoArrays #, branchPropArrays
+    return topo_info, busInfoArrays, branchTopoInfoArrays
 
 """Main function: create the sub graph represents the Topology"""
 def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNodes, addELineNodes, addEGenNodes, generatorClusterFunctionName, voltageLevel, OWLFileStoragePath, updateLocalOWLFile = True):
@@ -295,7 +289,7 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchTopoHeader, localQu
         graph.add((URIRef(ToBus_iri), URIRef(ontocape_network_system.hasInput.iri), URIRef(branch_node)))
               
         # Adding the nodes about the branches' ShapeRepresentation (length) and PARALLEL_CONNECTIONS (the different voltage level's branches) 
-        # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long,FromBus_lat, Tobus_long, Tobus_lat]
+        # Query the FromBus and Tobus GPS location, gpsArray = [FromBus_long, FromBus_lat, Tobus_long, Tobus_lat]
         
         gpsArray = list(query_topo.queryConnectedBusGPS(endpoint_label, uk_topo.SleepycatStoragePath, FromBus_iri, ToBus_iri, localQuery))
         if len(gpsArray) == 0:
@@ -303,9 +297,9 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchTopoHeader, localQu
         Eline_length = DistanceBasedOnGPSLocation(gpsArray[0])
         # print(Eline_length)      
         # ELine ShapeRepresentation node uri
-        ELine_shape_node = ELine_namespace + uk_eline_model.ShapeKey + Eline_context_locator
-        ELine_length_node = ELine_namespace + uk_eline_model.LengthKey + Eline_context_locator
-        value_ELine_length_node = ELine_namespace + uk_topo.valueKey + uk_eline_model.LengthKey + Eline_context_locator
+        ELine_shape_node = ELine_namespace + uk_topo.ShapeKey + Eline_context_locator
+        ELine_length_node = ELine_namespace + uk_topo.LengthKey + Eline_context_locator
+        value_ELine_length_node = ELine_namespace + uk_topo.valueKey + uk_topo.LengthKey + Eline_context_locator
         
         # add ShapeRepresentation (length) of ELine
         graph.add((URIRef(Eline_node), URIRef(ontocape_geometry.hasShapeRepresentation.iri), URIRef(ELine_shape_node)))
@@ -322,7 +316,7 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchTopoHeader, localQu
             headerIndex = 2
             while headerIndex < len(branchTopoHeader):
                 # parallel connections node uri   
-                OHLKey = uk_eline_model.OHLKey + str(branchTopoHeader[headerIndex].strip('\n')) + KV + UNDERSCORE
+                OHLKey = uk_topo.OHLKey + str(branchTopoHeader[headerIndex].strip('\n')) + KV + UNDERSCORE
                 PARALLEL_CONNECTIONS = ELine_namespace + OHLKey + Eline_context_locator
                 num_of_PARALLEL_CONNECTIONS = ELine_namespace + uk_topo.NumberOfKey + OHLKey + Eline_context_locator
                 # the parallel conection of each branch (400kV and 275kV)
@@ -449,12 +443,12 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
     return graph
 
 if __name__ == '__main__': 
-    createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
+    # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
     
-    createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
+    # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
-    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
     
     print('**************Terminated**************')

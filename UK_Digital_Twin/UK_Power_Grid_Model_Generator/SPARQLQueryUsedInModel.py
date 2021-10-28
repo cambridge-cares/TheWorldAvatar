@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 13 Oct 2021          #
+# Last Update Date: 27 Oct 2021          #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -411,11 +411,9 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
     
 
 ###############ELine#############
-# queryStr_busConnectionAndLength: query ELine iri and its From_Bus, To_Bus and the Length_ELine.
-# queryStr_parallelBranches: the number of OHL_400 and 275kV of an ELine
-def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleepycat, localQuery):
-    label = "_" + str(numOfBus) + "_"  
-    queryStr = """
+# branchGeometryQueryCreator is developed to constuct a query string used to retrieve the branch's geometry information according to its parallel connection of each branch
+def branchGeometryQueryCreator(label, branch_voltage_level): 
+    PREFIX = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
@@ -424,7 +422,59 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    SELECT  ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400kV ?Num_OHL_275kV
+    """
+    
+    SELECT_CLAUSE = """
+    SELECT DISTINCT ?ELine ?From_Bus ?To_Bus ?Value_Length_ELine """
+    
+    for voltage in branch_voltage_level:
+       SELECT_CLAUSE += "?Num_OHL_" + str(voltage) + " "
+        
+    WHERE_CLAUSE = """
+    WHERE
+    {
+    ?Topology rdfs:label ?label .
+    FILTER regex(?label, "%s") .
+    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?PowerFlow_ELine .
+    ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .   
+    ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
+    ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
+    ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
+
+    ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
+    ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
+
+    """% label 
+    
+    for voltage in branch_voltage_level: 
+        OHL = "?OHL_" + str(voltage)
+        Num_OHL = "?Num_OHL_" + str(voltage)
+        
+        WHERE_CLAUSE += """?ELine ontocape_upper_level_system:isComposedOfSubsystem %s . 
+    %s rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    %s ontopowsys_PowSysRealization:hasVoltageLevel "%s" .
+    %s ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue %s .    
+    """% (OHL, OHL, OHL, voltage, OHL, Num_OHL)
+    WHERE_CLAUSE += "} ORDER BY ASC(?ELine)"
+        
+    queryStr =  PREFIX + SELECT_CLAUSE + WHERE_CLAUSE
+    return queryStr    
+    
+# queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
+def queryELineTopologicalInformation(numOfBus, ukdigitaltwin_endpointlabel, topology_Sleepycat, localQuery):
+    label = "_" + str(numOfBus) + "_"  
+    
+    query_branch_voltage_level = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ontopowsys_PowSysRealization: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#>    
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    PREFIX ontocape_geometry: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>
+    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+    SELECT DISTINCT ?OHL_voltage_level
     WHERE
     {
     ?Topology rdf:type ontocape_network_system:NetworkSystem .
@@ -434,49 +484,41 @@ def queryELineTopologicalInformation(numOfBus, topology_Endpoint, topology_Sleep
     ?PowerFlow_ELine rdf:type ontopowsys_PowSysFunction:PowerFlow .   
     ?PowerFlow_ELine ontoecape_technical_system:isRealizedBy ?ELine .
     ?ELine rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?PowerFlow_ELine ontocape_network_system:leaves ?From_Bus .
-    ?PowerFlow_ELine ontocape_network_system:enters ?To_Bus .
-    
-    OPTIONAL{
-    ?ELine ontocape_geometry:hasShapeRepresentation/ontocape_geometry:has_length ?Length_ELine .
-    ?Length_ELine ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Value_Length_ELine .
-    
-    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_400kV . 
-    ?OHL_400kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?OHL_400kV ontopowsys_PowSysRealization:hasVoltageLevel "400kV" .
-    ?OHL_400kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_400kV .    
-
-    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL_275kV . 
-    ?OHL_275kV rdf:type ontopowsys_PowSysRealization:OverheadLine .
-    ?OHL_275kV ontopowsys_PowSysRealization:hasVoltageLevel "275kV" .
-    ?OHL_275kV ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?Num_OHL_275kV .       
-    }
+       
+    ?ELine ontocape_upper_level_system:isComposedOfSubsystem ?OHL . 
+    ?OHL rdf:type ontopowsys_PowSysRealization:OverheadLine .
+    ?OHL ontopowsys_PowSysRealization:hasVoltageLevel ?OHL_voltage_level .   
     }
     """% label
     
     global qres 
     
-    if localQuery == False and topology_Endpoint != None: 
-        print('remoteQuery')
-        res = json.loads(performQuery(topology_Endpoint, queryStr))
-        print('query is done')
+    if localQuery == False and ukdigitaltwin_endpointlabel != None: 
+        print('Query the branch_voltage_level')
+        res = json.loads(performQuery(ukdigitaltwin_endpointlabel, query_branch_voltage_level))
+        print('Branch_voltage_level query is done')
+        branch_voltage_level =  [str(r['OHL_voltage_level']) for r in res]
+        queryStr = branchGeometryQueryCreator(label, branch_voltage_level)
+        print('Query Branch Geometry')
+        res = json.loads(performQuery(ukdigitaltwin_endpointlabel, queryStr))
+        print('branchGeometryQuery is done')
         for r in res:
           for key in r.keys():
               if '\"^^' in  r[key] :
                 r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-        # qres = [[ str(r['ELine']), int(r['From_Bus'].split('EBus-')[1]), int(r['To_Bus'].split('EBus-')[1]), \
-        #          float((r['Value_Length_ELine'].split('\"^^')[0]).replace('\"','')), int((r['Num_OHL_400kV'].split('\"^^')[0]).replace('\"','')),\
-        #              int((r['Num_OHL_275kV'].split('\"^^')[0]).replace('\"',''))] for r in res]
-        return res 
-    elif topology_Sleepycat != None and localQuery == True:  
+        return res, branch_voltage_level 
+    elif topology_Sleepycat != None and localQuery == True: 
+        print('*************WARNING: Local Query is specified, the return is a list instead of a dictionary.*************')       
         eline_cg = ConjunctiveGraph('Sleepycat')
         sl = eline_cg.open(topology_Sleepycat, create = False)
         if sl == NO_STORE:
             print('Cannot find the UK topology sleepycat store')
-            return None
-        qres = list(eline_cg.query(queryStr))
+            return []
+        branch_voltage_level = list(eline_cg.query(query_branch_voltage_level))
+        queryStr = branchGeometryQueryCreator(label, branch_voltage_level)
+        qres = list(eline_cg.query(queryStr))  
         eline_cg.close()
-        return qres 
+        return qres, branch_voltage_level 
 
 
 if __name__ == '__main__': 
@@ -489,16 +531,17 @@ if __name__ == '__main__':
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
     # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
-    res = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
-   
+    res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
+    # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
     # SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\Top_node\\Sleepycat_topnode"
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
     # geo = res[0]['Geo_InfoList']
-    #print(geo.geom_type)
-    
-    print(res)
+    #print(geo.geom_type)    
+    # print(res)
+    for r in res:
+        print(r['ELine'])
     
 

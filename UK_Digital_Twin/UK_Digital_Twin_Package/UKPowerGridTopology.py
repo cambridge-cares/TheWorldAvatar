@@ -12,10 +12,15 @@ class UKPowerGridTopology:
     """Default remote endpoint"""
     endpoint = EndPointConfigAndBlazegraphRepoLabel.UKGridTopologylKG
     
-    """Bus Node keys"""
+    """Node keys"""
     EquipmentConnection_EBusKey = "EquipmentConnection_EBus-"
     PowerFlow_ELineKey = "PowerFlow_ELine-"
     PowerGeneration_EGenKey = "PowerGeneration_EGen-"
+    
+    """Elines attributes"""
+    ShapeKey = "Shape_"
+    LengthKey = "Length_"
+    OHLKey = "OHL_"
     
     CoordinateSystemKey = "CoordinateSystem_"
     
