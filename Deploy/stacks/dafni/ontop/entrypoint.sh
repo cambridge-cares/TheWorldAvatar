@@ -7,10 +7,15 @@ if [ -e "$POSTGRES_PASSWORD_FILE" ]; then
 else 
   postgres_password="postpass"
 fi
-sed -i "s/POSTGRES_PASSWORD/$postgres_password/" /opt/ontop/obda/cropmap.properties
+sed -e "s/POSTGRES_HOST/$POSTGRES_HOST/" \
+    -e "s/POSTGRES_PORT/$POSTGRES_PORT/" \
+    -e "s/POSTGRES_USER/$POSTGRES_USER/" \
+    -e "s/POSTGRES_PASSWORD/$postgres_password/" \
+    ${ONTOP_PROPERTIES_FILE}.template \
+    > $ONTOP_PROPERTIES_FILE
 
 # Run ontop, waiting for the postgis server to start first
-/opt/wait-for-it/wait-for-it.sh postgis:${POSTGRES_PORT} \
+/opt/wait-for-it/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} \
                                 --timeout=0 \
                                 --strict \
                                 -- \
