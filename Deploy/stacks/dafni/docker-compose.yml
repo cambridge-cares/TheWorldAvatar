@@ -124,6 +124,27 @@ services:
       - ./ontop/obda:/opt/ontop/input
       - ./ontop/wait-for-it:/opt/wait-for-it
 
+  pgsql-uploader:
+    image: mdillon/postgis:11-alpine
+    container_name: "pgsql-uploader${CONTAINER_NAME_SUFFIX}"
+    environment:
+      g_SHP_ENABLED: 1
+      g_TIF_ENABLED: 1
+      CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
+      DATA_DIR: ${SHARED_DATA_DIR}
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
+      POSTGRES_HOST: postgis
+      POSTGRES_PORT: $POSTGRES_PORT
+    env_file:
+      - postgres/postgres.env
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
+      - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password:ro
+
   postgis:
     image: postgis/postgis:14-3.1-alpine
     container_name: "postgis${CONTAINER_NAME_SUFFIX}"
