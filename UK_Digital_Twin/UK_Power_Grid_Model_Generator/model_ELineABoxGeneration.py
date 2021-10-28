@@ -44,27 +44,13 @@ t_box = T_BOX.UKDigitalTwinTBox()
 """Create an object of Class UKPowerPlantDataProperty"""
 ukpp = UKpp.UKPowerPlant()
 
-# """Create an object of Class UKElineModel"""
-# uk_eline_model = UK_PG.UKElineModel()
-
-# """Create an object of Class UKPowerGridTopology"""
-# uk_topo = UK_Topo.UKPowerGridTopology()
-
-# """Remote Endpoint lable"""
-# topology_Endpoint = uk_topo.endpoint['lable']
-
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
 
 """Sleepycat storage path"""
-# defaultPath_Sleepycat = uk_eline_model.SleepycatStoragePath
-# topoAndConsumpPath_Sleepycat = uk_topo.SleepycatStoragePath
 userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
-
-# """OWL file storage path"""
-# defaultStoredPath = uk_eline_model.StoreGeneratedOWLs # default path
 
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
@@ -203,40 +189,8 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
     if isinstance(store, Sleepycat):  
         cg_model_ELine.close()       
     return
-# TODO: 1.check all R, B X with the excel sheets 2. upload ELines to Blazegraph
-# # check the header of the eline propery
-# # Eline = ['http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_ELine-001.owl#ELine-001', 1, 2, 184.8475, 3, 0] , 400kv, 275kv
-# def initialiseELineModelVar(topo_info, branchPropertyArrays, ELine_Model, ELine):
-#     if isinstance (ELine_Model, UK_PG.UKElineModel):
-#         pass
-#     else:
-#         print('The first argument should be an instence of UKElineModel')
-#         return None
-#     ELine_Model.FROMBUS = ELine[1]
-#     ELine_Model.TOBUS = ELine[2]
-   
-#     if branchPropertyArrays[0] != topo_info.headerBranchProperty or int(branchPropertyArrays[1][0]) != 275 or int(branchPropertyArrays[2][0]) != 400:
-#         print('The branch property data header is not matched, please check the data file')
-#         return None
-    
-#     if ELine[5] == 0: # Only 400kV lines
-#         ELine_Model.R = ELine[3] * float(branchPropertyArrays[2][1]) / ELine[4]
-#         ELine_Model.X = ELine[3] * float(branchPropertyArrays[2][2]) / ELine[4]
-#         ELine_Model.B = ELine[3] * float(branchPropertyArrays[2][3]) * ELine[4]
-#     elif ELine[4] == 0: # Only 275kV lines
-#         ELine_Model.R = ELine[3] * float(branchPropertyArrays[1][1]) / ELine[5] 
-#         ELine_Model.X = ELine[3] * float(branchPropertyArrays[1][2]) / ELine[5] 
-#         ELine_Model.B = ELine[3] * float(branchPropertyArrays[1][3]) * ELine[5] 
-#     else: # 400kV and 275kV lines
-#         ELine_Model.R = 1 / ((1 / ( ELine[3] * float(branchPropertyArrays[2][1]) / ELine[4])) + (1 / (ELine[3] * float(branchPropertyArrays[1][1]) / ELine[5] )))
-#         ELine_Model.X = 1 / ((1 / ( ELine[3] * float(branchPropertyArrays[2][2]) / ELine[4])) + (1 / (ELine[3] * float(branchPropertyArrays[1][2]) / ELine[5] )))
-#         ELine_Model.B = (ELine[3] * float(branchPropertyArrays[2][3]) * ELine[4]) + (ELine[3] * float(branchPropertyArrays[1][3]) * ELine[5])
-    
-#     ELine_Model.RateA = (float(branchPropertyArrays[2][4]) * ELine[4]) + (float(branchPropertyArrays[1][4]) * ELine[5])
-    
-#     return ELine_Model
 
 if __name__ == '__main__':    
-    # createModel_ELine('default', False, 10, 14, 2019, 'defaultBranchInitialiser', None, True)    
+    createModel_ELine('default', False, 10, 14, 2019, 'defaultBranchInitialiser', None, True)    
     createModel_ELine('default', False, 29, 99, 2019, 'preSpecifiedBranchInitialiser', None, True)  
     print('Terminated')

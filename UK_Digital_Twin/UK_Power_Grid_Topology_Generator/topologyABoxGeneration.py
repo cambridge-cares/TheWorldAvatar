@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 25 Oct 2021          #
+# Last Update Date: 28 Oct 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -252,8 +252,11 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchTopoHeader, localQu
     
     for header in branchTopoArray[0]:
         if not  header.strip('\n') in branchTopoHeader:   
-            raise Exception('The branch topoinfo data header is not matched, please check the data file.')       
-       
+            raise Exception('The branch topoinfo data header is not matched, please check the data file.')    
+    
+    if len(branchTopoHeader) != len(branchTopoArray[0]):
+        raise Exception('The length of the branch topoinfo data header does not match, please check the data file.')   
+        
     counter = 1
     # Number of the Elines (branches)
     Num_Eline = len(branchTopoArray) - 1    
@@ -312,17 +315,17 @@ def addELineNodes(graph, numOfBranch, branchTopoArray, branchTopoHeader, localQu
         graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.km.iri)))
         graph.add((URIRef(value_ELine_length_node), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(Eline_length))))
         
-        if len(branchTopoHeader) > 2: # indicates that there are PARALLEL_CONNECTIONS of the branches topology            
+        if len(branchTopoArray[0]) > 2: # indicates that there are PARALLEL_CONNECTIONS of the branches topology            
             headerIndex = 2
-            while headerIndex < len(branchTopoHeader):
+            while headerIndex < len(branchTopoArray[0]):
                 # parallel connections node uri   
-                OHLKey = uk_topo.OHLKey + str(branchTopoHeader[headerIndex].strip('\n')) + KV + UNDERSCORE
+                OHLKey = uk_topo.OHLKey + str(branchTopoArray[0][headerIndex].strip('\n')) + KV + UNDERSCORE
                 PARALLEL_CONNECTIONS = ELine_namespace + OHLKey + Eline_context_locator
                 num_of_PARALLEL_CONNECTIONS = ELine_namespace + uk_topo.NumberOfKey + OHLKey + Eline_context_locator
                 # the parallel conection of each branch (400kV and 275kV)
                 graph.add((URIRef(Eline_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(PARALLEL_CONNECTIONS)))
                 graph.add((URIRef(PARALLEL_CONNECTIONS), RDF.type, URIRef(ontopowsys_PowSysRealization.OverheadLine.iri)))
-                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal(str(branchTopoHeader[headerIndex].strip('\n')) + KV)))
+                graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(t_box.ontopowsys_PowSysRealization + 'hasVoltageLevel'), Literal(str(branchTopoArray[0][headerIndex].strip('\n')) + KV)))
                 
                 graph.add((URIRef(PARALLEL_CONNECTIONS), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(num_of_PARALLEL_CONNECTIONS)))
                 graph.add((URIRef(num_of_PARALLEL_CONNECTIONS), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
@@ -444,11 +447,11 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
 
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
+    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
+    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
-    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
     
     print('**************Terminated**************')

@@ -49,15 +49,14 @@ class BranchPropertyInitialisation(object):
             i_V = np.argwhere(_branchPropertyArrays == voltage.strip('kV'))[0][0] 
             r = int(ELineTopoAndGeometryInfo[voltageLevelKey]) / (float(ELineTopoAndGeometryInfo['Value_Length_ELine']) * float(branchPropertyArrays[i_V][1]))
             x = int(ELineTopoAndGeometryInfo[voltageLevelKey]) / (float(ELineTopoAndGeometryInfo['Value_Length_ELine']) * float(branchPropertyArrays[i_V][2]))
-            b = int(ELineTopoAndGeometryInfo[voltageLevelKey]) / (float(ELineTopoAndGeometryInfo['Value_Length_ELine']) * float(branchPropertyArrays[i_V][3]))
+            b = int(ELineTopoAndGeometryInfo[voltageLevelKey]) * float(ELineTopoAndGeometryInfo['Value_Length_ELine']) * float(branchPropertyArrays[i_V][3])
             rateA = float(branchPropertyArrays[i_V][4]) * int(ELineTopoAndGeometryInfo[voltageLevelKey])
-            if r != 0:
-                R_inverse += r
-            if x != 0:
-                X_inverse += x
-            if b != 0:
-                B += 1/b           
+            
+            R_inverse += r            
+            X_inverse += x
+            B += b           
             RateA += rateA
+            
         if R_inverse != 0: ELine_Model.R = 1/R_inverse
         if X_inverse != 0: ELine_Model.X = 1/X_inverse
         ELine_Model.B = B
