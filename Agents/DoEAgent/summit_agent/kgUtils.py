@@ -575,15 +575,17 @@ def performUpdate(endpoint, update):
     KGClient.setUpdateEndpoint(endpoint)
     KGClient.executeUpdate(update)
 
-def uploadOntology(filePath):
+def uploadOntology(triple_store_server, triple_store_repo, filePath):
     """
         This function uploads ontology to knowledge graph.
 
         Arguments:
+            triple_store_server - address of triple store server, e.g. "http://kg.cmclinnovations.com:81/blazegraph"
+            triple_store_repo - address of triple store repository, e.g. "testontorxn"
             filePath - the file path of ontology to be uploaded
     """
     KRClient = jpsBaseLib_view.KnowledgeRepository()
-    KRClient.uploadOntology(TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY, filePath)
+    KRClient.uploadOntology(triple_store_server, triple_store_repo, filePath)
 
 def getShortName(iri):
     """

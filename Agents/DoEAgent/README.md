@@ -24,7 +24,7 @@ Requirements:
     RUN jpsrm install JpsBaseLib ./jpstemp/
     ``` 
     Once the changes of the DerivationClient class are merged back to develop branch and wrapped in the latest `py4jps` release, these lines in the Dockerfile can be commented out when building the Docker Image.
-* The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` within the `TheWorldAvatar/Agents/DoEAgent/summit_agent/resources/doeagent_properties.py` file. Developers needs to ensure that this file is correctly updated before building the Docker Image.
+* The knowledge graph endpoints used by this agent are specified using `SPARQL_QUERY_ENDPOINT` and `SPARQL_UPDATE_ENDPOINT` (based on `TRIPLE_STORE_UPLOAD_SERVER` and `TRIPLE_STORE_UPLOAD_REPOSITORY`) within the `TheWorldAvatar/Agents/DoEAgent/summit_agent/resources/doeagent_properties.py` file. Developers needs to ensure that this file is correctly updated before building the Docker Image.
 
 Once the requirements have been addressed, the Image can be build using the following commands:
 ```

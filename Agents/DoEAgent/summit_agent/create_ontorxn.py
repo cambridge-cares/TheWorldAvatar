@@ -47,7 +47,7 @@ class ReactionVariation:
         # Serialise the created OntoRxn:ReactionVariation instance as a XML file
         self.g.serialize(filePath, format='xml')
         # Upload the created OntoRxn:ReactionVariation instance to knowledge graph
-        uploadOntology(filePath)
+        uploadOntology(TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY, filePath)
         # os.remove(filePath)
     
     def createOntoRxnInstance(self):
