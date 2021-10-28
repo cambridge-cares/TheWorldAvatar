@@ -31,6 +31,10 @@ def createOntoDoENewExperimentIRI(endpoint, doe_instance, new_exp_iri_list):
              """INSERT DATA { \
              <%s> rdf:type <%s> . \
              <%s> <%s> <%s> . """ % (ontodoe_new_exp_iri, ONTODOE_NEWEXPERIMENT, doe_instance, ONTODOE_PROPOSESNEWEXPERIMENT, ontodoe_new_exp_iri)
+
+    # Add safeguard in case the input new_exp_iri_list is not a list
+    if not isinstance(new_exp_iri_list, list):
+        new_exp_iri_list = [new_exp_iri_list]
     for new_exp_iri in new_exp_iri_list:
         update = update + """<%s> <%s> <%s> . """ % (ontodoe_new_exp_iri, ONTODOE_REFERSTO, new_exp_iri)
     update = update + """}"""
@@ -56,6 +60,10 @@ def getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemRespon
             WHERE { \
             ?doe_instance <%s> <%s> ; \
                 <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance, ONTODOE_HASDOMAIN, domain_instance)
+
+    # Add safeguard in case the input systemResponse_instances is not a list
+    if not isinstance(systemResponse_instances, list):
+        systemResponse_instances = [systemResponse_instances]
     for sysres in systemResponse_instances:
         query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres)
     query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historicalData_instance)
@@ -360,16 +368,19 @@ def getDesignVariables(endpoint, domain_instance):
     response = performQuery(endpoint, query)
     return response
 
-def getSystemResponses(endpoint, systemRespons_instances):
+def getSystemResponses(endpoint, systemResponse_instances):
     """
         This methods retrieves all the system responses given instances of OntoDoE:SystemResponses.
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            systemRespons_instances - a list of OntoDoE:SystemResponse instances
+            systemResponse_instances - a list of OntoDoE:SystemResponse instances
     """
     list_sys = []
-    for sys_ins in systemRespons_instances:
+    # Add safeguard in case the input systemResponse_instances is not a list
+    if not isinstance(systemResponse_instances, list):
+        systemResponse_instances = [systemResponse_instances]
+    for sys_ins in systemResponse_instances:
         # Delete "<" and ">" around the IRI
         sys_ins = trimIRI(sys_ins)
         # Prepare query string
