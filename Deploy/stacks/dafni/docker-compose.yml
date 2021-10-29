@@ -44,6 +44,7 @@ services:
       g_CSV_ENABLED: 1
       CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
       DATA_DIR: ${SHARED_DATA_DIR}
+      POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
       - postgres/postgres.env
     network_name: ${NETWORK_NAME}
