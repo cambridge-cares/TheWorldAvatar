@@ -117,13 +117,8 @@ public class RemoteStoreClientTest {
 	public void connectionURLForQueryEndpointTest() throws SQLException{
 		queryEndpoint = "http://localhost:8080/test";
 		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
-		System.out.println(
-				"\nTesting if the URL to connect to an endpoint for performing a query operation is set as expected.");
 		assertNotNull(kbClient.getConnectionUrl());
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint), kbClient.getConnectionUrl());
-		System.out.println("Expected connection URL      :"
-				+ "jdbc:jena:remote:query=".concat(queryEndpoint)
-				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 	/**
@@ -138,12 +133,7 @@ public class RemoteStoreClientTest {
 		updateEndpoint = "http://localhost:8080/test";
 		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
-		System.out.println(
-				"\nTesting if the URL to connect to an endpoint for performing an insert operation is set as expected.");
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint), kbClient.getConnectionUrl());
-		System.out.println("Expected connection URL      :"
-				+ "jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint)
-				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 	/**
@@ -158,13 +148,8 @@ public class RemoteStoreClientTest {
 		updateEndpoint = "http://localhost:8080/blazegraph/namespace/ontokin/sparql";
 		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertNotNull(kbClient.getConnectionUrl());
-		System.out.println(
-				"\nTesting if the URL to connect to an endpoint for performing a delete query is set as expected.");
 		assertEquals("jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint),
 				kbClient.getConnectionUrl());
-		System.out.println("Expected connection URL      :"
-				+ "jdbc:jena:remote:query=".concat(queryEndpoint).concat("&update=").concat(updateEndpoint)
-				+ "\n matched with the actual one :" + kbClient.getConnectionUrl());
 	}
 	
 	/**
@@ -253,8 +238,6 @@ public class RemoteStoreClientTest {
 		kbClient.setQueryEndpoint(queryEndpoint);
 		when(kbClient.executeFederatedQuery(endpoints, formFederatedQuery())).thenReturn(jsonArray);
 		JSONArray result = kbClient.executeFederatedQuery(endpoints, formFederatedQuery());
-		System.out.println("Expected federated query result      :" + jsonArray.toString()
-				+ "\n matched with the actual one :" + result);
 		assertEquals(jsonArray.toString(), result.toString());
 		verify(kbClient).executeFederatedQuery(endpoints, formFederatedQuery());
 	}
@@ -276,8 +259,6 @@ public class RemoteStoreClientTest {
 		kbClient.setQueryEndpoint(queryEndpoint);
 		when(kbClient.execute(formMechanismCountQuery())).thenReturn(jsonArray.toString());
 		String result = kbClient.execute(formMechanismCountQuery());
-		System.out.println("Expected query result      :" + jsonArray.toString()
-				+ "\n matched with the actual one :" + result);
 		assertEquals(jsonArray.toString(), result);
 		verify(kbClient).execute(formMechanismCountQuery());
 	}
