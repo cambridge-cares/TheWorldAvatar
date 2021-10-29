@@ -15,4 +15,4 @@ if [[ -n ${user_id//[0-9]/} ]]; then
   exit 2
 fi
 
-sed -e "s/USER_PORT_BASE/1$user_id/g" < "$script_dir/.env_template" > "$script_dir/.env"
+sed -e "s/USER_PORT_BASE/1$user_id/g" < "$script_dir/../.env_template" > "$script_dir/../.env"
