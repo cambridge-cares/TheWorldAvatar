@@ -59,17 +59,19 @@ class InteractionHandler {
                 this._map.on("mouseenter", layerName, (event) => {
                     let feature = this._map.queryRenderedFeatures(event.point)[0];
 
+                    // Change cursor
+                    this._map.getCanvas().style.cursor = 'pointer';
+
                     // Get correct co-ords
                     var coordinates = feature.geometry.coordinates.slice();
                     while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
-                            
-                    // Change cursor
-                    this._map.getCanvas().style.cursor = 'pointer';
 
                     // Get appropriate description for layer
-                    if(!feature.properties["displayName"] && !feature.properties["name"]) return;
+                    if(!feature.properties["displayName"] && !feature.properties["name"]) {
+                        return;
+                    }
                     var name = feature.properties["displayName"];
                     if(name == null) name = feature.properties["name"];
 
@@ -110,7 +112,6 @@ class InteractionHandler {
                                     { hover: false }
                                 );
                             }
-
                             
                             // Set hover state for this feature
                             this._hoveredStateId = e.features[0].id;
@@ -172,8 +173,21 @@ class InteractionHandler {
         var title = feature.properties["displayName"];
         if(title == null) title = feature.properties["name"];
         if(title == null) title = "ID " + feature.id;
-        this._panelHandler.setTitle(title);
 
+        if(feature["geometry"]["type"] === "Point") {
+            var coordinates = feature.geometry.coordinates;
+
+            var titleHTML = title + `
+                <div class="tooltip">
+                    <img src="./img/target.png" onclick="manager.zoomTo(` + coordinates + `);"/>
+                    <span class="tooltiptext">Zoom to this location</span>
+                </div>
+            `;
+            this._panelHandler.setTitle(titleHTML);
+        } else {
+            this._panelHandler.setTitle(title);
+        }
+       
         // Handle the metadata
         this.#handleMetadata(feature);
 
@@ -222,7 +236,10 @@ class InteractionHandler {
                     if(key !== "id") fixedMeta[key] = jsonEntry[key];
                 });
             });
-            allMetadata["Properties"] = fixedMeta;
+
+            if(fixedMeta.length > 0) { 
+                allMetadata["Properties"] = fixedMeta;
+            }
         });
 
         // Read the additional metadata
@@ -234,7 +251,10 @@ class InteractionHandler {
                     if(key !== "id") transientMeta[key] = jsonEntry[key];
                 });
             });
-            allMetadata["Transient Properties"] = transientMeta;
+
+            if(transientMeta.length > 0) { 
+                allMetadata["Transient Properties"] = transientMeta;
+            }
         });
 
         // Build tree once all metadata is added

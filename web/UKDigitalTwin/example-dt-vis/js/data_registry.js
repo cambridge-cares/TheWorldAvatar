@@ -90,7 +90,7 @@ class DataRegistry {
      */
     loadMetaData(rootDir, callback) {
         rootDir = (rootDir.endsWith("/")) ? rootDir : rootDir + "/";
-        let overallMeta = rootDir + "/overall-meta.json";
+        let overallMeta = rootDir + "overall-meta.json";
 
         // Reset data objects
         this._overallMeta = null;

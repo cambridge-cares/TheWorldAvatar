@@ -33,5 +33,26 @@
         "assetPropertyA": "Alpha",
         "assetPropertyB": "Beta",
         "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 6,
+        "assetNumber": "AN0006",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 7,
+        "assetNumber": "AN0007",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
+    },
+    {
+        "id": 8,
+        "assetNumber": "AN0008",
+        "assetPropertyA": "Alpha",
+        "assetPropertyB": "Beta",
+        "assetPropertyC": "Charlie"
     }
 ]

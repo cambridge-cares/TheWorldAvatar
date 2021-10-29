@@ -22,6 +22,11 @@ class TimeseriesHandler {
         for(var i = 0; i < entries.length; i++) {
             var entry = entries[i];
 
+            if(entry == null || !entry["data"] || !entry["units"] || !entry["time"] || !entry["values"]){
+                // Skip if any required properties are missing
+                continue;
+            }
+
             // May have multiple data sets with differing units
             var tableNames = entry["data"];
             var tableUnits = entry["units"];
@@ -117,7 +122,6 @@ class TimeseriesHandler {
         });
 
         if(data == null) {
-            console.log("ERROR: Could not find data entry!");
             return;
         }
 
@@ -161,7 +165,6 @@ class TimeseriesHandler {
         });
 
         if(data == null) {
-            console.log("ERROR: Could not find data entry!");
             return;
         }
 

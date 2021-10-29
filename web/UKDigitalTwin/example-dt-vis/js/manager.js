@@ -27,12 +27,24 @@ class DigitalTwinManager {
 	// Handles timeseries display
 	_timeseriesHandler;
 
+	// All possible root directories.
+	_rootDirectories = [];
+
+	// Current root directory name.
+	_currentRootDirName;
+
+	//
+	_metaCallback;
+
 	/**
 	 * Initialisation.
 	 */
 	constructor() {
+		this._dataRegistry = new DataRegistry();
+
 		// Create a new window namespace to let us set global variables
 		window.DT = {};
+		DT.terrain = "light";
 		DT.currentAdditionals = [];
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
@@ -40,15 +52,35 @@ class DigitalTwinManager {
 		});
 	}
 
+    /**
+     * Register multpiple possible root directories.
+     * 
+     * @param {dictionary} directories 
+     */
+	registerDirectories(directories) {
+		this._rootDirectories = directories;
+    }
+
 	/**
 	 * Scans for and reads the metadata that details the actual data within
 	 * the expected visualisation data structure.
 	 * 
-	 * @param {string} rootDir root directory containing all data
+	 * @param {string} rootDir name of the root directory containing all data
 	 * @param {function} callback optional function to run once all metadata has been read.
 	 */
-	readMetadata(rootDir, callback = null) {
-		this._dataRegistry = new DataRegistry();
+	readMetadata(rootDirName, callback = null) {
+		this._currentRootDirName = rootDirName;
+		this._metaCallback = callback;
+
+		let rootDir = this._rootDirectories[rootDirName];
+		if(rootDir == null) {
+			console.log("looking for " + rootDirName);
+			console.log(this._rootDirectories);
+			
+			console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
+			return;
+		}
+
 		this._dataRegistry.loadMetaData(rootDir, callback);
 	}
 
@@ -117,7 +149,7 @@ class DigitalTwinManager {
 	 * Will remove all Additional Data sets that are currently shown 
 	 * on the map.
 	 */
-	 removeAllAdditionalData() {
+	removeAllAdditionalData() {
 		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
             this.removeAdditionalData(DT.currentAdditionals[i]);
         }
@@ -209,8 +241,17 @@ class DigitalTwinManager {
 			this._map.getZoom(), 
 			treeCallback
 		);
+		
+		let rootDir = this._rootDirectories[this._currentRootDirName];
+		if(rootDir == null) {
+			console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
+			return;
+		}
+		rootDir = (rootDir.endsWith("/")) ? rootDir : rootDir + "/";
 
-		this._controlHandler.showControls(treeFile, selectCallback);
+		let fullTreeFile = rootDir + treeFile;
+		this._controlHandler.showControls(fullTreeFile, this._rootDirectories, this._currentRootDirName, selectCallback);
+		this._controlHandler.changeTerrain(DT.terrain);
 	}
 
 	/**
@@ -285,7 +326,11 @@ class DigitalTwinManager {
 	 * @param {*} selectValue 
 	 */
 	onGroupSelectChange(selectID, selectValue) {
-		this._controlHandler.onGroupSelectChange(selectID, selectValue);
+		if(selectID == "root-dir-select") {
+			this.readMetadata(selectValue, this._metaCallback);
+		} else {
+			this._controlHandler.onGroupSelectChange(selectID, selectValue);
+		}
 	}
 
 	/**
@@ -305,6 +350,23 @@ class DigitalTwinManager {
 	 */
 	updateTimeseries(setName) {
 		this._timeseriesHandler.update(setName);
+	}
+
+	/**
+	 * Fly to the input location.
+	 * 
+	 * @param {*} lon 
+	 * @param {*} lat 
+	 */
+	zoomTo(lon, lat) {
+		console.log("Zooming to " + lon + ", " + lat);
+		this._map.flyTo({
+			center: [lon, lat],
+			essential: true,
+			zoom: 18,
+			bearing: 0,
+			speed: 0.75
+		});
 	}
 
 }

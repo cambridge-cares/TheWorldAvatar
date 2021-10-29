@@ -84,7 +84,7 @@ class ControlHandler {
 	 * 
 	 * @param {string} treeFile JSON file defining layer tree
 	 */
-	showControls(treeFile, selectCallback) {
+	showControls(treeFile, rootDirectories, selectedRootName, selectCallback) {
 		this._selectCallback = selectCallback;
 
 		var that = this;
@@ -93,24 +93,60 @@ class ControlHandler {
 			document.getElementById("controlsContainer").innerHTML = that.#controlHTML;
 			that.rebuildTree();
 
+			let terrainContainer = document.getElementById("terrainContainer");
+			let terrainSelect = terrainContainer.querySelector("input[id='" + DT.terrain + "']");
+			if(terrainSelect != null) terrainSelect.checked = true;
+
+			var selectionsContainer = document.getElementById("selectionsContainer");
+			selectionsContainer.innerHTML = `<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`;
+			
+			// Build dropdown to change root dir
+			if(rootDirectories != null && Object.keys(rootDirectories).length > 1) {
+				that.#buildRootDropdown(rootDirectories, selectedRootName);
+			} 
+			
 			if(that._dataRegistry.additionalMeta != null && that._dataRegistry.additionalMeta.length > 0) {
 				var selectionsContainer = document.getElementById("selectionsContainer");
 				if(selectionsContainer != null) selectionsContainer.style.display = "block";
 
 				// Build the initial dropdown selections
 				let selectString = that.buildDropdown(that._dataRegistry.additionalMeta[0]);
-				document.getElementById("selectionsContainer").innerHTML += `
-					<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`
-					+ selectString
-				;
-			} else {
-				var selectionsContainer = document.getElementById("selectionsContainer");
-				if(selectionsContainer != null) selectionsContainer.style.display = "none";
-			}
+				document.getElementById("selectionsContainer").innerHTML += selectString;
+			} 
 		};
 
 		// Read the tree file then run the callback
 		this.#readTreeFile(treeFile, callback);
+	}
+
+	/**
+	 * 
+	 * @param {*} rootDirectories 
+	 */
+	#buildRootDropdown(rootDirectories, selectedName) {
+		var htmlString = `
+			<div id="selectContainer" style="margin-bottom: 10px;">
+				<label for="root-dir-select">Data set:</label>
+				<select id="root-dir-select" onchange="manager.onGroupSelectChange(this.id, this.value)">
+		`;
+
+		Object.keys(rootDirectories).forEach(function(key) {
+			if(key === selectedName) {
+				htmlString += `
+					<option value="` + key + `" selected>` + key + `</option>
+				`;
+			} else {
+				htmlString += `
+					<option value="` + key + `">` + key + `</option>
+				`;
+			}
+		});
+		htmlString += `</div>`;
+
+		var selectionsContainer = document.getElementById("selectionsContainer");
+		if(selectionsContainer != null) {
+			selectionsContainer.innerHTML += htmlString;
+		}
 	}
 
 	/**

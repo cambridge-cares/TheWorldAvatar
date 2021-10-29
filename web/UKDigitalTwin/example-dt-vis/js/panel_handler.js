@@ -211,10 +211,16 @@ class PanelHandler {
 		document.getElementById("footerContainer").innerHTML = newHTML;
 	}
 
+	/**
+	 * 
+	 */
 	storeDefault() {
 		this._defaultHTML = document.getElementById("sidePanelInner").innerHTML;
 	}
 
+	/**
+	 * 
+	 */
 	returnToDefault() {
 		document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
 

@@ -36,7 +36,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Digital Twin Controls */
 #controlContainer {
 	width: 250px;
-	height: calc(100% - 40px);
+	height: auto;
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -195,6 +195,10 @@ h1, h2, h3, h4, h5, h6 {
 	text-align: center;
 	margin-bottom: 20px;
 }
+#titleContainer img:hover{
+	opacity: 50%;
+	cursor: pointer;
+}
 #propsContainer {
 	margin-top: 10px;
 	width: 100%;
@@ -303,8 +307,8 @@ h1, h2, h3, h4, h5, h6 {
 
 	position: absolute;
 	z-index: 1;
-	top: 80%;
-	right: 80%;
+	top: 100%;
+	right: 50%;
 }
 .tooltip:hover .tooltiptext {
 	visibility: visible;
