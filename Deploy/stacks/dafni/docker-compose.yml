@@ -44,6 +44,7 @@ services:
       g_CSV_ENABLED: 1
       CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
       DATA_DIR: ${SHARED_DATA_DIR}
+      POSTGRES_HOST: postgis
       POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
       - postgres/postgres.env
@@ -54,6 +55,7 @@ services:
     volumes:
       - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
       - ./pgsql-uploader/upload_to_pgsql.sh:/upload_to_pgsql.sh
+      - ./postgres/secrets/postgres_password:/tmp/postgres_password:ro
 
   flood-vis:
     image: docker.cmclinnovations.com/flood-vis:1.0.0-SNAPSHOT-dev
@@ -116,7 +118,6 @@ services:
       ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
       POSTGRES_HOST: postgis
-      POSTGRES_PORT: ${POSTGRES_PORT}
     env_file:
       - ontop/ontop.env
       - postgres/postgres.env
