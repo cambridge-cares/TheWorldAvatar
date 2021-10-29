@@ -8,14 +8,13 @@ else
   postgres_password="postpass"
 fi
 sed -e "s/POSTGRES_HOST/$POSTGRES_HOST/" \
-    -e "s/POSTGRES_PORT/$POSTGRES_PORT/" \
     -e "s/POSTGRES_USER/$POSTGRES_USER/" \
     -e "s/POSTGRES_PASSWORD/$postgres_password/" \
     ${ONTOP_PROPERTIES_FILE}.template \
     > $ONTOP_PROPERTIES_FILE
 
 # Run ontop, waiting for the postgis server to start first
-/opt/wait-for-it/wait-for-it.sh ${POSTGRES_HOST}:${POSTGRES_PORT} \
+/opt/wait-for-it/wait-for-it.sh ${POSTGRES_HOST}:5432 \
                                 --timeout=0 \
                                 --strict \
                                 -- \

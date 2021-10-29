@@ -1,4 +1,4 @@
-jdbc.url=jdbc:postgresql://POSTGRES_HOST:POSTGRES_PORT/cropmap
+jdbc.url=jdbc:postgresql://POSTGRES_HOST:5432/cropmap
 jdbc.driver=org.postgresql.Driver
 jdbc.user=POSTGRES_USER
 jdbc.password=POSTGRES_PASSWORD
