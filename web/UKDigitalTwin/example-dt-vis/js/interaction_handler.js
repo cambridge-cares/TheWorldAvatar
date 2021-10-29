@@ -4,15 +4,6 @@
  */
 class InteractionHandler {
 
-    #NO_ADDITIONAL = `
-        <div style="height: 100%; background-color: lightgrey;">
-            <p style="text-align: center; margin: 20px; position: relative; top: 50%; transform: translateY(-50%);">
-                Select a group using the controls to the left of the map to view the
-                group specific metadata for this location.
-            </p>
-        </div>
-    `;
-
     _map;
 
     _dataRegistry;
@@ -24,6 +15,8 @@ class InteractionHandler {
     _previousTab = "meta-tree-button";
 
     _timeseriesHandler;
+
+    _hoveredStateId = null;
 
     /**
      * Initialise a new interaction handler.
@@ -41,44 +34,124 @@ class InteractionHandler {
     }
 
 
-    registerInteractions(layerName) {
-        // Mouse enter
-        this._map.on("mouseenter", layerName, (event) => {
-            this._map.getCanvas().style.cursor = 'pointer';
-            let feature = event.features[0];
+    /**
+     * Register default mouse interactions with the input layer.
+     * 
+     * @param {string[]} layer [layer name, layer type]
+     */
+    registerInteractions(layer) {
+        let layerName = layer[0];
+        let layerType = layer[1];
+        let sourceName = this._map.getLayer(layerName).source;
 
-            // Get correct co-ords
-            var coordinates = feature.geometry.coordinates.slice();
-            while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
-            }
+        var lastFeature = null;
 
-            // Get appropriate description for layer
-            if(!feature.properties["displayName"] && !feature.properties["name"]) return;
-            var description = feature.properties["displayName"];
-            if(description == null) description = feature.properties["name"];
+        // Interactions per layer type
+        switch(layerType) {
+            case "point":
+                // Mouse click
+                this._map.on("click", layerName, (event) => {
+                    let feature = event.features[0];
+                    this.mouseClick(feature);
+                });
 
-            var html = "<b>" + description + "</b></br>";
-            if(feature.properties["description"]) {
-                html += feature.properties["description"] + "</br></br>"
-            }
+                // Mouse enter
+                this._map.on("mouseenter", layerName, (event) => {
+                    let feature = this._map.queryRenderedFeatures(event.point)[0];
 
-            // Show popup
-            html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
-            this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
-        });
+                    // Get correct co-ords
+                    var coordinates = feature.geometry.coordinates.slice();
+                    while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+                        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+                    }
+                            
+                    // Change cursor
+                    this._map.getCanvas().style.cursor = 'pointer';
 
-        // Mouse exit
-        this._map.on("mouseleave", layerName, (event) => {
-            this._map.getCanvas().style.cursor = '';
-		    this._popup.remove();
-        });
+                    // Get appropriate description for layer
+                    if(!feature.properties["displayName"] && !feature.properties["name"]) return;
+                    var name = feature.properties["displayName"];
+                    if(name == null) name = feature.properties["name"];
 
-        // Mouse click
-        this._map.on("click", layerName, (event) => {
-            let feature = event.features[0];
-            this.mouseClick(feature);
-        });
+                    // Build HTML for popup
+                    var html = "<b>" + name + "</b></br>";
+                    if(feature.properties["description"]) {
+                        html += feature.properties["description"] + "</br></br>"
+                    }
+
+                    // Show popup
+                    html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
+                    this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
+                });
+
+                // Mouse exit
+                this._map.on("mouseleave", layerName, (event) => {
+                    this._map.getCanvas().style.cursor = '';
+                    this._popup.remove();
+                });
+                break;
+
+                case "fill":
+                case "extrusion":
+                case "polygon":
+                    var lastFeature = null;
+
+                    // When the user moves their mouse over the fill area
+                    this._map.on('mousemove', layerName, (e) => {
+                        var thisFeature = this._map.queryRenderedFeatures(e.point)[0];
+
+                        if(lastFeature == null || thisFeature.id != lastFeature.id) {
+                            lastFeature = thisFeature;
+
+                            // Remove old feature's hover state
+                            if (this._hoveredStateId !== null) {
+                                this._map.setFeatureState(
+                                    { source: sourceName, id: this._hoveredStateId },
+                                    { hover: false }
+                                );
+                            }
+
+                            
+                            // Set hover state for this feature
+                            this._hoveredStateId = e.features[0].id;
+                            this._map.setFeatureState(
+                                { source: sourceName, id: this._hoveredStateId },
+                                { hover: true }
+                            );
+
+                            // Get appropriate description for layer
+                            if(!thisFeature.properties["displayName"] && !thisFeature.properties["name"]) return;
+                            var name = thisFeature.properties["displayName"];
+                            if(name == null) name = thisFeature.properties["name"];
+
+                            // Build HTML for popup
+                            var html = "<b>" + name + "</b></br>";
+                            if(thisFeature.properties["description"]) {
+                                html += thisFeature.properties["description"] + "</br></br>"
+                            }
+
+                            // Get coords for the center of the polygon
+                            var center = turf.centroid(thisFeature)["geometry"]["coordinates"];
+                            this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                        }
+                    });
+
+                    // Mouse exit
+                    this._map.on("mouseleave", layerName, (event) => {
+                        this._map.getCanvas().style.cursor = '';
+                        this._popup.remove();
+                        lastFeature = null;
+
+                        if (this._hoveredStateId !== null) {
+                            this._map.setFeatureState(
+                                { source: sourceName, id: this._hoveredStateId },
+                                { hover: false }
+                            );
+                        }
+                        this._hoveredStateId = null;
+                    });
+                break;
+        } 
 
         console.log("INFO: Interactions for layer '" + layerName + "' have been registered.");
     }
@@ -166,6 +239,8 @@ class InteractionHandler {
 
         // Build tree once all metadata is added
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
+            document.getElementById("meta-tree").innerHTML = "";
+
             if(allMetadata == null || Object.keys(allMetadata).length == 0) {
                 // Fallback to the GeoJSON properties
                 var metaTree = JsonView.renderJSON(feature.properties, document.getElementById("meta-tree"));
@@ -191,18 +266,12 @@ class InteractionHandler {
         var self = this;
         Promise.all(allPromises).then((values) => {
 
-            console.log(values);
-
             if(values == null || values.length == 0) {
                 // No time series data
-                console.log("A");
-
                 document.getElementById("time-series-button").style.display = "none";
                 this.openTreeTab("meta-tree-button", "meta-tree");
             } else {
                 // Data present, show it
-                console.log("B");
-
                 document.getElementById("time-series-button").style.display = "block";
                 self._timeseriesHandler.parseData(values);
                 self._timeseriesHandler.showData("time-series-container");
@@ -261,7 +330,8 @@ class InteractionHandler {
             // Check if the layer name is the same
             if(datasets[i]["name"] === feature.layer["id"]) {
                 let metaFiles = datasets[i]["metaFiles"];
-                
+                if(metaFiles == null || metaFiles.length == 0) continue;
+
                 // Load each listed meta file
                 for(var j = 0; j < metaFiles.length; j++) {
                     let metaFile = metaDir + "/" + metaFiles[j];
@@ -306,24 +376,27 @@ class InteractionHandler {
                 if(dataSet["name"] === feature.layer["id"]) {
                     let metaFiles = dataSet["metaFiles"];
 
-                     // Load each listed meta file
-                    for(var j = 0; j < metaFiles.length; j++) {
-                        let metaFile = metaDir + "/" + metaFiles[j];
-                        console.log("INFO: Reading Additional metadata JSON at " + metaFile);
+                        if(metaFiles != null) {
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(metaFile).then(json => {
+                        // Load each listed meta file
+                        for(var j = 0; j < metaFiles.length; j++) {
+                            let metaFile = metaDir + "/" + metaFiles[j];
+                            console.log("INFO: Reading Additional metadata JSON at " + metaFile);
 
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    return json[i];
+                            // Load file asynchronously
+                            var promise = $.getJSON(metaFile).then(json => {
+
+                                // Once read, only return the node with the matching feature id
+                                for(var i = 0; i < json.length; i++) {
+                                    if(json[i]["id"] == feature.id) {
+                                        return json[i];
+                                    }
                                 }
-                            }
-                        });
+                            });
 
-                        // Pool promise
-                        allPromises.push(promise);
+                            // Pool promise
+                            allPromises.push(promise);
+                        }
                     }
                 }
             });
@@ -347,6 +420,7 @@ class InteractionHandler {
             // Check if the layer name is the same
             if(datasets[i]["name"] === feature.layer["id"]) {
                 let timeFiles = datasets[i]["timeseriesFiles"];
+                if(timeFiles == null || timeFiles.length == 0) continue;
 
                 for(var j = 0; j < timeFiles.length; j++) {
                     let timeFile = metaDir + "/" + timeFiles[j];
@@ -392,24 +466,28 @@ class InteractionHandler {
                 if(dataSet["name"] === feature.layer["id"]) {
                     let timeFiles = dataSet["timeseriesFiles"];
 
-                    for(var j = 0; j < timeFiles.length; j++) {
-                        let timeFile = metaDir + "/" + timeFiles[j];
-                        console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
+                    if(timeFiles != null) {
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(timeFile).then(json => {
+                        // Read each time file
+                        for(var j = 0; j < timeFiles.length; j++) {
+                            let timeFile = metaDir + "/" + timeFiles[j];
+                            console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
 
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    return json[i];
+                            // Load file asynchronously
+                            var promise = $.getJSON(timeFile).then(json => {
+
+                                // Once read, only return the node with the matching feature id
+                                for(var i = 0; i < json.length; i++) {
+                                    if(json[i]["id"] == feature.id) {
+                                        return json[i];
+                                    }
                                 }
-                            }
-                        });
-                    
+                            });
+                        
 
-                        // Pool promise
-                        allPromises.push(promise);
+                            // Pool promise
+                            allPromises.push(promise);
+                        }
                     }
                 }
             });

@@ -1,12 +1,12 @@
 /**
- * This class uses the metadata discovered by the DigitalTwinDataRegistry
+ * This class uses the metadata discovered by the DataRegistry
  * to read the location GeoJSON files and add them to the MapBox
  * map object as a new data source.
  */
 class SourceHandler {
 
     /**
-     * DigitalTwinDataRegistry instance.
+     * DataRegistry instance.
      */
     _dataRegistry;
 
@@ -16,9 +16,9 @@ class SourceHandler {
     _map;
 
     /**
-     * Initialise a new DigitalTwinDataHandler.
+     * Initialise a new SourceHandler.
      * 
-     * @param {*} dataRegistry DigitalTwinDataRegistry
+     * @param {*} dataRegistry DataRegistry
      * @param {*} map MapBox map 
      */
     constructor(dataRegistry, map) {
@@ -104,3 +104,4 @@ class SourceHandler {
     }
 
 }
+// End of class.

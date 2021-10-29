@@ -1,6 +1,9 @@
 /**
  * This class handles finding, reading, and storing the metadata that outlines
- * the standard format for Digital Twin visualisations.
+ * the standard format for Digital Twin visualisation data.
+ * 
+ * Note that this is the metadata that describes the data itself, not the 
+ * metadata that lists additional properties for each feature/location.
  */
 class DataRegistry {
 
@@ -76,13 +79,78 @@ class DataRegistry {
     }
 
     /**
+     * Automatically identify and load data if that meets the standard
+     * format outlined for Digital Twin visualisations.
      * 
-     * @param {*} currentGroup 
-     * @param {*} i 
-     * @param {*} groups 
-     * @returns 
+     * Note that this method is asynchronous, so a callback should be 
+     * passed if action needs to be taken after the data is loaded.
+     * 
+     * @param {string} rootDir location of root directory containing data
+     * @param {function} callback function to call once data is loaded.
      */
-    #recurseAdditional(currentGroup, i, groups, result) {
+    loadMetaData(rootDir, callback) {
+        rootDir = (rootDir.endsWith("/")) ? rootDir : rootDir + "/";
+        let overallMeta = rootDir + "/overall-meta.json";
+
+        // Reset data objects
+        this._overallMeta = null;
+        this._fixedMeta = null;
+        this._additionalMeta = [];
+
+        // Load the overall meta
+        var registry = this;
+        var promise = $.getJSON(overallMeta, function(json) {
+            json["rootDirectory"] =  rootDir;
+            registry._overallMeta = json;
+        }).promise();
+
+        // After that's loaded, read the fixed and additional meta
+        promise.then(
+            function() {
+                var promises = [];
+
+                // Read the fixed meta
+                var fixedPromise = registry.#loadFixedMeta(registry, rootDir);
+                promises.push(fixedPromise);
+                
+                if(registry._overallMeta["additionalDirectory"]) {
+                    var selectionsContainer = document.getElementById("selectionsContainer");
+                    if(selectionsContainer != null) selectionsContainer.style.display = "block";
+
+                    // If additional directories are present, recursively read that meta
+                    var additionalDir = rootDir + registry._overallMeta["additionalDirectory"];
+                    var additionalPromise = registry.#loadAdditionalMeta(registry, additionalDir, registry._additionalMeta);
+                    promises.push(additionalPromise);
+                } else {
+                    // No additional data sets, hide the selection controls
+                    var selectionsContainer = document.getElementById("selectionsContainer");
+                    if(selectionsContainer != null) selectionsContainer.style.display = "none";
+                }
+
+                // Once both of those are finished, fire the callback
+                Promise.all([promises]).then(() => {
+                    console.log("INFO: Metadata for the Fixed and Additional Data sets has been loaded.");
+                    if(callback != null) callback();
+                });              
+            },
+
+            function(error) {
+                // Hard fail
+                console.log("ERROR: Could not load metadata!");
+            }
+        );
+    }
+
+    /**
+     * Recurses the Additional Data groups and finds the group represented
+     * by the input group name strings.
+     * 
+     * @param {JSONObject} currentGroup current entry for searching
+     * @param {int} i current depth in groups array
+     * @param {string[]} groups names of group
+     * @param {JSONObject[]} result container for result
+     */
+      #recurseAdditional(currentGroup, i, groups, result) {
         if(result.length > 0) return;
 
         if(currentGroup["directory"] === groups[i]) {
@@ -106,56 +174,12 @@ class DataRegistry {
     }
 
     /**
-     * Automatically idenfiy and load data if that meets the standard
-     * format outlined for Digital Twin visualisations.
-     * 
-     * Note that this method is asynchronous, so a callback should be 
-     * passed if action needs to be taken after the data is loaded.
-     * 
-     * @param {string} overallMeta location of "overall-meta.json". 
-     * @param {function} callback function to call once data is loaded.
-     */
-    loadMetaData(overallMeta, callback) {
-        let rootDir = overallMeta.substring(0, overallMeta.lastIndexOf("/") + 1);
-
-        var registry = this;
-        var promise = $.getJSON(overallMeta, function(json) {
-            json["rootDirectory"] = rootDir;
-            registry._overallMeta = json;
-        }).promise();
-
-        promise.then(
-            function() {
-                var promises = [];
-                var fixedPromise = registry.#loadFixedMeta(registry, rootDir);
-                promises.push(fixedPromise);
-                
-                if(registry._overallMeta["additionalDirectory"]) {
-                    var additionalDir = rootDir + registry._overallMeta["additionalDirectory"];
-                    var additionalPromise = registry.#loadAdditionalMeta(registry, additionalDir, registry._additionalMeta);
-                    promises.push(additionalPromise);
-                } else {
-                    // No additional data sets, hide the selection controls
-                    document.getElementById("selectionsContainer").style.display = "none";
-                }
-            
-                Promise.all([promises]).then(() => {
-                    console.log("INFO: Metadata for the Fixed Data sets has been loaded.");
-                    console.log("INFO: Metadata for the Additional Data sets has been loaded.");
-                    if(callback != null) callback();
-                });              
-            },
-            function(error) {
-                console.log("ERROR: Could not load metadata!");
-            }
-        );
-    }
-
-    /**
      * Loads the metadata that describes the fixed data set.
      * 
-     * @param {DigitalTwinDataLoader} self 
+     * @param {DigitalTwinDataLoader} self self
      * @param {string} rootDir root directory of data structures.
+     * 
+     * @returns promise
      */
     #loadFixedMeta(self, rootDir) {
         let fixedDirectory = self._overallMeta["fixedDirectory"];
@@ -168,11 +192,14 @@ class DataRegistry {
 
 
     /**
+     * Recursively finds and loads the meta describing the additional
+     * data sets.
      * 
-     * @param {*} self 
-     * @param {*} parentDir 
-     * @param {*} parentEntry 
-     * @returns 
+     * @param {DigitalTwinDataLoader} self self
+     * @param {string} parentDir parent directory
+     * @param {JSONObject} parentEntry parent meta entry
+     * 
+     * @returns promise
      */
     #loadAdditionalMeta(self, parentDir, parentEntry) {
         let metaFile = parentDir + "/meta.json";
@@ -206,5 +233,5 @@ class DataRegistry {
         );
     }
 
-
 }
+// End of class.

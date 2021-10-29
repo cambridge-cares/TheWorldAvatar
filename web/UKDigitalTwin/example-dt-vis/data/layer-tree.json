@@ -5,6 +5,11 @@
         "layerIDs": ["boundary"]
     },
     {
+        "layerName": "Buildings",
+        "defaultState": "visible",
+        "layerIDs": ["buildings-1"]
+    },
+    {
         "groupName": "Assets",
         "layers": [               
             {

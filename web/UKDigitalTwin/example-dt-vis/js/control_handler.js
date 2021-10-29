@@ -93,13 +93,20 @@ class ControlHandler {
 			document.getElementById("controlsContainer").innerHTML = that.#controlHTML;
 			that.rebuildTree();
 
-			// Build the initial dropdown selections
-			let selectString = that.buildDropdown(that._dataRegistry.additionalMeta[0]);
-			document.getElementById("selectionsContainer").innerHTML += `
-				<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`
-			    + selectString
-			;
+			if(that._dataRegistry.additionalMeta != null && that._dataRegistry.additionalMeta.length > 0) {
+				var selectionsContainer = document.getElementById("selectionsContainer");
+				if(selectionsContainer != null) selectionsContainer.style.display = "block";
 
+				// Build the initial dropdown selections
+				let selectString = that.buildDropdown(that._dataRegistry.additionalMeta[0]);
+				document.getElementById("selectionsContainer").innerHTML += `
+					<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`
+					+ selectString
+				;
+			} else {
+				var selectionsContainer = document.getElementById("selectionsContainer");
+				if(selectionsContainer != null) selectionsContainer.style.display = "none";
+			}
 		};
 
 		// Read the tree file then run the callback
@@ -311,8 +318,6 @@ class ControlHandler {
 
 		for(var i = 0; i < inputs.length; i++) {
 			var layerName = inputs[i].id;
-			console.log("State for " + layerName + " is " + inputs[i].checked);
-
 			var layerEntry = [];
 			for(var k = 0; k < this._treeSpecification.length; k++) {
 				this.#findLayer(layerName, this._treeSpecification[k], layerEntry);
@@ -511,7 +516,6 @@ class ControlHandler {
 				newState = treeEntry["defaultState"] === "visible";
 			} 
 
-			console.log(newState);
 			this.#updateLayerSelection(parentEntry, treeEntry, treeEntry["layerName"], newState);
 			let inputBox = document.querySelector("input[id='" + treeEntry["layerName"] + "']");
 			inputBox.checked = newState;

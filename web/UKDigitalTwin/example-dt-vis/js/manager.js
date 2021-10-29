@@ -24,6 +24,7 @@ class DigitalTwinManager {
 	// Handles MapBox interactions
 	_interactionHandler;
 
+	// Handles timeseries display
 	_timeseriesHandler;
 
 	/**
@@ -32,7 +33,6 @@ class DigitalTwinManager {
 	constructor() {
 		// Create a new window namespace to let us set global variables
 		window.DT = {};
-		DT.terrain = "light";
 		DT.currentAdditionals = [];
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
@@ -44,12 +44,12 @@ class DigitalTwinManager {
 	 * Scans for and reads the metadata that details the actual data within
 	 * the expected visualisation data structure.
 	 * 
-	 * @param {string} overallMeta location of overall-meta.json file.
+	 * @param {string} rootDir root directory containing all data
 	 * @param {function} callback optional function to run once all metadata has been read.
 	 */
-	readMetadata(overallMeta, callback = null) {
+	readMetadata(rootDir, callback = null) {
 		this._dataRegistry = new DataRegistry();
-		this._dataRegistry.loadMetaData(overallMeta, callback);
+		this._dataRegistry.loadMetaData(rootDir, callback);
 	}
 
 	/**
@@ -59,9 +59,9 @@ class DigitalTwinManager {
 	plotFixedData() {
 		this._sourceHandler.addFixedSources();
 
-		let newLayerNames = this._layerHandler.addFixedLayers();
-		newLayerNames.forEach(newLayerName => {
-			this._interactionHandler.registerInteractions(newLayerName);
+		let newLayers = this._layerHandler.addFixedLayers();
+		newLayers.forEach(layer => {
+			this._interactionHandler.registerInteractions(layer);
 		})
 	}
 
@@ -78,7 +78,10 @@ class DigitalTwinManager {
         }
 
 		this._sourceHandler.addAdditionalSources(groups);
-		this._layerHandler.addAdditionalLayers(groups);
+		let newLayers = this._layerHandler.addAdditionalLayers(groups);
+		newLayers.forEach(layer => {
+			this._interactionHandler.registerInteractions(layer);
+		})
 		
 		this._controlHandler.rebuildTree();
 
@@ -120,6 +123,9 @@ class DigitalTwinManager {
         }
 	}
 
+	/**
+	 * Will replot any previously plotted Additional Data sets.
+	 */
 	restoreAllAdditionalData() {
 		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
             this.plotAdditionalData(DT.currentAdditionals[i]);
@@ -130,21 +136,23 @@ class DigitalTwinManager {
 	 * Create a new MapBox map instance.
 	 * 
 	 * @param {String} containerName id of div to add map to.
-	 * @param {String} apiKey MapBox API key.
-	 * @param {Number[]} defaultCenter default center position.
-	 * @param {Number} defaultZoom default zoom value.
 	 * 
 	 * @returns {MapBox map}
 	 */
-	createMap(containerName, apiKey, defaultCenter = [-2, 54.5], defaultZoom = 5) {
+	createMap(containerName) {
+		if(this._dataRegistry == null) {
+			console.log("ERROR: Cannot create map until metadata has been initialised!");
+			return;
+		}
+
 		// Specify default options
 		let defaultOptions = {
 			container: containerName,
 			style: "mapbox://styles/mapbox/light-v10?optimize=true",
 			center: this._dataRegistry.overallMeta["defaultCenter"],
 			zoom: this._dataRegistry.overallMeta["defaultZoom"],
-			pitch: 0.0,
-			bearing: 0.0
+			pitch: this._dataRegistry.overallMeta["defaultPitch"],
+			bearing: this._dataRegistry.overallMeta["defaultBearing"]
 		};
 
 		// Create the map instance
@@ -157,6 +165,7 @@ class DigitalTwinManager {
 		this._layerHandler = new LayerHandler(this._dataRegistry, this._map);
 		this._panelHandler = new PanelHandler(this._map);
 		this._timeseriesHandler = new TimeseriesHandler();
+
 		this._interactionHandler = new InteractionHandler(
 			this._map, 
 			this._dataRegistry, 
@@ -167,6 +176,14 @@ class DigitalTwinManager {
 		return this._map;
 	}
 
+	/**
+	 * Sets the content of the right hand side panel.
+	 * 
+	 * @param {string} title 
+	 * @param {string} content 
+	 * @param {string} legend 
+	 * @param {string} footer 
+	 */
 	setPanelContent(title, content, legend, footer) {
 		this._panelHandler.setTitle(title);
 		this._panelHandler.setContent(content);
@@ -241,16 +258,6 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Opens the selected legend element
-	 * 
-	 * @param {MouseEvent} event mouse event
-	 * @param {String} legendID id of selected legend
-	 */
-	openLegend(event, legendID) {
-		//DT.sidePanelHandler.openLegend(event, legendID);
-	}
-
-	/**
 	 * Toggle the expansion state of the side panel.
 	 */
 	togglePanelExpansion() {
@@ -264,11 +271,15 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	/**
+	 * Returns to the default state of the side panel
+	 */
 	goToDefaultPanel() {
 		this._panelHandler.returnToDefault();
 	}
 
 	/**
+	 * Pass through
 	 * 
 	 * @param {*} selectID 
 	 * @param {*} selectValue 
@@ -277,12 +288,21 @@ class DigitalTwinManager {
 		this._controlHandler.onGroupSelectChange(selectID, selectValue);
 	}
 
-
+	/**
+	 * Pass through
+	 * 
+	 * @param {*} event 
+	 * @param {*} tabName 
+	 */
 	openTreeTab(event, tabName) {
 		this._interactionHandler.openTreeTab(event, tabName);
 	};
 
-
+	/**
+	 * Pass through
+	 * 
+	 * @param {*} setName 
+	 */
 	updateTimeseries(setName) {
 		this._timeseriesHandler.update(setName);
 	}

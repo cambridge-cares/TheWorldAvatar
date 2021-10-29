@@ -5,16 +5,19 @@
             "locationFile": "assets-1.geojson",
             "locationType": "point",
             "metaFiles": ["assets-1-meta.json"],
-            "timeseriesFiles": ["assets-1-timeseries.json"],
-            "description": "These are assets from asset owner #1."
+            "timeseriesFiles": ["assets-1-timeseries.json"]
         },
         {
             "name": "assets-2",
             "locationFile": "assets-2.geojson",
             "locationType": "point",
             "metaFiles": ["assets-2-meta.json"],
-            "timeseriesFiles": ["assets-2-timeseries.json"],
-            "description": "These are assets from asset owner #2."
+            "timeseriesFiles": ["assets-2-timeseries.json"]
+        },
+        {
+            "name": "buildings-1",
+            "locationFile": "buildings-1.geojson",
+            "locationType": "extrusion"
         }
     ]
 }

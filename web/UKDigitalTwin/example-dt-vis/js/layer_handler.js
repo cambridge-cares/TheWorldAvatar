@@ -1,30 +1,11 @@
 /**
- * TODO
+ * This class uses the metadata discovered by the DataRegistry
+ * to create MapBox layers for each data source.
  */
 class LayerHandler {
 
     /**
-     * Colors for point locations.
-     */
-    #POINT_COLORS = ["#EF1919", "#1966EF", "#51EF19", "#EF19E8", "#EF8719", "#19EFBD", "#E6EF19"];
-
-    /**
-     * Outline colors for point locations.
-     */
-    #POINT_OUTLINES = ["#FFFFFF", "#000000"];
-
-    /**
-     * Colors for region fills.
-     */
-    #FILL_COLORS = ["#EF1919", "#1966EF", "#51EF19", "#EF19E8", "#EF8719", "#19EFBD", "#E6EF19"];
-
-    /**
-     * Outline colors for regions.
-     */
-    #FILL_OUTLINES = ["#B11616", "#114196", "#349512", "#920F8E", "#9F5C14", "#0D8D6F", "#949A13"];
-
-    /**
-     * DigitalTwinDataRegistry instance.
+     * DataRegistry instance.
      */
     _dataRegistry;
 
@@ -35,9 +16,9 @@ class LayerHandler {
 
 
     /**
-      * Initialise a new DigitalTwinDataHandler.
+      * Initialise a new LayerHandler.
       * 
-      * @param {*} dataRegistry DigitalTwinDataRegistry
+      * @param {*} dataRegistry DataRegistry
       * @param {*} map MapBox map 
       */
     constructor(dataRegistry, map) {
@@ -53,20 +34,12 @@ class LayerHandler {
         let fixedMeta = this._dataRegistry.fixedMeta;
         let fixedDataSets = fixedMeta["dataSets"];
 
-        let layerNames = [];
-
-        fixedDataSets.forEach(fixedDataSet => {
-            if(fixedDataSet["locationType"] === "point") {
-                let layerName = this.#addPointLayer(fixedDataSet, false);
-                layerNames.push(layerName);
-
-            } else if(fixedDataSet["locationType"] === "polygon") {
-                let layerName = this.#addPolygonLayer(fixedDataSet);
-                layerNames.push(layerName);
-            }
+        let layers = [];
+        fixedDataSets.forEach(dataSet => {
+            layers.push(this.#addLayer(dataSet));
         });
 
-        return layerNames;
+        return layers;
     }
 
     /**
@@ -77,31 +50,73 @@ class LayerHandler {
      */
     addAdditionalLayers(groups) {
         let result = this._dataRegistry.getAdditionalGroup(groups);
-        let layerNames = [];
+        let layers = [];
 
         if(result != null) {
-
             let dataSets = result["dataSets"];
 
             for(var i = 0; i < dataSets.length; i++) {
                 let dataSet = dataSets[i];
                 if(!dataSet["locationType"]) continue;
-
-                if(dataSet["locationType"] === "polygon") {
-                    let layerName = this.#addPolygonLayer(dataSet);
-                    layerNames.push(layerName);
-
-                } else {
-                    let layerName = this.#addPointLayer(dataSet, false);
-                    layerNames.push(layerName);
-                }
+                layers.push(this.#addLayer(dataSet));
             }
         }
 
-        return layerNames;
+        return layers;
     }
 
     /**
+     * Given a single dataset, determine the correct type of layer to create,
+     * create it, then return the MapBox id of that new layer.
+     * 
+     * @param {JSONObject} dataSet data set specification 
+     * @returns layer name
+     */
+    #addLayer(dataSet) {
+        let layerName = null;
+        switch(dataSet["locationType"]) {
+            case "point":
+                layerName = this.#addPointLayer(dataSet);
+                break;
+
+            case "fill":
+            case "polygon":
+                layerName = this.#addFillLayer(dataSet);
+                break;
+
+            case "extrusion":
+                layerName = this.#addExtrusionLayer(dataSet);
+                break;
+        }
+        return [layerName, dataSet["locationType"]];
+    }
+
+    /**
+     * Removes the MapBox layers corresponding to the Additional Data sets
+     * represented by the input groups.
+     * 
+     * @param {string[]} groups
+     */
+     removeAdditionalLayers(groups) {
+        let result = this._dataRegistry.getAdditionalGroup(groups);
+        if(result != null) {
+            let dataSets = result["dataSets"];
+
+            for(var i = 0; i < dataSets.length; i++) {
+                let dataSet = dataSets[i];
+                if(!dataSet["locationFile"]) continue;
+
+                let name = dataSet["name"];
+                if(this._map.getLayer(name) != null) {
+                    this._map.removeLayer(name);
+                    console.log("INFO: Layer '" + name + "' has been removed.");
+                }
+            }
+        }
+    }
+
+    /**
+     * Adds a layer to show point location data.
      * 
      * @param {JSONObject} dataSet 
      */
@@ -136,26 +151,17 @@ class LayerHandler {
         return layerName;
     }
 
-    #getRandomColor() {
-        let hue = Math.floor(Math.random() * 12) * 30;
-        let sat = 50 + Math.floor(Math.random() * 51);
-        return "hsl(" + hue + ", " + sat + ", 50%)";
-    }
-
-    #getOutlineColor(fillColor) {
-        return fillColor.replace("50%)", "25%)");
-    }
 
     /**
+     * Adds a layer to create fills for polygon location data.
      * 
      * @param {JSONObject} dataSet 
      */
-    #addPolygonLayer(dataSet) {
+    #addFillLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
         let backupFillColor = this.#getRandomColor();
-        let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
         this._map.addLayer({
 			id: layerName,
@@ -169,49 +175,76 @@ class LayerHandler {
 			},
 			paint: {
                 'fill-color': ["case", ["has", "fill-color"], ["get", "fill-color"], backupFillColor],
-				'fill-opacity': ["case", ["has", "fill-opacity"], ["get", "fill-opacity"], 0.33],
-                'fill-outline-color': ["case", ["has", "fill-outline-color"], ["get", "fill-outline-color"], backupStrokeColor],
+                'fill-opacity': [
+                    "case", 
+                    ['boolean', ['feature-state', 'hover'], false],
+                    0.50, 
+                    0.33
+                ]
 			}
 		});
         
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
+
+    /**
+     * Adds a layer to create fill extrusions for polygon location data.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+    #addExtrusionLayer(dataSet) {
+        let layerName = dataSet["name"];
+        let sourceName = dataSet["name"];
+
+        this._map.addLayer({
+			id: layerName,
+			source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+			type: 'fill-extrusion',
+			layout: {
+				'visibility': 'visible'
+			},
+			paint: {
+                'fill-extrusion-base': ["case", ["has", "fill-extrusion-base"], ["get", "fill-extrusion-base"], 0],
+                'fill-extrusion-height': ["case", ["has", "fill-extrusion-height"], ["get", "fill-extrusion-height"], 25],
+                'fill-extrusion-opacity': 0.33,
+
+                'fill-extrusion-color': [
+                    "case", 
+                    ['boolean', ['feature-state', 'hover'], false],
+                    "hsl(200, 75%, 90%)",
+                    ["case", ["has", "fill-extrusion-color"], ["get", "fill-extrusion-color"], "hsl(190, 25%, 25%)"]
+                ]
+			}
+		});
+
+        console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        return layerName;
+    }
     
     /**
-     * Removes the MapBox layers corresponding to the Additional Data sets
-     * represented by the input groups.
+     * Returns a random color.
      * 
-     * @param {string[]} groups
+     * @returns
      */
-    removeAdditionalLayers(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
-        if(result != null) {
-            let dataSets = result["dataSets"];
-
-            for(var i = 0; i < dataSets.length; i++) {
-                let dataSet = dataSets[i];
-                if(!dataSet["locationFile"]) continue;
-
-                let name = dataSet["name"];
-                if(this._map.getLayer(name) != null) {
-                    this._map.removeLayer(name);
-                    console.log("INFO: Layer '" + name + "' has been removed.");
-                }
-            }
-        }
+    #getRandomColor() {
+        let hue = Math.floor(Math.random() * 12) * 30;
+        let sat = 50 + Math.floor(Math.random() * 51);
+        return "hsl(" + hue + ", " + sat + ", 50%)";
     }
 
     /**
-     * Finds layers that match the input type and were provided by CMCL (i.e. not included
-     * with the MapBox style).
+     * Given a color, returns a darker version of it to use as outlines.
      * 
-     * @param {*} layer 
-     * @param {*} targetType 
+     * @param {string} fillColor 
      * @returns 
      */
-      #findLayers(layer, targetType) {
-        return layer.type === targetType && (layer.metadata != null && layer.metadata.provider === "cmcl");
+    #getOutlineColor(fillColor) {
+        return fillColor.replace("50%)", "35%)");
     }
 
 }
+// End of class.
