@@ -72,7 +72,7 @@ for c in ${CONFIG_DIR}/*${c}.conf; do
         echo $csv
 
         # https://csvkit.readthedocs.io/en/1.0.6/scripts/csvsql.html
-        csvsql --overwrite --insert --db-schema $CSV_SCHEMA --db "postgresql://${POSTGRES_USER}:$(cat ${POSTGRES_PASSWORD_FILE})@${POSTGRES_HOST}/${CSV_DB}" $csv
+        csvsql --overwrite --insert --db-schema $CSV_SCHEMA --db postgresql://${POSTGRES_USER}:$(cat ${POSTGRES_PASSWORD_FILE})@${POSTGRES_HOST}/${CSV_DB} $csv
       done
     else
       echo Skipping loading of csv files
