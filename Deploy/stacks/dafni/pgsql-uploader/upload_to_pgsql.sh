@@ -49,7 +49,7 @@ for c in ${CONFIG_DIR}/*${c}.conf; do
   if [ $g_CSV_ENABLED -eq 1 ] && [ $CSV_ENABLED -eq 1 ]; then
     echo loading csv files
     
-    create_postgres_database $CSV_DB 
+#    create_postgres_database $CSV_DB 
 
     if [ -z "$CSV_SQL_STATEMENT_TRANSFORM" ]; then
       CSV_SQL_STATEMENT_TRANSFORM=cat
@@ -57,10 +57,10 @@ for c in ${CONFIG_DIR}/*${c}.conf; do
       CSV_SQL_STATEMENT_TRANSFORM=${CONFIG_DIR}/$CSV_SQL_STATEMENT_TRANSFORM
     fi
 
-    for xls in {${DATA_DIR}/${DATASET_DIR}/*.{xls,xlsx,XLS,XLSX}; do
+    for xls in ${DATA_DIR}/${DATASET_DIR}/*.{xls,xlsx,XLS,XLSX}; do
       echo $xls
       # https://csvkit.readthedocs.io/en/1.0.6/scripts/in2csv.html
-      in2csv $xls
+ #     in2csv $xls
     done
 
     #
