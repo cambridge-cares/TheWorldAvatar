@@ -2,6 +2,9 @@
 
 set -e
 
+ensure_unix_line_endings() {
+  sed -i 's/\r$//' ${1}
+}
 create_postgres_database() {
   db=${1}
   type=${2}
@@ -44,6 +47,7 @@ for c in ${CONFIG_DIR}/*${c}.conf; do
   TIF_ENABLED=0
 
   echo $c
+  ensure_unix_line_endings $c
   . $c
 
   if [ "$g_CSV_ENABLED" = "1" ]; then
