@@ -1,19 +1,25 @@
 import unittest
 
 import knowledge.geoNames
-import utils_for_testing
 
-class TestAgent(utils_for_testing.TestCaseOntoMatch):
-    def test_query(self):
-        agent = knowledge.geoNames.Agent()
-        lat, long = agent.query(None, None)#Country feature not implemented yet
+class TestAgent(unittest.TestCase):
+
+    def test_query_ep(self):
+        agent = knowledge.geoNames.Agent("Germany")
+
+        #test base case
+        lat, long = agent.query("altbach")
+        self.assertAlmostEqual(lat, 48.7225)
+        self.assertAlmostEqual(long, 9.379)
+
+        #test empty
+        lat, long = agent.query("")
         self.assertIsNone(lat)
         self.assertIsNone(long)
 
-        lat, long = agent.query("altbach", None)#Country feature not implemented yet
-        self.assertAlmostEqual(lat, 48.76716)
-        self.assertAlmostEqual(long, 12.04562)
-
-
+        #test alternative name
+        lat, long = agent.query("Gera-Zwötzen")
+        self.assertAlmostEqual(lat, 50.84858)
+        self.assertAlmostEqual(long, 12.08635)
 if __name__ == '__main__':
     unittest.main()

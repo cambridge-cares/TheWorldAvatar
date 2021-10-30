@@ -6,6 +6,7 @@ import rdflib
 
 class GeoAttrFinder():
     def __init__(self, featureSelect, initialDict = None):
+        self.dictFile = initialDict
         self.geoNameDict = {}
         if featureSelect == '3F':
             self.featureSelect = self.featureSelect3F
@@ -16,6 +17,10 @@ class GeoAttrFinder():
             with open(initialDict) as f:
                 self.geoNameDict = json.load(f)
 
+    def save(self):
+        if self.dictFile is not None:
+            with open(self.dictFile, 'w') as f:
+                json.dump(self.geoNameDict, f)
 
     def findExtraGeoAttrSingleOnto(self, onto, leveled=False):
         #add new list to existing list, how?
@@ -36,12 +41,12 @@ class GeoAttrFinder():
         return map
 
     '''
-    Get all coordinates for geoNames contained in the instanceName if it is a geo name
+    Get all coordinates for geoName tokens contained in the instanceName if it is a geo name
     input instancename, string
     output
     '''
     def getCoordiIfGeoname(self, instanceName,country):
-        if instanceName is None:
+        if instanceName is None or country is None:
             return []
         tokens = ronin.split(instanceName)  #tokenize
         geoVs = []
@@ -53,28 +58,36 @@ class GeoAttrFinder():
                 #geoVs.extend(self.geoNameDict[token])
                 coordi = self.featureSelect(self.geoNameDict[token])
                 if len(coordi) >= 2:
-                    geoVs.extend((float(coordi[0]), float(coordi[1])))
+                    geoVs.extend(coordi)
                 else:
                     logging.warning('empty coordinates for token=%s, instanceName=%s', token, instanceName)
 
-            '''
+
             else:
                 newVs = self.requestGeonameSingleToken(token, country)
-                if newVs is not None:
-                    geoVs.extend(newVs)
+                if newVs is not None and len(newVs) > 0:#found new geonames
                     self.geoNameDict[token] = newVs #add to pre-save
-            '''
+                    geoVs.extend(self.featureSelect(newVs))
         return geoVs
 
+
+    #TODO: select multiple features (add noise by increase chance of matching?)
+    '''
+    Feature select by three tiers of trustworthiness: ADM>PPL>others
+    input: [(x, y, featurecode),]
+    output: (float, float)
+    '''
     def featureSelect3F(self, listOfFeature):
         for feature in listOfFeature:
             x,y,fcode = feature
+            x = float(x)
+            y = float(y)
             if "ADM" in fcode:
                 return (x,y)
             elif "PPL" in fcode:
                 return (x,y)
         if len(listOfFeature)>0:
-            return (listOfFeature[0][0],listOfFeature[0][1])
+            return float(listOfFeature[0][0]), float(listOfFeature[0][1])
         else:
             return ()
 
@@ -131,19 +144,22 @@ class GeoAttrFinder():
     output: coordinates if exist
     '''
     def requestGeonameSingleToken(self, token, country):
-        FEATURE_TAG = "PPL"
         FCODE_TAG = "fcode"
         COUNTRY_TAG = "countryName"
-        res = requests.get("http://api.geonames.org/search?name_equals="+token+"&maxRows=20&username=zmm1994115&type=json")
+        res = requests.get(
+            "http://api.geonames.org/search?name_equals=" + token + "&maxRows=50&username=szhang012&type=json")
         gNames = json.loads(res.text)
+        coordis = []
+        if "totalResultsCount" not in gNames:
+            # print(res.text)
+            logging.warning('request to Geonames failed for token=%s, reason: %s', token, res.text)
+            return None
         if "totalResultsCount" in gNames and gNames["totalResultsCount"] is not 0:
             for geoRecord in gNames["geonames"]:
                 if FCODE_TAG in geoRecord and COUNTRY_TAG in geoRecord and "lat" in geoRecord and "lng" in geoRecord:
-                    if FEATURE_TAG in geoRecord[FCODE_TAG] and geoRecord[COUNTRY_TAG].lower() == country.lower():#same country, ADM kind of geo
-                        return geoRecord["lat"], geoRecord["lng"]
-
-        return None
-
+                    if geoRecord[COUNTRY_TAG].lower() == country.lower():  # same country, ADM kind
+                        coordis.append((geoRecord["lat"], geoRecord["lng"], geoRecord[FCODE_TAG]))
+        return coordis
 
 if __name__ == "__main__":
     from ontologyWrapper import Ontology
