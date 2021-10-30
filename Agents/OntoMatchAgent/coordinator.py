@@ -201,13 +201,13 @@ class Agent():
             params_model_specific = params['matching']['model_specific']
 
             if matching_name == 'matchManager.matchManager':
-                self.__start_match_manager(params_model_specific, params_blocking, srconto, tgtonto)
+                return self.__start_match_manager(params_model_specific, params_blocking, srconto, tgtonto)
             elif matching_name == 'instancematching.InstanceMatcherWithAutoCalibration':
                 params_mapping = params['mapping']
-                self.__start_matching_with_auto_calibration(srconto, tgtonto, params_blocking, params_mapping)
+                return self.__start_matching_with_auto_calibration(srconto, tgtonto, params_blocking, params_mapping)
             elif matching_name == 'instancematching.InstanceMatcherWithScoringWeights':
                 params_mapping = params['mapping']
-                self.__start_matching_with_scoring_weights(srconto, tgtonto, params_blocking, params_mapping)
+                return self.__start_matching_with_scoring_weights(srconto, tgtonto, params_blocking, params_mapping)
             else:
                 raise RuntimeError('unknown matcher', matching_name)
 
@@ -220,11 +220,11 @@ class Agent():
     def __start_matching_with_auto_calibration(self, srconto, tgtonto, params_blocking, params_mapping):
         matcher = instancematching.InstanceMatcherWithAutoCalibration()
         #TODO-AE URGENT 211023 Must be continued ... all matchers has to write back matching results ...
-        matcher.start(srconto, tgtonto, params_blocking, params_mapping)
+        return matcher.start(srconto, tgtonto, params_blocking, params_mapping)
 
     def __start_matching_with_scoring_weights(self, srconto, tgtonto, params_blocking, params_mapping):
         matcher = instancematching.InstanceMatcherWithScoringWeights()
-        matcher.start(srconto, tgtonto, params_blocking, params_mapping, None)
+        return matcher.start(srconto, tgtonto, params_blocking, params_mapping, None)
 
     def __start_match_manager(self, params_model_specific, params_blocking, srconto, tgtonto):
 
@@ -260,3 +260,4 @@ class Agent():
         alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
         #match_manager.showResult(match_manager.A,'individualList')
         match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+        return alignment

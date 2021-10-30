@@ -191,12 +191,14 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
 
 def create_DUKES_plants(source_file, target_file, version, format, coordinates):
 
-    filter_strings = [] #['Pencoose', 'Goonhilly_Downs_2', 'Goonhilly_Downs_1']
+    #filter_strings = [] #['Pencoose', 'Goonhilly_Downs_2', 'Goonhilly_Downs_1']
 
     graph = rdflib.Graph()
     bind_prefixes(graph)
 
     dframe = pd.read_csv(source_file, index_col='dukes_id')
+    dframe['primary_fuel'] = dframe['primary_fuel'].copy().apply(fuel_UK)
+
     #size_dbr = len('http://dbpedia.org/resource/')
 
     if version == 'v2':
@@ -208,17 +210,22 @@ def create_DUKES_plants(source_file, target_file, version, format, coordinates):
         plant_name = row['file_name'][:-7]
         j = plant_name.index('_')
         plant_name = plant_name[j+1:]
-        if filter_strings and plant_name not in filter_strings:
-            continue
+        #if filter_strings and plant_name not in filter_strings:
+        #    continue
 
         if version == 'v2':
             owner = owner_dict[row['owner']]
         else:
             owner = row['owner']
 
-        row = {
+        fuel = v(row, 'primary_fuel')
+        #fuel_type = convert_fuel_to_subclass(fuel)
+
+
+        drow = {
             'plant_id': i,
             'type': row['onto_type'],
+            'primary_fuel': fuel,
             'plantname': plant_name,
             'owner': owner,
             'country': URIRef(row['address']),
@@ -227,12 +234,12 @@ def create_DUKES_plants(source_file, target_file, version, format, coordinates):
         }
 
         if coordinates:
-            row.update({
+            drow.update({
                 'long': row['long'],
                 'lat': row['lat'],
             })
 
-        create_plant_from_dictionary(graph, row, version, 'GBR')
+        create_plant_from_dictionary(graph, drow, version, 'GBR')
 
     graph.serialize(target_file, format=format)
 
@@ -258,7 +265,7 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
     global BASE
     BASE = BASE_GPPD
 
-    filter_strings = [] #['Pencoose', 'Goonhilly Downs Wind Farm', 'Goonhilly Solar']
+    #filter_strings = [] #['Pencoose', 'Goonhilly Downs Wind Farm', 'Goonhilly Solar']
 
     graph = rdflib.Graph()
     bind_prefixes(graph)
@@ -279,8 +286,8 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
         plant_name = v(row, 'name')
         plant_name_norm = normalize_plant_name(plant_name)
 
-        if filter_strings and plant_name not in filter_strings:
-            continue
+        #if filter_strings and plant_name not in filter_strings:
+        #    continue
 
         owner = v(row, 'owner')
         if owner and version == 'v2':
@@ -303,7 +310,8 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
             'country': country,
             'long': v(row, 'longitude'),
             'lat': v(row, 'latitude'),
-            'year_built': v(row, 'commissioning_year'),
+            # there is no commissioning year for GPPDB GBR
+            #'year_built': v(row, 'commissioning_year'),
             'design_cap': v(row, 'capacity_mw')
         }
 
@@ -377,6 +385,28 @@ def create_GPPDB_plants_single_files(source_file, target_dir, version, format, c
         print('Finished', count, name)
         #if count >= 10:
         #    break
+
+dict_fuel_UK = {
+    'Solar': 'Solar',
+    'Wind': 'Wind',
+    'Hydro': 'Hydro',
+    'NaturalGas': 'Gas',
+    'Oil': 'Oil',
+    'CoalBiomass': 'Biomass',
+    'Coal': 'Coal',
+    'Nuclear': 'Nuclear',
+    'PumpHydro': 'Hydro',
+    'SourGas': 'Gas',
+    'Waste': 'Waste',
+    'Waste_municipalsolidwaste': 'Waste',
+    'Waste_anaerobicdigestion': 'Waste'
+}
+
+def fuel_UK(s):
+    value = dict_fuel_UK.get(s)
+    if not value:
+        value = 'Other'
+    return value
 
 dict_fuel_German = {
     'Abfall': 'Waste',
@@ -756,26 +786,26 @@ if __name__ == '__main__':
     #frmt = 'owl'
     #frmt = 'xml'
     #frmt = 'nt' # ntriples
-    #src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes.owl'
-    #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=False)
+    src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
+    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes_geo_211028.ttl'
+    create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=True)
 
     #country_short='GBR'
     #country_short='DEU'
     #src_file = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/globalpowerplantdatabasev120/global_power_plant_database.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_DEU_211022.ttl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_GBR_211028.ttl'
     #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', frmt=frmt, country_short=country_short)
 
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='United Kingdom', country_short='UK')
     #create_GPPDB_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt, country='Germany', country_short='DE')
-    src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
+    #src_file = 'C:/my/tmp/ontomatch/Kraftwerksliste_CSV_2020_04_UTF8_TMP.csv'
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_kwl_files'
-    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_211022.ttl'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_211022.ttl'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.owl'
     #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/kwl.nt'
     #create_KWL_plants_single_files(source_file=src_file, target_dir=tgt_dir, version='v1', format=frmt)
-    create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
+    #create_KWL_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt)
 
     #src_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_v1.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/dbpedia_DEU_converted_ontopowsys.owl'

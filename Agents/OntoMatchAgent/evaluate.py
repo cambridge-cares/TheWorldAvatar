@@ -125,5 +125,5 @@ if __name__ == '__main__':
     #matchfile = 'C:/my/tmp/ontomatch/20210914_scores_dukes_gppd_v3.csv'
     #matchfile = 'C:/my/tmp/ontomatch/scores_dbp_DEU_v2.csv'
     index_set_matches = read_match_file_as_index_set(matchfile, linktypes = [1, 3, 4, 5])
-    logging.info('lenght of alignment file=%s, ground truth matches=%s', len(df_alignment), len(index_set_matches))
+    logging.info('length of alignment file=%s, ground truth matches=%s', len(df_alignment), len(index_set_matches))
     evaluate(df_alignment, index_set_matches)

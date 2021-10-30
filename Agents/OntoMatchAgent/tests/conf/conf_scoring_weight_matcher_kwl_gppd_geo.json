@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/kwl_address_211022.pkl",
-	"tgt": "./data/gppd_DEU_211022.pkl"
+	"src": "./data/kwl_address_geo_211022.pkl",
+	"tgt": "./data/gppd_DEU_geo_211022.pkl"
 },
 "pre_processing":{
 	"add_knowledge": null,
@@ -16,7 +16,7 @@
 		 "min_token_length": 3,
 		 "max_token_occurrences_src": 20,
 		 "max_token_occurrences_tgt": 20,
-		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
 		 "reset_index": false
 	}
 },
@@ -49,6 +49,10 @@
 		"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2
 	},{
 		"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3
+	},{
+		"prop1": "geo:wgs84_pos#long", "prop2": "hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue", "sim": 1
+	},{
+		"prop1": "geo:wgs84_pos#lat", "prop2": "hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue", "sim": 1
 	}]
 }
 }

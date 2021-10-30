@@ -140,9 +140,10 @@ def start(config_dev=None):
 
     starttime = time.time()
     agent = coordinator.Agent()
-    agent.start(config)
+    result = agent.start(config)
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)
+    return result
 
 
 if __name__ == '__main__':

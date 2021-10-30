@@ -16,14 +16,13 @@
 		 "min_token_length": 3,
 		 "max_token_occurrences_src": 20,
 		 "max_token_occurrences_tgt": 20,
-		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
 		 "reset_index": false
 	}
 },
 "matching":{
-	"name": "instancematching.InstanceMatcherWithScoringWeights",
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"weights": [0.8, 0.0, 0.1, 0.0, 0.1]
 	}
 },
 "mapping": {
@@ -38,6 +37,8 @@
 		"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1
 	},{
 		"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1
+	},{
+		"name": "dist_cosine_binary", "cut_off_mode": "fixed", "cut_off_value": 1
 	}],
 	"triples": [{
 		"prop1": "name", "prop2": "name", "sim": 4

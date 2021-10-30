@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/kwl_address_211022.pkl",
-	"tgt": "./data/gppd_DEU_211022.pkl"
+	"src": "./data/dukes_211028.pkl",
+	"tgt": "./data/gppd_GBR_211028.pkl"
 },
 "pre_processing":{
 	"add_knowledge": null,
@@ -23,7 +23,7 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithScoringWeights",
 	"model_specific": {
-		"weights": [0.8, 0.0, 0.1, 0.0, 0.1]
+		"weights": [0.8, 0.0, 0.2, 0.0]
 	}
 },
 "mapping": {
@@ -38,13 +38,13 @@
 		"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1
 	},{
 		"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1
+	},{
+		"name": "dist_cosine_binary", "cut_off_mode": "fixed", "cut_off_value": 1
 	}],
 	"triples": [{
 		"prop1": "name", "prop2": "name", "sim": 4
 	},{
 		"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4
-	},{
-		"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 1
 	},{
 		"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2
 	},{

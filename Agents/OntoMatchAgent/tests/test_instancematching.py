@@ -107,7 +107,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
 
         index_set_matches = self.read_kwl_gppd_DEU_matching_file()
-        logging.info('lenght of total best scores=%s', len(df_total_best_scores))
+        logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = evaluate.evaluate(df_total_best_scores, index_set_matches)
 
         self.assertEqual(len(df_total_best_scores), 1298)
@@ -148,7 +148,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
 
         index_set_matches = self.read_kwl_gppd_DEU_matching_file()
-        logging.info('lenght of total best scores=%s', len(df_total_best_scores))
+        logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
         self.assertEqual(len(df_total_best_scores), 1298)

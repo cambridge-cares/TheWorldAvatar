@@ -21,19 +21,27 @@ class InstanceMatcherWithAutoCalibration():
         # --> configurable, also: fixed property mapping (e.g. geo coordinates)
         # TODO-AE: symmetrical mapping (with max value for entities of dataset 2)
 
-        if params_mapping:
-            mode = params_mapping['mode']
-            logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
-
-            if mode == 'auto':
-                params_sim_fcts = params_mapping['similarity_functions']
-                sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
-                property_mapping = scoring.find_property_mapping(self.score_manager, sim_fcts)
-            else:
-                raise RuntimeError('unknown mode', mode)
-
+        if prop_prop_sim_tuples:
+            mode = 'test'
         else:
-            logging.info('starting InstanceMatcherWithAutoCalibrationAgent with prop_prop_sim_tuples=%s', len(prop_prop_sim_tuples))
+            mode = params_mapping['mode']
+
+        logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
+
+        if mode == 'auto':
+            # TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator
+            params_sim_fcts = params_mapping['similarity_functions']
+            sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+            property_mapping = scoring.find_property_mapping(self.score_manager, sim_fcts)
+
+        elif mode in ['fixed', 'test']:
+
+            if mode == 'fixed':
+                prop_prop_sim_tuples = scoring.create_prop_prop_sim_triples_from_params(params_mapping)
+                logging.info('created prop_prop_sim_tuples from params_mapping')
+
+            logging.info('prop_prop_sim_tuples=%s', prop_prop_sim_tuples)
+
             property_mapping = []
             for pos, t in enumerate(prop_prop_sim_tuples):
                 prop1, prop2, sim_fct = t
@@ -45,10 +53,13 @@ class InstanceMatcherWithAutoCalibration():
                     'score_fct': sim_fct
                 }
                 property_mapping.append(row)
-            logging.info('added prop_prop_sim_tuples, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
+            logging.info('added prop_prop_sim_tuples to score manager, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
 
             self.score_manager.calculate_similarities_between_datasets()
             self.score_manager.calculate_maximum_scores()
+
+        else:
+            raise RuntimeError('unknown mode', mode)
 
         df_scores = self.score_manager.get_scores()
         #TODO-AE asymmetry
