@@ -231,6 +231,7 @@ class InstanceMatcherWithScoringWeights():
 
         self.score_manager.calculate_similarities_between_datasets()
         #scores = self.get_scores()
+        return self.get_scores()
 
     def get_scores(self):
         return self.score_manager.get_scores()

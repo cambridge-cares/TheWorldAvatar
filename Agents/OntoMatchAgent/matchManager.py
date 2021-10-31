@@ -4,9 +4,11 @@ import sys
 import time
 
 import numpy
+import pandas as pd
 
 from alignment import Alignment
 import blocking
+import evaluate
 import matchers
 from matchers.GeoAttrFinder import GeoAttrFinder
 from matchers.Penalizer import Penalizer
@@ -53,9 +55,11 @@ class matchManager(object):
                 if  matcher=="ValueMatcher":
                     self.paras[idx].append((extraS,extraT))
 
+        column_names = [ step for step in self.matchSteps]
         self.matchSteps = [getattr(matchers, step) for step in self.matchSteps]
-        if match_method is 'matchWrite2Matrix':
+        if match_method == 'matchWrite2Matrix':
 
+            df_scores = None
             msize = (len(self.srcOnto.individualList), len(self.tgtOnto.individualList))
             resultMatrix = numpy.zeros(msize)
             for idx, matcherName in enumerate(self.matchSteps):
@@ -68,7 +72,11 @@ class matchManager(object):
                 else:
                     matcher = matcherName((self.srcOnto, self.tgtOnto), pair_iterator)
                 mm = getattr(matcher, match_method)
-                resultMatrix = resultMatrix + mm()*self.weight[idx]
+                # mm_result is a numpy matrix with similarity scores between 0 and 1 calculated by the current matcher
+                mm_result = mm()
+                resultMatrix = resultMatrix + mm_result*self.weight[idx]
+                column = column_names[idx]
+                df_scores = self.add_similarity_scores_to_dataframe(resultMatrix, df_scores, column, self.srcOnto, self.tgtOnto, params_blocking, self.thre)
                 mrunTime = time.time() - mtime
                 logging.info('Finished matcher %s in %s', idx, mrunTime)
 
@@ -88,7 +96,8 @@ class matchManager(object):
             if rematch is True:
                 logging.info('rematch')
                 self.A = MeronymRematcher((self.srcOnto, self.tgtOnto), self.A).rematch()
-            return
+
+            return self.A.map, df_scores
 
 
         for idx, matcherName in enumerate(self.matchSteps):
@@ -126,6 +135,8 @@ class matchManager(object):
             logging.info('rematch')
             self.A = MeronymRematcher((self.srcOnto, self.tgtOnto), self.A).rematch()
         #TODO: save to second list
+
+        return self.A.map, df_scores
 
 
 
@@ -198,6 +209,31 @@ class matchManager(object):
         self.A.render(self.srcOnto, self.tgtOnto, onto1Name,onto2Name, saveAddress, entityName)
 
 
+    def add_similarity_scores_to_dataframe(self, sim_matrix, df_scores, column_name, src_onto, tgt_onto, params_blocking, threshold):
+        '''
+        converts the sparse numpy matrix with row index pos1 and column index pos2 into a pandas dataframe
+        with multi-index (idx_1, idx_2)
+        '''
+        rows = []
+        pair_iterator = blocking.create_iterator(src_onto, tgt_onto, params_blocking)
+        for pos1, pos2 in pair_iterator:
+            score = sim_matrix[pos1, pos2]
+            if score >= threshold:
+                iri1 = src_onto.individualList[pos1]
+                iri2 = tgt_onto.individualList[pos2]
+                idx_1 = evaluate.getID(iri1)
+                idx_2 = evaluate.getID(iri2)
+                if df_scores is None:
+                    rows.append({'idx_1': idx_1, 'idx_2': idx_2, column_name: score})
+                else:
+                    df_scores.at[(idx_1, idx_2), column_name] = score
+
+        if df_scores is None:
+            df_scores = pd.DataFrame(rows)
+            df_scores.set_index(['idx_1', 'idx_2'], inplace=True)
+
+        return df_scores
+
 if __name__ == '__main__':
     #test
     matchSteps = ['StringMatcher', 'BOWMatcher','DomainMatcher']
@@ -218,4 +254,3 @@ if __name__ == '__main__':
     m.runMatch()
 
     #m.searchS('installedCapacity')
-

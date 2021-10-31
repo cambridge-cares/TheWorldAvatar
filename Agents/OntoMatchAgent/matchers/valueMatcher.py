@@ -42,10 +42,10 @@ class ValueMatcher(ElementMatcher):
             cmapS.remove('NamedIndividual')
         if 'NamedIndividual' in cmapT:
             cmapT.remove('NamedIndividual')
-        if cmapS is not None and len(cmapS) is not 0:
+        if cmapS is not None and len(cmapS) != 0:
             subclassS = [('type', rdflib.term.Literal(v, datatype=rdflib.namespace.XSD.string)) for v in cmapS]
             listS.extend(subclassS)
-        if cmapT is not None and len(cmapT) is not 0:
+        if cmapT is not None and len(cmapT) != 0:
             subclassT = [('type', rdflib.term.Literal(v, datatype=rdflib.namespace.XSD.string)) for v in cmapT]
             listT.extend(subclassT)
         if self.extraValueMapS is not None and self.extraValueMapS[id1] is not None:
@@ -76,7 +76,7 @@ class ValueMatcher(ElementMatcher):
                 p1, v1 = item1
                 p2, v2 = item2
                 score = self.criteria(v1, v2,p1)
-                if score is not 0:
+                if score != 0:
                     if matched[idx1] is None:  # No previous match for idx1
                         matched[idx1] = idx2
                         scores[idx1] = score
@@ -194,7 +194,7 @@ class ValueMatcher(ElementMatcher):
     def isNumberType(self,v):
         numberTypes = ['http://www.w3.org/2001/XMLSchema#float', 'http://www.w3.org/2001/XMLSchema#decimal',
                      'http://www.w3.org/2001/XMLSchema#double','http://www.w3.org/2001/XMLSchema#integer']
-        if v.datatype  is 'http://www.w3.org/2001/XMLSchema#integer' or v.datatype is 'http://www.w3.org/2001/XMLSchema#decimal' or  v.datatype is 'http://www.w3.org/2001/XMLSchema#float' or  v.datatype is 'http://www.w3.org/2001/XMLSchema#double':
+        if v.datatype == 'http://www.w3.org/2001/XMLSchema#integer' or v.datatype == 'http://www.w3.org/2001/XMLSchema#decimal' or  v.datatype == 'http://www.w3.org/2001/XMLSchema#float' or  v.datatype == 'http://www.w3.org/2001/XMLSchema#double':
             return True
         elif isinstance(v.value, float) or isinstance(v.value, int):
             return True
@@ -226,9 +226,9 @@ class ValueMatcher(ElementMatcher):
 
     def isDateType(self,v):
 
-        return v.datatype is 'http://www.w3.org/2001/XMLSchema#date' or self.matchDate(v.value) is not None
+        return v.datatype == 'http://www.w3.org/2001/XMLSchema#date' or self.matchDate(v.value) is not None
     def isStringType(self,v):
-        return v.datatype is 'http://www.w3.org/2001/XMLSchema#string' or isinstance(v.value,str)
+        return v.datatype == 'http://www.w3.org/2001/XMLSchema#string' or isinstance(v.value,str)
 
 
 if __name__ =="__main__":

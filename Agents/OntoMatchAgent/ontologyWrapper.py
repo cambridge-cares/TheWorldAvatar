@@ -343,7 +343,7 @@ class Ontology():
             }}"""
 
             re = list(mg.query(qstr.format(s)))
-            if len(re) is not 0 and re[0][0].n3().replace('<','').replace('>','') not in pset:
+            if len(re) != 0 and re[0][0].n3().replace('<','').replace('>','') not in pset:
                 for res in re:
                     if res[0].n3().replace('<','').replace('>','') not in pset:
                         iri =res[0].n3().replace('<','').replace('>','')
@@ -358,7 +358,7 @@ class Ontology():
         def traceUntilNotBNode(mg,pOne ,v):
             re = list(mg.query(qstrBNode.format("","?s0",pOne.n3(),v.n3())))
             #Assume only one level of blank node
-            if len(re) is not 0 and type(re[0][0]) is not rdflib.term.BNode and  re[0][0].n3().replace('<','').replace('>','') not in pset:
+            if len(re) != 0 and type(re[0][0]) is not rdflib.term.BNode and  re[0][0].n3().replace('<','').replace('>','') not in pset:
                 for res in re:
                     if type(res[0]) is not rdflib.term.BNode :
                         iri =res[0].n3().replace('<','').replace('>','')
@@ -378,7 +378,7 @@ class Ontology():
             if level >= 5:
                 print("warning: deep level 5, could be lopping")
                 return
-            if len(re) is not 0 and type(re[0][0]) is not rdflib.term.BNode and re[0][0].n3().replace('<','').replace('>','') not in pset:
+            if len(re) != 0 and type(re[0][0]) is not rdflib.term.BNode and re[0][0].n3().replace('<','').replace('>','') not in pset:
                 for res in re:
                     if type(res[0]) is not rdflib.term.BNode:
                         iri =res[0].n3().replace('<','').replace('>','')

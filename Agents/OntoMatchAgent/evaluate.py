@@ -41,7 +41,7 @@ def read_match_file_as_index_set(filename, linktypes):
     mi_match_pairs = dframe[mask].index
     #remove duplicates
     mi_match_pairs = mi_match_pairs.intersection(mi_match_pairs)
-    logging.info('file=%s, link types=%s, number of matches=%s', filename, linktypes, len(mi_match_pairs))
+    logging.info('loaded evaluation file=%s, link types=%s, number of matches=%s', filename, linktypes, len(mi_match_pairs))
     return mi_match_pairs
 
 def calculate_precision_recall(predicted_matches, matches):

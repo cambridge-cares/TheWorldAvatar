@@ -257,7 +257,20 @@ class Agent():
                 weight=match_weights, paras=additional_match_params,
                 matchIndividuals=True, penalize=penalize, useAttrFinder=False)
 
-        alignment = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
+        alignment, df_scores = match_manager.runMatch("matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
         #match_manager.showResult(match_manager.A,'individualList')
-        match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
-        return alignment
+        #match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
+
+        # convert alignment to dataframe with indices and score function
+        '''
+        rows = []
+        for pos1, pos2, score in alignment:
+            iri1 = srconto.individualList[pos1]
+            iri2 = tgtonto.individualList[pos2]
+            idx_1 = evaluate.getID(iri1)
+            idx_2 = evaluate.getID(iri2)
+            rows.append({'idx_1': idx_1, 'idx_2': idx_2, 'score': score})
+        df_scores = pd.DataFrame(rows)
+        df_scores.set_index(['idx_1', 'idx_2'], inplace=True)
+        '''
+        return df_scores

@@ -16,7 +16,7 @@
 		 "min_token_length": 3,
 		 "max_token_occurrences_src": 20,
 		 "max_token_occurrences_tgt": 20,
-		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
 		 "reset_index": false
 	}
 },

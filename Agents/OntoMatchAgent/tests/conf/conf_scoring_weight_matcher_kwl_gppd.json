@@ -7,7 +7,7 @@
 	"tgt": "./data/gppd_DEU_211022.pkl"
 },
 "pre_processing":{
-	"add_knowledge": null,
+	"add_knowledge": "knowledge.geoNames",
 	"pickle_dump": false
 },
 "blocking":{
@@ -16,7 +16,7 @@
 		 "min_token_length": 3,
 		 "max_token_occurrences_src": 20,
 		 "max_token_occurrences_tgt": 20,
-		 "blocking_properties": ["name", "isOwnedBy/hasName"],
+		 "blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
 		 "reset_index": false
 	}
 },

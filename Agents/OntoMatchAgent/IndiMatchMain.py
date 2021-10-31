@@ -115,7 +115,7 @@ for subc in sublist:
 
 m = matchManager(matchSteps,'./testFiles/4_dukes_all.owl','./testFiles/4_gppdb_all.owl', thre=0.6, weight=w, paras=paras,matchIndividuals =True,penalize ={'class':True,'align':Alignment(clist)},useAttrFinder=False)
 
-a = m.runMatch("matchWrite2Matrix", to1=False, rematch = False)
+a, _ = m.runMatch("matchWrite2Matrix", to1=False, rematch = False)
 
 #m.showResult(m.A,'individualList')
 m.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", 'Test0916Dukes.owl', True)
