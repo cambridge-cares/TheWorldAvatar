@@ -15,5 +15,5 @@ services:
         authors: "support@cmclinnovations"
         description: "Example implementation of the Digital Twin Visualisation Framework."
     ports:
-      - "1180:80"
+      - "65080:80"
  
