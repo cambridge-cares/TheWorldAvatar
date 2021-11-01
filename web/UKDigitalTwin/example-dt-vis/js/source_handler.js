@@ -38,6 +38,8 @@ class SourceHandler {
             let locationFile = fixedDataSet["locationFile"];
             locationFile = this._dataRegistry.getFixedDirectory() + "/" + locationFile;
 
+            console.log("INFO: Loading source file at " + locationFile);
+            
             this._map.addSource(name, {
                 type: "geojson",
                 data: locationFile

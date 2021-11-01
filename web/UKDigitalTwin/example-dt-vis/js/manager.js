@@ -153,6 +153,7 @@ class DigitalTwinManager {
 		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
             this.removeAdditionalData(DT.currentAdditionals[i]);
         }
+		console.log("REMOVED ADDITIONAL?");
 	}
 
 	/**
@@ -162,6 +163,7 @@ class DigitalTwinManager {
 		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
             this.plotAdditionalData(DT.currentAdditionals[i]);
         }
+		console.log("RESTORE ADDITIONAL?");
 	}
 	
 	/**
@@ -177,10 +179,27 @@ class DigitalTwinManager {
 			return;
 		}
 
+		// If there was a previously selected terrain
+		let terrainURL = null;
+		switch(DT.terrain) {
+			default:
+				terrainURL = "mapbox://styles/mapbox/light-v10?optimize=true";
+				break;
+			case "dark":
+				terrainURL = "mapbox://styles/mapbox/dark-v10?optimize=true";
+				break;
+			case "satellite":
+				terrainURL = "mapbox://styles/mapbox/satellite-v9?optimize=true";
+				break;
+			case "satellite-streets":
+				terrainURL = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
+				break;
+		}
+
 		// Specify default options
 		let defaultOptions = {
 			container: containerName,
-			style: "mapbox://styles/mapbox/light-v10?optimize=true",
+			style: terrainURL,
 			center: this._dataRegistry.overallMeta["defaultCenter"],
 			zoom: this._dataRegistry.overallMeta["defaultZoom"],
 			pitch: this._dataRegistry.overallMeta["defaultPitch"],
@@ -251,7 +270,6 @@ class DigitalTwinManager {
 
 		let fullTreeFile = rootDir + treeFile;
 		this._controlHandler.showControls(fullTreeFile, this._rootDirectories, this._currentRootDirName, selectCallback);
-		this._controlHandler.changeTerrain(DT.terrain);
 	}
 
 	/**
