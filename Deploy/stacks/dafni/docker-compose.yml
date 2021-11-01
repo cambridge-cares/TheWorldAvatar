@@ -217,6 +217,8 @@ services:
     secrets:
       - rdf4j_admin_password
       - rdf4j_user_password
+    security_opt:
+      - label=disable
     volumes:
       - rdf4j_data:/var/rdf4j
       - ./rdf4j/logs:/usr/local/tomcat/logs
