@@ -24,8 +24,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * This class provides integration tests for the TimeSeriesRDBClient class
  */
 
-@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
+//@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 public class TimeSeriesRDBClientIntegrationTest {
 	
 	// Define RDB database setup (analogous to a triple-store endpoint)
