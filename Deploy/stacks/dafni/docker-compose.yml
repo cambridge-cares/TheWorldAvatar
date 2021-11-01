@@ -193,10 +193,16 @@ services:
   rdf4j_config_file_copier:
     image: busybox
     container_name: "rdf4j_config_file_copier${CONTAINER_NAME_SUFFIX}"
-    entrypoint: ["cp", "-rf", "/in/server", "/out/"]
+    entrypoint: ["/entrypoint.sh"]
+    environment:
+      BLAZEGRAPH_HOST: ${BLAZEGRAPH_HOST}
+      BLAZEGRAPH_PORT: ${BLAZEGRAPH_PORT}
+      ONTOP_HOST: ${ONTOP_HOST}
+      ONTOP_PORT: ${ONTOP_PORT}
     pull_policy: if_not_present
     restart: "no"
     volumes:
+      - ./rdf4j_config_file_copier/entrypoint.sh:/entrypoint.sh
       - ./rdf4j/server:/in/server
       - rdf4j_data:/out
 

@@ -7,7 +7,7 @@
   rep:repositoryID "ontop";
   rep:repositoryImpl [
       rep:repositoryType "openrdf:SPARQLRepository";
-      sparql:query-endpoint <http://ontop-pgsql:8080/sparql>;
+      sparql:query-endpoint <http://ONTOP_HOST:ONTOP_PORT/sparql>;
       sparql:update-endpoint <http://www.openrdf.org/config/repository>
     ];
   rdfs:label "Ontop" .

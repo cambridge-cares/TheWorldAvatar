@@ -7,7 +7,7 @@
   rep:repositoryID "blazegraph";
   rep:repositoryImpl [
       rep:repositoryType "openrdf:SPARQLRepository";
-      sparql:query-endpoint <http://blazegraph-geo:8080/blazegraph/namespace/kb/sparql>;
-      sparql:update-endpoint <http://blazegraph-geo:8080/blazegraph/namespace/kb/sparql>
+      sparql:query-endpoint <http://BLAZEGRAPH_HOST:BLAZEGRAPH_PORT/blazegraph/namespace/kb/sparql>;
+      sparql:update-endpoint <http://BLAZEGRAPH_HOST:BLAZEGRAPH_PORT/blazegraph/namespace/kb/sparql>
     ];
   rdfs:label "Blazegraph triplestore" .
