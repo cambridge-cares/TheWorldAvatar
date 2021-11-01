@@ -201,6 +201,8 @@ services:
       ONTOP_PORT: ${ONTOP_PORT}
     pull_policy: if_not_present
     restart: "no"
+    security_opt:
+      - label=disable
     volumes:
       - ./rdf4j_config_file_copier/entrypoint.sh:/entrypoint.sh
       - ./rdf4j/server:/in/server
