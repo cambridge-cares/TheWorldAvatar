@@ -23,7 +23,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Kok Foong Lee
  *
  */
-@Ignore
 public class RemoteStoreIntegrationTest {
 	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
