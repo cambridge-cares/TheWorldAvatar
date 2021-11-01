@@ -15,4 +15,15 @@ if [[ -n ${user_id//[0-9]/} ]]; then
   exit 2
 fi
 
-sed -e "s/USER_PORT_BASE/1$user_id/g" < "$script_dir/../.env_template" > "$script_dir/../.env"
+if command -v podman-compose &> /dev/null
+then
+  container_host=localhost
+else
+  container_host=host.docker.internal
+fi
+
+sed \
+    -e "s/USER_PORT_BASE/1$user_id/g" \
+    -e "s/CONTAINER_HOST/$container_host/" \
+    < "$script_dir/../.env_template" \
+    > "$script_dir/../.env"

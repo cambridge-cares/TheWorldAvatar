@@ -36,7 +36,7 @@ EOSQL
 export PGPASSFILE=/tmp/postgres.pgpass
 # Populate .pgpass file
 # hostname:port:database:username:password
-echo ${POSTGRES_HOST}:5432:*:${POSTGRES_USER}:$(cat ${POSTGRES_PASSWORD_FILE}) > $PGPASSFILE
+echo ${POSTGRES_HOST}:${POSTGRES_PORT}:*:${POSTGRES_USER}:$(cat ${POSTGRES_PASSWORD_FILE}) > $PGPASSFILE
 chmod 0600 $PGPASSFILE
 
 # Read in the configuration files

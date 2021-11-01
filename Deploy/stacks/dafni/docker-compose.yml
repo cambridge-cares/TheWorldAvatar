@@ -44,7 +44,8 @@ services:
       g_CSV_ENABLED: 1
       CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
       DATA_DIR: ${SHARED_DATA_DIR}
-      POSTGRES_HOST: postgis
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_PASSWORD_FILE: /tmp/postgres_password
     env_file:
       - postgres/postgres.env
@@ -117,7 +118,8 @@ services:
       ONTOP_CORS_ALLOWED_ORIGINS: '*'
       ONTOP_DEV_MODE: '${ONTOP_DEV_MODE}'
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
-      POSTGRES_HOST: postgis
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
     env_file:
       - ontop/ontop.env
       - postgres/postgres.env
@@ -142,8 +144,8 @@ services:
       CONFIG_DIR: ${SHARED_DATA_DIR}/config_files
       DATA_DIR: ${SHARED_DATA_DIR}
       POSTGRES_PASSWORD_FILE: /tmp/postgres_password
-      POSTGRES_HOST: postgis
-      POSTGRES_PORT: $POSTGRES_PORT
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
     env_file:
       - postgres/postgres.env
     restart: unless-stopped
