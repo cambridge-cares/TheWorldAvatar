@@ -200,6 +200,7 @@ public class TimeSeriesClient<T> {
      */
     public void addTimeSeriesData(TimeSeries<T> ts) {
     	// Add time series data to respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	rdbClient.addTimeSeriesData(ts);
     }
     
@@ -211,6 +212,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
 		// Delete RDB time series table rows between lower and upper Bound
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
     
@@ -338,6 +340,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
     	// Retrieve time series data from respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
     }
 	
@@ -359,6 +362,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getAverage(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getAverage(dataIRI);
 	}
 	
@@ -369,6 +373,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getMaxValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxValue(dataIRI);
 	}
 	
@@ -379,6 +384,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public double getMinValue(String dataIRI) {
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinValue(dataIRI);
 	}
 	
@@ -389,6 +395,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public T getMaxTime(String dataIRI) {
 		// Retrieve latest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxTime(dataIRI);
 	}
 	
@@ -399,6 +406,7 @@ public class TimeSeriesClient<T> {
 	 */
 	public T getMinTime(String dataIRI) {
 		// Retrieve earliest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinTime(dataIRI);
 	}
 	

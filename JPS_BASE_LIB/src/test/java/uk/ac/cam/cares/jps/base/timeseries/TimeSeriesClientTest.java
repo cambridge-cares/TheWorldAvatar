@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
+
 /**
  * This class provides unit tests for the TimeSeriesClient class
  */
@@ -437,69 +438,47 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testAddTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
-        // Set-up stubbing
-    	Mockito.when(mockTimeSeries.getDataIRIs()).thenReturn(dataIRIs);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+          
         try {
             testClientWithMocks.addTimeSeriesData(mockTimeSeries);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+      
         try {
             testClientWithMocks.getTimeSeriesWithinBounds(dataIRIs, null, null);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+       
         try {
             testClientWithMocks.getTimeSeries(dataIRIs);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("TimeSeriesRDBClient: Error while executing SQL command"));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+    	        
         try {
             testClientWithMocks.getAverage(dataIRIs.get(0));
             Assert.fail();
@@ -511,10 +490,7 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+    	// Only tests for the first Exception to occur when called without prior initialised time series
         
         try {
             testClientWithMocks.getMaxValue(dataIRIs.get(0));
@@ -527,10 +503,7 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+    	// Only tests for the first Exception to occur when called without prior initialised time series
         
         try {
             testClientWithMocks.getMinValue(dataIRIs.get(0));
@@ -543,10 +516,7 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+    	// Only tests for the first Exception to occur when called without prior initialised time series
         
         try {
             testClientWithMocks.getMaxTime(dataIRIs.get(0));
@@ -559,10 +529,7 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+    	// Only tests for the first Exception to occur when called without prior initialised time series
         
         try {
             testClientWithMocks.getMinTime(dataIRIs.get(0));
@@ -575,10 +542,7 @@ public class TimeSeriesClientTest {
     
     @Test
     public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException {
-    	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+    	// Only tests for the first Exception to occur when called without prior initialised time series
         
         try {
             testClientWithMocks.deleteTimeSeriesHistory(dataIRIs.get(0), null, null);

@@ -24,8 +24,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  * This class provides integration tests for the TimeSeriesRDBClient class
  */
 
-@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
-		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
+//@Ignore("Requires postgreSQL database set up and running (using testcontainers)\n" + 
+//		"Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
 public class TimeSeriesRDBClientIntegrationTest {
 	
 	// Define RDB database setup (analogous to a triple-store endpoint)
@@ -210,7 +210,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 			Assert.fail();
 		} catch (JPSRuntimeException e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertEquals("TimeSeriesRDBClient: <" + dataIRI_1.get(0) + "> already has a time series instance (i.e. tsIRI)",
+			Assert.assertEquals("TimeSeriesRDBClient: <" + dataIRI_1.get(0) + "> already has an assigned time series instance",
 								e.getMessage());
 		}
 	}
@@ -344,7 +344,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		} catch (JPSRuntimeException e) {
 			String s = ts1.getDataIRIs().get(0);
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertEquals("TimeSeriesRDBClient: <" + s + "> does not have a time series instance (i.e. tsIRI)",
+			Assert.assertEquals("TimeSeriesRDBClient: <" + s + "> does not have an assigned time series instance",
 								e.getMessage());
 		}
 		try {
@@ -391,7 +391,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 	@Test
 	public void testGetTimeseriesExceptions() {
 		try {
-			// Add time series data for non-initialised time series and central table
+			// Get time series data for non-initialised time series and central table
 			client.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (JPSRuntimeException e) {
@@ -400,16 +400,16 @@ public class TimeSeriesRDBClientIntegrationTest {
 								e.getMessage());
 		}
 		try {
-			// Add time series data for non-initialised time series
+			// Get time series data for non-initialised time series
 			client.initTimeSeriesTable(dataIRI_3, dataClass_3, tsIRI_3);	
 			client.getTimeSeries(dataIRI_1);
 			Assert.fail();
 		} catch (JPSRuntimeException e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertTrue(e.getMessage().contains("> does not have a time series instance (i.e. tsIRI)"));
+			Assert.assertTrue(e.getMessage().contains("> does not have an assigned time series instance"));
 		}
 		try {
-			// Add time series data which is not in same table
+			// Get time series data which is not in same table
 			client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1);
 			List<String> dataIRIs = new ArrayList<>();
 			dataIRIs.addAll(dataIRI_1);
@@ -548,7 +548,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 			client.getMinTime(iri);
 		} catch (Exception e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have an assigned time series instance",
 								e.getMessage());
 		}
 	}
@@ -679,7 +679,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 			Assert.fail();
 		} catch (Exception e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have an assigned time series instance",
 								e.getMessage());
 		}
 
@@ -739,7 +739,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 			Assert.fail();
 		} catch (Exception e) {
 			Assert.assertEquals(JPSRuntimeException.class, e.getClass());
-			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have a time series instance",
+			Assert.assertEquals("TimeSeriesRDBClient: <" + iri + "> does not have an assigned time series instance",
 								e.getMessage());
 		}
 		
