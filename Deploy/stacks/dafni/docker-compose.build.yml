@@ -48,6 +48,19 @@ services:
         description: "The ontop image to allow a password to be set via a secret."
         hash: "${HASH}"
 
+  python:
+    image: docker.cmclinnovations.com/python_with_ssh:${PYTHON_VERSION}
+    build:
+      args:
+        PYTHON_SCRIPTS_DIR: ${PYTHON_SCRIPTS_DIR}
+        PYTHON_VERSION: ${PYTHON_VERSION}
+      context: python
+      labels:
+        authors: "oparry@cmclinnovations, support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Python installation with an ssh server installed."
+        hash: "${HASH}"
+
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
     build:

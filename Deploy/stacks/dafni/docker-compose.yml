@@ -176,6 +176,18 @@ services:
       - postgis_data:/var/lib/postgresql/data
       - ./postgres/secrets/postgres_password:/tmp/postgres_password
 
+  python:
+    image: docker.cmclinnovations.com/python_with_ssh:${PYTHON_VERSION}
+    container_name: "python${CONTAINER_NAME_SUFFIX}"
+    network_name: ${NETWORK_NAME}
+    ports:
+      - ${PYTHON_SSH_PORT}:22
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    volumes:
+      - ${PYTHON_SCRIPTS_DIR_HOST}:${PYTHON_SCRIPTS_DIR}
+
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
     container_name: "qgis${CONTAINER_NAME_SUFFIX}"
@@ -212,10 +224,6 @@ services:
   rdf4j:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
-    depends_on:
-      # Need to ensure the config files are already in the volume before running
-      rdf4j_config_file_copier:
-        condition: service_completed_successfully
     environment:
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
