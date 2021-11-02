@@ -17,7 +17,7 @@ fi
 
 if command -v podman-compose &> /dev/null
 then
-  container_host=localhost
+  container_host=$(hostname)
 else
   container_host=host.docker.internal
 fi
