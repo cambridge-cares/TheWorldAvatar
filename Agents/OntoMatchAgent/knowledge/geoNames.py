@@ -2,9 +2,11 @@ from matchers import GeoAttrFinder
 import logging
 import time
 import requests
+from os.path import exists
+import pickle
 class Agent():
 
-    def __init__(self, country="Germany", isOnline = False):
+    def __init__(self, country="Germany", isOnline = False, save = None):
         logging.info('initializing geoNames agent')
         #Import global file
         #addr = "./data/geoName_dict_All_Feature.json"
@@ -14,11 +16,25 @@ class Agent():
         self.lookup = {}
         self.coordiDict = {}
         self.online = isOnline
-        if isOnline:
-            self.buildDict()
-        else:
-            self.buildDictCoordi()
+        self.pklAddr = None
+        #check if save file already exist:
+        if save is not None and type(save) is str:
+            if exists(save):
+                self.loadDictFromSave(save)
+            else:
+                self.pklAddr = save
+                if isOnline:
+                    self.buildDict()
+                else:
+                    self.buildDictCoordi()
         self.featureSelect = "featureSelect3F" #TODO:make it into a parameter later
+
+    def loadDictFromSave(self, loadAddr):
+        with open(loadAddr, 'rb') as f:
+            #TODO: err handling
+            self.lookup, self.coordiDict = pickle.load(f)
+            logging.info("Lookup dictionary loaded from {}".format(loadAddr))
+
 
     #query to get all names
     def buildDict(self):
@@ -46,9 +62,14 @@ class Agent():
             self.lookup[key].append(line['s']['value'])
         endtime = time.time() - starttime
         logging.info("Dictionary for {} built in {} s with {} entries".format(self.country, endtime, len(self.lookup.keys())))
+        if self.pklAddr is not None:
+            self.saveLookup()
+            logging.info("Dictionary saved to {}".format(self.pklAddr))
 
     def buildDictCoordi(self):
         starttime = time.time()
+        logging.info("build Dictionary starts")
+
         #TODO, check country name validity by ASK
         query = '''
         PREFIX gn:<http://www.geonames.org/ontology#>
@@ -86,6 +107,9 @@ class Agent():
 
         endtime = time.time() - starttime
         logging.info("Dictionary for {} built in {} s with {} entries".format(self.country, endtime, len(self.lookup.keys())))
+        if self.pklAddr is not None:
+            self.saveLookup()
+            logging.info("Dictionary saved to {}".format(self.pklAddr))
 
     def query(self, name):
         #exact match
@@ -111,6 +135,10 @@ class Agent():
         else:#Geoname not found
             logging.info("geoname:{} Not found".format(name))
             return None, None
+
+    def saveLookup(self):
+        with open(self.pklAddr, 'wb') as f:
+            pickle.dump((self.lookup, self.coordiDict), f)
 
 
     def requestCoordinate(self, IRIs):
