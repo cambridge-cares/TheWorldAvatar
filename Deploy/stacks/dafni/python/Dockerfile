@@ -4,7 +4,7 @@ ARG PYTHON_SCRIPTS_DIR=/scripts
 FROM python:${PYTHON_VERSION}-slim-bullseye
 
 
-RUN apt update && apt install -y openssh-server xauth
+RUN apt update && apt install -y openssh-server python3-tk xauth
 
 RUN ssh-keygen -A \
     && mkdir /root/.ssh \
