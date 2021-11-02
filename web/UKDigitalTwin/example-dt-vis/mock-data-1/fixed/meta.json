@@ -15,6 +15,21 @@
             "timeseriesFiles": ["assets-2-timeseries.json"]
         },
         {
+            "name": "assets-1-connections",
+            "locationFile": "lines-1.geojson",
+            "locationType": "line"
+        },
+        {
+            "name": "assets-2-connections",
+            "locationFile": "lines-2.geojson",
+            "locationType": "line"
+        },
+        {
+            "name": "inter-asset-connections",
+            "locationFile": "lines-3.geojson",
+            "locationType": "line"
+        },
+        {
             "name": "buildings-1",
             "locationFile": "buildings-1.geojson",
             "locationType": "extrusion"

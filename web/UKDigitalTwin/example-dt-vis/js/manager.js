@@ -119,10 +119,7 @@ class DigitalTwinManager {
 
 		if(DT.currentFeature != null) {
 			// A location was already selected, update the side panel
-			this._interactionHandler.mouseClick(
-				DT.currentFeature.layer["id"],
-				DT.currentFeature
-			);
+			this._interactionHandler.mouseClick(DT.currentFeature);
 		}
 	}
 

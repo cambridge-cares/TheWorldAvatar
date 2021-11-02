@@ -87,6 +87,10 @@ class LayerHandler {
             case "extrusion":
                 layerName = this.#addExtrusionLayer(dataSet);
                 break;
+
+            case "line":
+                layerName= this.#addLineLayer(dataSet);
+                break;
         }
         return [layerName, dataSet["locationType"]];
     }
@@ -218,6 +222,38 @@ class LayerHandler {
                     "hsl(200, 75%, 90%)",
                     ["case", ["has", "fill-extrusion-color"], ["get", "fill-extrusion-color"], "hsl(190, 25%, 25%)"]
                 ]
+			}
+		});
+
+        console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        return layerName;
+    }
+
+     /**
+     * Adds a layer to create lines for location data.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+      #addLineLayer(dataSet) {
+        let layerName = dataSet["name"];
+        let sourceName = dataSet["name"];
+
+        let backupColor = this.#getRandomColor();
+
+        this._map.addLayer({
+			id: layerName,
+			source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+			type: 'line',
+			layout: {
+				'visibility': 'visible'
+			},
+			paint: {
+                'line-color': ["case", ["has", "line-color"], ["get", "line-color"], backupColor],
+                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.5],
+                'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3]
 			}
 		});
 

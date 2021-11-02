@@ -48,6 +48,10 @@ class InteractionHandler {
 
         // Interactions per layer type
         switch(layerType) {
+            case "line":
+               // No interactions for line features
+            break;
+
             case "point":
                 // Mouse click
                 this._map.on("click", layerName, (event) => {
@@ -237,7 +241,7 @@ class InteractionHandler {
                 });
             });
 
-            if(fixedMeta.length > 0) { 
+            if(fixedMeta.length > 0 || Object.keys(fixedMeta).length > 0) { 
                 allMetadata["Properties"] = fixedMeta;
             }
         });
@@ -252,7 +256,7 @@ class InteractionHandler {
                 });
             });
 
-            if(transientMeta.length > 0) { 
+            if(transientMeta.length > 0 || Object.keys(transientMeta).length > 0) { 
                 allMetadata["Transient Properties"] = transientMeta;
             }
         });
@@ -260,6 +264,8 @@ class InteractionHandler {
         // Build tree once all metadata is added
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
             document.getElementById("meta-tree").innerHTML = "";
+
+            console.log(allMetadata);
 
             if(allMetadata == null || Object.keys(allMetadata).length == 0) {
                 // Fallback to the GeoJSON properties
