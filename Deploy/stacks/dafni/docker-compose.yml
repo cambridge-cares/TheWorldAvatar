@@ -187,6 +187,7 @@ services:
       - label=disable
     volumes:
       - ${PYTHON_SCRIPTS_DIR_HOST}:${PYTHON_SCRIPTS_DIR}
+      - ${SHARED_DATA_DIR_HOST}:${SHARED_DATA_DIR}
 
   qgis:
     image: docker.cmclinnovations.com/qgis_with_ssh:release-3_20
