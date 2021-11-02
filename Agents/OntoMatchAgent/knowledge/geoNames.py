@@ -4,7 +4,7 @@ import time
 import requests
 class Agent():
 
-    def __init__(self, country="Germany"):
+    def __init__(self, country="Germany", isOnline = False):
         logging.info('initializing geoNames agent')
         #Import global file
         #addr = "./data/geoName_dict_All_Feature.json"
@@ -12,11 +12,16 @@ class Agent():
         self.EP = "http://www.theworldavatar.com/blazegraph/namespace/geonames/sparql"
         self.country = country
         self.lookup = {}
-        self.buildDict(country)
+        self.coordiDict = {}
+        self.online = isOnline
+        if isOnline:
+            self.buildDict()
+        else:
+            self.buildDictCoordi()
         self.featureSelect = "featureSelect3F" #TODO:make it into a parameter later
 
     #query to get all names
-    def buildDict(self, country):
+    def buildDict(self):
         starttime = time.time()
         #TODO, check country name validity
         query = '''
@@ -28,7 +33,7 @@ class Agent():
          ?s a <http://www.geonames.org/ontology#Feature>.
          ?s gn:alternateName ?n.
          }} }}
-        '''.format(country)
+        '''.format(self.country)
         res = requests.post(self.EP, params={'query': query, 'format': 'json'})
         if res.status_code != 200:
             logging.info("can not connect to endpoint, status:"+str(res.status_code))
@@ -40,21 +45,70 @@ class Agent():
                 self.lookup[key] = []
             self.lookup[key].append(line['s']['value'])
         endtime = time.time() - starttime
-        logging.info("Dictionary for {} built in {} s with {} entries".format(country, endtime, len(self.lookup.keys())))
+        logging.info("Dictionary for {} built in {} s with {} entries".format(self.country, endtime, len(self.lookup.keys())))
+
+    def buildDictCoordi(self):
+        starttime = time.time()
+        #TODO, check country name validity by ASK
+        query = '''
+        PREFIX gn:<http://www.geonames.org/ontology#>
+        PREFIX wgs84_pos:<http://www.w3.org/2003/01/geo/wgs84_pos#>
+        SELECT distinct ?s ?n ?lat ?lng ?fcode ?alt FROM <Geonames_{}>
+        {{  ?s a <http://www.geonames.org/ontology#Feature>.
+         ?s gn:name ?n.
+         ?s wgs84_pos:lat ?lat.
+         ?s wgs84_pos:long ?lng.    
+         ?s gn:featureCode ?fcode.
+    OPTIONAL {{ ?s gn:alternateName ?alt }}}} 
+       '''.format(self.country)
+        res = requests.post(self.EP, params={'query': query, 'format': 'json'})
+        if res.status_code != 200:
+            logging.info("can not connect to endpoint, status:"+str(res.status_code))
+            raise ConnectionError("Error connecting to endpoint with status code {}".format(str(res.status_code)))
+        jres = res.json()
+        for line in jres['results']['bindings']: #{'head': {'vars': ['n']}, 'results': {'bindings': [{'n': {'type': 'literal', 'value': 'Weikering'}}]}}
+            geoname = line['n']['value'].lower()
+            IRI = line['s']['value']
+            if geoname not in self.lookup:
+                self.lookup[geoname] = set()
+            self.lookup[geoname].add(IRI)
+            if 'alt' in line:
+                altname = line['alt']['value'].lower()
+                if altname not in self.lookup:
+                    self.lookup[altname] = set()
+                self.lookup[altname].add(IRI)
+
+
+            lat = float(line['lat']['value'])
+            lng = float(line['lng']['value'])
+            fcode = line['fcode']['value']
+            self.coordiDict[IRI] = (lat, lng, fcode)
+
+        endtime = time.time() - starttime
+        logging.info("Dictionary for {} built in {} s with {} entries".format(self.country, endtime, len(self.lookup.keys())))
 
     def query(self, name):
         #exact match
+        start = time.time()
         name = name.lower()
         if name in self.lookup:
-            IRIs = self.lookup[name]
+            IRIs = list(self.lookup[name])
             try:
-                clist = self.requestCoordinate(IRIs)
+                if len(IRIs) == 0:
+                    raise ValueError
+                if self.online:
+                    clist = self.requestCoordinate(IRIs)
+                else:
+                    clist = [self.coordiDict[IRI] for IRI in IRIs]
                 #TODO: error handling, empty list
+                if len(clist) == 0:
+                    raise ValueError
+                logging.info("coordi query finished in {} s".format(str(time.time()-start)))
                 return self.featureSelect3F(clist)
             except (ValueError, ConnectionError):
-                logging.info("geoname:{} with IRI:{} query coordinates failed".format(name,IRI))
+                logging.info("geoname:{} with IRI:{} query coordinates failed".format(name,IRIs))
                 return None, None
-        else:
+        else:#Geoname not found
             logging.info("geoname:{} Not found".format(name))
             return None, None
 
@@ -91,18 +145,27 @@ class Agent():
         return coords
 
 
+    '''
+    listOfFeature: Not-empty list of (x, y, fcode)
+    '''
     def featureSelect3F(self, listOfFeature):
+        # Choose in this order: ADM > PPL > Others
+        chosen = listOfFeature[0]
         for feature in listOfFeature:
+            if feature is False:#check not empty
+                continue
             x,y,fcode = feature
             x = float(x)
             y = float(y)
-            if "ADM" in fcode:
+            if "ADM" in fcode: #If we found ADM, don't need to consider others, return
                 return x,y
             elif "PPL" in fcode:
-                return x,y
-        else:
-            return None, None
+                chosen = feature
 
+        #LOOP is over, ADM is not found! chosen is either any PPL feature or the first feature
+        return float(chosen[0]), float(chosen[1])
+
+    #TODO: more refined feature selection
 
 '''
     
