@@ -56,7 +56,7 @@ public class TimeSeriesRDBClient<T> {
     // Exception prefix
  	private final String exceptionPrefix = this.getClass().getSimpleName() + ": ";
  	// Allowed aggregation function
-	private enum AggregateFunction {
+	protected enum AggregateFunction {
 		AVERAGE,
 		MAX,
 		MIN
@@ -201,7 +201,7 @@ public class TimeSeriesRDBClient<T> {
     	List<String> dataIRI = ts.getDataIRIs();
     	
 		// Initialise connection and set jOOQ DSL context
-		connect();
+    	connect();
 		
 		// All database interactions in try-block to ensure closure of connection
 		try {
@@ -564,7 +564,7 @@ public class TimeSeriesRDBClient<T> {
 	/**
 	 * Establish connection to RDB and set DSL context
 	 */
-	private void connect() {
+	protected void connect() {
 		try {
 			if (this.conn == null || this.conn.isClosed()) {
 				// Load required driver
@@ -789,7 +789,7 @@ public class TimeSeriesRDBClient<T> {
 	 * @param aggregateFunction enumerator for the wanted type of aggregation (AVERAGE, MAX, MIN)   
 	 * @return The aggregate value of the whole time series corresponding to the dataIRI.
 	 */
-	private double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
+	protected double getAggregate(String dataIRI, AggregateFunction aggregateFunction) {
 
 		// Initialise connection and set jOOQ DSL context
 		connect();
