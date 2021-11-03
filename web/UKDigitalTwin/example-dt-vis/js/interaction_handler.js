@@ -85,8 +85,12 @@ class InteractionHandler {
                         html += feature.properties["description"] + "</br></br>"
                     }
 
+                    // Add coordinate details if possible
+                    if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
+                        html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
+                    }
+
                     // Show popup
-                    html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
                     this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
                 });
 
@@ -519,6 +523,15 @@ class InteractionHandler {
             });
         });
         return allPromises;
+    }
+
+    /**
+     * 
+     * @param {*} n 
+     * @returns 
+     */
+    #isNumber(n) { 
+        return !isNaN(parseFloat(n)) && !isNaN(n - 0);
     }
 
 
