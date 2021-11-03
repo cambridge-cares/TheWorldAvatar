@@ -1,6 +1,7 @@
 import glob
 import os
 from typing import List, Tuple
+import pyuploader.errorhandling.appexceptions as appexcept
 
 def get_files_by_extensions(
         fileOrDir: str,
@@ -25,7 +26,26 @@ def get_credentials_from_str(
         raise ValueError('Wrong authorisation string format.')
     return (auth_parts[0], auth_parts[1])
 
+def get_credentials_from_file(
+    auth_file_path: str) -> Tuple[str,str]:
+
+    auth_file_content = read_file_content(auth_file_path)
+
+    auth_parts = auth_file_content.split(':')
+    if len(auth_parts)>2:
+        raise ValueError('Wrong authorisation string format.')
+    return (auth_parts[0], auth_parts[1])
+
 def read_file_content(file_path: str) -> str:
     with open(file_path) as f:
         content = f.read()
     return content
+
+def get_env_var_value(
+    env_var_name: str) -> str:
+    try:
+        env_var_value = os.environ[env_var_name]
+    except KeyError:
+        raise appexcept.EnvironmentVarError(f"Error: {env_var_name} not found in the environment variables.")
+
+    return env_var_value
