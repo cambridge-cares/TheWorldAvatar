@@ -1,6 +1,13 @@
+import argparse
+import collections
+import json
 import logging
+import os
 import pickle
+import random
+import time
 import traceback
+
 
 import numpy as np
 import pandas as pd
@@ -10,11 +17,14 @@ import rdflib.namespace
 from tqdm import tqdm
 
 from alignment import Alignment
+import evaluate
 import instancematching
 import knowledge.geocoding
 import knowledge.geoNames
 from matchManager import matchManager
 from ontologyWrapper import Ontology
+import scoring
+import util
 
 
 class Agent():
@@ -141,7 +151,9 @@ class Agent():
         if agent_name == 'knowledge.geocoding':
             geocoding_agent = knowledge.geocoding.Agent()
         elif agent_name == 'knowledge.geoNames':
-            geocoding_agent = knowledge.geoNames.Agent()
+            #TODO-AE URGENT 211101 configure country for geoNames
+            #geocoding_agent = knowledge.geoNames.Agent(country="Germany")
+            geocoding_agent = knowledge.geoNames.Agent(country="UnitedKingdom")
         else:
             logging.error('not found geocoding agent with name=%s', agent_name)
 
@@ -168,8 +180,13 @@ class Agent():
                     zipcode = obj
 
             if location or zipcode:
-                #latitude, longitude = geocoding_agent.query(location, zipcode)
-                latitude, longitude = geocoding_agent.query(location, None)
+                if agent_name == 'knowledge.geocoding':
+                    #latitude, longitude = geocoding_agent.query(location, zipcode)
+                    latitude, longitude = geocoding_agent.query(location, None)
+                else:
+                    if location is None:
+                        continue
+                    latitude, longitude = geocoding_agent.query(location)
                 #print('coord=', latitude, longitude)
                 if latitude and longitude:
 
@@ -207,11 +224,12 @@ class Agent():
                 return self.__start_matching_with_auto_calibration(srconto, tgtonto, params_blocking, params_mapping)
             elif matching_name == 'instancematching.InstanceMatcherWithScoringWeights':
                 params_mapping = params['mapping']
-                return self.__start_matching_with_scoring_weights(srconto, tgtonto, params_blocking, params_mapping)
+                return self.__start_matching_with_scoring_weights(srconto, tgtonto, params_model_specific, params_blocking, params_mapping)
             else:
                 raise RuntimeError('unknown matcher', matching_name)
 
         except:
+            logging.fatal('finished with exception')
             full_traceback = traceback.format_exc()
             print(full_traceback)
             logging.fatal(full_traceback)
@@ -220,11 +238,18 @@ class Agent():
     def __start_matching_with_auto_calibration(self, srconto, tgtonto, params_blocking, params_mapping):
         matcher = instancematching.InstanceMatcherWithAutoCalibration()
         #TODO-AE URGENT 211023 Must be continued ... all matchers has to write back matching results ...
-        return matcher.start(srconto, tgtonto, params_blocking, params_mapping)
+        _, df_total_best_scores = matcher.start(srconto, tgtonto, params_blocking, params_mapping)
+        return df_total_best_scores
 
-    def __start_matching_with_scoring_weights(self, srconto, tgtonto, params_blocking, params_mapping):
+    def __start_matching_with_scoring_weights(self, srconto, tgtonto, params_model_specific, params_blocking, params_mapping):
         matcher = instancematching.InstanceMatcherWithScoringWeights()
-        return matcher.start(srconto, tgtonto, params_blocking, params_mapping, None)
+        df_scores = matcher.start(srconto, tgtonto, params_blocking, params_mapping, None)
+        prop_prop_sim_triples = scoring.create_prop_prop_sim_triples_from_params(params_mapping)
+        prop_column_names = [ c for c in range(len(prop_prop_sim_triples)) ]
+        scoring_weights = params_model_specific['weights']
+        instancematching.add_total_scores(df_scores, props=prop_column_names, scoring_weights=scoring_weights,
+                        missing_score=None, aggregation_mode='sum', average_min_prop_count=2)
+        return df_scores
 
     def __start_match_manager(self, params_model_specific, params_blocking, srconto, tgtonto):
 
@@ -262,15 +287,54 @@ class Agent():
         #match_manager.renderResult(" http://dbpedia.org/resource", "http://www.theworldavatar.com", '2109xx.owl', True)
 
         # convert alignment to dataframe with indices and score function
-        '''
-        rows = []
-        for pos1, pos2, score in alignment:
-            iri1 = srconto.individualList[pos1]
-            iri2 = tgtonto.individualList[pos2]
-            idx_1 = evaluate.getID(iri1)
-            idx_2 = evaluate.getID(iri2)
-            rows.append({'idx_1': idx_1, 'idx_2': idx_2, 'score': score})
-        df_scores = pd.DataFrame(rows)
-        df_scores.set_index(['idx_1', 'idx_2'], inplace=True)
-        '''
         return df_scores
+
+def init(config_dev=None, config_file=None):
+    print('current working directory=', os.getcwd())
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', type=str, default=config_file)
+    parser.add_argument('--logconfdir', type=str, default='./conf')
+    parser.add_argument('--logdir', type=str, default='../logs')
+    args = parser.parse_args()
+
+    print('args = args')
+
+    if args.config:
+        with open(args.config) as json_config:
+            config = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+    else:
+        config = config_dev
+
+    util.init_logging(args.logconfdir, args.logdir)
+    logging.info('current working directory=%s', os.getcwd())
+    logging.info('args=%s', args)
+    logging.info('config=%s', config)
+
+    seed = config['numerical_settings'].get('seed')
+    logging.info('setting random seed=%s', seed)
+    np.random.seed(seed)
+    random.seed(seed)
+
+    return config
+
+def postprocess(config, df_scores):
+    matchfile = config['post_processing']['evaluation_file']
+    index_set_matches = evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+    logging.info('ground truth matches=%s', len(index_set_matches))
+    logging.info('length of scores=%s', len(df_scores))
+    result = evaluate.evaluate(df_scores, index_set_matches)
+    return result
+
+def start(config_dev=None, config_file=None):
+    config = init(config_dev, config_file)
+    starttime = time.time()
+    agent = Agent()
+    df_scores = agent.start(config)
+    timenow = time.time()-starttime
+    logging.info('elapsed time in seconds=%s', timenow)
+    result = postprocess(config, df_scores)
+    return df_scores, result
+
+if __name__ == '__main__':
+    start()

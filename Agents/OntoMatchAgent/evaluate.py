@@ -117,7 +117,7 @@ def evaluate(df_alignment, matches, number_of_thresholds=41):
 
 if __name__ == '__main__':
 
-    util.init_logging('.', '..')
+    util.init_logging()
 
     alignmentfile = './2109xx.owl'
     df_alignment = read_alignment_file_as_dataframe(alignmentfile)

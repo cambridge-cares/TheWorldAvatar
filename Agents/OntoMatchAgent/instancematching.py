@@ -185,7 +185,9 @@ class InstanceMatcherWithAutoCalibration():
         rows = []
         for idx_1, _ in tqdm(df_max_scores.iterrows()):
             #TODO-AE URGENT
-            skip_column_number = 1
+            #  skip_column_number = 1
+            #TODO-AE 211102 URGENT restaurant, for phone prop only, set skip_column_number = 0
+            skip_column_number = 0
             total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = skip_column_number)
             rows.extend(total_score_rows)
 

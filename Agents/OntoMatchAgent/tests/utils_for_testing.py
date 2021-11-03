@@ -9,7 +9,7 @@ class TestCaseOntoMatch(unittest.TestCase):
 
     def setUp(self):
         print()
-        util.init_logging('.', '..')
+        util.init_logging()
 
     def load_kwl_gppd_ontologies(self):
         with open('./data/kwl_address_211022.pkl','rb') as file:

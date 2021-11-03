@@ -469,6 +469,8 @@ class ScoringWeightIterator(collections.Iterable, collections.Sized):
         else:
             self.weight_arrays = self.all_weight_arrays
 
+        logging.info('finished preparing scoring weight iterator, weights=%s (out of %s)', len(self.weight_arrays), len(self.all_weight_arrays))
+
 
     def collect_weights(self, current_weight_array):
 
@@ -485,7 +487,6 @@ class ScoringWeightIterator(collections.Iterable, collections.Sized):
             extended_copy = current_weight_array.copy()
             extended_copy.append(w)
             self.collect_weights(extended_copy)
-
 
     def __iter__(self):
         return iter(self.weight_arrays)

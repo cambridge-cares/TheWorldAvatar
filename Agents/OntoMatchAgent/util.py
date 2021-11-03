@@ -31,11 +31,9 @@ def init_file_logging(log_config_file, log_file):
     logging.info(concat('initialized logging with config file=', log_config_file, ', log file=', log_file))
 
 
-def init_logging(src_directory, dst_directory):
-
+def init_logging(log_conf_dir='./conf', log_dir='../logs'):
     # file and console logging with Python's standard logging library
-    log_config_file = src_directory + '/conf/logging.yaml'
-    log_dir = dst_directory + '/logs'
+    log_config_file = log_conf_dir + '/logging.yaml'
     name = 'ontomatch'
     init_file_logging(log_config_file, log_dir + '/' + name + '.log')
 

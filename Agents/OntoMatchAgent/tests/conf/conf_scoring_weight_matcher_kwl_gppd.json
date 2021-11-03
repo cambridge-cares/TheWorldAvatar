@@ -3,12 +3,12 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/kwl_address_211022.pkl",
+	"src": "C:/my/tmp/ontomatch/tmp_kwl_files/kwl_address_211022.ttl",
 	"tgt": "./data/gppd_DEU_211022.pkl"
 },
 "pre_processing":{
 	"add_knowledge": "knowledge.geoNames",
-	"pickle_dump": false
+	"pickle_dump": true
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",

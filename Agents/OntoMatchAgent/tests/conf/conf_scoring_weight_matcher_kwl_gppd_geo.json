@@ -3,7 +3,7 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/kwl_address_geo_211022.pkl",
+	"src": "./data/kwl_address_geonames_211030.pkl",
 	"tgt": "./data/gppd_DEU_geo_211022.pkl"
 },
 "pre_processing":{

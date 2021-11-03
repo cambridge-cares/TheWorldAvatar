@@ -1,4 +1,6 @@
+import html
 import logging
+import re
 
 import numpy as np
 import pandas as pd
@@ -14,6 +16,8 @@ BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
 BASE_MUN_GER = Namespace('http://www.theworldavatar.com/kb/municipalities/')
+BASE_REST_FODORS = Namespace('http://www.theworldavatar.com/kb/restaurants/fodors/')
+BASE_REST_ZAGATS = Namespace('http://www.theworldavatar.com/kb/restaurants/zagats/')
 DBO = Namespace('http://dbpedia.org/ontology/')
 DBR = Namespace('http://dbpedia.org/resource/')
 GEO = Namespace('http://www.w3.org/2003/01/geo/wgs84_pos#')
@@ -43,9 +47,6 @@ def bind_prefixes(g):
     g.bind('eipreal', EIPREAL)
     g.bind('cptecsys', CPTECSYS)
 
-def uri(prefix, entity):
-    return URIRef(prefix + entity)
-
 def add(graph, subject, predicates, obj=None):
 
     prev_object = subject
@@ -61,6 +62,21 @@ def add(graph, subject, predicates, obj=None):
         prev_object = current_obj
 
     return triples, current_obj
+
+def replace_special_symbols(s):
+    s = s.replace('/', ' ').replace('\\', ' ')
+    return s
+
+def normalize(s: str):
+    if s:
+        symbols = [',', '-', '–', '\n', ' ', u'\xa0', "'"]
+        for sym in symbols:
+            s = s.replace(sym, '_')
+        symbols = ['�', '&', '?', '+', '.', '"', '#', '(', ')', '\\', '/', '!']
+        for sym in symbols:
+            s = s.replace(sym, '')
+        return s.strip()
+    return s
 
 def create_owner_dict(g, df):
     d = {}
@@ -91,10 +107,6 @@ def get_owner(g, dictionary, name):
         return s
 
     print('skipped owner {} because no valid URI'.format(s))
-
-def replace_special_symbols(s):
-    s = s.replace('/', ' ').replace('\\', ' ')
-    return s
 
 def create_plant_from_dictionary(g, d, version, country_short, use_schema=False):
 
@@ -284,7 +296,7 @@ def create_GPPDB_plants(source_file, target_file, version, frmt, country_short):
     for i, row in dframe.iterrows():
         # TODO
         plant_name = v(row, 'name')
-        plant_name_norm = normalize_plant_name(plant_name)
+        plant_name_norm = normalize(plant_name)
 
         #if filter_strings and plant_name not in filter_strings:
         #    continue
@@ -344,7 +356,7 @@ def create_GPPDB_plants_single_files(source_file, target_dir, version, format, c
         plant_name = v(row, 'name')
         if filter_strings and plant_name not in filter_strings:
             continue
-        plant_name_norm = normalize_plant_name(plant_name)
+        plant_name_norm = normalize(plant_name)
 
         owner = v(row, 'owner')
         if owner and version == 'v2':
@@ -509,17 +521,7 @@ def get_kwl(df):
 
     return kwl
 
-def normalize_plant_name(plant_name):
-    plant_name_norm = plant_name
-    if plant_name_norm:
-        symbols = [',', '-', '–', '\n', ' ', u'\xa0']
-        for s in symbols:
-            plant_name_norm = plant_name_norm.replace(s, '_')
-        symbols = ['�', '&', '?', '+', '.', '"', '#', '(', ')', '\\', '/']
-        for s in symbols:
-            plant_name_norm = plant_name_norm.replace(s, '')
-        return plant_name_norm.strip()
-    return plant_name
+
 
 def create_KWL_plants_single_files(source_file, target_dir, version, format):
 
@@ -543,7 +545,7 @@ def create_KWL_plants_single_files(source_file, target_dir, version, format):
     for i, row in tqdm(dframe.iterrows()):
 
         plant_name = v(row, 'name')
-        plant_name_norm = normalize_plant_name(plant_name)
+        plant_name_norm = normalize(plant_name)
 
         #if filter_strings and plant_name not in filter_strings:
         #    continue
@@ -606,7 +608,7 @@ def create_KWL_plants(source_file, target_file, version, format):
     for i, row in tqdm(dframe.iterrows()):
 
         plant_name = v(row, 'name')
-        plant_name_norm = normalize_plant_name(plant_name)
+        plant_name_norm = normalize(plant_name)
 
         #if filter_strings and plant_name not in filter_strings:
         #    continue
@@ -778,17 +780,276 @@ def convert_dbpedia_to_ontopowsys(source_file, target_file, format):
 
     graph.serialize(target_file, format=format)
 
+class Restaurant_Converter():
+
+    def __init__(self):
+        pass
+
+    def split_restaurant(self, s):
+
+        reg_expressions = ['\D+', '\d+', '\d+[-/] ?\d+-+((\d+)|(DIVE))']
+        #     reg_expressions = ['\D+', '\d+', '\D+', '\d+[-/] ?\d+-+((\d+)|(DIVE))']
+        streets = ['dr.', 'ave.', 'aves.', 'st.', 'sts.', 'blvd.', 'rd.', ' road', 'way', 'hwy.',
+                'pch', 'circle', 'cienega', 'alley', 'drive', 'sq.', 'park s', 'financial center', 'pl.', 'plaza',
+                'norcross', 'flamingo', 'pkwy.', 'la.', 'northpoint', 'center', 'ln.', 'court']
+
+        # Fodors special cases
+        if s.startswith("Dante's Down the Hatch  Underground Underground Mall  Underground Atlanta Atlanta 404/577-1800 Continental"):
+            return ["Dante's Down the Hatch", "", "Underground Underground Mall  Underground Atlanta", "Atlanta", "404/577-1800", "Continental"]
+        if s.startswith("La Grotta at Ravinia Dunwoody Rd.  Holiday Inn/Crowne Plaza at Ravinia  Dunwoody Atlanta 770/395-9925 Italian"):
+            return ["La Grotta", "", "at Ravinia Dunwoody Rd. Holiday Inn/Crowne Plaza at Ravinia  Dunwoody", "Atlanta", "770/395-9925", "Italian"]
+        if s.startswith("Little Szechuan C Buford Hwy.  Northwoods Plaza  Doraville Atlanta 770/451-0192 Asian"):
+            return ["Little Szechuan", "", "C Buford Hwy.  Northwoods Plaza  Doraville", "Atlanta", "770/451-0192", "Asian"]
+        if s.startswith("Mi Spia Dunwoody Rd.  Park Place  across from Perimeter Mall  Dunwoody Atlanta 770/393-1333 Italian"):
+            return ["Mi Spia", "", "Dunwoody Rd.  Park Place  across from Perimeter Mall  Dunwoody", "Atlanta", "770/393-1333", "Italian"]
+        if s.startswith("Toulouse B Peachtree Rd. Atlanta 404/351-9533 French"):
+            return ["Toulouse", "", "B Peachtree Rd.", "Atlanta", "404/351-9533", "French"]
+        if s.startswith("Garden Court Market and New Montgomery Sts. San Francisco 415/546-5011 Old San Francisco"):
+            return ["Garden Court", "", "Market and New Montgomery Sts.", "San Francisco", "415/546-5011", "Old San Francisco"]
+        if s.startswith("Gaylord's Ghirardelli Sq. San Francisco 415/771-8822 Asian"):
+            return ["Gaylord's", "", "Ghirardelli Sq.", "San Francisco", "415/771-8822", "Asian"]
+        if s.startswith("Greens Bldg. A Fort Mason San Francisco 415/771-6222 Vegetarian"):
+            return ["Greens", "", "Bldg. A Fort Mason", "San Francisco", "415/771-6222", "Vegetarian"]
+        if s.startswith("McCormick & Kuleto's Ghirardelli Sq. San Francisco 415/929-1730 Seafood"):
+            return ["McCormick & Kuleto's", "", "Ghirardelli Sq.", "San Francisco", "415/929-1730", "Seafood"]
+        if s.startswith("Gladstone's 4 Fish 17300 Pacific Coast Hwy. at Sunset Blvd. Pacific Palisades 310/454-3474 American"):
+            return ["Gladstone's 4 Fish", "17300", "Pacific Coast Hwy. at Sunset Blvd.", "Pacific Palisades", "310/454-3474", "American"]
+        if s.startswith("21 Club 21 W. 52nd St. New York 212/582-7200 American"):
+            return ["21 Club", "21", "W. 52nd St.", "New York", "212/582-7200", "American"]
+        '''
+        if s.startswith("Adrienne 700 5th Ave. at 55th St. New York 212/903-3918 French"):
+            return ["Adrienne", "700", "5th Ave. at 55th St.", "New York", "212/903-3918", "French"]
+        if s.startswith("Agrotikon 322 E. 14 St.  between 1st and 2nd Aves. New York 212/473-2602 Mediterranean"):
+            return ["Agrotikon", "322", "E. 14 St.  between 1st and 2nd Aves.", "New York", "212/473-2602", "Mediterranean"]
+        if s.startswith("Aja 937 Broadway at 22nd St. New York 212/473-8388 American"):
+            return ["Aja", "937", "Broadway at 22nd St.", "New York", "212/473-8388", "American"]
+        if s.startswith("Alamo 304 E. 48th St. New York 212/ 759-0590 Mexican"):
+            return ["Alamo", "304", "E. 48th St.", "New York", "212/ 759-0590", "Mexican"]
+        '''
+        if s.startswith("Splendido Embarcadero 4 San Francisco 415/986-3222 Mediterranean"):
+            return ["Splendido Embarcadero", "4", "", "San Francisco", "415/986-3222", "Mediterranean"]
+
+
+        # Zagats special cases
+        if s.startswith("Jody Maroni's Sausage Kingdom 2011 Ocean Front Walk Venice 310-306-1995 Hot Dogs"):
+            return ["Jody Maroni's Sausage Kingdom", "2011", "Ocean Front Walk", "Venice", "310-306-1995", "Hot Dogs"]
+        if s.startswith("Kuruma Zushi 2nd fl. New York City 212-317-2802 Japanese"):
+            return ["Kuruma Zushi", "", "2nd fl.", "New York City", "212-317-2802", "Japanese"]
+        if s.startswith("Oyster Bar lower level New York City 212-490-6650 Seafood"):
+            return ["Oyster Bar", "", "lower level", "New York City", "212-490-6650", "Seafood"]
+        if s.startswith("Tavern on the Green Central Park West New York City 212-873-3200 American (New)"):
+            return ["Tavern on the Green", "", "Central Park West", "New York City", "212-873-3200", "American (New)"]
+        if s.startswith("Windows on the World 107th fl. New York City 212-524-7000 Eclectic"):
+            return ["Windows on the World", "", "107th fl.", "New York City", "212-524-7000", "Eclectic"]
+        '''
+        if s.startswith("Bradshaw's Restaurant 2911 S. Pharr Court Atlanta 404-261-7015 Southern/Soul"):
+            return ["Bradshaw's Restaurant", "2911", "S. Pharr Court", "Atlanta", "404-261-7015", "Southern/Soul"]
+        '''
+
+        props = []
+        for i, regex in enumerate(reg_expressions):
+            span = re.search(regex, s).span()
+
+            if i == 2:
+                street_and_city = s[:span[0]]
+                phone = s[span[0]: span[1]]
+                props.append(street_and_city)
+                props.append(phone)
+            else:
+                prop = s[:span[1]].strip()
+                props.append(prop.strip())
+            s = s[span[1]:]
+        props.append(s.strip())
+
+        # split street name and city
+        s = props[2].lower()
+        split = -1
+        length = -1
+        for street in streets:
+            try:
+                i = s.rindex(street) + len(street)
+                if i > split:
+                    split = i
+                    length = len(street)
+            except ValueError as err:
+                pass
+
+        if split > 0:
+            street = props[2][:split].strip()
+            location = props[2][split:].strip()
+            props[2] = street
+            props.insert(3, location)
+        else:
+            logging.error('unable to split street and city: %s', props)
+            raise ValueError('unable to split street and city', props)
+
+        return props
+
+    def load_to_dframe(self,filename, short):
+        rows = []
+        with open(filename, encoding='utf8') as f:
+            for i, line in tqdm(enumerate(f)):
+                if len(line) < 3:
+                    continue
+
+                # convert special characters
+                line = html.unescape(line)
+                line = line.replace('\x02', '')
+                line = line.replace('\n', '')
+
+                row = self.split_restaurant(line)
+                row.append(line.lower())
+                row.append(short + str(i))
+                rows.append(row)
+        dframe = pd.DataFrame(rows, columns=['name', 'street_no', 'street', 'city', 'phone', 'type', 'description', 'idx'])
+        dframe.set_index(['idx'], inplace=True)
+        logging.info('loaded and split restaurants, number=%s for file=%s', len(dframe), filename)
+        return dframe
+
+    def convert_restaurant_data(self, src_file, short, tgt_file, format):
+
+        dframe = self.load_to_dframe(src_file, short)
+
+        #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/zagats.csv'
+        #dframe.to_csv(tgt_file)
+
+
+        global BASE
+        BASE = BASE_REST_FODORS
+
+        graph = rdflib.Graph()
+        bind_prefixes(graph)
+
+        for idx, row in dframe.iterrows():
+            # TODO: remove characters from URL that are not allowed, e.g. ( or - or . (as in i.d. ....)
+            restaurant = idx + '_' + normalize(row['name'])
+            s = BASE[restaurant]
+            graph.add((s, RDF.type, SDO['Restaurant']))
+            graph.add((s, RDFS.label, Literal(row['name'], lang='en')))
+            o = row['type']
+            if o:
+                graph.add((s, SDO['servesCuisine'], Literal(o)))
+
+            x = rdflib.BNode()
+            graph.add((s, SDO['address'], x))
+            o = row['phone']
+            if o:
+                graph.add((x, SDO['telephone'], Literal(o)))
+            o = row['city']
+            if o:
+                graph.add((x, SDO['addressLocality'], Literal(o)))
+
+
+            street_no = row['street_no']
+            street = row['street']
+            if street_no or street:
+                o = street_no if street_no else ''
+                o = o + ' ' + street if street else o
+                if o:
+                    graph.add((x, SDO['streetAddress'], Literal(o.strip())))
+
+        graph.serialize(tgt_file, format=format)
+
+        return dframe, graph
+
+    def convert_matches_to_multi_indices(self, src_file, tgt_file, df_1, df_2):
+        descriptions = []
+        previous = ''
+        current = ''
+        with open(src_file, encoding='utf8') as f:
+            for line in f:
+                if len(line) < 3 or line.startswith('#'):
+                    continue
+
+                # convert special characters
+                line = html.unescape(line)
+                line = line.replace('\x02', '').replace('\n', '').lower()
+
+                previous = current
+                if line.startswith(' '):
+                    # some records cover two lines
+                    current = previous + line
+                    previous = ''
+                else:
+                    current = line
+                    # four entries in the original match-pairs.txt have spelling errors
+                    # they are corrected here to get the corresponding entry in zagats.txt and fodors.txt, resp.
+                    for prefix in ['cdaniel', 'bcafe', 'ghedgerose']:
+                        if prefix in current:
+                            current = current[1:]
+                            break
+                    if 'ext 6108' in current:
+                        current = 'café  ritz-carlton  buckhead 3434 peachtree rd. atlanta 404/237-2700  ext 6108 international'
+                if previous:
+                    descriptions.append(previous)
+
+        descriptions.append(current)
+        assert len(descriptions) == 224  # = 2 * 112 matches
+        logging.info('number restaurant descriptions=%s', len(descriptions))
+
+        index_pairs = []
+        first_index = None
+        for i, d in enumerate(descriptions):
+            if first_index is None:
+                found = df_1[df_1['description'] == d]
+                # the result set only contains a single entry
+                if len(found) == 0:
+                    logging.error('NOT FOUND: %s', d)
+                    continue
+                else:
+                    first_index = found.index[0]
+            else:
+                found = df_2[df_2['description'] == d]
+                if len(found) == 0:
+                    logging.error('NOT FOUND: %s %s', i, d)
+                    first_index = None
+                    continue
+                second_index = found.index[0]
+                index_pairs.append({
+                    'idx_1': first_index,
+                    'idx_2': second_index,
+                    'link': 1
+                    })
+                first_index = None
+
+        #multi_index = pd.MultiIndex.from_tuples(index_pairs, names=['idx_1', 'idx_2'])
+        df_matches = pd.DataFrame(index_pairs)
+        df_matches.set_index(['idx_1', 'idx_2'], inplace=True)
+        logging.info('number matching pairs=%s', len(df_matches))
+        df_matches.to_csv(tgt_file, index=True)
+
+def convert_restaurants():
+
+    format = 'turtle'
+    path = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/restaurant/original'
+    src_file_zagats = path + '/zagats.txt'
+    src_file_fodors = path + '/fodors.txt'
+    file_matches = path + '/match-pairs.txt'
+
+    converter = Restaurant_Converter()
+    df_zagats, _ = converter.convert_restaurant_data(src_file_zagats, 'Z', 'C:/my/tmp/ontomatch/tmp_kwl_files/zagats.ttl', format)
+    df_fodors, _ = converter.convert_restaurant_data(src_file_fodors, 'F', 'C:/my/tmp/ontomatch/tmp_kwl_files/fodors.ttl', format)
+    converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_kwl_files/matches_restaurant.csv', df_zagats, df_fodors)
+
+
+def test():
+
+    conv = Restaurant_Converter()
+    s = 'Fujiyama Mama 467 Columbus Ave.  between 82nd and 83rd Sts. New York 212/769-1144 Asian'
+    props = conv.split_restaurant(s)
+    print(props)
+
 if __name__ == '__main__':
 
-    util.init_logging('.', '..')
+    util.init_logging()
 
     frmt = 'turtle'
     #frmt = 'owl'
     #frmt = 'xml'
     #frmt = 'nt' # ntriples
-    src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
-    tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes_geo_211028.ttl'
-    create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=True)
+    #src_file = 'C:/my/tmp/ontomatch/dukes_owl.csv'
+    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/dukes_geo_211028.ttl'
+    #create_DUKES_plants(source_file=src_file, target_file=tgt_file, version='v1', format=frmt, coordinates=True)
 
     #country_short='GBR'
     #country_short='DEU'
@@ -814,3 +1075,6 @@ if __name__ == '__main__':
     #src_file = 'C:/my/tmp/ontomatch/Municipalities_Germany_UTF8.csv'
     #tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'
     #create_location_file(src_file, tgt_file, frmt)
+
+    convert_restaurants()
+    #test()
