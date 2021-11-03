@@ -14,7 +14,7 @@
 #! will lead to a default of (1/32)*total memory per task.
 #! Setting a larger amount per task increases the number of cores.
 ##SBATCH --mem=   # 63900 is the maximum value allowed per node.
-##SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)  
+##SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)
 ##SBATCH --error slurm.%u.%j.%N.errout.txt    #
 ##SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 

@@ -23,11 +23,11 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>repo</id>
+            <id>worldavatar-github</id>
             <url>REPO_URL</url>
         </snapshotRepository>
         <repository>
-            <id>repo</id>
+            <id>worldavatar-github</id>
             <url>REPO_URL</url>
         </repository>
     </distributionManagement>

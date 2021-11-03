@@ -9,8 +9,8 @@ ARG artifact_id="trained_models"
 FROM maven:3.6-openjdk-11-slim as dependency_fetcher
 
 # Specify repository and artifact details
-ARG repo_url="https://maven.pkg.github.com/ucam-ceb-como/oscml/"
-ARG group_id="com.oscml"
+ARG repo_url="https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/"
+ARG group_id="uk.ac.cam.cares.jps.agent.oscml"
 ARG artifact_fmt="zip"
 ARG artifact_version="1.0.0-SNAPSHOT"
 # artifact_id has to be declared here so that the globally-defined value is available in this stage
@@ -30,7 +30,7 @@ WORKDIR /root/
 RUN sed -i "s|REPO_URL|${repo_url}|g;s|GROUP_ID|${group_id}|;s|ARTIFACT_ID|${artifact_id}|g;s|ARTIFACT_VERSION|${artifact_version}|;s|ARTIFACT_FMT|${artifact_fmt}|" pom.xml
 
 # Download dependencies as described in the pom
-RUN mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
+RUN --mount=type=cache,target=/root/.m2/repository mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
 #==================================================================================================
 
 # Second stage: install the oscml app
@@ -46,19 +46,6 @@ EXPOSE 5000
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED=1
 SHELL ["/bin/bash", "-c"]
-# Set the default working directory, then copy the Python source code into it
-WORKDIR /app
-COPY ./oscml /app/oscml/
-COPY ./LICENSE /app/.
-COPY ./README.md /app/.
-COPY ./setup.py /app/.
-COPY ./cronconfig /app/.
-COPY ./environment_cpu.yml /app/.
-COPY ./environment_gpu.yml /app/.
-COPY ./delete_logs.sh /app/.
-COPY ./app_entry_point.sh /app/.
-COPY ./install_script.sh /app/.
-COPY --from=dependency_fetcher /root/${artifact_id} ./retrieved_models/${artifact_id}
 
 #------------------------------------
 # cron setup
@@ -75,6 +62,21 @@ RUN chmod 0744 /app/delete_logs.sh
 RUN crontab /etc/cron.d/cronconfig
 # Create the log file to be able to run tail
 RUN touch /var/log/cron.log
+
+
+# Set the default working directory, then copy the Python source code into it
+WORKDIR /app
+COPY ./oscml /app/oscml/
+COPY ./LICENSE /app/.
+COPY ./README.md /app/.
+COPY ./setup.py /app/.
+COPY ./cronconfig /app/.
+COPY ./environment_cpu.yml /app/.
+COPY ./environment_gpu.yml /app/.
+COPY ./delete_logs.sh /app/.
+COPY ./app_entry_point.sh /app/.
+COPY ./install_script.sh /app/.
+COPY --from=dependency_fetcher /root/${artifact_id} ./retrieved_models/${artifact_id}
 
 #------------------------------------
 # conda setup
