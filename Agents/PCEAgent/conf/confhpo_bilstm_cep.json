@@ -1,0 +1,57 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "src": "./data/processed/CEPDB_25000.csv",
+    "z-stand": "False",
+    "x_column": ["SMILES_str"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+    },
+"model":{
+    "name": "BILSTM",
+    "model_specific":{
+        "embedding_dim":{"type":"categorical","choices":[8, 16, 32, 64, 128, 256]},
+        "mlp_layers":{"type":"int","low":1,"high":4},
+        "mlp_units":{"type":"int","low":8,"high":256,"starting_value":"embedding_dim","length":"mlp_layers","direction":"decreasing"},
+        "mlp_dropouts":{"type":"uniform","low":0.0,"high":0.3,"direction":"constant","length":"mlp_layers"}
+        },
+    "max_sequence_length": 60,
+    "type_dict": "CEP25000"
+    },
+"training":{
+    "optimiser":{
+        "name":"Adam",
+        "lr":{"type":"loguniform","low":1e-5,"high":1e-2},
+        "weight_decay":{"type":"loguniform","low":1e-5,"high":0.01}
+        },
+    "batch_size": 250,
+    "epochs": 400,
+    "patience": 20,
+    "min_delta": 0.0,
+    "metric": "val_loss",
+    "direction": "minimize",
+    "cross_validation": false,
+    "trials": 20,
+    "study_name": "bilstm_cep25000_stratified",
+    "storage": "sqlite:///bilstm_cep25000_stratified.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "n_jobs": 1
+    },
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": true,
+    "regression_plot": true
+}
+}

@@ -1,0 +1,2 @@
+,number,value,datetime_start,datetime_complete,duration,params_C,params_epsilon,params_gamma_structural,params_nBits,params_radius,state
+0,0,4.514573015695849,2021-03-26 12:23:34.908192,2021-03-26 12:23:41.122167,0 days 00:00:06.213975,4.544522584329559,0.00010010539860510496,0.062176196446039805,1024,3,COMPLETE

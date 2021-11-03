@@ -1,0 +1,74 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": true,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "src": "./data/processed/CEPDB_25000.csv",
+    "z-stand": "False",
+    "x_column": ["SMILES_str"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+    },
+"logging_settings":{
+    "log_main_dir": "./tests/modelsRegressionTests/attentivefp/transfer",
+    "log_sub_dir_prefix": "reg_test",
+    "log_config_file": "./tests/conf/logging.yaml",
+    "log_file_name": "oscml.log",
+    "use_date_time": false
+},
+"model":{
+    "name": "AttentiveFP",
+    "model_specific":{
+        "graph_feat_size": {"type":"int","low":8,"high":256},
+        "num_layers":{"type":"int","low":1,"high":6},
+        "num_timesteps":{"type":"int","low":1,"high":4},
+        "dropout":{"type":"uniform","low":0.0,"high":0.3}
+        },
+    "featurizer": "full"
+    },
+"training":{
+    "optimiser":{
+        "name":"Adam",
+        "lr":{"type":"loguniform","low":1e-5,"high":1e-2},
+        "weight_decay":{"type":"loguniform","low":1e-5,"high":0.01}
+        },
+    "batch_size": 250,
+    "epochs": 1,
+    "patience": 20,
+    "min_delta": 0.0,
+    "metric": "val_loss",
+    "direction": "minimize",
+    "cross_validation": 0,
+    "trials": 1,
+    "study_name": "transfer",
+    "storage": "sqlite:///tests/modelsRegressionTests/attentivefp/transfer/reg_test.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+    },
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": false,
+    "regression_plot": false
+},
+"transfer_learning": {
+  "freeze_and_train": true,
+  "ckpt_path": "./tests/modelsRegressionTests/attentivefp/transfer/reg_test/best_trial_retrain/trial_*/best_trial_retrain_model*.ckpt",
+  "dataset":{
+    "src": "./data/processed/HOPV_15_revised_2_processed_homo_5fold.csv",
+    "z-stand": "False",
+    "x_column": ["smiles"],
+    "y_column": ["pce"],
+    "split": "ml_phase_fold_0"
+    }
+}
+}

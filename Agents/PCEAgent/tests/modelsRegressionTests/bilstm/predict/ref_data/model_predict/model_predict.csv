@@ -1,0 +1,5 @@
+predicted Pce,actual Pce,smiles_string
+4.231184174625674,5.57,Cc1nc2c3ccsc3c3sc(-c4ccc(-c5cnc(C6=S=CC=C6)c6nsnc65)s4)cc3c2nc1C
+4.4532989952744675,7.7,COc1c2ccsc2c(OC)c2cc(-c3scc4sc(C(C)=O)c(F)c43)sc21
+3.3226315836652534,3.1,COc1c(OC)c(-c2ccc(-c3ccc4c(c3)C(C)(C)c3ccccc3-4)s2)c2nsnc2c1-c1cccs1
+4.44093494618845,6.6,COc1c2ccsc2c(OC)c2cc(-c3scc4sc(C(C)=O)cc43)sc21

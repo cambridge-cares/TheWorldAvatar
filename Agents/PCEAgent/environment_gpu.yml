@@ -1,0 +1,31 @@
+channels:
+  - pytorch
+  - defaults
+  - rdkit
+  - dglteam
+dependencies:
+  - python=3.7.7
+  - pytorch=1.6.0
+  - torchvision=0.7.0
+  - torchaudio=0.6.0
+  - cudatoolkit=10.2
+  - rdkit=2020.09.1.0
+  - dgl-cuda10.2=0.5.2
+  - pip=20.2.4
+  - pip:
+    - pytorch_lightning==1.0.4
+    - scikit-learn==0.23.2
+    - tqdm==4.51.0
+    - pyyaml==5.3.1
+    - networkx==2.5
+    - matplotlib==3.3.2
+    - seaborn==0.11.0
+    - optuna==2.3.0
+    - dgllife==0.2.6
+    - docopt==0.6.2
+    - py4jps==1.0.0
+    - parameterized==0.8.1
+    - dill==0.3.3
+    - pandas==1.1.0
+    - flask==1.1.2
+    - gunicorn==20.0.4

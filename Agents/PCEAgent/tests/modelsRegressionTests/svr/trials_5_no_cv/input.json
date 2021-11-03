@@ -1,0 +1,59 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "src": "./data/processed/HOPV_15_revised_2_processed_homo_5fold.csv",
+    "z-stand": "False",
+    "x_column": ["smiles"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+},
+"logging_settings":{
+    "log_main_dir": "./tests/modelsRegressionTests/svr/trials_5_no_cv",
+    "log_sub_dir_prefix": "reg_test",
+    "log_config_file": "./tests/conf/logging.yaml",
+    "log_file_name": "oscml.log",
+    "use_date_time": false
+},
+"model":{
+    "name": "SVR",
+    "model_specific":{
+        "kernel": "rbf_kernel_phys_and_struct",
+        "gamma_structural": {"type":"loguniform","low":0.001,"high":20.0},
+        "C":{"type":"loguniform","low":0.1,"high":20.0},
+        "epsilon":{"type":"loguniform","low":0.0001,"high":1.0}
+    },
+    "fingerprint_specific":{
+        "type":"morgan",
+        "nBits":{"type":"categorical","choices": [128, 256, 512, 1024, 2048, 4096]},
+        "radius": {"type":"categorical","choices": [2, 3, 4, 5]},
+        "useChirality": true,
+        "useBondTypes": true
+    }
+},
+"training":{
+    "metric": "mse",
+    "cross_validation": 0,
+    "direction": "minimize",
+    "trials": 5,
+    "study_name": "trials_5_no_cv",
+    "storage": "sqlite:///tests/modelsRegressionTests/svr/trials_5_no_cv/reg_test.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+},
+"post_processing":{
+    "z_transform_inverse_prediction": true,
+    "regression_plot": false
+}
+}

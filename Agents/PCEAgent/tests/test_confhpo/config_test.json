@@ -1,0 +1,24 @@
+{
+"config_parser_test":{
+	"param_1": 1,
+	"param_2": {"starting_value":4},
+	"param_3": {"starting_value":"param_1"},
+	"param_4": [1,3,4],
+	"param_5": {"values":[1,3,4],"length":100},
+	"param_6": {"values":[1,3,4],"length":"param_3"},
+	"param_7": {"values":[1,3,4],"length":"param_4"},
+	"param_8": {"values":[1,3,4],"length":"param_4[2]"},
+	"param_9": {"type":"int","low":1,"high":12,"starting_value":"param_1", "length":4},
+	"param_10": {"type":"int","low":1,"high":4,"starting_value":"param_4"},
+	"param_11": {"type":"int","low":1,"high":4,"starting_value":"param_4", "length":6},
+	"param_12": {"type":"int","low":1,"high":4,"starting_value":"param_9[2]", "length":"param_7"},
+	"param_13": {"type":"int","low":1,"high":10,"length":4,"direction":"decreasing"},
+	"param_14": {"type":"int","low":1,"high":10,"length":4,"direction":"increasing"},
+	"param_15": {"type":"int","low":1,"high":10,"length":4,"direction":"constant"},
+	"param_16": {"type":"int","low":1,"high":10,"length":4,"direction":"constant","starting_value":[1]},
+	"param_17": {"type":"int","low":1,"high":10,"length":4,"direction":"increasing","starting_value":[1]},
+	"param_18": {"type":"int","low":1,"high":10,"length":4,"direction":"decreasing","starting_value":[10]},
+	"param_19": {"length":4,"starting_value":2},
+	"param_20": {"length":4,"starting_value":[2,3,5]}
+    }
+}

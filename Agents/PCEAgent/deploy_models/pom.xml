@@ -1,0 +1,47 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.oscml</groupId>
+    <artifactId>trained_models</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    
+    <!-- Repository locations to deploy to (the IDs should match a server ID in your ~/.m2/settings.xml -->
+    <distributionManagement>
+        <snapshotRepository>
+            <id>oscml-github</id>
+            <url>https://maven.pkg.github.com/ucam-ceb-como/oscml/</url>
+        </snapshotRepository>
+        <repository>
+            <id>oscml-github</id>
+            <url>https://maven.pkg.github.com/ucam-ceb-como/oscml/</url>
+        </repository>
+    </distributionManagement>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>descriptor.xml</descriptor>
+                    </descriptors>
+                    <finalName>${project.artifactId}</finalName>
+                    <appendAssemblyId>false</appendAssemblyId>
+                    <outputDirectory></outputDirectory>
+                    <attach>true</attach>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
