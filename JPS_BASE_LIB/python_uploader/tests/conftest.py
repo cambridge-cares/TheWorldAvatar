@@ -4,15 +4,15 @@ import os
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
+SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
+URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
-    dummy_auth_file = os.path.join(THIS_DIR, "dummy_test_auth.txt")
-    dummy_url_file = os.path.join(THIS_DIR, "dummy_test_url.txt")
-    if os.path.exists(dummy_auth_file):
-        os.remove(dummy_auth_file)
-    if os.path.exists(dummy_url_file):
-        os.remove(dummy_url_file)
+    if os.path.exists(SECRETS_FILE_PATH):
+        os.remove(SECRETS_FILE_PATH)
+    if os.path.exists(URL_FILE_PATH):
+        os.remove(URL_FILE_PATH)
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -32,8 +32,8 @@ def get_service_url(session_scoped_container_getter):
     return _get_service_url
 
 @pytest.fixture(scope="session")
-def get_service_auth():
-    def _get_service_auth(service_name):
+def get_service_auth_file_path():
+    def _get_service_auth_file_path(service_name):
         password_file = os.path.join(SECRETS_PATH,service_name+'_passwd.txt')
         user_file = os.path.join(SECRETS_PATH,service_name+'_user.txt')
 
@@ -46,8 +46,13 @@ def get_service_auth():
         if os.path.exists(password_file):
             with open(password_file) as f:
                 password = f.read().strip()
-        return f"{username}:{password}"
-    return _get_service_auth
+
+        with open(SECRETS_FILE_PATH, 'w') as f:
+            f.write(f"{username}:{password}")
+
+        return SECRETS_FILE_PATH
+
+    return _get_service_auth_file_path
 
 
 @pytest.fixture(scope="session")

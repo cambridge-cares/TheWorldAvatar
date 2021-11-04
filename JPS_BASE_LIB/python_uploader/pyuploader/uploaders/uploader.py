@@ -95,7 +95,7 @@ class Uploader:
         url: str,
         auth: Tuple[str,str],
         file_path: str,
-        subdirs: Union[str,None],
+        subdirs: Union[str,None]=None,
         *args, **kwargs) -> str:
         location = self.upload_file_func(url, auth, file_path, subdirs, *args, **kwargs)
         return location
