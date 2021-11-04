@@ -47,7 +47,7 @@ def start() -> None:
     except docopt.DocoptExit: #type: ignore
         raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.') #type: ignore
 
-    _ = app.upload(
+    app.app_upload(
         uploader_type='fs_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
