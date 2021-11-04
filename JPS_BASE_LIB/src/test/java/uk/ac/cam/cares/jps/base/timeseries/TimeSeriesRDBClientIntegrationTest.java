@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.OptionalDouble;
@@ -91,7 +92,8 @@ public class TimeSeriesRDBClientIntegrationTest {
     	data3_1 = new ArrayList<>();
     	
     	for (int i = 0; i < 10; i++) {
-   			timeList_1.add(Instant.now().plusSeconds(i));
+    		// Create test time series (maximum temporal resolution of postgres limited to microseconds)
+   			timeList_1.add(Instant.now().plusSeconds(i).truncatedTo(ChronoUnit.MICROS));
     		data1_1.add((double) i);
     		data2_1.add(String.valueOf(i));
     		data3_1.add(i);
@@ -111,7 +113,7 @@ public class TimeSeriesRDBClientIntegrationTest {
     	
     	for (int i = 0; i < 10; i++) {
     		// Add additional 10 s to ensure no overlap between time lists
-   			timeList_2.add(Instant.now().plusSeconds(10+i));
+   			timeList_2.add(Instant.now().plusSeconds(10+i).truncatedTo(ChronoUnit.MICROS));
     		data1_2.add((double) (10 + i));
     		data2_2.add(String.valueOf(10+i));
     		data3_2.add(10 + i);
@@ -134,7 +136,7 @@ public class TimeSeriesRDBClientIntegrationTest {
 		List<Double> data1_3 = new ArrayList<>();
 
     	for (int i = 0; i < 10; i++) {
-   			timeList_3.add(Instant.now().plusSeconds(i));
+   			timeList_3.add(Instant.now().plusSeconds(i).truncatedTo(ChronoUnit.MICROS));
     		data1_3.add((double) i);
     	}
 		List<List<?>> dataToAdd_3 = new ArrayList<>();
