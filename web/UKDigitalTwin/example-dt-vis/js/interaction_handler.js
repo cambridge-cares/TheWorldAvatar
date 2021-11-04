@@ -208,7 +208,7 @@ class InteractionHandler {
         // Expand the side panel if it's collapsed
         var sidePanel = document.getElementById("sidePanel");
         if(sidePanel.classList.contains("collapsed")) {
-            this._panelHandler.toggleMode();
+            this._panelHandler.toggleExpansion();
         }
 
         // Remember the currently selected feature
