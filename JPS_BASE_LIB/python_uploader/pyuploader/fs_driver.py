@@ -4,7 +4,7 @@ import pyuploader.app as app
 __doc__: str = """pyuploader
 Usage:
     fs_upload <file_or_dir>  [--url=<url>]
-                             [--auth=<auth>]
+                             [--auth_file=<file>]
                              [--no-auth]
                              [--file-ext=<ext>]
                              [--subdirs=<dir>]
@@ -19,17 +19,21 @@ Options:
                         Example: --file-ext='.log,.txt'                     [default: log]
 --url=<url>             File server upload url. If not specified, the code
                         will try to read it from a file whose location
-                        should be specified in user environment variables.
---auth=<auth>           File server authorization string given as a
-                        "username:password". If not specified, the code
-                        will try to read it from a file whose location
-                        should be specified in user environment variables.
+                        should be specified in user 'KG_FILE_SERVER_SPECS'
+                        environment variables.
+--auth_file=<file>      File path to the file server secrets file containing
+                        the user authorization string of the following form:
+                        "username:password". If not specified, the code will
+                        try to read the secrets file path from a user
+                        'KG_FILE_SERVER_SECRETS' environment variable.
+                        DO NOT store your secrets directly in environment
+                        variables, only store the secrets file path.
 --no-auth               Disables reading credentials from the environment
                         variables and sending it to the file server.
 --subdirs=<dir>         Optional subdirectories to be created on
                         the file server to upload your files into.
                         Example: --subdirs='dir1/dir2/'                     [default: ]
---log-file-name=<name>  Name of the generated log file.                     [default: fs_upload.log]
+--log-file-name=<name>  Name of the generated log file.                     [default: fs_uploader.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <fileOrDir> directory.
@@ -43,10 +47,11 @@ def start() -> None:
     except docopt.DocoptExit: #type: ignore
         raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.') #type: ignore
 
-    app.fs_upload_wrapper(
+    _ = app.upload(
+        uploader_type='fs_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth_str = args['--auth'],
+        auth_file = args['--auth_file'],
         no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         subdirs = args['--subdirs'],

@@ -1,77 +1,44 @@
-import pyuploader.triplestore.upload as tripleupload
-import pyuploader.webserver.upload as fileupload
-import pyuploader.common.logconfig as logconfig
+from pyuploader.uploaders.uploader_factory import get_uploader
 import logging
-from typing import Union
+from typing import Union, Dict
 
 logger = logging.getLogger(__name__)
 
-def ts_upload_wrapper(
-        file_or_dir: str,
-        url: Union[str, None]=None,
-        auth_str: Union[str, None]=None,
-        no_auth: bool= False,
-        file_ext: str='owl',
-        log_file_dir: Union[str, None]= None,
-        log_file_name: str= 'ts_upload.log',
-        no_file_logging: bool = False,
-        dry_run: bool=False) -> None:
+def upload(
+    uploader_type: str,
+    file_or_dir: str,
+    file_ext: str,
+    url: Union[str, None]=None,
+    auth_file: Union[str, None]=None,
+    no_auth: bool= False,
+    subdirs: Union[str, None]=None,
+    log_file_dir: Union[str, None]= None,
+    log_file_name: Union[str, None]= None,
+    no_file_logging: bool = False,
+    dry_run: bool=False) -> Dict[str,str]:
 
-    logconfig.config_logging(
-        log_file_dir,
-        log_file_name,
-        no_file_logging)
-
-    if dry_run:
-        logger.info(f"#######################")
-        logger.info(f"## THIS IS A DRY-RUN ##")
-        logger.info(f"#######################")
-        logger.info(f"")
-
+    uploaded_locations = {}
     try:
-        tripleupload.upload_to_triple_store(
-                file_or_dir,
-                url,
-                auth_str,
-                no_auth,
-                file_ext,
-                dry_run)
+        uploader = get_uploader(uploader_type)
+
+        uploader.set_logging(
+            log_file_dir=log_file_dir,
+            log_file_name=log_file_name,
+            no_file_logging=no_file_logging
+        )
+
+        uploaded_locations = uploader.upload(
+            file_or_dir=file_or_dir,
+            file_ext=file_ext,
+            url=url,
+            auth_file=auth_file,
+            no_auth=no_auth,
+            subdirs=subdirs,
+            dry_run=dry_run
+            )
+
     except Exception as e:
-        logger.error("Triples upload failed. Please check the log for a more detailed error description.")
+        logger.error("Upload failed. Please check the log for a more detailed error description.")
         logger.exception(e)
 
-def fs_upload_wrapper(
-        file_or_dir: str,
-        url: Union[str, None]=None,
-        auth_str: Union[str, None]=None,
-        no_auth: bool= False,
-        file_ext: str='log',
-        subdirs: Union[str, None]=None,
-        log_file_dir:  Union[str, None]= None,
-        log_file_name: str='ts_upload.log',
-        no_file_logging: bool= False,
-        dry_run: bool= False) -> None:
-
-    logconfig.config_logging(
-        log_file_dir,
-        log_file_name,
-        no_file_logging)
-
-    if dry_run:
-        logger.info(f"#######################")
-        logger.info(f"## THIS IS A DRY-RUN ##")
-        logger.info(f"#######################")
-        logger.info(f"")
-
-    try:
-        _ = fileupload.upload_to_web_server(
-            file_or_dir,
-            url,
-            auth_str,
-            no_auth,
-            file_ext,
-            subdirs,
-            dry_run)
-    except Exception as e:
-        logger.error("File upload failed. Please check the log for a more detailed error description.")
-        logger.exception(e)
+    return uploaded_locations

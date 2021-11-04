@@ -4,7 +4,7 @@ import pyuploader.app as app
 __doc__: str = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--url=<url>]
-                             [--auth=<auth>]
+                             [--auth_file=<file>]
                              [--no-auth]
                              [--file-ext=<ext>]
                              [--log-file-name=<name>]
@@ -17,15 +17,18 @@ Options:
                         the code will try to read it from a file whose
                         location should be specified in user environment
                         variables.
---auth=<auth>           Triple store authorization string given as a
-                        "username:password". If not specified, the code
-                        will try to read it from a file whose location
-                        should be specified in user environment variables.
+--auth_file=<file>      File path to the triple store secrets file containing
+                        the user authorization string of the following form:
+                        "username:password". If not specified, the code will
+                        try to read the secrets file path from a user
+                        'TRIPLE_STORE_SECRETS' environment variable.
+                        DO NOT store your secrets directly in environment
+                        variables, only store the secrets file path.
 --no-auth               Disables reading credentials from the environment
                         variables and sending it to the triple store.
 --file-ext=<ext>        List of extensions used to select files             [default: owl]
                         that will be uploaded to the triple store.
---log-file-name=<name>  Name of the generated log file.                     [default: ts_upload.log]
+--log-file-name=<name>  Name of the generated log file.                     [default: ts_uploader.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
                         to the <fileOrDir> directory.
@@ -40,10 +43,11 @@ def start() -> None:
     except docopt.DocoptExit: #type: ignore
         raise docopt.DocoptExit('Error: ts_upload called with wrong arguments.') #type: ignore
 
-    app.ts_upload_wrapper(
+    _ = app.upload(
+        uploader_type='ts_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth_str = args['--auth'],
+        auth_file = args['--auth_file'],
         no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],

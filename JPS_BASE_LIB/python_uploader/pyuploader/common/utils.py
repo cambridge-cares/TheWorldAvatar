@@ -8,13 +8,13 @@ def get_files_by_extensions(
         extensions: str) -> List[str]:
 
     files: List[str,]= []
-    extensions_list = [ext.strip() for ext in extensions.split(',')]
     if os.path.isdir(fileOrDir):
+        extensions_list = [ext.strip() for ext in extensions.split(',')]
         for ext in extensions_list:
             # use glob to easily filter the files
             files.extend(glob.glob(os.path.join(fileOrDir, '*.'+ext)))
     elif os.path.isfile(fileOrDir):
-        # if it is a file, then do not check for its extension
+        # if it is a file, then do not check for its extension here
         files.append(fileOrDir)
     return files
 
