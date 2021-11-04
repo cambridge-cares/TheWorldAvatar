@@ -4,6 +4,16 @@ import sys
 from datetime import datetime, timedelta
 import re
 from collections import OrderedDict
+import logging
+
+
+#Setup the logging with a logger
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+fileHandler = logging.FileHandler('ExcelMatchOutputLog.log', mode='w') #remove the "mode='w'" to have it only append with each run to the log file, rather than deleting previous contents. 
+#formatter = logging.Formatter()
+#fileHandler.setFormatter(formatter)
+logger.addHandler(fileHandler)
 
 
 #Functions
@@ -13,7 +23,9 @@ def MultipleBMRSEIC (data):
         for j in range(0,len(data['Registered Resource EIC code'])):
             if i != j:
                 if data['Registered Resource EIC code'][i] == data['Registered Resource EIC code'][j]:
-                    print("Data Error: Multiple instances of EIC in BMRS Data: " + str(data['Registered Resource EIC code'][i]))
+                    #print("Data Error: Multiple instances of EIC in BMRS Data: " + str(data['Registered Resource EIC code'][i]))
+                    #logger.info('Data Error: Multiple instances of EIC in BMRS Data: {}'.format(str(data['Registered Resource EIC code'][i]))) #Alternate way to give this input. 
+                    logger.warning("Data Error: Multiple instances of EIC in BMRS Data: " + str(data['Registered Resource EIC code'][i]))
                     #Note, the multiple instance error above occurs when the same EIC code occurs multiple times in the BMRS data. These are handled individually, but will obtain the same result. 
 
 
@@ -281,7 +293,68 @@ def SmallOnLargeDiffFraction(num1, num2):
         return (1.0 - (num1/num2))
 
 
+#Error Text Functions, these take output data from the Primary Function, and give text translations for the logger file.
+def ErrorNameText(e):
+    e = int(e)
+    if e == -10:
+        return "Exact Match" 
+    elif e == -9:
+        return "Roman Numeral / Decimal Writing Difference Only"
+    elif e == -8:
+        return "Simplified Names Match" 
+    elif e == -7:
+        return "Simplified Name with Roman Numeral / Decimal Writing Difference or Name Extension Convention Difference"
+    elif e == -6:
+        return "Simplified Name with Roman Numeral / Decimal Writing Difference and Name Extension Convention Difference"
+    elif e == -4: #No -5
+        return "First EIC Word Matches Whole DUKES Name" 
+    elif e == -3:
+        return "First Words of EIC and DUKES Match (if unique)"
+    elif e == -2:
+        return "First Simplified EIC and DUKES Names Match"
+    elif e == -1:
+        return "Any Simplified Unique Word Appears in both EIC and DUKES Names"
+    return "None" #incl. e == 999
+def ErrorCapacityDifferenceText(e):
+    e = int(e)
+    if e == 999:
+        return "None"
+    elif (e < 999) and (e >= 0):
+        return str(e)
+    return "None" #incl. e == 999
+def ErrorDateText(e):
+    e = int(e)
+    if e == -5:
+        return "Same Year"
+    elif e == -1:
+        return "Within a Year"
+    elif e == 0:
+        return "Unclear" 
+    elif e == 1: 
+        return "Startup Differences"
+    return "None" #incl. e == 999
+def ErrorGenTypeText(e): 
+    e = int(e)
+    if e == -5:
+        return "Same Generation Type Match"
+    elif e == -2:
+        return "Ambiguous Generation Type" 
+    elif e == 1:
+        return "Unknown Generation Type"
+    elif e == 10:
+        return "Generation Type Differences"
+    return "None" #incl. e == 999
+def ErrorMatch(e):
+    if int(e) == 1:
+        return "Matched" 
+    return "Not Matched" 
+
+
+#Primary Function
 def BMRSEICDUKESMap(ExcelName):
+    #The function this functionality is run through. Reads the excel, processes the matches (with scores), then outputs back to excel.
+    logger.info('\nBMRSEICDUKESMap Function Started: \'Data Error\'s below if found (not fatal): ')
+    
     #Read Excel
     data = pd.read_excel(ExcelName) #place "r" before the path string to address special character, such as '\'. Don't forget to put the file name at the end of the path + '.xlsx'
 
@@ -336,11 +409,14 @@ def BMRSEICDUKESMap(ExcelName):
                 ###    print(str(i + 1) + ' ' + data['Registered Resource Name'][i] + ' ' + Match) ###
         data.iloc[i, data.columns.get_loc('outputBMRSUnitToDUKESStation')] = match #When assigning a value to a dataframe, need to do this unfortunately (no way to do it with a string and integer index, so need to go for the integer one). Also it's row, column, rather than column, row as we use in other cases. 
         if a > 1:
-            print("Data Error: Multiple instances of EIC in EIC Station Data: " + str(data['Registered Resource EIC code'][i]))
+            #print("Data Error: Multiple instances of EIC in EIC Station Data: " + str(data['Registered Resource EIC code'][i]))
+            logger.warning("Data Error: Multiple instances of EIC in EIC Station Data: " + str(data['Registered Resource EIC code'][i]))
         if b > 1:
-            print("Data Error: Multiple instances of EIC in EIC Unit Data: " + str(data['Registered Resource EIC code'][i]))
+            #print("Data Error: Multiple instances of EIC in EIC Unit Data: " + str(data['Registered Resource EIC code'][i]))
+            logger.warning("Data Error: Multiple instances of EIC in EIC Unit Data: " + str(data['Registered Resource EIC code'][i]))
         if (((a + b) > 1) and (a < 2) and (b < 2)):
-            print("Data Error: Multiple instances of EIC in EIC Station and Unit Data: " + str(data['Registered Resource EIC code'][i]))
+            #print("Data Error: Multiple instances of EIC in EIC Station and Unit Data: " + str(data['Registered Resource EIC code'][i]))
+            logger.warning("Data Error: Multiple instances of EIC in EIC Station and Unit Data: " + str(data['Registered Resource EIC code'][i]))
             #Note, the multiple instance errors above occur when multiple EIC matches in the EIC data match the BMRS EIC code. So the same EIC code occurs multiple times in the EIC data. In this instance the last map is used.
             #The reason this doesn't have its own loop is that only EIC matches to BMRS are relevant, so only those are considered to save time. 
 
@@ -464,6 +540,7 @@ def BMRSEICDUKESMap(ExcelName):
 
     #The scores should sum to a verdict. If it is less than or equal to 'x' then it is approved.
     x = 10
+    logger.info('\nBMRSEICDUKESMap BMRS->EIC->DUKES mapping complete, results as follows: ')
     for i in range(0,len(data['outputDUKESToBMRS'])):
         error[i][4] = error[i][0] + error[i][1] + error[i][2] + error[i][3]
         data.iloc[i, data.columns.get_loc('ConfidenceScore')] = error[i][4]
@@ -471,14 +548,17 @@ def BMRSEICDUKESMap(ExcelName):
             data.iloc[i, data.columns.get_loc('ConfidenceResult')] = 1
         else:
             data.iloc[i, data.columns.get_loc('ConfidenceResult')] = 0
+        #Log final result for DUKES station. 
+        logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRS'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
+        
     
     #Re-export to excel, with the confidence values.
     data.to_excel(ExcelName, index = False)
+    logger.info('BMRSEICDUKESMap Function Completed')
 
 #Main Function
 if __name__ == "__main__":
     BMRSEICDUKESMap('Input.xlsx')
     #print("END")
     sys.exit()
-
 
