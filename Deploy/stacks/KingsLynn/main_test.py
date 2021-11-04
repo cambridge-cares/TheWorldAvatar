@@ -1,6 +1,6 @@
 from SPARQLWrapper import SPARQLWrapper, JSON
 import pyproj
-import kg_geojson
+import geojson_formatter
 ServerIP = "192.168.1.7"
 PortID   = "9995"
 DataBaseName = "blazegraph"
@@ -73,8 +73,8 @@ if __name__ == '__main__':
 
     NoOfBuilding = len(Output)
 
-    LHead = kg_geojson.WriteType()
-    LEnd = kg_geojson.WriteEnd()
+    LHead = geojson_formatter.WriteType()
+    LEnd = geojson_formatter.WriteEnd()
 
     MainText = LHead
     #for i in range(0,NoOfBuilding):
@@ -84,9 +84,9 @@ if __name__ == '__main__':
         BD,AvgH = GetCoordinateData(Output[i])
         GeometryInfo = BD
         if i == endloop -1:
-            Body = kg_geojson.WriteFeature(i,AvgH,GeometryInfo,1)
+            Body = geojson_formatter.WriteFeature(i, AvgH, GeometryInfo, 1)
         else:
-            Body = kg_geojson.WriteFeature(i,AvgH,GeometryInfo,0)
+            Body = geojson_formatter.WriteFeature(i, AvgH, GeometryInfo, 0)
         
         if GeometryInfo != 0:
             MainText = MainText + Body
