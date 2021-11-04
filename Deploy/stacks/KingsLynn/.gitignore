@@ -1,0 +1,58 @@
+# Useful links for more information about ignoring files:
+# https://git-scm.com/docs/gitignore
+# https://github.com/github/gitignore
+# https://www.toptal.com/developers/gitignore
+
+# Binary archives of any kind are not allowed:
+*.tar
+*.gz
+*.zip
+*.7z
+*.rar
+*.tgz
+*.hdt
+
+# Integrated Development Environment (IDE)-specific files/folders:
+.vscode/
+.code-workspace
+.idea/
+.settings/
+.metadata
+.classpath
+.project
+.factorypath
+
+# Java:
+*.jar
+*.war
+*.class
+log4j2.xml
+
+# Maven:
+target/
+
+# Python:
+__pycache__/
+*.py[cod]
+*$py.class
+*.pkl
+*.egg-info/
+.venv
+venv/
+.env
+env/
+
+# JavaScript:
+node_modules/
+jspm_packages/
+
+# Compiled/binary output folders:
+bin/
+build/
+dist/
+
+# Mac/OSX-specific files:
+.DS_Store
+
+# Windows-specific files:
+Thumbs.db
