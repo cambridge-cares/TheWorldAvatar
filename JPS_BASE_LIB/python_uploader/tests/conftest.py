@@ -54,7 +54,6 @@ def get_service_auth_file_path():
 
     return _get_service_auth_file_path
 
-
 @pytest.fixture(scope="session")
 def write_service_auth_to_file(get_service_auth):
     def _write_service_auth_to_file(service_name):
@@ -70,8 +69,7 @@ def write_service_auth_to_file(get_service_auth):
 def write_service_url_to_file(get_service_url):
     def _write_service_url_to_file(service_name, url_route):
         service_url = get_service_url(service_name, url_route)
-        url_file = os.path.join(THIS_DIR, "dummy_test_url.txt")
-        with open(url_file, 'w') as f:
+        with open(URL_FILE_PATH, 'w') as f:
             f.write(service_url)
-        return url_file
+        return URL_FILE_PATH
     return _write_service_url_to_file

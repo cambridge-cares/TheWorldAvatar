@@ -68,8 +68,9 @@ class Uploader:
         if not no_auth: auth = self._get_auth(auth_file)
 
         if self.supported_file_ext != 'all':
-            if file_ext != self.supported_file_ext:
-                raise NotImplementedError(f"Only {self.supported_file_ext} files are currently supported.")
+            for file_ext_i in file_ext.split(','):
+                if file_ext_i.strip() != self.supported_file_ext:
+                    raise NotImplementedError(f"Only {self.supported_file_ext} files are currently supported.")
         files = utils.get_files_by_extensions(file_or_dir,file_ext)
 
         file_locations: Dict[str,str] = {}
@@ -114,11 +115,11 @@ class Uploader:
             auth_file: Union[str,None]) -> Tuple[str,str]:
         if auth_file is None:
             logger.info(f"Reading the {self.uploader_name} secrets file path from environment variables.")
-        logger.info(f"Reading the {self.uploader_name} auth from the secrets file.")
-        try:
-            auth_file = utils.get_env_var_value(self.env_vars[BASE_AUTH_ENV_VAR_KEY])
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Error: The {self.uploader_name} secrets file does not exist.")
+            logger.info(f"Reading the {self.uploader_name} auth from the secrets file.")
+            try:
+                auth_file = utils.get_env_var_value(self.env_vars[BASE_AUTH_ENV_VAR_KEY])
+            except FileNotFoundError:
+                raise FileNotFoundError(f"Error: The {self.uploader_name} secrets file does not exist.")
         auth = utils.get_credentials_from_file(auth_file)
 
         return auth
