@@ -401,6 +401,15 @@ class ControlHandler {
 				"visibility",
 				(visible ? "visible" : "none")
 			);
+
+			// Is there a corresponding _clickable layer?
+			if(this._map.getLayer(layerID + "_clickable") != null) {
+				this._map.setLayoutProperty(
+					layerID + "_clickable",
+					"visibility",
+					(visible ? "visible" : "none")
+				);
+			}
 		} catch(err) {
 			console.log("WARN: Could not toggle '" + layerID + "', it may have no initial 'visibility' layout property?");
 		}

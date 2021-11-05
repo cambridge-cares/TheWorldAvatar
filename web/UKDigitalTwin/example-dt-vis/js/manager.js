@@ -74,9 +74,6 @@ class DigitalTwinManager {
 
 		let rootDir = this._rootDirectories[rootDirName];
 		if(rootDir == null) {
-			console.log("looking for " + rootDirName);
-			console.log(this._rootDirectories);
-			
 			console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
 			return;
 		}
@@ -93,7 +90,12 @@ class DigitalTwinManager {
 
 		let newLayers = this._layerHandler.addFixedLayers();
 		newLayers.forEach(layer => {
-			this._interactionHandler.registerInteractions(layer);
+			
+			if(layer[1] === "line") {
+				this._interactionHandler.registerInteractions([layer[0] + "_clickable", "line"]);
+			} else {
+				this._interactionHandler.registerInteractions(layer);
+			}
 		})
 	}
 
@@ -112,7 +114,12 @@ class DigitalTwinManager {
 		this._sourceHandler.addAdditionalSources(groups);
 		let newLayers = this._layerHandler.addAdditionalLayers(groups);
 		newLayers.forEach(layer => {
-			this._interactionHandler.registerInteractions(layer);
+
+			if(layer[1] === "line") {
+				this._interactionHandler.registerInteractions([layer[0] + "_clickable", "line"]);
+			} else {
+				this._interactionHandler.registerInteractions(layer);
+			}
 		})
 		
 		this._controlHandler.rebuildTree();

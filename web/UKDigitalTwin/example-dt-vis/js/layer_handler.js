@@ -92,6 +92,7 @@ class LayerHandler {
                 layerName= this.#addLineLayer(dataSet);
                 break;
         }
+        this.orderLayers();
         return [layerName, dataSet["locationType"]];
     }
 
@@ -240,6 +241,7 @@ class LayerHandler {
 
         let backupColor = this.#getRandomColor();
 
+        // Visible layer
         this._map.addLayer({
 			id: layerName,
 			source: sourceName,
@@ -257,10 +259,48 @@ class LayerHandler {
 			}
 		});
 
+        // Interaction layer
+        this._map.addLayer({
+			id: layerName + "_clickable",
+			source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+			type: 'line',
+			layout: {
+				'visibility': 'visible'
+			},
+			paint: {
+                'line-color': "#000000",
+                'line-opacity': 0.0,
+                'line-width': 10
+			}
+		});
+
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
     
+    /**
+     * Bump all point locations to the top of the stack, for better interactions
+     * they should really be above any line or fill layers.
+     */
+    orderLayers() {
+        var layers = this._map.getStyle().layers
+        layers.forEach(layer => {
+
+            if(layer["metadata"] && layer["metadata"]["provider"]) {
+                let provider = layer["metadata"]["provider"];
+
+                if(provider === "cmcl"){
+                    if(layer["type"] == "circle" || layer["type"] === "symbol") {
+                        this._map.moveLayer(layer["id"]);
+                    }
+                }
+            }
+        });
+    }
+
     /**
      * Returns a random color.
      * 
@@ -281,6 +321,5 @@ class LayerHandler {
     #getOutlineColor(fillColor) {
         return fillColor.replace("50%)", "35%)");
     }
-
 }
 // End of class.

@@ -17,6 +17,7 @@
         {
             "name": "assets-1-connections",
             "locationFile": "lines-1.geojson",
+            "metaFiles": ["lines-1-meta.json"],
             "locationType": "line"
         },
         {

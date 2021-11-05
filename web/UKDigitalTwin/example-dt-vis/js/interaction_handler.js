@@ -49,9 +49,6 @@ class InteractionHandler {
         // Interactions per layer type
         switch(layerType) {
             case "line":
-               // No interactions for line features
-            break;
-
             case "point":
                 // Mouse click
                 this._map.on("click", layerName, (event) => {
@@ -85,13 +82,17 @@ class InteractionHandler {
                         html += feature.properties["description"] + "</br></br>"
                     }
 
-                    // Add coordinate details if possible
                     if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
+                        // Add coordinate details if a point
                         html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
-                    }
+                        this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
 
-                    // Show popup
-                    this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
+                    } else if(coordinates.length >= 2) {
+                        // Not a point, determine center then show popup
+                        let centroid = turf.centroid(feature);
+                        let popupLoc = centroid["geometry"]["coordinates"];
+                        this._popup.setLngLat(popupLoc).setHTML(html).addTo(this._map);
+                    }
                 });
 
                 // Mouse exit
@@ -269,8 +270,6 @@ class InteractionHandler {
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
             document.getElementById("meta-tree").innerHTML = "";
 
-            console.log(allMetadata);
-
             if(allMetadata == null || Object.keys(allMetadata).length == 0) {
                 // Fallback to the GeoJSON properties
                 var metaTree = JsonView.renderJSON(feature.properties, document.getElementById("meta-tree"));
@@ -358,7 +357,9 @@ class InteractionHandler {
 
         for(var i = 0; i < datasets.length; i++) {
             // Check if the layer name is the same
-            if(datasets[i]["name"] === feature.layer["id"]) {
+            let layerName = feature.layer["id"].replace("_clickable", "");
+
+            if(datasets[i]["name"] === layerName) {
                 let metaFiles = datasets[i]["metaFiles"];
                 if(metaFiles == null || metaFiles.length == 0) continue;
 
@@ -403,7 +404,9 @@ class InteractionHandler {
            
             metaGroup["dataSets"].forEach(dataSet => {
                 // Check if the layer name is the same
-                if(dataSet["name"] === feature.layer["id"]) {
+                let layerName = feature.layer["id"].replace("_clickable", "");
+
+                if(dataSet["name"] === layerName) {
                     let metaFiles = dataSet["metaFiles"];
 
                         if(metaFiles != null) {
