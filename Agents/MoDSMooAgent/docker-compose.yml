@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  moo_agent_eg:
+    image: moo_agent_eg:0.0.1
+    build: .
+    container_name: moo_agent_eg
+    environment: 
+      DATA_DIR: /app/files
+    ports:
+      - "58085:8080"
+
+    volumes:
+      - external_maven_repo:/root/.m2
+      - ./MoDSMooAgent/files:/app/files
+      - /mnt/c/Users/ddeme/Documents/Demetris_SSH_Key.ppk:/var/run/secrets/csd3.ppk
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"      
