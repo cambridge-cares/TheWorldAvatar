@@ -297,23 +297,23 @@ def SmallOnLargeDiffFraction(num1, num2):
 def ErrorNameText(e):
     e = int(e)
     if e == -10:
-        return "Exact Match" 
+        return "Exact Match" + " (" + str(e) + ")"
     elif e == -9:
-        return "Roman Numeral / Decimal Writing Difference Only"
+        return "Roman Numeral / Decimal Writing Difference Only" + " (" + str(e) + ")"
     elif e == -8:
-        return "Simplified Names Match" 
+        return "Simplified Names Match" + " (" + str(e) + ")"
     elif e == -7:
-        return "Simplified Name with Roman Numeral / Decimal Writing Difference or Name Extension Convention Difference"
+        return "Simplified Name with Roman Numeral / Decimal Writing Difference or Name Extension Convention Difference" + " (" + str(e) + ")"
     elif e == -6:
-        return "Simplified Name with Roman Numeral / Decimal Writing Difference and Name Extension Convention Difference"
+        return "Simplified Name with Roman Numeral / Decimal Writing Difference and Name Extension Convention Difference" + " (" + str(e) + ")"
     elif e == -4: #No -5
-        return "First EIC Word Matches Whole DUKES Name" 
+        return "First EIC Word Matches Whole DUKES Name" + " (" + str(e) + ")"
     elif e == -3:
-        return "First Words of EIC and DUKES Match (if unique)"
+        return "First Words of EIC and DUKES Match (if unique)" + " (" + str(e) + ")"
     elif e == -2:
-        return "First Simplified EIC and DUKES Names Match"
+        return "First Simplified EIC and DUKES Names Match" + " (" + str(e) + ")"
     elif e == -1:
-        return "Any Simplified Unique Word Appears in both EIC and DUKES Names"
+        return "Any Simplified Unique Word Appears in both EIC and DUKES Names" + " (" + str(e) + ")"
     return "None" #incl. e == 999
 def ErrorCapacityDifferenceText(e):
     e = int(e)
@@ -325,28 +325,28 @@ def ErrorCapacityDifferenceText(e):
 def ErrorDateText(e):
     e = int(e)
     if e == -5:
-        return "Same Year"
+        return "Same Year" + " (" + str(e) + ")"
     elif e == -1:
-        return "Within a Year"
+        return "Within a Year" + " (" + str(e) + ")"
     elif e == 0:
-        return "Unclear" 
+        return "Unclear" + " (" + str(e) + ")"
     elif e == 1: 
-        return "Startup Differences"
+        return "Startup Differences" + " (" + str(e) + ")"
     return "None" #incl. e == 999
 def ErrorGenTypeText(e): 
     e = int(e)
     if e == -5:
-        return "Same Generation Type Match"
+        return "Same Generation Type Match" + " (" + str(e) + ")"
     elif e == -2:
-        return "Ambiguous Generation Type" 
+        return "Ambiguous Generation Type" + " (" + str(e) + ")"
     elif e == 1:
-        return "Unknown Generation Type"
+        return "Unknown Generation Type" + " (" + str(e) + ")"
     elif e == 10:
-        return "Generation Type Differences"
+        return "Generation Type Differences" + " (" + str(e) + ")"
     return "None" #incl. e == 999
 def ErrorMatch(e):
     if int(e) == 1:
-        return "Matched" 
+        return "Matched" + " (" + str(e) + ")"
     return "Not Matched" 
 
 
