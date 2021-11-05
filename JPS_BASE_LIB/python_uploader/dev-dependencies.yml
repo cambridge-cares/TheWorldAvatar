@@ -5,4 +5,5 @@ dependencies:
   - pip:
     - pytest
     - pytest-docker-compose
+    - pytest-html
     - -e .
