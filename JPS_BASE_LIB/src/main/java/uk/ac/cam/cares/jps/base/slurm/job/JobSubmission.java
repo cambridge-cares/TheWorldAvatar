@@ -443,12 +443,17 @@ public class JobSubmission{
 				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
 				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
+                                String privateKeyFilename =slurmJobProperty.getHpcServerPrivateKey();
 
 				try {
-					// Attempt to connect to a running instance of Pageant
-					Connector con = new PageantConnector();
-					IdentityRepository irepo = new RemoteIdentityRepository(con);
-					jsch.setIdentityRepository(irepo);
+                                        if(!privateKeyFilename.isEmpty()){
+                                            jsch.addIdentity(privateKeyFilename);
+                                        }else{
+                                            // Attempt to connect to a running instance of Pageant
+                                            Connector con = new PageantConnector();
+                                            IdentityRepository irepo = new RemoteIdentityRepository(con);
+                                            jsch.setIdentityRepository(irepo);
+                                        }
 					// If successful then attempt to authenticate using a public key first,
 					// falling back to using the password if no valid key is found
 					session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
