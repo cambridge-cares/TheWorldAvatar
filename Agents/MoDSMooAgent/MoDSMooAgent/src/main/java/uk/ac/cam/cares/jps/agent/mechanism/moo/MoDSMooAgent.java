@@ -238,7 +238,8 @@ public class MoDSMooAgent extends JPSAgent {
 			jobSubmission = new JobSubmission(MoDSMooAgentProperty.getAgentClass(), MoDSMooAgentProperty.getHpcAddress());
 			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(MoDSMooAgentProperty.getHpcServerLoginUserName());
 			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(MoDSMooAgentProperty.getHpcServerLoginUserPassword());
-			jobSubmission.slurmJobProperty.setAgentClass(MoDSMooAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setHpcServerPrivateKey(MoDSMooAgentProperty.getHpcServerPrivateKey());
+                        jobSubmission.slurmJobProperty.setAgentClass(MoDSMooAgentProperty.getAgentClass());
 			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(MoDSMooAgentProperty.getAgentCompletedJobsSpacePrefix());
 			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(MoDSMooAgentProperty.getAgentFailedJobsSpacePrefix());
 			jobSubmission.slurmJobProperty.setHpcAddress(MoDSMooAgentProperty.getHpcAddress());

@@ -18,7 +18,10 @@ public class MoDSMooAgentProperty {
 
 	@Value("${hpc.server.login.user.password}")
 	private String hpcServerLoginUserPassword;
-
+        
+        @Value("${hpc.server.login.user.privatekey}")
+        private String hpcServerPrivateKey;
+        
 	@Value("${agent.class}")
 	private String agentClass;
 	
@@ -89,6 +92,10 @@ public class MoDSMooAgentProperty {
 	public String getHpcServerLoginUserPassword() {
 		return hpcServerLoginUserPassword;
 	}
+
+        public String getHpcServerPrivateKey() {
+            return hpcServerPrivateKey;
+        }
 
 	public String getAgentClass() {
 		return agentClass;

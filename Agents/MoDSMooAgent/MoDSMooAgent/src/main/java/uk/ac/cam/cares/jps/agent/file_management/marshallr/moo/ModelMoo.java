@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,7 +29,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jayway.jsonpath.internal.Path;
+//import com.jayway.jsonpath.internal.Path;
+import java.nio.file.Paths;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMooAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
@@ -97,19 +99,19 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 		// -------------------------------------------Read from csv-----------------------------------------------------
 
 		//String csvPathFolder = "C:\\Users\\ddeme\\Desktop\\AM_OT_csv_files\\WorldAvatar_DataDrivenAgent_csv_file";
-		String csvPathFolder = "C:\\Users\\ddeme\\Documents\\Codes\\TheWorldAvatar\\Agents\\MoDSMooAgent\\files";
+		//String csvPathFolder = "C:\\Users\\ddeme\\Documents\\Codes\\TheWorldAvatar\\Agents\\MoDSMooAgent\\files";
+                String csvPathFolder = System.getenv("DATA_DIR");
 		String csvFileNameInput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_INPUTS_v2.csv";
 		String csvFileNameOutput = "specific_data_filter_steelmillgrade_toughnessposition_coolingflag_09022021_train_OUTPUTS_v2.csv";
 
-		String csvPathFileInput = csvPathFolder + "\\" + csvFileNameInput; 
-		String csvPathFileOutput = csvPathFolder + "\\" + csvFileNameOutput; 
+		Path csvPathFileInput = Paths.get(csvPathFolder,csvFileNameInput);
+                Path csvPathFileOutput = Paths.get(csvPathFolder,csvFileNameOutput);
 
-        String csvFileInput = new QueryBroker().readFileLocal(csvPathFileInput);
-        List<String[]> csvArrayInput = MatrixConverter.fromCsvToArray(csvFileInput);
-        String csvFileOutput = new QueryBroker().readFileLocal(csvPathFileOutput);
-        List<String[]> csvArrayOutput = MatrixConverter.fromCsvToArray(csvFileOutput);
+                String csvFileInput = new QueryBroker().readFileLocal(csvPathFileInput.toString());
+                List<String[]> csvArrayInput = MatrixConverter.fromCsvToArray(csvFileInput);
+                String csvFileOutput = new QueryBroker().readFileLocal(csvPathFileOutput.toString());
+                List<String[]> csvArrayOutput = MatrixConverter.fromCsvToArray(csvFileOutput);
         
-
 		// -----------------  Create the new directories/folders -----------------------------------------------------       
 		File dirPathDataAlgorithm = createDir(jobFolderPath, "Data_Algorithm");
 
