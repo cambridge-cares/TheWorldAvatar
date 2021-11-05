@@ -8,6 +8,9 @@ server = "localhost"
 port = "9999"
 namespace = "kings-lynn"
 
+# Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
+n = 2
+
 # Specify output coordinate reference system (CRS)
 # Our Mapbox plotting framework uses EPSG:4326 (https://epsg.io/4326)
 target_crs = 'urn:ogc:def:crs:EPSG::4326'
@@ -48,20 +51,38 @@ def create_sparql_prefix(abbreviation):
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
 
 
-def get_all_buildings():
+def get_buildings(number=None):
     """
-        Create SPARQL query to retrieve ALL buildings and associated (surface) geometries
+        Create SPARQL query to retrieve buildings and associated (surface) geometries
+
+        Arguments:
+            number - Number of buildings to retrieve data for
 
         Returns:
             SPARQL query to pass to Blazegraph
     """
 
+    # Create subquery to limit number of buildings for which to retrieve surface geometries
+    if number:
+        subquery = '''{ SELECT distinct ?bldg \
+                        WHERE { ?surf ocgl:cityObjectId ?bldg ; \
+                                      ocgl:GeometryType ?geom . } \
+                        LIMIT %i \
+                        }''' % number
+    else:
+        subquery = ''
+
     # Construct query
+    # Consider only surface polygons with provided geometries/polygons (some only refer to "told blank nodes")
     query = create_sparql_prefix('ocgl') + \
             create_sparql_prefix('xsd') + \
-            '''SELECT ?surf ?bldg ?geom \
+            '''SELECT ?bldg ?surf ?geom \
                WHERE { ?surf ocgl:cityObjectId ?bldg ; \
-       		                 ocgl:GeometryType ?geom . }'''
+       		                 ocgl:GeometryType ?geom . \
+       		   FILTER (!isBlank(?geom)) ''' + \
+            subquery + \
+       		'''} \
+       		   ORDER BY ?bldg'''
 
     return query
 
@@ -165,7 +186,7 @@ if __name__ == '__main__':
     query_endpoint = "http://" + server + ':' + port + '/blazegraph/namespace/' + namespace + "/sparql"
 
     # Retrieve SPARQL results from Blazegraph
-    kg_buildings = execute_query(get_all_buildings(), query_endpoint)
+    kg_buildings = execute_query(get_buildings(n), query_endpoint)
     kg_crs = execute_query(get_crs(), query_endpoint)
 
     # Unpack CRS SPARQL result to extract coordinate reference system
@@ -188,13 +209,9 @@ if __name__ == '__main__':
     total_features = len(features)
     for i in range(total_features):
 
+        # Extract and transform coordinates from String polygon returned by SPARQL query
         feature = str(features[i])
-
-        # Consider only surface polygons with provided coordinates (some have only literal values in Blazegraph)
-        if surfaces[feature][1][0].isdigit():
-            coords, zmax = get_coordinates(surfaces[feature][1], crs_in, crs_out)
-        else:
-            pass
+        coords, zmax = get_coordinates(surfaces[feature][1], crs_in, crs_out)
 
         # Specify feature properties to consider (beyond coordinates)
         props = {
@@ -214,6 +231,6 @@ if __name__ == '__main__':
     output += geojson_formatter.end_output()
 
     # Write output to file
-    file_name = 'Buildings.geojson'
+    file_name = 'Buildings2.geojson'
     with open(file_name, 'w') as f:
         f.write(output)
