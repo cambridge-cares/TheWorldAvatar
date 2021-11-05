@@ -7,12 +7,19 @@ FS_AUTH_ENV_VAR_VALUE = 'KG_FILE_SERVER_SECRETS'
 
 def get_file_server_uploader(
         uploader_name: str = 'file server',
-        supported_file_ext: str='all') -> Uploader:
+        supported_file_ext: str='all',
+        default_url: Union[str,None] = None,
+        default_auth_file: Union[str, None] = None,
+        default_no_auth: bool = False
+        ) -> Uploader:
 
     fs_uploader = Uploader(
         upload_file_func= upload_file,
         uploader_name=uploader_name,
-        supported_file_ext=supported_file_ext
+        supported_file_ext=supported_file_ext,
+        default_url = default_url,
+        default_auth_file = default_auth_file,
+        default_no_auth = default_no_auth
     )
 
     fs_uploader.set_url_env_var_value(FS_URL_ENV_VAR_VALUE)

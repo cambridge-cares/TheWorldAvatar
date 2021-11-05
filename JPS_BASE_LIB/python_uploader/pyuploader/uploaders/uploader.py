@@ -16,7 +16,10 @@ class Uploader:
         self,
         upload_file_func: Callable,
         uploader_name: str = 'uploader',
-        supported_file_ext: str = 'all'):
+        supported_file_ext: str = 'all',
+        default_url: Union[str, None] = None,
+        default_auth_file: Union[str, None] = None,
+        default_no_auth: bool = False):
 
         self.upload_file_func = upload_file_func
         self.env_vars: Dict[str,str] = {BASE_URL_ENV_VAR_KEY: '',
@@ -24,6 +27,9 @@ class Uploader:
 
         self.uploader_name = uploader_name
         self.supported_file_ext = supported_file_ext
+        self.default_url = default_url
+        self.default_auth_file = default_auth_file
+        self.default_no_auth = default_no_auth
 
     def set_url_env_var_value(self,
         url_env_var_value: str) -> None:
@@ -33,13 +39,19 @@ class Uploader:
         auth_env_var_value: str) -> None:
         self.env_vars[BASE_AUTH_ENV_VAR_KEY] = auth_env_var_value
 
+    def get_url_env_var_value(self) -> str:
+        return self.env_vars[BASE_URL_ENV_VAR_KEY]
+
+    def get_auth_env_var_value(self) -> str:
+        return self.env_vars[BASE_AUTH_ENV_VAR_KEY]
+
     def set_logging(self,
         log_file_dir: Union[str, None] = None,
         log_file_name: Union[str, None]= None,
         no_file_logging: bool = False):
 
         if log_file_name is None:
-            log_file_name = self.uploader_name + '.log'
+            log_file_name = self.uploader_name.replace(' ', '_') + '.log'
 
         logconfig.config_logging(
             log_file_dir,
@@ -47,12 +59,12 @@ class Uploader:
             no_file_logging)
 
     def upload(self,
-        url: Union[str, None],
-        auth_file: Union[str, None],
         file_ext: str,
-        dry_run: bool,
         file_or_dir: str,
-        no_auth: bool,
+        url: Union[str, None] = None,
+        auth_file: Union[str, None] = None,
+        no_auth: Union[bool,None] = None,
+        dry_run: bool = False,
         subdirs: Union[str, None]=None,
         *args, **kwargs) -> Dict[str,str]:
 
@@ -62,10 +74,17 @@ class Uploader:
             logger.info(f"#######################")
             logger.info(f"")
 
-        if url is None: url = self._get_url()
+        # url and auth details
+        #-------------------------------------------
+        if url is None: url= self.default_url
+        if url is None: url= self._get_url()
 
         auth: Tuple[str,str] = ('','')
-        if not no_auth: auth = self._get_auth(auth_file)
+        if no_auth is None: no_auth = self.default_no_auth
+        if not no_auth:
+            if auth_file is None: auth_file= self.default_auth_file
+            auth = self._get_auth(auth_file)
+        #-------------------------------------------
 
         if self.supported_file_ext != 'all':
             for file_ext_i in file_ext.split(','):
@@ -88,7 +107,7 @@ class Uploader:
                     file_locations[f] = location
             logger.info(f"Uploading files to the {self.uploader_name} finished.")
         else:
-            logger.info('No files to upload')
+            logger.info('No files to upload. Check if the file/directory exists or if the directory contains files that match the specified extensions.')
         logger.info(f"---------------------------------------------------------------------------")
         return file_locations
 

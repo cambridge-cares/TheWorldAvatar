@@ -26,19 +26,22 @@ def upload(
 
     uploaded_locations = {}
 
-    uploader = get_uploader(uploader_type)
+    uploader = get_uploader(
+        uploader_type=uploader_type,
+        default_url=url,
+        default_auth_file=auth_file,
+        default_no_auth=no_auth
+        )
+
     uploader.set_logging(
         log_file_dir=log_file_dir,
         log_file_name=log_file_name,
         no_file_logging=no_file_logging
-    )
+        )
 
     uploaded_locations = uploader.upload(
         file_or_dir=file_or_dir,
         file_ext=file_ext,
-        url=url,
-        auth_file=auth_file,
-        no_auth=no_auth,
         subdirs=subdirs,
         dry_run=dry_run
         )
