@@ -102,6 +102,26 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 
 	/**
+	 * Adds a label as rdfs:label to the OWL class.
+	 * 
+	 * @param className
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToOWLClass(String className, String label) throws JPSRuntimeException{
+		if(label!=null && !label.isEmpty()){
+			// Reads the class from the ontology model. If not available, 
+			// it creates the class.
+			OWLClass clas = createClass(className);
+			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), labelAnnotation)));
+		}
+	}
+
+	
+	/**
 	 * Adds the definition as a comment to the OWL class.
 	 * 
 	 * @param className

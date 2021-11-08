@@ -74,6 +74,16 @@ public interface ITBoxManagement {
 	public void createOWLObjectProperty(String propertyName, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
 	
 	/**
+	 * Adds a label as rdfs:label to the OWL class.
+	 * 
+	 * @param className
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToOWLClass(String className, String label) throws JPSRuntimeException;
+	
+	
+	/**
 	 * Adds the definition as a comment to the OWL class.
 	 * 
 	 * @param className

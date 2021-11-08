@@ -540,6 +540,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToClass(tokens[0], tokens[8]);
 		}
+		
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToOWLClass(tokens[0], tokens[9]);
+		}
 	}
 	
 	/**
