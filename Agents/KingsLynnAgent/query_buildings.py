@@ -4,7 +4,10 @@ from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 from geojson_rewind import rewind
 import pyproj
 
-import geojson_formatter
+import geojson_creator
+
+
+###   SPECIFY INPUTS   ###
 
 # Specify (local) Blazegraph properties
 server = "localhost"
@@ -12,7 +15,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 10
+n = None
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -20,6 +23,8 @@ PREFIXES = {
     'xsd': 'http://www.w3.org/2001/XMLSchema#'
 }
 
+
+###   FUNCTIONS   ###
 
 def create_sparql_prefix(abbreviation):
     """
@@ -80,7 +85,7 @@ def get_buildings(number=None):
        		                 ocgl:GeometryType ?geom . \
        		   FILTER (!isBlank(?geom)) ''' + \
             subquery + \
-       		'''} \
+            '''} \
        		   ORDER BY ?bldg'''
 
     return query
@@ -192,14 +197,14 @@ if __name__ == '__main__':
         print('\nERROR: SPARQL query endpoint not found! Please ensure correct namespace and reachable triple store.\n')
         raise e
 
-    # Unpack CRS SPARQL result to extract coordinate reference system
+    # Unpack CRS result to extract coordinate reference system
     try:
         crs = kg_crs['results']['bindings'][0][kg_crs['head']['vars'][0]]['value']
     except IndexError as e:
         print('\nERROR: No CRS could be retrieved from specified triple store namespace.\n')
         raise Exception('No CRS could be retrieved from specified triple store namespace.')
 
-    # Unpack buildings SPARQL results into dictionary in format {surface_IRI: [building_IRI, polygon_data]}
+    # Unpack buildings results into dictionary in format {surface_IRI: [building_IRI, polygon_data]}
     surfaces = {}
     for s in kg_buildings["results"]["bindings"]:
         surfaces[s['surf']['value']] = [s['bldg']['value'], s["geom"]["value"]]
@@ -210,10 +215,11 @@ if __name__ == '__main__':
     # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
     # Mapbox: https://docs.mapbox.com/help/glossary/projection/
     target_crs = 'urn:ogc:def:crs:OGC::CRS84'
+    #target_crs = 'urn:ogc:def:crs:OGC:1.3:CRS84'
     crs_out = pyproj.CRS.from_string(target_crs)
 
-    # Start GeoJSON output file
-    output = geojson_formatter.start_output(target_crs)
+    # Initialise GeoJSON output dictionary
+    output = geojson_creator.initialise_geojson(target_crs)
 
     # Iterate through all geospatial features
     features = list(surfaces.keys())
@@ -230,16 +236,8 @@ if __name__ == '__main__':
             'max_height': round(zmax, 3)
         }
 
-        if i == total_features - 1:
-            body = geojson_formatter.write_feature(feature, props, coords, 1)
-        else:
-            body = geojson_formatter.write_feature(feature, props, coords, 0)
-
-        # Append feature data to GeoJSON output
-        output += body
-
-    # Finalise GeoJSON output
-    output += geojson_formatter.end_output()
+        # Append feature to GeoJSON FeatureCollection
+        output['features'].append(geojson_creator.add_feature(feature, props, coords))
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
     # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
@@ -247,7 +245,7 @@ if __name__ == '__main__':
     # Restore json dictionary from returned String by rewind method
     output = json.loads(rewound)
 
-    # Write output to file
+    # Write GeoJSON dictionary nicely formatted to file
     file_name = 'Buildings_.geojson'
     with open(file_name, 'w') as f:
         json.dump(output, indent=4, fp=f)
