@@ -1,4 +1,4 @@
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 import pyproj
 
 import geojson_formatter
@@ -186,11 +186,19 @@ if __name__ == '__main__':
     query_endpoint = "http://" + server + ':' + port + '/blazegraph/namespace/' + namespace + "/sparql"
 
     # Retrieve SPARQL results from Blazegraph
-    kg_buildings = execute_query(get_buildings(n), query_endpoint)
-    kg_crs = execute_query(get_crs(), query_endpoint)
+    try:
+        kg_buildings = execute_query(get_buildings(n), query_endpoint)
+        kg_crs = execute_query(get_crs(), query_endpoint)
+    except SPARQLExceptions.EndPointNotFound as e:
+        print('\nERROR: SPARQL query endpoint not found! Please ensure correct namespace and reachable triple store.\n')
+        raise e
 
     # Unpack CRS SPARQL result to extract coordinate reference system
-    crs = kg_crs['results']['bindings'][0][kg_crs['head']['vars'][0]]['value']
+    try:
+        crs = kg_crs['results']['bindings'][0][kg_crs['head']['vars'][0]]['value']
+    except IndexError as e:
+        print('\nERROR: No CRS could be retrieved from specified triple store namespace.\n')
+        raise Exception('No CRS could be retrieved from specified triple store namespace.')
 
     # Unpack buildings SPARQL results into dictionary in format {surface_IRI: [building_IRI, polygon_data]}
     surfaces = {}
@@ -231,6 +239,6 @@ if __name__ == '__main__':
     output += geojson_formatter.end_output()
 
     # Write output to file
-    file_name = 'Buildings2.geojson'
+    file_name = 'Buildings_.geojson'
     with open(file_name, 'w') as f:
         f.write(output)
