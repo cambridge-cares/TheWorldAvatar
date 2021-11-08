@@ -50,6 +50,7 @@ class InteractionHandler {
         switch(layerType) {
             case "line":
             case "point":
+            case "symbol":
                 // Mouse click
                 this._map.on("click", layerName, (event) => {
                     let feature = event.features[0];
@@ -270,15 +271,11 @@ class InteractionHandler {
         Promise.all([finalFixedPromise, finalAdditionalPromise]).then(() => {
             document.getElementById("meta-tree").innerHTML = "";
 
-            if(allMetadata == null || Object.keys(allMetadata).length == 0) {
-                // Fallback to the GeoJSON properties
-                var metaTree = JsonView.renderJSON(feature.properties, document.getElementById("meta-tree"));
-                JsonView.expandChildren(metaTree);
-            } else {
+            if(allMetadata != null && Object.keys(allMetadata).length > 0) {
                 // Show the metadata tree
                 var metaTree = JsonView.renderJSON(allMetadata, document.getElementById("meta-tree"));
                 JsonView.expandChildren(metaTree);
-            }
+            } 
         });
     }
 

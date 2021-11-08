@@ -79,6 +79,10 @@ class LayerHandler {
                 layerName = this.#addPointLayer(dataSet);
                 break;
 
+            case "symbol":
+                layerName = this.#addSymbolLayer(dataSet);
+                break;
+
             case "fill":
             case "polygon":
                 layerName = this.#addFillLayer(dataSet);
@@ -149,6 +153,37 @@ class LayerHandler {
 				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
 				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
                 'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 0.75]
+			}
+		});
+
+        console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        return layerName;
+    }
+
+    /**
+     * Adds a layer to show symbol location data.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+    #addSymbolLayer(dataSet) {
+        let layerName = dataSet["name"];
+        let sourceName = dataSet["name"];
+
+        this._map.addLayer({
+			id: layerName,
+			source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+            type: 'symbol',
+			layout: {
+				'visibility': 'visible'
+			},
+			layout: {
+				'icon-image': ["case", ["has", "icon-image"], ["get", "icon-image"], "circle-black"],
+				'icon-size':  ["case", ["has", "icon-size"], ["get", "icon-size"], 1.0],
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': true
 			}
 		});
 

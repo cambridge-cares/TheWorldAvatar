@@ -21,6 +21,11 @@
                 "layerName": "Asset Owner #2",
                 "defaultState": "visible",
                 "layerIDs": ["assets-2"]
+            },
+            {
+                "layerName": "Asset Owner #3",
+                "defaultState": "visible",
+                "layerIDs": ["assets-3"]
             }
         ]
     },

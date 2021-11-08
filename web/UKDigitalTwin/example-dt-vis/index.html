@@ -22,11 +22,11 @@
 		release, these files will be hosted remotely).  
 	-->
 	
-	<!-- Local CSS -->
+	<!-- Framework CSS -->
 	<link href='./css/digital_twin_style.css' rel='stylesheet' />
 	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
 
-	<!-- Local JS -->
+	<!-- Framework JS -->
 	<script src='./js/manager.js'></script>
 	<script src='./js/data_registry.js'></script>
 	<script src='./js/source_handler.js'></script>
@@ -35,7 +35,11 @@
 	<script src='./js/panel_handler.js'></script>
 	<script src='./js/interaction_handler.js'></script>
 	<script src='./js/timeseries_handler.js'></script>
+	<script src='./js/icon_handler.js'></script>
 	<script src='./js/jsonview.bundle.js'></script>
+
+	<!-- Implementation specific -->
+	<script src='./local_icons.js'></script>
 </head>
 </head>
 
@@ -76,7 +80,7 @@
 		// Will run once metadata is loaded asynchronously
 		function startUp() {
 			// Create the MapBox map
-			let map = manager.createMap("map");
+			var map = manager.createMap("map");
 
 			// Provide some default content for the side panel
 			let title = `Example Visualisation`;
@@ -101,8 +105,8 @@
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);
 			
-			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources and layers.
-			// This means that we have to listen for this event (below) and re-add sources and re-add layers.
+			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
+			// This means that we have to listen for this event (below) and re-add everything.
 			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
 			// styles, but there is an open feature request for MapBox to implement this.
 			var loadedOnce = false;
@@ -113,8 +117,15 @@
 				// Plot the Fixed Data locations
 				manager.plotFixedData();
 
-				// Re-plot any previously plotted Additional Data sources
-				//manager.restoreAllAdditionalData();
+				// Re-register icon images used by this visualisation
+				let winURL = window.location;
+				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+
+				var iconHandler = new IconHandler(map);
+				EXAMPLE_ICONS.forEach(relativeURL => {
+					let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+					iconHandler.registerIcon(imageURL);
+				});
 
 				// On first load only
 				if(!loadedOnce) {
