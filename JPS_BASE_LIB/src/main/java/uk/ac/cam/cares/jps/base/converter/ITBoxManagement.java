@@ -93,6 +93,15 @@ public interface ITBoxManagement {
 	public void addDefinitionToOWLClass(String className, String definition) throws JPSRuntimeException;
 	
 	/**
+	 * Adds a label to the current object property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToObjectProperty(String property, String label) throws JPSRuntimeException;
+	
+	/**
 	 * Adds the definition of the current object property.
 	 * 
 	 * @param property

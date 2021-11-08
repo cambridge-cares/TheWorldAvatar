@@ -139,6 +139,26 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 					dataFactory.getOWLAnnotationAssertionAxiom(clas.getIRI(), definitionLiteral)));
 		}
 	}
+
+	/**
+	 * Adds a label to the current object property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToObjectProperty(String property, String label) throws JPSRuntimeException{
+		if(label!=null && !label.isEmpty()){
+			// Reads the object property from the ontology model. If not available, 
+			// it creates the property.
+			OWLObjectProperty objectProperty = createObjectProperty(property);
+			OWLAnnotationProperty rdfsLabel = dataFactory.getRDFSLabel();
+			OWLAnnotation labelAnnotation = dataFactory.getOWLAnnotation(rdfsLabel, dataFactory.getOWLLiteral(label));
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLAnnotationAssertionAxiom(objectProperty.getIRI(), labelAnnotation)));
+		}
+	}
+
 	
 	/**
 	 * Adds the definition of the current object property.
