@@ -685,21 +685,83 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param range
 	 * @return
 	 */
-	private OWL2Datatype getRange(String range){
-		if(range.equalsIgnoreCase("string")){
+	private OWL2Datatype getRange(String range) {
+		switch (range.toLowerCase()) {
+		case "string":
 			return OWL2Datatype.XSD_STRING;
-		} else if(range.equalsIgnoreCase("integer") || range.equalsIgnoreCase("int")){
+		case "integer":
 			return OWL2Datatype.XSD_INTEGER;
-		} else if(range.equalsIgnoreCase("float")){
+		case "int":
+			return OWL2Datatype.XSD_INT;
+		case "float":
 			return OWL2Datatype.XSD_FLOAT;
-		} else if(range.equalsIgnoreCase("double")){
+		case "double":
 			return OWL2Datatype.XSD_DOUBLE;
-		} else if(range.equalsIgnoreCase("datetime")){
+		case "date time":
 			return OWL2Datatype.XSD_DATE_TIME;
-		} else if(range.equalsIgnoreCase("timestamp")){
+		case "date time stamp":
 			return OWL2Datatype.XSD_DATE_TIME_STAMP;
+		case "boolean":
+			return OWL2Datatype.XSD_BOOLEAN;
+		case "long":
+			return OWL2Datatype.XSD_LONG;
+		case "decimal":
+			return OWL2Datatype.XSD_DECIMAL;
+		case "negative integer":
+			return OWL2Datatype.XSD_NEGATIVE_INTEGER;
+		case "non negative integer":
+			return OWL2Datatype.XSD_NON_NEGATIVE_INTEGER;
+		case "non positive integer":
+			return OWL2Datatype.XSD_NON_POSITIVE_INTEGER;
+		case "rational":
+			return OWL2Datatype.OWL_RATIONAL;
+		case "real":
+			return OWL2Datatype.OWL_REAL;
+		case "literal":
+			return OWL2Datatype.RDFS_LITERAL;
+		case "lang string":
+			return OWL2Datatype.RDF_LANG_STRING;
+		case "plain literal":
+			return OWL2Datatype.RDF_PLAIN_LITERAL;
+		case "xml literal":
+			return OWL2Datatype.RDF_XML_LITERAL;
+		case "any uri":
+			return OWL2Datatype.XSD_ANY_URI;
+		case "base 64 binary":
+			return OWL2Datatype.XSD_BASE_64_BINARY;
+		case "byte":
+			return OWL2Datatype.XSD_BYTE;
+		case "hex binary":
+			return OWL2Datatype.XSD_HEX_BINARY;
+		case "language":
+			return OWL2Datatype.XSD_LANGUAGE;
+		case "name":
+			return OWL2Datatype.XSD_NAME;
+		case "ncname":
+			return OWL2Datatype.XSD_NCNAME;
+		case "nmtoken":
+			return OWL2Datatype.XSD_NMTOKEN;
+		case "normalized string":
+			return OWL2Datatype.XSD_NORMALIZED_STRING;
+		case "positive integer":
+			return OWL2Datatype.XSD_POSITIVE_INTEGER;
+		case "short":
+			return OWL2Datatype.XSD_SHORT;
+		case "token":
+			return OWL2Datatype.XSD_TOKEN;
+		case "unsigned byte":
+			return OWL2Datatype.XSD_UNSIGNED_BYTE;
+		case "unsigned int":
+			return OWL2Datatype.XSD_UNSIGNED_INT;
+		case "unsigned long":
+			return OWL2Datatype.XSD_UNSIGNED_LONG;
+		case "unsigned short":
+			return OWL2Datatype.XSD_UNSIGNED_SHORT;
+		default:
+			logger.warn("The following data type is not valid:" + range
+					+ ". Now the converter will proceed with the string data type.");
+			return OWL2Datatype.XSD_STRING;
 		}
-		return OWL2Datatype.XSD_STRING;
 	}
 	
 	/**
