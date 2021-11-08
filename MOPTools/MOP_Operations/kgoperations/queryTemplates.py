@@ -1,4 +1,4 @@
-def testquery():
+def getMOPIRIs():
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
