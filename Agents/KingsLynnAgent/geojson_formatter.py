@@ -1,15 +1,25 @@
 # Define GeoJSON writer formats
 
-def start_output(crs_name):
-    # Returns properly formatted start of GeoJSON output incl. CRS definition (file, etc.)
+def start_output(crs_name='urn:ogc:def:crs:OGC::CRS84'):
+    # Returns properly formatted start of GeoJSON output
+    # According to latest standard, all GeoJSON coordinates SHALL be in "urn:ogc:def:crs:OGC::CRS84" CRS (default)
+    # The use of alternative CRS is still possible, but STRONGLY advices against
+
+    # create CRS member substring
+    if crs_name == 'urn:ogc:def:crs:OGC::CRS84':
+        crs_member = ''
+    else:
+        crs_member = '	' + '"crs": {' + '\n' \
+                     + '	    ' + '"type": "name",' + '\n' \
+                     + '	    ' + '"properties": {' + '\n' \
+                     + '	        ' + '"name": "' + str(crs_name) + '"' + '\n' \
+                     + '	    ' + '}' + '\n' \
+                     + '	' + '},' + '\n' \
+
+    # Create GeoJSON file start
     out = '{' + '\n' \
           + '	' + '"type": "FeatureCollection",' + '\n' \
-          + '	' + '"crs": {' + '\n' \
-          + '	    ' + '"type": "name",' + '\n' \
-          + '	    ' + '"properties": {' + '\n' \
-          + '	        ' + '"name": "' + str(crs_name) + '"' + '\n' \
-          + '	    ' + '}' + '\n' \
-          + '	' + '},' + '\n' \
+          + crs_member \
           + '	' + '"features": [' + '\n'
 
     return out

@@ -11,10 +11,6 @@ namespace = "kings-lynn"
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
 n = 2
 
-# Specify output coordinate reference system (CRS)
-# Our Mapbox plotting framework uses EPSG:4326 (https://epsg.io/4326)
-target_crs = 'urn:ogc:def:crs:EPSG::4326'
-
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     'ocgl': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
@@ -205,8 +201,12 @@ if __name__ == '__main__':
     for s in kg_buildings["results"]["bindings"]:
         surfaces[s['surf']['value']] = [s['bldg']['value'], s["geom"]["value"]]
 
-    # Initialise pyproj CRS objects
+    # Initialise pyproj coordinate reference system (CRS) objects
     crs_in = pyproj.CRS.from_string(crs)
+    # Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
+    # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
+    # Mapbox: https://docs.mapbox.com/help/glossary/projection/
+    target_crs = 'urn:ogc:def:crs:OGC::CRS84'
     crs_out = pyproj.CRS.from_string(target_crs)
 
     # Start GeoJSON output file
