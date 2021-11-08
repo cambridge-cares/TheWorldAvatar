@@ -1,4 +1,7 @@
+import json
+
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
+from geojson_rewind import rewind
 import pyproj
 
 import geojson_formatter
@@ -9,7 +12,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 2
+n = 10
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -238,7 +241,13 @@ if __name__ == '__main__':
     # Finalise GeoJSON output
     output += geojson_formatter.end_output()
 
+    # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
+    # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
+    rewound = rewind(output)
+    # Restore json dictionary from returned String by rewind method
+    output = json.loads(rewound)
+
     # Write output to file
     file_name = 'Buildings_.geojson'
     with open(file_name, 'w') as f:
-        f.write(output)
+        json.dump(output, indent=4, fp=f)
