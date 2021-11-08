@@ -1,4 +1,4 @@
-from kgoperations.javagateway import jpsBaseLibGW
+from CBU_to_os_JSON.kgoperations.javagateway import jpsBaseLibGW
 import json
 
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()

@@ -1,4 +1,4 @@
-from kgoperations.javagateway import jpsBaseLibGW
+from MOP_to_omJSON.kgoperations.javagateway import jpsBaseLibGW
 import json
 
 jpsBaseLib_view = jpsBaseLibGW.createModuleView()

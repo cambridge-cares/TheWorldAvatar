@@ -1,6 +1,6 @@
-from kgoperations.querykg import querykg
-from kgoperations.queryendpoints import SPARQL_ENDPOINTS
-from kgoperations.querytemplate import spin_inchi_query
+from CBU_to_os_JSON.kgoperations.querykg import querykg
+from CBU_to_os_JSON.kgoperations.queryendpoints import SPARQL_ENDPOINTS
+from CBU_to_os_JSON.kgoperations.querytemplate import spin_inchi_query
 
 def printJSON(inchi_string, spin_number):
     result_1  = querykg(SPARQL_ENDPOINTS['ontospecies'], spin_inchi_query(inchi_string, spin_number)) 
