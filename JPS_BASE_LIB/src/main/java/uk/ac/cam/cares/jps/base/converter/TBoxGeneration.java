@@ -582,6 +582,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * - the property definition (as a comment)
 	 * - the defined by property
 	 * - the domain and range
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -593,6 +594,9 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		}
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToDataProperty(tokens[0], tokens[8]);
+		}
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToDataProperty(tokens[0], tokens[9]);
 		}
 	}
 	

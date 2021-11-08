@@ -111,6 +111,15 @@ public interface ITBoxManagement {
 	public void addDefinitionToObjectProperty(String property, String definition) throws JPSRuntimeException;
 	
 	/**
+	 * Adds a label to the current data property.
+	 * 
+	 * @param property
+	 * @param label
+	 * @throws JPSRuntimeException
+	 */
+	public void addLabelToDataProperty(String property, String label) throws JPSRuntimeException;
+	
+	/**
 	 * Adds the definition of the current data property.
 	 * 
 	 * @param property
