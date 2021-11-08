@@ -1,32 +1,46 @@
 package uk.ac.cam.cares.jps.bio;
 
-import com.sun.jna.StringArray;
 import org.json.JSONArray;
 import org.json.JSONObject;
-//import org.locationtech.jts.awt.PointShapeFactory;
-//import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.bio.json.parser.JSonRequestParser;
 
 import java.sql.SQLException;
 
 public class CrossDomainQuery extends JSONObject{
     //Variables that can be used later in the agent
-    private static final String OCGML           = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
-    private static final String BIO             = "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/";
-    private static final String GEO             = "http://www.bigdata.com/rdf/geospatial#";
-    private static final String TWA             = "http://www.theworldavatar.com:83/citieskg/namespaces/singaporeEPSG24500/sparql/cityobject/";
-    private static final String GEO_GRAPH       = "http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql/cityobjectgenericattrib/";
+    /*
+    These lines are commented for now and will be used later when the queries are later replaced by Query Builder
 
-    String queryEndpointGeo                     = "http://www.theworldavatar.com:83/citieskg/namespaces/singaporeEPSG24500/sparql";
-    String queryEndpointChem                    = "http://www.theworldavatar.com/blazegraph/sgbiodieselplants/sparql";
+    private static final String OCGML                   = "http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#";
+    private static final String BIO                     = "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/";
+    private static final String GEO                     = "http://www.bigdata.com/rdf/geospatial#";
+    private static final String TWA                     = "http://www.theworldavatar.com:83/citieskg/namespaces/singaporeEPSG24500/sparql/cityobject/";
+    private static final String GEO_GRAPH               = "http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql/cityobjectgenericattrib/";
+    */
 
-    String bioIRIs                              = " ?IRIs";
-    String cost                                 = " ?cost";
+    // SPARQL end-points for the queries
+    static String queryEndpointGeo                     = "http://www.theworldavatar.com:83/citieskg/namespace/singaporeEPSG24500/sparql";
+    static String queryEndpointChem                    = "http://www.theworldavatar.com/blazegraph/namespace/sgbiodieselplants/sparql";
+
+    // Variables to be used in the queries
+    static String bioIRIs                              = " ?IRIs";
+    static String cost                                 = " ?cost";
 
 
+    /**
+    * This part is the main method that takes input from CrossDomainQueryAgent and passes them in
+    * the below mentioned queries. The geospatial query returns the list of IRIs of all the items
+    * present within a bounding box; the chemical engineering part of the query returns the costs
+    * and the IRIs after a filter based on the cost of the items. Then we compare these two lists
+    * to return a final list that contains IRIs and costs of equipments within a specified region
+    * and have a cost above the prescribed limit.
+    */
 
+    public static JSONObject performCrossDomainQuery(JSONObject jsonObject) throws SQLException {
 
-    public JSONObject performCrossDomainQuery(JSONObject jsonObject) throws SQLException {
+        JSONArray result = new JSONArray();
+        JSONObject result1 = new JSONObject();
 
         String upperBounds                          = JSonRequestParser.getUPPER_LIMITS(jsonObject.toString());
         String lowerBounds                          = JSonRequestParser.getLOWER_LIMITS(jsonObject.toString());
@@ -34,10 +48,74 @@ public class CrossDomainQuery extends JSONObject{
 
         JSONArray geoSpatialQueryResult             = runQuery(buildGeoSpatialQuery(lowerBounds,upperBounds), queryEndpointGeo);
 
-        return null;
+        for (int i = 0; i < geoSpatialQueryResult.length(); i++) {
+            JSONObject geoS = geoSpatialQueryResult.getJSONObject(i);
+            String geoIRIs = geoS.getString("IRIs");
+
+
+            JSONArray chemEngQueryResult = runQuery(buildChemEngQuery(equipmentCost,bioIRIs), queryEndpointChem);
+            for (int j = 0; j< chemEngQueryResult.length(); j++) {
+                JSONObject chemS = chemEngQueryResult.getJSONObject(j);
+                String chemIRIs = chemS.getString("IRIs");
+                if (chemIRIs.equals(geoIRIs)) {
+                    System.out.println(chemIRIs);
+                    String cost = chemS.getString("cost");
+                    System.out.println(cost);
+                    JSONObject row = new JSONObject();
+                    row.put("iri", chemIRIs);
+                    row.put("cost", cost);
+                    result.put(row);
+                }
+            }
+        }
+        result1.put("result", result);
+
+        return result1;
     }
 
-    public static  void main(String[] args) throws SQLException {
+    /*
+    public static void main(String[] args) throws SQLException {
+
+        JSONArray result = new JSONArray();
+
+        JSONObject jsonObject = new JSONObject();
+        JSONObject bounds = new JSONObject();
+        bounds.put("lower_bounds","10428#26648#0#10428#26648#0#10428#26648#0#10428#26648#0#10428#26648#0");
+        bounds.put("upper_bounds","10880#26955#10#10880#26955#10#10880#26955#10#10880#26955#10#10880#26955#10");
+        bounds.put("equip_cost","30000");
+        jsonObject.put("job",bounds);
+        String upperBounds                          = JSonRequestParser.getUPPER_LIMITS(jsonObject.toString());
+        String lowerBounds                          = JSonRequestParser.getLOWER_LIMITS(jsonObject.toString());
+        String equipmentCost                        = JSonRequestParser.getEQUIP_COST(jsonObject.toString());
+        JSONArray geoSpatialQueryResult             = runQuery(buildGeoSpatialQuery(lowerBounds,upperBounds), queryEndpointGeo);
+
+
+        for (int i = 0; i < geoSpatialQueryResult.length(); i++) {
+            JSONObject geoS = geoSpatialQueryResult.getJSONObject(i);
+            String geoIRIs = geoS.getString("IRIs");
+
+
+        JSONArray chemEngQueryResult = runQuery(buildChemEngQuery(equipmentCost,bioIRIs), queryEndpointChem);
+        for (int j = 0; j< chemEngQueryResult.length(); j++) {
+            JSONObject chemS = chemEngQueryResult.getJSONObject(j);
+            String chemIRIs = chemS.getString("IRIs");
+            if (chemIRIs.equals(geoIRIs)) {
+                System.out.println(chemIRIs);
+                String cost = chemS.getString("cost");
+                System.out.println(cost);
+                JSONObject row = new JSONObject();
+                row.put("iri", chemIRIs);
+                row.put("cost", cost);
+                result.put(row);
+            }
+        }
+        }
+
+    }
+    */
+
+
+ /*   public static  void main(String[] args) throws SQLException {
         CrossDomainQuery crossDomainQuery = new CrossDomainQuery();
         JSONObject jsonObject = new JSONObject();
         JSONObject bounds = new JSONObject();
@@ -49,11 +127,11 @@ public class CrossDomainQuery extends JSONObject{
 
        // {"job":{"lower_bounds":"10428#26648#0#10428#26648#0#10428#26648#0#10428#26648#0#10428#26648#0","upper_bounds":"10880#26955#10#10880#26955#10#10880#26955#10#10880#26955#10#10880#26955#10","equip_cost":"30000"}};
         crossDomainQuery.performCrossDomainQuery(jsonObject);
-    }
+    }*/
 
-    private String buildGeoSpatialQuery (String lowerBounds, String upperBounds){
-        // Geospatial part of the query
 
+    // Geospatial part of the query
+    private static String buildGeoSpatialQuery (String lowerBounds, String upperBounds){
 
         StringBuffer geosSpatialQuery = new StringBuffer("PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>\n");
         geosSpatialQuery.append("PREFIX bio: <http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/>\n");
@@ -82,34 +160,39 @@ public class CrossDomainQuery extends JSONObject{
     }
 
     //Chemical Engineering part of the query
-    private String buildChemEngQuery (String equipmentCost, String bioIRIs){
-
+    private static String buildChemEngQuery (String equipmentCost, String bioIRIs){
 
         StringBuffer chemEngQuery = new StringBuffer("PREFIX cost:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\n");
+        chemEngQuery.append("PREFIX iri:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#>\n");
         chemEngQuery.append("SELECT").append(bioIRIs).append(cost).append("\n");
         chemEngQuery.append("WHERE{\n");
-        chemEngQuery.append("{BIND(STRBEFORE(").append(bioIRIs).append(", '#') AS ?iri4).\n");
-        chemEngQuery.append("BIND(CONCAT(?iri4, '#') AS ?iri5).\n");
-        chemEngQuery.append("BIND(STRAFTER(?IRIs, '#') AS ?iri6).\n");
-        chemEngQuery.append("BIND(CONCAT('ValueOf_EquipmentCost_', ?iri6) AS ?EquipCost1).\n");
-        chemEngQuery.append("BIND(IRI(CONCAT(?iri5, ?EquipCost1)) AS ?EquipCost).}\n");
-        chemEngQuery.append("{?EquipCost cost:numericalValue ?Cost.\n");
+        chemEngQuery.append("{?s iri:hasIRI ?iri;\n");
+        chemEngQuery.append("FILTER(CONTAINS(?iri, 'http://www.jparksimulator.com/kb/sgp')).\n");
+        chemEngQuery.append("BIND(STRAFTER(SUBSTR(STR(?iri),STRLEN('http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/')),\"/\") AS ?iri1).\n");
+        chemEngQuery.append("BIND(STRBEFORE(?iri1, '.owl') AS ?iri2).\n");
+        chemEngQuery.append("BIND(CONCAT(?iri, '#') AS ?iri3).\n");
+        chemEngQuery.append("BIND(IRI(CONCAT(?iri3, ?iri2)) AS").append(bioIRIs).append(").\n");
+        chemEngQuery.append("BIND(CONCAT('ValueOf_EquipmentCost_', ?iri2) AS ?EquipCost1).\n");
+        chemEngQuery.append("BIND(IRI(CONCAT(?iri3, ?EquipCost1)) AS ?EquipCost).}");
+        chemEngQuery.append("{?EquipCost cost:numericalValue").append(cost).append(".\n");
         chemEngQuery.append("FILTER(").append(cost).append(">").append(equipmentCost).append(").}}");
 
         return chemEngQuery.toString();
     }
 
-    public JSONArray runQuery(String query,String queryEndpoint) throws SQLException{
-//        RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
-//        JSONArray queryResult         = kbClient.executeQuery(query);
+    // Execute a query at its specified end-point
 
-        return null;
+    public static JSONArray runQuery(String query,String queryEndpoint) throws SQLException{
+        RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
+        JSONArray queryResult      = kbClient.executeQuery(query);
+        return queryResult;
     }
 
 
 
 
         /**
+         * Replacing the queries using Query Builder
         String upperBounds              = JSonRequestParser.getUPPER_LIMITS(jsonObject.toString());
         String lowerBounds              = JSonRequestParser.getLOWER_LIMITS(jsonObject.toString());
         String equipmentCost            = JSonRequestParser.getEQUIP_COST(jsonObject.toString());
@@ -128,6 +211,6 @@ public class CrossDomainQuery extends JSONObject{
         WhereBuilder Where_Geospatial   = new WhereBuilder();
         Where_Geospatial.addGraph(GEO_GRAPH)
 
-         */
+        */
 
 }

@@ -1,9 +1,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.jps</groupId>
-  <artifactId>JPS_BIODIESELPLANT3</artifactId>
+  <artifactId>JPS_BIODIESELPLANT</artifactId>
   <version>2.0.0</version>
   <packaging>war</packaging>
+	<!-- Parent POM -->
+	<parent>
+		<groupId>uk.ac.cam.cares.jps</groupId>
+		<artifactId>jps-parent-pom</artifactId>
+		<version>1.0.0-SNAPSHOT</version>
+	</parent>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
@@ -18,7 +24,7 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.1</version>
         <configuration>
           <source>1.8</source>
           <target>1.8</target>
@@ -32,12 +38,38 @@
        <skipTests>true</skipTests>
        </configuration>
        </plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-resources-plugin</artifactId>
+			<version>3.2.0</version>
+			<executions>
+				<execution>
+					<id>default-copy-resources</id>
+					<phase>generate-sources</phase>
+					<goals>
+						<goal>copy-resources</goal>
+					</goals>
+					<configuration>
+						<overwrite>true</overwrite>
+						<outputDirectory>
+							${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/classes/
+						</outputDirectory>
+						<resources>
+							<resource>
+								<directory>${project.basedir}/src/main/resources</directory>
+							</resource>
+						</resources>
+					</configuration>
+				</execution>
+			</executions>
+		</plugin>
 
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
-        <version>3.2.1</version>
+        <version>3.3.1</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
+			<!--suppress UnresolvedMavenProperty -->
           <warName>${project.artifactId}##${project.version}</warName>
 		<outputDirectory>${tomcatPath}/webapps</outputDirectory>
         </configuration>
@@ -68,11 +100,11 @@
 		    <artifactId>commons-io</artifactId>
 		    <version>2.6</version>
 		</dependency>
-<!--		<dependency>
+	  <dependency>
 			<groupId>com.cmclinnovations.mods</groupId>
-			<artifactId>MoDS_Java_API</artifactId>
-			<version>0.3.3</version>
-		</dependency>-->
+			<artifactId>MoDS_API</artifactId>
+			<version>0.5.0</version>
+		</dependency>
 		<dependency>
 	        <groupId>xml-apis</groupId>
 	        <artifactId>xml-apis</artifactId>
@@ -87,6 +119,17 @@
 		  <groupId>uk.ac.cam.cares.jps</groupId>
 		  <artifactId>jps-base-lib</artifactId>
 		  <version>1.4.0-SNAPSHOT</version>
+		  <scope>compile</scope>
+	  </dependency>
+	  <dependency>
+		  <groupId>com.jayway.jsonpath</groupId>
+		  <artifactId>json-path</artifactId>
+		  <version>2.4.0</version>
+	  </dependency>
+	  <dependency>
+		  <groupId>org.locationtech.jts</groupId>
+		  <artifactId>jts-core</artifactId>
+		  <version>1.15.1</version>
 		  <scope>compile</scope>
 	  </dependency>
   </dependencies>

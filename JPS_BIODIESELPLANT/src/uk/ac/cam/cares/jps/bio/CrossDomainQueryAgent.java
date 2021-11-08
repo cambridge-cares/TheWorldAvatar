@@ -1,34 +1,16 @@
 package uk.ac.cam.cares.jps.bio;
 
-import java.io.IOException;
-import java.util.Enumeration;
+import java.sql.SQLException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
-import javax.ws.rs.Path;
-
-//import com.jayway.jsonpath.JsonPath;
-import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.arq.querybuilder.WhereBuilder;
-import org.json.JSONArray;
 import org.json.JSONObject;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.bio.json.parser.JSonRequestParser;
-
-import java.io.IOException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * ---------------------------------- Cross-domain query agent ----------------------------------
@@ -43,22 +25,21 @@ import java.util.concurrent.ScheduledExecutorService;
  * However, this class file demonstrates the feasibility of a cross-domain query by returning the
  * cost of equipments within a bounding box in Jurong Island. To achieve this, the query consists
  * of two parts, made up of two queries: geospatial part and chemical engineering part. First, we
- * obtain all the equipments, and their respective IRIs, from the geo-spatial part; then, we pass
- * the returned variables and check for their cost through the chemical engineering part; lastly,
- * the agent returns the filtered list that satisfies some conditions pertaining to the above two
- * parts.
+ * obtain all the equipments, and their respective IRIs, from the geo-spatial part; then, all the
+ * IRIs and their costs, after a filter based on the cost of the items, are queried from the next
+ * (chemical engineering part) query. Finally, the output of the agent is a final list of all the
+ * IRIs and costs of equipments within a specified region and have costs above a specified limit.
  *
- * @author Vishvak Kannan
+ *
+ * * @author Vishvak Kannan
  *
  * ----------------------------------------------------------------------------------------------
  */
 
 /**
  * Servlet implementation class CrossdomainQueryAgent; URL pattern to execute the agent: <http://
- * www.theworldavatar.com/JPS_BIODIESELPLANT3/crossdomainqueryagent>
+ * www.theworldavatar.com/JPS_BIODIESELPLANT/crossdomainqueryagent>
  */
-
-
 
 @Controller
 @WebServlet(urlPatterns = {CrossDomainQueryAgent.URL_PATH})
@@ -83,8 +64,9 @@ public class CrossDomainQueryAgent extends JPSAgent {
      * @param request
      * @return
      */
+
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request){
         String path = request.getServletPath();
         System.out.println("A request has been received..............................\n");
         if (path.equals(URL_PATH)) {
@@ -93,8 +75,12 @@ public class CrossDomainQueryAgent extends JPSAgent {
             } catch (BadRequestException e) {
                 return requestParams.put(BAD_INPUT, e.getMessage());
             }
-            CrossDomainQuery performCrossDomainQuery = new CrossDomainQuery();
-            return null;/*new performCrossDomainQuery.performCrossDomainQuery(requestParams);*/
+            CrossDomainQuery crossDomainQuery = new CrossDomainQuery();
+            try{
+                return crossDomainQuery.performCrossDomainQuery(requestParams);
+            } catch (SQLException e){
+                throw new JPSRuntimeException(e);
+            }
         }
         else {
             System.out.println("Unknown request.\n");
@@ -129,15 +115,4 @@ public class CrossDomainQueryAgent extends JPSAgent {
         }
         return true;
     }
-
-
-
-
-
-
-
-
-
-
-
 }
