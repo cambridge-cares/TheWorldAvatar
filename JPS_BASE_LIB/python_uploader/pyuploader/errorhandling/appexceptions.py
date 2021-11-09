@@ -6,3 +6,6 @@ class NotSupportedUploader(Exception):
 
 class UploaderInputError(Exception):
     pass
+
+class FileUploadError(Exception):
+    pass
