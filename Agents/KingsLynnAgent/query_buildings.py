@@ -1,9 +1,10 @@
 import json
 
-from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 from geojson_rewind import rewind
+import numpy as np
 import pandas as pd
 import pyproj
+from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 
 import geojson_creator
 
@@ -16,7 +17,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 3
+n = 2
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -131,7 +132,7 @@ def execute_query(query, query_endpoint):
     return results
 
 
-def get_coordinates(polygon_data, input_crs, target_crs):
+def get_coordinates(polygon_data, input_crs, target_crs, dimensions=3):
     '''
         Extracts and transforms polygon coordinates as retrieved from Blazegraph
         to suit GeoJSON polygon requirements (and target CRS)
@@ -140,10 +141,12 @@ def get_coordinates(polygon_data, input_crs, target_crs):
             polygon_data - polygon data as returned from Blazegraph
             input_crs - CRS of input data (as pyproj CRS object)
             target_crs - CRS of output data (as pyproj CRS object)
+            dimensions - number of dimension of output data as integer
 
         Returns:
             List of polygon coordinates as required for GeoJSON objects
-            Maximum height of polygon surface
+            Minimum elevation (Z value) of polygon surface
+            Maximum elevation (Z value) of polygon surface
     '''
 
     # Initialise CRS transformer
@@ -157,8 +160,9 @@ def get_coordinates(polygon_data, input_crs, target_crs):
     # If all input coordinates have proper (X,Y,Z) values ...
     if len(coordinate_str) % 3 == 0:
 
-        # Initialise maximum height of polygon
-        zmax = 0.0
+        # Initialise minimum and maximum elevation of polygon
+        z_min = np.inf
+        z_max = -np.inf
 
         # Iterate through all polygon points
         nodes = int(len(coordinate_str) / 3)
@@ -169,20 +173,28 @@ def get_coordinates(polygon_data, input_crs, target_crs):
             z = coordinate_str[node + 2]
             coordinates.append([x, y, z])
 
-            # Update max height
-            if z > zmax:
-                zmax = z
-
         # Check if first and last polygon vertices are equivalent and fix if necessary
         if coordinates[0] != coordinates[-1]:
             print('Surface polygon did not close properly! Geometry has been fixed.')
             coordinates.append(coordinates[0])
 
+        # Convert to numpy array
+        coordinates = np.array(coordinates)
+        # Extract min and max Z values of polygon
+        z_min = min(coordinates[:, 2])
+        z_max = max(coordinates[:, 2])
+
+        # Potentially trim dimensions from 3D to 2D by dropping Z value
+        coordinates = coordinates[:, :dimensions]
+
+        # Convert coordinates back to regular list
+        coordinates = coordinates.tolist()
+
     # ... otherwise print error
     else:
         print('Erroneous polygon coordinates:', coordinate_str)
 
-    return coordinates, zmax
+    return coordinates, z_min, z_max
 
 
 if __name__ == '__main__':
@@ -235,19 +247,28 @@ if __name__ == '__main__':
     for b in surfaces['building'].unique():
         # Extract all surface geometries for this building
         surf = surfaces[surfaces['building'] == b]
-        # Initialise list of surface geometry (polygon) coordinates
+        # Initialise list of surface geometry coordinates (polygons)
         polygons = []
+        # Initialise minimum and maximum elevation of building
+        zmin = np.inf
+        zmax = -np.inf
         # Iterate through all surface geometries
         for s in surf['surface'].unique():
             # Transform coordinates for surface geometry
-            coords, zmax = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], crs_in, crs_out)
-            # Append transformed polygon coordinates as sublist to overall list for building
+            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], crs_in, crs_out)
+            # Append transformed polygon coordinate list as sublist to overall list for building
             polygons.append(coords)
+            # Potentially update min and max elevation
+            if z_min < zmin:
+                zmin = z_min
+            if z_max > zmax:
+                zmax = z_max
 
         # Specify building/feature properties to consider (beyond coordinates)
         props = {
             'building': str(b),
-            'max_height': round(zmax, 3)
+            'ground_elevation': round(zmin, 3),
+            'building_height': round(zmax-zmin, 3)
         }
 
         # Update feature_id
