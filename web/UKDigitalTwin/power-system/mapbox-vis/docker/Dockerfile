@@ -11,7 +11,7 @@
 
 ##### DEVELOPMENT STAGE #####
 # Base image is a lightweight version of Python
-FROM python:3.7.10 as development
+FROM python:3.7.10 as dev
 
 # Meta data
 LABEL authors = "trs53@cam.ac.uk, support@cmclinnovations.com"
@@ -68,8 +68,8 @@ CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh && tail -f /dev/null" ]
 
 
 ##### PRODUCTION STAGE #####
-# Using development as the base 
-FROM development as production
+# Using development image as the base 
+FROM dev as prod
 
 # Copy in the download script specific to the PRODUCTION setup
 COPY head-prod.html head.html

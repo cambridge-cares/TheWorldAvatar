@@ -16,10 +16,10 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 # Copy in the Java source and build the .war file
 WORKDIR /root/build
 COPY components/LDF_SERVER_JAVA/Server .
-RUN mvn -Dmaven.test.skip=true -Dmaven.javadoc.skip=true package -U
+RUN --mount=type=cache,target=/root/.m2/repository mvn -Dmaven.test.skip=true -Dmaven.javadoc.skip=true package -U
 
 # Unpack other dependencies
-RUN mvn org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies -U
+RUN --mount=type=cache,target=/root/.m2/repository mvn org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies -U
 #==================================================================================================
 
 # Second stage - copy in dependencies, run war file in Tomcat,

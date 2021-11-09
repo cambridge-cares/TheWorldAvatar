@@ -73,6 +73,21 @@ public class AccessAgentCaller{
     }
 
 	/**
+	 * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource.
+	 * 
+	 * @param targetResourceID 	target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+	 * @param sparqlQuery		SPARQL query string
+     * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
+	 */
+	public static String query(String targetResourceID, String sparqlQuery) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for queries
+		return query(null, targetResourceID, sparqlQuery);
+	}
+	
+	/**
 	 * cf. https://www.w3.org/TR/sparql11-protocol/#query-via-get<br>
      * differences: parameter key and value are serialized as JSON, the parameter key is
      * "sparqlquery" instead of "query"
@@ -101,7 +116,20 @@ public class AccessAgentCaller{
         return Http.execute(Http.get(requestUrl, null, joparams));
     }
 
-
+	/**
+     * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource. 
+     * @param targetResourceID	the target namespace or IRI
+     * 							e.g. to access the Ontokin triple store
+     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param sparqlUpdate		SPARQL update string
+     */
+	public static void update(String targetResourceID, String sparqlUpdate) {
+		//pass the target resource ID directly as the targetUrl
+    	//both datasetUrl and targetUrl are not used by the AccessAgent for updates
+    	update(null, targetResourceID, sparqlUpdate);
+    	return;
+	}
+	
 	/**
 	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
 	 * If a scenario url is given in the JPS context, then the SPARQL update is redirected to the scenario url.
@@ -148,6 +176,10 @@ public class AccessAgentCaller{
 		//	  the targetUrl may optionally request a graph at the datasetUrl
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
+		//
+		// If no host is provided as part of the datasetUrl (case 2) or targetUrl (case1),
+		// a requestUrl will be constructed using the host stored in JPSConstants
+		
 		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
 		
@@ -237,6 +269,8 @@ public class AccessAgentCaller{
 	 * Get the base world Access Agent url.
 	 * The scheme, host and port of the target or dataset url are preserved, while
 	 * the path is changed to the Access Agent Path. 
+	 * If no scheme, host or port is provided then url will default to the values 
+	 * provided by JPSConstants e.g. "http://www.theworldavatar.com/access-agent/access"
 	 * @param url
 	 * @return
 	 */
@@ -247,6 +281,15 @@ public class AccessAgentCaller{
 			URI uri = new URI(URLDecoder.decode(url,"UTF-8"));
 			String scheme = uri.getScheme();
 			String authority = uri.getAuthority();
+			
+			//If no scheme is provided then default to HTTP
+			if(scheme == null) {
+				scheme = "http";
+			}
+			//If no authority is given then use the default host 
+			if(authority == null) {
+				authority = JPSConstants.ACCESS_AGENT_HOST;
+			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
 			

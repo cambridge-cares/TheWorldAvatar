@@ -1,10 +1,16 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
+import org.jooq.tools.jdbc.MockConnection;
+import org.jooq.tools.jdbc.MockDataProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.*;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -17,6 +23,7 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
 
 /**
  * This class provides unit tests for the TimeSeriesClient class
@@ -44,6 +51,16 @@ public class TimeSeriesClientTest {
                 Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
         testClientWithMocks = new TimeSeriesClient<>(Instant.class,
                 Paths.get(Objects.requireNonNull(getClass().getResource("/timeseries.properties")).toURI()).toString());
+    }
+    
+    @Before
+    public void openMocks() {
+        closeMocks = MockitoAnnotations.openMocks(this);
+    }
+
+    @After
+    public void releaseMocks() throws Exception {
+        closeMocks.close();
     }
 
     @Before
@@ -103,16 +120,6 @@ public class TimeSeriesClientTest {
         TimeSeriesRDBClient<Instant> rdbClient = (TimeSeriesRDBClient<Instant>) rdbClientField.get(client);
         Assert.assertEquals("jdbc:postgresql:timeseries", rdbClient.getRdbURL());
         Assert.assertEquals("postgres", rdbClient.getRdbUser());
-    }
-
-    @Before
-    public void openMocks() {
-        closeMocks = MockitoAnnotations.openMocks(this);
-    }
-
-    @After
-    public void releaseMocks() throws Exception {
-        closeMocks.close();
     }
 
     @Test
@@ -436,174 +443,168 @@ public class TimeSeriesClientTest {
     }
     
     @Test
-    public void testAddTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
+    public void testAddTimeSeriesException()  throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+    	  	
         // Set-up stubbing
-    	Mockito.when(mockTimeSeries.getDataIRIs()).thenReturn(dataIRIs);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
+    	Mockito.doCallRealMethod().when(mockRDBClient).addTimeSeriesData(Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
         
         try {
             testClientWithMocks.addTimeSeriesData(mockTimeSeries);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetTimeSeriesWithinBoundsException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+    	
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getTimeSeriesWithinBounds(Mockito.any(), Mockito.any(), Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
+      
         try {
-            testClientWithMocks.getTimeSeriesWithinBounds(dataIRIs, null, null);
+            testClientWithMocks.getTimeSeriesWithinBounds(dataIRIs, null, null);            
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetTimeSeriesException() throws NoSuchFieldException, IllegalAccessException {
-
-        String nonValidDataIRI = dataIRIs.get(1);
-
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(dataIRIs.get(0))).thenReturn(true);
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(nonValidDataIRI)).thenReturn(false);
-        setRDFMock();
-        
+    	// Only tests for the first Exception to occur when called without prior initialised time series
+       
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getTimeSeriesWithinBounds(Mockito.any(), Mockito.any(), Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
+    	
         try {
             testClientWithMocks.getTimeSeries(dataIRIs);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(nonValidDataIRI));
+            Assert.assertTrue(e.getMessage().contains("Central RDB lookup table has not been initialised yet"));
         }
     }
     
     @Test
     public void testGetAverageException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
-        
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getAverage(Mockito.any());
+    	Mockito.doCallRealMethod().when(mockRDBClient).getAggregate(Mockito.any(), Mockito.any());    	
+    	setJDBCMocks();
+        setRDBMock();
+    	        
         try {
             testClientWithMocks.getAverage(dataIRIs.get(0));
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
     
     @Test
     public void testGetMaxValueException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getMaxValue(Mockito.any());
+    	Mockito.doCallRealMethod().when(mockRDBClient).getAggregate(Mockito.any(), Mockito.any());    	
+    	setJDBCMocks();
+        setRDBMock();
         
         try {
             testClientWithMocks.getMaxValue(dataIRIs.get(0));
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
     
     @Test
     public void testGetMinValueException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getMinValue(Mockito.any());
+    	Mockito.doCallRealMethod().when(mockRDBClient).getAggregate(Mockito.any(), Mockito.any());    	
+    	setJDBCMocks();
+        setRDBMock();
         
         try {
             testClientWithMocks.getMinValue(dataIRIs.get(0));
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
     
     @Test
     public void testGetMaxTimeException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getMaxTime(Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
         
         try {
             testClientWithMocks.getMaxTime(dataIRIs.get(0));
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
     
     @Test
     public void testGetMinTimeException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).getMinTime(Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
+        
         
         try {
             testClientWithMocks.getMinTime(dataIRIs.get(0));
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
     
     @Test
     public void testDeleteTimeSeriesHistoryException() throws NoSuchFieldException, IllegalAccessException {
+    	// Only tests for the first Exception to occur when called without prior initialised time series
     	
-        // Set-up stubbing
-        Mockito.when(mockSparqlClient.checkDataHasTimeSeries(Mockito.any())).thenReturn(false);
-        setRDFMock();
+        // Set-up stubbing    	
+    	Mockito.doCallRealMethod().when(mockRDBClient).deleteRows(Mockito.any(), Mockito.any(), Mockito.any());
+    	setJDBCMocks();
+        setRDBMock();
         
         try {
             testClientWithMocks.deleteTimeSeriesHistory(dataIRIs.get(0), null, null);
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertTrue(e.getMessage().contains("is not attached to any time series instance in the KG"));
-            Assert.assertTrue(e.getMessage().contains(testClientWithMocks.getClass().getSimpleName()));
-            Assert.assertTrue(e.getMessage().contains(dataIRIs.get(0)));
+            Assert.assertTrue(e.getMessage().contains("Error while executing SQL command"));
         }
     }
 
@@ -618,6 +619,22 @@ public class TimeSeriesClientTest {
         Field rdbClientField = TimeSeriesClient.class.getDeclaredField("rdbClient");
         rdbClientField.setAccessible(true);
         rdbClientField.set(testClientWithMocks, mockRDBClient);
+    }
+    
+    private void setJDBCMocks() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        // Mock the JDBC API for unit testing using jOOQ's own mock API (i.e. to mock connection, context, etc.)
+    	// Initialise mock data provider and connection and pass mock connection to a jOOQ DSLContext
+    	MockDataProvider mockRDB = new PostgresMock();
+    	MockConnection mockConnection = new MockConnection(mockRDB);
+    	DSLContext mockContext = DSL.using(mockConnection, SQLDialect.POSTGRES);
+        // Inject mock connection and context into private fields of mockRDBClient
+        Field connField = TimeSeriesRDBClient.class.getDeclaredField("conn");
+        connField.setAccessible(true);
+        connField.set(mockRDBClient, mockConnection);
+        Field contextField = TimeSeriesRDBClient.class.getDeclaredField("context");
+        contextField.setAccessible(true);
+        contextField.set(mockRDBClient, mockContext);    
+
     }
 
 }

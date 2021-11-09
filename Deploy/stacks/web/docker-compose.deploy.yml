@@ -1,0 +1,69 @@
+# This configuration file should include all docker-compose options required to *deploy containers*
+# for services in the 'web' stack, with the exception of the 'ports' node which should be set in
+# docker-compose.deploy.live.yml and docker-compose.deploy.test.yml (see those files for details).
+#
+# Options used to generate an image from source, such as the 'build' node and 'labels' node should
+# be set in docker-compose.build.yml.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the 
+# service name, the 'image' tag (retaining 'docker.cmclinnovations.com') and the 'container_name'
+# node (retaining '${CONTAINER_NAME_SUFFIX}').
+# =================================================================================================
+
+version: "3.8"
+
+
+services:
+
+  # Flood Map
+  flood-map:
+    image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
+    container_name: "flood-map${CONTAINER_NAME_SUFFIX}"    
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Land Use Crop Map
+  land-use:
+    image: docker.cmclinnovations.com/land-use-vis-${MODE}:1.0.0-SNAPSHOT
+    container_name: "land-use${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Reverse Proxy
+  reverse-proxy:
+    image: docker.cmclinnovations.com/reverse_proxy-${MODE}:1.0.0-SNAPSHOT
+    container_name: "reverse_proxy${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: always
+    volumes:
+      - type: bind
+        source: /var/log/kg-website-logs
+        target: /var/log/nginx/persistent
+
+  # Gas Grid Visualisation
+  uk-gas-grid:
+    image: docker.cmclinnovations.com/gas-grid-vis-${MODE}:1.0.0-SNAPSHOT
+    container_name: "uk-gas-grid${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Power System and SDG Visualisation
+  uk-power-system:
+    image: docker.cmclinnovations.com/power-system-vis-${MODE}:1.0.0-SNAPSHOT
+    container_name: "uk-power-system${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+  # Knowledge Graph Website
+  website:
+    image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
+    container_name: "website${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+
+
+# The default network name is set using a docker-compose environment variable.
+# Please don't modify the contents of the 'networks' node below.
+networks:
+  default:
+    name: ${NETWORK_NAME}

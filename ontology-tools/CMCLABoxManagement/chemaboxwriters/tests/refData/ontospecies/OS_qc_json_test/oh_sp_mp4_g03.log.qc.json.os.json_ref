@@ -24,8 +24,8 @@
     "GeometryString": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",
     "BondString": "2 1 1",
     "AtomsCanonicalPositions": {
-        "0": 0,
-        "1": 1
+        "0": 1,
+        "1": 0
     },
     "PubchemAlternativeLabel": "water",
     "CAS": "7732-18-5",
@@ -39,5 +39,5 @@
         1
     ],
     "EntryUUID": "testID-111-111-111",
-    "EntryIRI": "Species_testID-111-111-111"
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111"
 }
