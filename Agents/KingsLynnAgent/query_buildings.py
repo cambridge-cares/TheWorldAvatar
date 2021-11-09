@@ -2,6 +2,7 @@ import json
 
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 from geojson_rewind import rewind
+import pandas as pd
 import pyproj
 
 import geojson_creator
@@ -15,7 +16,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+n = 3
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -197,17 +198,23 @@ if __name__ == '__main__':
         print('\nERROR: SPARQL query endpoint not found! Please ensure correct namespace and reachable triple store.\n')
         raise e
 
-    # Unpack CRS result to extract coordinate reference system
+    # Unpack queried CRS result to extract coordinate reference system
     try:
         crs = kg_crs['results']['bindings'][0][kg_crs['head']['vars'][0]]['value']
     except IndexError as e:
         print('\nERROR: No CRS could be retrieved from specified triple store namespace.\n')
         raise Exception('No CRS could be retrieved from specified triple store namespace.')
 
-    # Unpack buildings results into dictionary in format {surface_IRI: [building_IRI, polygon_data]}
-    surfaces = {}
-    for s in kg_buildings["results"]["bindings"]:
-        surfaces[s['surf']['value']] = [s['bldg']['value'], s["geom"]["value"]]
+    # Unpack queried buildings results into pandas DataFrame
+    rows_list = []
+    for s in kg_buildings['results']['bindings']:
+        # Create own dictionary for each surface geometry (to form own row in later DataFrame)
+        row = {'building': s['bldg']['value'],
+               'surface': s['surf']['value'],
+               'geometry': s["geom"]["value"]}
+        rows_list.append(row)
+    # Create DataFrame from dictionary list
+    surfaces = pd.DataFrame(rows_list)
 
     # Initialise pyproj coordinate reference system (CRS) objects
     crs_in = pyproj.CRS.from_string(crs)
@@ -221,29 +228,40 @@ if __name__ == '__main__':
     # Initialise GeoJSON output dictionary
     output = geojson_creator.initialise_geojson(target_crs)
 
-    # Iterate through all geospatial features
-    features = list(surfaces.keys())
-    total_features = len(features)
-    for i in range(total_features):
+    # Initialise unique feature/building IDs
+    feature_id = 0
 
-        # Extract and transform coordinates from String polygon returned by SPARQL query
-        feature = str(features[i])
-        coords, zmax = get_coordinates(surfaces[feature][1], crs_in, crs_out)
+    # Iterate through all buildings (each building represents one geospatial feature)
+    for b in surfaces['building'].unique():
+        # Extract all surface geometries for this building
+        surf = surfaces[surfaces['building'] == b]
+        # Initialise list of surface geometry (polygon) coordinates
+        polygons = []
+        # Iterate through all surface geometries
+        for s in surf['surface'].unique():
+            # Transform coordinates for surface geometry
+            coords, zmax = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], crs_in, crs_out)
+            # Append transformed polygon coordinates as sublist to overall list for building
+            polygons.append(coords)
 
-        # Specify feature properties to consider (beyond coordinates)
+        # Specify building/feature properties to consider (beyond coordinates)
         props = {
-            'building': surfaces[feature][0],
+            'building': str(b),
             'max_height': round(zmax, 3)
         }
 
-        # Append feature to GeoJSON FeatureCollection
-        output['features'].append(geojson_creator.add_feature(feature, props, coords))
+        # Update feature_id
+        feature_id += 1
+
+        # Append building/feature to GeoJSON FeatureCollection
+        output['features'].append(geojson_creator.add_feature(feature_id, props, polygons))
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
     # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
     rewound = rewind(output)
     # Restore json dictionary from returned String by rewind method
-    output = json.loads(rewound)
+    if type(rewound) is str:
+        output = json.loads(rewound)
 
     # Write GeoJSON dictionary nicely formatted to file
     file_name = 'Buildings_.geojson'

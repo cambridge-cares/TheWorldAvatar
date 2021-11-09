@@ -32,15 +32,22 @@ def add_geometry(coordinates):
         Returns geometry member (Polygon, Multipolygon) for single GeoJSON feature
 
         Arguments:
-            coordinates - list of coordinates in the form [[x,y,z], [...], ...]
+            coordinates - list of polygon coordinates in the form [[[x1,y1,z1],...], [[x2,y2,z2],...], ...]
 
         Returns:
             GeoJSON Geometry object as dictionary
     '''
 
-    geometry = {'type': 'Polygon',
-                'coordinates': [coordinates]
-                }
+    if len(coordinates) == 1:
+        # Add single Polygon geometry member if coordinates list contains only coordinates for one surface geometry
+        geometry = {'type': 'Polygon',
+                    'coordinates': [coordinates]
+                    }
+    else:
+        # Add MultiPolygon geometry member if coordinates list contains coordinates for multiple surface geometries
+        geometry = {'type': 'MultiPolygon',
+                    'coordinates': [coordinates]
+                    }
 
     return geometry
 
@@ -50,16 +57,16 @@ def add_feature(feature_id, properties, coordinates):
         Returns single GeoJSON feature for overall GeoJSON FeatureCollection
 
         Arguments:
-            feature_id - feature identifier as String
+            feature_id - numerical feature identifier
             properties - feature properties as dictionary
-            coordinates - list of coordinates in the form [[x,y,z], [...], ...]
+            coordinates - list of coordinates in the form [[[x1,y1,z1],...], [[x2,y2,z2],...], ...]
 
         Returns:
             GeoJSON Feature object as dictionary
     '''
 
     feature = {'type': 'Feature',
-               'id': str(feature_id),
+               'id': int(feature_id),
                'properties': properties,
                'geometry': add_geometry(coordinates)
                }
