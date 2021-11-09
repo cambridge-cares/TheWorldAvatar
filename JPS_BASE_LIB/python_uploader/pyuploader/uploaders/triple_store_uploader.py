@@ -37,9 +37,6 @@ def upload_file(
     *args,
     **kwargs) -> str:
 
-    # TODO:
-    # - fix the java side code so that it closes the file being sent after the upload
-    # - in case of errors, add response status code to the exception message
     client = jpsBaseLib_view.RemoteStoreClient(url, url, auth[0], auth[1])
     rdfFile = jpsBaseLib_view.java.io.File(file_path)
     client.uploadRDFFile(rdfFile)

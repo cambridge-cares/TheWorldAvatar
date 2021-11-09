@@ -54,7 +54,6 @@ def test_uploader(
     # service url, auth setup
     service_url = get_service_url(service_name, url_route=url_route)
     auth_file = get_service_auth_file_path(service_name)
-    service_url = 'http://aa'
     #---------------------------
     uploaded_files = app.upload(
             uploader_type=uploader_type,
@@ -163,6 +162,7 @@ def test_uploader_auth_from_env(
     # service url, auth setup
     service_url = get_service_url(service_name, url_route=url_route)
     auth_file = get_service_auth_file_path(service_name)
+    #---------------------------
     uploader = get_uploader(
         uploader_type=uploader_type,
         default_url=service_url
@@ -369,11 +369,11 @@ def test_uploader_wrong_file_type(
 # Parameterized to test various input variations.
 # ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
-    """service_name, uploader_type, url_route, file_ext""",
+    """service_name, uploader_type, url_route, file_ext, uploaded_files_nr""",
 [
-    ("fileserver",     "fs_uploader", FS_ROUTE, "log"),
-    ("blazegraph",     "ts_uploader", BG_ROUTE, "owl"),
-    ("blazegraph-geo", "ts_uploader", BG_ROUTE, "owl"),
+    ("fileserver",     "fs_uploader", FS_ROUTE, "log", 1),
+    ("blazegraph",     "ts_uploader", BG_ROUTE, "owl", 1),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, "owl", 1),
 ]
 )
 def test_uploader_large_file(
@@ -381,34 +381,24 @@ def test_uploader_large_file(
         uploader_type,
         url_route,
         file_ext,
+        uploaded_files_nr,
         get_service_url,
         get_service_auth_file_path,
         create_large_file):
     # service url, auth setup
     service_url = get_service_url(service_name, url_route=url_route)
     auth_file = get_service_auth_file_path(service_name)
-    uploader = get_uploader(
-        uploader_type=uploader_type,
-        default_url=service_url,
-        default_auth_file=auth_file
-    )
     #---------------------------
     test_file = create_large_file(uploader_type)
-    uploader.upload(
-        uploader_type=uploader_type,
-        file_or_dir=test_file,
-        file_ext=file_ext,
-        url=service_url,
-        auth_file=auth_file,
-        no_file_logging=True
-    )
-    #uploaded_files = app.upload(
-    #        uploader_type=uploader_type,
-    #        file_or_dir=file_or_dir,
-    #        file_ext=file_ext,
-    #        no_file_logging=True
-    #    )
-    #assert uploaded_files_nr == len(uploaded_files)
+    uploaded_files = app.upload(
+            uploader_type=uploader_type,
+            file_or_dir=test_file,
+            file_ext=file_ext,
+            url=service_url,
+            auth_file=auth_file,
+            no_file_logging=True
+        )
+    assert uploaded_files_nr == len(uploaded_files)
 
 ## Triple store tests, wont test anything atm as the current blazegraph image does not have
 ## the authorisation enabled

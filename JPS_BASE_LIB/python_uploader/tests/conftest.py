@@ -9,6 +9,17 @@ URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url'
 LARGE_TXT_FILE = os.path.join(THIS_DIR, 'large_txt_file')
 LARGE_OWL_FILE = os.path.join(THIS_DIR, 'large_owl_file')
 
+def pytest_sessionstart(session):
+    """ This will run before all the tests"""
+    if os.path.exists(SECRETS_FILE_PATH):
+        os.remove(SECRETS_FILE_PATH)
+    if os.path.exists(URL_FILE_PATH):
+        os.remove(URL_FILE_PATH)
+    if os.path.exists(LARGE_TXT_FILE):
+        os.remove(LARGE_TXT_FILE)
+    if os.path.exists(LARGE_OWL_FILE):
+        os.remove(LARGE_OWL_FILE)
+
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
     if os.path.exists(SECRETS_FILE_PATH):
@@ -80,11 +91,10 @@ def create_large_file():
         return large_file_path
     return _create_large_file
 
-
 def create_large_txt_file():
     if not os.path.exists(LARGE_TXT_FILE):
         with open(LARGE_TXT_FILE, "w") as file:
-            file.truncate(10 ** 9)
+            file.truncate(10 ** 8) # ~ 100MB
     return LARGE_TXT_FILE
 
 def create_large_owl_file():
@@ -100,7 +110,7 @@ def create_large_owl_file():
                         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
                         <owl:Ontology rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90"/>
             """)
-            for i in range(10**3):
+            for i in range(7*10**5):
                 file.write(
                     """<!-- http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#A$i -->
                     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#A$i"/>
@@ -118,6 +128,6 @@ def create_large_owl_file():
                     </owl:Class>
                     """.replace('$i', str(i))
                 )
-            file.write("</rdf:RDF>")
+            file.write("</rdf:RDF>") # ~ 1GB
 
     return LARGE_OWL_FILE
