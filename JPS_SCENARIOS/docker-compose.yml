@@ -1,0 +1,18 @@
+version: "3.8"
+
+services:
+  access-agent:
+    image: scenarios:1.0.0-SNAPSHOT
+    build: .
+    container_name: jps_scenarios
+    pull_policy: if_not_present
+    ports:
+      - "48081:8080"
+
+    volumes:
+      - external_maven_repo:/root/.m2
+
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"
