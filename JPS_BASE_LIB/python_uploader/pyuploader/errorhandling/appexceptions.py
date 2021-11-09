@@ -9,3 +9,13 @@ class UploaderInputError(Exception):
 
 class FileUploadError(Exception):
     pass
+
+
+class SpecsFileNotFoundError(Exception):
+    pass
+
+class SecretsFileNotFoundError(Exception):
+    pass
+
+class WrongSecretsFormatError(Exception):
+    pass

@@ -33,7 +33,7 @@ def get_credentials_from_file(
 
     auth_parts = auth_file_content.split(':')
     if len(auth_parts)>2:
-        raise ValueError('Wrong authorisation string format.')
+        raise appexcept.WrongSecretsFormatError('Wrong authorisation string format.')
     return (auth_parts[0], auth_parts[1])
 
 def read_file_content(file_path: str) -> str:
@@ -45,7 +45,6 @@ def get_env_var_value(
     env_var_name: str) -> str:
     try:
         env_var_value = os.environ[env_var_name]
-    except KeyError:
-        raise appexcept.EnvironmentVarError(f"Error: {env_var_name} not found in the environment variables.")
-
+    except KeyError as ex:
+        raise appexcept.EnvironmentVarError(f"Error: {env_var_name} not found in the environment variables.") from ex
     return env_var_value

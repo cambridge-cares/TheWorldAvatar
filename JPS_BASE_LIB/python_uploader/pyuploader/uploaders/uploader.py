@@ -138,19 +138,20 @@ class Uploader:
         logger.info(f"Reading the {self.uploader_name} url from the specs file.")
         try:
             url = utils.read_file_content(url_file)
-        except FileNotFoundError:
-            raise FileNotFoundError(f"Error: The {self.uploader_name} specs file does not exist.")
+        except FileNotFoundError as ex:
+            raise appexcept.SpecsFileNotFoundError(f"Error: The {self.uploader_name} specs file does not exist.") from ex
         return url
 
     def _get_auth(self,
             auth_file: Union[str,None]) -> Tuple[str,str]:
+
         if auth_file is None:
             logger.info(f"Reading the {self.uploader_name} secrets file path from environment variables.")
             logger.info(f"Reading the {self.uploader_name} auth from the secrets file.")
-            try:
-                auth_file = utils.get_env_var_value(self.env_vars[BASE_AUTH_ENV_VAR_KEY])
-            except FileNotFoundError:
-                raise FileNotFoundError(f"Error: The {self.uploader_name} secrets file does not exist.")
-        auth = utils.get_credentials_from_file(auth_file)
+            auth_file = utils.get_env_var_value(self.env_vars[BASE_AUTH_ENV_VAR_KEY])
 
+        try:
+            auth = utils.get_credentials_from_file(auth_file)
+        except FileNotFoundError as ex:
+            raise appexcept.SecretsFileNotFoundError(f"Error: The {self.uploader_name} secrets file does not exist.") from ex
         return auth

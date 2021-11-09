@@ -54,6 +54,7 @@ def test_uploader(
     # service url, auth setup
     service_url = get_service_url(service_name, url_route=url_route)
     auth_file = get_service_auth_file_path(service_name)
+    service_url = 'http://aa'
     #---------------------------
     uploaded_files = app.upload(
             uploader_type=uploader_type,
