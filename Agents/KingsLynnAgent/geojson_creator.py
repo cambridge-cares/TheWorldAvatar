@@ -41,7 +41,7 @@ def add_geometry(coordinates):
     if len(coordinates) == 1:
         # Add single Polygon geometry member if coordinates list contains only coordinates for one surface geometry
         geometry = {'type': 'Polygon',
-                    'coordinates': [coordinates]
+                    'coordinates': coordinates
                     }
     else:
         # Add MultiPolygon geometry member if coordinates list contains coordinates for multiple surface geometries

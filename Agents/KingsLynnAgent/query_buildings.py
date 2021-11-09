@@ -17,7 +17,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 2
+n = 100
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -226,7 +226,7 @@ if __name__ == '__main__':
                'geometry': s["geom"]["value"]}
         rows_list.append(row)
     # Create DataFrame from dictionary list
-    surfaces = pd.DataFrame(rows_list)
+    results = pd.DataFrame(rows_list)
 
     # Initialise pyproj coordinate reference system (CRS) objects
     crs_in = pyproj.CRS.from_string(crs)
@@ -237,18 +237,21 @@ if __name__ == '__main__':
     #target_crs = 'urn:ogc:def:crs:OGC:1.3:CRS84'
     crs_out = pyproj.CRS.from_string(target_crs)
 
-    # Initialise GeoJSON output dictionary
-    output = geojson_creator.initialise_geojson(target_crs)
+    # Initialise GeoJSON output dictionaries
+    output_3d = geojson_creator.initialise_geojson(target_crs)
+    output_2d = geojson_creator.initialise_geojson(target_crs)
 
     # Initialise unique feature/building IDs
     feature_id = 0
 
     # Iterate through all buildings (each building represents one geospatial feature)
-    for b in surfaces['building'].unique():
+    for b in results['building'].unique():
+        # Update feature_id
+        feature_id += 1
         # Extract all surface geometries for this building
-        surf = surfaces[surfaces['building'] == b]
+        surf = results[results['building'] == b]
         # Initialise list of surface geometry coordinates (polygons)
-        polygons = []
+        all_polygons = []
         # Initialise minimum and maximum elevation of building
         zmin = np.inf
         zmax = -np.inf
@@ -257,34 +260,60 @@ if __name__ == '__main__':
             # Transform coordinates for surface geometry
             coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], crs_in, crs_out)
             # Append transformed polygon coordinate list as sublist to overall list for building
-            polygons.append(coords)
+            all_polygons.append(coords)
             # Potentially update min and max elevation
             if z_min < zmin:
                 zmin = z_min
             if z_max > zmax:
                 zmax = z_max
 
+        # Prepare GeoJSON as required by Digital Twin Visualisation Framework (DTVF):
+        # Each building is represented by 2D base polygon only (ground and building elevation only properties)
+        for p in all_polygons:
+            poly = np.array(p)
+            # Define small uncertainty range to account for conversion inaccuracies
+            eps = 0.001
+            # Check if all Z values of polygon are the same and (aprrox.) equal to building elevation
+            if (poly[:, 2] == poly[:, 2][0]).all() and \
+               ((poly[:, 2][0] >= (zmin - eps)) and (poly[:, 2][0] <= (zmin + eps))):
+                # Trim dimensions from 3D to 2D by dropping Z value
+                poly = poly[:, :2]
+                base_polygon = [poly.tolist()]
+                # As there can only be one base polygon, stop as soon as it is found
+                break
+
         # Specify building/feature properties to consider (beyond coordinates)
         props = {
-            'building': str(b),
-            'ground_elevation': round(zmin, 3),
-            'building_height': round(zmax-zmin, 3)
+            'displayName': 'Building {}'.format(feature_id),
+            'description': str(b),
+            'fill-extrusion-color': '#666666',
+            'fill-extrusion-opacity': 0.66,
+            # Building ground elevation
+            'fill-extrusion-base': round(zmin, 3),
+            # Building height
+            'fill-extrusion-height': round(zmax-zmin, 3)
         }
 
-        # Update feature_id
-        feature_id += 1
-
         # Append building/feature to GeoJSON FeatureCollection
-        output['features'].append(geojson_creator.add_feature(feature_id, props, polygons))
+        output_3d['features'].append(geojson_creator.add_feature(feature_id, props, all_polygons))
+        output_2d['features'].append(geojson_creator.add_feature(feature_id, props, base_polygon))
+
+
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
     # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
-    rewound = rewind(output)
+    rewound_3d = rewind(output_3d)
+    rewound_2d = rewind(output_2d)
     # Restore json dictionary from returned String by rewind method
-    if type(rewound) is str:
-        output = json.loads(rewound)
+    if type(rewound_3d) is str:
+        output_3d = json.loads(rewound_3d)
+    if type(rewound_2d) is str:
+        output_2d = json.loads(rewound_2d)
 
     # Write GeoJSON dictionary nicely formatted to file
-    file_name = 'Buildings_.geojson'
+    file_name = 'Buildings_3D.geojson'
     with open(file_name, 'w') as f:
-        json.dump(output, indent=4, fp=f)
+        json.dump(output_3d, indent=4, fp=f)
+    file_name = 'Buildings_2D.geojson'
+    with open(file_name, 'w') as f:
+        json.dump(output_2d, indent=4, fp=f)
