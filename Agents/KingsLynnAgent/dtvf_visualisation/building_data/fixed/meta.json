@@ -1,0 +1,10 @@
+{
+    "dataSets": [
+        {
+            "name": "buildings-2D",
+            "locationFile": "Buildings_2D.geojson",
+            "locationType": "extrusion"
+        }
+
+    ]
+}

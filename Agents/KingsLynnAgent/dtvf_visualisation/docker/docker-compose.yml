@@ -1,0 +1,19 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DT Visualisation
+  kings-lynn-dtvf:
+    image: docker.cmclinnovations.com/example-dtvf:1.0.0-SNAPSHOT
+    container_name: kings-lynn-dtvf
+    build:
+      context: "../"
+      dockerfile: "./docker/Dockerfile"
+      target: "dev"
+      labels:
+        authors: "support@cmclinnovations"
+        description: "Example visualisation for interoperable King's Lynn use cases."
+    ports:
+      - "65081:80"
+ 

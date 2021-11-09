@@ -1,0 +1,13 @@
+{
+    "name": "Built environment King's Lynn",
+    "description": "This is an example visualisation to detail the expected data structure for all visualisations using the central framework.",
+
+    "apiKey": "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw",
+    "defaultCenter": [0.39713859558105463, 52.75354199742786],
+    "defaultZoom": 15,
+    "defaultBearing": -30,
+    "defaultPitch": 65,
+
+    "selectionsTitle": "Current Group:",
+    "fixedDirectory": "fixed"
+}
