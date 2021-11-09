@@ -17,15 +17,27 @@ TEST_FILE = os.path.join(TEST_DIR, 'test.owl')
 # ----------------------------------------------------------------------------------
 # Tests
 # ----------------------------------------------------------------------------------
+
+
+# Generic uploader test calling the app.upload function.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
-    "service_name, uploader_type, url_route, file_or_dir, file_ext, subdirs, uploaded_files_nr",
+    """service_name, uploader_type, url_route, file_or_dir,
+      file_ext, subdirs, dry_run, uploaded_files_nr""",
 [
-    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    1),
-    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    1),
-    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    1),
-    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    1),
-    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_FILE, "owl",     None,    1),
-    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_DIR,  "owl,log", 'a/b/c', 2)
+    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    False, 1),
+    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    False, 1),
+    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    True,  0),
+    ("blazegraph",     "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    True,  0),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    False, 1),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    False, 1),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_FILE, "owl",     None,    True,  0),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, TEST_DIR,  "owl",     None,    True,  0),
+    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_FILE, "owl",     None,    False, 1),
+    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_DIR,  "owl,log", 'a/b/c', False, 2),
+    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_FILE, "owl",     None,    True,  0),
+    ("fileserver",     "fs_uploader", FS_ROUTE, TEST_DIR,  "owl,log", 'a/b/c', True,  0)
 ]
 )
 def test_uploader(
@@ -35,6 +47,7 @@ def test_uploader(
         file_or_dir,
         file_ext,
         subdirs,
+        dry_run,
         uploaded_files_nr,
         get_service_url,
         get_service_auth_file_path):
@@ -49,13 +62,19 @@ def test_uploader(
             subdirs=subdirs,
             url=service_url,
             auth_file=auth_file,
+            dry_run=dry_run,
             no_file_logging=True
         )
     assert uploaded_files_nr == len(uploaded_files)
-    if subdirs is not None:
+    if subdirs is not None and not dry_run:
         for locations in uploaded_files.values():
             assert subdirs in locations
+# ----------------------------------------------------------------------------------
 
+
+# Uploader stress test calling the app.upload function a large nr of times.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     "service_name, uploader_type, url_route, file_or_dir",
 [
@@ -80,7 +99,11 @@ def test_uploader_stress_test(
     uploader = get_uploader(uploader_type=uploader_type)
     for _ in range(1000):
       uploader._upload_file(service_url, auth, file_or_dir)
+# ----------------------------------------------------------------------------------
 
+# Checks if an appropriate exception is raised in case of unsupported file extension.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     "service_name, uploader_type, url_route, file_or_dir, file_ext",
 [
@@ -110,6 +133,9 @@ def test_uploader_wrong_file_ext(
                 no_file_logging=True
             )
 
+# Tests reading the auth details from env variables.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     """service_name, uploader_type, url_route, file_or_dir,
        file_ext, subdirs, uploaded_files_nr""",
@@ -152,7 +178,13 @@ def test_uploader_auth_from_env(
     if subdirs is not None:
         for locations in uploaded_files.values():
             assert subdirs in locations
+# ----------------------------------------------------------------------------------
 
+
+# Tests if an appropriate exception is raised if reading the auth details
+# from env variables fails.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     "service_name, uploader_type, url_route, file_or_dir, file_ext",
 [
@@ -184,6 +216,9 @@ def test_uploader_auth_from_env_fail(
                 file_ext=file_ext
             )
 
+# Tests reading the url details from env variables fails.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     """service_name, uploader_type, url_route, file_or_dir,
        file_ext, uploaded_files_nr""",
@@ -218,7 +253,12 @@ def test_uploader_url_from_env(
             file_ext=file_ext
         )
     assert uploaded_files_nr == len(uploaded_files)
+# ----------------------------------------------------------------------------------
 
+# Tests if an appropriate exception is raised if reading the url details
+# from env variables fails.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     """service_name, uploader_type, file_or_dir, file_ext""",
 [
@@ -249,6 +289,9 @@ def test_uploader_url_from_env_fail(
                 file_ext=file_ext
             )
 
+# Tests reading both the url and auth details from env variables fails.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
 @pytest.mark.parametrize(
     """service_name, uploader_type, url_route, file_or_dir,
        file_ext, uploaded_files_nr""",
@@ -280,11 +323,92 @@ def test_uploader_url_and_auth_from_env(
     uploaded_files = app.upload(
             uploader_type=uploader_type,
             file_or_dir=file_or_dir,
-            file_ext=file_ext
+            file_ext=file_ext,
+            no_file_logging=True
         )
     assert uploaded_files_nr == len(uploaded_files)
 
-#
+
+
+# Generic uploader test calling the app.upload function.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    """service_name, uploader_type, url_route, file_ext""",
+[
+    ("blazegraph",     "ts_uploader", BG_ROUTE, "owl"),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, "owl"),
+]
+)
+def test_uploader_wrong_file_type(
+        service_name,
+        uploader_type,
+        url_route,
+        file_ext,
+        get_service_url,
+        get_service_auth_file_path):
+    # service url, auth setup
+    service_url = get_service_url(service_name, url_route=url_route)
+    auth_file = get_service_auth_file_path(service_name)
+    test_file = os.path.join(TEST_DIR, 'test.log')
+    #---------------------------
+    with pytest.raises(appexcept.FileUploadError):
+        _ = app.upload(
+                uploader_type=uploader_type,
+                file_or_dir=test_file,
+                file_ext=file_ext,
+                url=service_url,
+                auth_file=auth_file,
+                no_file_logging=True
+            )
+
+# ----------------------------------------------------------------------------------
+
+# Tests reading both the url and auth details from env variables fails.
+# Parameterized to test various input variations.
+# ----------------------------------------------------------------------------------
+@pytest.mark.parametrize(
+    """service_name, uploader_type, url_route, file_ext""",
+[
+    ("fileserver",     "fs_uploader", FS_ROUTE, "log"),
+    ("blazegraph",     "ts_uploader", BG_ROUTE, "owl"),
+    ("blazegraph-geo", "ts_uploader", BG_ROUTE, "owl"),
+]
+)
+def test_uploader_large_file(
+        service_name,
+        uploader_type,
+        url_route,
+        file_ext,
+        get_service_url,
+        get_service_auth_file_path,
+        create_large_file):
+    # service url, auth setup
+    service_url = get_service_url(service_name, url_route=url_route)
+    auth_file = get_service_auth_file_path(service_name)
+    uploader = get_uploader(
+        uploader_type=uploader_type,
+        default_url=service_url,
+        default_auth_file=auth_file
+    )
+    #---------------------------
+    test_file = create_large_file(uploader_type)
+    uploader.upload(
+        uploader_type=uploader_type,
+        file_or_dir=test_file,
+        file_ext=file_ext,
+        url=service_url,
+        auth_file=auth_file,
+        no_file_logging=True
+    )
+    #uploaded_files = app.upload(
+    #        uploader_type=uploader_type,
+    #        file_or_dir=file_or_dir,
+    #        file_ext=file_ext,
+    #        no_file_logging=True
+    #    )
+    #assert uploaded_files_nr == len(uploaded_files)
+
 ## Triple store tests, wont test anything atm as the current blazegraph image does not have
 ## the authorisation enabled
 #@pytest.mark.parametrize(

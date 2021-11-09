@@ -6,6 +6,8 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
+LARGE_TXT_FILE = os.path.join(THIS_DIR, 'large_txt_file')
+LARGE_OWL_FILE = os.path.join(THIS_DIR, 'large_owl_file')
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -13,6 +15,10 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
+    if os.path.exists(LARGE_TXT_FILE):
+        os.remove(LARGE_TXT_FILE)
+    if os.path.exists(LARGE_OWL_FILE):
+        os.remove(LARGE_OWL_FILE)
 
 # ----------------------------------------------------------------------------------
 # Session-scoped test fixtures
@@ -55,17 +61,6 @@ def get_service_auth_file_path():
     return _get_service_auth_file_path
 
 @pytest.fixture(scope="session")
-def write_service_auth_to_file(get_service_auth):
-    def _write_service_auth_to_file(service_name):
-        auth = get_service_auth(service_name)
-
-        auth_file = os.path.join(THIS_DIR, "dummy_test_auth.txt")
-        with open(auth_file, 'w') as f:
-            f.write(auth)
-        return auth_file
-    return _write_service_auth_to_file
-
-@pytest.fixture(scope="session")
 def write_service_url_to_file(get_service_url):
     def _write_service_url_to_file(service_name, url_route):
         service_url = get_service_url(service_name, url_route)
@@ -73,3 +68,56 @@ def write_service_url_to_file(get_service_url):
             f.write(service_url)
         return URL_FILE_PATH
     return _write_service_url_to_file
+
+@pytest.fixture(scope="session")
+def create_large_file():
+    def _create_large_file(uploader_type):
+        if uploader_type == 'ts_uploader':
+            large_file_path = create_large_owl_file()
+        else:
+            large_file_path = create_large_txt_file()
+
+        return large_file_path
+    return _create_large_file
+
+
+def create_large_txt_file():
+    if not os.path.exists(LARGE_TXT_FILE):
+        with open(LARGE_TXT_FILE, "w") as file:
+            file.truncate(10 ** 9)
+    return LARGE_TXT_FILE
+
+def create_large_owl_file():
+    if not os.path.exists(LARGE_OWL_FILE):
+        with open(LARGE_OWL_FILE, "w") as file:
+            file.write("""<?xml version="1.0"?>
+                    <rdf:RDF xmlns="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#"
+                        xml:base="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90"
+                        xmlns:owl="http://www.w3.org/2002/07/owl#"
+                        xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                        xmlns:xml="http://www.w3.org/XML/1998/namespace"
+                        xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+                        xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+                        <owl:Ontology rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90"/>
+            """)
+            for i in range(10**3):
+                file.write(
+                    """<!-- http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#A$i -->
+                    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#A$i"/>
+                    <!-- http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#B$i -->
+                    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#B$i">
+                        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#A$i"/>
+                    </owl:Class>
+                    <!-- http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#C$i -->
+                    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#C$i">
+                        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#B$i"/>
+                    </owl:Class>
+                    <!-- http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#D$i -->
+                    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#D$i">
+                        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2021/9/untitled-ontology-90#C$i"/>
+                    </owl:Class>
+                    """.replace('$i', str(i))
+                )
+            file.write("</rdf:RDF>")
+
+    return LARGE_OWL_FILE
