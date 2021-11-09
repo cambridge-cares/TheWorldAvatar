@@ -211,7 +211,7 @@ def getQuantityUnit(endpoint, rxn_instance, clz, positionalID: int):
 
 def getObjectRelationship(endpoint, rxn_instance, clz):
     """
-        This method retrieves the object property between an OntoRxn:ReactionExperiment/OntoRxn:ReactionVariation instance and the class of a reaction condition.
+        This method retrieves the object property between an OntoRxn:ReactionExperiment/OntoRxn:ReactionVariation instance and a OntoRxn:ReactionCondition or OntoRxn:PerformanceIndicator class and their subclasses.
 
         Arguments:
             endpoint - SPARQL Query endpoint

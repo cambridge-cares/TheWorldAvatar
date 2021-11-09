@@ -134,10 +134,17 @@ class ReactionVariation:
         # Create performance indicator instance
         indicator_iri = URIRef(NAMESPACE_KB_ONTORXN + getShortName(clz) + '_' + str(uuid.uuid4()))
         # Add performance indicator to reaction experiment (or variation)
-        self.g.add((self.rxnvar, URIRef(ONTORXN_HASPERFORMANCEINDICATOR), indicator_iri))
+        # As we are stating the <reactionVariationIRI> <OntoRxn:isVariationOf> <reactionExperimentIRI>
+        # we are using the list of the object properties between the <reactionExperimentIRI> and the class which the performance indicator belongs to
+        for pred in getObjectRelationship(self.query, self.rIRI, clz):
+            self.g.add((self.rxnvar, URIRef(pred), indicator_iri))
+        
+        # The previously added below statement is seen to be not suitable given the latest design of OntoRxn TBox, hence commented out
+        # <reactionVariationIRI> <OntoRxn:hasPerformanceIndicator> <indicator_iri>
+        # self.g.add((self.rxnvar, URIRef(ONTORXN_HASPERFORMANCEINDICATOR), indicator_iri))
+
         self.g.add((indicator_iri, URIRef(OM_HASPHENOMENON), self.rxnvar))
         # Add rdf:type to created performance indicator instance
-        self.g.add((indicator_iri, RDF.type, URIRef(ONTORXN_PERFORMANCEINDICATOR)))
         self.g.add((indicator_iri, RDF.type, URIRef(clz)))
         # Only add positional ID if it exists
         if id is not None:

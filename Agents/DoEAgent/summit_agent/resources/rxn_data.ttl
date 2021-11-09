@@ -17,8 +17,38 @@ PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
 PREFIX SinglePhase: <https://theworldavatar.com/kb/ontorxn/SinglePhase/>
 PREFIX ChemRxn:     <https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
 PREFIX doe_instance:<https://theworldavatar.com/kb/ontodoe/DoE_1/>
+PREFIX rdfs:		<http://www.w3.org/2000/01/rdf-schema#>
 
 INSERT DATA {
+	###########################################################
+    ## Part of OntoRxn ontology for /subPropertyOf relationship ##
+    ###########################################################
+	OntoRxn:ResidenceTime rdfs:subClassOf OntoRxn:ReactionCondition . 
+	OntoRxn:ReactionTemperature rdfs:subClassOf OntoRxn:ReactionCondition . 
+	OntoRxn:ReactionPressure rdfs:subClassOf OntoRxn:ReactionCondition . 
+	OntoRxn:StoichiometryRatio rdfs:subClassOf OntoRxn:ReactionCondition . 
+	OntoRxn:ReactionScale rdfs:subClassOf OntoRxn:ReactionCondition . 
+	
+	OntoRxn:EnvironmentalFactor rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	OntoRxn:Yield rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator . 
+	
+	OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
+	OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
+	OntoRxn:hasRxnPressure rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
+	OntoRxn:hasStoichiometryRatio rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
+	OntoRxn:hasRxnScale rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
+	
+	OntoRxn:hasEnvironmentalFactor rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+	OntoRxn:hasYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+	OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+	OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+	OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+	OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
+
 	################################
     ## Reaction experiment data 1 ##
     ################################
@@ -32,20 +62,16 @@ INSERT DATA {
 		OntoRxn:hasStoichiometryRatio exp1:StoiRatio_2;
 		OntoRxn:hasStoichiometryRatio exp1:StoiRatio_3;
 		OntoRxn:hasRxnScale exp1:RxnScale_1;
-		OntoRxn:hasPerformanceIndicator exp1:Yield_1;
-		OntoRxn:hasPerformanceIndicator exp1:RunMaterialCost_1;
+		OntoRxn:hasYield exp1:Yield_1;
+		OntoRxn:hasRunMaterialCost exp1:RunMaterialCost_1;
 		OntoRxn:hasInputChemical exp1:InputChemical_1;
 		OntoRxn:hasInputChemical exp1:InputChemical_2;
 		OntoRxn:hasInputChemical exp1:InputChemical_3;
 		OntoRxn:hasOutputChemical exp1:OutputChemical_4;
 	.
 
-	exp1:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime .
-	exp1:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature .
-	exp1:RxnPressure_1 rdf:type OntoRxn:ReactionPressure .
-
 	exp1:ResidenceTime_1
-		rdf:type om:Duration;
+		rdf:type OntoRxn:ResidenceTime;
 		om:hasPhenomenon exp1:RxnExp_1;
 		om:hasValue exp1:ResidenceTime_1_Measure_1;
 	.
@@ -57,7 +83,7 @@ INSERT DATA {
 	.
 
 	exp1:RxnTemperature_1
-		rdf:type om:CelsiusTemperature;
+		rdf:type OntoRxn:ReactionTemperature;
 		om:hasPhenomenon exp1:RxnExp_1;
 		om:hasValue exp1:RxnTemperature_1_Measure_1;
 	.
@@ -69,7 +95,7 @@ INSERT DATA {
 	.
 
 	exp1:RxnPressure_1
-		rdf:type om:Pressure;
+		rdf:type OntoRxn:ReactionPressure;
 		om:hasPhenomenon exp1:RxnExp_1;
 		om:hasValue exp1:RxnPressure_1_Measure_1;
 	.
@@ -81,7 +107,6 @@ INSERT DATA {
 	.
 
 	exp1:Yield_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:Yield;
 		om:hasPhenomenon exp1:RxnExp_1;
 		om:hasValue exp1:Yield_1_Measure_1;
@@ -94,7 +119,6 @@ INSERT DATA {
 	.
 
 	exp1:RunMaterialCost_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:RunMaterialCost;
 		om:hasPhenomenon exp1:RxnExp_1;
 		om:hasValue exp1:RunMaterialCost_1_Measure_1;
@@ -193,20 +217,16 @@ INSERT DATA {
 		OntoRxn:hasStoichiometryRatio exp2:StoiRatio_2;
 		OntoRxn:hasStoichiometryRatio exp2:StoiRatio_3;
 		OntoRxn:hasRxnScale exp2:RxnScale_1;
-		OntoRxn:hasPerformanceIndicator exp2:Yield_1;
-		OntoRxn:hasPerformanceIndicator exp2:RunMaterialCost_1;
+		OntoRxn:hasYield exp2:Yield_1;
+		OntoRxn:hasRunMaterialCost exp2:RunMaterialCost_1;
 		OntoRxn:hasInputChemical exp2:InputChemical_1;
 		OntoRxn:hasInputChemical exp2:InputChemical_2;
 		OntoRxn:hasInputChemical exp2:InputChemical_3;
 		OntoRxn:hasOutputChemical exp2:OutputChemical_4;
 	.
 
-	exp2:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime .
-	exp2:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature .
-	exp2:RxnPressure_1 rdf:type OntoRxn:ReactionPressure .
-
 	exp2:ResidenceTime_1
-		rdf:type om:Duration;
+		rdf:type OntoRxn:ResidenceTime;
 		om:hasPhenomenon exp2:RxnExp_1;
 		om:hasValue exp2:ResidenceTime_1_Measure_1;
 	.
@@ -218,7 +238,7 @@ INSERT DATA {
 	.
 
 	exp2:RxnTemperature_1
-		rdf:type om:CelsiusTemperature;
+		rdf:type OntoRxn:ReactionTemperature;
 		om:hasPhenomenon exp2:RxnExp_1;
 		om:hasValue exp2:RxnTemperature_1_Measure_1;
 	.
@@ -230,7 +250,7 @@ INSERT DATA {
 	.
 
 	exp2:RxnPressure_1
-		rdf:type om:Pressure;
+		rdf:type OntoRxn:ReactionPressure;
 		om:hasPhenomenon exp2:RxnExp_1;
 		om:hasValue exp2:RxnPressure_1_Measure_1;
 	.
@@ -242,7 +262,6 @@ INSERT DATA {
 	.
 
 	exp2:Yield_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:Yield;
 		om:hasPhenomenon exp2:RxnExp_1;
 		om:hasValue exp2:Yield_1_Measure_1;
@@ -255,7 +274,6 @@ INSERT DATA {
 	.
 
 	exp2:RunMaterialCost_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:RunMaterialCost;
 		om:hasPhenomenon exp2:RxnExp_1;
 		om:hasValue exp2:RunMaterialCost_1_Measure_1;
@@ -354,20 +372,16 @@ INSERT DATA {
 		OntoRxn:hasStoichiometryRatio exp3:StoiRatio_2;
 		OntoRxn:hasStoichiometryRatio exp3:StoiRatio_3;
 		OntoRxn:hasRxnScale exp3:RxnScale_1;
-		OntoRxn:hasPerformanceIndicator exp3:Yield_1;
-		OntoRxn:hasPerformanceIndicator exp3:RunMaterialCost_1;
+		OntoRxn:hasYield exp3:Yield_1;
+		OntoRxn:hasRunMaterialCost exp3:RunMaterialCost_1;
 		OntoRxn:hasInputChemical exp3:InputChemical_1;
 		OntoRxn:hasInputChemical exp3:InputChemical_2;
 		OntoRxn:hasInputChemical exp3:InputChemical_3;
 		OntoRxn:hasOutputChemical exp3:OutputChemical_4;
 	.
 
-	exp3:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime .
-	exp3:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature .
-	exp3:RxnPressure_1 rdf:type OntoRxn:ReactionPressure .
-
 	exp3:ResidenceTime_1
-		rdf:type om:Duration;
+		rdf:type OntoRxn:ResidenceTime;
 		om:hasPhenomenon exp3:RxnExp_1;
 		om:hasValue exp3:ResidenceTime_1_Measure_1;
 	.
@@ -379,7 +393,7 @@ INSERT DATA {
 	.
 
 	exp3:RxnTemperature_1
-		rdf:type om:CelsiusTemperature;
+		rdf:type OntoRxn:ReactionTemperature;
 		om:hasPhenomenon exp3:RxnExp_1;
 		om:hasValue exp3:RxnTemperature_1_Measure_1;
 	.
@@ -391,7 +405,7 @@ INSERT DATA {
 	.
 
 	exp3:RxnPressure_1
-		rdf:type om:Pressure;
+		rdf:type OntoRxn:ReactionPressure;
 		om:hasPhenomenon exp3:RxnExp_1;
 		om:hasValue exp3:RxnPressure_1_Measure_1;
 	.
@@ -403,7 +417,6 @@ INSERT DATA {
 	.
 
 	exp3:Yield_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:Yield;
 		om:hasPhenomenon exp3:RxnExp_1;
 		om:hasValue exp3:Yield_1_Measure_1;
@@ -416,7 +429,6 @@ INSERT DATA {
 	.
 
 	exp3:RunMaterialCost_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:RunMaterialCost;
 		om:hasPhenomenon exp3:RxnExp_1;
 		om:hasValue exp3:RunMaterialCost_1_Measure_1;
@@ -515,20 +527,16 @@ INSERT DATA {
 		OntoRxn:hasStoichiometryRatio exp4:StoiRatio_2;
 		OntoRxn:hasStoichiometryRatio exp4:StoiRatio_3;
 		OntoRxn:hasRxnScale exp4:RxnScale_1;
-		OntoRxn:hasPerformanceIndicator exp4:Yield_1;
-		OntoRxn:hasPerformanceIndicator exp4:RunMaterialCost_1;
+		OntoRxn:hasYield exp4:Yield_1;
+		OntoRxn:hasRunMaterialCost exp4:RunMaterialCost_1;
 		OntoRxn:hasInputChemical exp4:InputChemical_1;
 		OntoRxn:hasInputChemical exp4:InputChemical_2;
 		OntoRxn:hasInputChemical exp4:InputChemical_3;
 		OntoRxn:hasOutputChemical exp4:OutputChemical_4;
 	.
 
-	exp4:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime .
-	exp4:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature .
-	exp4:RxnPressure_1 rdf:type OntoRxn:ReactionPressure .
-
 	exp4:ResidenceTime_1
-		rdf:type om:Duration;
+		rdf:type OntoRxn:ResidenceTime;
 		om:hasPhenomenon exp4:RxnExp_1;
 		om:hasValue exp4:ResidenceTime_1_Measure_1;
 	.
@@ -540,7 +548,7 @@ INSERT DATA {
 	.
 
 	exp4:RxnTemperature_1
-		rdf:type om:CelsiusTemperature;
+		rdf:type OntoRxn:ReactionTemperature;
 		om:hasPhenomenon exp4:RxnExp_1;
 		om:hasValue exp4:RxnTemperature_1_Measure_1;
 	.
@@ -552,7 +560,7 @@ INSERT DATA {
 	.
 
 	exp4:RxnPressure_1
-		rdf:type om:Pressure;
+		rdf:type OntoRxn:ReactionPressure;
 		om:hasPhenomenon exp4:RxnExp_1;
 		om:hasValue exp4:RxnPressure_1_Measure_1;
 	.
@@ -564,7 +572,6 @@ INSERT DATA {
 	.
 
 	exp4:Yield_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:Yield;
 		om:hasPhenomenon exp4:RxnExp_1;
 		om:hasValue exp4:Yield_1_Measure_1;
@@ -577,7 +584,6 @@ INSERT DATA {
 	.
 
 	exp4:RunMaterialCost_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:RunMaterialCost;
 		om:hasPhenomenon exp4:RxnExp_1;
 		om:hasValue exp4:RunMaterialCost_1_Measure_1;
@@ -676,20 +682,16 @@ INSERT DATA {
 		OntoRxn:hasStoichiometryRatio exp5:StoiRatio_2;
 		OntoRxn:hasStoichiometryRatio exp5:StoiRatio_3;
 		OntoRxn:hasRxnScale exp5:RxnScale_1;
-		OntoRxn:hasPerformanceIndicator exp5:Yield_1;
-		OntoRxn:hasPerformanceIndicator exp5:RunMaterialCost_1;
+		OntoRxn:hasYield exp5:Yield_1;
+		OntoRxn:hasRunMaterialCost exp5:RunMaterialCost_1;
 		OntoRxn:hasInputChemical exp5:InputChemical_1;
 		OntoRxn:hasInputChemical exp5:InputChemical_2;
 		OntoRxn:hasInputChemical exp5:InputChemical_3;
 		OntoRxn:hasOutputChemical exp5:OutputChemical_4;
 	.
 
-	exp5:ResidenceTime_1 rdf:type OntoRxn:ResidenceTime .
-	exp5:RxnTemperature_1 rdf:type OntoRxn:ReactionTemperature .
-	exp5:RxnPressure_1 rdf:type OntoRxn:ReactionPressure .
-
 	exp5:ResidenceTime_1
-		rdf:type om:Duration;
+		rdf:type OntoRxn:ResidenceTime;
 		om:hasPhenomenon exp5:RxnExp_1;
 		om:hasValue exp5:ResidenceTime_1_Measure_1;
 	.
@@ -701,7 +703,7 @@ INSERT DATA {
 	.
 
 	exp5:RxnTemperature_1
-		rdf:type om:CelsiusTemperature;
+		rdf:type OntoRxn:ReactionTemperature;
 		om:hasPhenomenon exp5:RxnExp_1;
 		om:hasValue exp5:RxnTemperature_1_Measure_1;
 	.
@@ -713,7 +715,7 @@ INSERT DATA {
 	.
 
 	exp5:RxnPressure_1
-		rdf:type om:Pressure;
+		rdf:type OntoRxn:ReactionPressure;
 		om:hasPhenomenon exp5:RxnExp_1;
 		om:hasValue exp5:RxnPressure_1_Measure_1;
 	.
@@ -725,7 +727,6 @@ INSERT DATA {
 	.
 
 	exp5:Yield_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:Yield;
 		om:hasPhenomenon exp5:RxnExp_1;
 		om:hasValue exp5:Yield_1_Measure_1;
@@ -738,7 +739,6 @@ INSERT DATA {
 	.
 
 	exp5:RunMaterialCost_1
-		rdf:type OntoRxn:PerformanceIndicator;
 		rdf:type OntoRxn:RunMaterialCost;
 		om:hasPhenomenon exp5:RxnExp_1;
 		om:hasValue exp5:RunMaterialCost_1_Measure_1;
