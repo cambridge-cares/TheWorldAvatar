@@ -24,15 +24,22 @@ def read_alignment_file_as_dataframe(filename):
 def getID(iri):
     if iri.startswith('http://dbpedia.org/resource/'):
         return iri.replace('http://dbpedia.org/resource/', 'dbr:')
+    if iri.startswith('http://www.google.com/base/feeds/snippets/'):
+        return iri
     i = iri.rfind('/')
     strs = iri[i+1:].split('_')
     return strs[0]
 
 def read_match_file_as_index_set(filename, linktypes):
-    dframe = pd.read_csv(filename, index_col=['idx_1', 'idx_2'])
-    idx0 = dframe.index.levels[0].astype(str)
-    idx1 = dframe.index.levels[1]
-    dframe.index = dframe.index.set_levels([idx0, idx1])
+    dframe = pd.read_csv(filename)
+    dframe['idx_1'] = dframe['idx_1'].astype(str)
+    dframe['idx_2'] = dframe['idx_2'].astype(str)
+    fct = lambda s : s.replace('http://www.google.com/base/feeds/snippets/', '')
+    dframe['idx_2'] = dframe['idx_2'].apply(fct)
+    dframe.set_index(['idx_1', 'idx_2'], inplace=True)
+    #idx0 = dframe.index.levels[0].astype(str)
+    #idx1 = dframe.index.levels[1].astype(str)
+    #dframe.index = dframe.index.set_levels([idx0, idx1])
 
     mask = (dframe['link'] >= 0) & False
     for t in linktypes:
@@ -93,14 +100,11 @@ def get_area_under_curve(result):
 
 def evaluate(df_alignment, matches, number_of_thresholds=41):
 
-    # TODO-AE: check scores < 0 or > 1
     result = []
     thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
     for t in thresholds:
-        #logging.debug('threshold=%s', t)
         mask = (df_alignment['score'] >= t)
         predicted_matches =  df_alignment[mask].index
-        # TODO-AE remove duplicates?
         true_matches, false_matches, false_nonmatches, precision, recall, f1score = calculate_precision_recall(
             predicted_matches, matches)
         entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches), f1score]

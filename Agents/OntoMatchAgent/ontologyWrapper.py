@@ -15,7 +15,7 @@ from matchers.UnitConverter import UnitConverter
 logging.getLogger("gensim").setLevel(logging.CRITICAL)
 
 class Ontology():
-    def __init__(self, addr, ontology, graph, use_comment=False, no_stem=False):
+    def __init__(self, addr, ontology, graph, use_comment=False, no_stem=False, skip_labels=True):
         self._addr = addr
         self.ontology = ontology
         self.graph = graph
@@ -25,9 +25,9 @@ class Ontology():
         self.classTree = {}
         self.rangeMap = {} #classId to range
         self.domainMap = {}
-        self._load(no_stem)
+        self._load(no_stem, skip_labels)
 
-    def _load(self, no_stem = False):
+    def _load(self, no_stem = False, skip_labels=True):
         '''
         load the ontology entities, divide into words entry
         '''
@@ -37,7 +37,7 @@ class Ontology():
         #self.properties =list( self.ontology.properties())
         #self.getRdfLevelDef()
         self.ontoName = self._addr.replace('.','')
-        self.individualList, self.individualNames, self.instanceDict, self.instanceTokensDict, self.icmap, self.ipmap, self.valueMap = self.buildValueMap()
+        self.individualList, self.individualNames, self.instanceDict, self.instanceTokensDict, self.icmap, self.ipmap, self.valueMap = self.buildValueMap(skip_labels)
 
     @staticmethod
     def lemmatize_stemming(text, no_stem = False):
@@ -158,7 +158,7 @@ class Ontology():
         self.rdfProperties = self.getRDFProp(self.graph)
 
 
-    def buildValueMap(self):
+    def buildValueMap(self, skip_labels):
         '''
         Build a map [entity ID, (value, property)]
         Search is bottom up, from all literal values
@@ -189,12 +189,13 @@ class Ontology():
             #TODO-AE: BNA1866 - ask Shaocong why < 60 was required
             #if isinstance(v, rdflib.term.Literal) and len(str(v.value))<60:#filter in only Literal and string that is not too long
             if isinstance(v, rdflib.term.Literal):
-                if hasattr(v,'language') and v.language is not None and v.language!='en':
-                    continue
-                if p == rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#label'):
-                    continue
-                if p == rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#comment'):
-                    continue
+                if skip_labels:
+                    if hasattr(v,'language') and v.language is not None and v.language!='en':
+                        continue
+                    if p == rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#label'):
+                        continue
+                    if p == rdflib.term.URIRef('http://www.w3.org/2000/01/rdf-schema#comment'):
+                        continue
                 instanceIri = s.n3().replace('<','').replace('>','')
                 name  = self.getName(instanceIri)
                 clist = self.query4class(g, instanceIri)

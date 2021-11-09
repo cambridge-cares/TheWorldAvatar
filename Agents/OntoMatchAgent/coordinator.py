@@ -5,6 +5,7 @@ import logging
 import os
 import pickle
 import random
+import sys
 import time
 import traceback
 
@@ -75,7 +76,7 @@ class Agent():
         else:
             graph = self.load_rdflib_graph(addr, add_knowledge)
             owlready2onto = self.load_owlready2_ontology(graph)
-            onto = Ontology(addr, ontology=owlready2onto, graph=graph)
+            onto = Ontology(addr, ontology=owlready2onto, graph=graph, skip_labels=False)
             if dump_ontology:
                 self.dump(addr, onto)
 
@@ -239,7 +240,9 @@ class Agent():
         matcher = instancematching.InstanceMatcherWithAutoCalibration()
         #TODO-AE URGENT 211023 Must be continued ... all matchers has to write back matching results ...
         _, df_total_best_scores = matcher.start(srconto, tgtonto, params_blocking, params_mapping)
-        return df_total_best_scores
+        #return df_total_best_scores
+        #TODO-AE URGENT 211103
+        return matcher
 
     def __start_matching_with_scoring_weights(self, srconto, tgtonto, params_model_specific, params_blocking, params_mapping):
         matcher = instancematching.InstanceMatcherWithScoringWeights()
@@ -249,7 +252,8 @@ class Agent():
         scoring_weights = params_model_specific['weights']
         instancematching.add_total_scores(df_scores, props=prop_column_names, scoring_weights=scoring_weights,
                         missing_score=None, aggregation_mode='sum', average_min_prop_count=2)
-        return df_scores
+        #return df_scores
+        return matcher
 
     def __start_match_manager(self, params_model_specific, params_blocking, srconto, tgtonto):
 
@@ -289,16 +293,16 @@ class Agent():
         # convert alignment to dataframe with indices and score function
         return df_scores
 
-def init(config_dev=None, config_file=None):
+def init(config_dev=None):
     print('current working directory=', os.getcwd())
+    print('sys.argv=', sys.argv)
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, default=config_file)
+    parser.add_argument('--config', type=str)
     parser.add_argument('--logconfdir', type=str, default='./conf')
     parser.add_argument('--logdir', type=str, default='../logs')
     args = parser.parse_args()
-
-    print('args = args')
+    print('args = ', args)
 
     if args.config:
         with open(args.config) as json_config:
@@ -318,23 +322,48 @@ def init(config_dev=None, config_file=None):
 
     return config
 
-def postprocess(config, df_scores):
+def postprocess(config, matcher, dump=None):
+
+    if dump:
+        dir_name = dump + '_' + str(time.time())
+        logging.info('dumping results to %s', dir_name)
+        os.mkdir(dir_name)
+        sm = matcher.score_manager
+        sm.data1.to_csv(dir_name + '/data1.csv')
+        sm.data2.to_csv(dir_name + '/data2.csv')
+
+        if isinstance(matcher, instancematching.InstanceMatcherWithScoringWeights):
+            sm.df_scores.to_csv(dir_name + '/total_scores.csv')
+        elif isinstance(matcher, instancematching.InstanceMatcherWithAutoCalibration):
+            if sm.df_max_scores_1 is not None:
+                sm.df_max_scores_1.to_csv(dir_name + '/max_scores_1.csv')
+            if sm.df_max_scores_2 is not None:
+                sm.df_max_scores_2.to_csv(dir_name + '/max_scores_2.csv')
+            matcher.df_total_scores.to_csv(dir_name + '/total_scores.csv')
+            matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
+            sm.df_scores.to_csv(dir_name + '/scores.csv')
+        else:
+            raise RuntimeError('unsupported type of matcher', type(matcher))
+
     matchfile = config['post_processing']['evaluation_file']
     index_set_matches = evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
     logging.info('ground truth matches=%s', len(index_set_matches))
+
+    df_scores = matcher.get_scores()
     logging.info('length of scores=%s', len(df_scores))
     result = evaluate.evaluate(df_scores, index_set_matches)
     return result
 
-def start(config_dev=None, config_file=None):
-    config = init(config_dev, config_file)
+def start(config_dev=None):
+    config = init(config_dev)
     starttime = time.time()
     agent = Agent()
-    df_scores = agent.start(config)
+    matcher = agent.start(config)
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)
-    result = postprocess(config, df_scores)
-    return df_scores, result
+    dump = config['post_processing'].get('dump')
+    result = postprocess(config, matcher, dump)
+    return matcher, result
 
 if __name__ == '__main__':
     start()

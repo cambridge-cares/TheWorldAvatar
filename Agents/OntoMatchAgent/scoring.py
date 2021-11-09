@@ -149,6 +149,11 @@ class ScoreManager():
     def get_max_scores_2(self):
         return self.df_max_scores_2
 
+    def add_prop_prop_fct_tuples_by_params(self, params_mapping):
+        prop_prop_sim_tuples = create_prop_prop_sim_triples_from_params(params_mapping)
+        for prop1, prop2, sim_fct in prop_prop_sim_tuples:
+            self.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
+
     def add_prop_prop_fct_tuples(self, property1: str, property2: str, fcts):
         if property1 and (not property1 in self.data1.columns):
             raise RuntimeError('property1 not found in dataframe columns', property1)
@@ -173,7 +178,7 @@ class ScoreManager():
         for p1 in props1:
             for p2 in props2:
                 for fct in fcts:
-                    # TODO-AE check whether scoring_fcts works for p1 / p2
+                    # TODO-AE check whether scoring_fcts can be applied to datatype of p1 / p2
                     self.prop_prop_fct_tuples.append((p1, p2, fct))
 
     @staticmethod
@@ -201,11 +206,18 @@ class ScoreManager():
             idx2 = self.data2.index[pos2]
             row1 = self.data1.loc[idx1]
             row2 = self.data2.loc[idx2]
-            assert row1['pos'] == pos1
+            try:
+                assert row1['pos'] == pos1
+            except ValueError as err:
+                logging.debug('%s', err)
+                logging.debug('\nidx1=%s, idx2=%s', idx1, idx2)
+                logging.debug('\n%s', row1.to_string())
+                raise err
             try:
                 assert row2['pos'] == pos2
             except ValueError as err:
                 logging.debug('%s', err)
+                logging.debug('\nidx1=%s, idx2=%s', idx1, idx2)
                 logging.debug('\n%s', row2.to_string())
                 raise err
             row = [idx1, idx2, pos1, pos2]
@@ -248,7 +260,8 @@ class ScoreManager():
             columns.append(c)
             str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
 
-        index_column_name = 'idx_' + str(dataset_id)
+        index_column_name = 'idx_1' if dataset_id==1 else 'idx_2'
+        other_index_column_name = 'idx_2' if dataset_id==1 else 'idx_1'
 
         result_rows = []
         count = 0
@@ -265,14 +278,30 @@ class ScoreManager():
                     if not ((score is None) or np.isnan(score)):
                         if max_score is None or score > max_score:
                             max_score = score
-
                 result_row.update({str(c) + '_max': max_score})
 
             result_row.update({index_column_name: idx})
+
+            # use idx_2 as second index if all its column scores are maximum; otherwise use 'virtual'
+            max_idx_2 = None
+            for idx_2, row in cand.iterrows():
+                max_idx_2 = idx_2
+                for c in columns:
+                    v1 = row[c]
+                    v2 = result_row[str(c) + '_max']
+                    if not ((pd.isna(v1) and pd.isna(v2)) or (v1 == v2)):
+                        max_idx_2 = None
+                        break
+                if max_idx_2:
+                    break
+            if not max_idx_2:
+                max_idx_2 = 'virtual'
+            result_row.update({other_index_column_name: max_idx_2})
+
             result_rows.append(result_row)
 
         df_result = pd.DataFrame(result_rows)
-        df_result.set_index([index_column_name], inplace=True)
+        df_result.set_index([index_column_name, other_index_column_name], inplace=True)
 
         logging.info('calculated maximum scores, number of entities=%s, number of pairs=%s', len(df_result), count)
         logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
@@ -420,11 +449,12 @@ def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
 
     for t1 in tokens1.copy():
         for t2 in tokens2:
-            edit_dist = nltk.edit_distance(t1, t2)
-            if edit_dist == 1:
-                tokens1.remove(t1)
-                tokens1.append(t2)
-                break
+            if len(t1) > 3 and len(t2) > 3:
+                edit_dist = nltk.edit_distance(t1, t2)
+                if edit_dist == 1:
+                    tokens1.remove(t1)
+                    tokens1.append(t2)
+                    break
 
     if df_index_tokens is not None:
         freq1 = get_frequencies(tokens1, df_index_tokens)

@@ -332,9 +332,16 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
         logging.debug('property_mapping=%s', property_mapping)
 
+        '''
         expected = {
             'name': ('name', 0.79765, 4),
             'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.55746, 4)
+        }
+        '''
+
+        expected = {
+            'name': ('name', 0.75249, 4),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.52053, 0)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -362,9 +369,9 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         logging.debug('property_mapping=%s', property_mapping)
 
         expected = {
-            'name': ('name', 0.79765, 4),
+            'name': ('name', 0.75249, 4),
             # score function 0 and 1 got the same mean result, thus the first score function wins
-            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0)
+            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.81211, 0)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -406,15 +413,15 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         property_mapping = scoring.find_property_mapping(manager, sim_fcts)
 
         expected = {
-            'name' : ('name', 0.797, 4),
-            'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.997, 3),
-            'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.703, 3),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.557, 4),
+            'name' : ('name', 0.78602, 4),
+            'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.99758, 3),
+            'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.70326, 3),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54737, 1),
             # for OwnedBy/hasName score function 1 is slightly behind 4
             #'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.547, 1),
-            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.852, 0),
+            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0),
             #both fuel and type have been identified for property mapping
-            'type': ('type', 0.876, 0)
+            'type': ('type', 0.87609, 0)
             #'geo:wgs84_pos#long': ('hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', 0.9708340665506993, 3),
             #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 3)
         }

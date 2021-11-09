@@ -11,13 +11,17 @@ from rdflib.term import _is_valid_uri
 from tqdm import tqdm
 
 import util
-
+# TODO-AE 211106 rename BASE to BASE_DUKES
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
 BASE_MUN_GER = Namespace('http://www.theworldavatar.com/kb/municipalities/')
-BASE_REST_FODORS = Namespace('http://www.theworldavatar.com/kb/restaurants/fodors/')
-BASE_REST_ZAGATS = Namespace('http://www.theworldavatar.com/kb/restaurants/zagats/')
+BASE_REST_FODOR = Namespace('http://www.theworldavatar.com/kb/restaurants/fodor/')
+BASE_REST_ZAGAT = Namespace('http://www.theworldavatar.com/kb/restaurants/zagat/')
+BASE_BIBL_DBLP = Namespace('http://www.theworldavatar.com/kb/bibliography/dblp/')
+BASE_BIBL_ACM = Namespace('http://www.theworldavatar.com/kb/bibliography/acm/')
+BASE_PROD_AMAZON = Namespace('http://www.theworldavatar.com/kb/products/amazon/')
+BASE_PROD_GOOGLE = Namespace('http://www.google.com/base/feeds/snippets/')
 DBO = Namespace('http://dbpedia.org/ontology/')
 DBR = Namespace('http://dbpedia.org/resource/')
 GEO = Namespace('http://www.w3.org/2003/01/geo/wgs84_pos#')
@@ -68,7 +72,7 @@ def replace_special_symbols(s):
     return s
 
 def normalize(s: str):
-    if s:
+    if s and isinstance(s, str):
         symbols = [',', '-', '–', '\n', ' ', u'\xa0', "'"]
         for sym in symbols:
             s = s.replace(sym, '_')
@@ -780,10 +784,7 @@ def convert_dbpedia_to_ontopowsys(source_file, target_file, format):
 
     graph.serialize(target_file, format=format)
 
-class Restaurant_Converter():
-
-    def __init__(self):
-        pass
+class ConverterRestaurant():
 
     def split_restaurant(self, s):
 
@@ -903,19 +904,16 @@ class Restaurant_Converter():
                 rows.append(row)
         dframe = pd.DataFrame(rows, columns=['name', 'street_no', 'street', 'city', 'phone', 'type', 'description', 'idx'])
         dframe.set_index(['idx'], inplace=True)
-        logging.info('loaded and split restaurants, number=%s for file=%s', len(dframe), filename)
+        columns = [ str(col) for col in dframe.columns]
+        logging.info('loaded and split restaurants, number=%s for file=%s, columns=%s', len(dframe), filename, columns)
         return dframe
 
-    def convert_restaurant_data(self, src_file, short, tgt_file, format):
+    def convert_data(self, src_file, namespace, short, tgt_file, format):
 
         dframe = self.load_to_dframe(src_file, short)
 
-        #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/zagats.csv'
-        #dframe.to_csv(tgt_file)
-
-
         global BASE
-        BASE = BASE_REST_FODORS
+        BASE = namespace
 
         graph = rdflib.Graph()
         bind_prefixes(graph)
@@ -952,7 +950,7 @@ class Restaurant_Converter():
 
         return dframe, graph
 
-    def convert_matches_to_multi_indices(self, src_file, tgt_file, df_1, df_2):
+    def convert_matches_to_multi_indices(self, src_file, tgt_file, df1, df2):
         descriptions = []
         previous = ''
         current = ''
@@ -991,7 +989,7 @@ class Restaurant_Converter():
         first_index = None
         for i, d in enumerate(descriptions):
             if first_index is None:
-                found = df_1[df_1['description'] == d]
+                found = df1[df1['description'] == d]
                 # the result set only contains a single entry
                 if len(found) == 0:
                     logging.error('NOT FOUND: %s', d)
@@ -999,7 +997,7 @@ class Restaurant_Converter():
                 else:
                     first_index = found.index[0]
             else:
-                found = df_2[df_2['description'] == d]
+                found = df2[df2['description'] == d]
                 if len(found) == 0:
                     logging.error('NOT FOUND: %s %s', i, d)
                     first_index = None
@@ -1018,23 +1016,172 @@ class Restaurant_Converter():
         logging.info('number matching pairs=%s', len(df_matches))
         df_matches.to_csv(tgt_file, index=True)
 
-def convert_restaurants():
+    @staticmethod
+    def convert():
 
-    format = 'turtle'
-    path = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/restaurant/original'
-    src_file_zagats = path + '/zagats.txt'
-    src_file_fodors = path + '/fodors.txt'
-    file_matches = path + '/match-pairs.txt'
+        format = 'turtle'
+        path = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/restaurant/original'
+        src_file_zagat = path + '/zagats.txt'
+        src_file_fodor = path + '/fodors.txt'
+        file_matches = path + '/match-pairs.txt'
 
-    converter = Restaurant_Converter()
-    df_zagats, _ = converter.convert_restaurant_data(src_file_zagats, 'Z', 'C:/my/tmp/ontomatch/tmp_kwl_files/zagats.ttl', format)
-    df_fodors, _ = converter.convert_restaurant_data(src_file_fodors, 'F', 'C:/my/tmp/ontomatch/tmp_kwl_files/fodors.ttl', format)
-    converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_kwl_files/matches_restaurant.csv', df_zagats, df_fodors)
+        converter = ConverterRestaurant()
+        df1, _ = converter.convert_data(src_file_zagat, BASE_REST_ZAGAT, 'Z', 'C:/my/tmp/ontomatch/tmp_kwl_files/zagats.ttl', format)
+        df2, _ = converter.convert_data(src_file_fodor, BASE_REST_FODOR, 'F', 'C:/my/tmp/ontomatch/tmp_kwl_files/fodors.ttl', format)
+        converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_kwl_files/matches_restaurant.csv', df1, df2)
+
+class ConverterBibliographicRecord():
+
+    def load_to_dframe(self,filename):
+        dframe = pd.read_csv(filename) #, encoding='utf8')
+        dframe = dframe.rename(columns={'id': 'idx'})
+        dframe.set_index(['idx'], inplace=True)
+        columns = [ str(col) for col in dframe.columns]
+        logging.info('loaded bibliographic records, number=%s for file=%s, columns=%s', len(dframe), filename, columns)
+        return dframe
+
+    def convert_data(self, src_file, namespace, tgt_file, format):
+
+        dframe = self.load_to_dframe(src_file)
+
+        global BASE
+        BASE = namespace
+
+        graph = rdflib.Graph()
+        bind_prefixes(graph)
+
+        for idx, row in dframe.iterrows():
+            # replace '-' by '' not by '_' to be consistent with IRI's for KWL and DUKES
+            # e.g. DBLP ID=conf/sigmod/Galindo-Legaria94
+            norm_idx = normalize(str(idx).replace('-', ''))
+            s = BASE[norm_idx]
+            graph.add((s, RDF.type, SDO['ScholarlyArticle']))
+            graph.add((s, SDO['name'], Literal(row['title'], lang='en')))
+            graph.add((s, SDO['author'], Literal(row['authors'], lang='en')))
+
+            x = rdflib.BNode()
+            graph.add((s, SDO['isPartOf'], x))
+            graph.add((x, RDF.type, SDO['PublicationIssue']))
+            graph.add((x, SDO['name'], Literal(row['venue'], lang='en')))
+            graph.add((x, SDO['datePublished'], Literal(row['year'], datatype=XSD.integer)))
+
+        graph.serialize(tgt_file, format=format)
+
+        return dframe, graph
+
+    def convert_matches_to_multi_indices(self, src_file, tgt_file):
+        df_matches = pd.read_csv(src_file)
+        df_matches = df_matches.rename(columns={'idDBLP': 'idx_1', 'idACM': 'idx_2'})
+        fct = lambda s : normalize(s.replace('-', ''))
+        df_matches['idx_1'] = df_matches['idx_1'].copy().apply(fct)
+        df_matches['link'] = 1
+        df_matches.set_index(['idx_1', 'idx_2'], inplace=True)
+        logging.info('number matching pairs=%s', len(df_matches))
+        df_matches.to_csv(tgt_file, index=True)
+
+    @staticmethod
+    def convert():
+
+        format = 'turtle'
+        #path = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/DBLP-ACM'
+        path = 'C:/my/tmp/ontomatch/tmp_dblp_acm'
+        src_file_dblp = path + '/DBLP2.csv'
+        src_file_acm = path + '/ACM.csv'
+        file_matches = path + '/DBLP-ACM_perfectMapping.csv'
+
+        converter = ConverterBibliographicRecord()
+        converter.convert_data(src_file_dblp, BASE_BIBL_DBLP, 'C:/my/tmp/ontomatch/tmp_dblp_acm/dblp.ttl', format)
+        converter.convert_data(src_file_acm, BASE_BIBL_ACM, 'C:/my/tmp/ontomatch/tmp_dblp_acm/acm.ttl', format)
+        converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_dblp_acm/matches_bibliography.csv')
+
+class ConverterProduct():
+
+    def load_to_dframe(self,filename):
+        dframe = pd.read_csv(filename) #, encoding='utf8')
+        dframe = dframe.rename(columns={'id': 'idx'})
+        dframe.set_index(['idx'], inplace=True)
+        columns = [ str(col) for col in dframe.columns]
+        logging.info('loaded products, number=%s for file=%s, columns=%s', len(dframe), filename, columns)
+        return dframe
+
+    def convert_data(self, src_file, namespace, tgt_file, format, name_column):
+
+        dframe = self.load_to_dframe(src_file)
+
+        global BASE
+        BASE = namespace
+
+        graph = rdflib.Graph()
+        bind_prefixes(graph)
+
+        prefix_length = len('http://www.google.com/base/feeds/snippets/')
+
+        for idx, row in dframe.iterrows():
+
+            if idx.startswith('http://www.google.com/base/feeds/snippets/'):
+                idx = idx[prefix_length:]
+            s = BASE[idx]
+            graph.add((s, RDF.type, SDO['Product']))
+
+            o = row[name_column]
+            if isinstance(o, str) and o:
+                graph.add((s, SDO['name'], Literal(o, lang='en')))
+
+            o = row['manufacturer']
+            if isinstance(o, str) and o:
+                graph.add((s, SDO['manufacturer'], Literal(o , lang='en')))
+
+            o = row['description']
+            if isinstance(o, str) and o:
+                graph.add((s, SDO['description'], Literal(o, lang='en')))
+
+            o = row['price']
+            if o is not None:
+                # 62 out of 3327 Google products contain a price such as '236.18 gbp'
+                # we remove the currency here
+                if isinstance(o, str) and o.endswith(' gbp'):
+                    o = o[:-4]
+                o = float(o)
+                # 199 out of 1363 Amazon products contain the price 0. which means missing price information
+                # Thus, we skip price 0.
+                if o > 0.:
+                    x = rdflib.BNode()
+                    graph.add((s, SDO['offers'], x))
+                    graph.add((x, RDF.type, SDO['Offer']))
+                    graph.add((x, SDO['price'], Literal(o, datatype=XSD.float)))
+
+        graph.serialize(tgt_file, format=format)
+
+        return dframe, graph
+
+    def convert_matches_to_multi_indices(self, src_file, tgt_file):
+        df_matches = pd.read_csv(src_file)
+        df_matches = df_matches.rename(columns={'idAmazon': 'idx_1', 'idGoogleBase': 'idx_2'})
+        df_matches['link'] = 1
+        df_matches.set_index(['idx_1', 'idx_2'], inplace=True)
+        logging.info('number matching pairs=%s', len(df_matches))
+        df_matches.to_csv(tgt_file, index=True)
+
+    @staticmethod
+    def convert():
+
+        format = 'turtle'
+        #path = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/Amazon-GoogleProducts'
+        path = 'C:/my/tmp/ontomatch/tmp_product'
+        src_file_dblp = path + '/Amazon_small.csv'
+        src_file_acm = path + '/GoogleProducts_small.csv'
+        file_matches = path + '/Amzon_GoogleProducts_perfectMapping_small.csv'
+
+        converter = ConverterProduct()
+        converter.convert_data(src_file_dblp, BASE_PROD_AMAZON, 'C:/my/tmp/ontomatch/tmp_product/amazon_small.ttl', format, name_column='title')
+        converter.convert_data(src_file_acm, BASE_PROD_GOOGLE, 'C:/my/tmp/ontomatch/tmp_product/googleproducts_small.ttl', format, name_column='name')
+        converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_product/matches_product_small.csv')
+
 
 
 def test():
 
-    conv = Restaurant_Converter()
+    conv = ConverterRestaurant()
     s = 'Fujiyama Mama 467 Columbus Ave.  between 82nd and 83rd Sts. New York 212/769-1144 Asian'
     props = conv.split_restaurant(s)
     print(props)
@@ -1076,5 +1223,8 @@ if __name__ == '__main__':
     #tgt_file = 'C:/my/tmp/ontomatch/Municipalities_Germany.ttl'
     #create_location_file(src_file, tgt_file, frmt)
 
-    convert_restaurants()
+    #ConverterRestaurant.convert()
+    ConverterBibliographicRecord.convert()
+    #ConverterProduct.convert()
+
     #test()

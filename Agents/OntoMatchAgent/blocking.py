@@ -21,7 +21,7 @@ class FullPairIterator(collections.Iterable, collections.Sized):
     in the source ontology and the target ontology
     """
 
-    def __init__(self, src_onto:Ontology, tgt_onto:Ontology):
+    def __init__(self, src_onto:Ontology, tgt_onto:Ontology, reset_index:bool =False):
         """
         Init the iterator on the Cartesian product of the ordered positions of individuals
         in the source ontology and the target ontology
@@ -210,6 +210,7 @@ def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
     params_model_specific = params.get('model_specific')
     if not params_model_specific:
         params_model_specific = {}
+    params_model_specific.update({'reset_index': True})
     it_instance = globals()[name](src_onto, tgt_onto, **params_model_specific)
     return it_instance
 
@@ -247,13 +248,17 @@ def create_dataframe_from_ontology(onto):
         row['type'] = rdf_types
 
 
-        # TODO-AE 211026 add rdfs:label or replace name by rdfs:label; this is too specialized (wil not work for DBPedia)
+        # TODO-AE 211026 add rdfs:label or replace name by rdfs:label; this is too specialized (will not work for DBPedia)
         # also idx will not work
         subj = onto.individualNames[pos]
         first = subj.find('_')
-        last = subj.rfind('_')
-        idx = subj[:first]
-        subj = subj[first+1:last]
+        if first > 0:
+            last = subj.rfind('_')
+            idx = subj[:first]
+            subj = subj[first+1:last]
+        else:
+            idx = subj
+            subj = None
 
         row['pos'] = pos
         row['idx'] = idx

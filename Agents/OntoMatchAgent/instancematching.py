@@ -11,6 +11,8 @@ class InstanceMatcherWithAutoCalibration():
 
     def __init__(self):
         self.score_manager = None
+        self.df_total_scores = None
+        self.df_total_best_scores = None
 
     #TODO-AE remove attribute prop_prop_sim_tuples (was just for testing). replace it completely by params_mapping
     def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
@@ -64,10 +66,12 @@ class InstanceMatcherWithAutoCalibration():
         df_scores = self.score_manager.get_scores()
         #TODO-AE asymmetry
         df_max_scores = self.score_manager.get_max_scores_1()
-        df_total_scores, df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
-        return df_total_scores, df_total_best_scores
+        self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
+        return self.df_total_scores, self.df_total_best_scores
 
-    def calculate_auto_calibrated_total_scores_for_index(self, df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = 1):
+
+    '''
+    def calculate_auto_calibrated_total_scores_for_index_OLD(self, df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = 1):
         best_score = 0
         best_pos = None
         total_score_rows = []
@@ -90,9 +94,9 @@ class InstanceMatcherWithAutoCalibration():
                     # is: matches are penalized when using <= (around 0) but when using < instead nonmatches benefit (around 1)
                     # idea: use <= around 0 and < around 1 and "interpolate" in between
                     # this idea should not have much effect if there are many 'discrete values' and there is no lumping on values around 0
-                    mask = (df_scores[c] > value)
+                    mask = (df_scores[c] >= value)
                     count_m_plus_n = len(df_scores[mask])
-                    mask = (df_max_scores[c_max] > value)
+                    mask = (df_max_scores[c_max] >= value)
                     count_m = len(df_max_scores[mask])
                     if count_m_plus_n == 0:
                         column_score = 1
@@ -100,8 +104,8 @@ class InstanceMatcherWithAutoCalibration():
 
                         #TODO-AE URGENT 211022
                         column_score = count_m / count_m_plus_n
-
-                        '''
+    '''
+    '''
                         mask = (df_scores[c] == value)
                         count_m_plus_n_equal = len(df_scores[mask])
                         mask = (df_scores[c] < value)
@@ -125,8 +129,8 @@ class InstanceMatcherWithAutoCalibration():
 
 
                         column_score = count_m / denom
-                        '''
-                    '''
+    '''
+    '''
                     if log:
                         if count_m_plus_n == 0:
                             print(c, value, 'ZERO', column_score)
@@ -134,7 +138,112 @@ class InstanceMatcherWithAutoCalibration():
                             print(c, value, count_m, count_m_plus_n, 'orginal score=', count_m / count_m_plus_n, 'new score=', column_score)
                             print('\t', count_m, count_m_equal, count_m_greater, 'nom=', nom)
                             print('\t', count_m_plus_n, count_m_plus_n_equal, count_m_plus_n_greater, 'denom=', denom)
+    '''
+    '''
+                    score += column_score
+
+
+                    #TODO-AE 211015 calibrated score for each prop
+                    prop_score.update({c: column_score})
+
+
+                else:
+                    #TODO-AE how to score missing data?
+                    number_columns = number_columns - 1
+
+
+            # TODO-AE 211026 replace by get_total_score function
+            if number_columns <= skip_column_number:
+                score = 0.
+                print('score = 0 since number columns=', number_columns, idx_1, idx_2)
+            else:
+                score = score / number_columns
+
+            total_score_row = {
+                'idx_1': idx_1,
+                'idx_2': idx_2,
+                'score': score,
+                'best': False,
+                'pos_1': row['pos_1'],
+                'pos_2': row['pos_2'],
+            }
+
+            total_score_row.update(prop_score)
+
+            total_score_rows.append(total_score_row)
+
+            # TODO-AE what about equality?
+            if score > best_score or best_pos is None:
+                best_score = score
+                best_pos = pos
+
+        total_score_rows[best_pos]['best'] = True
+
+        return total_score_rows
+
+    def calculate_auto_calibrated_total_scores_OLD(self, df_scores, df_max_scores, property_mapping):
+
+        logging.info('calculating auto calibrated total scores')
+
+        df_scores['score'] = 0.
+
+        rows = []
+        for idx_1, _ in tqdm(df_max_scores.iterrows()):
+            #TODO-AE URGENT
+            #  skip_column_number = 1
+            #TODO-AE 211102 URGENT restaurant, for phone prop only, set skip_column_number = 0
+            skip_column_number = 0
+            total_score_rows = self.calculate_auto_calibrated_total_scores_for_index_OLD(df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = skip_column_number)
+            rows.extend(total_score_rows)
+
+        df_total_scores = pd.DataFrame(rows)
+        df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)
+        mask = (df_total_scores['best'] == True)
+        df_total_best_scores = df_total_scores[mask]
+
+        logging.info('calculated auto calibrated total scores')
+
+        return df_total_scores, df_total_best_scores
+    '''
+
+    def calculate_auto_calibrated_total_scores_for_index(self, df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = 1):
+        best_score = 0
+        best_pos = None
+        total_score_rows = []
+
+        for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
+            score = 0
+            number_columns = len(property_mapping)
+            prop_score = {}
+            for propmap  in property_mapping:
+
+                c_max = propmap['key']
+                c = int(c_max.split('_')[0])
+                value = row[c]
+
+                #TODO-AE changed at 210926
+                #if (not value is None) and (type(value) is float and not np.isnan(value)):
+                if not (value is None or type(value) is str or np.isnan(value)):
+                    # TODO-AE check: <= in line 1 and 3 leads to worse results than <
+                    # TODO-AE experimental idea: problem with just a few 'discrete values' (e.g. 0 and 1 for match and mismatch fuel, or 0, 1, 2 edit distance)
+                    # is: matches are penalized when using <= (around 0) but when using < instead nonmatches benefit (around 1)
+                    # idea: use <= around 0 and < around 1 and "interpolate" in between
+                    # this idea should not have much effect if there are many 'discrete values' and there is no lumping on values around 0
                     '''
+                    mask = (df_scores[c] >= value)
+                    count_m_plus_n = len(df_scores[mask])
+                    mask = (df_max_scores[c_max] >= value)
+                    count_m = len(df_max_scores[mask])
+                    '''
+                    count_m = sliding_counts[c_max](value)
+                    count_m_plus_n = sliding_counts[c](value)
+                    if count_m_plus_n == 0:
+                        column_score = 1
+                    else:
+
+                        #TODO-AE URGENT 211022
+                        column_score = count_m / count_m_plus_n
+
                     score += column_score
 
 
@@ -182,13 +291,26 @@ class InstanceMatcherWithAutoCalibration():
 
         df_scores['score'] = 0.
 
+        sliding_counts = {}
+        for propmap  in property_mapping:
+                c_max = propmap['key']
+                series = df_max_scores[c_max]
+                scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+                sliding_counts[c_max] = scount
+
+                c = int(c_max.split('_')[0])
+                series = df_scores[c]
+                scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+                sliding_counts[c] = scount
+
         rows = []
-        for idx_1, _ in tqdm(df_max_scores.iterrows()):
+        for idx, _ in tqdm(df_max_scores.iterrows()):
+            idx_1 = idx[0]
             #TODO-AE URGENT
             #  skip_column_number = 1
             #TODO-AE 211102 URGENT restaurant, for phone prop only, set skip_column_number = 0
             skip_column_number = 0
-            total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = skip_column_number)
+            total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = skip_column_number)
             rows.extend(total_score_rows)
 
         df_total_scores = pd.DataFrame(rows)
@@ -199,6 +321,19 @@ class InstanceMatcherWithAutoCalibration():
         logging.info('calculated auto calibrated total scores')
 
         return df_total_scores, df_total_best_scores
+
+    @classmethod
+    def sliding_count(cls, series, delta):
+        def sliding_count_internal(x):
+            mask = (sorted_series >= x - delta) & (sorted_series <= x + delta)
+            df_tmp = sorted_series[mask]
+            return len(df_tmp)
+
+        sorted_series = series.sort_values(ascending=True).copy()
+        return sliding_count_internal
+
+    def get_scores(self):
+        return self.df_total_best_scores
 
 
 class InstanceMatcherWithScoringWeights():
@@ -237,9 +372,6 @@ class InstanceMatcherWithScoringWeights():
 
     def get_scores(self):
         return self.score_manager.get_scores()
-
-    def calculate_total_score(self, scores):
-        pass
 
 def add_total_scores(df_scores, props, scoring_weights=None, missing_score=None, aggregation_mode='sum', average_min_prop_count=2):
 
