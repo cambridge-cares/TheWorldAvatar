@@ -1,0 +1,60 @@
+[
+    {
+        "id": 1,
+        "isStatusA": false,
+        "isStatusB": true,
+        "isStatusC": false,
+        "subGroup1": {
+            "isSubStatusA": false,
+            "isSubStatusB": true,
+            "isSubStatusC": false,
+            "subsubGroup1": {
+                "isSubSubStatusA": false,
+                "isSubSubStatusB": true,
+                "isSubSubStatusC": false
+            }
+        }
+    },
+    {
+        "id": 2,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 3,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 4,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 5,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 6,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 7,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    },
+    {
+        "id": 8,
+        "isStatusA": false,
+        "isStatusB": false,
+        "isStatusC": false
+    }
+]

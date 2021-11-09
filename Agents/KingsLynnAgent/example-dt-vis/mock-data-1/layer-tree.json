@@ -1,0 +1,52 @@
+[
+    {
+        "layerName": "Current Scenario",
+        "defaultState": "visible",
+        "layerIDs": ["boundary"]
+    },
+    {
+        "layerName": "Buildings",
+        "defaultState": "visible",
+        "layerIDs": ["buildings-1"]
+    },
+    {
+        "groupName": "Assets",
+        "layers": [               
+            {
+                "layerName": "Asset Owner #1",
+                "defaultState": "visible",
+                "layerIDs": ["assets-1"]
+            },
+            {
+                "layerName": "Asset Owner #2",
+                "defaultState": "visible",
+                "layerIDs": ["assets-2"]
+            },
+            {
+                "layerName": "Asset Owner #3",
+                "defaultState": "visible",
+                "layerIDs": ["assets-3"]
+            }
+        ]
+    },
+    {
+        "groupName": "Connections",
+        "layers": [               
+            {
+                "layerName": "Asset Owner #1 Connections",
+                "defaultState": "visible",
+                "layerIDs": ["assets-1-connections"]
+            },
+            {
+                "layerName": "Asset Owner #2 Connections",
+                "defaultState": "visible",
+                "layerIDs": ["assets-2-connections"]
+            },
+            {
+                "layerName": "Interasset Connections",
+                "defaultState": "visible",
+                "layerIDs": ["inter-asset-connections"]
+            }
+        ]
+    }
+]

@@ -1,0 +1,11 @@
+{
+    "apiKey": "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw",
+    "selectionsTitle": "Current Scenario:",
+    "fixedDirectory": "fixed",
+    "name": "Sites",
+    "description": "Locations of sites",
+    "defaultCenter": [ 0.2829644382170151, 52.94733409274979],
+    "defaultZoom": 9,
+    "defaultBearing": 0.0,
+    "defaultPitch": 0.0
+}
