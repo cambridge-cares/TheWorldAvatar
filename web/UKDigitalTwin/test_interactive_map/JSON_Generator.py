@@ -13,6 +13,7 @@ from geoJSONCreator import powerPlantgeoJSONCreator, elecConsAndGEOInfogeoJSONCr
 ONS = "http://statistics.data.gov.uk/sparql.json"
 ukdigitaltwin_label = "ukdigitaltwin"
 ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
+startTime_of_EnergyConsumption = "2017-01-31"
 
 
 """PowerPlant query"""
@@ -22,8 +23,8 @@ print("************************Start querying power plant data******************
 
 """Electricity consumption query"""
 print("************************Start querying Electricity consumption data************************")
-# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, True) # query the region consumption
-# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, False) # query the sub areas consumption
+# ret_elec_region = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, startTime_of_EnergyConsumption, True) # query the region consumption
+# ret_elec_area = queryUKElectricityConsumptionAndAssociatedGEOInfo(ukdigitaltwinendpoint, ONS, startTime_of_EnergyConsumption, False) # query the sub areas consumption
 
 """Grid model query"""
 print("************************Start querying Grid model************************")
