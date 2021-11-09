@@ -14,18 +14,16 @@ RUN sed -i "s|WA_REPO_USERNAME|$(cat ../credentials/wa_repo_username.txt)|;s|WA_
 # Build
 WORKDIR /root/MoDSMooAgent
 RUN --mount=type=cache,target=/root/.m2/repository mvn package
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+#==================================================================================================
 
-# #==================================================================================================
+# Second stage: copy the downloaded dependency into a new image and build into an app
+#==================================================================================================
+FROM tomcat:9.0 as agent
 
-# # Second stage: copy the downloaded dependency into a new image and build into an app
-# #==================================================================================================
-# FROM tomcat:9.0 as agent
+WORKDIR /app
 
-# WORKDIR /app
+COPY --from=builder /root/MoDSMooAgent/output/webapps/MoDSMooAgent.war $CATALINA_HOME/webapps/
 
-# COPY --from=builder /root/MoDSMooAgent/output/webapps/MoDSMooAgent.war $CATALINA_HOME/webapps/
-
-# # Start the Tomcat server
-# ENTRYPOINT ["catalina.sh", "run"]
-# #==================================================================================================
+# Start the Tomcat server
+ENTRYPOINT ["catalina.sh", "run"]
+#==================================================================================================
