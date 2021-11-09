@@ -42,4 +42,3 @@ hasLocalAuthorityCode,Data Property,,,AdministrativeDivision UNION Asset,String,
 hasLocalAuthorityCode,Data Property,hasCode,IS-A,,,,A relation between AdministrativeDivision and Land Authority code which it is tagged.,http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl
 hasLocalAuthorityCode,Data Property,,,AdministrativeDivision,String,exactly 1,A relation between AdministrativeDivision and Land Authority code which it is tagged.,http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl
 hasLatitudeLongitudeCoordinates,Data Property,,,,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,,A relation between an objecgt and its Latitude-Longitude coordinate.,http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl
-http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,Datatype,,,,,,A datatype  represents the Latitude Longitude pair.,http://www.bigdata.com/rdf/geospatial/literals/v1#
