@@ -4,7 +4,7 @@ import pyuploader.app as app
 __doc__: str = """pyuploader
 Usage:
     fs_upload <file_or_dir>  [--url=<url>]
-                             [--auth_file=<file>]
+                             [--auth-file=<file>]
                              [--no-auth]
                              [--file-ext=<ext>]
                              [--subdirs=<dir>]
@@ -16,12 +16,12 @@ Usage:
 Options:
 --file-ext=<ext>        List of extensions used to select files
                         that will be uploaded to the file server.
-                        Example: --file-ext='.log,.txt'                     [default: log]
+                        Example: --file-ext='log,txt'                       [default: log]
 --url=<url>             File server upload url. If not specified, the code
                         will try to read it from a file whose location
                         should be specified in user 'KG_FILE_SERVER_SPECS'
                         environment variables.
---auth_file=<file>      File path to the file server secrets file containing
+--auth-file=<file>      File path to the file server secrets file containing
                         the user authorization string of the following form:
                         "username:password". If not specified, the code will
                         try to read the secrets file path from a user
@@ -51,7 +51,7 @@ def start() -> None:
         uploader_type='fs_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth_file = args['--auth_file'],
+        auth_file = args['--auth-file'],
         no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         subdirs = args['--subdirs'],

@@ -4,7 +4,7 @@ import pyuploader.app as app
 __doc__: str = """pyuploader
 Usage:
     ts_upload <file_or_dir>  [--url=<url>]
-                             [--auth_file=<file>]
+                             [--auth-file=<file>]
                              [--no-auth]
                              [--file-ext=<ext>]
                              [--log-file-name=<name>]
@@ -17,7 +17,7 @@ Options:
                         the code will try to read it from a file whose
                         location should be specified in user environment
                         variables.
---auth_file=<file>      File path to the triple store secrets file containing
+--auth-file=<file>      File path to the triple store secrets file containing
                         the user authorization string of the following form:
                         "username:password". If not specified, the code will
                         try to read the secrets file path from a user
@@ -47,7 +47,7 @@ def start() -> None:
         uploader_type='ts_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth_file = args['--auth_file'],
+        auth_file = args['--auth-file'],
         no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         log_file_dir = args['--log-file-dir'],
