@@ -1,9 +1,10 @@
 import pyuploader.common.utils as utils
 import pyuploader.common.logconfig as logconfig
+import pyuploader.errorhandling.appexceptions as appexcept
 from typing import Callable, Dict, Tuple, Union
 import pathlib
 import logging
-import os
+import textwrap
 
 logger = logging.getLogger(__name__)
 
@@ -102,7 +103,18 @@ class Uploader:
                 basenf = pathlib.Path(f).name
                 logger.info(f"Uploading file: {basenf} to the {self.uploader_name}.")
                 if not dry_run:
-                    location = self._upload_file(url, auth, f, subdirs, *args, **kwargs)
+                    try:
+                        location = self._upload_file(url, auth, f, subdirs, *args, **kwargs)
+                    except Exception as e:
+                        raise appexcept.FileUploadError(textwrap.dedent("""
+                            Error: Failed to upload file: #f#
+                                Potential reasons and returned response status codes:
+                                - Wrong upload url endpoint (400 - status code)
+                                - Upload url endpoint is down (400 - status code)
+                                - Wrong auth details (401 - status code)
+                                - Unsupported file type (500 - status code)
+                                - File is too large (500 - status code)
+                        """.replace('#f#', f))) from e
                     logger.info(f"File: {basenf} successfully uploaded to: {location}.")
                     file_locations[f] = location
             logger.info(f"Uploading files to the {self.uploader_name} finished.")
