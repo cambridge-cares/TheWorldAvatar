@@ -9,10 +9,10 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">23 September 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">09 November 2021</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for describing reaction experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">62a73109f25fe5f3b03583d7ad578ac816b2aeb0</gitCommitHash>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">9044ca1c940503f127b6e81c03b123dfed91e17d</gitCommitHash>
     </owl:Ontology>
     
 
@@ -26,6 +26,19 @@
      -->
 
 
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit">
+        <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost"/>
+        <rdfs:domain rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#SpaceTimeYield"/>
+        <rdfs:range rdf:resource="http://theworldavatar.com/resource/ontouom/kilogram_per_litre_per_minute"/>
+        <rdfs:range rdf:resource="http://theworldavatar.com/resource/ontouom/pound_sterling_per_litre"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
     
 
 
@@ -127,6 +140,39 @@
     
 
 
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasConversion -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasConversion">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its conversion performance indicator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEcoScore -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEcoScore">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its eco score performance indicator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEnvironmentalFactor -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEnvironmentalFactor">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its environmental factor performance indicator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasInputChemical -->
 
 
@@ -157,11 +203,33 @@
     
 
 
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and all its reaction conditions.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasResTime -->
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasResTime">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its residence time condition. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRunMaterialCost -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRunMaterialCost">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its run material cost performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -171,6 +239,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRxnPressure">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction pressure condition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -181,6 +250,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRxnScale">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction scale specified to an input chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -191,6 +261,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRxnTemperature">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction temperature condition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -217,10 +288,22 @@
     
 
 
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasSpaceTimeYield -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasSpaceTimeYield">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its space time yield performance indicator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasStoichiometryRatio -->
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasStoichiometryRatio">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the stoichiometry ratio it applies to each input chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -232,6 +315,17 @@
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasVariation">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its variation. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasYield -->
+
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasYield">
+        <rdfs:subPropertyOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasPerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its yield performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -383,6 +477,27 @@
     
 
 
+    <!-- http://theworldavatar.com/resource/ontouom/kilogram_per_litre_per_minute -->
+
+
+    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/kilogram_per_litre_per_minute"/>
+    
+
+
+    <!-- http://theworldavatar.com/resource/ontouom/pound_sterling_per_litre -->
+
+
+    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/pound_sterling_per_litre"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/CelsiusTemperature -->
 
 
@@ -397,6 +512,13 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure -->
 
 
@@ -408,6 +530,20 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificAmountOfMoney -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificAmountOfMoney"/>
     
 
 
@@ -643,6 +779,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Conversion">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The conversion indicates, which portion of the originally used starting material has been converted into other chemical substances by a chemical reaction. [UDM https://github.com/PistoiaAlliance/UDM/blob/master/Docs/Glossary.md]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
@@ -654,6 +791,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#EcoScore">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -664,6 +802,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#EnvironmentalFactor">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The environmental factor (E-factor) of a reaction experiment is the ratio of the mass of waste (impurity) to mass of (desired/target) product. [doi:10.1039/B713736M]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
@@ -720,8 +859,17 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that is calculated from the measured analytical data of output chemical of a reaction experiment. It is used as objectives of a reaction optimisation problem. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition -->
+
+
+    <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that is used to specify the condition at which the reaction is to be conducted. It can be used as the optimisation variable in a reaction development process.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -735,6 +883,24 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#conductedIn"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontolab/OntoLab.owl#ExperimentSetup"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasConversion"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Conversion"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEcoScore"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#EcoScore"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasEnvironmentalFactor"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#EnvironmentalFactor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -757,6 +923,24 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasReactionCondition"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasRunMaterialCost"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasSpaceTimeYield"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#SpaceTimeYield"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasStoichiometryRatio"/>
                 <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio"/>
             </owl:Restriction>
@@ -765,6 +949,12 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasVariation"/>
                 <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionVariation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#hasYield"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Yield"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -813,6 +1003,7 @@
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionPressure">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure at which a reaction experiment is conducted. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -824,6 +1015,7 @@
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionScale">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#indicatesUsageOf"/>
@@ -842,6 +1034,7 @@
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionTemperature">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/CelsiusTemperature"/>
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The temperature at which a reaction experiment is conducted. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -871,6 +1064,7 @@
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ResidenceTime">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The time required for air or reagent parcel to pass from the entrance to the exit of an instrument. Often this is approximated as the ratio of the interior volume of the device to the flow rate. [doi:10.1351/goldbook.R05309]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -881,6 +1075,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificAmountOfMoney"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total cost of input chemical during one reaction experiment. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
@@ -903,6 +1098,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#SpaceTimeYield">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Space-time yield is a measure of reactor productivity calculated from mass of (desired/target) product formed, devided by the the reactor volume, and residence time. [doi:10.1002/cmtd.202000044]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
@@ -915,6 +1111,7 @@
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction"/>
+        <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionCondition"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#indicatesMultiplicityOf"/>
@@ -943,6 +1140,7 @@
 
 
     <owl:Class rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Yield">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio expressing the efficiency of a mass conversion process.�[doi:10.1351/goldbook.Y06724]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl</rdfs:isDefinedBy>
