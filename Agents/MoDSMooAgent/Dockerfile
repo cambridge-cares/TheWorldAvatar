@@ -24,6 +24,11 @@ WORKDIR /app
 
 COPY --from=builder /root/MoDSMooAgent/output/webapps/MoDSMooAgent.war $CATALINA_HOME/webapps/
 
+ENV JPDA_ADDRESS=0.0.0.0:8000
+ENV JPDA_TRANSPORT=dt_socket
+EXPOSE 8000
+
 # Start the Tomcat server
-ENTRYPOINT ["catalina.sh", "run"]
+ENTRYPOINT ["catalina.sh", "jpda", "run"]
+
 #==================================================================================================

@@ -9,11 +9,11 @@ services:
       DATA_DIR: /app/files
     ports:
       - "58085:8080"
-
+      - "8000:8000"
     volumes:
       - external_maven_repo:/root/.m2
       - ./MoDSMooAgent/files:/app/files
-      - /mnt/c/Users/ddeme/Documents/Demetris_SSH_Key.ppk:/var/run/secrets/csd3.ppk
+      - /home/ddemetriou/.ssh/nopassphrase_private_key.openssh:/var/run/secrets/csd3.ppk
 
 
 volumes:
