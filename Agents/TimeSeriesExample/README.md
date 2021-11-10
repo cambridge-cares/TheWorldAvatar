@@ -1,6 +1,7 @@
 # Time Series Example
 
-### 0. How to create a Python virtual environment and install required packages (in Windows):
+## Preparation
+### 1. Create a Python virtual environment and install required packages (in Windows):
 
 1) Open `cmd` terminal and navigate into project repository
 
@@ -20,6 +21,14 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
+### 2. Setup local Blazegraph instance and PostgreSQL database 
+
+Start up Blazegraph and create a new namespace. Populate the `sparql.query.endpoint` and `sparql.update.endpoint` fields in the [requirements file] with the respectively SPARQL endpoints to this namespace.
+
+Start pgAdmin and create a new PostgreSQL database (e.g. `<ts_example>`). Update the fields `db.url`, `db.user`, and `db.password` according to your local PostgreSQL settings. The default URL (with default port) for the example database name would be `jdbc:postgresql:ts_example`. 
+
+## Usage
+
 ### 1. Instantiate Geospatial Time Series Data
 
 
@@ -28,4 +37,12 @@ python -m pip install -r requirements.txt
 
 ### 3. Visualise Geospatial Time Series Data using the DTVF
 
-[Digital Twin Visualisation Framework (DTVF)] (https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations)
+Digital Twin Visualisation Framework ([DTVF])
+
+
+
+
+
+
+[DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[requirements file]: resources/ts_example.properties

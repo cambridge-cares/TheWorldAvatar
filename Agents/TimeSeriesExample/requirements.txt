@@ -1,2 +1,3 @@
 #geojson-rewind~=1.0
+py4jps
 SPARQLWrapper~=1.8
