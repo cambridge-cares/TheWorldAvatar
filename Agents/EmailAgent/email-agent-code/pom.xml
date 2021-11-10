@@ -20,7 +20,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         
         <!-- Version of the JPS Base Library to use, can be overridden by child projects. -->
-        <jps.base.version>1.4.0-SNAPSHOT</jps.base.version>
+        <jps.base.version>1.4.0-EmailAgent-SNAPSHOT</jps.base.version>
     </properties>
     
     <!-- Parent POM -->
