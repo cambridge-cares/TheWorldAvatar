@@ -23,8 +23,34 @@
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-    </parent>
+    </parent>   
+
     
+    <!-- Profiles are used to switch between building for development and production 
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+    <profiles>
+        <!-- This profile should be used for development builds. -->
+        <profile>
+            <id>dev-profile</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <!-- Set property to download development logging config -->
+                <log.artifact>java-logging-dev</log.artifact>
+            </properties>
+        </profile>
+        
+        <!-- This profile should be used for production builds. -->
+        <profile>
+            <id>prod-profile</id>
+            <properties>
+                <!-- Set property to download production logging config -->
+                <log.artifact>java-logging-prod</log.artifact>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
 		<!-- Core utilities used by other modules. Define this if you use Spring 
 			Utility APIs (org.springframework.core.*/org.springframework.util.*) -->
@@ -162,7 +188,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.4.0-SNAPSHOT</version>
+            <version>1.4.0-mooagent-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
         <dependency>
