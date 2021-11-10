@@ -1,8 +1,7 @@
 [
     {
-        "layerName": "Buildings (2D GeoJSON)",
+        "layerName": "Buildings",
         "defaultState": "visible",
-        "layerIDs": ["buildings-2D"]
+        "layerIDs": ["buildings"]
     }
-    
 ]

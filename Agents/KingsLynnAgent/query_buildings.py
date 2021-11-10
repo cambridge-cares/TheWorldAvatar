@@ -17,7 +17,7 @@ port = "9999"
 namespace = "kings-lynn"
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 100
+n = None
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -241,6 +241,9 @@ if __name__ == '__main__':
     output_3d = geojson_creator.initialise_geojson(target_crs)
     output_2d = geojson_creator.initialise_geojson(target_crs)
 
+    # Initialise output metadata
+    metadata = []
+
     # Initialise unique feature/building IDs
     feature_id = 0
 
@@ -283,22 +286,27 @@ if __name__ == '__main__':
                 break
 
         # Specify building/feature properties to consider (beyond coordinates)
-        props = {
-            'displayName': 'Building {}'.format(feature_id),
-            'description': str(b),
-            'fill-extrusion-color': '#666666',
-            'fill-extrusion-opacity': 0.66,
-            # Building ground elevation
-            'fill-extrusion-base': round(zmin, 3),
-            # Building height
-            'fill-extrusion-height': round(zmax-zmin, 3)
-        }
+        geojson_props = {'displayName': 'Building {}'.format(feature_id),
+                         #'description': str(b),
+                         'fill-extrusion-color': '#666666',
+                         'fill-extrusion-opacity': 0.66,
+                         # Building ground elevation
+                         'fill-extrusion-base': round(zmin, 3),
+                         # Building height
+                         'fill-extrusion-height': round(zmax-zmin, 3)
+                         }
+
+        # Specify metadata properties to consider
+        metadata_props = {'id': feature_id,
+                          'Building': str(b),
+                          'Ground elevation (m)': round(zmin, 3),
+                          'Building height (m)': round(zmax-zmin, 3)
+                          }
 
         # Append building/feature to GeoJSON FeatureCollection
-        output_3d['features'].append(geojson_creator.add_feature(feature_id, props, all_polygons))
-        output_2d['features'].append(geojson_creator.add_feature(feature_id, props, base_polygon))
-
-
+        output_3d['features'].append(geojson_creator.add_feature(feature_id, geojson_props, all_polygons))
+        output_2d['features'].append(geojson_creator.add_feature(feature_id, geojson_props, base_polygon))
+        metadata.append(metadata_props)
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
     # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
@@ -317,3 +325,6 @@ if __name__ == '__main__':
     file_name = 'Buildings_2D.geojson'
     with open(file_name, 'w') as f:
         json.dump(output_2d, indent=4, fp=f)
+    file_name = 'Buildings_2D-meta.json'
+    with open(file_name, 'w') as f:
+        json.dump(metadata, indent=4, fp=f)
