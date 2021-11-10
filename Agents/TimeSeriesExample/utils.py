@@ -8,7 +8,7 @@ from configobj import ConfigObj
 
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "../../../Users/mh807.CEB-315-55-WLO/Desktop/src", "resources", "ts_example.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
@@ -18,8 +18,8 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
-    # Namespace for this test data
-    'test':  'http://www.theworldavatar.com/kb/ts_example/',
+    # Namespace for this example data
+    'ex':  'http://www.theworldavatar.com/kb/ts_example/',
     # Namespaces for used ontologies
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',

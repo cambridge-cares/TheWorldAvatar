@@ -1,3 +1,2 @@
 configobj
 py4jps
-SPARQLWrapper~=1.8

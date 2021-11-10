@@ -31,6 +31,11 @@ Start pgAdmin and create a new PostgreSQL database (e.g. `<ts_example>`). Update
 
 ### 1. Instantiate Geospatial Time Series Data
 
+Assumptions:
+- Elevation (Z coordinate) neglected
+- Coordinates in EPSG:4326 to use Blazegraph's built-in geospatial search functionality
+- 
+
 
 ### 2. Query Geospatial Time Series Data
 
@@ -45,4 +50,5 @@ Digital Twin Visualisation Framework ([DTVF])
 
 
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
+[TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [requirements file]: resources/ts_example.properties
