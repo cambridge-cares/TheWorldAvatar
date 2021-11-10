@@ -10,11 +10,15 @@ services:
     ports:
       - "58085:8080"
       - "8000:8000"
+    secrets:
+      - private_key
     volumes:
       - external_maven_repo:/root/.m2
       - ./MoDSMooAgent/files:/app/files
-      - /home/ddemetriou/.ssh/nopassphrase_private_key.openssh:/var/run/secrets/csd3.ppk
 
+secrets:
+  private_key:
+    file: $PRIVATE_KEY_PATH
 
 volumes:
   external_maven_repo:
