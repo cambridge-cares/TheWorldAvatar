@@ -219,23 +219,23 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 	public List<String> createFolderInitial(List<String> activeParameters)
 			throws IOException, MoDSMooAgentException {
 		// set the passive parameter csv file path
-		File passiveParametersAndOutputsFilePath = new File(folderInitialPath.concat(
-				FRONTSLASH + FILE_MODS_PREFIX + UNDERSCORE + modelName + UNDERSCORE + FILE_MODS_PASSIVE_SUFFIX));
+		//File passiveParametersAndOutputsFilePath = new File(folderInitialPath.concat(FRONTSLASH + FILE_MODS_PREFIX + UNDERSCORE + modelName + UNDERSCORE + FILE_MODS_PASSIVE_SUFFIX));
+		File passiveParametersAndOutputsFilePath = Paths.get(folderInitialPath,FILE_MODS_PREFIX + UNDERSCORE + modelName + UNDERSCORE + FILE_MODS_PASSIVE_SUFFIX).toFile();
 		// set the base mechanism file path, as Cantera reads active parameters from
 		// mechanism file
-		File activeParameterBaseMechanismFilePath = new File(
-				folderInitialPath.concat(FRONTSLASH + FILE_MECHANISM_BASE));
+		//File activeParameterBaseMechanismFilePath = new File(folderInitialPath.concat(FRONTSLASH + FILE_MECHANISM_BASE));
+		File activeParameterBaseMechanismFilePath = Paths.get(folderInitialPath,FILE_MECHANISM_BASE).toFile();
 
 		// get the filePath of experimental data
 		File expData = null;
 		for (String expFilePath : expFiles) {
 			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX) && expFilePath.contains(modelName)) {
-				expData = new File(folderTemporaryPath.concat(FRONTSLASH + expFilePath));
+				expData = Paths.get(folderTemporaryPath,expFilePath).toFile();
 			}
 		}
 
 		// get the filePath of mechanism file
-		File mech = new File(folderTemporaryPath.concat(FRONTSLASH + FILE_MECHANISM));
+		File mech = Paths.get(folderTemporaryPath, FILE_MECHANISM).toFile();
 
 		// create files in the initial folder
 		List<String> initialFiles = new ArrayList<>();
@@ -253,16 +253,16 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 	public List<String> createFolderAll(List<String> processedActiveParam)
 			throws IOException, MoDSMooAgentException {
 		// set the mechanism file, element file and lfsSimulation file path
-		File copyOfMechanismFilePath = new File(folderAllPath.concat(FRONTSLASH + FILE_MECHANISM_CANTERA));
-		File elementData = new File(folderAllPath.concat(FRONTSLASH + FILE_MECHANISM_ELEMENT));
-		File lfsSimulationFilePath = new File(folderAllPath.concat(FRONTSLASH + FILE_CANTERA_LFSSIMULATION));
+		File copyOfMechanismFilePath = Paths.get(folderAllPath,FILE_MECHANISM_CANTERA).toFile();
+		File elementData = Paths.get(folderAllPath,FILE_MECHANISM_ELEMENT).toFile();
+		File lfsSimulationFilePath = Paths.get(folderAllPath,FILE_CANTERA_LFSSIMULATION).toFile();
 
 		// get the filePath of experimental data and mechanism
 		File expData = null;
-		File mechanism = new File(folderTemporaryPath.concat(FRONTSLASH + FILE_MECHANISM));
+		File mechanism = Paths.get(folderTemporaryPath,FILE_MECHANISM).toFile();
 		for (String expFilePath : expFiles) {
 			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX) && expFilePath.contains(modelName)) {
-				expData = new File(folderTemporaryPath.concat(FRONTSLASH + expFilePath));
+				expData = Paths.get(folderTemporaryPath,expFilePath).toFile();
 			}
 		}
 
@@ -288,7 +288,7 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 	public void placeScript() throws IOException, MoDSMooAgentException {
 		File srcScript = new File(
 				getClass().getClassLoader().getResource(Property.MODEL_CANTERA_SCRIPT.getPropertyName()).getFile());
-		File jobScript = new File(jobFolderPath.concat(FRONTSLASH + FILE_CANTERALFS_SCRIPT));
+		File jobScript = Paths.get(jobFolderPath, FILE_CANTERALFS_SCRIPT).toFile();
 
 		// create the BufferedReader and BufferedWriter to read and write files
 		BufferedReader br = null;
@@ -472,7 +472,8 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 	}
 
 	private File createDir(String path, String dirName) {
-		String filePath = path + "\\" + dirName;
+		//String filePath = path + "\\" + dirName;
+		String filePath = Paths.get(path,dirName).toString();
 		File theDir = new File(filePath);
 		if (!theDir.exists()){
 			theDir.mkdirs();
@@ -534,7 +535,8 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 			variable_names.put(csvArray.get(0)[i],String.valueOf(i));
 			
 			// Create csv file for each variable
-			File varFile = new File(pathDataAlgorithm + "\\" + "Data_Algorithm_subtype_" + csvArray.get(0)[i] + ".csv");
+			File varFile = Paths.get(pathDataAlgorithm,"Data_Algorithm_subtype_" + csvArray.get(0)[i] + ".csv").toFile();
+
 			varFile.createNewFile();
 			// Write into the file for each variable
 		    FileWriter varFileWriter = new FileWriter(varFile.getAbsolutePath());
@@ -558,7 +560,8 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 
 		int numVars = csvArray.get(0).length;
 		
-		File initialFile_AIVarInitReadFile = new File(pathInitial + "\\" + "MODS_SIM_INITFILE__AIVarInitReadFile.csv");
+		File initialFile_AIVarInitReadFile = Paths.get(pathInitial,"MODS_SIM_INITFILE__AIVarInitReadFile.csv").toFile();
+
 		initialFile_AIVarInitReadFile.createNewFile();
 		
 		// Write in 'MODS_SIM_INITFILE__AIVarInitReadFile'
@@ -606,7 +609,7 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 		
 		int numVars = csvArray.get(0).length;
 		
-		File initialFile_cases = new File(pathInitial + "\\" + "MODS_SIM_INITFILE__cases.csv");
+		File initialFile_cases = Paths.get(pathInitial,"MODS_SIM_INITFILE__cases.csv").toFile();
 		initialFile_cases.createNewFile();
 		
 		// Write in 'MODS_SIM_INITFILE__AIVarInitReadFile'
@@ -643,7 +646,7 @@ public class ModelMoo extends MoDSMarshaller implements IModel {
 	}
 
 	private void createModsInputsFile(List<String[]> csvArray, String pathWorkingDir) throws IOException {
-		File modsInputsFile = new File(pathWorkingDir + "\\" + "MoDS_inputs.xml");
+		File modsInputsFile = Paths.get(pathWorkingDir,"MoDS_inputs.xml").toFile();
 		modsInputsFile.createNewFile();
 	}
 	

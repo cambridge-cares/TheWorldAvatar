@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,31 +56,36 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		init();
 		
 		// create the job folder 
-		jobFolderPath = FOLDER_ROOT.concat(FRONTSLASH).concat("."+jobFolderName);
+		jobFolderPath = Paths.get(FOLDER_ROOT,"."+jobFolderName).toString();
+		//jobFolderPath = Paths.getFOLDER_ROOT.concat(File.pathSeparator).concat("."+jobFolderName);
 		File jobFolder = new File(jobFolderPath);
 		if (!jobFolder.exists()) {
 			jobFolder.mkdirs();
 		}
 		// create the \Temporary folder for file storage
-		folderTemporaryPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_TEMPORARY);
+		//folderTemporaryPath = jobFolderPath.concat(File.pathSeparator).concat(FOLDER_TEMPORARY);
+		folderTemporaryPath = Paths.get(jobFolderPath,FOLDER_TEMPORARY).toString();
 		File temporary = new File(folderTemporaryPath);
 		if (!temporary.exists()) {
 			temporary.mkdirs();
 		}
 		// create the \Initial folder
-		folderInitialPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_INITIAL);
+		//folderInitialPath = jobFolderPath.concat(File.pathSeparator).concat(FOLDER_INITIAL);
+		folderInitialPath = Paths.get(jobFolderPath,FOLDER_INITIAL).toString();
 		File initial = new File(folderInitialPath);
 		if (!initial.exists()) {
 			initial.mkdirs();
 		}
 		// create the \All folder
-		folderAllPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_ALL);
+		//folderAllPath = jobFolderPath.concat(File.pathSeparator).concat(FOLDER_ALL);
+		folderAllPath = Paths.get(jobFolderPath,FOLDER_ALL).toString();
 		File all = new File(folderAllPath);
 		if (!all.exists()) {
 			all.mkdirs();
 		}
 		// create the \Working_dir folder
-		folderWorkingDirPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_WORKING_DIR);
+		//folderWorkingDirPath = jobFolderPath.concat(File.pathSeparator).concat(FOLDER_WORKING_DIR);
+		folderWorkingDirPath = Paths.get(jobFolderPath,FOLDER_WORKING_DIR).toString();
 		File workingDir = new File(folderWorkingDirPath);
 		if (!workingDir.exists()) {
 			workingDir.mkdirs();
@@ -133,8 +139,10 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		mods.setXmlns("http://como.cheng.cam.ac.uk/MoDS");
 		mods.setXmlnsXsi("http://www.w3.org/2001/XMLSchema-instance");
 		mods.setXsiSchemaLocation("http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd");
-		saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
-		cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
+		//saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
+		saveMoDSInputsContent(Paths.get(folderWorkingDirPath,FILE_MODS_INPUTS).toString());
+		//cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
+		cleanUp(Paths.get(folderWorkingDirPath,FILE_MODS_INPUTS).toString());
 		deleteDirectory(new File(folderTemporaryPath));
 		
 		logger.info("MoDS input files are now in place.");

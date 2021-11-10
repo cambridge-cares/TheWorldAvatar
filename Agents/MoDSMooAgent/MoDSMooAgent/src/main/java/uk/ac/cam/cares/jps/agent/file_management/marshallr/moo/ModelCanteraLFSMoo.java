@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -101,7 +102,9 @@ public class ModelCanteraLFSMoo extends MoDSMarshaller implements IModel {
 			caseList.add(Property.MODEL_CANTERA.getPropertyName().concat("_case_"+i));
 			i += 1;
 		}
-		File expDataCSV = new File(folderTemporaryPath.concat(FRONTSLASH).concat(Property.MODEL_CANTERA.getPropertyName().concat(UNDERSCORE+FILE_MODEL_EXPDATA_SUFFIX)));
+		//File expDataCSV = new File(folderTemporaryPath.concat(FRONTSLASH).concat(Property.MODEL_CANTERA.getPropertyName().concat(UNDERSCORE+FILE_MODEL_EXPDATA_SUFFIX)));
+		File expDataCSV = Paths.get(folderTemporaryPath,Property.MODEL_CANTERA.getPropertyName().concat(UNDERSCORE+FILE_MODEL_EXPDATA_SUFFIX)).toFile();
+
 		try (PrintWriter pw = new PrintWriter(expDataCSV)) {
 			dataLines.stream()
 			.map(this::convertToCSV)
