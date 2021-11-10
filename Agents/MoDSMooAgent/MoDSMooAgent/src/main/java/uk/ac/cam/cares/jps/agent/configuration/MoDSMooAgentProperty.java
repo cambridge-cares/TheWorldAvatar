@@ -11,7 +11,7 @@ import org.springframework.context.annotation.PropertySource;
  *
  */
 @Configuration
-@PropertySource("classpath:modsdatadriven-agent.properties")
+@PropertySource("classpath:modsmoo-agent.properties")
 public class MoDSMooAgentProperty {
 	@Value("${hpc.server.login.user.name}")
 	private String hpcServerLoginUserName;
