@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -21,9 +22,11 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -59,6 +62,10 @@ public class DerivationSparql{
 	// object properties
 	private static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
 	private static Iri hasOperation = p_agent.iri("hasOperation");
+	private static Iri hasInput = p_agent.iri("hasInput");
+	private static Iri hasMandatoryPart = p_agent.iri("hasMandatoryPart");
+	private static Iri hasType = p_agent.iri("hasType");
+	private static Iri hasName = p_agent.iri("hasName");
 	private static Iri isDerivedFrom = p_derived.iri("isDerivedFrom");
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
 	private static Iri belongsTo = p_derived.iri("belongsTo");
@@ -601,6 +608,50 @@ public class DerivationSparql{
 		}
 		
 		return inputs;
+	}
+	
+	/**
+	 * This method retrieves the agent inputs given the IRI of OntoDerivation:Derivation instance, 
+	 * and maps those inputs against the I/O signature declared in the OntoAgent instance of the agent.
+	 * The inputs are finally structured as a JSONObject to be feed into the agent for execution.
+	 * @param kbClient
+	 * @param derivedQuantity
+	 * @param agentIRI
+	 * @return
+	 */
+	static JSONObject getInputsMapToAgent(StoreClientInterface kbClient, String derivedQuantity, String agentIRI) {
+		String typeKey = "type";
+		String inputKey = "input";
+		
+		Variable type = SparqlBuilder.var(typeKey);
+		Variable input = SparqlBuilder.var(inputKey);
+		
+		// make use of SPARQL Property Paths
+		GraphPattern agentTypePattern = iri(agentIRI).has(PropertyPaths.path(hasOperation,hasInput,hasMandatoryPart,hasType),type);
+		GraphPattern derivationInputPattern = iri(derivedQuantity).has(isDerivedFrom, input);
+		GraphPattern mappingPattern = input.has(PropertyPaths.path(PropertyPaths.oneOrMore(RdfPredicate.a)), type);
+		SelectQuery query = Queries.SELECT();
+		
+		query.prefix(p_derived,p_agent).where(agentTypePattern,derivationInputPattern,mappingPattern).select(input,type);
+		kbClient.setQuery(query.getQueryString());
+		JSONArray queryResult = kbClient.executeQuery();
+		
+		// construct the JSONObject for agent input
+		JSONObject agentInputs = new JSONObject();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (agentInputs.has(queryResult.getJSONObject(i).getString(typeKey))) {
+				if (agentInputs.get(queryResult.getJSONObject(i).getString(typeKey)) instanceof JSONArray) {
+					agentInputs.getJSONArray(queryResult.getJSONObject(i).getString(typeKey)).put(queryResult.getJSONObject(i).getString(inputKey));
+				} else {
+					agentInputs.put(queryResult.getJSONObject(i).getString(typeKey), new JSONArray().put(agentInputs.get(queryResult.getJSONObject(i).getString(typeKey))));
+					agentInputs.getJSONArray(queryResult.getJSONObject(i).getString(typeKey)).put(queryResult.getJSONObject(i).getString(inputKey));
+				}
+			} else {
+				agentInputs.put(queryResult.getJSONObject(i).getString(typeKey), queryResult.getJSONObject(i).getString(inputKey));
+			}
+		}
+		
+		return agentInputs;
 	}
 	
 	/**
