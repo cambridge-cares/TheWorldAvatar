@@ -79,14 +79,16 @@ if __name__ == '__main__':
     for c in consumers:
         print('Current consumer: ', c['consumer'])
 
+        # Create IRI for current consumer
+        consumerIRI = utils.PREFIXES['ex'] + 'Consumer_' + str(uuid.uuid4())
+
         # Initialise list of dataIRIs, which will be represented as time series
         dataIRIs = []
 
         # Loop over all time series for this consumer
         for ts in list(c['timeseries'].keys()):
 
-            # Create UUIDs for current time series and attach to dataIRI list
-            consumerIRI = utils.PREFIXES['ex'] + 'Consumer_' + str(uuid.uuid4())
+            # Create IRI for current time series and attach to dataIRI list
             dataIRI = utils.PREFIXES['ex'] + ts + '_' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
 
@@ -94,7 +96,7 @@ if __name__ == '__main__':
             query = utils.create_sparql_prefix('ex') + \
                     utils.create_sparql_prefix('rdf') + \
                     utils.create_sparql_prefix('rdfs') + \
-                    utils.create_sparql_prefix('geo') + \
+                    utils.create_sparql_prefix('geolit') + \
                     '''INSERT DATA { \
                     <%s> rdf:type ex:Consumer ; \
                          rdfs:label "%s" ; \

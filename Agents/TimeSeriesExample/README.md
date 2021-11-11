@@ -34,14 +34,15 @@ Start pgAdmin and create a new PostgreSQL database (e.g. `<ts_example>`). Update
 The example uses the following namespaces:
 ```
 # ABoxes
-ex   : http://www.theworldavatar.com/kb/ts_example/
-tsa  : http://www.theworldavatar.com/kb/ontotimeseries/
+ex     : http://www.theworldavatar.com/kb/ts_example/
+tsa    : http://www.theworldavatar.com/kb/ontotimeseries/
 # Tboxes (ontologies)
-rdf  : http://www.w3.org/1999/02/22-rdf-syntax-ns#
-rdfs : http://www.w3.org/2000/01/rdf-schema#
-ts   : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
-xsd  : http://www.w3.org/2001/XMLSchema#
-geo  : http://www.bigdata.com/rdf/geospatial/literals/v1#
+rdf    : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+rdfs   : http://www.w3.org/2000/01/rdf-schema#
+ts     : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+xsd    : http://www.w3.org/2001/XMLSchema#
+geolit : http://www.bigdata.com/rdf/geospatial/literals/v1#
+geo    : http://www.bigdata.com/rdf/geospatial#
 ```
 
 ### 1. Instantiate Geospatial Time Series Data

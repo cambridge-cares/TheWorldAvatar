@@ -26,7 +26,8 @@ PREFIXES = {
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
     'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
-    'geo':   'http://www.bigdata.com/rdf/geospatial/literals/v1#',
+    'geolit':   'http://www.bigdata.com/rdf/geospatial/literals/v1#',
+    'geo':   'http://www.bigdata.com/rdf/geospatial#>'
 }
 
 
