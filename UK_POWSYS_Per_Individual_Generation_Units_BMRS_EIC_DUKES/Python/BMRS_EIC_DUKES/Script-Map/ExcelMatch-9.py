@@ -1,4 +1,4 @@
-#Libraries
+###Libraries###
 import pandas as pd
 import sys
 from datetime import datetime, timedelta
@@ -7,6 +7,8 @@ from collections import OrderedDict
 import logging
 
 
+
+###Logging###
 #Setup the logging with a logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -16,7 +18,8 @@ fileHandler = logging.FileHandler('ExcelMatchOutputLog.log', mode='w') #remove t
 logger.addHandler(fileHandler)
 
 
-#Functions
+
+###Functions###
 def MultipleBMRSEIC (data):
     #Check for a repeat EIC in the BMRS data. 
     for i in range(0,len(data['Registered Resource EIC code'])):
@@ -315,6 +318,8 @@ def ErrorNameText(e):
     elif e == -1:
         return "Any Simplified Unique Word Appears in both EIC and DUKES Names" + " (" + str(e) + ")"
     return "None" #incl. e == 999
+
+
 def ErrorCapacityDifferenceText(e):
     e = int(e)
     if e == 999:
@@ -322,6 +327,8 @@ def ErrorCapacityDifferenceText(e):
     elif (e < 999) and (e >= 0):
         return str(e)
     return "None" #incl. e == 999
+
+
 def ErrorDateText(e):
     e = int(e)
     if e == -5:
@@ -333,25 +340,30 @@ def ErrorDateText(e):
     elif e == 1: 
         return "Startup Differences" + " (" + str(e) + ")"
     return "None" #incl. e == 999
-def ErrorGenTypeText(e): 
+
+
+def ErrorGenTypeText(x, e): 
     e = int(e)
-    if e == -5:
+    if e == (-int(x/5) -3):
         return "Same Generation Type Match" + " (" + str(e) + ")"
     elif e == -2:
         return "Ambiguous Generation Type" + " (" + str(e) + ")"
     elif e == 1:
         return "Unknown Generation Type" + " (" + str(e) + ")"
-    elif e == 10:
+    elif e == x:
         return "Generation Type Differences" + " (" + str(e) + ")"
     return "None" #incl. e == 999
+
+
 def ErrorMatch(e):
     if int(e) == 1:
         return "Matched" + " (" + str(e) + ")"
     return "Not Matched" 
 
 
-#Primary Function
-def BMRSEICDUKESMap(ExcelName):
+
+###Primary Function###
+def BMRSEICDUKESMap(ExcelName, x):
     #The function this functionality is run through. Reads the excel, processes the matches (with scores), then outputs back to excel.
     logger.info('\nBMRSEICDUKESMap Function Started: \'Data Error\'s below if found (not fatal): ')
     
@@ -360,7 +372,7 @@ def BMRSEICDUKESMap(ExcelName):
 
     #Initialise ExemptWords for the name comparison. Some of these are hardcoded (note that just because a word doesn't repeat, doesn't make it significant, imagine if some instances are missing in datasets for example. Thus hard coded ones, and found ones. 
     ExemptWords = ["VPI", "CHP", "West", "South", "East", "North", "Hill", "Ferry", "&", "Power", "Heat", "Great", "Farm", "Windfarm", "Lane", "Street", "A", "B", "C", "D", "E", "F", "G", "H", "I", "II", "III", "IV", "V", "VI", "VII", ""] #One place is just called 'FERRY FARM'. It's solar, so doesn't matter here, but if there's other similar issues, just have to go on the more exact match methods. 
-    ExemptWords = ExemptFind(data, ExemptWords, 2) #scrictness was increased from > 1 to > 2 as, if there's just 2 instances, the capacity matching seems to be sufficient. 
+    ExemptWords = ExemptFind(data, ExemptWords, len(str(x))) #scrictness was increased from > 1 to > 2 as, if there's just 2 instances, the capacity matching seems to be sufficient. 
     
     #Initialise the array for the acceptable error output (confidence of answer). 
     #error = [len(data['Installed Capacity (MW)'])][5]
@@ -507,31 +519,31 @@ def BMRSEICDUKESMap(ExcelName):
                 if (data['Type'][i] in solar) or (data['Fuel'][i] in solar): #No need for BMRS check, as it has no solar. If it does in the future, this rule has to be changed to be similar to those below. 
                     error[i][3] = 999
                 elif ((data['Type'][i] in onshorewind) or (data['Fuel'][i] in onshorewind)) and ((data['PSR Type'][j] in onshorewind)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in offshorewind) or (data['Fuel'][i] in offshorewind)) and ((data['PSR Type'][j] in offshorewind)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in wind) or (data['Fuel'][i] in wind)) and ((data['PSR Type'][j] in wind)):
                     error[i][3] = -2
                 elif ((data['Type'][i] in biomass) or (data['Fuel'][i] in biomass)) and ((data['PSR Type'][j] in biomass)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in coal) or (data['Fuel'][i] in coal)) and ((data['PSR Type'][j] in coal)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in hydro) or (data['Fuel'][i] in hydro)) and ((data['PSR Type'][j] in hydro)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in gas) or (data['Fuel'][i] in gas)) and ((data['PSR Type'][j] in gas)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in nuclear) or (data['Fuel'][i] in nuclear)) and ((data['PSR Type'][j] in nuclear)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif ((data['Type'][i] in oil) or (data['Fuel'][i] in oil)) and ((data['PSR Type'][j] in oil)):
-                    error[i][3] = -5
+                    error[i][3] = (-int(x/5) -3)
                 elif (data['Type'][i] in other) or (data['Fuel'][i] in other) or (data['PSR Type'][j] in other):
                     error[i][3] = -2
                 elif((data['Type'][i] not in allgen) or (data['Fuel'][i] not in allgen) or (data['PSR Type'][j] not in allgen)): #Can't find it in known types. 
                     error[i][3] = 1
                 else: #Generator types were known, but just not matched. 
-                    error[i][3] = 10
+                    error[i][3] = x #10 by default
                 data.iloc[i, data.columns.get_loc('MatchGenType')] = error[i][3]
-
+    
     #Final Confidence
     for i in range(0,len(data['ConfidenceScore'])):
         data.iloc[i, data.columns.get_loc('ConfidenceScore')] = 999
@@ -539,7 +551,6 @@ def BMRSEICDUKESMap(ExcelName):
         data.iloc[i, data.columns.get_loc('ConfidenceResult')] = 999
 
     #The scores should sum to a verdict. If it is less than or equal to 'x' then it is approved.
-    x = 10
     logger.info('\nBMRSEICDUKESMap BMRS->EIC->DUKES mapping complete, results as follows: ')
     for i in range(0,len(data['outputDUKESToBMRS'])):
         error[i][4] = error[i][0] + error[i][1] + error[i][2] + error[i][3]
@@ -549,16 +560,36 @@ def BMRSEICDUKESMap(ExcelName):
         else:
             data.iloc[i, data.columns.get_loc('ConfidenceResult')] = 0
         #Log final result for DUKES station. 
-        logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRS'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
+        logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (if known, and at the error threshold if unknown) (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRS'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(x, data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
         
     
-    #Re-export to excel, with the confidence values.
+    #Re-export to excel, with the confidence values. 
     data.to_excel(ExcelName, index = False)
     logger.info('BMRSEICDUKESMap Function Completed')
 
-#Main Function
+
+
+###Main Function###
 if __name__ == "__main__":
-    BMRSEICDUKESMap('Input.xlsx')
+    #You may add two args to this input: 
+    #The first is the name of the excel sheet to open (type: string).'Input.xlsx' is default. 
+    #The second is the error threshold (type: int). Reccomended 5-50 range, where 5 is more sensitive and 50 is less sensitive. If in doubt use 10 (default). Be sure to give the file extension.
+    #If you give two valid integers, or two non-integers (presumably file names then), the latter arg shall be used for its respective category. 
+    args = sys.argv[1:]
+    inputName = 'Input.xlsx' #Default, will be changed if a valid input is given.
+    errorThreshold = 10
+    if len(args) > 0:
+        if args[0].isdigit() == True:
+            errorThreshold = int(args[0])
+        else: 
+            inputName = args[0]
+    if len(args) > 1:
+        if args[0].isdigit() == True:
+            errorThreshold = int(args[1])
+        else:
+            inputName = args[1]
+    BMRSEICDUKESMap(inputName, errorThreshold)
     #print("END")
-    sys.exit()
+
+#sys.exit()
 
