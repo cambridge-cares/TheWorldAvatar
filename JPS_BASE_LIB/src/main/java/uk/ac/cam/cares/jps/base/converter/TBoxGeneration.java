@@ -87,6 +87,33 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 			throw new JPSRuntimeException(e);
 		}
 	}
+	
+	public void generateTBox(String csvFileNamePlusPath, String outputFilePlusPath) {
+		if (csvFileNamePlusPath == null || csvFileNamePlusPath.isEmpty()) {
+			logger.error("No file has been found in the path specied.");
+		}
+		logger.info("Ontokin TBox generator started running...");
+		owlFilePath = outputFilePlusPath;
+		iTBoxManagement = new TBoxManagement();
+		try {
+			iTBoxManagement.init();
+			readCSVTemplate(csvFileNamePlusPath);
+			iTBoxManagement.saveOntology(owlFilePath);
+			logger.info("Ontokin TBox generation FINISHED.");
+		} catch (IOException e) {
+			logger.error("IOException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (JPSRuntimeException e) {
+			logger.error("JPSRuntimeException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyCreationException e) {
+			logger.error("OWLOntologyCreationException occured.");
+			throw new JPSRuntimeException(e);
+		} catch (OWLOntologyStorageException e) {
+			logger.error("OWLOntologyStorageException occured.");
+			throw new JPSRuntimeException(e);
+		}
+	}
 
 	/**
 	 * Reads a CSV template with inputs for creating TBoxes.
@@ -500,6 +527,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * Adds following metadata to a class.</br>
 	 * - the class definition (as a comment)
 	 * - the defined by property
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -513,6 +541,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToClass(tokens[0], tokens[8]);
 		}
+		
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToOWLClass(tokens[0], tokens[9]);
+		}
 	}
 	
 	/**
@@ -521,6 +553,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * - the defined by property
 	 * - the domain and range
 	 * - formulas
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -538,6 +571,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				iTBoxManagement.addLogicalFormulaToObjectProperty(tokens[0], tokens[6], tokens[4], tokens[5]);
 			}
 		}
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToObjectProperty(tokens[0], tokens[9]);
+		}
+
 	}
 	
 	/**
@@ -545,6 +582,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * - the property definition (as a comment)
 	 * - the defined by property
 	 * - the domain and range
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -556,6 +594,9 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		}
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToDataProperty(tokens[0], tokens[8]);
+		}
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToDataProperty(tokens[0], tokens[9]);
 		}
 	}
 	

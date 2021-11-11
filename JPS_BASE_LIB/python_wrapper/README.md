@@ -355,7 +355,7 @@ def querykg(sparqlEndPoint=None, queryStr=None):
 
     # perform an example sparql query,
     # see the jps-base-lib docs for further details
-    StoreRouter = jpsGW_view.StoreRouter
+    StoreRouter = jpsBaseLib_view.StoreRouter
     StoreClient = StoreRouter.getStoreClient(sparqlEndPoint, True, False)
     response = json.loads(str(StoreClient.executeQuery(queryStr)))
     return response

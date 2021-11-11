@@ -1,0 +1,54 @@
+version: "3.8"
+
+
+services:
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_test"
+    ports:
+      - 48082:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+  # Blazegraph geo
+  blazegraph-geo:
+    image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
+    container_name: "blazegraph_geo_test"
+    ports:
+      - 48083:8080
+
+  ## RDF4J
+  #rdf4j:
+  #  image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
+  #  container_name: "rdf4j_test"
+  #  environment:
+  #    RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
+  #  # Add secrets to set BASIC authentication passwords for both the workbench and server
+  #  ports:
+  #    - 48084:8080
+  #  secrets:
+  #    - rdf4j_user_password
+
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver:1.0.0-SNAPSHOT
+    container_name: "fileserver_test"
+    ports:
+      - 48086:8080
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: dummy_services_secrets/blazegraph_passwd.txt
+  file_server_password:
+    file: dummy_services_secrets/fileserver_passwd.txt
+  #rdf4j_user_password:
+  #  file: dummy_services_secrets/rdf4j_passwd.txt

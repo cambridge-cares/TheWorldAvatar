@@ -1,0 +1,148 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.cam.cares.jps</groupId>
+  <artifactId>access-agent</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>AccessAgent</name>
+  
+  <!-- Parent POM -->
+  <parent>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-parent-pom</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+  </parent>
+  
+  <!-- Profiles are used to switch between building for development and production 
+    environments. Use "-P profile-id" within an mvn command to build with a profile -->
+	<profiles>
+		<!-- This profile should be used for development builds. -->
+		<profile>
+			<id>dev-profile</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- Set property to download development logging config -->
+				<log.artifact>java-logging-dev</log.artifact>
+			</properties>
+		</profile>
+		
+		<!-- This profile should be used for production builds. -->
+		<profile>
+			<id>prod-profile</id>
+			<properties>
+				<!-- Set property to download production logging config -->
+				<log.artifact>java-logging-prod</log.artifact>
+			</properties>
+		</profile>
+	</profiles>
+  
+  <!-- Build settings -->
+  <build>
+	  <plugins>
+		<plugin>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<version>3.7.0</version>
+			<configuration>
+				<source>1.8</source>
+				<target>1.8</target>
+			</configuration>
+		</plugin>
+		
+		<plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.22.0</version>
+        </plugin>
+        
+        <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
+        gets copied into the final WAR file's internal WEB-INF directory. -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-war-plugin</artifactId>
+            <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
+        </plugin>
+        
+        <!-- Downloads and extracts ZIP archives from Maven repository -->
+        <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
+        </plugin>
+            
+	  </plugins>
+  </build>
+  
+  <dependencies>
+  	<!-- JPS Base Library -->
+  	<dependency>
+    	<groupId>uk.ac.cam.cares.jps</groupId>
+    	<artifactId>jps-base-lib</artifactId>
+    	<version>1.4.0-accessagent-SNAPSHOT</version>
+    </dependency>
+    
+    <!-- Java servlet API -->
+    <dependency>
+	    <groupId>javax.servlet</groupId>
+	    <artifactId>javax.servlet-api</artifactId>
+	    <scope>provided</scope>
+	     <!-- Version, configuration, and executions should be pulled from the 
+            parent POM unless overridden here. -->
+	</dependency>
+	
+	<!-- Logging, versions pulled from parent POM -->
+     <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-api</artifactId>
+     </dependency>
+     <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-core</artifactId>
+     </dependency>
+    <dependency>
+		<groupId>org.apache.logging.log4j</groupId>
+		<artifactId>log4j-web</artifactId>
+	</dependency>
+
+	<!-- Testing -->
+	<dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-api</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter-engine</artifactId>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+		<groupId>org.mockito</groupId>
+		<artifactId>mockito-core</artifactId>
+		<version>3.5.7</version>
+		<scope>test</scope>
+	</dependency>
+	<dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>testcontainers</artifactId>
+        <version>1.15.3</version>
+        <scope>test</scope>
+    </dependency>
+    <dependency>
+        <groupId>org.testcontainers</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <version>1.15.3</version>
+        <scope>test</scope>
+    </dependency>
+    
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-annotations -->
+    <!-- needed for testcontainers find docker environment -->
+	<dependency>
+	    <groupId>com.fasterxml.jackson.core</groupId>
+	    <artifactId>jackson-annotations</artifactId>
+	    <version>2.9.8</version>
+	</dependency>
+  </dependencies>              
+</project>

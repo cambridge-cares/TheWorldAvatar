@@ -48,6 +48,19 @@ services:
         description: "Gas Grid Agent."
         hash: "${HASH}"
       target: "${MODE}"
+      
+  # Flood Agent
+  flood-agent:
+    image: docker.cmclinnovations.com/flood-agent-${MODE}:1.0.0-SNAPSHOT
+    build:
+      context: "../../../Agents/FloodAgent"
+      dockerfile: "Dockerfile"
+      labels:
+        authors: "support@cmclinnovations.com"
+        description: "Flood Agent that scrapes data, updates the KG, and write JSON files daily."
+        builder: "${BUILDER}"
+        hash: "${HASH}"
+      target: "default"
 
   # JPS Chatbot
   jps-chatbot:
