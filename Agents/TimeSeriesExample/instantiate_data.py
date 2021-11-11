@@ -105,7 +105,7 @@ if __name__ == '__main__':
                     <%s> rdf:type ex:Consumption ; \
                          rdfs:label "%s" ; \
                          ex:unit "%s" . }''' % ( consumerIRI, c['consumer'], dataIRI,
-                                                 c['lat'] + '#' + c['lon'] + '\"^^geo:lat-lon',
+                                                 c['lat'] + '#' + c['lon'] + '\"^^geolit:lat-lon',
                                                  dataIRI, ts+' consumption', units[ts] )
 
             KGClient.executeUpdate(query)
