@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Digital Twin Example</title>
+	<meta charset="utf-8">
+
+	<!-- External CSS -->
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+
+	<!-- External JS -->
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+
+	<!--
+		The following visualisiation framework files are currently stored locally (as
+		this is	easier during development and initial testing. Once it's ready for
+		release, these files will be hosted remotely).  
+	-->
+	
+	<!-- Framework CSS -->
+	<link href='css/digital_twin_style.css' rel='stylesheet' />
+	<link href="css/jsonview.bundle.css" rel="stylesheet">
+
+	<!-- Framework JS -->
+	<script src='js/manager.js'></script>
+	<script src='js/data_registry.js'></script>
+	<script src='js/source_handler.js'></script>
+	<script src='js/layer_handler.js'></script>
+	<script src='js/control_handler.js'></script>
+	<script src='js/panel_handler.js'></script>
+	<script src='js/interaction_handler.js'></script>
+	<script src='js/timeseries_handler.js'></script>
+	<script src='js/icon_handler.js'></script>
+	<script src='js/jsonview.bundle.js'></script>
+
+	<!-- Implementation specific -->
+	<script src='local_icons.js'></script>
+</head>
+</head>
+
+<body>
+	<!-- Element the MapBox map will be added to -->
+	<div id='map'></div>
+	
+	<!-- Element the map controls will be added to (normally on the left) -->
+	<div id="controlsContainer"></div>
+
+	<!-- Non-module JS block, variables in here are global -->
+	<script>
+		// This ensures that the "manager" variable can be accessed from 
+		// HTMLElements for interaction events.
+		let manager = null;
+
+	</script>
+
+	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
+	<script type="module">
+
+		// Initialise a DigitalTwinManager (and store as a global variable)
+		manager = new DigitalTwinManager();
+
+		// We could have wholesale data packages, so register multiple possible root directories
+		let rootDirectories = {
+			"data": "./queried_data"
+		};
+		manager.registerDirectories(rootDirectories);
+
+		// Load all the metadata
+		manager.readMetadata("data", function() {
+			// Run start-up function only AFTER metadata is loaded
+			startUp();
+		});
+
+		// Will run once metadata is loaded asynchronously
+		function startUp() {
+			// Create the MapBox map
+			var map = manager.createMap("map");
+
+			// Provide some default content for the side panel
+			let title = `Example Visualisation of Queried Data`;
+			let content = `
+					This section of default text should be used to give a brief introduction on the purpose of the
+					visualisation, and to detail how the user can interact with it. For the purpose of this example,
+					some junk content to pad it out has been added.
+				`;
+			let legend = `	
+					<b>Example Legend:</b>
+					<br/>
+					<div style="display: flex; justify-content: center;">
+						<img src="img/sample-legend.png" width="350px"/>
+					</div>
+				`;
+			let footer = `Here is an example footer.`;
+
+			// Show content and store as default (so it can be returned to later)
+			manager.setPanelContent(title, content,	legend,	footer);
+			
+			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
+			// This means that we have to listen for this event (below) and re-add everything.
+			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
+			// styles, but there is an open feature request for MapBox to implement this.
+			var loadedOnce = false;
+
+			map.on('style.load', function() {
+				console.log("INFO: A new style has been loaded.");
+
+				// Plot the Fixed Data locations
+				manager.plotFixedData();
+
+				// Re-register icon images used by this visualisation
+				let winURL = window.location;
+				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+
+				var iconHandler = new IconHandler(map);
+				EXAMPLE_ICONS.forEach(relativeURL => {
+					let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+					iconHandler.registerIcon(imageURL);
+				});
+
+				// On first load only
+				if(!loadedOnce) {
+					// This callback will be fired when a selection in the layer tree changes
+					let treeCallback = null;
+					
+					// This callback will be fired when a final group is selected in the dropdowns
+					let selectCallback = function(selectedGroups) {
+						manager.removeAllAdditionalData();
+						manager.plotAdditionalData(selectedGroups);
+					};
+
+					// Build and show the layer tree based on the metadata
+					manager.showControls("layer-tree.json", treeCallback, selectCallback);
+					loadedOnce = true;
+				}
+			});
+		}
+	</script>
+
+</body>
+
+</html>

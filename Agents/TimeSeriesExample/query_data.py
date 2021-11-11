@@ -3,10 +3,7 @@
 # several consumers with location given as geospatial point
 # ===============================================================================
 
-import datetime as dt
 import os.path
-import random
-import uuid
 import json
 
 

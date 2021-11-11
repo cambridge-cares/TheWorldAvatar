@@ -1,0 +1,9 @@
+{
+    "dataSets": [
+        {
+            "name": "consumers",
+            "locationFile": "consumers.geojson",
+            "locationType": "point"
+        }
+    ]
+}

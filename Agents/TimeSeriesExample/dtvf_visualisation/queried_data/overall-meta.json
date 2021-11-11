@@ -1,0 +1,13 @@
+{
+    "name": "DTVF Example Visualisation",
+    "description": "This is an example visualisation of the retrieved KG data.",
+
+    "apiKey": "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw",
+    "defaultCenter": [0.119115, 52.205363],
+    "defaultZoom": 15,
+    "defaultBearing": -30,
+    "defaultPitch": 65,
+
+    "selectionsTitle": "Current Group:",
+    "fixedDirectory": "fixed"
+}

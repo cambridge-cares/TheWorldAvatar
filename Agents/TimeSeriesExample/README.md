@@ -74,6 +74,9 @@ A `consumerIRI` describes any entity which consumes a particular utility (e.g. P
 
 Digital Twin Visualisation Framework ([DTVF])
 
+Provide API key
+
+For detailed instruction please see the README md there
 
 
 
