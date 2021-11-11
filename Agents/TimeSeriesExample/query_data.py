@@ -117,18 +117,55 @@ def get_geojson_data(consumer):
     return coordinates, name
 
 
+def get_metadata(consumer):
+    '''
+        Returns coordinates ([lon, lat]) and name (label) for given 'consumer'
+    '''
+
+    # Define query
+    query = utils.create_sparql_prefix('ex') + \
+            utils.create_sparql_prefix('rdfs') + \
+            '''SELECT ?loc ?utility \
+               WHERE { <%s> ex:hasLocation ?loc ; \
+                            ex:consumes ?dataIRI. \
+                       ?dataIRI rdfs:label ?utility }''' % consumer
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Unpack consumer location
+    coordinates = response[0]['loc'].split('#')
+    lon = coordinates[1]
+    lat = coordinates[0]
+
+    # Derive consumed utilities
+    elec, water, gas = 'no', 'no', 'no'
+    for r in response:
+        if str.startswith(r['utility'], 'Electricity'):
+            elec = 'yes'
+        elif str.startswith(r['utility'], 'Water'):
+            water = 'yes'
+        elif str.startswith(r['utility'], 'Gas'):
+            gas = 'yes'
+
+    return lon, lat, elec, water, gas
+
+
 # ===============================================================================
 # Functions to Structure Retrieved Data for DTVF
 
 def geojson_initialise_dict():
-
     # Start GeoJSON FeatureCollection
     geojson = {'type': 'FeatureCollection',
                'features': []
                }
     return geojson
 
+
 def geojson_add_consumer(feature_id, properties, coordinates):
+    # Define new GeoJSON feature
     feature = {'type': 'Feature',
                'id': int(feature_id),
                'properties': properties.copy(),
@@ -137,6 +174,18 @@ def geojson_add_consumer(feature_id, properties, coordinates):
                             }
                }
     return feature
+
+
+def json_add_metadata(feature_id, lon, lat, elec, water, gas):
+    # Define metadata dictionary
+    metadata = { 'id': feature_id,
+                 'Longitude': lon,
+                 'Latitude': lat,
+                 'Consumes electricity': elec,
+                 'Consumes water': water,
+                 'Consumes gas': gas
+                 }
+    return metadata
 
 # ===============================================================================
 # Retrieve Example Data from KG and Store as Files for DTVF
@@ -154,6 +203,7 @@ if __name__ == '__main__':
 
     # Initialise output files/dictionaries
     geojson = geojson_initialise_dict()
+    metadata = []
     feature_id = 0
 
     # Get consumers of interest
@@ -164,7 +214,7 @@ if __name__ == '__main__':
     for c in consumers:
         feature_id += 1
 
-        # Retrieve data for GeoJSON output
+        # 1) Retrieve data for GeoJSON output
         coords, name = get_geojson_data(c)
 
         # Update GeoJSON properties
@@ -173,11 +223,18 @@ if __name__ == '__main__':
         # Append results to overall GeoJSON FeatureCollection
         geojson['features'].append(geojson_add_consumer(feature_id, geojson_props, coords))
 
+        # 2) Retrieve data for metadata output
+        lon, lat, elec, water, gas = get_metadata(c)
+        metadata.append(json_add_metadata(feature_id, lon, lat, elec, water, gas))
+
+
     # Write GeoJSON dictionary formatted to file
     file_name = os.path.join(utils.OUTPUT_DIR, 'consumers.geojson')
     with open(file_name, 'w') as f:
         json.dump(geojson, indent=4, fp=f)
-
+    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers-meta.json')
+    with open(file_name, 'w') as f:
+        json.dump(metadata, indent=4, fp=f)
 
 
 

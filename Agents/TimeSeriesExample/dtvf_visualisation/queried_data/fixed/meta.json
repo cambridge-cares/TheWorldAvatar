@@ -3,7 +3,8 @@
         {
             "name": "consumers",
             "locationFile": "consumers.geojson",
-            "locationType": "point"
+            "locationType": "point",
+            "metaFiles": ["consumers-meta.json"]
         }
     ]
 }
