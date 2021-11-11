@@ -4,7 +4,8 @@
             "name": "consumers",
             "locationFile": "consumers.geojson",
             "locationType": "point",
-            "metaFiles": ["consumers-meta.json"]
+            "metaFiles": ["consumers-meta.json"],
+            "timeseriesFiles": ["consumers-timeseries.json"]
         }
     ]
 }

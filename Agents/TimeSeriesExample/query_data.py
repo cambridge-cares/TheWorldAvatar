@@ -119,7 +119,7 @@ def get_geojson_data(consumer):
 
 def get_metadata(consumer):
     '''
-        Returns coordinates ([lon, lat]) and name (label) for given 'consumer'
+        Returns meta data for given 'consumer'
     '''
 
     # Define query
@@ -151,6 +151,41 @@ def get_metadata(consumer):
             gas = 'yes'
 
     return lon, lat, elec, water, gas
+
+
+def get_all_time_series(consumer):
+    '''
+        Returns data for all time series associated with given 'consumer'
+    '''
+
+    # Define query
+    query = utils.create_sparql_prefix('ex') + \
+            utils.create_sparql_prefix('rdfs') + \
+            '''SELECT ?dataIRI ?utility ?unit \
+               WHERE { <%s> ex:consumes ?dataIRI. \
+                       ?dataIRI rdfs:label ?utility ;
+                                ex:unit ?unit }''' % consumer
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Initialise lists
+    dataIRIs = []
+    utilities = []
+    units = []
+    # Append lists with all query results
+    for r in response:
+        dataIRIs.append(r['dataIRI'])
+        utilities.append(r['utility'])
+        units.append((r['unit']))
+
+    # Retrieve time series data for retrieved set of dataIRIs
+    timeseries = TSClient.getTimeSeries(dataIRIs)
+
+    # Return time series and associated lists of variables and units
+    return timeseries, utilities, units
 
 
 # ===============================================================================
@@ -204,11 +239,16 @@ if __name__ == '__main__':
     # Initialise output files/dictionaries
     geojson = geojson_initialise_dict()
     metadata = []
+    ts_data = { 'ts': [],
+                'id': [],
+                'units': [],
+                'headers': []
+                }
     feature_id = 0
 
     # Get consumers of interest
-    #consumers = get_all_consumers()
-    consumers = get_consumers_in_circle(center, radius)
+    consumers = get_all_consumers()
+    #consumers = get_consumers_in_circle(center, radius)
 
     # Loop over all consumers
     for c in consumers:
@@ -227,6 +267,17 @@ if __name__ == '__main__':
         lon, lat, elec, water, gas = get_metadata(c)
         metadata.append(json_add_metadata(feature_id, lon, lat, elec, water, gas))
 
+        # 3) Retrieve time series data
+        timeseries, utilities, units = get_all_time_series(c)
+        ts_data['ts'].append(timeseries)
+        ts_data['id'].append(feature_id)
+        ts_data['units'].append(units)
+        ts_data['headers'].append(utilities)
+
+    # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
+    ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
+    # Make JSON file readable in Python
+    ts_json = json.loads(ts_json.toString())
 
     # Write GeoJSON dictionary formatted to file
     file_name = os.path.join(utils.OUTPUT_DIR, 'consumers.geojson')
@@ -235,6 +286,9 @@ if __name__ == '__main__':
     file_name = os.path.join(utils.OUTPUT_DIR, 'consumers-meta.json')
     with open(file_name, 'w') as f:
         json.dump(metadata, indent=4, fp=f)
+    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers-timeseries.json')
+    with open(file_name, 'w') as f:
+        json.dump(ts_json, indent=4, fp=f)
 
 
 
