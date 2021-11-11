@@ -1,9 +1,15 @@
 package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
+
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
+import uk.ac.cam.cares.jps.base.interfaces.SetupJobInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -11,7 +17,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.util.SysStreamHandler;
 
-public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
+public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface, SetupJobInterface {
 
     /**
      * Logger for error output.
@@ -38,12 +44,14 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         validateInput(requestParams);
+        List<String> generatedIRI = setupJob(requestParams);
         return new JSONObject();
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         validateInput(requestParams);
+        List<String> generatedIRI = setupJob(requestParams);
         return new JSONObject();
     }
 
@@ -80,4 +88,24 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
     }
+    
+    /**
+     * 
+     * @param agentIRI
+     */
+    public void monitorDerivation(String agentIRI, JPSAgent agent) {
+    	RemoteStoreClient storeClient = new RemoteStoreClient();
+    	DerivationClient devClient = new DerivationClient(storeClient);
+    	devClient.monitorDerivation(agentIRI, agent);
+    }
+
+    /**
+     * Set up the job based on the requestParams, it can either from the HTTP request, 
+     * or the inputs from asynchronous derivation framework.
+     * @param request
+     */
+    @Override
+	public List<String> setupJob(JSONObject requestParams) {
+		return null;
+	}
 }
