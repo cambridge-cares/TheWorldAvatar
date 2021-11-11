@@ -51,7 +51,7 @@ Assumptions:
 - Elevation (Z coordinate) neglected
 - Coordinates in EPSG:4326 to use Blazegraph's built-in geospatial search functionality
 
-Upon instantiation, the following triples get created for each `dataIRI`:
+To instantiate the sample data, please run `instantiate_data.py`. Upon instantiation, the following triples get created for each `dataIRI`:
 ```
 ex:consumerIRI rdf:type ex:Consumer ;
                rdfs:label <description> ; 
@@ -69,15 +69,12 @@ A `consumerIRI` describes any entity which consumes a particular utility (e.g. P
 
 ### 2. Query Geospatial Time Series Data
 
+To query the triple store and write the retrieved data to respective files for later visualisation, please run `query_data.py`. Within the main function of this module, on can specify, whether to query for all consumers or just consumers within a certain radius from Cambridge's city center (around line 250).
 
 ### 3. Visualise Geospatial Time Series Data using the DTVF
 
-Digital Twin Visualisation Framework ([DTVF])
-
-Provide API key
-
-For detailed instruction please see the README md there
-
+The previously queried data will be visualised using the Digital Twin Visualisation Framework ([DTVF]). For more detailed instructions, please read the [DTVF readme] file within the `dtvf_visualisation` folder.
+Please note that you need to specify a Mapbox API key in the `dtvf_visualisation/queried_data/overall-meta.json` file.
 
 
 
@@ -86,3 +83,4 @@ For detailed instruction please see the README md there
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
 [requirements file]: resources/ts_example.properties
+[DTVF readme]: dtvf_visualisation/README.md

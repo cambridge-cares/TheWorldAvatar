@@ -1,6 +1,5 @@
-# This module instantiates several sample geospatial time series (i.e. sample
-# consumption time series for various utilities (water, gas, electricity) for
-# several consumers with location given as geospatial point
+# This module queries the previously instantiated sample data from Blazegraph
+# and creates output files suitable for use with the DTVF
 # ===============================================================================
 
 import os.path
