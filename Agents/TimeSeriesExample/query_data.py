@@ -4,6 +4,7 @@
 # ===============================================================================
 
 import datetime as dt
+import os.path
 import random
 import uuid
 import json
@@ -24,6 +25,18 @@ center = '52.205363#0.119115'
 # Search radius in km
 radius = 1
 
+# Specify plotting parameter for GeoJSON features
+geojson_props = { 'displayName': '',
+                  'description': '',
+                  'circle-color': '#FF0000',
+                  'circle-stroke-width': 1,
+                  'circle-stroke-color': '#000000',
+                  'circle-stroke-opacity': 0.75,
+                  'circle-opacity': 0.75
+                  }
+
+# ===============================================================================
+# Functions to Query Example Data from KG
 
 def get_all_consumers():
     '''
@@ -31,18 +44,17 @@ def get_all_consumers():
     '''
 
     # Define query
-    var = 'cons'
     query = utils.create_sparql_prefix('ex') + \
             utils.create_sparql_prefix('rdf') + \
-            '''SELECT ?%s \
-               WHERE { ?%s rdf:type ex:Consumer }''' % (var, var)
+            '''SELECT ?cons \
+               WHERE { ?cons rdf:type ex:Consumer }'''
     # Execute query
     response = KGClient.execute(query)
 
     # Convert JSONArray String back to list
     response = json.loads(response)
     # Unpack all consumers to list
-    consumers = [r[var] for r in response]
+    consumers = [r['cons'] for r in response]
 
     return consumers
 
@@ -53,23 +65,22 @@ def get_consumers_in_circle(center, radius):
     '''
 
     # Define query
-    var = 'cons'
     query = utils.create_sparql_prefix('ex') + \
             utils.create_sparql_prefix('rdf') + \
             utils.create_sparql_prefix('geo') + \
             utils.create_sparql_prefix('geolit') + \
-            '''SELECT ?%s \
+            '''SELECT ?cons \
                WHERE { \
                  SERVICE geo:search \
                  { \
-                    ?%s geo:search "inCircle" . \
-                    ?%s geo:searchDatatype geolit:lat-lon . \
-                    ?%s geo:predicate ex:hasLocation . \
-                    ?%s geo:spatialCircleCenter "%s" . \
-                    ?%s geo:spatialCircleRadius "%s" . \
+                    ?cons geo:search "inCircle" . \
+                    ?cons geo:searchDatatype geolit:lat-lon . \
+                    ?cons geo:predicate ex:hasLocation . \
+                    ?cons geo:spatialCircleCenter "%s" . \
+                    ?cons geo:spatialCircleRadius "%s" . \
                  } \
-                 ?%s rdf:type ex:Consumer \
-               }''' % (var, var, var, var, var, str(center), var, str(radius), var)
+                 ?cons rdf:type ex:Consumer \
+               }''' % (str(center), str(radius))
 
     # Execute query
     response = KGClient.execute(query)
@@ -77,14 +88,61 @@ def get_consumers_in_circle(center, radius):
     # Convert JSONArray String back to list
     response = json.loads(response)
     # Unpack all consumers to list
-    consumers = [r[var] for r in response]
+    consumers = [r['cons'] for r in response]
 
     return consumers
 
 
+def get_geojson_data(consumer):
+    '''
+        Returns coordinates ([lon, lat]) and name (label) for given 'consumer'
+    '''
+
+    # Define query
+    query = utils.create_sparql_prefix('ex') + \
+            utils.create_sparql_prefix('rdfs') + \
+            '''SELECT ?loc ?name \
+               WHERE { <%s> ex:hasLocation ?loc ; \
+                            rdfs:label ?name }''' % consumer
+    # Execute query
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Unpack consumer name
+    name = response[0]['name']
+    # Unpack consumer location, and convert to [lon, lat] format
+    coordinates = response[0]['loc'].split('#')
+    coordinates = [float(i) for i in coordinates]
+    coordinates = coordinates[::-1]
+
+    return coordinates, name
+
 
 # ===============================================================================
-# Query Example Data from KG
+# Functions to Structure Retrieved Data for DTVF
+
+def geojson_initialise_dict():
+
+    # Start GeoJSON FeatureCollection
+    geojson = {'type': 'FeatureCollection',
+               'features': []
+               }
+    return geojson
+
+def geojson_add_consumer(feature_id, properties, coordinates):
+    feature = {'type': 'Feature',
+               'id': int(feature_id),
+               'properties': properties.copy(),
+               'geometry': {'type': 'Point',
+                            'coordinates': coordinates
+                            }
+               }
+    return feature
+
+# ===============================================================================
+# Retrieve Example Data from KG and Store as Files for DTVF
 
 if __name__ == '__main__':
 
@@ -97,11 +155,31 @@ if __name__ == '__main__':
     # Initialise TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
 
-    # Get consumers
-    #consumers = get_all_consumers()
-    consumer = get_consumers_in_circle(center, radius)
+    # Initialise output files/dictionaries
+    geojson = geojson_initialise_dict()
+    feature_id = 0
 
-    print('')
+    # Get consumers of interest
+    #consumers = get_all_consumers()
+    consumers = get_consumers_in_circle(center, radius)
+
+    # Loop over all consumers
+    for c in consumers:
+        feature_id += 1
+
+        # Retrieve data for GeoJSON output
+        coords, name = get_geojson_data(c)
+
+        # Update GeoJSON properties
+        geojson_props['description'] = str(c)
+        geojson_props['displayName'] = name
+        # Append results to overall GeoJSON FeatureCollection
+        geojson['features'].append(geojson_add_consumer(feature_id, geojson_props, coords))
+
+    # Write GeoJSON dictionary formatted to file
+    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers.geojson')
+    with open(file_name, 'w') as f:
+        json.dump(geojson, indent=4, fp=f)
 
 
 
