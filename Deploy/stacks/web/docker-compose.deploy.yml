@@ -18,7 +18,8 @@ services:
   # Flood Map
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
-    container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    container_name: "flood-map${CONTAINER_NAME_SUFFIX}"    
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # Land Use Crop Map

@@ -527,6 +527,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * Adds following metadata to a class.</br>
 	 * - the class definition (as a comment)
 	 * - the defined by property
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -540,6 +541,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToClass(tokens[0], tokens[8]);
 		}
+		
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToOWLClass(tokens[0], tokens[9]);
+		}
 	}
 	
 	/**
@@ -548,6 +553,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * - the defined by property
 	 * - the domain and range
 	 * - formulas
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -565,6 +571,10 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				iTBoxManagement.addLogicalFormulaToObjectProperty(tokens[0], tokens[6], tokens[4], tokens[5]);
 			}
 		}
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToObjectProperty(tokens[0], tokens[9]);
+		}
+
 	}
 	
 	/**
@@ -572,6 +582,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * - the property definition (as a comment)
 	 * - the defined by property
 	 * - the domain and range
+	 * - a label
 	 * 
 	 * @param tokens
 	 * @throws IOException
@@ -583,6 +594,9 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		}
 		if(tokens.length>8){
 			iTBoxManagement.addDefinedByToDataProperty(tokens[0], tokens[8]);
+		}
+		if(tokens.length>9){
+			iTBoxManagement.addLabelToDataProperty(tokens[0], tokens[9]);
 		}
 	}
 	

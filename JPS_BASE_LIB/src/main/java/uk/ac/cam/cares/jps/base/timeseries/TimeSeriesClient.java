@@ -1,8 +1,12 @@
 package uk.ac.cam.cares.jps.base.timeseries;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -149,23 +153,54 @@ public class TimeSeriesClient<T> {
     }
     
     /**
+     * similar to initTimeSeries, but uploads triples in one connection
+     */
+    public void bulkInitTimeSeries(List<List<String>> dataIRIs, List<List<Class<?>>> dataClass, List<String> timeUnit) {
+        // create random time series IRI
+    	List<String> tsIRIs = new ArrayList<>(dataIRIs.size());
+    	
+    	for (int i = 0; i < dataIRIs.size(); i++) {
+    		String tsIRI = TimeSeriesSparql.ns_kb + "Timeseries_" + UUID.randomUUID();
+    		tsIRIs.add(i, tsIRI);
+    	}
+    	
+    	// Step1: Initialise time series in knowledge base
+    	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
+    	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
+   		try {
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), null);
+		}
+		catch (Exception e_RdfCreate) {
+			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
+		}
+   		
+   	    // Step2: Try to initialise time series in relational database
+   		for (int i = 0; i < dataIRIs.size(); i++) {
+   			try {
+   	    		rdbClient.initTimeSeriesTable(dataIRIs.get(i), dataClass.get(i), tsIRIs.get(i));
+   	    	} catch (JPSRuntimeException e_RdbCreate) {
+   	    		// For exceptions thrown when initialising RDB elements in relational database,
+   				// try to revert previous knowledge base instantiation
+   	    		// TODO Ideally try to avoid throwing exceptions in a catch block - potential solution: have removeTimeSeries throw
+   	    		//		a different exception depending on what the problem was, and how it should be handled
+   	    		try {
+   	    			rdfClient.removeTimeSeries(tsIRIs.get(i));
+   	    		} catch (Exception e_RdfDelete) {
+   	    			throw new JPSRuntimeException(exceptionPrefix + "Inconsistent state created when initialising time series " + tsIRIs.get(i) +
+   							" , as database related instantiation failed but KG triples were created.");
+   	    		}
+   	    		throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdbCreate);
+   	    	}
+   		}	
+    }
+    
+    /**
      * Append time series data to an already instantiated time series
 	 * @param ts TimeSeries object to add
      */
     public void addTimeSeriesData(TimeSeries<T> ts) {
-		
-    	// Retrieve relevant dataIRIs
-    	List<String> dataIRIs = ts.getDataIRIs();
-    	
-    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
-    	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
-    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
-    					  " is not attached to any time series instance in the KG");
-    		}    		
-    	}
-    	
     	// Add time series data to respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	rdbClient.addTimeSeriesData(ts);
     }
     
@@ -176,14 +211,8 @@ public class TimeSeriesClient<T> {
 	 * @param upperBound end timestamp until which to delete data (inclusive)
 	 */
 	public void deleteTimeSeriesHistory(String dataIRI, T lowerBound, T upperBound) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Delete RDB time series table rows between lower and upper Bound
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		rdbClient.deleteRows(dataIRI, lowerBound, upperBound);
 	}
     
@@ -310,16 +339,8 @@ public class TimeSeriesClient<T> {
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeriesWithinBounds(List<String> dataIRIs, T lowerBound, T upperBound) {
-		
-    	// Check whether all dataIRIs are instantiated in the KG and attached to a time series
-    	for (String iri : dataIRIs) {
-    		if (!rdfClient.checkDataHasTimeSeries(iri)) {
-    			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + iri + 
-    					  " is not attached to any time series instance in the KG");
-    		}    		
-    	}
-    	
     	// Retrieve time series data from respective database table
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
     	return rdbClient.getTimeSeriesWithinBounds(dataIRIs, lowerBound, upperBound);
     }
 	
@@ -331,7 +352,6 @@ public class TimeSeriesClient<T> {
 	 * @return All data series from dataIRIs list as single TimeSeries object
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRIs) {
-		
     	return getTimeSeriesWithinBounds(dataIRIs, null, null);
     }
 	
@@ -341,14 +361,8 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getAverage(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getAverage(dataIRI);
 	}
 	
@@ -358,14 +372,8 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMaxValue(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxValue(dataIRI);
 	}
 	
@@ -375,14 +383,8 @@ public class TimeSeriesClient<T> {
 	 * @return The average of the corresponding data series as double
 	 */
 	public double getMinValue(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve wanted time series aggregate from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinValue(dataIRI);
 	}
 	
@@ -392,14 +394,8 @@ public class TimeSeriesClient<T> {
 	 * @return The maximum (latest) timestamp of the corresponding data series
 	 */
 	public T getMaxTime(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve latest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMaxTime(dataIRI);
 	}
 	
@@ -409,14 +405,8 @@ public class TimeSeriesClient<T> {
 	 * @return The minimum (earliest) timestamp of the corresponding data series
 	 */
 	public T getMinTime(String dataIRI) {
-		
-    	// Check whether dataIRI is instantiated in the KG and attached to a time series
-		if (!rdfClient.checkDataHasTimeSeries(dataIRI)) {
-			throw new JPSRuntimeException(exceptionPrefix + "DataIRI " + dataIRI + 
-					  " is not attached to any time series instance in the KG");
-		}    		
-		
 		// Retrieve earliest time entry from database
+    	// Checks whether all dataIRIs are instantiated as time series are conducted within rdb client (due to performance reasons)
 		return rdbClient.getMinTime(dataIRI);
 	}
 	
@@ -435,7 +425,7 @@ public class TimeSeriesClient<T> {
 	 * @return True if dataIRI exists and is attached to a time series, false otherwise
 	 */
     public boolean checkDataHasTimeSeries(String dataIRI) {
-    	return rdfClient.checkDataHasTimeSeries(dataIRI);
+    	return rdbClient.checkDataHasTimeSeries(dataIRI);
     }
     
 	/**
@@ -502,5 +492,63 @@ public class TimeSeriesClient<T> {
      */
 	public List<String> getAllTimeSeries() {
 		return rdfClient.getAllTimeSeries();
+	}
+	
+	/**
+	 * disconnects current connection to postgres
+	 */
+	public void disconnectRDB() {
+		rdbClient.disconnect();
+	}
+	
+	/**
+	 * converts list of time series into required format for visualisation
+	 * please do not modify without consulting the visualisation team at CMCL
+	 * @param ts_list
+	 * @param id
+	 * @param units
+	 * @param table_header
+	 * @return
+	 */
+	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
+			List<List<String>> units, List<List<String>> table_header) {
+		JSONArray ts_array = new JSONArray();
+		
+		for (int i = 0; i < ts_list.size(); i++) {
+			TimeSeries<T> ts = ts_list.get(i);
+			
+			JSONObject ts_jo = new JSONObject();
+			
+			// to link this time series to a station
+			// in this application there is only 1 data per ts
+			List<String> dataIRIs = ts.getDataIRIs();
+			ts_jo.put("id", id.get(i));
+			
+			// for table headers
+			if (table_header != null) {
+				ts_jo.put("data", table_header.get(i));
+			} else {
+				ts_jo.put("data", ts.getDataIRIs());
+			}
+	    	
+	    	ts_jo.put("units", units.get(i));
+	    	
+	    	// time column
+	    	ts_jo.put("time", ts.getTimes());
+	    	
+	    	// values columns
+	    	// values columns, one array for each data
+	    	JSONArray values = new JSONArray();
+	    	
+	    	for (int j = 0; j < dataIRIs.size(); j++) {
+	    		values.put(ts.getValuesAsDouble(dataIRIs.get(j)));
+	    	}
+	    	
+	    	ts_jo.put("values", values);
+			
+			ts_array.put(ts_jo);
+		}
+		
+		return ts_array;
 	}
 }
