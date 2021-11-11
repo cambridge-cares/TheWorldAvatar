@@ -23,3 +23,6 @@ OntoKinGUI
 
 ## SPARQL Query GUI
 RDF4J_SPARQL_GUI
+
+## Quantum Chemistry
+OntoCompChemUpload, molhub 
