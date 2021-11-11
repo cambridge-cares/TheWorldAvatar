@@ -77,6 +77,7 @@ if __name__ == '__main__':
     # Loop over all consumers
     consumers = [consumer1, consumer2, consumer3]
     for c in consumers:
+        print('Current consumer: ', c['consumer'])
 
         # Initialise list of dataIRIs, which will be represented as time series
         dataIRIs = []
@@ -84,7 +85,8 @@ if __name__ == '__main__':
         # Loop over all time series for this consumer
         for ts in list(c['timeseries'].keys()):
 
-            # Create UUID for current time series and attach to dataIRI list
+            # Create UUIDs for current time series and attach to dataIRI list
+            consumerIRI = utils.PREFIXES['ex'] + 'Consumer_' + str(uuid.uuid4())
             dataIRI = utils.PREFIXES['ex'] + ts + '_' + str(uuid.uuid4())
             dataIRIs.append(dataIRI)
 
@@ -94,12 +96,15 @@ if __name__ == '__main__':
                     utils.create_sparql_prefix('rdfs') + \
                     utils.create_sparql_prefix('geo') + \
                     '''INSERT DATA { \
+                    <%s> rdf:type ex:Consumer ; \
+                         rdfs:label "%s" ; \
+                         ex:consumes <%s> ; \
+                         ex:hasLocation "%s . \
                     <%s> rdf:type ex:Consumption ; \
-                          rdfs:label "%s" ; \
-                          ex:consumedBy "%s" ; \
-                          ex:unit "%s" ; \
-                          ex:hasLocation "%s }''' % (dataIRI, ts+' consumption', c['consumer'], units[ts],
-                                                     c['lat'] + '#' + c['lon'] + '\"^^geo:lat-lon')
+                         rdfs:label "%s" ; \
+                         ex:unit "%s" . }''' % ( consumerIRI, c['consumer'], dataIRI,
+                                                 c['lat'] + '#' + c['lon'] + '\"^^geo:lat-lon',
+                                                 dataIRI, ts+' consumption', units[ts] )
 
             KGClient.executeUpdate(query)
             print("Triples independent of Java TimeSeriesClient successfully instantiated.")
