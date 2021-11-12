@@ -49,7 +49,7 @@ public class DerivationClient {
     public String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputsIRI) {
     	String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, agentURL, inputsIRI);
     	DerivationSparql.addTimeInstance(kbClient, createdDerivation);
-    	LOGGER.info("Instantiated derivation with time series <" + createdDerivation + ">");
+    	LOGGER.info("Instantiated derivation <" + createdDerivation + ">");
     	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
@@ -89,6 +89,25 @@ public class DerivationClient {
     	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
+    	return createdDerivation;
+    }
+    
+    /**
+     * This method creates a new asynchronous derived instance and adds the following statements
+	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
+     * Use this for asynchronous instances that get replaced by agents, also when the information about agent exists already
+     * @param entities
+     * @param agentIRI
+     * @param inputsIRI
+     * @return
+     */
+    public String createAsynDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
+    	String createdDerivation = DerivationSparql.createDerivationAsyn(this.kbClient, entities, agentIRI, inputsIRI);
+    	DerivationSparql.addTimeInstance(this.kbClient, createdDerivation);
+    	LOGGER.info("Instantiated asynchronous derivation <" + createdDerivation + ">");
+    	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
+    	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + ">");
     	return createdDerivation;
     }
     
@@ -175,16 +194,22 @@ public class DerivationClient {
 		List<String> listOfDerivation = DerivationSparql.getDerivations(this.kbClient, agentIRI);
 		
 		for (String derivation : listOfDerivation) {
-			if (DerivationSparql.isRequested(this.kbClient, derivation)) {
-				JSONObject agentInputs = new JSONObject();
-				agentInputs.put(AGENT_INPUT_KEY, DerivationSparql.getInputsMapToAgent(this.kbClient, derivation, agentIRI));
-				DerivationSparql.markAsInProgress(this.kbClient, derivation);
-				List<String> newDerivedIRI = setupJob.setupJob(agentInputs);
-				updateStatusAtJobCompletion(derivation, newDerivedIRI);
-			} else if (DerivationSparql.isInProgress(this.kbClient, derivation)) {
-				// at the moment the design is the agent just pass when it's detected as "InProgress"
-			} else if (DerivationSparql.isFinished(this.kbClient, derivation)) {
-				cleanUpFinishedDerivationUpdate(derivation);
+			// check if the derivation is an instance of asynchronous derivation
+			if (DerivationSparql.isDerivedAsynchronous(this.kbClient, derivation)) {
+				if (DerivationSparql.isRequested(this.kbClient, derivation)) {
+					JSONObject agentInputs = new JSONObject();
+					agentInputs.put(AGENT_INPUT_KEY, DerivationSparql.getInputsMapToAgent(this.kbClient, derivation, agentIRI));
+					DerivationSparql.markAsInProgress(this.kbClient, derivation);
+					List<String> newDerivedIRI = setupJob.setupJob(agentInputs);
+					updateStatusAtJobCompletion(derivation, newDerivedIRI);
+				} else if (DerivationSparql.isInProgress(this.kbClient, derivation)) {
+					// at the moment the design is the agent just pass when it's detected as "InProgress"
+				} else if (DerivationSparql.isFinished(this.kbClient, derivation)) {
+					cleanUpFinishedDerivationUpdate(derivation);
+				}
+			} else {
+				// TODO ideally this should call the update or other functions in synchronous derivation function
+				LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
 			}
 		}
     }

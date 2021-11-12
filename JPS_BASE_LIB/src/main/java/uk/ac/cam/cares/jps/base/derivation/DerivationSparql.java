@@ -53,6 +53,7 @@ public class DerivationSparql{
     private static Iri TimePosition = p_time.iri("TimePosition");
     private static Iri Derivation = p_derived.iri("Derivation");
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
+    private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
     private static Iri Status = p_derived.iri("Status");
     private static Iri Requested = p_derived.iri("Requested");
     private static Iri InProgress = p_derived.iri("InProgress");
@@ -245,6 +246,60 @@ public class DerivationSparql{
 	    kbClient.executeUpdate();
 	    
 	    return derivedQuantity;
+	}
+	
+	/**
+	 * This method creates a new instance of asynchronous derived quantity, grouping the given entities under this instance,
+	 * whenever this derived quantity gets updated, the provided entities will get deleted by the client.
+	 * This method primarily follows createDerivation(StoreClientInterface kbClient, List<String> entities,
+	 * String agentIRI, String agentURL, List<String> inputs), except that this method does NOT create statements
+	 * about the OntoAgent:Operation and OntoAgent:hasHttpUrl. Rather, this method assumes the triples
+	 * {<Agent> <msm:hasOperation> <Operation>} and {<Operation> <msm:hasHttpUrl> <URL>}
+	 * already exist in respective OntoAgent instances.
+	 * @param kbClient
+	 * @param entities
+	 * @param agentIRI
+	 * @param inputs
+	 * @return
+	 */
+	static String createDerivationAsyn(StoreClientInterface kbClient, List<String> entities, String agentIRI, List<String> inputs) {
+		ModifyQuery modify = Queries.MODIFY();
+
+		// create a unique IRI for this new derived quantity
+		String derivedQuantity = derivednamespace + "derivedAsyn_" + UUID.randomUUID().toString();
+		while (checkInstanceExists(kbClient, derivedQuantity)) {
+			derivedQuantity = derivednamespace + "derivedAsyn_" + UUID.randomUUID().toString();
+		}
+
+		Iri derived_iri = iri(derivedQuantity);
+
+		modify.insert(derived_iri.isA(DerivationAsyn));
+
+		for (String entity : entities) {
+			// ensure that given entity is not part of another derived quantity
+			if (!hasBelongsTo(kbClient, entity)) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			} else {
+				String errmsg = "<" + entity + "> is already part of another derivation";
+				LOGGER.fatal(errmsg);
+				throw new JPSRuntimeException(errmsg);
+			}
+		}
+
+		// link to agent
+		// here it is assumed that an agent only has one operation
+		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+		
+		// link to each input
+		for (String input : inputs) {
+			modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+		}
+	    
+		modify.prefix(p_time,p_derived,p_agent);
+		
+		kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+		kbClient.executeUpdate();
+		return derivedQuantity;
 	}
 	
 	/**
@@ -1027,6 +1082,28 @@ public class DerivationSparql{
 		Expression<?> constraint = Expressions.equals(type, DerivationWithTimeSeries);
 		
 		// this query will return one result if the constraint matches
+		GraphPattern queryPattern = tp.filter(constraint);
+		
+		query.prefix(p_derived).select(type).where(queryPattern);
+		if (kbClient.executeQuery(query.getQueryString()).length() == 1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns true if it is a asynchronous derived quantity.
+	 * @param kbClient
+	 * @param derived_iri
+	 * @return
+	 */
+	static boolean isDerivedAsynchronous(StoreClientInterface kbClient, String derived_iri) {
+		SelectQuery query = Queries.SELECT();
+		Variable type = query.var();
+		TriplePattern tp = iri(derived_iri).isA(type);
+		Expression<?> constraint = Expressions.equals(type, DerivationAsyn);
+		
 		GraphPattern queryPattern = tp.filter(constraint);
 		
 		query.prefix(p_derived).select(type).where(queryPattern);
