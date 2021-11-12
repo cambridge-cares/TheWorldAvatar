@@ -1,0 +1,475 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl"
+     xmlns:OntoEnergySystem="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 November 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoEnergySystem is an ontology developed for representing energy systems.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon -->
+
+
+    <rdfs:Datatype rdf:about="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#enablesElectricityConsumptionOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#enablesElectricityConsumptionOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#enablesEnergyConsumptionOf"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricPowerSystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation links an EnergySystem with the electic energy consumption which is met by it. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#enablesEnergyConsumptionOf -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#enablesEnergyConsumptionOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergySystem"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation links an EnergySystem with the energy consumption which is met by it. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasRelevantPlace -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasRelevantPlace">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Asset"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an asset and its relevant areas. Normally it refers to the area where the asset located in.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#includesConsumption -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#includesConsumption">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a total consumption and a sub-consumption which is the inverse of isSub-ConsumptionOf</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#isObservedIn -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#isObservedIn">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a phenomena and its observed object. It is the inverse property of observes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#observes -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#observes">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation is the inverse of isObservedIn.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasCode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasCode">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a GeographicalArea and its tag of any types of codes or indexes.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasLatitudeLongitude -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasLatitudeLongitude">
+        <rdfs:range rdf:resource="http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an object and its Latitude-Longitude coordinates (basde on EPSG 4326, also known as WGS84).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasLocalAuthorityCode -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasLocalAuthorityCode">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#hasCode"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between AdministrativeDivision and Land Authority code which it is tagged.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#PowerPlant">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Asset"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#AdministrativeDivision -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#AdministrativeDivision">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A generic name for geographical areas into which a particular, independent sovereign state (country) is divided. Such a unit usually has an administrative authority with the power to take administrative or policy decisions for its area.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Asset -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Asset">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A physical item of property, which is of value and available to meet debts, commitments, or legacies. Normally, asset is persisted by a natural person, company or any organisations.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#CommercialElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#CommercialElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the components of the Non-DomesticElectricityConsumption which is totally different from IndustrialElectricityConsumption. It specifically refers to the electricity consumed the by nonmanufacturing establishments or agencies primarily engaged in the sale of goods or services. In short, CommercialElectricityConsumption includes the consumption of the service sector. It is highly connected to population growth (as services tend to population serving).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#DomesticElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#DomesticElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The rest part of TotalElectricityConsumption which refers to the electricity used by domestic purposes, conceptually opposites to Non-DomesticElectricityConsumption.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricPowerSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricPowerSystem">
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerSystem"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergySystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A network of electrical components deployed to supply, transfer, and use electric power.  An example of a power system is the electrical grid that provides power to homes, industries, etc.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The form of energy consumption that uses electric energy. Electric energy consumption is the actual energy demand made on existing electricity supply which is not equal to the nominal demanding.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergyConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy or power used. The consumer can be of any types includes a given area. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergySystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergySystem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A system primarily designed to supply energy-services to end-users. All components of energy system are related to the production, conversion, delivery, and use of energy. The energy type can be of variety includes both primary and secondary energy sources.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#GeographicalArea">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A demarcated area of the Earth.The boundary of the area is of arbitrary which means it can be official, like the border of country,  or non-offical ones forming from any conventional rules or even the boundaries with no underlying meaning.  </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#IndustrialElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#IndustrialElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">One of the components of the Non-DomesticElectricityConsumption, which refers to the electric energy is predominantly used for industrial purpose, such as production, as well as for lighting and other business uses in the manufacturing industries.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#NaturalGasSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#NaturalGasSystem">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#EnergySystem"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A transmission network (system) of gas pipelines that supply gas to end-users from natural gas terminals situated on the coast, and to gas distribution companies that supply commercial and domestic users.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#includesConsumption"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#CommercialElectricityConsumption"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#IndustrialElectricityConsumption"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A part of TotalElectricityConsumption which refers to the electricity consumed by non-domestic consumers or purposes. It can be subdivided into  IndustrialElectricityConsumption and IndustrialElectricityConsumption.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#TotalElectricityConsumption -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#TotalElectricityConsumption">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#ElectricityConsumption"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#includesConsumption"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:unionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#DomesticElectricityConsumption"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption"/>
+                        </owl:unionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The accumulated amount of ElectricityConsumption over a time period such as on a year base. It is composed of both DomesticElectricityConsumption and Non-DomesticElectricityConsumption.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerSystem"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#isSub-ConsumptionOf">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation is the inverse of includesConsumption.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+
