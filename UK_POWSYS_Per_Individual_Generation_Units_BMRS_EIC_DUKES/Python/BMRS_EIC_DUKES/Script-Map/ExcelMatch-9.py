@@ -297,6 +297,7 @@ def SmallOnLargeDiffFraction(num1, num2):
 
 
 #Error Text Functions, these take output data from the Primary Function, and give text translations for the logger file.
+#Name Match Type
 def ErrorNameText(e):
     e = int(e)
     if e == -10:
@@ -320,6 +321,7 @@ def ErrorNameText(e):
     return "None" #incl. e == 999
 
 
+#Capacity Difference (%) Note that the x value (sensitivity limit) is given if it is not possible. 
 def ErrorCapacityDifferenceText(e):
     e = int(e)
     if e == 999:
@@ -329,6 +331,7 @@ def ErrorCapacityDifferenceText(e):
     return "None" #incl. e == 999
 
 
+#Error score description from year match (very low quality test, so minimal effect on final score). 
 def ErrorDateText(e):
     e = int(e)
     if e == -5:
@@ -342,6 +345,7 @@ def ErrorDateText(e):
     return "None" #incl. e == 999
 
 
+#Gen type match test output description. 
 def ErrorGenTypeText(x, e): 
     e = int(e)
     if e == (-int(x/5) -3):
@@ -355,6 +359,7 @@ def ErrorGenTypeText(x, e):
     return "None" #incl. e == 999
 
 
+#The final verdict described. 
 def ErrorMatch(e):
     if int(e) == 1:
         return "Matched" + " (" + str(e) + ")"
