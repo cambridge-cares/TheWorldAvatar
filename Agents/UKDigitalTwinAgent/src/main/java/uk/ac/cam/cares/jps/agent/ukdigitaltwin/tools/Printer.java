@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Printer is developed for making the print ArrayList procedure convenient
+ * Printer is developed for making the print ArrayList procedure more convenient
  * 
  * @author Wanni Xie (wx243@cam.ac.uk)
  * 

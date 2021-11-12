@@ -27,6 +27,7 @@
 *.war
 *.class
 log4j2.xml
+catalog-v001.xml
 
 # Maven:
 target/
