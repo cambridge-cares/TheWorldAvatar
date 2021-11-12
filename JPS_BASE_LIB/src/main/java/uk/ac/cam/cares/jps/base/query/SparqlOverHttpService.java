@@ -19,7 +19,7 @@ import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class SparqlOverHttpService {
 	
@@ -35,7 +35,7 @@ public class SparqlOverHttpService {
 	private String sparqlServiceURIForUpdate = null;
 	
 	// Declared the kbClient variable
-	private KnowledgeBaseClientInterface kbClient;
+	private StoreClientInterface kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
@@ -100,7 +100,7 @@ public class SparqlOverHttpService {
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new RemoteKnowledgeBaseClient();
+			kbClient = new RemoteStoreClient();
 			if(sparqlServiceURIForUpdate==null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is null. Provide a valid URI.");
 			}
@@ -174,7 +174,7 @@ public class SparqlOverHttpService {
 		if (RDFStoreType.RDF4J.equals(type)) {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new RemoteKnowledgeBaseClient();
+			kbClient = new RemoteStoreClient();
 			if(sparqlServiceURIForQuery == null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is null. Provide a valid URI.");
 			}

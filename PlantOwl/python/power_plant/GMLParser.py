@@ -17,12 +17,15 @@ from CropMap import CropMap
 from Envelope import Envelope
 from rdflib import Graph, URIRef, XSD
 
-import PropertyReader as propread
 import GMLParserPropReader as gmlpropread
 import ABoxGeneration as aboxgen
-import EntityRDFizer as rdfizer
 
 import uuid
+
+"""Utility constants"""
+HASH = '#'
+SLASH = '/'
+UNDERSCORE = '_'
 
 OBJECT_ID = 'OBJECTID'
 CROME_ID = 'cromeid'
@@ -100,19 +103,19 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
                     cropMap.objectID = attribute.text
                     aboxgen.link_data_with_type(g, URIRef(gmlpropread.getObjectIDVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                             + SLASH + format_iri(cropMap.id)),
                                       cropMap.objectID, XSD.integer)
                     #print('OBJECT_ID', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  CROME_ID.lower():
                     cropMap.cromeID = attribute.text
                     aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCromeIDVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                             + SLASH + format_iri(cropMap.id)),
                                       cropMap.cromeID, XSD.string)
                     if getcentre_point_from_crome_id(cropMap.cromeID) != None:
                         aboxgen.link_data_with_type(g, URIRef(gmlpropread.getCentrePoint()),
                                                     URIRef(gmlpropread.getABoxIRI()
-                                      + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                      + SLASH + format_iri(cropMap.id)),
                                                     convert_epsg27700_to_wgs84(getcentre_point_from_crome_id(cropMap.cromeID), "#"),
                                                     URIRef(gmlpropread.getDataTypeCoordinatePoint()))
 
@@ -121,28 +124,28 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
                     cropMap.luCode = attribute.text
                     aboxgen.link_instance(g, URIRef(gmlpropread.getLucodeVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
-                                      URIRef(propread.getABoxIRI()+rdfizer.SLASH+cropMap.luCode))
+                                             + SLASH + format_iri(cropMap.id)),
+                                      URIRef(gmlpropread.getABoxIRI()+SLASH+cropMap.luCode))
                     #print('lucode', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  REF_DATE.lower():
                     cropMap.refDate = attribute.text
                     aboxgen.link_data_with_type(g, URIRef(gmlpropread.getRefDateVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                             + SLASH + format_iri(cropMap.id)),
                                       cropMap.refDate, XSD.integer)
                     #print('refdate', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_LENGTH.lower():
                     cropMap.shapeLength = attribute.text
                     aboxgen.link_data_with_type(g, URIRef(gmlpropread.getShapeLengthVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                             + SLASH + format_iri(cropMap.id)),
                                       cropMap.shapeLength, XSD.double)
                     #print('Shape_Length', attribute.text)
                 if get_tag_name(attribute.tag.lower()) ==  SHAPE_AREA.lower():
                     cropMap.shapeArea = attribute.text
                     aboxgen.link_data_with_type(g, URIRef(gmlpropread.getShapeAreaVocabulary()),
                                       URIRef(gmlpropread.getABoxIRI()
-                                             + rdfizer.SLASH + rdfizer.format_iri(cropMap.id)),
+                                             + SLASH + format_iri(cropMap.id)),
                                       cropMap.shapeArea, XSD.double)
                     #print('Shape_Area', attribute.text)
                 if get_tag_name(attribute.tag.lower()) == SURFACE_PROPERTY.lower():
@@ -154,12 +157,12 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
                                         for posList in linerRing:
                                             aboxgen.create_instance(g,
                                                                     URIRef(gmlpropread.getClassLinearRing()),
-                                                                    gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                                                    + rdfizer.format_iri(cropMap.id),
+                                                                    gmlpropread.getABoxIRI() + SLASH
+                                                                    + format_iri(cropMap.id),
                                                                     cropMap.name)
                                             aboxgen.link_data_with_type(g, URIRef(gmlpropread.getPropertyPosList()),
                                                                         URIRef(gmlpropread.getABoxIRI()
-                                                                               + rdfizer.SLASH + rdfizer.format_iri(
+                                                                               + SLASH + format_iri(
                                                                             cropMap.id)),
                                                                         convert_polygon_from_epsg27700_to_wgs84(
                                                                             posList.text.replace(" ", "#"), "#", 2),
@@ -170,41 +173,41 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
             if map_counter == 1:
                 aboxgen.create_instance(g,
                                         URIRef(gmlpropread.getClassEnvelope()),
-                                        gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name),
+                                        gmlpropread.getABoxIRI() + SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name),
                                         ENVELOPE_INSTANCE_PREFIX+cropMap.name)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsName()),
-                                        URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        URIRef(gmlpropread.getABoxIRI() + SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name)),
                                         EPSG_4326, XSD.string)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getSrsDimension()),
-                                        URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        URIRef(gmlpropread.getABoxIRI() + SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name)),
                                         envelope.srsDimension, XSD.integer)
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getLowerCorner()),
-                                        URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
-                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        URIRef(gmlpropread.getABoxIRI()+ SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name)),
                                         convert_epsg27700_to_wgs84(envelope.lowerCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
                 aboxgen.link_data_with_type(g, URIRef(gmlpropread.getUpperCorner()),
-                                        URIRef(gmlpropread.getABoxIRI()+ rdfizer.SLASH
-                                        + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)),
+                                        URIRef(gmlpropread.getABoxIRI()+ SLASH
+                                        + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name)),
                                         convert_epsg27700_to_wgs84(envelope.upperCorner.replace(' ', '#'), "#"),
                                         gmlpropread.getDataTypeCoordinatePoint())
             """Links each feature to the envelope"""
             aboxgen.link_instance(g, URIRef(gmlpropread.getBoundedBy()),
-                                  URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                  + rdfizer.format_iri(cropMap.id)),
-                                  URIRef(gmlpropread.getABoxIRI() + rdfizer.SLASH
-                                  + ENVELOPE_INSTANCE_PREFIX + rdfizer.format_iri(cropMap.name)))
+                                  URIRef(gmlpropread.getABoxIRI() + SLASH
+                                  + format_iri(cropMap.id)),
+                                  URIRef(gmlpropread.getABoxIRI() + SLASH
+                                  + ENVELOPE_INSTANCE_PREFIX + format_iri(cropMap.name)))
         if map_counter % 20 == 0 and map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
             print('Total number of feature members processed:', map_counter)
 
         if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) == 0:
             if '/' in output_folder_path:
-                save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+                save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+UNDERSCORE+str(file_counter))
             else:
-                save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+                save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + UNDERSCORE + str(
                     file_counter))
             file_counter += 1
             g = Graph()
@@ -214,9 +217,9 @@ def get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
         map_counter = map_counter -1
     if map_counter % int(gmlpropread.getNOfMapsInAnAboxFile()) != 0:
         if '/' in output_folder_path:
-            save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+rdfizer.UNDERSCORE+str(file_counter))
+            save_into_disk(g, output_folder_path+'/'+str(uuid.uuid4())+UNDERSCORE+str(file_counter))
         else:
-            save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + rdfizer.UNDERSCORE + str(
+            save_into_disk(g, output_folder_path + '\\' + str(uuid.uuid4()) + UNDERSCORE + str(
                 file_counter))
         print('Total number of feature members processed:', map_counter)
 
@@ -279,6 +282,13 @@ def parse_gml(file_name, output_folder_path, start_feature_number, upper_limit):
     get_envelope(context)
     context = get_context(file_name, URL_FEATURE_MEMBER)
     get_crop_map(context, output_folder_path, start_feature_number, upper_limit)
+
+"""Formats an IRI string to discard characters that are not allowed in an IRI"""
+def format_iri(iri):
+    iri = iri.replace(":"," ")
+    iri = iri.replace(",", " ")
+    iri = iri.replace(" ","")
+    return iri
 
 """This block of code is the access point to this Python module"""
 if __name__ == '__main__':

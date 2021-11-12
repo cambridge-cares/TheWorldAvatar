@@ -9,21 +9,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.http.Http;
-
-import javax.ws.rs.core.Response;
 
 /**
  * All JPS agents that want to make use of scenario have to inherit from this servlet class.
@@ -137,8 +133,10 @@ public abstract class JPSHttpServlet extends HttpServlet {
             String responseBody = getResponseBody(request);
             response.getWriter().write(responseBody);
         } catch (BadRequestException e) {
+        	logger.error(e.getMessage());
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         } catch (JPSRuntimeException e) {
+        	logger.error(e.getMessage());
         	response.setStatus(Response.Status.SERVICE_UNAVAILABLE.getStatusCode());
         }
     }
@@ -156,12 +154,13 @@ public abstract class JPSHttpServlet extends HttpServlet {
             String responseBody = getResponseBody(request, reqBody);
             response.getWriter().write(responseBody);
         } catch (BadRequestException e) {
+        	logger.error(e.getMessage());
             response.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
         }
     }
     
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(JPSHttpServlet.class);
+        logger = LogManager.getLogger(JPSHttpServlet.class);
     } 
 
     /**

@@ -1,0 +1,28 @@
+# This configuration file should include any docker-compose options used only when deploying the
+# stack in development ('dev') mode and not in production ('prod') mode.
+# It can also include whole services that are only required in development mode, and therefore 
+# aren't declared in docker-compose.deploy.yml .
+
+# Its counterpart is docker-compose.prod.yml, although that file isn't necessarily required.
+# =================================================================================================
+
+
+version: "3.8"
+
+# Services
+services:
+
+  # Status Agent (Development Only)
+  status-agent:
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    container_name: "status-agent${CONTAINER_NAME_SUFFIX}"
+    hostname: status-agent
+    pull_policy: if_not_present
+    restart: unless-stopped
+    volumes:
+      - status-agent:/root/.jps
+      
+
+# Volumes
+volumes:
+  status-agent:

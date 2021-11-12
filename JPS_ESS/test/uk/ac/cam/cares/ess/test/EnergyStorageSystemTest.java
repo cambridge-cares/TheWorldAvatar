@@ -89,7 +89,6 @@ public class EnergyStorageSystemTest {
 		assertEquals(0.53,simulationResult.get(1)[1], 0.01);
 		assertEquals(61.0,simulationResult.get(0)[2], 0.01);
 		//ArrayList<String>removedplant=new ArrayList<String>();
-		JSONObject result = new JSONObject();
 	}	
 	
 	/** tests  modifyTemplate and runGAMS methods

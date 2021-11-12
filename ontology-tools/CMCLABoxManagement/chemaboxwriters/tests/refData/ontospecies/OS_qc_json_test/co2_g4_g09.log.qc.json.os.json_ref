@@ -1,0 +1,50 @@
+{
+    "InChi": "InChI=1S/CO2/c2-1-3",
+    "Smiles": "C(=O)=O",
+    "Empirical formula": "C1O2",
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Geometry": [
+        [
+            -3.555363,
+            -0.513457,
+            0.0
+        ],
+        [
+            -4.71831,
+            -0.521207,
+            0.0
+        ],
+        [
+            -2.392417,
+            -0.505708,
+            0.0
+        ]
+    ],
+    "Spin multiplicity": 1,
+    "MolecularWeight": 43.98982,
+    "Formal charge": 0,
+    "GeometryString": "C -3.555363 -0.513457 0.0 O -4.71831 -0.521207 0.0 O -2.392417 -0.505708 0.0",
+    "BondString": "1 2 2 1 3 2",
+    "AtomsCanonicalPositions": {
+        "0": 0,
+        "1": 1,
+        "2": 2
+    },
+    "PubchemAlternativeLabel": "carbon dioxide",
+    "CAS": "124-38-9",
+    "PubchemCID": 280,
+    "AtomsList": [
+        "C",
+        "O"
+    ],
+    "AtomsCounts": [
+        1,
+        2
+    ],
+    "EntryUUID": "testID-111-111-111",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111"
+}

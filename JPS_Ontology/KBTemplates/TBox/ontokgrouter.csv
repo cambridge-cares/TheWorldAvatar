@@ -1,4 +1,9 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-Target Resource,Class,,,,,,A target resource refers to a repository or an ontology file located in any file system.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl
-hasQueryEndpoint,Data Property,,,Target Resource,String,,Defines the query endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl
-hasUpdateEndpoint,Data Property,,,Target Resource,String,,Defines the upate endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoKGRouter,TBox,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoKGRouter,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoKGRouter,TBox,An ontology developed for representing Knowledge Graph routing maps.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoKGRouter,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Target Resource,Class,,,,,,A target resource refers to a repository or an ontology file located in any file system.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,
+hasQueryEndpoint,Data Property,,,Target Resource,String,,Defines the query endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,
+hasUpdateEndpoint,Data Property,,,Target Resource,String,,Defines the upate endpoint of a repository.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,
+hasFilePath,Data Property,,,Target Resource,String,,Defines the local file path.,http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl,

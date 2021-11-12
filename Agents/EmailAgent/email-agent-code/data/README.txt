@@ -1,0 +1,1 @@
+This folder exists to contain sensitive test data. For tests to function, properties files with real SMTP credentials should be added to this directory, but NEVER committed (a .gitignore file has been created to facilitate this).

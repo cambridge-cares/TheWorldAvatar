@@ -1,0 +1,33 @@
+{
+    "Empirical formula": "Cl1",
+    "Atom counts": {
+        "Cl": 1
+    },
+    "Atom types": [
+        "Cl"
+    ],
+    "Atomic masses": [
+        34.9688527
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "UB971",
+    "Basis set": "6-311+G(d,p)",
+    "Spin multiplicity": 2,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "atomic",
+    "Electronic energy": -460.101954548,
+    "Electronic and ZPE energy": -460.101955,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Mon Oct 19 21:14:21 2015",
+    "Log file name": "Cl.g09"
+}
