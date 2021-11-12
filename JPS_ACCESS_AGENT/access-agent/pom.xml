@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>access-agent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>war</packaging>
   <name>AccessAgent</name>
   
@@ -81,7 +81,7 @@
   	<dependency>
     	<groupId>uk.ac.cam.cares.jps</groupId>
     	<artifactId>jps-base-lib</artifactId>
-    	<version>1.4.0-accessagent-SNAPSHOT</version>
+    	<version>1.4.0</version>
     </dependency>
     
     <!-- Java servlet API -->
