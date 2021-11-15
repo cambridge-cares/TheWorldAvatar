@@ -24,6 +24,7 @@ public class DerivationClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs with the do
 	public static final String AGENT_INPUT_KEY = "agent_input";
 	public static final String AGENT_OUTPUT_KEY = "agent_output";
+	public static final String DERIVATION_KEY = "derivation";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	
@@ -179,6 +180,7 @@ public class DerivationClient {
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray(inputs);
 				requestParams.put(AGENT_INPUT_KEY, iris);
+				requestParams.put(DERIVATION_KEY, instance);
 				
 				LOGGER.debug("Updating <" + instance + "> using agent at <" + agentURL + "> with http request " + requestParams);
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
