@@ -184,7 +184,7 @@ public class DerivationSparql{
 	 * @param entity
 	 * @return
 	 */
-	private static boolean hasBelongsTo(StoreClientInterface storeClient, String entity) {
+	static boolean hasBelongsTo(StoreClientInterface storeClient, String entity) {
 		SelectQuery query = Queries.SELECT();
 		
 		TriplePattern queryPattern = iri(entity).has(belongsTo, query.var());
