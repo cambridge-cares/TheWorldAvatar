@@ -14,7 +14,7 @@ python -m venv <name>
 
 3) Activate virtual environemnt by running:
 ```
-<name>\Scripts\activte
+<name>\Scripts\activate
 ```
 
 4) Install requirements listed in `requirements.txt`:
