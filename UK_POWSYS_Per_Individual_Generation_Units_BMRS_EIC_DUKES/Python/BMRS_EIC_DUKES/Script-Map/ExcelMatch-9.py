@@ -91,9 +91,7 @@ def BMRSEICDUKESStationNameCheck(data, j, k, ExemptWords):
     regex = re.compile(r"\b\d+\b")
     
     name = data['EIC Name - Asset Name - Stations'][j]
-    if len(name) < 2:
-        print(len(name))
-
+    
     PickName = ""
     PickCapacity = -10
     
