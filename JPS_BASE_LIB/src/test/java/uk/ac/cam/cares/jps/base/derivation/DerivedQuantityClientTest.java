@@ -178,4 +178,30 @@ public class DerivedQuantityClientTest{
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived3));
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 	}
+	
+	@Test
+	public void testDropDerivations() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		
+		// case 1: standard derivation
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivations();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		
+		// case 2: with time series
+		derivation = devClient.createDerivationWithTimeSeries(entities, derivation, derivation, inputs);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivations();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		
+		// case 3: both types present
+		derivation = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, Arrays.asList(input1));
+		String derivation2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI, derivedAgentURL, Arrays.asList(input2));
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		Assert.assertNotNull(testKG.getIndividual(derivation2));
+		devClient.dropAllDerivations();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		Assert.assertNull(testKG.getIndividual(derivation2));
+	}
 }
