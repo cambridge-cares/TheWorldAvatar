@@ -31,7 +31,7 @@ Firstly, the following columns are used for each BMRS generator's suggested DUKE
 outputBMRSUnitToDUKESStation, tMatchType. 
 
 For this important match (DUKES to BMRS), the following columns are used: 
-outputDUKESToBMRS. 
+outputDUKESToBMRSEIC, outputDUKESToBMRSID. 
 ...And...
 CapacityDiff, MatchType, MatchYear, MatchGenType, ConfidenceScore, ConfidenceResult
 

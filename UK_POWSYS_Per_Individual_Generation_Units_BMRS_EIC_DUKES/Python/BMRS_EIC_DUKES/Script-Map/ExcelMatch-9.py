@@ -295,6 +295,14 @@ def SmallOnLargeDiffFraction(num1, num2):
         return (1.0 - (num1/num2))
 
 
+def IDPick(a, b):
+    #There are two ID options, the first isn't always filled in, but is better if it exists. So return this if it exists, otherwise, return the more common backup.
+    if ((len(a) > 0) and (a != "nan")):
+        return a
+    return b
+
+
+
 #Error Text Functions, these take output data from the Primary Function, and give text translations for the logger file.
 #Name Match Type
 def ErrorNameText(e):
@@ -389,7 +397,7 @@ def BMRSEICDUKESMap(ExcelName, x):
     #print(data)
     #print(data['NGC BM Unit ID'][1])
     
-    #BMRS -> EIC -> DUKES (output: outputDUKESToBMRS)
+    #BMRS -> EIC -> DUKES (output: outputDUKESToBMRS EIC or ID)
     
     #Check data (turn this off when testing if you want to speed things up a bit)
     MultipleBMRSEIC(data)
@@ -439,6 +447,7 @@ def BMRSEICDUKESMap(ExcelName, x):
     for m in range(0,len(data['Station Name'])): #DUKES
         ClosestCapacity = -10
         ClosestEIC = "None"
+        ClosestID = "None"
         #ClosestTime = datetime.strptime("01/01/01  12:00:00 AM", "%d/%m/%Y %I:%M:%S %p") #If there's a replacement it doesn't actually matter as they have the same EIC, so this comparrison idea is not required and this line is for debugging times. 
         for n in range(0,len(data['outputBMRSUnitToDUKESStation'])):
             #ClosestTime = datetime.strptime(str(data['Effective From (Date)'][n]), "%d/%m/%Y %I:%M:%S %p")
@@ -448,18 +457,20 @@ def BMRSEICDUKESMap(ExcelName, x):
                 if (ClosestCapacity == -10):
                     ClosestCapacity = data['Capacity MW'][n]
                     ClosestEIC = str(data['Registered Resource EIC code'][n])
+                    ClosestID = IDPick(str(data['NGC BM Unit ID'][n]), str(data['Registered Resource Name'][n]))
                     error[m][0] = int(100 * SmallOnLargeDiffFraction(float(ClosestCapacity), float(data['Installed Capacity (MW)'][m])) + 0.5)
                     error[m][1] = terror[n]
                 elif (abs(float(data['Installed Capacity (MW)'][m]) - float(data['Capacity MW'][n])) < abs(float(data['Installed Capacity (MW)'][m]) - float(ClosestCapacity))):
                     ClosestCapacity = data['Capacity MW'][n]
                     ClosestEIC = str(data['Registered Resource EIC code'][n])
+                    ClosestID = IDPick(str(data['NGC BM Unit ID'][n]), str(data['Registered Resource Name'][n]))
                     error[m][0] = int(100 * SmallOnLargeDiffFraction(float(ClosestCapacity), float(data['Installed Capacity (MW)'][m])) + 0.5)
                     error[m][1] = terror[n]
-        #data.['outputDUKESToBMRS'][m] = ClosestEIC
-        data.iloc[m, data.columns.get_loc('outputDUKESToBMRS')] = ClosestEIC #When assigning a value to a dataframe, need to do this unfortunately (no way to do it with a string and integer index, so need to go for the integer one). Also it's row, column, rather than column, row as we use in other cases.
+        #Assign value
+        data.iloc[m, data.columns.get_loc('outputDUKESToBMRSEIC')] = ClosestEIC #When assigning a value to a dataframe, need to do this unfortunately (no way to do it with a string and integer index, so need to go for the integer one). Also it's row, column, rather than column, row as we use in other cases.
+        data.iloc[m, data.columns.get_loc('outputDUKESToBMRSID')] = ClosestID
         data.iloc[m, data.columns.get_loc('CapacityDiff')] = error[m][0]
         data.iloc[m, data.columns.get_loc('MatchType')] = error[m][1]
-        ###print(ClosestEIC)###
     
     #Data now has the output values, so need to export this back to the excel document.
     data.to_excel(ExcelName, index = False)
@@ -500,10 +511,10 @@ def BMRSEICDUKESMap(ExcelName, x):
         data.iloc[i, data.columns.get_loc('MatchGenType')] = 999
 
     #Loop through the DUKES matches to BMRS
-    for i in range(0,len(data['outputDUKESToBMRS'])):
+    for i in range(0,len(data['outputDUKESToBMRSEIC'])):
         #Loop through the BMRS
         for j in range(0,len(data['Registered Resource EIC code'])):
-            if data['outputDUKESToBMRS'][i] == data['Registered Resource EIC code'][j]:
+            if data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][j]:
                 #Compare Installation Year, and Type
                 #Installation Year
                 if (str(data['Effective From (Date)'][j].year) == str(data['Year of commission or year generation began'][i])):
@@ -555,7 +566,7 @@ def BMRSEICDUKESMap(ExcelName, x):
 
     #The scores should sum to a verdict. If it is less than or equal to 'x' then it is approved.
     logger.info('\nBMRSEICDUKESMap BMRS->EIC->DUKES mapping complete, results as follows: ')
-    for i in range(0,len(data['outputDUKESToBMRS'])):
+    for i in range(0,len(data['outputDUKESToBMRSEIC'])):
         error[i][4] = error[i][0] + error[i][1] + error[i][2] + error[i][3]
         data.iloc[i, data.columns.get_loc('ConfidenceScore')] = error[i][4]
         if error[i][4] <= x:
@@ -563,7 +574,7 @@ def BMRSEICDUKESMap(ExcelName, x):
         else:
             data.iloc[i, data.columns.get_loc('ConfidenceResult')] = 0
         #Log final result for DUKES station. 
-        logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (if known, and at the error threshold if unknown) (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRS'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(x, data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
+        logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (if known, and at the error threshold if unknown) (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRSEIC'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(x, data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
         
     
     #Re-export to excel, with the confidence values. 
