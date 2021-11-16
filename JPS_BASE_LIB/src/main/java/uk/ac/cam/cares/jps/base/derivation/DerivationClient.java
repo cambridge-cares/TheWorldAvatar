@@ -145,7 +145,7 @@ public class DerivationClient {
 	/**
 	 * clears all derivations from the kg, including timestamps of inputs
 	 */
-	public void dropAllDerivations() {
+	public void dropAllDerivationsAndTimestamps() {
 		// get all inputs with a time stamp
 		List<String> inputs = DerivationSparql.getInputsWithTimestamps(kbClient);
 		for (String input : inputs) {
