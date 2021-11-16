@@ -95,8 +95,15 @@ public class DerivationClient {
      * you may want to use this to update an input's timestamp, the DerivationClient does not deal with inputs directly
      */
     public void updateTimestamp(String entity) {
-    	DerivationSparql.updateTimeStamp(kbClient, entity);
-    	LOGGER.info("Updated timestamp of <" + entity + ">");
+		if (DerivationSparql.hasBelongsTo(kbClient,entity)) {
+			String derivation = getDerivationOf(entity);
+			LOGGER.info("<" + entity + "> has a derivation instance attached, timestamp of the derivation will get updated");
+			DerivationSparql.updateTimeStamp(kbClient, derivation);
+			LOGGER.info("Updated timestamp of <" + derivation + ">");
+		} else {
+			DerivationSparql.updateTimeStamp(kbClient, entity);
+			LOGGER.info("Updated timestamp of <" + entity + ">");
+		}
     }
     
     /**
@@ -133,6 +140,13 @@ public class DerivationClient {
 			LOGGER.warn(e.getMessage());
 		    throw new JPSRuntimeException(e);
 		}
+	}
+	
+	/**
+	 * clears all derivations from the kg
+	 */
+	public void dropAllDerivations() {
+		DerivationSparql.dropAllDerivations(kbClient);
 	}
 	
 	/**
