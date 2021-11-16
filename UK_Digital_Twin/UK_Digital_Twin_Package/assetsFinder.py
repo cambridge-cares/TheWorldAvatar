@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 11 Nov 2021          #
+# Last Update Date: 14 Nov 2021          #
 ##########################################
 
 """This module is developed as an assets finder which is able to return all assets located in a given area indicated by LA code"""
@@ -44,82 +44,87 @@ def assetFinder(givenLACode, assetsKGendpoint, assetsKGendpointLabel, ONS_Endpoi
         raise Exception('The currrent status of this LA code is terminated, please refer to a alive one.')
     else:
         raise Exception('The currrent status of this LA code is unclear, please check the existing of this LA code.')
+
+    areaList = ['K02000001', 'K03000001', 'K04000001', 'E92000001', 'W92000004', 'W08000001', 'S92000003', 'S04000001', 'N92000002', 'N07000001', \
+                'E12000001', 'E12000002', 'E12000003', 'E12000004', 'E12000005', 'E12000006', 'E12000007', 'E12000008', 'E12000009']
+    if not givenLACode in areaList:
+        raise Exception('The given LA code should wihtin the list', areaList)
         
-    # check the LA code of which country
-    # 1/UK 2/GB 3/England_and_Wales 4/England 5/Walse 6/scotland 7/Northern_Ireland 
-    CountryCheckResult = countryChecker(givenLACode)
+    givenLACodeList = []
+    if  givenLACode == 'K04000001':
+        givenLACodeList = ['E92000001', 'W08000001']        
+    elif givenLACode == 'W92000004':
+        givenLACodeList= ['W08000001']
+    elif givenLACode == 'N92000002':
+        givenLACodeList = ['N07000001']
+    elif givenLACode == 'S92000003':
+        givenLACodeList = ['S04000001'] 
+    elif givenLACode == 'K03000001':
+        givenLACodeList = ['E92000001', 'W08000001', 'S04000001']   
+    elif givenLACode == 'K02000001':
+        givenLACodeList = ['E92000001', 'W08000001', 'S04000001', 'N07000001']   
+    else:
+        givenLACodeList.append(givenLACode)
     
     # check the asset's LA code type
     assetTypeTripleTemplate = ''
     for at in assetType:
         assetTypeTripleTemplate += '{ ?Asset rdf:type ' + str(at).strip(" ").strip("\n").strip("\r").lstrip() + ' } ' + UNION + ' ' 
     assetTypeTripleTemplate = assetTypeTripleTemplate[:-6] + '.'     
-    assetLACodeTypeCheckResults = assetLACodeTypeChecker(assetsKGendpoint, ONS_Endpoint, assetTypeTripleTemplate)
     
-    
-    if CountryCheckResult == UK:
-        litteAreaList, needFurtherProcess = checkEngland(givenLACode, ONS_Endpoint)
-        
-        
-    queryStr = """
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-    PREFIX foi: <http://publishmydata.com/def/ontology/foi/code>
-    SELECT ?LACodeOfLittleArea
-    WHERE {
-    ?littleAreas <http://publishmydata.com/def/ontology/foi/within> ?givenPlace .
-    ?givenPlace <http://publishmydata.com/def/ontology/foi/code> "%s"^^xsd:string .
-    ?littleAreas ons:status 'live'^^xsd:string .
-    ?littleAreas <http://publishmydata.com/def/ontology/foi/code> ?LACodeOfLittleArea .
-    FILTER NOT EXISTS { ?littleAreas rdf:type <http://statistics.data.gov.uk/def/postcode/unit> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E00> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E01> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E02> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E03> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E04> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E05> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E06> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E07> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E08> .}
-    # FILTER NOT EXISTS { ?littleAreas <http://publishmydata.com/def/ontology/foi/memberOf> <http://statistics.data.gov.uk/def/geography/collection/E09> .}
-    }
-    ORDER BY ASC(?LACode)
-    LIMIT 1000
-    # LIMIT 98000
-    """%str(givenLACode)     
-    
-    res = json.loads(performQuery(ONS_Endpoint, queryStr))
-    littleAreasList = [ area['LACodeOfLittleArea'] for area in res]    
-    
-    # TODO: check if the LA code of the asset is within the hierarchy
     AssetList = []
-    for lacode in littleAreasList:
-        query_asset = """
+    for givenLACode in givenLACodeList:
+        query_assetWithinGivenLACode = """
+        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
-        PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-        PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+        PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+        PREFIX foi: <http://publishmydata.com/def/ontology/foi/code>
         PREFIX dbo: <https://dbpedia.org/ontology/>
-        SELECT DISTINCT ?powerPlant
+        PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+        SELECT DISTINCT ?Asset
         WHERE
-        {      	
-        ?powerPlant a ontoeip_powerplant:PowerPlant .
-        ?powerPlant ontocape_upper_level_system:hasAddress ?Region .
-        ?Region dbo:areaCode '%s' .        
-        }
+        {
+        %s # the Union pattern 
         
-        """%str(lacode).strip('\n')
-        res = json.loads(performQuery(assetsKGendpoint, query_asset))
-        if len(res) != 0:
-            print(res)
-            AssetList.append(res['powerPlant'])
+        ?Asset ontocape_upper_level_system:hasAddress ?locatedArea .
+        ?locatedArea dbo:areaCode ?LACode .  
+        ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode .
+        {?area <http://publishmydata.com/def/ontology/foi/within>  ?within .
+        ?within <http://publishmydata.com/def/ontology/foi/code> '%s' .} UNION { ?area <http://publishmydata.com/def/ontology/foi/code> '%s' .} .
+        
+        #?area ons:status ?status . 
+        #?Asset space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
+        #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?x_coordinate . # longitude is east/west
+        #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?y_coordinate . # latitude is north/south
+        
+        }
+        """%(str(assetTypeTripleTemplate), givenLACode, givenLACode)    
+        res_assetWithinGivenLACode = json.loads(performFederatedQuery(query_assetWithinGivenLACode, assetsKGendpoint, ONS_Endpoint))
+       
+        if len(res_assetWithinGivenLACode) > 0:    
+            for r in res_assetWithinGivenLACode:
+                AssetList.append(r['Asset'])
         
     return AssetList
- # This two query can be merged into one and attach the LA code type to the assets
-
-def assetLACodeTypeChecker(assetsKGendpoint, ONS_Endpoint, assetTypeTripleTemplate):
+        
+   
+def assetLACodeTypeChecker(assetsKGendpoint, ONS_Endpoint, CountryCheckResult, assetTypeTripleTemplate):
+    if CountryCheckResult == UK:
+        CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/K02000001>'
+    elif CountryCheckResult == GB: 
+        CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/K03000001>'
+    elif CountryCheckResult == ENGLAND_AND_WALES: 
+        CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/K04000001>'
+    elif CountryCheckResult == ENGLAND:
+        CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/E92000001>'
+    # If the country == walse, NI, scotlands, check if they in the hierarchy
+    elif CountryCheckResult == WALES:
+        CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/W92000004>'
+    elif CountryCheckResult == SCOTLAND:
+       CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/S92000003>'
+    elif CountryCheckResult == NORTHERN_IRELAND:
+       CountryLACode = '<http://statistics.data.gov.uk/id/statistical-geography/N92000002>'
+       
     query_assetLACodeStatus = """
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -127,7 +132,7 @@ def assetLACodeTypeChecker(assetsKGendpoint, ONS_Endpoint, assetTypeTripleTempla
     PREFIX foi: <http://publishmydata.com/def/ontology/foi/code>
     PREFIX dbo: <https://dbpedia.org/ontology/>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    SELECT DISTINCT ?Asset ?x_coordinate ?y_coordinate 
+    SELECT DISTINCT ?Asset 
     WHERE 
     {
     %s # the Union pattern 
@@ -135,43 +140,52 @@ def assetLACodeTypeChecker(assetsKGendpoint, ONS_Endpoint, assetTypeTripleTempla
     ?Asset ontocape_upper_level_system:hasAddress ?locatedArea .
     ?locatedArea dbo:areaCode ?LACode .  
     ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode .
-    ?area rdf:type ons:Statistical-Geography .      
+    ?area rdf:type ons:Statistical-Geography .  
+    ?area <http://publishmydata.com/def/ontology/foi/within> %s . 
     ?area ons:status "%s"^^xsd:string .
     
-    ?Asset space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
-    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?x_coordinate . # longitude is east/west
-    ?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?y_coordinate . # latitude is north/south
+    #?Asset space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
+    #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?x_coordinate . # longitude is east/west
+    #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?y_coordinate . # latitude is north/south
     
-    }"""%(str(assetTypeTripleTemplate), STATUS_TERMINATED)
+    }"""%(str(assetTypeTripleTemplate), CountryLACode, STATUS_LIVE)
     
     res_assetLACodeStatus = json.loads(performFederatedQuery(query_assetLACodeStatus, assetsKGendpoint, ONS_Endpoint))
     if len(res_assetLACodeStatus) > 0:    
-        assetWithInvalidLACode = [ [r['Asset'], float(r['x_coordinate']), float(r['y_coordinate'])] for r in res_assetLACodeStatus]
+        assetWithInvalidLACode = [ [r['Asset'], float(r['x_coordinate']), float(r['y_coordinate'])] for r in res_assetLACodeStatus ]
     else:
         assetWithInvalidLACode = []
     
-   
     query_assetLACodeType = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX space_and_time_extended: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
     PREFIX ontocape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX ontoeip_powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    PREFIX ons_se: <http://statistics.data.gov.uk/def/statistical-entity#>
     PREFIX dbo: <https://dbpedia.org/ontology/>
-    SELECT DISTINCT ?Asset ?LACodeType
+    SELECT DISTINCT ?LACodeType
     WHERE
     { 
     %s # the Union pattern 
      	
     ?Asset ontocape_upper_level_system:hasAddress ?locatedArea .
     ?locatedArea dbo:areaCode ?LACode .  
-    ?LACode 
+    ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode .
+    ?area rdf:type ons:Statistical-Geography . 
+    ?area <http://publishmydata.com/def/ontology/foi/within> %s .      
     }
+    """%(str(assetTypeTripleTemplate), CountryLACode)
     
-    """%str(performFederatedQuery)
     res_assetLACodeType = json.loads(performFederatedQuery(query_assetLACodeType, assetsKGendpoint, ONS_Endpoint))
     
-    return
+    assetLACodeTypeList = []
+    for r in res_assetLACodeType:
+        code = r['LACodeType'].split('entity/').strip(" ").strip("\n").strip("\r")
+        r['LACodeType'] = int(code[1] + code[2])
+        assetLACodeTypeList.append(r['LACodeType'])
+           
+    return assetWithInvalidLACode, assetLACodeTypeList
 
 
 def checkLACodeAlive(givenLACode, ONS_EndpointLabel):
@@ -188,9 +202,11 @@ def checkLACodeAlive(givenLACode, ONS_EndpointLabel):
     }"""%str(givenLACode)
     
     status = json.loads(performQuery(ONS_EndpointLabel, queryStr))
-    print(status)
-    status = status[0]['status']
-    print('The status of the given LA code is:', status)
+    if len(status) == 1:
+        status = status[0]['status']
+    else:
+        raise Exception('Please check the LA code, there is no status returned as the LA code may be invalid.')
+    print('The status of the given LA', givenLACode,'is:', status)
     return status
 
 
@@ -215,7 +231,7 @@ def countryChecker(givenLACode):
         raise Exception('The given LA code is illegal.')
         
 def checkEngland(givenLACode, ONS_Endpoint):
-    #TODO: when finished, test all the query strings against the ONS endpoint
+    #TODO: when finished, test all the query strings aginst the ONS endpoint
     # extract the code type of the given LA code
     indexLACode = givenLACode[1] + givenLACode[2]
     LACodeList = []
@@ -248,7 +264,7 @@ def checkEngland(givenLACode, ONS_Endpoint):
             """ %str(givenLACode)
             ret = json.loads(performQuery(ONS_Endpoint, query_withinAreaOfE04))  
             
-            withinCodeList, withinLACodeList = [], []
+            withinCodeList, withinLACodeList = [], [] # code refers to the type of the place and LA code is the full code representing a place
             
             for code in ret:
                 if 'E' in str(code['WithinLAcode']):
@@ -279,8 +295,7 @@ def checkEngland(givenLACode, ONS_Endpoint):
             
             ret = json.loads(performQuery(ONS_Endpoint, query_parentOfminWithinLACode)) 
             if len(ret) == 1:
-                parentOfminWithinLACode = ret[0]['parentOfminWithinLACode']
-                
+                parentOfminWithinLACode = ret[0]['parentOfminWithinLACode']                
             else:
                 raise Exception('The parent code does not exist for', minWithinLACode)
         
@@ -353,12 +368,13 @@ def checkEngland(givenLACode, ONS_Endpoint):
     LIMIT 1000
     # LIMIT 98000
     """%str(givenLACode)     
-    
-    
+
     return 
     
 if __name__ == '__main__':   
-    res = assetFinder('E92000001', 'ukdigitaltwin', 'ons')
+    ukdigitaltwin = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
+    ons = "http://statistics.data.gov.uk/sparql.json"
+    res = assetFinder('K03000001', ukdigitaltwin, 'ukdigitaltwin', ons, 'ons', POWERPLANT)
     print(res, len(res))
 
 
