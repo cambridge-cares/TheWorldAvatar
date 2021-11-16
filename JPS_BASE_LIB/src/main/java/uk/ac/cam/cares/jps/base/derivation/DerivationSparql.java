@@ -11,6 +11,7 @@ import java.util.UUID;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
+import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
@@ -281,8 +282,7 @@ public class DerivationSparql{
 		
 		Iri derivedQuantityIRI = iri(derivedQuantity);
 		
-		Iri[] predicates = {isDerivedUsing,hasOperation,hasHttpUrl};
-		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, derivedQuantityIRI, url);
+		GraphPattern queryPattern = derivedQuantityIRI.has(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), url);
 		
 		query.select(url).where(queryPattern).prefix(p_agent,p_derived);
 		
@@ -497,11 +497,11 @@ public class DerivationSparql{
 		// type 2: this is an input that is part of a derived quantity
 		// instances with timestamps directly attached
 		Iri[] predicates = {hasTime,inTimePosition,numericPosition};
-		GraphPattern queryPattern = getQueryGraphPattern(query, predicates, null, instanceIRI, time).optional();
+		GraphPattern queryPattern = instanceIRI.has(PropertyPaths.path(predicates),time).optional();
 
 		// instances that do not have time stamp directly attached, but belongs to a derived instance
 		Iri[] predicates2 = {belongsTo, hasTime, inTimePosition, numericPosition};
-		GraphPattern queryPattern2 = getQueryGraphPattern(query, predicates2, null, instanceIRI, time).optional();
+		GraphPattern queryPattern2 = instanceIRI.has(PropertyPaths.path(predicates2),time).optional();
 		
 		query.prefix(p_time,p_derived).where(queryPattern, queryPattern2).select(time);
 		
@@ -645,51 +645,4 @@ public class DerivationSparql{
 		
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
-	
-	private static GraphPattern getQueryGraphPattern(SelectQuery Query, Iri[] Predicates, Iri[] RdfType, Iri FirstNode, Variable LastNode) {
-        GraphPattern CombinedGP = null;
-    	
-    	Variable[] Variables = new Variable[Predicates.length];
-    	
-    	// initialise intermediate nodes
-    	for (int i=0; i < Variables.length-1; i++) {
-    		Variables[i] = Query.var();
-    	}
-    	Variables[Variables.length-1] = LastNode;
-    	
-    	// first triple
-    	GraphPattern firstTriple = FirstNode.has(Predicates[0],Variables[0]);
-    	if (RdfType != null) {
-    		if (RdfType[0] != null) {
-    			CombinedGP = GraphPatterns.and(firstTriple,FirstNode.isA(RdfType[0]));
-    		} else {
-    			CombinedGP = GraphPatterns.and(firstTriple);
-    		}
-    	} else {
-    		CombinedGP = GraphPatterns.and(firstTriple);
-    	}
-    	
-    	// the remaining
-    	for (int i=0; i < Variables.length-1; i++) {
-    		GraphPattern triple = Variables[i].has(Predicates[i+1],Variables[i+1]);
-    		if (RdfType != null) {
-    			if (RdfType[i+1] != null) {
-    				CombinedGP.and(triple,Variables[i].isA(RdfType[i+1]));
-    			} else {
-    				CombinedGP.and(triple);
-    			}
-    		} else {
-    			CombinedGP.and(triple);
-    		}
-    	}
-    	
-    	// type for the final node, if given
-    	if (RdfType != null) {
-    		if (RdfType[RdfType.length-1] != null) {
-    			CombinedGP.and(Variables[Variables.length-1].isA(RdfType[RdfType.length-1]));
-    		}
-    	}
-    	
-    	return CombinedGP;
-    }
 }
