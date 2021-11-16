@@ -88,10 +88,11 @@ def BMRSEICDUKESStationNameCheck(data, j, k, ExemptWords):
     #data is the excel data.
     #j is the index in the EIC station data that we will try to find a name match for in DUKES.
     #k is the index of the EIC in the BMRS data (used to extract BMRS capacity). 
-
     regex = re.compile(r"\b\d+\b")
     
     name = data['EIC Name - Asset Name - Stations'][j]
+    if len(name) < 2:
+        print(len(name))
 
     PickName = ""
     PickCapacity = -10
@@ -407,8 +408,7 @@ def BMRSEICDUKESMap(ExcelName, x):
             if (data['Registered Resource EIC code'][i] == data['Energy Identification Code - Units'][k]): 
                 #Match
                 b += 1
-                match = "NA"
-                #DUKES is just stations, so currently only using this check for error matching. 
+                match = "None" #DUKES is just stations, so currently only using this check for error matching. 
         #For Stations
         for j in range(0,len(data['Energy Identification Code - Stations'])):
             #print (data['Energy Identification Code'][j])
