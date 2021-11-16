@@ -18,7 +18,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * integration tests for updateInstance is provided at TheWorldAvater/Agents/DerivedAgent
+ * integration tests for updateInstance is provided at TheWorldAvater/Agents/DerivationExample
  * @author Kok Foong Lee
  *
  */
@@ -177,5 +177,34 @@ public class DerivedQuantityClientTest{
 		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
 		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived3));
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
+	}
+	
+	@Test
+	public void testDropDerivations() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		
+		// case 1: standard derivation
+		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+		}
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivationsAndTimestamps();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		
+		// case 2: with time series
+		derivation = devClient.createDerivationWithTimeSeries(entities, derivation, derivation, inputs);
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		devClient.dropAllDerivationsAndTimestamps();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		
+		// case 3: both types present
+		derivation = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, Arrays.asList(input1));
+		String derivation2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI, derivedAgentURL, Arrays.asList(input2));
+		Assert.assertNotNull(testKG.getIndividual(derivation));
+		Assert.assertNotNull(testKG.getIndividual(derivation2));
+		devClient.dropAllDerivationsAndTimestamps();
+		Assert.assertNull(testKG.getIndividual(derivation));
+		Assert.assertNull(testKG.getIndividual(derivation2));
 	}
 }

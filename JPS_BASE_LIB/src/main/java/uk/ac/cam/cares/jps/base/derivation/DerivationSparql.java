@@ -38,6 +38,8 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  *
  */
 public class DerivationSparql{
+	private StoreClientInterface storeClient;
+	
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
@@ -69,6 +71,10 @@ public class DerivationSparql{
 	
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
+	public DerivationSparql(StoreClientInterface storeClient) {
+		this.storeClient = storeClient;
+	}
+	
 	/**
 	 * creates a new instance of derived quantity, grouping the given entities under this instance
 	 * whenever this derived quantity gets updated, the provided entities will get deleted by the client
@@ -78,13 +84,12 @@ public class DerivationSparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	static String createDerivation(StoreClientInterface kbClient, 
-			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
+	String createDerivation(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(kbClient, derivedQuantity)) {
+		while (checkInstanceExists(derivedQuantity)) {
 			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
 		}
 		
@@ -94,7 +99,7 @@ public class DerivationSparql{
 		
 		for (String entity : entities) {
 			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(kbClient, entity)) {
+			if (!hasBelongsTo(entity)) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
 			} else {
 				String errmsg = "<" + entity + "> is already part of another derivation";
@@ -118,8 +123,8 @@ public class DerivationSparql{
 	    
 	    modify.prefix(p_time,p_derived,p_agent);
 	    
-	    kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
-	    kbClient.executeUpdate();
+	    storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+	    storeClient.executeUpdate();
 	    
 	    return derivedQuantity;
 	}
@@ -133,13 +138,12 @@ public class DerivationSparql{
 	 * @param agentURL
 	 * @param inputs
 	 */
-	static String createDerivationWithTimeSeries(StoreClientInterface kbClient, 
-			List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
+	String createDerivationWithTimeSeries(List<String> entities, String agentIRI, String agentURL, List<String> inputs) {
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(kbClient, derivedQuantity)) {
+		while (checkInstanceExists(derivedQuantity)) {
 			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
 		}
 		
@@ -149,7 +153,7 @@ public class DerivationSparql{
 		
 		for (String entity : entities) {
 			// ensure that given entity is not part of another derived quantity
-			if (!hasBelongsTo(kbClient, entity)) {
+			if (!hasBelongsTo(entity)) {
 				modify.insert(iri(entity).has(belongsTo, derived_iri));
 			} else {
 				String errmsg = "<" + entity + "> is already part of another derivation";
@@ -172,8 +176,8 @@ public class DerivationSparql{
 	    
 	    modify.prefix(p_time,p_derived,p_agent);
 	    
-	    kbClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
-	    kbClient.executeUpdate();
+	    storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
+	    storeClient.executeUpdate();
 	    
 	    return derivedQuantity;
 	}
@@ -185,7 +189,7 @@ public class DerivationSparql{
 	 * @param entity
 	 * @return
 	 */
-	static boolean hasBelongsTo(StoreClientInterface storeClient, String entity) {
+	boolean hasBelongsTo(String entity) {
 		SelectQuery query = Queries.SELECT();
 		
 		TriplePattern queryPattern = iri(entity).has(belongsTo, query.var());
@@ -206,7 +210,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	private static boolean checkInstanceExists(StoreClientInterface storeClient, String instance) {
+	private boolean checkInstanceExists(String instance) {
     	SelectQuery query = Queries.SELECT();
     	
     	// includes both cases where the instance is a subject and object
@@ -231,7 +235,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param input
 	 */
-	static void addTimeInstance(StoreClientInterface kbClient, String entity) {
+	void addTimeInstance(String entity) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		// add time stamp instance for the given entity
@@ -247,11 +251,11 @@ public class DerivationSparql{
 	    modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
 	    modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
 	    	    
-	    kbClient.setQuery(modify.prefix(p_time).getQueryString());
-	    kbClient.executeUpdate();
+	    storeClient.setQuery(modify.prefix(p_time).getQueryString());
+	    storeClient.executeUpdate();
 	}
 	
-	static void removeTimeInstance(StoreClientInterface kbClient, String entity) {
+	void removeTimeInstance(String entity) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		SelectQuery query = Queries.SELECT();
@@ -265,7 +269,7 @@ public class DerivationSparql{
 				time_unix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, TRS)};
 		
 		modify.delete(queryPattern).where(queryPattern).prefix(p_time);
-		kbClient.executeUpdate(modify.getQueryString());
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
@@ -274,7 +278,7 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
-	static String getAgentUrl(StoreClientInterface kbClient, String derivedQuantity) {
+	String getAgentUrl(String derivedQuantity) {
 		SelectQuery query = Queries.SELECT();
 		
 		String queryKey = "url";
@@ -286,9 +290,9 @@ public class DerivationSparql{
 		
 		query.select(url).where(queryPattern).prefix(p_agent,p_derived);
 		
-		kbClient.setQuery(query.getQueryString());
+		storeClient.setQuery(query.getQueryString());
 		
-		String queryResult = kbClient.executeQuery().getJSONObject(0).getString(queryKey);
+		String queryResult = storeClient.executeQuery().getJSONObject(0).getString(queryKey);
 		
 		return queryResult;
 	}
@@ -300,15 +304,15 @@ public class DerivationSparql{
 	 * @return
 	 */
 	
-	static List<String> getInputs(StoreClientInterface kbClient, String derivedQuantity) {
+	List<String> getInputs(String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = iri(derivedQuantity).has(isDerivedFrom,input);
 		SelectQuery query = Queries.SELECT();
 		
 		query.prefix(p_derived).where(queryPattern).select(input);
-		kbClient.setQuery(query.getQueryString());
-		JSONArray queryResult = kbClient.executeQuery();
+		storeClient.setQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery();
 		
 		List<String> inputs = new ArrayList<>();
 		
@@ -326,7 +330,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
-	static List<String> getInputsAndDerived(StoreClientInterface kbClient, String derived) {
+	List<String> getInputsAndDerived(String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
 		
@@ -342,7 +346,7 @@ public class DerivationSparql{
 		GraphPattern derivedPattern = input.has(belongsTo, derivedOfInput).optional();
 		
 		query.prefix(p_derived).where(inputPattern,derivedPattern).select(input,derivedOfInput);
-		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		List<String> inputsAndDerived = new ArrayList<>();
 		
@@ -365,14 +369,14 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	static String getDerivedIRI(StoreClientInterface kbClient, String instance) {
+	String getDerivedIRI(String instance) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "derived";
 		Variable derived = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = iri(instance).has(belongsTo, derived);
 		query.prefix(p_derived).select(derived).where(queryPattern);
 		
-		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		if (queryResult.length() != 1) {
 			throw new JPSRuntimeException(instance + " linked with " + String.valueOf(queryResult.length()) + " derived instances");
@@ -387,14 +391,14 @@ public class DerivationSparql{
 	 * @param derivedIRI
 	 * @return
 	 */
-	static List<String> getDerivedEntities(StoreClientInterface kbClient, String derivedIRI) {
+	List<String> getDerivedEntities(String derivedIRI) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "entity";
 		Variable entity = SparqlBuilder.var(queryKey);
 		GraphPattern queryPattern = entity.has(belongsTo, iri(derivedIRI));
 		query.prefix(p_derived).select(entity).where(queryPattern);
 		
-		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		List<String> entities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
@@ -410,7 +414,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	static List<List<String>> getIsDerivedFromEntities(StoreClientInterface kbClient, List<String> entities) {
+	List<List<String>> getIsDerivedFromEntities(List<String> entities) {
 		String derivedkey = "derived";
 		String typeKey = "type";
 		Variable derived = SparqlBuilder.var(derivedkey);
@@ -433,7 +437,7 @@ public class DerivationSparql{
 					.filter(Expressions.and(filters)).optional();
 			
 			query.select(derived, entityType).where(queryPattern).prefix(p_derived);
-			JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 			
 			// do not attempt to get value if this instance is not an input to any other derived quantities
 			if(!queryResult.getJSONObject(0).isEmpty()) {
@@ -456,7 +460,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
-	static void deleteInstances(StoreClientInterface kbClient, List<String> entities) {
+	void deleteInstances(List<String> entities) {
 		for (String entity : entities) {
 			SubSelect sub = GraphPatterns.select();
 			
@@ -481,11 +485,11 @@ public class DerivationSparql{
 			ModifyQuery modify = Queries.MODIFY();
 			modify.delete(delete_tp).where(sub);
 			
-			kbClient.executeUpdate(modify.getQueryString());
+			storeClient.executeUpdate(modify.getQueryString());
 		}
 	}
 	
-	static long getTimestamp(StoreClientInterface kbClient, String instance) {
+	long getTimestamp(String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
 		Variable time = SparqlBuilder.var(queryKey);
@@ -505,7 +509,7 @@ public class DerivationSparql{
 		
 		query.prefix(p_time,p_derived).where(queryPattern, queryPattern2).select(time);
 		
-		JSONArray queryResult = kbClient.executeQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		if (queryResult.length() > 1) {
 			throw new JPSRuntimeException("DerivedQuantitySparql: More than 1 time instance associated with <" +instance + ">");
@@ -526,7 +530,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	static void updateTimeStamp(StoreClientInterface kbClient, String instance) {
+	void updateTimeStamp(String instance) {
 		long timestamp = Instant.now().getEpochSecond();
 		
 		// obtain time IRI through sub query
@@ -549,8 +553,8 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		modify.prefix(p_time).delete(delete_tp).insert(insert_tp).where(sub);
 		
-		kbClient.setQuery(modify.getQueryString());
-		kbClient.executeUpdate();
+		storeClient.setQuery(modify.getQueryString());
+		storeClient.executeUpdate();
 	}
 	
 	/** 
@@ -560,7 +564,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
-	static List<String> getInstanceClass(StoreClientInterface kbClient, List<String> instances) {
+	List<String> getInstanceClass(List<String> instances) {
 		String queryKey = "class";
 		
 		List<String> classOfInstances = new ArrayList<>(instances.size()); 
@@ -577,9 +581,9 @@ public class DerivationSparql{
 			GraphPattern queryPattern = iri(instances.get(i)).isA(type).filter(Expressions.and(filters));
 			
 			query.select(type).where(queryPattern);
-			kbClient.setQuery(query.getQueryString());
+			storeClient.setQuery(query.getQueryString());
 			
-			JSONArray queryResult = kbClient.executeQuery();
+			JSONArray queryResult = storeClient.executeQuery();
 			// not having an rdf:type may be fine, but having more than 1 is an issue
 			if (queryResult.length() > 1) {
 				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instances.get(i));
@@ -598,14 +602,14 @@ public class DerivationSparql{
 	 * @param input
 	 * @param derived
 	 */
-	static void reconnectInputToDerived(StoreClientInterface kbClient, String input, String derived) {
+	void reconnectInputToDerived(String input, String derived) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		TriplePattern insert_tp = iri(derived).has(isDerivedFrom, iri(input));
 		
 		modify.prefix(p_derived).insert(insert_tp);
 		
-		kbClient.executeUpdate(modify.getQueryString());
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
@@ -613,7 +617,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param derived_iri
 	 */
-	static boolean isDerivedWithTimeSeries(StoreClientInterface kbClient, String derived_iri) {
+	boolean isDerivedWithTimeSeries(String derived_iri) {
 		SelectQuery query = Queries.SELECT();
 		Variable type = query.var();
 		TriplePattern tp = iri(derived_iri).isA(type);
@@ -623,7 +627,7 @@ public class DerivationSparql{
 		GraphPattern queryPattern = tp.filter(constraint);
 		
 		query.prefix(p_derived).select(type).where(queryPattern);
-		if (kbClient.executeQuery(query.getQueryString()).length() == 1) {
+		if (storeClient.executeQuery(query.getQueryString()).length() == 1) {
 			return true;
 		} else {
 			return false;
@@ -636,7 +640,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @param newEntities
 	 */
-	static void addNewEntitiesToDerived(StoreClientInterface storeClient, String instance, List<String> newEntities) {
+	void addNewEntitiesToDerived(String instance, List<String> newEntities) {
 		ModifyQuery modify = Queries.MODIFY();
 		
 		for (String newEntity : newEntities) {
@@ -646,13 +650,37 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
+	List<String> getInputsWithTimestamps() {
+		SelectQuery query = Queries.SELECT();
+		
+		Variable time = query.var();
+		Variable input = query.var();
+		Variable derivation = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(derivation.has(isDerivedFrom, input),
+				input.has(hasTime,time));
+		query.select(input).where(queryPattern).prefix(p_time,p_derived);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() == 0) {
+			return new ArrayList<>();
+		} else {
+			List<String> inputs = new ArrayList<>();
+			for (int i = 0; i < queryResult.length(); i++) {
+				inputs.add(queryResult.getJSONObject(i).getString(input.getQueryString().substring(1)));
+			}
+			return inputs;
+		}
+	}
+	
 	/**
 	 * only works with the standard Derivation type and DerivationWithTimeSeries
 	 * does not remove timestamps of inputs (technically outside derivation)
 	 * needs modification to work with asynchronous derivations
 	 * @param storeClient
 	 */
-	static void dropAllDerivations(StoreClientInterface storeClient) {
+	void dropAllDerivations() {
 		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries);
 		ModifyQuery modify = Queries.MODIFY();
 		

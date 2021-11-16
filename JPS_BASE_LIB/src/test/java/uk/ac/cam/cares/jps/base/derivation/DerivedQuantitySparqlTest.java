@@ -17,7 +17,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
  * createDerivedQuantity, createDerivedQuantityWithTimeSeries, updateTimestamp, addTimeinstance
@@ -27,6 +26,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class DerivedQuantitySparqlTest {
 	private MockDevStoreClient mockClient;
+	private DerivationSparql devClient;
 	private String entity1 = "http://entity1"; 
 	private String entity2 = "http://entity2"; 
 	private String entity3 = "http://entity3";
@@ -43,6 +43,7 @@ public class DerivedQuantitySparqlTest {
     public void initialiseSparqlClient() {
         OntModel kb = ModelFactory.createOntologyModel();
         mockClient = new MockDevStoreClient(kb);
+        devClient = new DerivationSparql(mockClient);
     }
 	
 	@After
@@ -53,36 +54,36 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testHasBelongsTo() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// empty kg
-		Method hasBelongsTo = DerivationSparql.class.getDeclaredMethod("hasBelongsTo", StoreClientInterface.class, String.class);
+		Method hasBelongsTo = devClient.getClass().getDeclaredMethod("hasBelongsTo", String.class);
 		hasBelongsTo.setAccessible(true);
-		Assert.assertFalse((boolean) hasBelongsTo.invoke(DerivationSparql.class, mockClient, entity1));
+		Assert.assertFalse((boolean) hasBelongsTo.invoke(devClient, entity1));
 		
 		// derived quantity created
-		DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) hasBelongsTo.invoke(DerivationSparql.class, mockClient, entity1));
+		devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertTrue((boolean) hasBelongsTo.invoke(devClient, entity1));
 	}
 	
 	@Test
 	public void testCheckInstanceExists () throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		// empty kg
-		Method checkInstanceExists = DerivationSparql.class.getDeclaredMethod("checkInstanceExists", StoreClientInterface.class, String.class);
+		Method checkInstanceExists = devClient.getClass().getDeclaredMethod("checkInstanceExists", String.class);
 	    checkInstanceExists.setAccessible(true);
-	    Assert.assertFalse((boolean) checkInstanceExists.invoke(DerivationSparql.class, mockClient, entity1));
+	    Assert.assertFalse((boolean) checkInstanceExists.invoke(devClient, entity1));
 	    
-	    DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue((boolean) checkInstanceExists.invoke(DerivationSparql.class, mockClient, entity1));
+	    devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertTrue((boolean) checkInstanceExists.invoke(devClient, entity1));
 	}
 	
 	@Test
 	public void testGetAgentUrl() {
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertEquals(derivedAgentURL, DerivationSparql.getAgentUrl(mockClient, derivedIRI));
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertEquals(derivedAgentURL, devClient.getAgentUrl(derivedIRI));
 	}
 	
 	@Test
 	public void testGetInputs() {
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		List<String> queriedInputs = DerivationSparql.getInputs(mockClient, derivedIRI);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		List<String> queriedInputs = devClient.getInputs(derivedIRI);
 		
 		for (String queriedInput : queriedInputs) {
 			Assert.assertTrue(inputs.contains(queriedInput));
@@ -92,27 +93,27 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetInputsAndDerived() {
 		// when an input is not a derived quantity
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue(DerivationSparql.getInputsAndDerived(mockClient, derivedIRI).containsAll(inputs));
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertTrue(devClient.getInputsAndDerived(derivedIRI).containsAll(inputs));
 		
 		// when an input is a derived quantity
-		String derivedIRI2 = DerivationSparql.createDerivation(mockClient, Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL, entities);
-		Assert.assertTrue(DerivationSparql.getInputsAndDerived(mockClient, derivedIRI2).contains(derivedIRI));
+		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL, entities);
+		Assert.assertTrue(devClient.getInputsAndDerived(derivedIRI2).contains(derivedIRI));
 	}
 	
 	@Test
 	public void testGetDerivedIRI() {
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
 		
 		for (String entity : entities) {
-			Assert.assertEquals(derivedIRI, DerivationSparql.getDerivedIRI(mockClient, entity));
+			Assert.assertEquals(derivedIRI, devClient.getDerivedIRI(entity));
 		}
 	}
 	
 	@Test
 	public void testGetDerivedEntities() {
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertTrue(DerivationSparql.getDerivedEntities(mockClient, derivedIRI).containsAll(entities));
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertTrue(devClient.getDerivedEntities(derivedIRI).containsAll(entities));
 	}
 	
 	@Test
@@ -120,8 +121,8 @@ public class DerivedQuantitySparqlTest {
 		// this function is used when a derived quantity is an input to another derived quantity, in this case, entities
 		// are inputs to derivedIRI2. The rdftype is used to reconnect instances
 		// derivedIRI2 depends on derivedIRI
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		String derivedIRI2 = DerivationSparql.createDerivation(mockClient, Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL, entities);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		String derivedIRI2 = devClient.createDerivation(Arrays.asList(entity3), derivedAgentIRI, derivedAgentURL, entities);
 		
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// add RDF types for entities
@@ -129,7 +130,7 @@ public class DerivedQuantitySparqlTest {
 			testKG.getIndividual(entity).addRDFType(ResourceFactory.createResource(entity + "class"));
 		}
 		
-		List<List<String>> queryResult = DerivationSparql.getIsDerivedFromEntities(mockClient, entities);
+		List<List<String>> queryResult = devClient.getIsDerivedFromEntities(entities);
 		List<String> derivedList = queryResult.get(0);
 		List<String> rdfTypeList = queryResult.get(1);
 		
@@ -148,13 +149,13 @@ public class DerivedQuantitySparqlTest {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		testKG.add(ResourceFactory.createResource(entity1), a, b);
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
-		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
+		devClient.deleteInstances(Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		
 		// only in object
 		testKG.add(b, a, ResourceFactory.createResource(entity1));
 		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
+		devClient.deleteInstances(Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 		
 		// in both subject and object
@@ -162,7 +163,7 @@ public class DerivedQuantitySparqlTest {
 		testKG.add(b, a, ResourceFactory.createResource(entity1));
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		Assert.assertTrue(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
-		DerivationSparql.deleteInstances(mockClient, Arrays.asList(entity1));
+		devClient.deleteInstances(Arrays.asList(entity1));
 		Assert.assertFalse(testKG.contains(ResourceFactory.createResource(entity1), a, b));
 		Assert.assertFalse(testKG.contains(b, a, ResourceFactory.createResource(entity1)));
 	}
@@ -170,30 +171,30 @@ public class DerivedQuantitySparqlTest {
 	@Test
 	public void testGetTimestamp() {
 		// no time stamp yet
-		Assert.assertThrows(JPSRuntimeException.class, () -> DerivationSparql.getTimestamp(mockClient, input1));
+		Assert.assertThrows(JPSRuntimeException.class, () -> devClient.getTimestamp(input1));
 		
 		// timestamp attached directly to input
-		DerivationSparql.addTimeInstance(mockClient, input1);
-		DerivationSparql.getTimestamp(mockClient, input1);
+		devClient.addTimeInstance(input1);
+		devClient.getTimestamp(input1);
 		
 		//time stamp of an instance linked to a derived quantity
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		DerivationSparql.addTimeInstance(mockClient, derivedIRI);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		devClient.addTimeInstance(derivedIRI);
 		
 		for (String entity : entities) {
-			Assert.assertEquals(DerivationSparql.getTimestamp(mockClient, derivedIRI), DerivationSparql.getTimestamp(mockClient, entity));
+			Assert.assertEquals(devClient.getTimestamp(derivedIRI), devClient.getTimestamp(entity));
 		}
 	}
 	
 	@Test
 	public void testUpdateTimestamp() {
 		// simply checks new time stamp is more recent
-		String derivedIRI = DerivationSparql.createDerivation(mockClient, entities, derivedAgentIRI, derivedAgentURL, inputs);
-		DerivationSparql.addTimeInstance(mockClient, derivedIRI);
+		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		devClient.addTimeInstance(derivedIRI);
 		// the derived instance is initialised with timestamp = 0
-		long oldtime = DerivationSparql.getTimestamp(mockClient, derivedIRI);
-		DerivationSparql.updateTimeStamp(mockClient, derivedIRI);
-		long newtime = DerivationSparql.getTimestamp(mockClient, derivedIRI);
+		long oldtime = devClient.getTimestamp(derivedIRI);
+		devClient.updateTimeStamp(derivedIRI);
+		long newtime = devClient.getTimestamp(derivedIRI);
 		Assert.assertTrue(newtime > oldtime);
 	}
 	
@@ -203,15 +204,15 @@ public class DerivedQuantitySparqlTest {
 		
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// returns an empty string if there is no rdf:type
-		Assert.assertEquals("", DerivationSparql.getInstanceClass(mockClient, Arrays.asList(entity1)).get(0));
+		Assert.assertEquals("", devClient.getInstanceClass(Arrays.asList(entity1)).get(0));
 		testKG.add(ResourceFactory.createResource(entity1), RDF.type, ResourceFactory.createResource(entityclass));
 		
-		Assert.assertEquals(entityclass, DerivationSparql.getInstanceClass(mockClient, Arrays.asList(entity1)).get(0));		
+		Assert.assertEquals(entityclass, devClient.getInstanceClass(Arrays.asList(entity1)).get(0));		
 	}
 	
 	@Test
 	public void testReconnectInputToDerived() {
-		DerivationSparql.reconnectInputToDerived(mockClient, input1, input2);
+		devClient.reconnectInputToDerived(input1, input2);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		Assert.assertTrue(testKG.contains(ResourceFactory.createResource(input2), 
 				ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
@@ -220,17 +221,17 @@ public class DerivedQuantitySparqlTest {
 	
 	@Test
 	public void testIsDerivedWithTimeSeries() {
-		String derived1 = DerivationSparql.createDerivation(mockClient, Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, Arrays.asList(input1));
-	    String derived2 = DerivationSparql.createDerivationWithTimeSeries(mockClient, Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(input2));
+		String derived1 = devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, Arrays.asList(input1));
+	    String derived2 = devClient.createDerivationWithTimeSeries(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(input2));
 	    
-	    Assert.assertFalse(DerivationSparql.isDerivedWithTimeSeries(mockClient, derived1));
-	    Assert.assertTrue(DerivationSparql.isDerivedWithTimeSeries(mockClient, derived2));
+	    Assert.assertFalse(devClient.isDerivedWithTimeSeries(derived1));
+	    Assert.assertTrue(devClient.isDerivedWithTimeSeries(derived2));
 	}
 	
 	@Test
 	public void testAddNewEntitiesToDerived() {
 		String derived = "http://derived";
-		DerivationSparql.addNewEntitiesToDerived(mockClient, derived, entities);
+		devClient.addNewEntitiesToDerived(derived, entities);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		
 		for (String entity : entities) {
