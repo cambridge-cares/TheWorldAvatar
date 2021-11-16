@@ -143,6 +143,13 @@ public class DerivationClient {
 	}
 	
 	/**
+	 * clears all derivations from the kg
+	 */
+	public void dropAllDerivations() {
+		DerivationSparql.dropAllDerivations(kbClient);
+	}
+	
+	/**
 	 * All private functions below
 	 */
 	

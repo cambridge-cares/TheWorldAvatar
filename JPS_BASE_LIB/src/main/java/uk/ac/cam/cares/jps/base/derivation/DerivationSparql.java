@@ -645,4 +645,54 @@ public class DerivationSparql{
 		
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
+	
+	/**
+	 * only works with the standard Derivation type and DerivationWithTimeSeries
+	 * does not remove timestamps of inputs (technically outside derivation)
+	 * needs modification to work with asynchronous derivations
+	 * @param storeClient
+	 */
+	static void dropAllDerivations(StoreClientInterface storeClient) {
+		List<Iri> derivationTypes = Arrays.asList(Derivation, DerivationWithTimeSeries);
+		ModifyQuery modify = Queries.MODIFY();
+		
+		SubSelect query = GraphPatterns.select();
+		Variable inputs = query.var();
+		Variable entities = query.var();
+		Variable derivation = query.var();
+		Variable time = query.var();
+		Variable time_unix_iri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+		Variable agent = query.var();
+		Variable operation = query.var();
+		Variable url = query.var();
+		Variable derivationType = query.var();
+		
+		TriplePattern belongsToTp = entities.has(belongsTo, derivation);
+		TriplePattern isDerivedFromTp = derivation.has(isDerivedFrom, inputs);
+		TriplePattern derivationTypeTp = derivation.isA(derivationType);
+	
+		// timestamp
+		TriplePattern timestampTp1 = derivation.has(hasTime, time);
+		
+		TriplePattern timeTpAll1 = time.isA(InstantClass).andHas(inTimePosition,time_unix_iri);
+		TriplePattern timeTpAll2 = time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, trs);
+		
+		// agent
+		TriplePattern agentTp1 = derivation.has(isDerivedUsing,agent);
+		TriplePattern agentTp2 = agent.isA(Service).andHas(hasOperation, operation);
+		TriplePattern agentTp3 = operation.isA(Operation).andHas(hasHttpUrl, url);
+		
+		GraphPattern queryPattern = GraphPatterns.and(belongsToTp,isDerivedFromTp,
+				timestampTp1, timeTpAll1,timeTpAll2,
+				agentTp1,agentTp2,agentTp3, new ValuesPattern(derivationType,derivationTypes));
+		
+		modify.delete(belongsToTp,isDerivedFromTp,
+				timestampTp1, timeTpAll1,timeTpAll2,
+				agentTp1,agentTp2,agentTp3,derivationTypeTp).where(queryPattern)
+				.prefix(p_time,p_derived,p_agent);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
 }
