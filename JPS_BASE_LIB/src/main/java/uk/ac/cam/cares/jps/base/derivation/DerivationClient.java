@@ -70,8 +70,8 @@ public class DerivationClient {
 	 * @return
 	 */
 	public String createDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
-		String createdDerivation = DerivationSparql.createDerivation(this.kbClient, entities, agentIRI, inputsIRI);
-		DerivationSparql.addTimeInstance(this.kbClient, createdDerivation);
+		String createdDerivation = this.sparqlClient.createDerivation(entities, agentIRI, inputsIRI);
+		this.sparqlClient.addTimeInstance(createdDerivation);
 		LOGGER.info("Instantiated derivation for asynchronous operation <" + createdDerivation + ">");
 		LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
 		LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
@@ -106,8 +106,8 @@ public class DerivationClient {
      * @return
      */
     public String createAsynDerivation(List<String> entities, String agentIRI, List<String> inputsIRI) {
-    	String createdDerivation = DerivationSparql.createDerivationAsyn(this.kbClient, entities, agentIRI, inputsIRI);
-    	DerivationSparql.addTimeInstance(this.kbClient, createdDerivation);
+    	String createdDerivation = this.sparqlClient.createDerivationAsyn(entities, agentIRI, inputsIRI);
+    	this.sparqlClient.addTimeInstance(createdDerivation);
     	LOGGER.info("Instantiated asynchronous derivation <" + createdDerivation + ">");
     	LOGGER.debug("<" + entities + "> belongsTo <" + createdDerivation + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
@@ -202,20 +202,20 @@ public class DerivationClient {
 	}
 	
 	public void monitorDerivation(String agentIRI, SetupJobInterface setupJob) {
-		List<String> listOfDerivation = DerivationSparql.getDerivations(this.kbClient, agentIRI);
+		List<String> listOfDerivation = this.sparqlClient.getDerivations(agentIRI);
 		
 		for (String derivation : listOfDerivation) {
 			// check if the derivation is an instance of asynchronous derivation
-			if (DerivationSparql.isDerivedAsynchronous(this.kbClient, derivation)) {
-				if (DerivationSparql.isRequested(this.kbClient, derivation)) {
+			if (this.sparqlClient.isDerivedAsynchronous(derivation)) {
+				if (this.sparqlClient.isRequested(derivation)) {
 					JSONObject agentInputs = new JSONObject();
-					agentInputs.put(AGENT_INPUT_KEY, DerivationSparql.getInputsMapToAgent(this.kbClient, derivation, agentIRI));
-					DerivationSparql.markAsInProgress(this.kbClient, derivation);
+					agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
+					this.sparqlClient.markAsInProgress(derivation);
 					List<String> newDerivedIRI = setupJob.setupJob(agentInputs);
 					updateStatusAtJobCompletion(derivation, newDerivedIRI);
-				} else if (DerivationSparql.isInProgress(this.kbClient, derivation)) {
+				} else if (this.sparqlClient.isInProgress(derivation)) {
 					// at the moment the design is the agent just pass when it's detected as "InProgress"
-				} else if (DerivationSparql.isFinished(this.kbClient, derivation)) {
+				} else if (this.sparqlClient.isFinished(derivation)) {
 					cleanUpFinishedDerivationUpdate(derivation);
 				}
 			} else {
@@ -290,7 +290,7 @@ public class DerivationClient {
 	private void updateDerivationAsyn(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph) {
 		// this method follows the first a few steps of method updateDerivation(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph)
 		// TODO in future development, ideally these two method should be merged into the same method?
-		List<String> inputsAndDerived = DerivationSparql.getInputsAndDerived(this.kbClient, instance);
+		List<String> inputsAndDerived = this.sparqlClient.getInputsAndDerived(instance);
 		
 		if (!graph.containsVertex(instance)) {
 			graph.addVertex(instance);
@@ -304,22 +304,22 @@ public class DerivationClient {
 			updateDerivationAsyn(input, graph);
 		}
 		
-		List<String> inputs = DerivationSparql.getInputs(this.kbClient, instance);
+		List<String> inputs = this.sparqlClient.getInputs(instance);
 		if (inputs.size() > 0) {
 			if (isOutOfDate(instance,inputs)) {
 				// if the Derivation is out of date, the first thing we do is checking its status
-				if (!DerivationSparql.hasStatus(this.kbClient, instance)) {
+				if (!this.sparqlClient.hasStatus(instance)) {
 					// if there's no status, then mark as requested - a job need to be started to update the derivation
 					LOGGER.info("Updating <" + instance + ">, marked as Requested");
 					LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
-					DerivationSparql.markAsRequested(this.kbClient, instance);
+					this.sparqlClient.markAsRequested(instance);
 				} else {
 					// for now, if there's any status, the derivation framework just pass
 				}
 			} else {
 				// if the derivation is up to date, then delete <hasStatus> <Status> if applies
-				if (DerivationSparql.hasStatus(this.kbClient, instance)) {
-					DerivationSparql.deleteStatus(this.kbClient, instance);
+				if (this.sparqlClient.hasStatus(instance)) {
+					this.sparqlClient.deleteStatus(instance);
 				}
 			}
 		}
@@ -436,9 +436,9 @@ public class DerivationClient {
 	 */
 	private void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		// mark as Finished
-		String statusIRI = DerivationSparql.markAsFinished(this.kbClient, derivation);
+		String statusIRI = this.sparqlClient.markAsFinished(derivation);
 		// add newDerivedIRI to Finished status
-		DerivationSparql.addNewDerivedIRIToFinishedStatus(this.kbClient, statusIRI, newDerivedIRI);
+		this.sparqlClient.addNewDerivedIRIToFinishedStatus(statusIRI, newDerivedIRI);
 	}
 	
 	/**
@@ -451,31 +451,31 @@ public class DerivationClient {
 		// in the future development, there's a potential these two methods can be merged into one
 		
 		// (1) get newDerivedIRI
-		List<String> newEntities = DerivationSparql.getNewDerivedIRI(this.kbClient, derivation);
+		List<String> newEntities = this.sparqlClient.getNewDerivedIRI(derivation);
 		
 		// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
 		// query for ?x <belongsTo> <instance>
-		List<String> entities = DerivationSparql.getDerivedEntities(kbClient, derivation);
+		List<String> entities = this.sparqlClient.getDerivedEntities(derivation);
 		
 		// check if any of the old entities is an input for another derived quantity
 		// query ?x <isDerivedFrom> <entity>, <entity> a ?y
 		// where ?x = a derived instance, ?y = class of entity
 		// index 0 = derivedIRIs list, index 1 = type IRI list
-		List<List<String>> derivedAndType = DerivationSparql.getIsDerivedFromEntities(kbClient, entities);
+		List<List<String>> derivedAndType = this.sparqlClient.getIsDerivedFromEntities(entities);
 		
 		// delete old instances
-		DerivationSparql.deleteInstances(kbClient, entities);
+		this.sparqlClient.deleteInstances(entities);
 		LOGGER.debug("Deleted old instances: " + Arrays.asList(entities));
 		
 		// link new entities to derived instance, adding ?x <belongsTo> <instance>
-		DerivationSparql.addNewEntitiesToDerived(kbClient, derivation, newEntities);
+		this.sparqlClient.addNewEntitiesToDerived(derivation, newEntities);
 		LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + derivation + ">");
 		
 		if (derivedAndType.get(0).size() > 0) {
 			LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 			LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 			// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
-			List<String> classOfNewEntities = DerivationSparql.getInstanceClass(kbClient, newEntities);
+			List<String> classOfNewEntities = this.sparqlClient.getInstanceClass(newEntities);
 			
 			// look for the entity with the same rdf:type that we need to reconnect
 			List<String> oldDerivedList = derivedAndType.get(0);
@@ -499,15 +499,15 @@ public class DerivationClient {
 					throw new JPSRuntimeException(reconnectError);
 				}
 			    // reconnect
-				DerivationSparql.reconnectInputToDerived(kbClient, newEntities.get(matchingIndex), oldDerivedList.get(i));
+				this.sparqlClient.reconnectInputToDerived(newEntities.get(matchingIndex), oldDerivedList.get(i));
 			}
 		}
 		
 		// (2) delete all triples connected to status of the derivation
-		DerivationSparql.deleteStatus(this.kbClient, derivation);
+		this.sparqlClient.deleteStatus(derivation);
 		
 		// if there are no errors, assume update is successful
-		DerivationSparql.updateTimeStamp(kbClient, derivation);
+		this.sparqlClient.updateTimeStamp(derivation);
 		LOGGER.info("Updated timestamp of <" + derivation + ">");
 	}
 	
@@ -627,7 +627,7 @@ public class DerivationClient {
 	 * @return
 	 */
 	public boolean hasStatus(String derivation) {
-		return DerivationSparql.hasStatus(this.kbClient, derivation);
+		return this.sparqlClient.hasStatus(derivation);
 	}
 
 	/**
@@ -636,7 +636,7 @@ public class DerivationClient {
 	 * @return
 	 */
 	public String getStatus(String derivation) {
-		return DerivationSparql.getStatus(this.kbClient, derivation);
+		return this.sparqlClient.getStatus(derivation);
 	}
 
 	/**
@@ -645,7 +645,7 @@ public class DerivationClient {
 	 * @return
 	 */
 	public List<String> getNewDerivedIRI(String derivation) {
-		return DerivationSparql.getNewDerivedIRI(this.kbClient, derivation);
+		return this.sparqlClient.getNewDerivedIRI(derivation);
 	}
 
 	/**
@@ -654,7 +654,7 @@ public class DerivationClient {
 	 * @return
 	 */
 	public String getAgentUrl(String derivedQuantity) {
-		return DerivationSparql.getAgentUrl(this.kbClient, derivedQuantity);
+		return this.sparqlClient.getAgentUrl(derivedQuantity);
 	}
 
 //	/**
