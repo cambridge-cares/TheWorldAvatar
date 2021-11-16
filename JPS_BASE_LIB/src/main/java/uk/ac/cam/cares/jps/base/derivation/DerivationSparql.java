@@ -646,6 +646,30 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
+	static List<String> getInputsWithTimestamps(StoreClientInterface storeClient) {
+		SelectQuery query = Queries.SELECT();
+		
+		Variable time = query.var();
+		Variable input = query.var();
+		Variable derivation = query.var();
+		
+		GraphPattern queryPattern = GraphPatterns.and(derivation.has(isDerivedFrom, input),
+				input.has(hasTime,time));
+		query.select(input).where(queryPattern).prefix(p_time,p_derived);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() == 0) {
+			return new ArrayList<>();
+		} else {
+			List<String> inputs = new ArrayList<>();
+			for (int i = 0; i < queryResult.length(); i++) {
+				inputs.add(queryResult.getJSONObject(i).getString(input.getQueryString().substring(1)));
+			}
+			return inputs;
+		}
+	}
+	
 	/**
 	 * only works with the standard Derivation type and DerivationWithTimeSeries
 	 * does not remove timestamps of inputs (technically outside derivation)

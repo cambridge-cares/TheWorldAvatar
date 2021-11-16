@@ -18,7 +18,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * integration tests for updateInstance is provided at TheWorldAvater/Agents/DerivedAgent
+ * integration tests for updateInstance is provided at TheWorldAvater/Agents/DerivationExample
  * @author Kok Foong Lee
  *
  */
@@ -185,6 +185,9 @@ public class DerivedQuantityClientTest{
 		
 		// case 1: standard derivation
 		String derivation = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+		}
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
