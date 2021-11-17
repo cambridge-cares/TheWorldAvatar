@@ -1,5 +1,7 @@
 # Creates dictionary for GeoJSON output
 
+# TODO: include proper handling for interior rings
+
 def initialise_geojson(crs_name='urn:ogc:def:crs:OGC::CRS84'):
     '''
         Initialises dictionary for GeoJSON output

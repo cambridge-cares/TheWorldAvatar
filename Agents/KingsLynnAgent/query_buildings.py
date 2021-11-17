@@ -281,9 +281,8 @@ if __name__ == '__main__':
                ((poly[:, 2][0] >= (zmin - eps)) and (poly[:, 2][0] <= (zmin + eps))):
                 # Trim dimensions from 3D to 2D by dropping Z value
                 poly = poly[:, :2]
+                # Create list to allow for composite ground surfaces
                 base_polygon = [poly.tolist()]
-                # As there can only be one base polygon, stop as soon as it is found
-                break
 
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
