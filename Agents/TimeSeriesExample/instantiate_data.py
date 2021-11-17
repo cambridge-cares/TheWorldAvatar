@@ -65,6 +65,9 @@ units = {'Electricity': 'kWh/h',
 
 if __name__ == '__main__':
 
+    # Create specified PostgreSQL database
+    utils.create_postgres_db()
+
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)
 

@@ -3,6 +3,7 @@
 # ===============================================================================
 import json
 import os
+import psycopg2
 from pathlib import Path
 from configobj import ConfigObj
 
@@ -12,6 +13,7 @@ PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY
+global DB_URL, DB_USER, DB_PASSWORD
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -40,7 +42,7 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY
+    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY, DB_URL, DB_USER, DB_PASSWORD
 
     # Read properties file
     props = ConfigObj(filepath)
@@ -76,6 +78,30 @@ def read_properties_file(filepath):
         raise KeyError('Key "sparql.update.endpoint" is missing in properties file: ' + filepath)
     if UPDATE_ENDPOINT == '':
         raise KeyError('No "sparql.update.endpoint" value has been provided in properties file: ' + filepath)
+
+    # Extract PostgreSQL database URL
+    try:
+        DB_URL = props['db.url']
+    except KeyError:
+        raise KeyError('Key "db.url" is missing in properties file: ' + filepath)
+    if DB_URL == '':
+        raise KeyError('No "db.url" value has been provided in properties file: ' + filepath)
+
+    # Extract PostgreSQL database username
+    try:
+        DB_USER = props['db.user']
+    except KeyError:
+        raise KeyError('Key "db.user" is missing in properties file: ' + filepath)
+    if DB_USER == '':
+        raise KeyError('No "db.user" value has been provided in properties file: ' + filepath)
+
+    # Extract PostgreSQL database password
+    try:
+        DB_PASSWORD = props['db.password']
+    except KeyError:
+        raise KeyError('Key "db.password" is missing in properties file: ' + filepath)
+    if DB_PASSWORD == '':
+        raise KeyError('No "db.password" value has been provided in properties file: ' + filepath)
 
 
 def create_sparql_prefix(abbreviation):
@@ -129,6 +155,37 @@ def set_mapbox_apikey():
     # Write updated overall meta data information
     with open(fp, 'w') as f:
         json.dump(meta, f, indent=4)
+
+
+def create_postgres_db():
+    """
+        Creates PostgreSQL database with name as specified in db.url field in the properties file
+        Please note: The PostgreSQL server is assumed to be available at DEFAULT HOST (i.e. localhost)
+        and PORT (i.e. 5432)
+    """
+
+    # Extract database name from DB URL provided in properties file
+    # (for details see: https://www.postgresql.org/docs/7.4/jdbc-use.html)
+    db_name = DB_URL.split(':')[-1]
+
+    # Create PostgreSQL database with extracted name
+    # (for details see: https://www.psycopg.org/docs/module.html)
+    conn = None
+    try:
+        # Connect to PostgreSQL server (via DEFAULT host and port)
+        conn = psycopg2.connect(user=DB_USER, password=DB_PASSWORD, host='localhost')
+        conn.autocommit = True
+        # Create cursor object
+        cur = conn.cursor()
+        # Create db table
+        cur.execute('CREATE DATABASE ' + db_name)
+        # Close communication with the PostgreSQL database server
+        cur.close()
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 # Run when module is imported
