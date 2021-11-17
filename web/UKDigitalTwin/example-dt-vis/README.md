@@ -1,9 +1,9 @@
 # Example Digital Twin Visualisation
 
 ## Purpose
-This example visualisation has been put together to demonstrate the intended us of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Javascript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
+This example visualisation has been put together to demonstrate the intended use of the centralised Digital Twin Visualisation Framework (DTVF). This framework has been designed to make it easier for users not experienced with Javascript (or the mapping libraries) to quickly & easily put together a new Digital Twin visualisation. It is intended for developers to use this example visualisation to gain an understanding of the DTVF before attempting to create their own visualisation; to do that, this example can be copied and used as a starting point.
 
-This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. Before starting, ensure your data meets this format by reading the "Visualisation Framework" page on the GitHub wiki. This page also details how the framework functions, and how to configure your visualisation to use it.
+This centralised framework expects users to have structured their data in a particular format, and provide a number of associated metadata files. Before starting, ensure your data meets this format by reading the ["Visualisation Framework"](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) page on the GitHub wiki. This page also details how the framework functions, and how to configure your visualisation to use it.
 
 ## Building the Image
 The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>).
