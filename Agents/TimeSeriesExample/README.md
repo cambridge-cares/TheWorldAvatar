@@ -1,20 +1,22 @@
 # Time Series Example
 
-This example provides a minimum working example on how to instantiate time series data which is attached to some geospatial reference within the KG using the [TimeSeriesClient]. Furthermore, it shows how to query and visualise this data using the Digital Twin Visualisation Framework ([DTVF]). To interact with the [TheWorldAvatar] code base (mainly) written in Java, the [py4jps] Python wrapper is used.
+This example provides a minimum working example on how to instantiate time series data which is attached to some geospatial reference within the KG using the [TimeSeriesClient]. Furthermore, it shows how to query and visualise this data using the Digital Twin Visualisation Framework ([DTVF]). To interact with the [TheWorldAvatar] (TWA) code base (mainly) written in Java, the [py4jps] Python wrapper is used.
+
+This example assumes that both Blazegraph and PostgreSQL are available locally. Furthermore, for PostgreSQL it is assumed that default connection settings are used, i.e. _localhost_ as `host` and _5432_ as `port`.
 
 ## Preparation
 ### 1. Create a Python virtual environment and install required packages (in Windows):
 
-1) Open `cmd` terminal and navigate into project repository
+1) Open `cmd` terminal and navigate into project's root repository (referred to as `<root>` in the following)
 
-2) Create virtual environment `name` using venv (`python` command might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variable):
+2) Create virtual environment `<venv_name>` using venv (`python` command might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variables):
 ```
-python -m venv <name>
+python -m venv <venv_name>
 ```
 
-3) Activate virtual environemnt by running:
+3) Activate virtual environment by running:
 ```
-<name>\Scripts\activate
+<venv_name>\Scripts\activate
 ```
 
 4) Install requirements listed in `requirements.txt`:
@@ -25,9 +27,9 @@ python -m pip install -r requirements.txt
 
 ### 2. Setup local Blazegraph instance and PostgreSQL database 
 
-Start up Blazegraph and create a new namespace. Populate the `sparql.query.endpoint` and `sparql.update.endpoint` fields in the [requirements file] with the respectively SPARQL endpoints to this namespace.
+Start up Blazegraph and ensure that the local instance is available (i.e. via Blazegraph workbench in the Browser). Populate the `sparql.query.endpoint` and `sparql.update.endpoint` fields in the [requirements file] with the wanted SPARQL endpoints. Please note that the specified namespace will be created automatically by the `instantiate_data.py` script. In other words, if the specified SPARQL endpoint is `http://localhost:9999/blazegraph/namespace/<ts_example>/sparql`, the program will automatically create the namespace `<ts_example>` with geospatial capability enabled before uploading any triples. In case the respective namespace already exists, a message is printed out and the namespace should be deleted manually (if required).
 
-Start pgAdmin and create a new PostgreSQL database (e.g. `<ts_example>`). Update the fields `db.url`, `db.user`, and `db.password` according to your local PostgreSQL settings. The default URL (with default port) for the example database name would be `jdbc:postgresql:ts_example`. 
+Start postgreSQL and ensure that the local server is available (i.e. via pgAdmin ). Update the fields `db.url`, `db.user`, and `db.password` in the [requirements file] according to your local PostgreSQL settings. The default URL (with default `host` (i.e. _localhost_) and `port` (i.e. _5432_)) looks like `jdbc:postgresql:<database_name>`. Please note that the specified database `<database_name>` will be created automatically by the `instantiate_data.py` script. In case the respective database already exists, a message is printed out and the database should be deleted manually (if required).
 
 ## Usage
 
@@ -47,11 +49,15 @@ geo    : http://www.bigdata.com/rdf/geospatial#
 
 ### 1. Instantiate Geospatial Time Series Data
 
-Assumptions:
+Assumptions regarding the geospatial data representation:
 - Elevation (Z coordinate) neglected
 - Coordinates in EPSG:4326 to use Blazegraph's built-in geospatial search functionality
 
-To instantiate the sample data, please run `instantiate_data.py`. Upon instantiation, the following triples get created for each `dataIRI`:
+To instantiate the sample data, please run (from within the `<root>` directory and with activated virtual environment `<venv_name>`)
+```
+python instantiate_data.py
+```
+Upon instantiation, the following triples get created for each `dataIRI`:
 ```
 ex:consumerIRI rdf:type ex:Consumer ;
                rdfs:label <description> ; 
@@ -69,12 +75,38 @@ A `consumerIRI` describes any entity which consumes a particular utility (e.g. P
 
 ### 2. Query Geospatial Time Series Data
 
-To query the triple store and write the retrieved data to respective files for later visualisation, please run `query_data.py`. Within the main function of this module, on can specify, whether to query for all consumers or just consumers within a certain radius from Cambridge's city center (around line 250).
+To query the triple store and write the retrieved data to respective files for later visualisation, please run (from within the `<root>` directory and with activated virtual environment `<venv_name>`)
+```
+python query_data.py
+```
+Within the main function of this module, on can specify, whether to query for all consumers or just consumers within a certain radius from Cambridge's city center (around line 250).
 
 ### 3. Visualise Geospatial Time Series Data using the DTVF
 
-The previously queried data will be visualised using the Digital Twin Visualisation Framework ([DTVF]). For more detailed instructions, please read the [DTVF readme] file within the `dtvf_visualisation` folder.
-Please note that you need to specify a Mapbox API key in the `dtvf_visualisation/queried_data/overall-meta.json` file.
+The previously queried data will be visualised using the Digital Twin Visualisation Framework (DTVF). A brief introduction on how to use this framework is provided below; however, for more detailed instructions, please read the [DTVF] TWA wiki page.
+
+#### 3.1. Building the Image
+The `<root>\dtvf_visualisation\docker` folder contains the required files to build a Docker Image for the example visualisation. The `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>).
+
+Please note the caveats below before attempting to build the service using Docker:
+
+* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image.
+* A valid Mapbox API key (which can be obtained for free by signing up) must be provided in the [requirements file]
+* A connection to the internet is required to contact remote resources and use the mapping libraries.
+
+### Docker Commands
+Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository):
+
++ To build the Image:
+  + `docker-compose -f ./docker/docker-compose.yml build --force-rm`
++ To generate a Container (i.e. run the Image):
+  + `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
+
+Afterwards the visualisation can be viewed via Docker Desktop 
+1. Open Docker Desktop
+2. Select "Container/Apps" in left panel
+3. Select container "dtvf_example_visualisation" in docker stack "Docker"
+4. Select `Open in Browser` to open visualisation in Browser
 
 
 
@@ -83,4 +115,3 @@ Please note that you need to specify a Mapbox API key in the `dtvf_visualisation
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
 [requirements file]: resources/ts_example.properties
-[DTVF readme]: dtvf_visualisation/README.md
