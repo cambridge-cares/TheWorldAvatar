@@ -67,6 +67,8 @@ if __name__ == '__main__':
 
     # Create specified PostgreSQL database
     utils.create_postgres_db()
+    # Create specified Blazegraph namespace
+    utils.create_blazegraph_namespace()
 
     # Initialise remote KG client with query AND update endpoints specified
     KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT, utils.UPDATE_ENDPOINT)

@@ -4,9 +4,9 @@
 import json
 import os
 import psycopg2
+import requests
 from pathlib import Path
 from configobj import ConfigObj
-
 
 # Define location of properties file (with Triple Store and RDB settings)
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
@@ -21,15 +21,15 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     # Namespace for this example data
-    'ex':  'http://www.theworldavatar.com/kb/ts_example/',
+    'ex': 'http://www.theworldavatar.com/kb/ts_example/',
     'tsa': 'http://www.theworldavatar.com/kb/ontotimeseries/',
     # Namespaces for used ontologies
-    'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
-    'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
-    'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
-    'xsd':   'http://www.w3.org/2001/XMLSchema#',
-    'geolit':   'http://www.bigdata.com/rdf/geospatial/literals/v1#',
-    'geo':   'http://www.bigdata.com/rdf/geospatial#>'
+    'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+    'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
+    'ts': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
+    'xsd': 'http://www.w3.org/2001/XMLSchema#',
+    'geolit': 'http://www.bigdata.com/rdf/geospatial/literals/v1#',
+    'geo': 'http://www.bigdata.com/rdf/geospatial#>'
 }
 
 
@@ -186,6 +186,44 @@ def create_postgres_db():
     finally:
         if conn is not None:
             conn.close()
+
+
+def create_blazegraph_namespace():
+    """
+        Creates Blazegraph namespace with name as specified in SPARQL endpoints
+    """
+
+    # Extract Blazegraph REST API url from SPARQL endpoint
+    url = UPDATE_ENDPOINT[:UPDATE_ENDPOINT.find('namespace') + len('namespace')]
+
+    # Extract name for new namespace from SPARQL endpoint
+    ns = UPDATE_ENDPOINT[UPDATE_ENDPOINT.find('namespace') + len('namespace') + 1:]
+    ns = ns[:ns.find('/')]
+
+    # Define POST request header and payload
+    header = {'Content-type': 'text/plain'}
+
+    payload = 'com.bigdata.rdf.store.AbstractTripleStore.textIndex=false\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.axiomsClass=com.bigdata.rdf.axioms.NoAxioms\r\n' \
+              'com.bigdata.rdf.sail.isolatableIndices=false\r\n' \
+              'com.bigdata.rdf.sail.truthMaintenance=false\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.justify=false\r\n' \
+              'com.bigdata.namespace.{}.spo.com.bigdata.btree.BTree.branchingFactor=1024\r\n' \
+              'com.bigdata.rdf.sail.namespace={}\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.quads=false\r\n' \
+              'com.bigdata.namespace.{}.lex.com.bigdata.btree.BTree.branchingFactor=400\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.geoSpatial=true\r\n' \
+              'com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers=false'.format(ns, ns, ns)
+
+    # Post the request
+    response = requests.post(url, payload, headers=header)
+
+    if response.status_code == 201:
+        print('New namespace \"{}\" successfully created.\n'.format(ns))
+    elif response.status_code == 409:
+        print('Namespace \"{}\" exists already.\n'.format(ns))
+    else:
+        print('Request status code: {}\n'.format(response.status_code))
 
 
 # Run when module is imported
