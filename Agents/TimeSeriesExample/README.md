@@ -90,22 +90,22 @@ The `<root>\dtvf_visualisation\docker` folder contains the required files to bui
 
 Please note the caveats below before attempting to build the service using Docker:
 
-* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image.
+* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [requirements file] is not changed.
 * A valid Mapbox API key (which can be obtained for free by signing up) must be provided in the [requirements file]
 * A connection to the internet is required to contact remote resources and use the mapping libraries.
 
-### Docker Commands
-Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository):
+#### 3.2. Docker Commands
+Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository and with deactivated virtual environment `<venv_name>`):
 
 + To build the Image:
   + `docker-compose -f ./docker/docker-compose.yml build --force-rm`
 + To generate a Container (i.e. run the Image):
   + `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
 
-Afterwards the visualisation can be viewed via Docker Desktop 
+#### 3.3. Afterwards the visualisation can be viewed via Docker Desktop 
 1. Open Docker Desktop
 2. Select "Container/Apps" in left panel
-3. Select container "dtvf_example_visualisation" in docker stack "Docker"
+3. Select container "dtvf_example_visualisation" in docker stack "docker"
 4. Select `Open in Browser` to open visualisation in Browser
 
 
