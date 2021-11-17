@@ -1,0 +1,22 @@
+[
+    {
+        "groupName": "Connections",
+        "layers": [               
+            {
+                "layerName": "Asset Owner #1 Connections",
+                "defaultState": "visible",
+                "layerIDs": ["assets-1-connections"]
+            },
+            {
+                "layerName": "Asset Owner #2 Connections",
+                "defaultState": "visible",
+                "layerIDs": ["assets-2-connections"]
+            },
+            {
+                "layerName": "Interasset Connections",
+                "defaultState": "visible",
+                "layerIDs": ["inter-asset-connections"]
+            }
+        ]
+    }
+]

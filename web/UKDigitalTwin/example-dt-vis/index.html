@@ -15,6 +15,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
 
 	<!--
 		The following visualisiation framework files are currently stored locally (as
@@ -66,8 +67,8 @@
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
-			"Mock Data #1": "./mock-data-1",
-			"Mock Data #2": "./mock-data-2"
+			"Mock Data #1": "./data/set-1",
+			"Mock Data #2": "./data/set-2",
 		};
 		manager.registerDirectories(rootDirectories);
 
@@ -114,8 +115,8 @@
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
 
-				// Plot the Fixed Data locations
-				manager.plotFixedData();
+				// Re-add the sky layer
+				manager.setSkyDetails();
 
 				// Re-register icon images used by this visualisation
 				let winURL = window.location;
@@ -127,19 +128,22 @@
 					iconHandler.registerIcon(imageURL);
 				});
 
+				// Re-plot the previously selected group
+				if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+					manager.plotGroup(DT.currentGroup, false);
+				}
+ 
 				// On first load only
 				if(!loadedOnce) {
-					// This callback will be fired when a selection in the layer tree changes
-					let treeCallback = null;
-					
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-						manager.removeAllAdditionalData();
-						manager.plotAdditionalData(selectedGroups);
+						manager.plotGroup(selectedGroups, false);
 					};
 
 					// Build and show the layer tree based on the metadata
-					manager.showControls("layer-tree.json", treeCallback, selectCallback);
+					manager.showControls(null, selectCallback);
+					manager.plotFirstGroup();
+
 					loadedOnce = true;
 				}
 			});

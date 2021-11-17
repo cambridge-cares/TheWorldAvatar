@@ -1,108 +1,176 @@
 /**
- * This class uses the metadata discovered by the DataRegistry
- * to read the location GeoJSON files and add them to the MapBox
- * map object as a new data source.
+ * This class handles the addition of sources to the MapBox map.
  */
 class SourceHandler {
 
     /**
-     * DataRegistry instance.
-     */
-    _dataRegistry;
-
-    /**
-     * MapBox map
+     * MapBox map.
      */
     _map;
 
     /**
+     * List of source IDs currently on map.
+     */
+    _currentSources = [];
+
+    /**
      * Initialise a new SourceHandler.
      * 
-     * @param {*} dataRegistry DataRegistry
-     * @param {*} map MapBox map 
+     * @param {?} map MapBox map 
      */
-    constructor(dataRegistry, map) {
-        this._dataRegistry = dataRegistry;
+    constructor(map) {
         this._map = map;
     }
 
     /**
-     * Adds the Fixed Data set location files as MapBox sources.
-     */
-    addFixedSources() {
-        let fixedMeta = this._dataRegistry.fixedMeta;
-        let fixedDataSets = fixedMeta["dataSets"];
-
-        fixedDataSets.forEach(fixedDataSet => {
-            let name = fixedDataSet["name"];
-            let locationFile = fixedDataSet["locationFile"];
-            locationFile = this._dataRegistry.getFixedDirectory() + "/" + locationFile;
-
-            console.log("INFO: Loading source file at " + locationFile);
-            
-            this._map.addSource(name, {
-                type: "geojson",
-                data: locationFile
-            });
-            console.log("INFO: Added fixed '" + name + "' source to MapBox.");
-        });
-    }
-
-    /**
-     * Adds the MapBox sources corresponding to the Additional Data sets
-     * represented by the input groups.
+     * Generates a new MapBox source from the definition taken
+     * from the meta.json file.
      * 
-     * @param {string[]} groups
+     * @param {String} rootDir absolute directory containing data 
+     * @param {JSONObject} dataSet data set definition
      */
-    addAdditionalSources(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
+    addSource(rootDir, dataSet) {
+        let name = dataSet["name"];
+        let type = dataSet["dataType"];
+        let location = dataSet["dataLocation"];
 
-        if(result != null) {
-            let dataSets = result["dataSets"];
+        // If the data location is NOT a URL, it will be a relative file path.
+        // If that's the case, make it absolute
+        if(!this.#isURL(location)) {
+            location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
+        }
 
-            for(var i = 0; i < dataSets.length; i++) {
-                let dataSet = dataSets[i];
-                if(!dataSet["locationFile"]) continue;
+        // Add source depending on type
+        switch(type) {
+            default:
+            case "geojson":
+                this.#addGeoJSONSource(dataSet, name, location);
+            break;
 
-                let name = dataSet["name"];
-                let directory = this._dataRegistry.getAdditionalDirectory(groups);
+            case "raster":
+                this.#addRasterSource(dataSet, name, location);
+            break;
 
-                let locationFile = dataSet["locationFile"];
-                locationFile = directory + "/" + locationFile;
-    
-                if(this._map.getSource(name) == null) {
-                    this._map.addSource(name, {
-                        type: "geojson",
-                        data: locationFile
-                    });
-                    console.log("INFO: Added additional '" + name + "' source to MapBox.");
-                }
-            }
+            case "vector":
+                this.#addVectorSource(dataSet, name, location);
+            break;
         }
     }
 
     /**
-     * Removes the MapBox sources corresponding to the Additional Data sets
-     * represented by the input groups.
-     * 
-     * @param {string[]} groups
+     * Removes all sources with the attribution:cmcl metadata.
      */
-     removeAdditionalSources(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
-        if(result != null) {
-            let dataSets = result["dataSets"];
-
-            for(var i = 0; i < dataSets.length; i++) {
-                let dataSet = dataSets[i];
-                if(!dataSet["locationFile"]) continue;
-
-                let name = dataSet["name"];
-                if(this._map.getSource(name) != null) {
-                    this._map.removeSource(name);
-                    console.log("INFO: Source '" + name + "' has been removed.");
-                }
+    removeSources() {
+        for(var i = 0; i < this._currentSources.length; i++) {
+            if(this._map.getSource(this._currentSources[i]) != null) {
+                this._map.removeSource(this._currentSources[i]);
             }
         }
+
+        this._currentSources = [];
+        console.log("INFO: Removed all Sources.");
+    }
+
+    /**
+     * Very dumb way of working out if the input location string
+     * is a remote URL (as opposed to a local file path).
+     * 
+     * @param {String} location data location 
+     * @returns true if URL
+     */
+    #isURL(location) {
+        if(location.startsWith("http")) return true;
+        if(location.startsWith("localhost")) return true;
+        if(location.startsWith("192")) return true;
+        if(location.startsWith("127")) return true;
+    }
+
+    /**
+     * Given a single dataSet definition, this method adds it as a 
+     * GeoJSON source to the MapBox map object.
+     * 
+     * @param {JSONObject} dataSet definition of data set
+     * @param {String} name name of the data set
+     * @param {String} location data location (URL or absolute file path)
+     */
+    #addGeoJSONSource(dataSet, name, location) {
+        this._currentSources.push(name);
+
+        // Determine source options
+        let options = {
+            "type": "geojson",
+            "data": location,
+            "generateId": false,
+            "attribution": "cmcl"
+        };
+
+        // Add clustering settings if present in dataSet definition
+        if(dataSet["cluster"]) options["cluster"] = dataSet["cluster"];
+        if(dataSet["clusterMaxZoom"]) options["clusterMaxZoom"] = dataSet["clusterMaxZoom"];
+        if(dataSet["clusterRadius"]) options["clusterRadius"] = dataSet["clusterRadius"];
+
+        // Add to map
+        this._map.addSource(name, options);
+        console.log("INFO: Added '" + name + "' as a GeoJSON source to MapBox.");
+    }
+
+    /**
+     * Given a single dataSet definition, this method adds it as a 
+     * Raster source to the MapBox map object.
+     * 
+     * @param {JSONObject} dataSet definition of data set
+     * @param {String} name name of the data set
+     * @param {String} location data location (URL)
+     */
+    #addRasterSource(dataSet, name, location) {
+        this._currentSources.push(name);
+
+        // Determine source options
+        let options = {
+            "type": "raster",
+            "url": location,
+            "attribution": "cmcl"
+        };
+
+        // Add additional raster settings if present in dataSet definition
+        if(dataSet["bounds"]) options["bounds"] = dataSet["bounds"];
+        if(dataSet["tiles"]) options["tiles"] = dataSet["tiles"];
+        if(dataSet["tileSize"]) options["tileSize"] = dataSet["tileSize"];
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        // Add to map
+        this._map.addSource(name, options);
+        console.log("INFO: Added '" + name + "' as a Raster source to MapBox.");
+    }
+
+    /**
+     * Given a single dataSet definition, this method adds it as a 
+     * Vector source to the MapBox map object.
+     * 
+     * @param {JSONObject} dataSet definition of data set
+     * @param {String} name name of the data set
+     * @param {String} location data location (URL)
+     */
+    #addVectorSource(dataSet, name, location) {
+        this._currentSources.push(name);
+
+        // Determine source options
+        let options = {
+            "type": "vector",
+            "data": location,
+            "attribution": "cmcl"
+        };
+
+        // Add additional vector settings if present in dataSet definition
+        if(dataSet["bounds"]) options["bounds"] = dataSet["bounds"];
+        if(dataSet["tiles"]) options["tiles"] = dataSet["tiles"];
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        // Add to map
+        this._map.addSource(name, options);
+        console.log("INFO: Added '" + name + "' as a Vector source to MapBox.");
     }
 
 }

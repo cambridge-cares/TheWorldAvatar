@@ -5,11 +5,6 @@
 class LayerHandler {
 
     /**
-     * DataRegistry instance.
-     */
-    _dataRegistry;
-
-    /**
       * MapBox map
       */
     _map;
@@ -18,110 +13,104 @@ class LayerHandler {
     /**
       * Initialise a new LayerHandler.
       * 
-      * @param {*} dataRegistry DataRegistry
-      * @param {*} map MapBox map 
+      * @param {Object} map MapBox map 
       */
-    constructor(dataRegistry, map) {
-        this._dataRegistry = dataRegistry;
+    constructor(map) {
         this._map = map;
     }
 
     /**
-     * Adds the Fixed Data sets as automatically generated
-     * MapBox layers.
-     */
-    addFixedLayers() {
-        let fixedMeta = this._dataRegistry.fixedMeta;
-        let fixedDataSets = fixedMeta["dataSets"];
-
-        let layers = [];
-        fixedDataSets.forEach(dataSet => {
-            layers.push(this.#addLayer(dataSet));
-        });
-
-        return layers;
-    }
-
-    /**
-     * Adds the Additional Data sets represented by the input groups as
-     * automatically generated MapBox layers.
+     * Adds a new layer to the MapBox map as defined by the
+     * input metadata.
      * 
-     * @param {string[]} groups
+     * @param {JSONObject} dataSet metadata for single dataset.
      */
-    addAdditionalLayers(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
-        let layers = [];
-
-        if(result != null) {
-            let dataSets = result["dataSets"];
-
-            for(var i = 0; i < dataSets.length; i++) {
-                let dataSet = dataSets[i];
-                if(!dataSet["locationType"]) continue;
-                layers.push(this.#addLayer(dataSet));
-            }
-        }
-
-        return layers;
-    }
-
-    /**
-     * Given a single dataset, determine the correct type of layer to create,
-     * create it, then return the MapBox id of that new layer.
-     * 
-     * @param {JSONObject} dataSet data set specification 
-     * @returns layer name
-     */
-    #addLayer(dataSet) {
-        let layerName = null;
+    addLayer(dataSet) {
         switch(dataSet["locationType"]) {
+            default:
             case "point":
-                layerName = this.#addPointLayer(dataSet);
+                this.#addPointLayer(dataSet);
                 break;
 
             case "symbol":
-                layerName = this.#addSymbolLayer(dataSet);
+                this.#addSymbolLayer(dataSet);
                 break;
 
             case "fill":
             case "polygon":
-                layerName = this.#addFillLayer(dataSet);
+                this.#addFillLayer(dataSet);
                 break;
 
             case "extrusion":
-                layerName = this.#addExtrusionLayer(dataSet);
+                this.#addExtrusionLayer(dataSet);
                 break;
 
             case "line":
-                layerName= this.#addLineLayer(dataSet);
+                this.#addLineLayer(dataSet);
                 break;
         }
-        this.orderLayers();
-        return [layerName, dataSet["locationType"]];
+
+        // Order the layers so that points are on top.
+        this.#orderLayers();
     }
 
     /**
-     * Removes the MapBox layers corresponding to the Additional Data sets
-     * represented by the input groups.
-     * 
-     * @param {string[]} groups
+     * Removes all layers with the provider:cmcl metadata.
      */
-     removeAdditionalLayers(groups) {
-        let result = this._dataRegistry.getAdditionalGroup(groups);
-        if(result != null) {
-            let dataSets = result["dataSets"];
+    removeLayers() {
+        var layers = this._map.getStyle().layers;
 
-            for(var i = 0; i < dataSets.length; i++) {
-                let dataSet = dataSets[i];
-                if(!dataSet["locationFile"]) continue;
-
-                let name = dataSet["name"];
-                if(this._map.getLayer(name) != null) {
-                    this._map.removeLayer(name);
-                    console.log("INFO: Layer '" + name + "' has been removed.");
-                }
+        for(var i = (layers.length - 1); i >= 0; i--) {
+            let layer = layers[i];
+            if(layer["metadata"] && layer["metadata"]["provider"] && layer["metadata"]["provider"] === "cmcl") {
+                this._map.removeLayer(layer["id"]);
             }
         }
+
+        console.log("INFO: Removed all Layers.");
+    }
+
+    /**
+     * Adds a layer to render a sky effect.
+     */
+    addSkyLayer() {
+        this._map.addLayer({
+            'id': 'sky',
+            'type': 'sky',
+            'paint': {
+                'sky-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0, 5, 0.3, 8, 1 ],
+                'sky-type': 'atmosphere',
+                'sky-atmosphere-sun-intensity': 5
+            }
+        });
+
+        this.setSunPosition(("dark" === DT.terrain) ? "sunsetStart" : "solarNoon");
+        console.log("INFO: Special sky layer has been added.");
+    }
+
+    /**
+     * Sets the position of the sun for the sky layer
+     * 
+     * @param {String} date 
+     */
+    setSunPosition(date) {
+        var sunPositions = SunCalc.getTimes(
+            Date.now(),
+            this._map.getCenter().lat,
+            this._map.getCenter().lng
+        );
+        if(date != null) date = sunPositions[date];
+
+        var center = this._map.getCenter();
+        var sunPos = SunCalc.getPosition(
+            date || Date.now(),
+            center.lat,
+            center.lng
+        );
+
+        var sunAzimuth = 180 + (sunPos.azimuth * 180) / Math.PI;
+        var sunAltitude = 90 - (sunPos.altitude * 180) / Math.PI;
+        this._map.setPaintProperty('sky', 'sky-atmosphere-sun', [sunAzimuth, sunAltitude]);
     }
 
     /**
@@ -136,6 +125,7 @@ class LayerHandler {
         let backupFillColor = this.#getRandomColor();
         let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
+       
         this._map.addLayer({
 			id: layerName,
 			source: sourceName,
@@ -147,9 +137,9 @@ class LayerHandler {
 				'visibility': 'visible'
 			},
 			paint: {
-				'circle-radius': ["case", ["has", "circle-radius"], ["get", "circle-radius"], 5],
+				'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 10],
+                'circle-opacity': 1.0,
 				'circle-color':  ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
-                'circle-opacity': ["case", ["has", "circle-opacity"], ["get", "circle-opacity"], 0.75],
 				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
 				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
                 'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 0.75]
@@ -180,8 +170,8 @@ class LayerHandler {
 				'visibility': 'visible'
 			},
 			layout: {
+                'icon-size':  ['interpolate', ['linear'], ['zoom'], 10, 0.33, 15, 0.66],
 				'icon-image': ["case", ["has", "icon-image"], ["get", "icon-image"], "circle-black"],
-				'icon-size':  ["case", ["has", "icon-size"], ["get", "icon-size"], 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true
 			}
@@ -265,12 +255,12 @@ class LayerHandler {
         return layerName;
     }
 
-     /**
+    /**
      * Adds a layer to create lines for location data.
      * 
      * @param {JSONObject} dataSet 
      */
-      #addLineLayer(dataSet) {
+    #addLineLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
@@ -308,7 +298,7 @@ class LayerHandler {
 			paint: {
                 'line-color': "#000000",
                 'line-opacity': 0.0,
-                'line-width': 10
+                'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12.5]
 			}
 		});
 
@@ -320,7 +310,7 @@ class LayerHandler {
      * Bump all point locations to the top of the stack, for better interactions
      * they should really be above any line or fill layers.
      */
-    orderLayers() {
+    #orderLayers() {
         var layers = this._map.getStyle().layers
         layers.forEach(layer => {
 
@@ -356,5 +346,6 @@ class LayerHandler {
     #getOutlineColor(fillColor) {
         return fillColor.replace("50%)", "35%)");
     }
+
 }
 // End of class.
