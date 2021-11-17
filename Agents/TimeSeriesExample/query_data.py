@@ -226,6 +226,9 @@ def json_add_metadata(feature_id, lon, lat, elec, water, gas):
 
 if __name__ == '__main__':
 
+    # Set Mapbox API key in DTVF 'overall-meta.json' file
+    utils.set_mapbox_apikey()
+
     # Initialise remote KG client with only query endpoint specified
     KGClient = jpsBaseLibView.RemoteStoreClient(utils.QUERY_ENDPOINT)
 

@@ -1,7 +1,7 @@
 # The purpose of this module is to provide settings and functions relevant to
 # both 1) instantiating and also 2) retrieving time series objects to/from KG
 # ===============================================================================
-
+import json
 import os
 from pathlib import Path
 from configobj import ConfigObj
@@ -11,7 +11,7 @@ from configobj import ConfigObj
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
 
 # Initialise global variables to be read from properties file
-global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
+global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR, MAPBOX_APIKEY
 
 # Define format of time series time entries: Year-Month-Day T hour:minute:second Z
 FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -40,7 +40,7 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT
+    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY
 
     # Read properties file
     props = ConfigObj(filepath)
@@ -52,6 +52,14 @@ def read_properties_file(filepath):
         raise KeyError('Key "output.directory" is missing in properties file: ' + filepath)
     if OUTPUT_DIR == '':
         raise KeyError('No "output.directory" value has been provided in properties file: ' + filepath)
+
+    # Extract Mapbox API key (required for visualisation using DTVF)
+    try:
+        MAPBOX_APIKEY = props['mapbox.apiKey']
+    except KeyError:
+        raise KeyError('Key "mapbox.apiKey" is missing in properties file: ' + filepath)
+    if MAPBOX_APIKEY == '':
+        raise KeyError('No "mapbox.apiKey" value has been provided in properties file: ' + filepath)
 
     # Extract SPARQL Query endpoint of KG
     try:
@@ -97,6 +105,30 @@ def create_sparql_prefix(abbreviation):
         iri = iri + '>'
 
     return 'PREFIX ' + abbreviation + ': ' + iri + ' '
+
+
+def set_mapbox_apikey():
+    """
+        Populates Mapbox API key field in 'overall-meta.json' file within the visualisation data folder
+        to API key provided in properties file
+    """
+
+    # Define global scope for global variables
+    global MAPBOX_APIKEY, OUTPUT_DIR
+
+    # Get filepath to "overall-meta.json" file in DTVF data folder
+    fp = Path.joinpath(Path(OUTPUT_DIR).parent, 'overall-meta.json')
+
+    # Read current overall meta data information
+    with open(fp, 'r') as f:
+        meta = json.load(f)
+
+    # Update API key information with key from properties file
+    meta['apiKey'] = MAPBOX_APIKEY
+
+    # Write updated overall meta data information
+    with open(fp, 'w') as f:
+        json.dump(meta, f, indent=4)
 
 
 # Run when module is imported
