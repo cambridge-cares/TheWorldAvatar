@@ -96,8 +96,6 @@ class DataRegistry {
      * @param {*} group 
      */
     #recurseFirstGroup(currentEntry, group) {
-        console.log(currentEntry);
-
         if(currentEntry["groups"]) {
             if(currentEntry["groups"]["label"] && currentEntry["groups"]["groups"]) {
                 group.push(currentEntry["groups"]["groups"][0]["directory"]);

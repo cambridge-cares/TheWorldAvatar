@@ -57,11 +57,16 @@
 		// HTMLElements for interaction events.
 		let manager = null;
 
+		// Enter your MapBox API here.
+		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
+		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
+		// domains via your MapBox account settings.
+		let mapboxAPI = "pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA";
+
 	</script>
 
 	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
 	<script type="module">
-
 		// Initialise a DigitalTwinManager (and store as a global variable)
 		manager = new DigitalTwinManager();
 

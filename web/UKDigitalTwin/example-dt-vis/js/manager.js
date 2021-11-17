@@ -73,27 +73,23 @@ class DigitalTwinManager {
 		this._currentRootDirName = rootDirName;
 		this._metaCallback = callback;
 
-		try {
-			let rootDir = this._rootDirectories[rootDirName];
-			if(rootDir == null) {
-				console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
-				return;
-			}
-
-			// Read all metadata
-			let registry = this;
-			this._registry.loadMetaData(rootDir, function() {
-				// Read the layer tree specification
-				let treeJSON = (rootDir.endsWith("/")) ? (rootDir + "tree.json") : (rootDir + "/tree.json");
-				let treePromise = registry._controlHandler.readTreeFile(treeJSON);
-				treePromise.then(() => {
-					console.log("INFO: Layer tree specification has been read.");
-					if(callback != null) callback();
-				});
-			});
-		} catch(err) {
-			console.log(err.stack);
+		let rootDir = this._rootDirectories[rootDirName];
+		if(rootDir == null) {
+			console.log("ERROR: Cannot locate root directory for key '" + rootDir + "'!");
+			return;
 		}
+
+		// Read all metadata
+		let registry = this;
+		this._registry.loadMetaData(rootDir, function() {
+			// Read the layer tree specification
+			let treeJSON = (rootDir.endsWith("/")) ? (rootDir + "tree.json") : (rootDir + "/tree.json");
+			let treePromise = registry._controlHandler.readTreeFile(treeJSON);
+			treePromise.then(() => {
+				console.log("INFO: Layer tree specification has been read.");
+				if(callback != null) callback();
+			});
+		});
 	}
 
 	/**
@@ -186,7 +182,6 @@ class DigitalTwinManager {
 
 					selects[i].value = selectOptions[j].value;
 					if(depth != (group.length - 1)) {
-						console.log("CHANGED SELECT " + selects[i].id);
 						selects[i].onchange();
 						this.#forceSelects(group, depth + 1);
 					}
@@ -245,10 +240,8 @@ class DigitalTwinManager {
 		};
 
 		// Create the map instance
-		mapboxgl.accessToken = this._registry.globalMeta["apiKey"];
+		mapboxgl.accessToken = mapboxAPI;
 		this._map = new mapboxgl.Map(defaultOptions);
-
-		console.log("INFO: Map object has been initialised.");
 		
 		// Now that we have a map, do some initialisation of handlers
 		this._sourceHandler = new SourceHandler(this._map);
@@ -263,6 +256,7 @@ class DigitalTwinManager {
 			this._timeseriesHandler
 		);
 		
+		console.log("INFO: Map object has been initialised.");
 		return this._map;
 	}
 
