@@ -37,6 +37,9 @@ CapacityDiff, MatchType, MatchYear, MatchGenType, ConfidenceScore, ConfidenceRes
 
 Many of these are important if you are interested in the internal workings, however, if you just want the output, then use "outputDUKESToBMRS" (if it exists), ONLY IF "ConfidenceResult" = 1. This will give a suggested EIC code for each mapped DUKES station that is deemed 'close enough' (as per your sensitivity input). These are exclusive. So use this for your final output. 
 
+The two remaining columns are not used by this script, but are used elsewhere to find the output at a given time, for a DUKES station (obtained from BMRS through this mapping): 
+Time, Output
+
 ## Inputs
 The script takes two inputs (both the primary function, and running it through __main__ with args). These are the name of the excel spreadsheet, and a sensitivity value. So: 
 - Excel Spreadsheet Name (contents similar to the notepad example noted above). 
