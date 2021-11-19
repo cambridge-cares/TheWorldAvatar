@@ -126,6 +126,13 @@ def run_query(Key, Year, Month, Day, Period):
     return IDOutput
 
 
+def empty_query_response(liveGeneratorData):
+    #See if there are a few outputs recieved. If not, this should not replace the old data.
+    if (len(liveGeneratorData) > 3):
+        return 0 #It is NOT empty.
+    return 1 #It is empty
+
+
 
 ###Primary Function###
 def live_power(ExcelName, Key, Year, Month, Day, Period):
@@ -137,7 +144,11 @@ def live_power(ExcelName, Key, Year, Month, Day, Period):
         #Day, eg. 01 (two characters, the first being a zero if it is <10, this being the day into the month, so 1-31),
         #Period, eg. 01 (could be 1 or two characters, as using a zero if it is <10 is optional).  The period is the half hour into the day, from 1-48.
     #The same time is used for the whole query. 
-    liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs. 
+    liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
+    if empty_query_response(liveGeneratorData):
+        #See if anything was recieved in this query. 
+        return 0
+    
     #Read DUKES Stations from Excel
     data = pd.read_excel(ExcelName) #Dataframe including DUKES stations.
 
@@ -159,7 +170,7 @@ def live_power(ExcelName, Key, Year, Month, Day, Period):
                 if (data['outputDUKESToBMRSID'][i] in gen):
                     if (gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i]):
                         data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
-                    elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")):
+                    elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")): 
                         #The station name could contain a number, which we can check with a looser method here. Here we see if, after removing the station name from the gen name, if the only remaining characters are numbers or in . -_". 
                         #print("TAKE2: " + data['outputDUKESToBMRSID'][i] + ", " + gen)
                         data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
@@ -169,10 +180,12 @@ def live_power(ExcelName, Key, Year, Month, Day, Period):
 
     #Re-export to excel, with times and outputs. 
     data.to_excel(ExcelName, index = False)
+    return 1
 
 
 
 ###Main Function###
 if __name__ == "__main__":
+    #NEED KEY
     live_power('Input.xlsx', '', '2021', '01', '01', '01')
 

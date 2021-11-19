@@ -29,6 +29,7 @@ The Time is the time of the query is broken down into the Year, Month, Day, and 
 ## Outputs
 The excel file is edited and a log file is also created. So the outputs are: 
 - Edits to the inputted excel file (same name). 
+The "primary function" (see python script) should also be noted to return a 1 or 0. 1 is returned if the query recieved data, 0 if it did not (eg. an invalid time was used). 
 
 ## Process
 The BMRS data gives output per generation unit. Each station has multiple generation units. DUKES stations should be mapped to BMRS station data. Using the IDs from this, the information (via the naming convention, eg. Station POWER with generation units POWER-1, and POWER-2). These outputs are summed for each station. 
