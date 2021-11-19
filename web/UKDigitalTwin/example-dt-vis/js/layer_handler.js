@@ -125,7 +125,6 @@ class LayerHandler {
         let backupFillColor = this.#getRandomColor();
         let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
-       
         this._map.addLayer({
 			id: layerName,
 			source: sourceName,
@@ -159,26 +158,77 @@ class LayerHandler {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
-        this._map.addLayer({
-			id: layerName,
-			source: sourceName,
+        // Layer options
+        let options = {
+            id: layerName,
+            source: sourceName,
             metadata: {
                 provider: "cmcl"
             },
             type: 'symbol',
-			layout: {
-				'visibility': 'visible'
-			},
-			layout: {
-                'icon-size':  ['interpolate', ['linear'], ['zoom'], 10, 0.33, 15, 0.66],
-				'icon-image': ["case", ["has", "icon-image"], ["get", "icon-image"], "circle-black"],
+            layout: {
+                "icon-image": ["get", "icon-image"],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.35, 16, 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true
-			}
-		});
+            }
+        };
 
+        // If clustering is on, then we want separate layers for clustered and non-clustered points.
+        // The above can become the unclustered points, and we'll deal with the clusterd points in a
+        // layer added within the #addClusterLayers() method.
+        // Note that it is possible to handle clustering within a single layer, but this seems to
+        // cause strange behaviour in MapBox.
+        if(eval(dataSet["cluster"])) {
+             options["filter"] = ['!', ['has', 'point_count']];
+             this.#addClusterLayers(dataSet);
+        }
+        this._map.addLayer(options);
+
+        // Note that we only return the name of the non-clustered layer here. At the moment, I
+        // only want mouse interactions on that layer (i.e. no clicks on clusters).
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
+    }
+
+    /**
+     * Clusters are represented on a new layer so that they can be styled differently, this
+     * method adds that layer to the map.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+    #addClusterLayers(dataSet) {
+        let layerName = dataSet["name"];
+        let sourceName = dataSet["name"];
+
+        let options = {
+            id: layerName + "_cluster",
+            source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+            type: 'symbol',
+            filter: ['has', 'point_count'],
+            layout: {
+                "icon-image": ["get", "icon-image"],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.35, 16, 1.0],
+                'icon-allow-overlap': true,
+                'icon-ignore-placement': true,
+                
+                'text-field': '{point_count_abbreviated}',
+                'text-font': ['Arial Unicode MS Bold'],
+                'text-size': 12,
+                'text-anchor': 'center',
+                'text-allow-overlap': true,
+                'text-ignore-placement': true
+            },
+            paint: {
+                 'text-color': ["get", "text-color"]
+            }
+        };
+
+        this._map.addLayer(options);
+        console.log("INFO: Added special '" + layerName + "' cluster layer to MapBox.");
     }
 
 
@@ -303,6 +353,7 @@ class LayerHandler {
 		});
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        console.log("INFO: Added special '" + layerName + "' interaction layer to MapBox.");
         return layerName;
     }
     

@@ -244,8 +244,8 @@ class ControlHandler {
 				speed: 1.6,
 				pitch: 0.0,
 				bearing: 0.0,
-				zoom: this._defaultZoom,
-				center: this._defaultCenter
+				zoom: this._registry.globalMeta["defaultZoom"],
+				center: this._registry.globalMeta["defaultCenter"]
 			});
 	
 		} else if(mode === "pitch") {
@@ -254,8 +254,8 @@ class ControlHandler {
 				speed: 1.6,
 				pitch: 65,
 				bearing: -30,
-				zoom: this._defaultZoom,
-				center: this._defaultCenter
+				zoom: this._registry.globalMeta["defaultZoom"],
+				center: this._registry.globalMeta["defaultCenter"]
 			});
 		} 
 	}
@@ -373,6 +373,15 @@ class ControlHandler {
 			if(this._map.getLayer(layerID + "_clickable") != null) {
 				this._map.setLayoutProperty(
 					layerID + "_clickable",
+					"visibility",
+					(visible ? "visible" : "none")
+				);
+			}
+
+			// Is there a corresponding _cluster layer?
+			if(this._map.getLayer(layerID + "_cluster") != null) {
+				this._map.setLayoutProperty(
+					layerID + "_cluster",
 					"visibility",
 					(visible ? "visible" : "none")
 				);

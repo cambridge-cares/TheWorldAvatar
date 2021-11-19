@@ -101,13 +101,13 @@ class SourceHandler {
             "type": "geojson",
             "data": location,
             "generateId": false,
-            "attribution": "cmcl"
         };
 
         // Add clustering settings if present in dataSet definition
         if(dataSet["cluster"]) options["cluster"] = dataSet["cluster"];
         if(dataSet["clusterMaxZoom"]) options["clusterMaxZoom"] = dataSet["clusterMaxZoom"];
         if(dataSet["clusterRadius"]) options["clusterRadius"] = dataSet["clusterRadius"];
+        if(dataSet["clusterProperties"]) options["clusterProperties"] = dataSet["clusterProperties"];
 
         // Add to map
         this._map.addSource(name, options);

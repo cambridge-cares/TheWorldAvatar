@@ -61,7 +61,7 @@
 		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
 		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
 		// domains via your MapBox account settings.
-		let mapboxAPI = "pk.eyJ1Ijoiam1hcnNkZW4iLCJhIjoiY2ttZzNqM3IxM2JyYzJ2bndzZnIxeG1lciJ9.uwb9ZnBO3vWssvcBsXcFeA";
+		let mapboxAPI = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
 
 	</script>
 
@@ -74,11 +74,12 @@
 		let rootDirectories = {
 			"Mock Data #1": "./data/set-1",
 			"Mock Data #2": "./data/set-2",
+			"Cluster Test": "./data/set-3"
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Mock Data #1", function() {
+		manager.readMetadata("Cluster Test", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -120,9 +121,6 @@
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
 
-				// Re-add the sky layer
-				manager.setSkyDetails();
-
 				// Re-register icon images used by this visualisation
 				let winURL = window.location;
 				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
@@ -132,6 +130,9 @@
 					let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
 					iconHandler.registerIcon(imageURL);
 				});
+
+				// Re-add the sky layer
+				manager.setSkyDetails();
 
 				// Re-plot the previously selected group
 				if(DT.currentGroup != null && DT.currentGroup.length > 0) {

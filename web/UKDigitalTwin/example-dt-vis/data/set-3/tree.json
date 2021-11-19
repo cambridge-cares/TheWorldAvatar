@@ -1,0 +1,22 @@
+[
+    {
+        "groupName": "Locations",
+        "layers": [               
+            {
+                "layerName": "Alpha Locations",
+                "defaultState": "visible",
+                "layerIDs": ["alpha-layer"]
+            },
+            {
+                "layerName": "Beta Locations",
+                "defaultState": "visible",
+                "layerIDs": ["beta-layer"]
+            },
+            {
+                "layerName": "Gamma Locations",
+                "defaultState": "visible",
+                "layerIDs": ["gamma-layer"]
+            }
+        ]
+    }
+]

@@ -1,0 +1,40 @@
+{
+    "dataSets": [
+        {
+            "name": "alpha-layer",
+            "dataType": "geojson",
+            "dataLocation": "alpha.geojson",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "alpha-empty"],
+                "text-color": ["string", "#0050bf"]
+            }
+        },
+        {
+            "name": "beta-layer",
+            "dataType": "geojson",
+            "dataLocation": "beta.geojson",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "beta-empty"],
+                "text-color": ["string", "#bc0000"]
+            }
+        },
+        {
+            "name": "gamma-layer",
+            "dataType": "geojson",
+            "dataLocation": "gamma.geojson",
+            "locationType": "symbol",
+            "cluster": true,
+            "clusterRadius": 30,
+            "clusterProperties": {
+                "icon-image": ["string", "gamma-empty"],
+                "text-color": ["string", "#00dd4a"]
+            }
+        }
+    ]
+}
