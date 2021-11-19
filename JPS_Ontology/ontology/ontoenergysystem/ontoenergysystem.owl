@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 November 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">18 November 2021</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoEnergySystem is an ontology developed for representing energy systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -388,6 +388,7 @@
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#CommercialElectricityConsumption"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#IndustrialElectricityConsumption"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
@@ -419,6 +420,7 @@
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#DomesticElectricityConsumption"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#Non-DomesticElectricityConsumption"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#TotalElectricityConsumption"/>
                         </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
