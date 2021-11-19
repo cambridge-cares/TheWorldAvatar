@@ -3,13 +3,12 @@ import random
 import time
 
 from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
-from util.MarieLogger import MarieIOLog, MarieMessage, MarieError
 from util.StopWords import removeStopWords
 from Wikidata_Query.WikiQueryInterface import WikiQueryInterface
 from JPS_Query.JPSQueryInterface import JPSQueryInterface
 from Agent_Query.AgentQueryInterface import AgentQueryInterface
 from LDA.LDA_classifier import LDAClassifier
-
+from Agent_Query.AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage, MarieError
 
 class CoordinateAgent:
     def __init__(self):
@@ -45,17 +44,7 @@ class CoordinateAgent:
         topics = ['agent'] + topics
 
         for topic in topics:
-            # rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
             rst = self.topic_function_map[topic](_question)
-
-            # parse_result = self.parse_question(topic, _question)
-            # try:
-            #     # select the function and model according to the topic
-            #     rst = self.topic_function_map[topic](self.topic_model_map[topic], _question)
-            # except Exception:
-            #     logging.warning('{} failed to provide an answer for {}'.format(topic, _question))
-            #     logging.error('{}'.format(traceback.format_exc()))
-
             if rst is None:
                 pass
             else:
@@ -94,6 +83,8 @@ if __name__ == '__main__':
     ca = CoordinateAgent()
     # for i in range(0,2):
     #     ca.run('aromatic hydrocarbons with mass less than 170')
+    # rst = ca.run('what is the pce of CC')
+    # print(rst)
     for i in range(0, 2):
         with open('test_questions') as f:
             questions = f.readlines()

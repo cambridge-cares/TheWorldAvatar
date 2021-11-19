@@ -106,6 +106,7 @@ def create_labelled_questions(inputs_for_creating_questions):
 
 def create_questions_from_agent(agent_name):
     questions = []
+    original_questions = [] # store the questions in their original forms
     apq = AgentPropertyQuery()
     agent_attributes = apq.get_agent_attributes(agent_name)
     # 1. iterate through all the outputs
@@ -158,8 +159,8 @@ def create_questions_from_agent(agent_name):
         questions = questions + create_labelled_questions(input_for_creating_question)
     questions_blk = ''.join(questions)
     block = '''## intent: %s\n %s ''' % (agent_name.replace('.owl', ''), questions_blk)
-
-    return block, questions
+    original_questions_list = questions
+    return block, questions, original_questions_list
 
 
 def generate_numerical_for_qualifiers(qualifier):
@@ -230,12 +231,27 @@ def get_smiles(id_list):
 
 logger = logging.getLogger('Function I/O')
 logger.setLevel(logging.INFO)
-blk_1, blk_1_questions = create_questions_from_agent('Thermo_Agent.owl')
+blk_1, blk_1_questions, original_questions_1 = create_questions_from_agent('Thermo_Agent.owl')
 logger.info('{} Thermo Agent Questions Are Created'.format(len(blk_1_questions)))
-blk_2, blk_2_questions = create_questions_from_agent('PCE_Agent.owl')
+blk_2, blk_2_questions, original_questions_2 = create_questions_from_agent('PCE_Agent.owl')
 logger.info('{} PCE    Agent Questions Are Created'.format(len(blk_2_questions)))
 
 with open('./training/data/nlu.md', 'wb') as f:
     f.write(blk_1.encode('utf-8'))
     f.write(blk_2.encode('utf-8'))
     f.close()
+
+# original_question = original_questions_1 + original_questions_2
+selected_questions_for_evaluation_stdc = random.sample(original_questions_1, 50)
+selected_questions_for_evaluation_pce = random.sample(original_questions_2, 50)
+
+with open('./training/data/question_list_stdc', 'wb') as f:
+    f.write(json.dumps(selected_questions_for_evaluation_stdc).encode('utf-8'))
+    f.close()
+
+with open('./training/data/question_list_pce', 'wb') as f:
+    f.write(json.dumps(selected_questions_for_evaluation_pce).encode('utf-8'))
+    f.close()
+
+
+

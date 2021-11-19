@@ -109,6 +109,8 @@ class ThermoAgent:
             self.keys = json.loads(f.read())
 
     def find_IRI(self, _key):
+        if _key is None:
+            return None
         return self.dict[_key]
 
     def findOntoSpecies(self, species):
@@ -123,6 +125,10 @@ class ThermoAgent:
         temperature, pressure = unitConversion(temperature, pressure)
         MarieMessage('temperature :{}, pressure: {}'.format(temperature, pressure))
         ontospecies_iri_list = self.findOntoSpecies(species)
+        if ontospecies_iri_list is None:
+            MarieError('No ontospecies iri found for this species {}'.format(species))
+            return None
+
         if len(ontospecies_iri_list) == 0:
             MarieError('No ontospecies iri found for this species {}'.format(species))
         else:

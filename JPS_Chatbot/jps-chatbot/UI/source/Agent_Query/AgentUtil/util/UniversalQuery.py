@@ -1,6 +1,7 @@
 import urllib.request
 import urllib.response
 import logging
+from http.client import InvalidURL
 from urllib.error import HTTPError, URLError
 import urllib.parse
 import urllib.request
@@ -73,6 +74,9 @@ def make_simple_http_request(_url, _data, _thermo_agent):
         MarieError('URL Error with URL {}'.format(full_url))
         return None
 
+    except InvalidURL:
+        MarieError('URL Error with URL {}'.format(full_url))
+        return None
 
 # simple test of the module
 if __name__ == '__main__':

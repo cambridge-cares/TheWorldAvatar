@@ -28,9 +28,5 @@ AGENT_OWL_DIR = os.path.join(AGENT_QUERY_DIR, 'Agents')
 
 JPS_QUERY_DIR = os.path.join(ROOT_DIR, 'JPS_Query')
 JPS_MODELS_DIR = os.path.join(JPS_QUERY_DIR, 'models')
-print('FILE_DIR', FILE_DIR)
-print('WIKI_MODEL_DIR', WIKI_MODELS_DIR)
-print('AGENT_MODEL_DIR', AGENT_MODELS_DIR)
-print('JPS_MODEL_DIR', JPS_MODELS_DIR)
 
-
+print('ROOT_DIR', ROOT_DIR)

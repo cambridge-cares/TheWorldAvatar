@@ -4,6 +4,7 @@ import sys
 
 # source_path = os.path.join(file_path, 'UI/source')
 # sys.path.insert(1, source_path)
+import time
 
 from pprint import pprint
 
@@ -15,8 +16,8 @@ from functools import lru_cache
 
 # sys.path.insert(1, os.path.realpath(os.path.dirname(__file__)))
 # sys.path.append('/source')
-from UI.source.CoordinateAgent import CoordinateAgent
-from UI.source.full_test import FullTest
+from CoordinateAgent import CoordinateAgent
+from full_test import FullTest
 
 app = Flask(__name__)
 CORS(app)
@@ -24,7 +25,7 @@ socketio = SocketIO(app)
 socketio.init_app(app, cors_allowed_origins="*")
 
 # Instantiate Coordinate Agent
-coordinate_agent = CoordinateAgent(socketio)
+coordinate_agent = CoordinateAgent()
 
 @app.route('/start_test')
 def start_test():
@@ -34,8 +35,14 @@ def start_test():
 
 
 @app.route('/log')
-def get_log():
-    return send_file('question-log.txt')
+def stream():
+    def generate():
+        with open('Marie.log') as f:
+            while True:
+                yield f.read()
+                time.sleep(1)
+
+    return app.response_class(generate(), mimetype='text/plain')
 
 
 @app.route('/chemistry_chatbot/static/<path:path>')

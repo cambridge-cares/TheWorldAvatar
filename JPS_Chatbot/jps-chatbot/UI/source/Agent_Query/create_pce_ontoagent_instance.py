@@ -4,8 +4,8 @@ from ontoagent_generator import OntoAgentGenerator
 from location import FILE_DIR
 agent = {
     "question_templates":
-        ['<attribute> OPF with donor <species>',
-         '<attribute> <species>'],
+        ['<attribute> of OPF with donor <species>',
+         '<attribute> of <species>'],
     "http_url": "http://kg.cmclinnovations.com:5001/api/model/predict",
     "outputs": [
         {

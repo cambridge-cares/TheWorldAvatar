@@ -19,8 +19,8 @@
   <MSM.:hasInput rdf:resource="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915"/>
   <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://kg.cmclinnovations.com:5001/api/model/predict</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt;</MSM.:hasQuestionTemplates>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
 
 <MSM.:MessageContent rdf:about="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c">

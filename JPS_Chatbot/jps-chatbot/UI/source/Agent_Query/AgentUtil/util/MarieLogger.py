@@ -1,5 +1,11 @@
 import json
 import logging
+import os
+
+if __name__ == '__main__':
+    from location import ROOT_DIR
+else:
+    from .location import ROOT_DIR
 
 
 def MarieLog(func):
@@ -16,6 +22,7 @@ def MarieLog(func):
 
 def MarieQuestionLog(func):
     def wrapper(*args, **kwargs):
+        logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='a', level=logging.DEBUG)
         logger = logging.getLogger('Question')
         logger.setLevel(logging.INFO)
         logger.info('\n======================== starting a question =========================')
@@ -26,6 +33,9 @@ def MarieQuestionLog(func):
 
 
 def MarieError(err):
+    # for handler in logging.root.handlers[:]:
+    #     logging.root.removeHandler(handler)
+    logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='a', level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
     logger = logging.getLogger('Error')
     logger.setLevel(logging.DEBUG)
@@ -33,7 +43,9 @@ def MarieError(err):
 
 
 def MarieMessage(message):
-    logging.basicConfig(level=logging.DEBUG)
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='a', level=logging.DEBUG)
     logger = logging.getLogger('Message')
     logger.setLevel(logging.DEBUG)
     logger.info(message)
@@ -41,7 +53,9 @@ def MarieMessage(message):
 
 def MarieIOLog(func):
     def wrapper(*args, **kwargs):
-        logging.basicConfig(level=logging.DEBUG)
+        # for handler in logging.root.handlers[:]:
+        #     logging.root.removeHandler(handler)
+        # logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='w', level=logging.DEBUG)
         logger = logging.getLogger('Function I/O')
         logger.setLevel(logging.DEBUG)
         rst = func(*args)
@@ -52,3 +66,17 @@ def MarieIOLog(func):
         return rst
 
     return wrapper
+
+
+@MarieIOLog
+def mock_function(input):
+    return 'hello' + input
+
+@MarieQuestionLog
+def mock_questions(q):
+    return 'this is a question {}'.format(q)
+
+
+if __name__ == '__main__':
+    mock_function(' world')
+    mock_questions('what is the pce of somethign')
