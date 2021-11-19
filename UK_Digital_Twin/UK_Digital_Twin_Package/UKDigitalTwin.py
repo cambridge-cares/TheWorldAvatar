@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 June 2021         #
+# Last Update Date: 18 Nov 2021          #
 ##########################################
 
 """This module defines the sub-graph memebers of UK digital twin and the URI fragments used to construct the A-box"""
@@ -29,11 +29,11 @@ class UKDigitalTwin:
     # endpoint = EndPointConfigAndBlazegraphRepoLabel.UKDigitalTwinKG
     
     """ Node Names """
-    baseURL = "http://www.theworldavatar.com/kb" 
-    
+    baseURL = "http://www.theworldavatar.com/kb"    
     topNode = "UK_Digital_Twin"  # Top level node
     
     powerPlant = "UK_power_plant" # Second level node
+    electricitySystem = "UK_electricity_system" # The newly addded second level node
     energyConsumption = "UK_energy_consumption" # Second level node
     gridTopology = "UK_power_grid_topology" # Second level node
     powerGridModel = "UK_power_grid" # Second level node
@@ -46,9 +46,9 @@ class UKDigitalTwin:
         }
     
     consumptionDataVersion = {
-        2017: "energyConsumptionIn2017",
-        2019: "energyConsumptionIn2019",
-		9999: "energyConsumptionIn9999"
+        2017: "electricityConsumptionIn2017",
+        2019: "electricityConsumptionIn2019",
+		9999: "electricityConsumptionIn9999"
         }
     
     
@@ -86,7 +86,7 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
     if nodeIdentifier == UKDigitalTwin.topLevelNode and nodeName == UKDigitalTwin.topNode and dataOrModelVersion == None:
         _topNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.topNode
         return _topNode
-    elif (nodeName == UKDigitalTwin.powerPlant or nodeName == UKDigitalTwin.energyConsumption\
+    elif (nodeName == UKDigitalTwin.powerPlant or nodeName == UKDigitalTwin.energyConsumption or nodeName == UKDigitalTwin.electricitySystem \
           or nodeName == UKDigitalTwin.gridTopology or nodeName == UKDigitalTwin.powerGridModel):
         if nodeIdentifier == UKDigitalTwin.secondLevelNode and dataOrModelVersion == None:
               _secondLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.OWL + UKDigitalTwin.HASH + nodeName
@@ -95,7 +95,7 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
               if nodeName == UKDigitalTwin.powerPlant and dataOrModelVersion in UKDigitalTwin.dukesDataVersion.keys():
                   _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.dukesDataVersion[dataOrModelVersion]\
                   + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.dukesDataVersion[dataOrModelVersion]
-                  print('_thirdLevelNode', _thirdLevelNode)
+                  # print('_thirdLevelNode', _thirdLevelNode)
                   return _thirdLevelNode
               elif nodeName == UKDigitalTwin.energyConsumption and dataOrModelVersion in UKDigitalTwin.consumptionDataVersion.keys():
                   _thirdLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.consumptionDataVersion[dataOrModelVersion]\
@@ -107,10 +107,10 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
                       + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.Model[dataOrModelVersion]
                   return _thirdLevelNode
               else:
-                  print ('Cannot construct the nodeLevel 3 URI, please check the input data')
-                  
+                  raise Exception('Cannot construct the nodeLevel 3 URI, please check the input data.')
+        
         elif nodeIdentifier == UKDigitalTwin.fourthLevelNode: # the return of the fourth level node is an array
-              if nodeName == UKDigitalTwin.powerGridModel and dataOrModelVersion in UKDigitalTwin.Model.keys() and subModelName==None:
+              if nodeName == UKDigitalTwin.powerGridModel and dataOrModelVersion in UKDigitalTwin.Model.keys() and subModelName == None:
                   _fourthLevelNode = []
                   for submodel in UKDigitalTwin.SubModel.keys():
                       __fourthLevelNode = UKDigitalTwin.ukdigitaltwin + UKDigitalTwin.SLASH + nodeName + UKDigitalTwin.SLASH + UKDigitalTwin.Model[dataOrModelVersion]\
@@ -123,15 +123,15 @@ def nodeURIGenerator (nodeIdentifier, nodeName, dataOrModelVersion, subModelName
                           + UKDigitalTwin.SLASH + UKDigitalTwin.SubModel[subModelName] + UKDigitalTwin.OWL + UKDigitalTwin.HASH + UKDigitalTwin.SubModel[subModelName] 
                    return _fourthLevelNode
               else:
-                  print ('Cannot construct the nodeLevel 4 URI, please check the input data') 
+                  raise Exception ('Cannot construct the nodeLevel 4 URI, please check the input data') 
         else:
-            print ('Cannot construct the nodeLevel 2/3 URI, please check the input data') 
+            raise Exception ('Cannot construct the nodeLevel 2/3 URI, please check the input data') 
     else:
-        print ('Cannot construct the nodeLevel 1/2/3 URI, please check the input data')
-        return
+        raise Exception ('Cannot construct the nodeLevel 1/2/3 URI, please check the input data')
     
 if __name__ == '__main__':
-    uri = nodeURIGenerator(4, UKDigitalTwin.powerGridModel, 29)
+    # uri = nodeURIGenerator(2, UKDigitalTwin.electricitySystem, None)
+    uri = nodeURIGenerator(3, UKDigitalTwin.energyConsumption, 2017)
     print (uri)
 
 

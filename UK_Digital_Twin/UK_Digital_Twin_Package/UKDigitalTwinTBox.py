@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Date: 27 May 2021                      #
+# Date: 17 Nov 2021                      #
 ##########################################
 
 """This class lists out the T-boxes used by UK digital twin"""
@@ -57,3 +57,6 @@ class UKDigitalTwinTBox:
     
     """OWL"""
     owl = "http://www.w3.org/2002/07/owl#"
+    
+    """OntoEnergySystem"""
+    ontoenergysystem = "http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#"

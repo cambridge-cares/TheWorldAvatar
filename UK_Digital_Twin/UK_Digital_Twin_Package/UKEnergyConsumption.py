@@ -19,6 +19,7 @@ class UKEnergyConsumption:
     endpoint = EndPointConfigAndBlazegraphRepoLabel.UKEnergyConsumptionKG
     
     """Node keys"""
+    ElectricityConsumptionKey = "Electricity_Consumption_of_"
     TotalConsumptionKey = "Total_Electricity_Consumption_of_"
     DomesticConsumptionKey = "Domestic_Electricity_Consumption_of_"
     IndustrialAndCommercialConsumptionKey = "Industrial_and_Commercial_Electricity_Consumption_of_"

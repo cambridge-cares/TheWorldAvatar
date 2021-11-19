@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 09 August 2021       #
+# Last Update Date: 17 Nov 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -20,6 +20,7 @@ from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import DUKESDataProperty as DUKES
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
+from UK_Digital_Twin_Package.LACodeOfOfficialRegion import LACodeOfOfficialRegion as LACode
 from UK_Digital_Twin_Package.OWLfileStorer import storeGeneratedOWLs, selectStoragePath, readFile, specifyValidFilePath
 
 """Notation used in URI construction"""
@@ -45,7 +46,6 @@ userSpecifiePath_Sleepycat = None # user specified path
 userSpecified_Sleepycat = False # storage mode: False: default, True: user specified
 defaultPath_Sleepycat = ukpp.SleepycatStoragePath
 
-
 """T-Box URI"""
 ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
 ontoecape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load()
@@ -59,10 +59,12 @@ ontocape_physical_dimension     = owlready2.get_ontology(t_box.ontocape_physical
 ontocape_coordinate_system      = owlready2.get_ontology(t_box.ontocape_coordinate_system).load()
 ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units).load()
 
-
 """User specified folder path"""
 filepath = None # user specified path
 userSpecified = False # storage mode: False: default, True: user specified
+
+"""UK enelectricity system URL"""
+UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
 """ Create the DUKESDataProperty Instance by specifying its version """
@@ -119,7 +121,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
         gpslocationArrays, regionArrays, root_uri, fileNum = createDUKESDataPropertyInstance(version)     
         
     counter = 0
-    while(counter < fileNum):
+    while(counter < fileNum): 
         print('The counter is:')
         print(counter)
         plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
@@ -155,7 +157,12 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoecape_technical_system.TechnicalSystem.iri)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
+            graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'Asset'))) # The power plant is specifically declared as an asset  
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
+            
+            # Link the power plant with the UK electricity system
+            graph.add((URIRef(UKElectricitySystem), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
+            graph.add((URIRef(UKElectricitySystem), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
             
             # Add connection between its father node
             graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
@@ -206,38 +213,48 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(pp_namespace + ukpp.OwnerKey + plantname), RDF.type, URIRef(ontoeip_upper_level_system_v1.Organization.iri)))
             graph.add((URIRef(pp_namespace + ukpp.OwnerKey + plantname), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
     
-            graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + region)))
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
-                       URIRef(pp_namespace + ukpp.LongitudeKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
-                       URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))  
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
-            graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
-                       URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-                       URIRef(ontocape_SI_units.m.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                       Literal(float(gpslocation[0].strip('\n')))))
-            graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
-                       URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-                       URIRef(ontocape_SI_units.m.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                       Literal(float(gpslocation[1].strip('\n')))))
+            
+            # Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
+            graph.add((URIRef(pp_root_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + region)))
+            graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(t_box.ontoenergysystem + 'AdministrativeDivision')))
+            graph.add((URIRef(t_box.dbr + region), URIRef(t_box.ontoenergysystem + 'hasLocalAuthorityCode'), Literal(str(LACode[region]))))
+            graph.add((URIRef(pp_root_node), URIRef(t_box.ontoenergysystem + 'hasWGS84LatitudeLongitude'), \
+                       Literal(gpslocation[0].strip('\n') + '#' + gpslocation[1].strip('\n'), datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
+            
+            ## The old version of the representation of the GPS location
+            # graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.hasAddress.iri), URIRef(t_box.dbr + region)))
+            
+            # graph.add((URIRef(pp_root_node), URIRef(ontoecape_space_and_time_extended.hasGISCoordinateSystem.iri), URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname)))
+            # graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), RDF.type, URIRef(ontoecape_space_and_time_extended.ProjectedCoordinateSystem.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_x.iri),\
+            #            URIRef(pp_namespace + ukpp.LongitudeKey + plantname)))
+            # graph.add((URIRef(pp_namespace + ukpp.CoordinateSystemKey + plantname), URIRef(ontoecape_space_and_time_extended.hasProjectedCoordinate_y.iri),\
+            #            URIRef(pp_namespace + ukpp.LantitudeKey + plantname)))
+            # graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))   
+            # graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontoecape_space_and_time.StraightCoordinate.iri)))  
+            # graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasDimension.iri), URIRef(ontocape_physical_dimension.length.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'y-axis')))
+            # graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_coordinate_system.refersToAxis.iri), URIRef(t_box.ontoecape_space_and_time + 'x-axis')))
+            # graph.add((URIRef(pp_namespace + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
+            #            URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
+            #            URIRef(ontocape_SI_units.m.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LantitudeKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
+            #            Literal(float(gpslocation[0].strip('\n')))))
+            # graph.add((URIRef(pp_namespace + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
+            #            URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), RDF.type, URIRef(ontocape_coordinate_system.CoordinateValue.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
+            #            URIRef(ontocape_SI_units.m.iri)))
+            # graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.LongitudeKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
+            #            Literal(float(gpslocation[1].strip('\n')))))
             
             # generate/update OWL files
             if updateLocalOWLFile == True:
                 # Store/update the generated owl files      
-                if filepath[-2:] != "\\": 
+                if filepath[-2:] != '\\': 
                     filepath_ = filepath + '\\' + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
                 else:
                     filepath_ = filepath + str(counter) + UNDERSCORE + plantname + '_UK' + OWL
