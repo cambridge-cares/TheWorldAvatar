@@ -34,4 +34,3 @@ class TestGeocoding(tests.utils_for_testing.TestCaseOntoMatch):
         columns =  [ str(c) for c in dfsrc.columns ]
         logging.info('columns=%s', columns)
         self.assertIn('address/postalCode', columns)
-

@@ -9,7 +9,7 @@ class Agent():
 
     def __init__(self):
         logging.info('initializing geocoding agent')
-        addr = './data/municipalities_germany.ttl'
+        addr = './data/power_plant_DEU/municipalities_germany.ttl'
         frmt = 'turtle'
         self.graph = rdflib.Graph()
         self.graph.parse(addr, format=frmt)

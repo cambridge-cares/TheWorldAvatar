@@ -1184,6 +1184,8 @@ if __name__ == '__main__':
 
     ontomatch.util.init()
 
+    main_dir = './data'
+
     frmt = 'turtle'
     #frmt = 'owl'
     #frmt = 'xml'
@@ -1195,7 +1197,7 @@ if __name__ == '__main__':
     #country_short='GBR'
     #country_short='DEU'
     #src_file = 'C:/my/CARES_CEP_project/CARES_CEP_docs/ontology_matching/original_data/globalpowerplantdatabasev120/global_power_plant_database.csv'
-    #tgt_file = 'C:/my/tmp/ontomatch/tmp_kwl_files/gppd_GBR_211028.ttl'
+    #tgt_file = maindir + '/power_plant_GBR/gppd_GBR.ttl'
     #create_GPPDB_plants(source_file=src_file, target_file=tgt_file, version='v1', frmt=frmt, country_short=country_short)
 
     #tgt_dir = 'C:/my/tmp/ontomatch/tmp_gppd_files'

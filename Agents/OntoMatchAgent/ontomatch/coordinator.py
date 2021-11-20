@@ -209,7 +209,10 @@ class Agent():
             matching_name = params['matching']['name']
             params_model_specific = params['matching']['model_specific']
 
-            if matching_name == 'matchManager.matchManager':
+            if matching_name is None:
+                logging.debug('for testing only: instance matching is not performed')
+                return None
+            elif matching_name == 'matchManager.matchManager':
                 return self.__start_match_manager(params_model_specific, params_blocking, srconto, tgtonto)
             elif matching_name == 'instancematching.InstanceMatcherWithAutoCalibration':
                 params_mapping = params['mapping']

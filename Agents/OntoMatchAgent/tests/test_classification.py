@@ -49,17 +49,6 @@ class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
         with unittest.mock.patch('sys.argv', testargs):
             params = ontomatch.util.init()
 
-            '''
-            params_for_loading = {
-                'srcaddr': params['dataset']['src'],
-                'tgtaddr': params['dataset']['tgt'],
-                'add_knowledge': params['pre_processing']['add_knowledge'],
-                'dump_ontology': params['pre_processing']['pickle_dump'],
-            }
-            srconto, tgtonto = coordinator.Agent().load(**params_for_loading)
-            df1 = ontomatch.blocking.create_dataframe_from_ontology(srconto)
-            df2 = ontomatch.blocking.create_dataframe_from_ontology(tgtonto)
-            '''
             df1, df2 = ontomatch.classification.Utils.create_dataframes(params)
 
             matchfile = tests.utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU

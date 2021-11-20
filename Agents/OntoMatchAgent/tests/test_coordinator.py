@@ -90,29 +90,27 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertIsNotNone(onto)
 
     def test_coordinator_load_add_knowledge_dump(self):
-        srcaddr = './data/kwl_address_211022.ttl'
-        tgtaddr = './data/gppd_DEU_211022.ttl'
-        #srcaddr = './data/kwl_address_geo_211022.ttl'
-        #tgtaddr = './data/gppd_DEU_geo_211022.ttl'
+        srcaddr = './data/power_plant_DEU/kwl.ttl'
+        tgtaddr = './data/power_plant_DEU/gppd_DEU.ttl'
+        #srcaddr = './data/power_plant_DEU/kwl_geo.ttl'
+        #tgtaddr = './data/power_plant_DEU/gppd_DEU_geo.ttl'
 
         agent = ontomatch.coordinator.Agent()
         #agent.load(srcaddr, tgtaddr, add_knowledge="knowledge.geocoding", dump_ontology=True)
-        agent.load(srcaddr, tgtaddr, add_knowledge=None, dump_ontology=True)
+        agent.load(srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False)
 
     def test_coordinator_start_with_pickle_files_and_score_manager(self):
 
-        srcaddr = './data/kwl_address_geo_211022.pkl'
-        tgtaddr = './data/gppd_DEU_geo_211022.pkl'
+        srcaddr = './data/power_plant_DEU/kwl_geo.pkl'
+        tgtaddr = './data/power_plant_DEU/gppd_DEU_geo.pkl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
         agent = ontomatch.coordinator.Agent()
         agent.start(params)
 
-    def xxx_test_coordinator_start_with_owl_and_adding_knowledge(self):
-
-        # TODO-AE add assert
-        srcaddr = './data/kwl_address_geo_211022.ttl'
-        tgtaddr = './data/gppd_DEU_geo_211022.ttl'
+    def xxx_test_coordinator_step_1_loading_and_step_2_adding_knowledge(self):
+        srcaddr = './data/power_plant_DEU/kwl.ttl'
+        tgtaddr = './data/power_plant_DEU/gppd_DEU.ttl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
         agent = ontomatch.coordinator.Agent()

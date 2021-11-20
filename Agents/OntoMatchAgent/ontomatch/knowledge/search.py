@@ -6,7 +6,7 @@ class Agent():
 
     def __init__(self):
         logging.info('initializing search agent')
-        addr = './data/municipalities_germany.ttl'
+        addr = './data/power_plant_DEU/municipalities_germany.ttl'
         properties = ['rdfs:label', 'sdo:postalCode']
         self.index = create_index(addr, 'turtle', properties)
 
