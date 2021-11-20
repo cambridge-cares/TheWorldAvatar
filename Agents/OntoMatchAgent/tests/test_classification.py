@@ -43,7 +43,7 @@ class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
     def xxx_test_train_SVC_with_seeds_for_ground_truth(self):
 
         testargs = ['test',
-            '--config', tests.utils_for_testing.PATH_CONF_AUTO_KWL_GPPD_DEU
+            '--config', tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_GEO
         ]
 
         with unittest.mock.patch('sys.argv', testargs):
@@ -51,7 +51,7 @@ class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
 
             df1, df2 = ontomatch.classification.Utils.create_dataframes(params)
 
-            matchfile = tests.utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU
+            matchfile = tests.utils_for_testing.PATH_MATCHES_PP_DEU
             match_index = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
 
             params_mapping = params['mapping']

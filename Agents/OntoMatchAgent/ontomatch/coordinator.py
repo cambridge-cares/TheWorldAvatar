@@ -140,9 +140,9 @@ class Agent():
             ?subj a owl:NamedIndividual .
         }'''
 
-        if agent_name == 'knowledge.geocoding':
+        if agent_name == 'ontomatch.knowledge.geocoding':
             geocoding_agent = ontomatch.knowledge.geocoding.Agent()
-        elif agent_name == 'knowledge.geoNames':
+        elif agent_name == 'ontomatch.knowledge.geoNames':
             #TODO-AE URGENT 211101 configure country for geoNames
             #geocoding_agent = knowledge.geoNames.Agent(country="Germany")
             geocoding_agent = ontomatch.knowledge.geoNames.Agent(country="UnitedKingdom")
@@ -172,7 +172,7 @@ class Agent():
                     zipcode = obj
 
             if location or zipcode:
-                if agent_name == 'knowledge.geocoding':
+                if agent_name == 'ontomatch.knowledge.geocoding':
                     #latitude, longitude = geocoding_agent.query(location, zipcode)
                     latitude, longitude = geocoding_agent.query(location, None)
                 else:
@@ -299,37 +299,6 @@ class Agent():
 
         # convert alignment to dataframe with indices and score function
         return df_scores
-
-'''
-def init(config_dev=None):
-    print('current working directory=', os.getcwd())
-    print('sys.argv=', sys.argv)
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str)
-    parser.add_argument('--logconfdir', type=str, default='./conf')
-    parser.add_argument('--logdir', type=str, default='../logs')
-    args = parser.parse_args()
-    print('args = ', args)
-
-    if args.config:
-        with open(args.config) as json_config:
-            config = json.load(json_config, object_pairs_hook=collections.OrderedDict)
-    else:
-        config = config_dev
-
-    ontomatch.util.init_logging(args.logconfdir, args.logdir)
-    logging.info('current working directory=%s', os.getcwd())
-    logging.info('args=%s', args)
-    logging.info('config=%s', config)
-
-    seed = config['numerical_settings'].get('seed')
-    logging.info('setting random seed=%s', seed)
-    np.random.seed(seed)
-    random.seed(seed)
-
-    return config
-'''
 
 def postprocess(config, matcher, dump=None):
 

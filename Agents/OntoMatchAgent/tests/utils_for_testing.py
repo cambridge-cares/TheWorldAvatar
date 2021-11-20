@@ -7,8 +7,9 @@ import numpy as np
 
 import ontomatch.util
 
-PATH_MATCHES_KWL_GPPD_DEU = './data/matches_power_plant_DEU.csv'
-PATH_CONF_AUTO_KWL_GPPD_DEU = './tests/conf/conf_auto_calibration_kwl_gppd_geo.json'
+PATH_MATCHES_PP_DEU = './data/matches_power_plant_DEU.csv'
+PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
+PATH_CONF_PP_DEU_AUTO_GEO = './tests/conf/conf_power_plant_DEU_auto_geo.json'
 
 class TestCaseOntoMatch(unittest.TestCase):
 

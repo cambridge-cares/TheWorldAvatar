@@ -39,7 +39,7 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
         dframe = pd.read_csv(path, index_col=['idx_1', 'idx_2'])
 
         # mark true matches in the scores data
-        df_matches = pd.read_csv(tests.utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU, index_col=['idx_1', 'idx_2'])
+        df_matches = pd.read_csv(tests.utils_for_testing.PATH_MATCHES_PP_DEU, index_col=['idx_1', 'idx_2'])
         index_intersection = dframe.index.intersection(df_matches.index)
         logging.info('df_matches=%s, intersection with scores=%s', len(df_matches), len(index_intersection))
         y_column = 'y'

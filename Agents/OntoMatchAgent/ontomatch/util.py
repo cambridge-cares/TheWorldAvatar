@@ -44,6 +44,11 @@ def init_logging(log_conf_dir='./conf', log_dir='../logs'):
     name = 'ontomatch'
     init_file_logging(log_config_file, log_dir + '/' + name + '.log')
 
+def read_config(path):
+    with open(path) as json_config:
+        config = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+    return config
+
 def init(config_dev=None):
     print('current working directory=', os.getcwd())
     print('sys.argv=', sys.argv)
@@ -56,8 +61,7 @@ def init(config_dev=None):
     print('args = ', args)
 
     if args.config:
-        with open(args.config) as json_config:
-            config = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+        config = read_config(args.config)
     else:
         config = config_dev
 

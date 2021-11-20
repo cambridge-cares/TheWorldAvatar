@@ -1,6 +1,8 @@
 import logging
+import unittest.mock
 
 import ontomatch.coordinator
+import ontomatch.util
 import tests.utils_for_testing
 
 class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
@@ -12,7 +14,7 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
                 "tgt": tgtaddr,
             },
             "pre_processing": {
-                "add_knowledge": "knowledge.geocoding",
+                "add_knowledge": "ontomatch.knowledge.geocoding",
                 "pickle_dump": False,
             },
             "blocking": {
@@ -73,7 +75,7 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
         srcaddr = './tests/data/KWL_20_power_plants.ttl'
 
         agent = ontomatch.coordinator.Agent()
-        graph = agent.load_rdflib_graph(srcaddr, add_knowledge="knowledge.geocoding")
+        graph = agent.load_rdflib_graph(srcaddr, add_knowledge="ontomatch.knowledge.geocoding")
 
         query = '''
         PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -96,7 +98,7 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
         #tgtaddr = './data/power_plant_DEU/gppd_DEU_geo.ttl'
 
         agent = ontomatch.coordinator.Agent()
-        #agent.load(srcaddr, tgtaddr, add_knowledge="knowledge.geocoding", dump_ontology=True)
+        #agent.load(srcaddr, tgtaddr, add_knowledge="ontomatch.knowledge.geocoding", dump_ontology=True)
         agent.load(srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False)
 
     def test_coordinator_start_with_pickle_files_and_score_manager(self):
@@ -108,10 +110,15 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
         agent = ontomatch.coordinator.Agent()
         agent.start(params)
 
-    def xxx_test_coordinator_step_1_loading_and_step_2_adding_knowledge(self):
-        srcaddr = './data/power_plant_DEU/kwl.ttl'
-        tgtaddr = './data/power_plant_DEU/gppd_DEU.ttl'
+    def test_coordinator_step_1_loading_and_step_2_adding_knowledge(self):
 
-        params = self.get_default_params(srcaddr, tgtaddr)
+        params = ontomatch.util.read_config(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO)
+        # the config file defines the pickled files as src and tgt and thus will not add geocoordinates
+        params['dataset']['src'] = './data/power_plant_DEU/kwl.ttl'
+        params['dataset']['tgt'] = './data/power_plant_DEU/gppd_DEU.ttl'
+        # None means that no instance matching is performed
+        params['matching']['name'] = None
+        params['pre_processing']['add_knowledge'] = 'ontomatch.knowledge.geocoding'
+
         agent = ontomatch.coordinator.Agent()
         agent.start(params)
