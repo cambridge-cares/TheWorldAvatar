@@ -1,10 +1,10 @@
 from owlready2 import get_ontology
 import rdflib
 
-from ontologyWrapper import Ontology
-import utils_for_testing
+from ontomatch.ontologyWrapper import Ontology
+import tests.utils_for_testing
 
-class TestOntology(utils_for_testing.TestCaseOntoMatch):
+class TestOntology(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_valuemap(self):
 

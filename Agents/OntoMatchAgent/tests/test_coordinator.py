@@ -1,9 +1,9 @@
 import logging
 
-import coordinator
-import utils_for_testing
+import ontomatch.coordinator
+import tests.utils_for_testing
 
-class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
+class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
     def get_default_params(self, srcaddr, tgtaddr):
         return {
@@ -72,7 +72,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
 
         srcaddr = './tests/data/KWL_20_power_plants.ttl'
 
-        agent = coordinator.Agent()
+        agent = ontomatch.coordinator.Agent()
         graph = agent.load_rdflib_graph(srcaddr, add_knowledge="knowledge.geocoding")
 
         query = '''
@@ -89,12 +89,15 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         onto = agent.load_owlready2_ontology(graph)
         self.assertIsNotNone(onto)
 
-    def xxx_test_coordinator_load_add_knowledge_dump(self):
-        srcaddr = './data/kwl_address_geo_211022.ttl'
-        tgtaddr = './data/gppd_DEU_geo_211022.ttl'
+    def test_coordinator_load_add_knowledge_dump(self):
+        srcaddr = './data/kwl_address_211022.ttl'
+        tgtaddr = './data/gppd_DEU_211022.ttl'
+        #srcaddr = './data/kwl_address_geo_211022.ttl'
+        #tgtaddr = './data/gppd_DEU_geo_211022.ttl'
 
-        agent = coordinator.Agent()
-        agent.load(srcaddr, tgtaddr, add_knowledge="knowledge.geocoding", dump_ontology=True)
+        agent = ontomatch.coordinator.Agent()
+        #agent.load(srcaddr, tgtaddr, add_knowledge="knowledge.geocoding", dump_ontology=True)
+        agent.load(srcaddr, tgtaddr, add_knowledge=None, dump_ontology=True)
 
     def test_coordinator_start_with_pickle_files_and_score_manager(self):
 
@@ -102,7 +105,7 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         tgtaddr = './data/gppd_DEU_geo_211022.pkl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
-        agent = coordinator.Agent()
+        agent = ontomatch.coordinator.Agent()
         agent.start(params)
 
     def xxx_test_coordinator_start_with_owl_and_adding_knowledge(self):
@@ -112,5 +115,5 @@ class TestCoordinator(utils_for_testing.TestCaseOntoMatch):
         tgtaddr = './data/gppd_DEU_geo_211022.ttl'
 
         params = self.get_default_params(srcaddr, tgtaddr)
-        agent = coordinator.Agent()
+        agent = ontomatch.coordinator.Agent()
         agent.start(params)

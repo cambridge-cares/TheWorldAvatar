@@ -1,17 +1,17 @@
 import unittest
 
-import knowledge.geoNames
+import ontomatch.knowledge.geoNames
 
 class TestAgent(unittest.TestCase):
 
     def test_pkl(self):
-        agent = knowledge.geoNames.Agent("UnitedKingdom", isOnline=False, save = "./data/UK_geonames.pkl")
+        agent = ontomatch.knowledge.geoNames.Agent("UnitedKingdom", isOnline=False, save = "./data/UK_geonames.pkl")
         lat, long = agent.query("Norwich")
         self.assertAlmostEqual(lat, 52.62783)
         self.assertAlmostEqual(long, 1.29834)
 
     def test_query_offline(self):
-        agent = knowledge.geoNames.Agent("Germany")
+        agent = ontomatch.knowledge.geoNames.Agent("Germany")
 
         #test base case
         lat, long = agent.query("altbach")
@@ -29,7 +29,7 @@ class TestAgent(unittest.TestCase):
         self.assertAlmostEqual(long, 12.08635)
 
     def test_query_online(self):
-        agent = knowledge.geoNames.Agent("Germany", isOnline=True)
+        agent = ontomatch.knowledge.geoNames.Agent("Germany", isOnline=True)
 
         # test base case
         lat, long = agent.query("altbach")
@@ -48,7 +48,7 @@ class TestAgent(unittest.TestCase):
 
 
     def test_query_UK(self):
-        agent = knowledge.geoNames.Agent("UnitedKingdom", isOnline=True)
+        agent = ontomatch.knowledge.geoNames.Agent("UnitedKingdom", isOnline=True)
 
         # test base case
         lat, long = agent.query("Norwich")

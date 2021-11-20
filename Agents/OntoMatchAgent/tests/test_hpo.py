@@ -1,20 +1,12 @@
 import logging
-from operator import index
-import unittest.mock
 
-import numpy as np
 import pandas as pd
-import sklearn.model_selection
 
-import blocking
-import classification
-import coordinator
-import evaluate
-import hpo
-import util
-import utils_for_testing
+import ontomatch.classification
+import ontomatch.hpo
+import tests.utils_for_testing
 
-class TestHPO(utils_for_testing.TestCaseOntoMatch):
+class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
 
     def xxx_test_start_RF_total_scores(self):
         params_classification = {
@@ -32,7 +24,7 @@ class TestHPO(utils_for_testing.TestCaseOntoMatch):
 
         x_columns = ['0', '1', '2', '3', '4']
         train_size = 0.8
-        result = hpo.split_hpo_evaluate(dframe, params_classification,
+        result = ontomatch.hpo.split_hpo_evaluate(dframe, params_classification,
                 x_columns=x_columns, y_column=y_column, train_size=train_size)
 
     def xxx_test_start_RF_scores(self):
@@ -47,7 +39,7 @@ class TestHPO(utils_for_testing.TestCaseOntoMatch):
         dframe = pd.read_csv(path, index_col=['idx_1', 'idx_2'])
 
         # mark true matches in the scores data
-        df_matches = pd.read_csv(utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU, index_col=['idx_1', 'idx_2'])
+        df_matches = pd.read_csv(tests.utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU, index_col=['idx_1', 'idx_2'])
         index_intersection = dframe.index.intersection(df_matches.index)
         logging.info('df_matches=%s, intersection with scores=%s', len(df_matches), len(index_intersection))
         y_column = 'y'
@@ -56,7 +48,7 @@ class TestHPO(utils_for_testing.TestCaseOntoMatch):
 
         x_columns = ['0', '1', '2', '3', '4']
         train_size = 0.02
-        result = hpo.split_hpo_evaluate(dframe, params_classification,
+        result = ontomatch.hpo.split_hpo_evaluate(dframe, params_classification,
                 x_columns=x_columns, y_column=y_column, train_size=train_size)
 
     def test_start_XGB_scores(self):
@@ -75,11 +67,11 @@ class TestHPO(utils_for_testing.TestCaseOntoMatch):
         train_size = 0.2
         column_ml_phase = 'ml_phase_' + str(train_size)
         prop_columns=['0', '1', '2', '3', '4']
-        x_train, x_test, y_train, y_test = classification.TrainTestGenerator.train_test_split(
+        x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split(
                 match_file, nonmatch_file, column_ml_phase, prop_columns)
 
-        model = hpo.start_hpo(params_classification, x_train, y_train)
-        result = hpo.evaluate_with_pred_proba(model, x_test, y_test, 11)
+        model = ontomatch.hpo.start_hpo(params_classification, x_train, y_train)
+        result = ontomatch.hpo.evaluate_with_pred_proba(model, x_test, y_test, 11)
 
         # max f1-score=0.864373783257625 for threshold t=0.7
         # area under curve=0.8794392545480988

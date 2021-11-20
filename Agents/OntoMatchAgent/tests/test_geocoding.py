@@ -1,13 +1,13 @@
 import logging
 
-import blocking
-import knowledge.geocoding
-import utils_for_testing
+import ontomatch.blocking
+import ontomatch.knowledge.geocoding
+import tests.utils_for_testing
 
-class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
+class TestGeocoding(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_geocoding_query(self):
-        agent = knowledge.geocoding.Agent()
+        agent = ontomatch.knowledge.geocoding.Agent()
         lat, long = agent.query(None, 91602)
         self.assertAlmostEqual(lat, 49.108758, places=4)
         self.assertAlmostEqual(long, 10.386423, places=4)
@@ -30,7 +30,7 @@ class TestGeocoding(utils_for_testing.TestCaseOntoMatch):
 
     def test_geocoding_kwl(self):
         ontosrc, ontotgt = self.load_kwl_gppd_ontologies()
-        dfsrc = blocking.create_dataframe_from_ontology(ontosrc)
+        dfsrc = ontomatch.blocking.create_dataframe_from_ontology(ontosrc)
         columns =  [ str(c) for c in dfsrc.columns ]
         logging.info('columns=%s', columns)
         self.assertIn('address/postalCode', columns)

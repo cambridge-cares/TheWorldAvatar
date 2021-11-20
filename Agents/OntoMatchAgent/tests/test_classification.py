@@ -2,26 +2,24 @@ import logging
 import unittest.mock
 
 import pandas as pd
-import sklearn.model_selection
 
-import blocking
-import classification
-import coordinator
-import evaluate
-import util
-import utils_for_testing
+import ontomatch.blocking
+import ontomatch.classification
+import ontomatch.evaluate
+import ontomatch.util
+import tests.utils_for_testing
 
-class TestClassification(utils_for_testing.TestCaseOntoMatch):
+class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_create_train_test_split(self):
         path = 'C:/my/repos/ontomatch_20210924/experiments/211115_visualization/KWL/scores_1/total_scores.csv'
-        dframe = util.read_csv(path)
+        dframe = ontomatch.util.read_csv(path)
         len_total = len(dframe)
         y = 'best'
         mask = (dframe[y] == True)
         len_best = len(dframe[mask])
         train_size = 0.2
-        df_split = classification.Utils.create_train_test_split(dframe=path, train_size=train_size, stratify_y_column=y, save_to=None)
+        df_split = ontomatch.classification.Utils.create_train_test_split(dframe=path, train_size=train_size, stratify_y_column=y, save_to=None)
 
         logging.debug('columns=%s', df_split.columns)
 
@@ -45,11 +43,11 @@ class TestClassification(utils_for_testing.TestCaseOntoMatch):
     def xxx_test_train_SVC_with_seeds_for_ground_truth(self):
 
         testargs = ['test',
-            '--config', utils_for_testing.PATH_CONF_AUTO_KWL_GPPD_DEU
+            '--config', tests.utils_for_testing.PATH_CONF_AUTO_KWL_GPPD_DEU
         ]
 
         with unittest.mock.patch('sys.argv', testargs):
-            params = util.init()
+            params = ontomatch.util.init()
 
             '''
             params_for_loading = {
@@ -59,17 +57,17 @@ class TestClassification(utils_for_testing.TestCaseOntoMatch):
                 'dump_ontology': params['pre_processing']['pickle_dump'],
             }
             srconto, tgtonto = coordinator.Agent().load(**params_for_loading)
-            df1 = blocking.create_dataframe_from_ontology(srconto)
-            df2 = blocking.create_dataframe_from_ontology(tgtonto)
+            df1 = ontomatch.blocking.create_dataframe_from_ontology(srconto)
+            df2 = ontomatch.blocking.create_dataframe_from_ontology(tgtonto)
             '''
-            df1, df2 = classification.Utils.create_dataframes(params)
+            df1, df2 = ontomatch.classification.Utils.create_dataframes(params)
 
-            matchfile = utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU
-            match_index = evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+            matchfile = tests.utils_for_testing.PATH_MATCHES_KWL_GPPD_DEU
+            match_index = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
 
             params_mapping = params['mapping']
 
-            df_train, df_test, labels_train, labels_test = classification.select_seeds_for_ground_truth(
+            df_train, df_test, labels_train, labels_test = ontomatch.classification.select_seeds_for_ground_truth(
                 df1, df2, match_index, params_mapping, split=[.8, .2], missing_value=None)
 
             params_hpo = [{
@@ -78,7 +76,7 @@ class TestClassification(utils_for_testing.TestCaseOntoMatch):
                 'C': [1.0],
             }]
 
-            model  = classification.hpo_svm(df_train, labels_train, params_hpo, crossvalidation=5)
+            model  = ontomatch.classification.hpo_svm(df_train, labels_train, params_hpo, crossvalidation=5)
             train_score = model.score(df_train, labels_train)
             test_score = model.score(df_test, labels_test)
             logging.debug('SVC train_score=%s, test_score=%s', train_score, test_score)
@@ -94,14 +92,14 @@ class TestClassification(utils_for_testing.TestCaseOntoMatch):
 
         df_max_scores = pd.read_csv(directory + '/max_scores_1.csv', index_col=['idx_1', 'idx_2'])
         df_scores = pd.read_csv(directory + '/scores.csv', index_col=['idx_1', 'idx_2'])[columns]
-        df_train, df_test, labels_train, labels_test = classification.select_seeds_for_max_scores(df_max_scores, df_scores)
+        df_train, df_test, labels_train, labels_test = ontomatch.classification.select_seeds_for_max_scores(df_max_scores, df_scores)
 
         params_hpo = [{
             'kernel': ['rbf'],
             'gamma': ['scale'],
             'C': [1.0],
         }]
-        model  = classification.hpo_svm(df_train, labels_train, params_hpo, crossvalidation=5)
+        model  = ontomatch.classification.hpo_svm(df_train, labels_train, params_hpo, crossvalidation=5)
         train_score = model.score(df_train, labels_train)
         test_score = model.score(df_test, labels_test)
         logging.debug('SVC train_score=%s, test_score=%s', train_score, test_score)

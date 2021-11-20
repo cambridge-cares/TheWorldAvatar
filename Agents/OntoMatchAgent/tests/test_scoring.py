@@ -1,10 +1,10 @@
 import logging
 
-import blocking
-import scoring
-import utils_for_testing
+import ontomatch.blocking
+import ontomatch.scoring
+import tests.utils_for_testing
 
-class TestScoring(utils_for_testing.TestCaseOntoMatch):
+class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def convert_to_dict(self, keys, values):
         return { k:v for k,v in zip(keys, values)}
@@ -12,7 +12,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
     def convert_to_similarity_fcts(self, prop_prop_dist_tuples):
         prop_prop_sim_tuples = []
         for prop1, prop2, dist_fct in prop_prop_dist_tuples:
-            prop_prop_sim_tuples.append((prop1, prop2, scoring.similarity_from_dist_fct(dist_fct)))
+            prop_prop_sim_tuples.append((prop1, prop2, ontomatch.scoring.similarity_from_dist_fct(dist_fct)))
         return prop_prop_sim_tuples
 
     def get_params_blocking(self):
@@ -31,11 +31,11 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
         sim_fcts = [
-            scoring.similarity_from_dist_fct(scoring.dist_nltk_edit),
-            scoring.similarity_from_dist_fct(scoring.dist_equal)
+            ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_nltk_edit),
+            ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_equal)
         ]
 
         # test case 1
@@ -63,7 +63,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                     "cut_off_value": 3
                 }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0]('power station', 'power1 station2')
         self.assertEqual(score, 0)
@@ -87,7 +87,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                     "cut_off_value": 10
                 }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0](10.5, 10.8)
         self.assertAlmostEqual(score, 0.7, places=4)
@@ -111,7 +111,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                     "cut_off_value": 0.1
                 }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         score = sim_fcts[0](10, 9)
         self.assertAlmostEqual(score, 0.9, places=4)
@@ -134,14 +134,14 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                 "cut_off_mode": "fixed"
             }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         # prepare df_index_tokens before using cosine_with_tfidf
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
-        blocking.create_iterator(src_onto, tgt_onto, params_blocking)
+        ontomatch.blocking.create_iterator(src_onto, tgt_onto, params_blocking)
 
-        df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens_unpruned
+        df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens_unpruned
         logging.debug('number of index tokens=%s', len(df_index_tokens))
         logging.debug('token counts in dataset 1 and 2:')
         for t in ['altbach', 'berlin', 'power', 'station', 'kraftwerk', 'müllheizkraftwerk', 'wuppertal', 'offenbach']:
@@ -179,7 +179,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
                 "cut_off_mode": "fixed"
             }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
 
         examples = [
             ('Altbach', 'Altbach'),
@@ -214,15 +214,15 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         entity2 = self.convert_to_dict(c2, v2)
 
         prop_prop_dist_tuples = [
-            ('name1', 'name2', scoring.dist_bounded_edit(0)),
-            ('owner1', 'owner2', scoring.dist_nltk_edit),
-            ('year1', 'year2', scoring.dist_absolute),
-            ('capacity1', 'capacity2', scoring.dist_relative),
-            ('fuel1', 'fuel2', scoring.dist_equal)
+            ('name1', 'name2', ontomatch.scoring.dist_bounded_edit(0)),
+            ('owner1', 'owner2', ontomatch.scoring.dist_nltk_edit),
+            ('year1', 'year2', ontomatch.scoring.dist_absolute),
+            ('capacity1', 'capacity2', ontomatch.scoring.dist_relative),
+            ('fuel1', 'fuel2', ontomatch.scoring.dist_equal)
         ]
 
         prop_prop_sim_tuples = self.convert_to_similarity_fcts(prop_prop_dist_tuples)
-        result = scoring.ScoreManager.calculate_between_entities(entity1, entity2,  prop_prop_sim_tuples)
+        result = ontomatch.scoring.ScoreManager.calculate_between_entities(entity1, entity2,  prop_prop_sim_tuples)
         self.assertEqual(result, [1, 1, 1, 1, 1])
 
     def test_calculate_between_entities_with_different_values(self):
@@ -236,15 +236,15 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         entity2 = self.convert_to_dict(c2, v2)
 
         prop_prop_dist_tuples = [
-            ('name1', 'name2', scoring.dist_bounded_edit(2)),
-            ('owner1', 'owner2', scoring.dist_nltk_edit),
-            ('year1', 'year2', scoring.dist_absolute),
-            ('capacity1', 'capacity2', scoring.dist_relative),
-            ('fuel1', 'fuel2', scoring.dist_equal)
+            ('name1', 'name2', ontomatch.scoring.dist_bounded_edit(2)),
+            ('owner1', 'owner2', ontomatch.scoring.dist_nltk_edit),
+            ('year1', 'year2', ontomatch.scoring.dist_absolute),
+            ('capacity1', 'capacity2', ontomatch.scoring.dist_relative),
+            ('fuel1', 'fuel2', ontomatch.scoring.dist_equal)
         ]
 
         prop_prop_sim_tuples = self.convert_to_similarity_fcts(prop_prop_dist_tuples)
-        result = scoring.ScoreManager.calculate_between_entities(entity1, entity2, prop_prop_sim_tuples)
+        result = ontomatch.scoring.ScoreManager.calculate_between_entities(entity1, entity2, prop_prop_sim_tuples)
         expected = [1/3, 0, 0, 8/10, 0]
         for i, actual in enumerate(result):
             self.assertAlmostEqual(actual, expected[i], places=4)
@@ -252,18 +252,18 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
     def test_calculate_similarities_between_datasets(self):
 
         prop_prop_dist_tuples = [
-            ('name', 'name', scoring.dist_bounded_edit(2)),
-            ('isOwnedBy/hasName', 'isOwnedBy/hasName', scoring.dist_nltk_edit),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', scoring.dist_absolute),
-            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', scoring.dist_relative),
-            ('type', 'type', scoring.dist_equal),
+            ('name', 'name', ontomatch.scoring.dist_bounded_edit(2)),
+            ('isOwnedBy/hasName', 'isOwnedBy/hasName', ontomatch.scoring.dist_nltk_edit),
+            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', ontomatch.scoring.dist_absolute),
+            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', ontomatch.scoring.dist_relative),
+            ('type', 'type', ontomatch.scoring.dist_equal),
         ]
 
         prop_prop_sim_tuples = self.convert_to_similarity_fcts(prop_prop_dist_tuples)
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
         for prop1, prop2, sim_fct in prop_prop_sim_tuples:
             manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
 
@@ -274,10 +274,10 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
         #prepare
 
-        score_fct_1 = scoring.similarity_from_dist_fct(scoring.dist_bounded_edit(2))
-        score_fct_2 = scoring.similarity_from_dist_fct(scoring.dist_nltk_edit, cut_off_value=10)
-        score_fct_3 = scoring.similarity_from_dist_fct(scoring.dist_absolute, cut_off_value=10)
-        score_fct_4 = scoring.similarity_from_dist_fct(scoring.dist_relative)
+        score_fct_1 = ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_bounded_edit(2))
+        score_fct_2 = ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_nltk_edit, cut_off_value=10)
+        score_fct_3 = ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_absolute, cut_off_value=10)
+        score_fct_4 = ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_relative)
 
         prop_prop_sim_tuples = [
             ('name', 'name', score_fct_1),
@@ -292,7 +292,7 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
         for prop1, prop2, sim_fct in prop_prop_sim_tuples:
             manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
 
@@ -323,12 +323,12 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
 
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
         props1 = ['name', 'isOwnedBy/hasName']
         props2 = ['name', 'isOwnedBy/hasName']
-        property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
+        property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         logging.debug('property_mapping=%s', property_mapping)
 
@@ -359,12 +359,12 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
 
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
         props1 = ['name', 'realizes/consumesPrimaryFuel']
         props2 = ['name', 'realizes/consumesPrimaryFuel']
-        property_mapping = scoring.find_property_mapping(manager, sim_fcts, props1, props2)
+        property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         logging.debug('property_mapping=%s', property_mapping)
 
@@ -407,10 +407,10 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         #src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
         params_blocking = self.get_params_blocking()
-        manager = scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
-        property_mapping = scoring.find_property_mapping(manager, sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
+        property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts)
 
         expected = {
             'name' : ('name', 0.78602, 4),
@@ -421,9 +421,10 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
             #'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.547, 1),
             'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0),
             #both fuel and type have been identified for property mapping
-            'type': ('type', 0.87609, 0)
+            'type': ('type', 0.87609, 0),
+            'http://www.w3.org/2000/01/rdf-schema#label': ('http://www.w3.org/2000/01/rdf-schema#label', 0.78345, 4)
             #'geo:wgs84_pos#long': ('hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', 0.9708340665506993, 3),
-            #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 3)
+            #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 3),
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -436,35 +437,35 @@ class TestScoring(utils_for_testing.TestCaseOntoMatch):
 
     def test_scoringweightiterator(self):
 
-        it = scoring.ScoringWeightIterator(3, 1)
+        it = ontomatch.scoring.ScoringWeightIterator(3, 1)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 3)
 
-        it = scoring.ScoringWeightIterator(10, 1)
+        it = ontomatch.scoring.ScoringWeightIterator(10, 1)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 10)
 
-        it = scoring.ScoringWeightIterator(3, 2)
+        it = ontomatch.scoring.ScoringWeightIterator(3, 2)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 6)
 
-        it = scoring.ScoringWeightIterator(3, 3)
+        it = ontomatch.scoring.ScoringWeightIterator(3, 3)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 10)
 
-        it = scoring.ScoringWeightIterator(4, 3)
+        it = ontomatch.scoring.ScoringWeightIterator(4, 3)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 20)
 
     def test_scoringweightiterator_with_sample_count(self):
-        it = scoring.ScoringWeightIterator(10, 1, sample_count=4)
+        it = ontomatch.scoring.ScoringWeightIterator(10, 1, sample_count=4)
         logging.debug(it.all_weight_arrays)
         self.assertEqual(len(it), 4)
 
     def test_create_prop_prop_sim_triples_from_params(self):
         params = self.read_conf_kwl()
         params_mapping = params['mapping']
-        triples = scoring.create_prop_prop_sim_triples_from_params(params_mapping)
+        triples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
         self.assertEqual(len(triples), 5)
         self.assertEqual(triples[0][0], 'name')
         self.assertEqual(triples[2][1], 'hasYearOfBuilt/hasValue/numericalValue')

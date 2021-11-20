@@ -1,15 +1,14 @@
 import logging
-import pickle
 
-import blocking
-import utils_for_testing
+import ontomatch.blocking
+import tests.utils_for_testing
 
-class TestBlocking(utils_for_testing.TestCaseOntoMatch):
+class TestBlocking(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_fullpairiterator(self):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params = {'name': 'FullPairIterator'}
-        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = ontomatch.blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
         for _, _ in iterator:
             count += 1
@@ -28,7 +27,7 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
                 'reset_index': True,
             }
         }
-        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = ontomatch.blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
         for _, _ in iterator:
             count += 1
@@ -47,7 +46,7 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
                 'reset_index': True,
             }
         }
-        iterator = blocking.create_iterator(src_onto, tgt_onto, params)
+        iterator = ontomatch.blocking.create_iterator(src_onto, tgt_onto, params)
         count = 0
         for _, _ in iterator:
             count += 1
@@ -56,7 +55,7 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
 
     def test_create_dataframe_assert_Windplant(self):
         ontosrc, _ = self.load_kwl_gppd_ontologies()
-        dfsrc = blocking.create_dataframe_from_ontology(ontosrc)
+        dfsrc = ontomatch.blocking.create_dataframe_from_ontology(ontosrc)
         columns =  [ str(c) for c in dfsrc.columns ]
         logging.info('columns=%s', columns)
         self.assertIn('isOwnedBy/hasName', columns)
@@ -84,8 +83,8 @@ class TestBlocking(utils_for_testing.TestCaseOntoMatch):
             }
         }
 
-        blocking.create_iterator(src_onto, tgt_onto, params)
-        df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens
+        ontomatch.blocking.create_iterator(src_onto, tgt_onto, params)
+        df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens
 
         #logging.info(df_index_tokens.to_string())
 

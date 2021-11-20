@@ -1,11 +1,11 @@
 import logging
 
-import evaluate
-import instancematching
-import scoring
-import utils_for_testing
+import ontomatch.evaluate
+import ontomatch.instancematching
+import ontomatch.scoring
+import tests.utils_for_testing
 
-class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
+class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
     def get_params_blocking(self):
         return {
@@ -40,7 +40,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
                     "cut_off_mode": "fixed"
             }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
         return [
             ('name', 'name', sim_fcts[4]),
             ('isOwnedBy/hasName', 'isOwnedBy/hasName', sim_fcts[0]),
@@ -71,7 +71,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
                     "cut_off_mode": "fixed"
             }
         ]
-        sim_fcts = scoring.create_similarity_functions_from_params(params_sim_fcts)
+        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
         return [
             ('name', 'name', sim_fcts[4]),
             ('isOwnedBy/hasName', 'isOwnedBy/hasName', sim_fcts[0]),
@@ -87,7 +87,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
         #TODO-AE move this file
         matchfile = 'C:/my/tmp/ontomatch/scores_kwl_20210720_8.csv'
         # TODO-AE URGENT link type 2
-        index_set_matches = evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
         logging.info('ground truth matches=%s', len(index_set_matches))
         return index_set_matches
 
@@ -99,7 +99,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
 
-        matcher = instancematching.InstanceMatcherWithAutoCalibration()
+        matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
         df_total_scores, df_total_best_scores = matcher.start(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
@@ -108,7 +108,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
 
         index_set_matches = self.read_kwl_gppd_DEU_matching_file()
         logging.info('length of total best scores=%s', len(df_total_best_scores))
-        result = evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
+        result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
         self.assertEqual(len(df_total_best_scores), 1298)
 
@@ -139,7 +139,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
 
         src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
 
-        matcher = instancematching.InstanceMatcherWithAutoCalibration()
+        matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
         df_total_scores, df_total_best_scores = matcher.start(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
@@ -151,29 +151,12 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
 
         index_set_matches = self.read_kwl_gppd_DEU_matching_file()
         logging.info('length of total best scores=%s', len(df_total_best_scores))
-        result = evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
+        result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
         self.assertEqual(len(df_total_best_scores), 1298)
 
-        #max f1-score=0.9138022210470651 for threshold t=0.6
-        #area under curve=0.9121979005625834
-        '''
-        expected_result = [[1.0, 1.0, 0.034482758620689655, 32, 0, 896, 0.06666666666666667],
-            [0.9, 1.0, 0.11637931034482758, 108, 0, 820, 0.2084942084942085],
-            [0.8, 0.9772727272727273, 0.46336206896551724, 430, 10, 498, 0.628654970760234],
-            [0.7, 0.9716312056737588, 0.7381465517241379, 685, 20, 243, 0.838946723821188],
-            [0.6, 0.897196261682243, 0.9310344827586207, 864, 99, 64, 0.9138022210470651],
-            [0.5, 0.7779735682819383, 0.9515086206896551, 883, 252, 45, 0.8560349006301503],
-            [0.4, 0.692247454972592, 0.9525862068965517, 884, 393, 44, 0.801814058956916],
-            [0.3, 0.6810477657935285, 0.9525862068965517, 884, 414, 44, 0.7942497753818509],
-            [0.2, 0.6810477657935285, 0.9525862068965517, 884, 414, 44, 0.7942497753818509],
-            [0.1, 0.6810477657935285, 0.9525862068965517, 884, 414, 44, 0.7942497753818509],
-            [0.0, 0.6810477657935285, 0.9525862068965517, 884, 414, 44, 0.7942497753818509]]
-        '''
-
         # max f1-score=0.9069003285870756 for threshold t=0.29999999999999993
         # area under curve=0.9104694783118478
-
         expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
@@ -199,17 +182,17 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
 
         for i, scores in enumerate(prop_scores):
             logging.debug('iteration i=%s', i)
-            total_score = instancematching.get_total_score_for_row(scores)
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores)
             self.assertEqual(total_score, expected[i][0])
-            total_score = instancematching.get_total_score_for_row(scores, scoring_weights[i])
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores, scoring_weights[i])
             self.assertEqual(total_score, expected[i][1])
-            total_score = instancematching.get_total_score_for_row(scores, missing_score=0.4)
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores, missing_score=0.4)
             self.assertEqual(total_score, expected[i][2])
-            total_score = instancematching.get_total_score_for_row(scores, scoring_weights[i], missing_score=1.)
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores, scoring_weights[i], missing_score=1.)
             self.assertEqual(total_score, expected[i][3])
-            total_score = instancematching.get_total_score_for_row(scores, missing_score=1., aggregation_mode='mean', average_min_prop_count=1)
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores, missing_score=1., aggregation_mode='mean', average_min_prop_count=1)
             self.assertEqual(total_score, expected[i][4])
-            total_score = instancematching.get_total_score_for_row(scores, aggregation_mode='mean', average_min_prop_count=3)
+            total_score = ontomatch.instancematching.get_total_score_for_row(scores, aggregation_mode='mean', average_min_prop_count=3)
             self.assertEqual(total_score, expected[i][5])
 
     def test_matching_with_scoring_weights_without_geo_coordinates(self):
@@ -221,7 +204,7 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
         params_mapping = params['mapping']
         #prop_prop_sim_tuples = self.get_prop_prop_sim_tuples_without_geo_coordinates()
 
-        matcher = instancematching.InstanceMatcherWithScoringWeights()
+        matcher = ontomatch.instancematching.InstanceMatcherWithScoringWeights()
         #matcher.start(src_onto, tgt_onto, params_blocking, None, prop_prop_sim_tuples)
         matcher.start(src_onto, tgt_onto, params_blocking, params_mapping)
         scores = matcher.get_scores()
@@ -234,10 +217,10 @@ class TestInstanceMatching(utils_for_testing.TestCaseOntoMatch):
         weight_sum = sum(scoring_weights)
         scoring_weights = [ w/weight_sum for w in scoring_weights]
 
-        instancematching.add_total_scores(scores, props=[0, 1, 2, 3, 4], scoring_weights=scoring_weights)
+        ontomatch.instancematching.add_total_scores(scores, props=[0, 1, 2, 3, 4], scoring_weights=scoring_weights)
 
         matches = self.read_kwl_gppd_DEU_matching_file()
-        result = evaluate.evaluate(scores, matches, number_of_thresholds=11)
+        result = ontomatch.evaluate.evaluate(scores, matches, number_of_thresholds=11)
 
 
     	#max f1-score=0.818840579710145 for threshold t=0.9
