@@ -1,7 +1,7 @@
 from ontomatch.matchManager import *
 from ontomatch.matchers.Penalizer import *
 from ontomatch.alignment import Alignment
-from ontomatch.PlusImport import PlusImport
+from ontomatch.utils.PlusImport import PlusImport
 
 import os
 import owlready2

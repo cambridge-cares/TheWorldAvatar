@@ -12,12 +12,13 @@ from tqdm import tqdm
 from ontomatch.alignment import Alignment
 import ontomatch.evaluate
 import ontomatch.instancematching
+import ontomatch.knowledge.enhancement
 import ontomatch.knowledge.geocoding
 import ontomatch.knowledge.geoNames
 from ontomatch.matchManager import matchManager
-from ontomatch.ontologyWrapper import Ontology
 import ontomatch.scoring
-import ontomatch.util
+from ontomatch.utils.ontologyWrapper import Ontology
+import ontomatch.utils.util
 
 class Agent():
 
@@ -81,6 +82,16 @@ class Agent():
         graph.serialize(tmp_file, format="xml")
         onto = owlready2.get_ontology(tmp_file).load()
         return onto
+
+    def call_knowledge_enhancer(self, addr:str, http:bool) -> str:
+        logging.info('calling ontomatch.knowledge.enhancement.Agent, addr=%s', addr)
+        if http:
+            raise NotImplementedError()
+        else:
+            enhancement_addr, is_enhanced = ontomatch.knowledge.enhancement.Agent().start(addr)
+        logging.info('called ontomatch.knowledge.enhancement.Agent, enhancement_addr=%s, is_enhanced=%s',
+                enhancement_addr, is_enhanced)
+        return enhancement_addr, is_enhanced
 
     def load_rdflib_graph(self, addr, add_knowledge=None):
 
@@ -333,7 +344,7 @@ def postprocess(config, matcher, dump=None):
     return result
 
 def start(config_dev=None):
-    config = ontomatch.util.init(config_dev)
+    config = ontomatch.utils.util.init(config_dev)
     starttime = time.time()
     agent = Agent()
     matcher = agent.start(config)

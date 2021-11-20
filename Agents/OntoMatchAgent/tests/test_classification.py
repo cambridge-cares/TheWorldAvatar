@@ -6,14 +6,14 @@ import pandas as pd
 import ontomatch.blocking
 import ontomatch.classification
 import ontomatch.evaluate
-import ontomatch.util
+import ontomatch.utils.util
 import tests.utils_for_testing
 
 class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_create_train_test_split(self):
         path = 'C:/my/repos/ontomatch_20210924/experiments/211115_visualization/KWL/scores_1/total_scores.csv'
-        dframe = ontomatch.util.read_csv(path)
+        dframe = ontomatch.utils.util.read_csv(path)
         len_total = len(dframe)
         y = 'best'
         mask = (dframe[y] == True)
@@ -47,7 +47,7 @@ class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
         ]
 
         with unittest.mock.patch('sys.argv', testargs):
-            params = ontomatch.util.init()
+            params = ontomatch.utils.util.init()
 
             df1, df2 = ontomatch.classification.Utils.create_dataframes(params)
 

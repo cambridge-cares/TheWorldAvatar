@@ -1,7 +1,7 @@
 from owlready2 import get_ontology
 import rdflib
 
-from ontomatch.ontologyWrapper import Ontology
+from ontomatch.utils.ontologyWrapper import Ontology
 import tests.utils_for_testing
 
 class TestOntology(tests.utils_for_testing.TestCaseOntoMatch):

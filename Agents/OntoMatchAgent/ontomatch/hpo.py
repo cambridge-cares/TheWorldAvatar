@@ -9,7 +9,7 @@ import xgboost
 
 import ontomatch.classification
 import ontomatch.evaluate
-import ontomatch.util
+import ontomatch.utils.util
 
 def create_classifier_RF():
     return sklearn.ensemble.RandomForestClassifier(n_jobs=1, verbose=0, class_weight='balanced')
@@ -82,7 +82,7 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
 
     #assert lower_threshold <= upper_threshold
 
-    dframe = ontomatch.util.read_csv(total_scores_file)
+    dframe = ontomatch.utils.util.read_csv(total_scores_file)
     mask = ((dframe['best'] == True) & (dframe['score'] >= upper_threshold ))
     index_matches = dframe[mask].index
 
@@ -98,10 +98,10 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
 
     if scores_file is None:
         # use auto-calibrated scores
-        df_scores = ontomatch.util.read_csv(total_scores_file)
+        df_scores = ontomatch.utils.util.read_csv(total_scores_file)
     else:
         # use the original similarity scores
-        df_scores = ontomatch.util.read_csv(scores_file)
+        df_scores = ontomatch.utils.util.read_csv(scores_file)
 
     index_union = index_matches.union(index_nonmatches)
     df_scores = df_scores.loc[index_union].copy()
@@ -116,7 +116,7 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
 
 def start_from_console():
 
-    params = ontomatch.util.init()
+    params = ontomatch.utils.util.init()
     params_classification = params['classification']
     # KWL
     match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'

@@ -5,7 +5,7 @@ import unittest
 
 import numpy as np
 
-import ontomatch.util
+import ontomatch.utils.util
 
 PATH_MATCHES_PP_DEU = './data/matches_power_plant_DEU.csv'
 PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
@@ -15,7 +15,7 @@ class TestCaseOntoMatch(unittest.TestCase):
 
     def setUp(self):
         print()
-        ontomatch.util.init_logging()
+        ontomatch.utils.util.init_logging()
         np.random.seed(1)
 
     def load_kwl_gppd_ontologies(self):

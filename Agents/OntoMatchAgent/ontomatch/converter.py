@@ -10,7 +10,7 @@ from rdflib.namespace import XSD
 from rdflib.term import _is_valid_uri
 from tqdm import tqdm
 
-import ontomatch.util
+import ontomatch.utils.util
 
 # TODO-AE 211106 rename BASE to BASE_DUKES
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
@@ -1182,7 +1182,7 @@ class ConverterProduct():
 
 if __name__ == '__main__':
 
-    ontomatch.util.init()
+    ontomatch.utils.util.init()
 
     main_dir = './data'
 

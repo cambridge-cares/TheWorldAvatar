@@ -9,7 +9,7 @@ import ontomatch.coordinator
 import ontomatch.evaluate
 import ontomatch.instancematching
 import ontomatch.scoring
-import ontomatch.util
+import ontomatch.utils.util
 
 def hpo(params, matchfile):
 
@@ -96,6 +96,6 @@ def current_state_to_dict(f1_score, threshold, area_under_curve, scoring_weights
 
 if __name__ == '__main__':
 
-    config = ontomatch.util.init()
+    config = ontomatch.utils.util.init()
     matchfile = config['post_processing']['evaluation_file']
     hpo(config, matchfile)

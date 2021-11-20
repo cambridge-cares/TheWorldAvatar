@@ -16,7 +16,7 @@ from tqdm import tqdm
 import ontomatch.blocking
 import ontomatch.coordinator
 import ontomatch.scoring
-import ontomatch.util
+import ontomatch.utils.util
 
 class TrainTestGenerator():
 
@@ -24,7 +24,7 @@ class TrainTestGenerator():
     def generate_sim_vectors_for_matches_and_split(params, tgt_file, train_sizes):
         match_file = params['post_processing']['evaluation_file']
         #dframe = pd.read_csv(match_file, index_col=['idx_1', 'idx_2'])
-        dframe = ontomatch.util.read_csv(match_file)
+        dframe = ontomatch.utils.util.read_csv(match_file)
 
         # split into train and test set for different sizes
         for train_size in train_sizes:
@@ -196,7 +196,7 @@ def filter_scores_for_index_set(df_scores, number=None, rate=None, mode='random'
     # mode='random' or 'max' or 'min'
     if number is None:
         number = int(len(df_scores) * rate)
-    columns = ontomatch.util.get_prop_columns(df_scores)
+    columns = ontomatch.utils.util.get_prop_columns(df_scores)
     if center == 0:
         if p == 'max':
             dist_fct = lambda x : np.abs(x[columns]).max()
@@ -416,7 +416,7 @@ def start_M():
     #config_file = 'C:/my/repos/ontomatch_20210924/experiments/211118_XGB/product/conf_product_xgb_1.json'
 
     sys.argv.extend(['--config', config_file])
-    params = ontomatch.util.init()
+    params = ontomatch.utils.util.init()
 
     train_sizes = [0.01, 0.02, 0.05, 0.1, 0.2]
     TrainTestGenerator.generate_sim_vectors_for_matches_and_split(params, tgt_file, train_sizes=train_sizes)
@@ -445,7 +445,7 @@ def start_N_from_blocks():
     #config_file = 'C:/my/repos/ontomatch_20210924/experiments/211118_XGB/product/conf_product_xgb_1.json'
 
     sys.argv.extend(['--config', config_file])
-    ontomatch.util.init()
+    ontomatch.utils.util.init()
     nonmatch_match_ratio = 5
     tgt_file = tgt_file[:-4] + '_ratio_' + str(nonmatch_match_ratio) + '.csv'
     TrainTestGenerator.random_nonmatches_from_file_and_split(scores_file, tgt_file, match_file, nonmatch_match_ratio)

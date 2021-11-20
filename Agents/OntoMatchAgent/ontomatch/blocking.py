@@ -12,7 +12,7 @@ import pandas as pd
 import rdflib
 from tqdm import tqdm
 
-from ontomatch.ontologyWrapper import Ontology
+from ontomatch.utils.ontologyWrapper import Ontology
 
 class FullPairIterator(collections.Iterable, collections.Sized):
 

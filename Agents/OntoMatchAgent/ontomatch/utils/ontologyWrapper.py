@@ -9,7 +9,7 @@ import owlready2
 from spiral import ronin
 from tqdm import tqdm
 
-from ontomatch.valueMap import *
+from ontomatch.utils.valueMap import *
 #from ontomatch.matchers.UnitConverter import UnitConverter
 
 logging.getLogger("gensim").setLevel(logging.CRITICAL)
@@ -455,7 +455,7 @@ class Ontology():
 
 if __name__ == '__main__':
     startTime = time.time()
-    from PlusImport import PlusImport
+    from ontomatch.utils.PlusImport import PlusImport
     ontologyIRI ="C:/Users/Shaocong/WORK/ontoMatchData/simMatch/testFiles/PowerPlant.owl"
     dbp = "testFiles/dbpedia_2014.owl"
     pklAddress = "D:/workwork/ontoMatchFiles/what.pkl"

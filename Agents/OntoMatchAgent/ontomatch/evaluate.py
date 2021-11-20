@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 
 import ontomatch.readAlignment
-import ontomatch.util
+import ontomatch.utils.util
 
 def evaluate_y_pred(y_test, y_pred):
     tp, tn, fp, fn = 0, 0, 0, 0
@@ -157,7 +157,7 @@ def evaluate(df_alignment, matches, number_of_thresholds=41):
 
 if __name__ == '__main__':
 
-    ontomatch.util.init_logging()
+    ontomatch.utils.util.init_logging()
 
     alignmentfile = './2109xx.owl'
     df_alignment = read_alignment_file_as_dataframe(alignmentfile)

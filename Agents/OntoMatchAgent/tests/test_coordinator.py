@@ -2,7 +2,7 @@ import logging
 import unittest.mock
 
 import ontomatch.coordinator
-import ontomatch.util
+import ontomatch.utils.util
 import tests.utils_for_testing
 
 class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
@@ -112,7 +112,7 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_coordinator_step_1_loading_and_step_2_adding_knowledge(self):
 
-        params = ontomatch.util.read_config(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO)
+        params = ontomatch.utils.util.read_config(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO)
         # the config file defines the pickled files as src and tgt and thus will not add geocoordinates
         params['dataset']['src'] = './data/power_plant_DEU/kwl.ttl'
         params['dataset']['tgt'] = './data/power_plant_DEU/gppd_DEU.ttl'

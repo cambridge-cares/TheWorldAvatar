@@ -2,6 +2,7 @@ import logging
 import pickle
 
 import ontomatch.blocking
+import ontomatch.coordinator
 import ontomatch.scoring
 import tests.utils_for_testing
 
@@ -53,3 +54,10 @@ class TestRestaurant(tests.utils_for_testing.TestCaseOntoMatch):
 
         result = ontomatch.scoring.ScoreManager.calculate_between_entities(entity1, entity2,  prop_prop_sim_tuples)
         self.assertAlmostEqual(result[0], 0.1546, places=2)
+
+    def xxx_test_restaurant_load_dump(self):
+        srcaddr = './data/restaurant/zagats.ttl'
+        tgtaddr = './data/restaurant/fodors.ttl'
+
+        agent = ontomatch.coordinator.Agent()
+        agent.load(srcaddr, tgtaddr, add_knowledge=None, dump_ontology=False)
