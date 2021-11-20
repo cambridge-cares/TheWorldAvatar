@@ -223,6 +223,13 @@ class Agent():
             elif matching_name == 'instancematching.InstanceMatcherWithAutoCalibration':
                 params_mapping = params['mapping']
                 return self.__start_matching_with_auto_calibration(srconto, tgtonto, params_blocking, params_mapping)
+            elif matching_name == 'instancematching.InstanceMatcherMaxSVC':
+                params_mapping = params['mapping']
+                classif_name = params['classification']['name']
+                if  classif_name != 'SVC':
+                    raise ValueError('unknown classification method', classif_name)
+                params_classification = params['classification']['model_specific']
+                return self.__start_matching_max_svc(srconto, tgtonto, params_blocking, params_mapping, params_classification)
             elif matching_name == 'instancematching.InstanceMatcherWithScoringWeights':
                 params_mapping = params['mapping']
                 return self.__start_matching_with_scoring_weights(srconto, tgtonto, params_model_specific, params_blocking, params_mapping)
@@ -242,6 +249,12 @@ class Agent():
         _, df_total_best_scores = matcher.start(srconto, tgtonto, params_blocking, params_mapping)
         #return df_total_best_scores
         #TODO-AE URGENT 211103
+        return matcher
+
+    def __start_matching_max_svc(self, srconto, tgtonto, params_blocking, params_mapping, params_classification):
+        matcher = instancematching.InstanceMatcherMaxSVC()
+        #TODO-AE URGENT 211023 Must be continued ... all matchers has to write back matching results ...
+        matcher.start(srconto, tgtonto, params_blocking, params_mapping, params_classification)
         return matcher
 
     def __start_matching_with_scoring_weights(self, srconto, tgtonto, params_model_specific, params_blocking, params_mapping):
@@ -293,6 +306,7 @@ class Agent():
         # convert alignment to dataframe with indices and score function
         return df_scores
 
+'''
 def init(config_dev=None):
     print('current working directory=', os.getcwd())
     print('sys.argv=', sys.argv)
@@ -321,6 +335,7 @@ def init(config_dev=None):
     random.seed(seed)
 
     return config
+'''
 
 def postprocess(config, matcher, dump=None):
 
@@ -332,7 +347,7 @@ def postprocess(config, matcher, dump=None):
         sm.data1.to_csv(dir_name + '/data1.csv')
         sm.data2.to_csv(dir_name + '/data2.csv')
 
-        if isinstance(matcher, instancematching.InstanceMatcherWithScoringWeights):
+        if isinstance(matcher, instancematching.InstanceMatcherWithScoringWeights) or isinstance(matcher, instancematching.InstanceMatcherMaxSVC):
             sm.df_scores.to_csv(dir_name + '/total_scores.csv')
         elif isinstance(matcher, instancematching.InstanceMatcherWithAutoCalibration):
             if sm.df_max_scores_1 is not None:
@@ -355,7 +370,7 @@ def postprocess(config, matcher, dump=None):
     return result
 
 def start(config_dev=None):
-    config = init(config_dev)
+    config = util.init(config_dev)
     starttime = time.time()
     agent = Agent()
     matcher = agent.start(config)

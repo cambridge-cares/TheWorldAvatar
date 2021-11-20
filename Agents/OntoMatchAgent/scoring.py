@@ -57,6 +57,8 @@ def dist_cosine_with_tfidf(v1, v2):
     # TODO-AE URGENT 211021 replaced by unpruned (original) index to get same tfidf weights as in jupyter notebook
     #df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens
     df_index_tokens = blocking.TokenBasedPairIterator.df_index_tokens_unpruned
+    if df_index_tokens is None:
+        raise ValueError('df_index_tokens was not created yet')
     #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
     n_max_idf = 30
     return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
@@ -119,6 +121,14 @@ def create_prop_prop_sim_triples_from_params(params_mapping):
 
     return triples
 
+def create_distance_functions_from_params(params_sim_fcts):
+    dist_fcts = []
+    for s_fct in params_sim_fcts:
+         # name refers to a distance function not to a similarity function
+        name = s_fct['name']
+        dist_fct = globals()[name]
+        dist_fcts.append(dist_fct)
+    return dist_fcts
 
 class ScoreManager():
 
@@ -182,21 +192,26 @@ class ScoreManager():
                     self.prop_prop_fct_tuples.append((p1, p2, fct))
 
     @staticmethod
-    def calculate_between_entities(entity1, entity2, prop_prop_fct_tuples):
+    def calculate_between_entities(entity1, entity2, prop_prop_fct_tuples, sim=True):
 
         result = []
         for prop1, prop2, fct in prop_prop_fct_tuples:
             v1 = entity1[prop1]
             v2 = entity2[prop2]
             value = fct(v1, v2)
-            assert value is None or (value >= 0 and value <= 1)
+            if sim:
+                # calculates similarities between 0 and 1
+                assert value is None or (value >= 0 and value <= 1)
+            else:
+                # calculate distances >= 0
+                assert value is None or (value >= 0)
             result.append(value)
 
         return result
 
-    def calculate_similarities_between_datasets(self):
+    def calculate_similarities_between_datasets(self, sim=True):
 
-        logging.info('calculating similarities')
+        logging.info('calculating similarities or distances, sim=%s', sim)
         count = 0
         rows = []
         for pos1, pos2 in tqdm(self.pair_iterator):
@@ -221,7 +236,7 @@ class ScoreManager():
                 logging.debug('\n%s', row2.to_string())
                 raise err
             row = [idx1, idx2, pos1, pos2]
-            scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples)
+            scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples, sim)
             row.extend(scores)
             rows.append(row)
 
@@ -233,21 +248,24 @@ class ScoreManager():
             #j = prop2.rfind('/')
             #str_prop2 = (prop2 if j==-1 else prop2[j+1:])
             #dist_column = '_'.join([str(i), 'dist', str_prop1, str_prop2])
-            dist_column = i
-            columns.append(dist_column)
+
+            # TODO-AE 211110 change from int to str for column names
+            sim_column = i
+            #sim_column = str(i)
+            columns.append(sim_column)
 
         self.df_scores = pd.DataFrame(data=rows, columns=columns)
         self.df_scores.set_index(['idx_1', 'idx_2'], inplace=True)
         logging.info('calculated scores, number of pairs=%s, score columns=%s', len(self.df_scores), columns)
         return self.df_scores
 
-    def calculate_maximum_scores(self):
-        self.df_max_scores_1 = self.__calculate_maximum_scores(1)
+    def calculate_maximum_scores(self, switch_to_min_of_distance=False):
+        self.df_max_scores_1 = self.__calculate_maximum_scores(1, switch_to_min_of_distance)
         #TODO-AE
-        #self.df_max_scores_2 = self.__calculate_maximum_scores(2)
+        #self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
         return self.df_max_scores_1, self.df_max_scores_2
 
-    def __calculate_maximum_scores(self, dataset_id):
+    def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
         logging.info('calculating maximum scores, dataset_id=%s, number of scores=%s', dataset_id, len(self.prop_prop_fct_tuples) )
         idx_values = self.df_scores.index.get_level_values(dataset_id-1).unique()
@@ -276,8 +294,12 @@ class ScoreManager():
                 for _, row in cand.iterrows():
                     score = row[c]
                     if not ((score is None) or np.isnan(score)):
-                        if max_score is None or score > max_score:
-                            max_score = score
+                        if not switch_to_min_of_distance:
+                            if max_score is None or score > max_score:
+                                max_score = score
+                        else:
+                            if max_score is None or score < max_score:
+                                max_score = score
                 result_row.update({str(c) + '_max': max_score})
 
             result_row.update({index_column_name: idx})

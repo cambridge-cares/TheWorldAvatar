@@ -6,6 +6,43 @@ import pandas as pd
 import readAlignment
 import util
 
+def evaluate_y_pred(y_test, y_pred):
+    tp, tn, fp, fn = 0, 0, 0, 0
+    for i, y in enumerate(y_test):
+        y_p = int(y_pred[i])
+        if y == 0:
+            if y_p == 0:
+                tn += 1
+            elif y_p == 1:
+                fp += 1
+            else:
+                raise ValueError()
+        elif y == 1:
+            if y_p == 0:
+                fn += 1
+            elif y_p == 1:
+                tp += 1
+            else:
+                raise ValueError()
+        else:
+            raise ValueError()
+    precision, recall, f1score = calculate_precision_recall_intern(tp, fp, fn)
+    return tp, fp, fn, precision, recall, f1score
+
+def evaluate_y_pred_proba(y_test, y_pred_proba, number_of_thresholds=41):
+    result = []
+    thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
+    for t in thresholds:
+        # y_pred_proba is an array of tuples (probability nonmatch, probability match)
+        # both probabilities sum up to 1
+        # the second probability (index = 1) is the 'confidence' for a match
+        map_fct = lambda x: 1 if x[1] > t else 0
+        y_pred = [ y for y in map(map_fct, y_pred_proba) ]
+        tp, fp, fn, precision, recall, f1score = evaluate_y_pred(y_test, y_pred)
+        entry = [t, precision, recall, tp, fp, fn, f1score]
+        result.append(entry)
+    return result
+
 def read_alignment_file_as_dataframe(filename):
     reader = readAlignment.AReader(filename)
     reader.readAlignment(-1.)
@@ -51,6 +88,16 @@ def read_match_file_as_index_set(filename, linktypes):
     logging.info('loaded evaluation file=%s, link types=%s, number of matches=%s', filename, linktypes, len(mi_match_pairs))
     return mi_match_pairs
 
+def calculate_precision_recall_intern(tm, fm, fn):
+    precision = 1.
+    recall = 0.
+    f1score = 0.
+    if tm > 0:
+        precision = tm / (tm + fm)
+        recall = tm / (tm + fn)
+        f1score = 2 * precision * recall / (precision + recall)
+    return precision, recall, f1score
+
 def calculate_precision_recall(predicted_matches, matches):
 
     true_matches = matches.intersection(predicted_matches)
@@ -60,18 +107,7 @@ def calculate_precision_recall(predicted_matches, matches):
     fm = len(false_matches)
     fn = len(false_nonmatches)
 
-    precision = 1.
-    recall = 0.
-    f1score = 0.
-    if tm > 0:
-        precision = tm / (tm + fm)
-        recall = tm / (tm + fn)
-        f1score = 2 * precision * recall / (precision + recall)
-
-    #logging.debug('number predicted matches=%s', len(predicted_matches))
-    #logging.debug('TP=%s, FP=%s, FN=%s', tm, fm, fn)
-    #logging.debug('precision=%s, recall=%s', precision, recall)
-
+    precision, recall, f1score = calculate_precision_recall_intern(tm, fm, fn)
     return true_matches, false_matches, false_nonmatches, precision, recall, f1score
 
 def get_max_f1score(result):
@@ -97,6 +133,12 @@ def get_area_under_curve(result):
 
     return area_under_curve
 
+def log_result(result):
+    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN, f1score):\n%s', result)
+    max_t, max_f1score = get_max_f1score(result)
+    area_under_curve = get_area_under_curve(result)
+    logging.info('max f1-score=%s for threshold t=%s', max_f1score, max_t)
+    logging.info('area under curve=%s', area_under_curve)
 
 def evaluate(df_alignment, matches, number_of_thresholds=41):
 
@@ -110,14 +152,8 @@ def evaluate(df_alignment, matches, number_of_thresholds=41):
         entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches), f1score]
         result.append(entry)
 
-    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN, f1score):\n%s', result)
-    max_t, max_f1score = get_max_f1score(result)
-    area_under_curve = get_area_under_curve(result)
-    logging.info('max f1-score=%s for threshold t=%s', max_f1score, max_t)
-    logging.info('area under curve=%s', area_under_curve)
-
+    log_result(result)
     return result
-
 
 if __name__ == '__main__':
 

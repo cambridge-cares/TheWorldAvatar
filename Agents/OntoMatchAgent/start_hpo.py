@@ -96,6 +96,6 @@ def current_state_to_dict(f1_score, threshold, area_under_curve, scoring_weights
 
 if __name__ == '__main__':
 
-    config = coordinator.init()
+    config = util.init()
     matchfile = config['post_processing']['evaluation_file']
     hpo(config, matchfile)

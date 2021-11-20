@@ -3,13 +3,19 @@ import json
 import pickle
 import unittest
 
+import numpy as np
+
 import util
+
+PATH_MATCHES_KWL_GPPD_DEU = './data/matches_kwl_gppd_DEU.csv'
+PATH_CONF_AUTO_KWL_GPPD_DEU = './tests/conf/conf_auto_calibration_kwl_gppd_geo.json'
 
 class TestCaseOntoMatch(unittest.TestCase):
 
     def setUp(self):
         print()
         util.init_logging()
+        np.random.seed(1)
 
     def load_kwl_gppd_ontologies(self):
         with open('./data/kwl_address_211022.pkl','rb') as file:

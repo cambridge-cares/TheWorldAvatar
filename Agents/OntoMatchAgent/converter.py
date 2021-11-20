@@ -1,16 +1,21 @@
 import html
 import logging
 import re
+import sys
 
 import numpy as np
 import pandas as pd
+from pandas.core.indexes.interval import IntervalIndex
 import rdflib
 from rdflib import RDF, RDFS, OWL, SDO, Namespace, Literal, URIRef
 from rdflib.namespace import XSD
 from rdflib.term import _is_valid_uri
 from tqdm import tqdm
 
+import classification
 import util
+
+
 # TODO-AE 211106 rename BASE to BASE_DUKES
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
@@ -67,7 +72,7 @@ def add(graph, subject, predicates, obj=None):
 
     return triples, current_obj
 
-def replace_special_symbols(s):
+def replace_special_characters(s):
     s = s.replace('/', ' ').replace('\\', ' ')
     return s
 
@@ -116,11 +121,11 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
 
     plant_name_norm = d.get('plantnamenorm')
     if plant_name_norm:
-        name = replace_special_symbols(plant_name_norm)
+        name = replace_special_characters(plant_name_norm)
         if country_short:
             name += '_' + country_short
     elif d['plantname']:
-        name = replace_special_symbols(d['plantname'])
+        name = replace_special_characters(d['plantname'])
         if country_short:
             name += '_' + country_short
     else:
@@ -1179,16 +1184,9 @@ class ConverterProduct():
 
 
 
-def test():
-
-    conv = ConverterRestaurant()
-    s = 'Fujiyama Mama 467 Columbus Ave.  between 82nd and 83rd Sts. New York 212/769-1144 Asian'
-    props = conv.split_restaurant(s)
-    print(props)
-
 if __name__ == '__main__':
 
-    util.init_logging()
+    util.init()
 
     frmt = 'turtle'
     #frmt = 'owl'
@@ -1224,7 +1222,5 @@ if __name__ == '__main__':
     #create_location_file(src_file, tgt_file, frmt)
 
     #ConverterRestaurant.convert()
-    ConverterBibliographicRecord.convert()
+    #ConverterBibliographicRecord.convert()
     #ConverterProduct.convert()
-
-    #test()

@@ -1,21 +1,21 @@
 import logging
+import os
+import os.path
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
+import classification
 import scoring
 
-
-class InstanceMatcherWithAutoCalibration():
+class InstanceMatcherBase():
 
     def __init__(self):
         self.score_manager = None
-        self.df_total_scores = None
-        self.df_total_best_scores = None
 
     #TODO-AE remove attribute prop_prop_sim_tuples (was just for testing). replace it completely by params_mapping
-    def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
+    def start_base(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
 
         self.score_manager = scoring.create_score_manager(srconto, tgtonto, params_blocking)
 
@@ -28,7 +28,7 @@ class InstanceMatcherWithAutoCalibration():
         else:
             mode = params_mapping['mode']
 
-        logging.info('starting InstanceMatcherWithAutoCalibrationAgent with mode=%s', mode)
+        logging.info('starting InstanceMatcherBase with mode=%s', mode)
 
         if mode == 'auto':
             # TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator
@@ -63,12 +63,91 @@ class InstanceMatcherWithAutoCalibration():
         else:
             raise RuntimeError('unknown mode', mode)
 
+        return property_mapping
+
+    def get_scores(self):
+        return self.score_manager.df_scores
+
+    def set_scores(self, df_scores):
+        self.score_manager.df_scores = df_scores
+
+class InstanceMatcherMaxSVC(InstanceMatcherBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def start(self, srconto, tgtonto, params_blocking, params_mapping, params_classification, prop_prop_sim_tuples=None):
+        logging.info('starting InstanceMatcherMaxSVC')
+        #TODO-AE 211110 auto property mapping
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
+        #TODO-AE asymmetry
+        df_max_scores = self.score_manager.get_max_scores_1()
+        df_scores = self.get_scores()
+        df_scores = self.classify_with_svc(df_max_scores, df_scores, params_classification)
+        self.set_scores(df_scores)
+        return self.get_scores()
+
+    def classify_with_svc(self, df_max_scores, df_scores, params_classification):
+
+        #columns = ['0','1','2','3','4']
+        #df_train, df_test, labels_train, labels_test = classification.select_seeds_for_max_scores_OLD(df_max_scores, df_scores, columns)
+
+        df_max_scores_cleaned = classification.clean(df_max_scores)
+        df_scores_cleaned = classification.clean(df_scores)
+        logging.info('max_scores=%s, cleaned=%s, scores=%s, cleaned=%s', len(df_max_scores), len(df_max_scores_cleaned), len(df_scores), len(df_scores_cleaned))
+        df_train, df_test, labels_train, labels_test = classification.select_seeds_for_max_scores(df_max_scores_cleaned, df_scores_cleaned)
+
+        # TODO-AE 211110 remove dumping to debug folder or find a better solution
+        if not os.path.exists('./debug'):
+            os.mkdir('./debug')
+        df_train.to_csv('./debug/df_train.csv')
+        labels_train.to_csv('./debug/labels_train.csv')
+
+        '''
+        params_classification = [{
+            'kernel': ['rbf'],
+            'gamma': ['scale'],
+            'C': [1.0]
+        }]
+        '''
+
+        '''
+        model  = classification.hpo_svm(df_train, labels_train, params_classification, crossvalidation=5)
+        train_score = model.score(df_train, labels_train)
+        test_score = model.score(df_test, labels_test)
+        logging.debug('SVC train_score=%s, test_score=%s', train_score, test_score)
+        '''
+
+        df_scores_cleaned = classification.calculate_confidence_scores_from_hpo_svm(params_classification, df_train, labels_train, df_test, labels_test, df_scores_cleaned)
+        df_scores['score'] = 0.
+        #df_scores.loc[df_scores_cleaned.index]['score'] = df_scores_cleaned['score']
+        count = 0
+        for i, row in df_scores_cleaned.iterrows():
+            df_scores.at[i, 'score'] = row['score']
+            count += 1
+        logging.info('number of scores transferred from df_scores_cleaned to df_scores=%s', count)
+
+
+        df_scores_cleaned.to_csv('./debug/scores_cleaned.csv')
+        df_scores.to_csv('./debug/scores.csv')
+
+        return df_scores
+
+class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
+
+    def __init__(self):
+        super().__init__()
+        self.df_total_scores = None
+        self.df_total_best_scores = None
+
+    def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
+        logging.info('starting InstanceMatcherWithAutoCalibration')
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
         df_scores = self.score_manager.get_scores()
         #TODO-AE asymmetry
         df_max_scores = self.score_manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
         return self.df_total_scores, self.df_total_best_scores
-
 
     '''
     def calculate_auto_calibrated_total_scores_for_index_OLD(self, df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = 1):
@@ -215,10 +294,12 @@ class InstanceMatcherWithAutoCalibration():
             score = 0
             number_columns = len(property_mapping)
             prop_score = {}
-            for propmap  in property_mapping:
+            for propmap in property_mapping:
 
                 c_max = propmap['key']
+                # TODO-AE 211110 change from int to str for column names
                 c = int(c_max.split('_')[0])
+                #c = c_max.split('_')[0]
                 value = row[c]
 
                 #TODO-AE changed at 210926
@@ -293,15 +374,17 @@ class InstanceMatcherWithAutoCalibration():
 
         sliding_counts = {}
         for propmap  in property_mapping:
-                c_max = propmap['key']
-                series = df_max_scores[c_max]
-                scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
-                sliding_counts[c_max] = scount
+            c_max = propmap['key']
+            series = df_max_scores[c_max]
+            scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+            sliding_counts[c_max] = scount
 
-                c = int(c_max.split('_')[0])
-                series = df_scores[c]
-                scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
-                sliding_counts[c] = scount
+            # TODO-AE 211110 change from int to str for column names
+            c = int(c_max.split('_')[0])
+            #c = c_max.split('_')[0]
+            series = df_scores[c]
+            scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+            sliding_counts[c] = scount
 
         rows = []
         for idx, _ in tqdm(df_max_scores.iterrows()):
