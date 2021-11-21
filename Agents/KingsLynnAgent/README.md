@@ -1,19 +1,18 @@
 # UK flooding
 
-### How to create a Python virtual environment and install required packages (in Windows):
+## Preparation
+### 1. Create a Python virtual environment and install required packages (in Windows):
 
-1) Open `cmd` terminal and navigate into project repository
+1) Open `cmd` terminal and navigate into project's root repository (referred to as `<root>` in the following)
 
-2) Create virtual environment `name` using venv (`python` might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variable):
+2) Create virtual environment `<venv_name>` using venv (`python` command might need to be replaced with `py` depending on whether Python is specified in system's `PATH` variables):
 ```
-python -m venv <name>
+python -m venv <venv_name>
 ```
 
-3) Navigate into virtual environemnt repository, activate it, and navigate back:
+3) Activate virtual environment by running:
 ```
-cd <name>\Scripts
-activate
-cd ..\..
+<venv_name>\Scripts\activate
 ```
 
 4) Install requirements listed in `requirements.txt`:

@@ -14,7 +14,8 @@ import geojson_creator
 # Specify (local) Blazegraph properties
 server = "localhost"
 port = "9999"
-namespace = "kings-lynn"
+#namespace = "geospatial_offset_analysis_epsg27700"
+namespace = 'geospatial_offset_analysis_ocg-crs84'
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
 n = None
@@ -132,7 +133,7 @@ def execute_query(query, query_endpoint):
     return results
 
 
-def get_coordinates(polygon_data, input_crs, target_crs, dimensions=3):
+def get_coordinates(polygon_data, proj, dimensions=3):
     '''
         Extracts and transforms polygon coordinates as retrieved from Blazegraph
         to suit GeoJSON polygon requirements (and target CRS)
@@ -148,9 +149,6 @@ def get_coordinates(polygon_data, input_crs, target_crs, dimensions=3):
             Minimum elevation (Z value) of polygon surface
             Maximum elevation (Z value) of polygon surface
     '''
-
-    # Initialise CRS transformer
-    proj = pyproj.Transformer.from_crs(input_crs, target_crs, always_xy=True)
 
     # Initialise output and input coordinate collections
     coordinates = []
@@ -170,6 +168,8 @@ def get_coordinates(polygon_data, input_crs, target_crs, dimensions=3):
             node = i * 3
             # Transform (x,y) values and append (x,y,z) to output list
             x, y = proj.transform(coordinate_str[node], coordinate_str[node + 1])
+            #x = coordinate_str[node]
+            #y = coordinate_str[node + 1]
             z = coordinate_str[node + 2]
             coordinates.append([x, y, z])
 
@@ -233,9 +233,19 @@ if __name__ == '__main__':
     # Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
     # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
     # Mapbox: https://docs.mapbox.com/help/glossary/projection/
-    target_crs = 'urn:ogc:def:crs:OGC::CRS84'
+    target_crs = 'urn:ogc:def:crs:EPSG::27700'
+    #target_crs = 'urn:ogc:def:crs:OGC::CRS84'
     #target_crs = 'urn:ogc:def:crs:OGC:1.3:CRS84'
     crs_out = pyproj.CRS.from_string(target_crs)
+
+    # Initialise CRS transformer
+    tg = pyproj.transformer.TransformerGroup(crs_in, crs_out)
+    if not tg.best_available:
+        tg.download_grids(verbose=True)
+        tg = pyproj.transformer.TransformerGroup(crs_in, crs_out)
+        if not tg.best_available:
+            print('WARNING: Best transformer for specified CRS not available. Results may be inaccurate.')
+    proj = pyproj.Transformer.from_crs(crs_in, crs_out, always_xy=True)
 
     # Initialise GeoJSON output dictionaries
     output_3d = geojson_creator.initialise_geojson(target_crs)
@@ -261,7 +271,7 @@ if __name__ == '__main__':
         # Iterate through all surface geometries
         for s in surf['surface'].unique():
             # Transform coordinates for surface geometry
-            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], crs_in, crs_out)
+            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], proj)
             # Append transformed polygon coordinate list as sublist to overall list for building
             all_polygons.append(coords)
             # Potentially update min and max elevation
