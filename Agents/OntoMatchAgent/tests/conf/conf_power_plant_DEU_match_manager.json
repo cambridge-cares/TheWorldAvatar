@@ -1,0 +1,35 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/power_plant_DEU/kwl.pkl",
+	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 20,
+		"max_token_occurrences_tgt": 20,
+		"blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
+		"reset_index": false
+	}
+},
+"matching":{
+	"name": "matchManager.matchManager",
+	"model_specific": {
+		"steps": ["ValueMatcher", "instanceStringMatcher", "instanceBOWMatcher"],
+		"weights": [0.5, 0.4, 0.1],
+		"params": [null, null, null],
+		"threshold": -1.0
+	}
+},
+"post_processing":{
+	"dump": "./scores",
+	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
+}
+}

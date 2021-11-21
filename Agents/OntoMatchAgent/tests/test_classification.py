@@ -47,7 +47,7 @@ class TestClassification(tests.utils_for_testing.TestCaseOntoMatch):
         ]
 
         with unittest.mock.patch('sys.argv', testargs):
-            params = ontomatch.utils.util.init()
+            params, _ = ontomatch.utils.util.init()
 
             df1, df2 = ontomatch.classification.Utils.create_dataframes(params)
 

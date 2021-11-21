@@ -110,13 +110,11 @@ class Utils():
 
     @staticmethod
     def create_dataframes(params):
-        params_for_loading = {
-            'srcaddr': params['dataset']['src'],
-            'tgtaddr': params['dataset']['tgt'],
-            'add_knowledge': params['pre_processing']['add_knowledge'],
-            'dump_ontology': params['pre_processing']['pickle_dump'],
-        }
-        srconto, tgtonto = ontomatch.coordinator.Agent().load(**params_for_loading)
+        srcaddr = params['dataset']['src'],
+        tgtaddr = params['dataset']['tgt'],
+        srconto = ontomatch.utils.util.load_ontology(srcaddr, blackboard=False)
+        tgtonto = ontomatch.utils.util.load_ontology(tgtaddr, blackboard=False)
+
         df1 = ontomatch.blocking.create_dataframe_from_ontology(srconto)
         df2 = ontomatch.blocking.create_dataframe_from_ontology(tgtonto)
         return df1, df2, srconto, tgtonto
@@ -416,7 +414,7 @@ def start_M():
     #config_file = 'C:/my/repos/ontomatch_20210924/experiments/211118_XGB/product/conf_product_xgb_1.json'
 
     sys.argv.extend(['--config', config_file])
-    params = ontomatch.utils.util.init()
+    params, _ = ontomatch.utils.util.init()
 
     train_sizes = [0.01, 0.02, 0.05, 0.1, 0.2]
     TrainTestGenerator.generate_sim_vectors_for_matches_and_split(params, tgt_file, train_sizes=train_sizes)

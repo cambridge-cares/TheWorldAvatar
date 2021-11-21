@@ -101,7 +101,7 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
@@ -141,7 +141,7 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_scores_geo_2.csv')
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_best_scores_geo_2.csv')
@@ -200,20 +200,16 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         params = self.read_conf_kwl()
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = params['blocking']
-        #params_blocking = self.get_params_blocking()
         params_mapping = params['mapping']
-        #prop_prop_sim_tuples = self.get_prop_prop_sim_tuples_without_geo_coordinates()
+        params_post_processing = params['post_processing']
+        scoring_weights = params['matching']['model_specific']['weights']
 
         matcher = ontomatch.instancematching.InstanceMatcherWithScoringWeights()
-        #matcher.start(src_onto, tgt_onto, params_blocking, None, prop_prop_sim_tuples)
-        matcher.start(src_onto, tgt_onto, params_blocking, params_mapping)
+        matcher.start_internal(src_onto, tgt_onto, params_blocking, scoring_weights, params_post_processing, params_mapping)
         scores = matcher.get_scores()
         logging.debug('number=%s', len(scores))
         logging.debug('columns=%s', [ str(c) for c in scores.columns])
 
-        #scoring_weights = [0.3, 0.2, 0.1, 0.2, 0.2]
-        #scoring_weights = [0.4, 0.2, 0.1, 0.2, 0.3]
-        scoring_weights = [0.8, 0.0, 0.1, 0.0, 0.1]
         weight_sum = sum(scoring_weights)
         scoring_weights = [ w/weight_sum for w in scoring_weights]
 
@@ -236,7 +232,6 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
             [0.09999999999999998, 0.26840215439856374, 0.9665948275862069, 897, 2445, 31, 0.4201405152224824],
             [0.0, 0.16828358208955224, 0.9719827586206896, 902, 4458, 26, 0.2868956743002545]]
 
-        # TODO-AE 211030 Is there some randomness in this test. Result seems to change by accident
         for i, expected in enumerate(expected_result):
             actual = result[i]
             self.assertAlmostEqual(actual[1], expected[1], places=2)

@@ -7,8 +7,7 @@
 	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
 },
 "pre_processing":{
-	"add_knowledge": null,
-	"pickle_dump": false
+	"add_knowledge": null
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",

@@ -8,12 +8,18 @@ import pandas as pd
 from ontomatch.alignment import Alignment
 import ontomatch.blocking
 import ontomatch.evaluate
+import ontomatch.instancematching
 import ontomatch.matchers
 from ontomatch.matchers.GeoAttrFinder import GeoAttrFinder
 from ontomatch.matchers.Penalizer import Penalizer
 from ontomatch.matchers.MeronymRematcher import MeronymRematcher
 
 class matchManager(object):
+
+    def __init__(self):
+        pass
+
+    '''
     def __init__(self, matchSteps, srconto, tgtonto, aggregation='average',thre=0.6, weight =None, paras=None, matchIndividuals=False, penalize=None, useAttrFinder=False):
         self.matchSteps = []
         #todo null handling
@@ -27,6 +33,46 @@ class matchManager(object):
         self.useAttrFinder = useAttrFinder
         self.srcOnto = srconto
         self.tgtOnto = tgtonto
+    '''
+
+    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
+        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
+        params = ontomatch.utils.util.convert_json_to_dict(config_json)
+        params_blocking = params['blocking']
+        params_model_specific = params['matching']['model_specific']
+        params_post_processing = params['post_processing']
+
+        clist = []
+        sublist = ['PowerStation', 'PowerPlant', 'RenewablePlant', 'FossilFuelPlant', 'HydroelectricPlant', 'HydrogenPlant', 'NuclearPlant', 'CogenerationPlant', 'GeothermalPlant', 'MarinePlant', 'BiomassPlant', 'WindPlant', 'SolarPlant','WastePlant']
+        for subc in sublist:
+            for subc2 in sublist:
+                #for subc in sublist:
+                clist.append((subc,subc2,0.9))
+
+        penalize = {'class':True,'align':Alignment(clist)}
+
+        self.srcOnto = ontomatch.utils.util.load_ontology(src_graph_handle)
+        self.tgtOnto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
+
+        self.matchSteps = []
+        #todo null handling
+        self.matchSteps = params_model_specific['steps']
+        self.thre= params_model_specific['threshold']
+        self.weight = params_model_specific['weights']
+        self.paras = params_model_specific['params']
+        self.aggregation = 'average'
+        self.matchI = True
+        self.penalize = penalize
+        self.useAttrFinder = False
+
+        _, df_scores = self.runMatch(match_method="matchWrite2Matrix", to1=False, rematch=False, params_blocking=params_blocking)
+        self.df_scores = df_scores
+
+        if params_post_processing:
+            ontomatch.instancematching.postprocess(params_post_processing, self)
+
+    def get_scores(self):
+        return self.df_scores
 
     def runMatch(self, match_method = 'matchSerial', to1 = False, rematch = False, params_blocking=None):
 
@@ -74,9 +120,13 @@ class matchManager(object):
                 mm_result = mm()
                 resultMatrix = resultMatrix + mm_result*self.weight[idx]
                 column = column_names[idx]
-                df_scores = self.add_similarity_scores_to_dataframe(resultMatrix, df_scores, column, self.srcOnto, self.tgtOnto, params_blocking, self.thre)
+                #df_scores = self.add_similarity_scores_to_dataframe(resultMatrix, df_scores, column, self.srcOnto, self.tgtOnto, params_blocking, self.thre)
+                df_scores = self.add_similarity_scores_to_dataframe(mm_result, df_scores, column, self.srcOnto, self.tgtOnto, params_blocking, self.thre)
+
                 mrunTime = time.time() - mtime
                 logging.info('Finished matcher %s in %s', idx, mrunTime)
+
+            df_scores = self.add_similarity_scores_to_dataframe(resultMatrix, df_scores, 'score', self.srcOnto, self.tgtOnto, params_blocking, self.thre)
 
             #translate matrix to  alignment
             resultArr = []

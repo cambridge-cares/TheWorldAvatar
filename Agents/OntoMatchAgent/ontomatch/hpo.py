@@ -116,7 +116,7 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
 
 def start_from_console():
 
-    params = ontomatch.utils.util.init()
+    params, _ = ontomatch.utils.util.init()
     params_classification = params['classification']
     # KWL
     match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'

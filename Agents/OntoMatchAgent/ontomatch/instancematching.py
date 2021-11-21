@@ -1,13 +1,17 @@
 import logging
 import os
 import os.path
+import time
 
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
 import ontomatch.classification
+import ontomatch.matchManager
 import ontomatch.scoring
+import ontomatch.utils.blackboard
+import ontomatch.utils.util
 
 class InstanceMatcherBase():
 
@@ -140,13 +144,29 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         self.df_total_scores = None
         self.df_total_best_scores = None
 
-    def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
+    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
+        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
+        params = ontomatch.utils.util.convert_json_to_dict(config_json)
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        params_post_processing = params['post_processing']
+
+        srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
+        tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
+
+        self.start_internal(srconto, tgtonto, params_blocking, params_post_processing, params_mapping)
+
+    def start_internal(self, srconto, tgtonto, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
         logging.info('starting InstanceMatcherWithAutoCalibration')
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
         df_scores = self.score_manager.get_scores()
         #TODO-AE asymmetry
         df_max_scores = self.score_manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
+
+        if params_post_processing:
+            postprocess(params_post_processing, self)
+
         return self.df_total_scores, self.df_total_best_scores
 
     '''
@@ -424,7 +444,20 @@ class InstanceMatcherWithScoringWeights():
     def __init__(self):
         self.score_manager = None
 
-    def start(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
+    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
+        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
+        params = ontomatch.utils.util.convert_json_to_dict(config_json)
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        params_post_processing = params['post_processing']
+        scoring_weights = params['matching']['model_specific']['weights']
+
+        srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
+        tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
+
+        return self.start_internal(srconto, tgtonto, params_blocking, scoring_weights, params_post_processing, params_mapping)
+
+    def start_internal(self, srconto, tgtonto, params_blocking, scoring_weights, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
 
         logging.info('starting InstanceMatcherWithScoringWeightsAgent')
 
@@ -450,8 +483,16 @@ class InstanceMatcherWithScoringWeights():
         logging.info('added prop_prop_sim_tuples, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
 
         self.score_manager.calculate_similarities_between_datasets()
-        #scores = self.get_scores()
-        return self.get_scores()
+
+        prop_column_names = [ c for c in range(len(prop_prop_sim_tuples)) ]
+        df_scores = self.get_scores()
+        ontomatch.instancematching.add_total_scores(df_scores, props=prop_column_names, scoring_weights=scoring_weights,
+                        missing_score=None, aggregation_mode='sum', average_min_prop_count=2)
+
+        if params_post_processing:
+            postprocess(params_post_processing, self)
+
+        return df_scores
 
     def get_scores(self):
         return self.score_manager.get_scores()
@@ -491,3 +532,42 @@ def get_total_score_for_row(prop_scores, scoring_weights=None, missing_score=Non
             return sum(scores) / prop_count
     else:
         raise RuntimeError('unknown aggregation mode=', aggregation_mode)
+
+def postprocess(params_post_processing, matcher):
+
+    logging.info('post processing')
+    dump = params_post_processing['dump']
+    if dump:
+        dir_name = dump + '_' + str(time.time())
+        logging.info('dumping results to %s', dir_name)
+        os.mkdir(dir_name)
+
+        if isinstance(matcher, ontomatch.matchManager.matchManager):
+            matcher.get_scores().to_csv(dir_name + '/total_scores.csv')
+        else:
+            sm = matcher.score_manager
+            sm.data1.to_csv(dir_name + '/data1.csv')
+            sm.data2.to_csv(dir_name + '/data2.csv')
+
+            if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherMaxSVC):
+                sm.df_scores.to_csv(dir_name + '/total_scores.csv')
+            elif isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+                if sm.df_max_scores_1 is not None:
+                    sm.df_max_scores_1.to_csv(dir_name + '/max_scores_1.csv')
+                if sm.df_max_scores_2 is not None:
+                    sm.df_max_scores_2.to_csv(dir_name + '/max_scores_2.csv')
+                matcher.df_total_scores.to_csv(dir_name + '/total_scores.csv')
+                matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
+                sm.df_scores.to_csv(dir_name + '/scores.csv')
+            else:
+                raise RuntimeError('unsupported type of matcher', type(matcher))
+
+    matchfile = params_post_processing['evaluation_file']
+    index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+    logging.info('ground truth matches=%s', len(index_set_matches))
+
+    df_scores = matcher.get_scores()
+    logging.info('length of scores=%s', len(df_scores))
+    result = ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+    logging.info('post processing finished')
+    return result
