@@ -7,24 +7,39 @@ import pyproj
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 
 import geojson_creator
+from custom_errors import *
 
 
 ###   SPECIFY INPUTS   ###
 
 # Specify (local) Blazegraph properties
-server = "localhost"
-port = "9999"
+server = 'localhost'
+port = '9999'
+namespace = 'kings-lynn'
 #namespace = "geospatial_offset_analysis_epsg27700"
-namespace = 'geospatial_offset_analysis_ocg-crs84'
-
-# Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+#namespace = 'geospatial_offset_analysis_ocg-crs84'
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
     'ocgl': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
     'xsd': 'http://www.w3.org/2001/XMLSchema#'
 }
+
+# Define full coordinate reference systems (CRS) for pyproj
+CRSs = {
+    'epsg_27700': 'urn:ogc:def:crs:EPSG::27700',
+    'epsg_4326': 'urn:ogc:def:crs:EPSG::4326',
+    'crs_84': 'urn:ogc:def:crs:OGC::CRS84',
+    'crs_1.3_84': 'urn:ogc:def:crs:OGC:1.3:CRS84'
+}
+
+# Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
+n = None
+
+# Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
+# GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
+# Mapbox: https://docs.mapbox.com/help/glossary/projection/
+target_crs = CRSs['crs_84']
 
 
 ###   FUNCTIONS   ###
@@ -133,15 +148,14 @@ def execute_query(query, query_endpoint):
     return results
 
 
-def get_coordinates(polygon_data, proj, dimensions=3):
+def get_coordinates(polygon_data, transformation, dimensions=3):
     '''
         Extracts and transforms polygon coordinates as retrieved from Blazegraph
         to suit GeoJSON polygon requirements (and target CRS)
 
         Arguments:
             polygon_data - polygon data as returned from Blazegraph
-            input_crs - CRS of input data (as pyproj CRS object)
-            target_crs - CRS of output data (as pyproj CRS object)
+            transformation - pyproj transformation object
             dimensions - number of dimension of output data as integer
 
         Returns:
@@ -167,7 +181,7 @@ def get_coordinates(polygon_data, proj, dimensions=3):
         for i in range(nodes):
             node = i * 3
             # Transform (x,y) values and append (x,y,z) to output list
-            x, y = proj.transform(coordinate_str[node], coordinate_str[node + 1])
+            x, y = transformation.transform(coordinate_str[node], coordinate_str[node + 1])
             #x = coordinate_str[node]
             #y = coordinate_str[node + 1]
             z = coordinate_str[node + 2]
@@ -206,16 +220,15 @@ if __name__ == '__main__':
     try:
         kg_buildings = execute_query(get_buildings(n), query_endpoint)
         kg_crs = execute_query(get_crs(), query_endpoint)
-    except SPARQLExceptions.EndPointNotFound as e:
-        print('\nERROR: SPARQL query endpoint not found! Please ensure correct namespace and reachable triple store.\n')
-        raise e
+    except Exception as e:
+        raise QueryError('Error while executing SPARQL query on specified endpoint: ' + e.__class__.__name__).\
+              with_traceback(e.__traceback__)
 
     # Unpack queried CRS result to extract coordinate reference system
-    try:
+    if len(kg_crs['results']['bindings']) != 1:
+        raise ResultsError('No or multiple CRS detected in SPARQL query result!')
+    else:
         crs = kg_crs['results']['bindings'][0][kg_crs['head']['vars'][0]]['value']
-    except IndexError as e:
-        print('\nERROR: No CRS could be retrieved from specified triple store namespace.\n')
-        raise Exception('No CRS could be retrieved from specified triple store namespace.')
 
     # Unpack queried buildings results into pandas DataFrame
     rows_list = []
@@ -230,22 +243,19 @@ if __name__ == '__main__':
 
     # Initialise pyproj coordinate reference system (CRS) objects
     crs_in = pyproj.CRS.from_string(crs)
-    # Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
-    # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
-    # Mapbox: https://docs.mapbox.com/help/glossary/projection/
-    target_crs = 'urn:ogc:def:crs:EPSG::27700'
-    #target_crs = 'urn:ogc:def:crs:OGC::CRS84'
-    #target_crs = 'urn:ogc:def:crs:OGC:1.3:CRS84'
     crs_out = pyproj.CRS.from_string(target_crs)
 
-    # Initialise CRS transformer
+    # Initialise pyproj CRS transformer
     tg = pyproj.transformer.TransformerGroup(crs_in, crs_out)
+    # Ensure that most accurate transformation is available
     if not tg.best_available:
         tg.download_grids(verbose=True)
+        # Update transformer to take effect after download
         tg = pyproj.transformer.TransformerGroup(crs_in, crs_out)
         if not tg.best_available:
-            print('WARNING: Best transformer for specified CRS not available. Results may be inaccurate.')
-    proj = pyproj.Transformer.from_crs(crs_in, crs_out, always_xy=True)
+            print('WARNING: Best transformer for specified CRS transformation not available. Results may be inaccurate.')
+    # Initialise actual transformer to use
+    trans = pyproj.Transformer.from_crs(crs_in, crs_out, always_xy=True)
 
     # Initialise GeoJSON output dictionaries
     output_3d = geojson_creator.initialise_geojson(target_crs)
@@ -271,7 +281,7 @@ if __name__ == '__main__':
         # Iterate through all surface geometries
         for s in surf['surface'].unique():
             # Transform coordinates for surface geometry
-            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], proj)
+            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], trans)
             # Append transformed polygon coordinate list as sublist to overall list for building
             all_polygons.append(coords)
             # Potentially update min and max elevation
@@ -296,7 +306,7 @@ if __name__ == '__main__':
 
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
-                         #'description': str(b),
+                         'description': str(b),
                          'fill-extrusion-color': '#666666',
                          'fill-extrusion-opacity': 0.66,
                          # Building ground elevation
@@ -318,7 +328,7 @@ if __name__ == '__main__':
         metadata.append(metadata_props)
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
-    # as required per: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
+    # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
     rewound_3d = rewind(output_3d)
     rewound_2d = rewind(output_2d)
     # Restore json dictionary from returned String by rewind method
