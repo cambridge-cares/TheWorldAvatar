@@ -44,6 +44,12 @@ class ControlHandler {
 	// JSON metadata defining tree structure
 	_treeSpecification;
 
+	// Default center position 
+	_defaultCenter;
+
+	// Default zoom level
+	_defaultZoom;
+
 	// Optional callback to fire when layer selections change
 	_treeCallback;
 
@@ -53,16 +59,22 @@ class ControlHandler {
 	// HTML string of rendered tree.
 	_treeHTML;
 
+	_legendTargets;
+
 	/**
 	 * Initialise a new MapControls instance.
 	 * 
 	 * @param {MapBox Map} map MapBox map 
-	 * @param {DataRegistry} registry DataRegistry containing metadata
+	 * @param {DataRegistry} dataRegistry
+	 * @param {float[]} defaultCenter default center of map
+	 * @param {float} defaultZoom default zoom level of map
 	 * @param {function} treeCallback Optional callback to fire when tree selections change
 	 */
-	initialise(map, registry, treeCallback = null) {
+	constructor(map, dataRegistry, defaultCenter, defaultZoom, treeCallback = null) {
 		this._map = map;
-		this._registry = registry;
+		this._dataRegistry = dataRegistry;
+		this._defaultCenter = defaultCenter;
+		this._defaultZoom = defaultZoom;
 		this._treeCallback = treeCallback;
 	}
 
@@ -72,27 +84,39 @@ class ControlHandler {
 	 * 
 	 * @param {string} treeFile JSON file defining layer tree
 	 */
-	showControls(rootDirectories, selectedRootName, selectCallback) {
+	showControls(treeFile, rootDirectories, selectedRootName, selectCallback) {
 		this._selectCallback = selectCallback;
 
-		document.getElementById("controlsContainer").innerHTML = this.#controlHTML;
-		this.rebuildTree();
+		var that = this;
+		let callback = function() {
+			console.log("INFO: Tree specification should now have been read.");
+			document.getElementById("controlsContainer").innerHTML = that.#controlHTML;
+			that.rebuildTree();
 
-		let terrainContainer = document.getElementById("terrainContainer");
-		let terrainSelect = terrainContainer.querySelector("input[id='" + DT.terrain + "']");
-		if(terrainSelect != null) terrainSelect.checked = true;
-		
-		// Build dropdown to change root dir
-		if(rootDirectories != null && Object.keys(rootDirectories).length > 1) {
-			this.#buildRootDropdown(rootDirectories, selectedRootName);
-		} 
-		
-		var selectionsContainer = document.getElementById("selectionsContainer");
-		if(selectionsContainer != null) selectionsContainer.style.display = "block";
+			let terrainContainer = document.getElementById("terrainContainer");
+			let terrainSelect = terrainContainer.querySelector("input[id='" + DT.terrain + "']");
+			if(terrainSelect != null) terrainSelect.checked = true;
 
-		// Build the initial dropdown selections
-		let selectString = this.buildDropdown(this._registry.meta);
-		document.getElementById("selectionsContainer").innerHTML += selectString;
+			var selectionsContainer = document.getElementById("selectionsContainer");
+			selectionsContainer.innerHTML = `<p>` + that._dataRegistry.overallMeta["selectionsTitle"] + `</p>`;
+			
+			// Build dropdown to change root dir
+			if(rootDirectories != null && Object.keys(rootDirectories).length > 1) {
+				that.#buildRootDropdown(rootDirectories, selectedRootName);
+			} 
+			
+			if(that._dataRegistry.additionalMeta != null && that._dataRegistry.additionalMeta.length > 0) {
+				var selectionsContainer = document.getElementById("selectionsContainer");
+				if(selectionsContainer != null) selectionsContainer.style.display = "block";
+
+				// Build the initial dropdown selections
+				let selectString = that.buildDropdown(that._dataRegistry.additionalMeta[0]);
+				document.getElementById("selectionsContainer").innerHTML += selectString;
+			} 
+		};
+
+		// Read the tree file then run the callback
+		this.#readTreeFile(treeFile, callback);
 	}
 
 	/**
@@ -101,7 +125,7 @@ class ControlHandler {
 	 */
 	#buildRootDropdown(rootDirectories, selectedName) {
 		var htmlString = `
-			<div id="rootSelectContainer" style="margin-bottom: 10px;">
+			<div id="selectContainer" style="margin-bottom: 10px;">
 				<label for="root-dir-select">Data set:</label>
 				<select id="root-dir-select" onchange="manager.onGroupSelectChange(this.id, this.value)">
 		`;
@@ -132,13 +156,11 @@ class ControlHandler {
 	 * @returns 
 	 */
 	buildDropdown(currentMeta, parentDivID) {
-		var htmlString = "";
-
 		if(currentMeta["label"]) {
 			let label = currentMeta["label"];
 			let groups = currentMeta["groups"];
 
-			htmlString += `
+			var htmlString = `
 				<div id="selectContainer">
 				<label for="` + label + `">` + label + `:</label>
 				<select id="` + label + `" onchange="manager.onGroupSelectChange(this.id, this.value)">
@@ -148,7 +170,9 @@ class ControlHandler {
 			for(var i = 0; i < groups.length; i++) {
 				let groupName = groups[i]["name"];
 				let groupDir = groups[i]["directory"];
+
 				let value = (parentDivID == null) ? groupDir : parentDivID + "/" + groupDir;
+
 				htmlString += `
 					<option value="` + value + `">` + groupName + `</option>
 				`;
@@ -170,8 +194,10 @@ class ControlHandler {
 	 * @param {*} value 
 	 */
 	onGroupSelectChange(groupID, value) {
+		console.log("INFO: Changed selection of '" + groupID + "' to '" + value + "'.");
+
 		let groupNames = value.split("/");
-		let metaGroup = this._registry.getGroup(groupNames);
+		let metaGroup = this._dataRegistry.getAdditionalGroup(groupNames);
 
 		if(metaGroup["groups"]) {
 			// This group has subgroups, need to build more dropdowns
@@ -244,8 +270,8 @@ class ControlHandler {
 				speed: 1.6,
 				pitch: 0.0,
 				bearing: 0.0,
-				zoom: this._registry.globalMeta["defaultZoom"],
-				center: this._registry.globalMeta["defaultCenter"]
+				zoom: this._defaultZoom,
+				center: this._defaultCenter
 			});
 	
 		} else if(mode === "pitch") {
@@ -254,8 +280,8 @@ class ControlHandler {
 				speed: 1.6,
 				pitch: 65,
 				bearing: -30,
-				zoom: this._registry.globalMeta["defaultZoom"],
-				center: this._registry.globalMeta["defaultCenter"]
+				zoom: this._defaultZoom,
+				center: this._defaultCenter
 			});
 		} 
 	}
@@ -346,13 +372,20 @@ class ControlHandler {
 	 * 
 	 * @param {String} treeFile JSON file defining layer tree
 	 */
-	readTreeFile(treeFile) {
+	#readTreeFile(treeFile, callback) {
 		var that = this;
 		var promise = $.getJSON(treeFile, function(json) {
             that._treeSpecification = json;
         }).promise();
 
-		return promise;
+		promise.then(
+			function() {
+				if(callback != null) callback()
+			},
+			function(error) {
+				console.log("ERROR: Could not read tree specification!");
+			}
+		);
 	}
 
 	/**
@@ -373,15 +406,6 @@ class ControlHandler {
 			if(this._map.getLayer(layerID + "_clickable") != null) {
 				this._map.setLayoutProperty(
 					layerID + "_clickable",
-					"visibility",
-					(visible ? "visible" : "none")
-				);
-			}
-
-			// Is there a corresponding _cluster layer?
-			if(this._map.getLayer(layerID + "_cluster") != null) {
-				this._map.setLayoutProperty(
-					layerID + "_cluster",
 					"visibility",
 					(visible ? "visible" : "none")
 				);
@@ -423,7 +447,6 @@ class ControlHandler {
 
 			if(treeEntry["layers"]) {
 				var layers = treeEntry["layers"];
-
 				for(var i = 0; i < layers.length; i++) {
 					this.#renderIterate(layers[i], groupName, controlType);
 				}		

@@ -1,12 +1,13 @@
 # The purpose of this module is to provide settings and functions relevant to
 # both 1) instantiating and also 2) retrieving time series objects to/from KG
 # ===============================================================================
-import json
 import os
+import re
 import psycopg2
 import requests
-from pathlib import Path
+
 from configobj import ConfigObj
+from pathlib import Path
 
 # Define location of properties file (with Triple Store and RDB settings)
 PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "resources", "ts_example.properties"))
@@ -135,26 +136,30 @@ def create_sparql_prefix(abbreviation):
 
 def set_mapbox_apikey():
     """
-        Populates Mapbox API key field in 'overall-meta.json' file within the visualisation data folder
-        to API key provided in properties file
+        Populates Mapbox API key field in 'index.html' file within the dtvf_visualisation folder
+        with API key provided in properties file
     """
 
     # Define global scope for global variables
     global MAPBOX_APIKEY, OUTPUT_DIR
 
-    # Get filepath to "overall-meta.json" file in DTVF data folder
-    fp = Path.joinpath(Path(OUTPUT_DIR).parent, 'overall-meta.json')
+    # Get filepath to "index.html" file in DTVF folder
+    fp = Path.joinpath(Path(OUTPUT_DIR).parent, 'index.html')
 
-    # Read current overall meta data information
+    # Read current "index.html" file
     with open(fp, 'r') as f:
-        meta = json.load(f)
+        old_html = f.read()
 
-    # Update API key information with key from properties file
-    meta['apiKey'] = MAPBOX_APIKEY
+    # Find old API key
+    match = re.search(r'mapboxAPI\s*=\s*".*"', old_html)
+    old_key = match.group()
+    # Replace old/default API key with actual one
+    new_key = 'mapboxAPI = "{}"'.format(MAPBOX_APIKEY)
+    new_html = old_html.replace(old_key, new_key)
 
-    # Write updated overall meta data information
+    # Write updated "index.html" file
     with open(fp, 'w') as f:
-        json.dump(meta, f, indent=4)
+        f.write(new_html)
 
 
 def create_postgres_db():

@@ -179,7 +179,7 @@ var JsonView = (function (exports) {
     }
   }
 
-  function createTree(jsonData, rootName = "All Entries:") {
+  function createTree(jsonData, rootName = "All entries") {
     var data = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
 
     var rootNode = createNode({
@@ -192,7 +192,7 @@ var JsonView = (function (exports) {
     return rootNode;
   }
 
-  function renderJSON(jsonData, targetElement, rootName = "All Entries:") {
+  function renderJSON(jsonData, targetElement, rootName = "All entries") {
     var parsedData = typeof jsonData === 'string' ? JSON.parse(jsonData) : jsonData;
     var tree = createTree(parsedData, rootName);
     render(tree, targetElement);

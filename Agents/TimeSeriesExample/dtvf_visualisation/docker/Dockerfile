@@ -28,7 +28,7 @@ LABEL description = "Example Digital Twin"
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix
 
 # Install Apache and PHP
-RUn apk update && apk add apache2 php7-apache2
+RUN apk update && apk add apache2 php7-apache2
 
 # Copy in the start-up script
 COPY ./docker/start-up.sh /usr/local/start-up.sh

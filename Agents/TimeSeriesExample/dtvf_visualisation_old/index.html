@@ -15,7 +15,6 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
 	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
 	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
 
 	<!--
 		The following visualisiation framework files are currently stored locally (as
@@ -24,23 +23,23 @@
 	-->
 	
 	<!-- Framework CSS -->
-	<link href='./css/digital_twin_style.css' rel='stylesheet' />
-	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
+	<link href='css/digital_twin_style.css' rel='stylesheet' />
+	<link href="css/jsonview.bundle.css" rel="stylesheet">
 
 	<!-- Framework JS -->
-	<script src='./js/manager.js'></script>
-	<script src='./js/data_registry.js'></script>
-	<script src='./js/source_handler.js'></script>
-	<script src='./js/layer_handler.js'></script>
-	<script src='./js/control_handler.js'></script>
-	<script src='./js/panel_handler.js'></script>
-	<script src='./js/interaction_handler.js'></script>
-	<script src='./js/timeseries_handler.js'></script>
-	<script src='./js/icon_handler.js'></script>
-	<script src='./js/jsonview.bundle.js'></script>
+	<script src='js/manager.js'></script>
+	<script src='js/data_registry.js'></script>
+	<script src='js/source_handler.js'></script>
+	<script src='js/layer_handler.js'></script>
+	<script src='js/control_handler.js'></script>
+	<script src='js/panel_handler.js'></script>
+	<script src='js/interaction_handler.js'></script>
+	<script src='js/timeseries_handler.js'></script>
+	<script src='js/icon_handler.js'></script>
+	<script src='js/jsonview.bundle.js'></script>
 
 	<!-- Implementation specific -->
-	<script src='./local_icons.js'></script>
+	<script src='local_icons.js'></script>
 </head>
 </head>
 
@@ -57,29 +56,22 @@
 		// HTMLElements for interaction events.
 		let manager = null;
 
-		// Enter your MapBox API here.
-		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
-		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
-		// domains via your MapBox account settings.
-		let mapboxAPI = "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw";
-
 	</script>
 
 	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
 	<script type="module">
+
 		// Initialise a DigitalTwinManager (and store as a global variable)
 		manager = new DigitalTwinManager();
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
-			"Mock Data #1": "./data/set-1",
-			"Mock Data #2": "./data/set-2",
-			"Cluster Test": "./data/set-3"
+			"data": "./queried_data"
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Cluster Test", function() {
+		manager.readMetadata("data", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -90,21 +82,17 @@
 			var map = manager.createMap("map");
 
 			// Provide some default content for the side panel
-			let title = `Example Visualisation`;
+			let title = `Example Visualisation of Queried Data`;
 			let content = `
 					This section of default text should be used to give a brief introduction on the purpose of the
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
 					some junk content to pad it out has been added.
-					<br/><br/>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mi turpis, posuere a nibh in, tincidunt
-					mollis eros. Cras imperdiet ornare enim, et luctus augue iaculis at. Ut tellus ex, auctor non sagittis quis,
-					feugiat vitae turpis. Cras efficitur, arcu sed condimentum mattis, quam est tempus lectus, eu faucibus.
 				`;
 			let legend = `	
 					<b>Example Legend:</b>
 					<br/>
 					<div style="display: flex; justify-content: center;">
-						<img src="./img/sample-legend.png" width="350px"/>
+						<img src="img/sample-legend.png" width="350px"/>
 					</div>
 				`;
 			let footer = `Here is an example footer.`;
@@ -121,6 +109,9 @@
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
 
+				// Plot the Fixed Data locations
+				manager.plotFixedData();
+
 				// Re-register icon images used by this visualisation
 				let winURL = window.location;
 				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
@@ -131,25 +122,19 @@
 					iconHandler.registerIcon(imageURL);
 				});
 
-				// Re-add the sky layer
-				manager.setSkyDetails();
-
-				// Re-plot the previously selected group
-				if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-					manager.plotGroup(DT.currentGroup, false);
-				}
- 
 				// On first load only
 				if(!loadedOnce) {
+					// This callback will be fired when a selection in the layer tree changes
+					let treeCallback = null;
+					
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
-						manager.plotGroup(selectedGroups, false);
+						manager.removeAllAdditionalData();
+						manager.plotAdditionalData(selectedGroups);
 					};
 
 					// Build and show the layer tree based on the metadata
-					manager.showControls(null, selectCallback);
-					manager.plotFirstGroup();
-
+					manager.showControls("layer-tree.json", treeCallback, selectCallback);
 					loadedOnce = true;
 				}
 			});

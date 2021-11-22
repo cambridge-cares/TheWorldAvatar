@@ -7,7 +7,7 @@ class DigitalTwinManager {
 	_map;
 
 	// Reads and stores metadata
-	_registry;
+	_dataRegistry;
 
 	// Reads data and adds MapBox sources
 	_sourceHandler;
@@ -40,13 +40,12 @@ class DigitalTwinManager {
 	 * Initialisation.
 	 */
 	constructor() {
-		this._registry = new DataRegistry();
-		this._controlHandler = new ControlHandler();
-		
+		this._dataRegistry = new DataRegistry();
+
 		// Create a new window namespace to let us set global variables
 		window.DT = {};
 		DT.terrain = "light";
-		DT.currentGroup = [];
+		DT.currentAdditionals = [];
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
@@ -79,126 +78,98 @@ class DigitalTwinManager {
 			return;
 		}
 
-		// Read all metadata
-		let registry = this;
-		this._registry.loadMetaData(rootDir, function() {
-			// Read the layer tree specification
-			let treeJSON = (rootDir.endsWith("/")) ? (rootDir + "tree.json") : (rootDir + "/tree.json");
-			let treePromise = registry._controlHandler.readTreeFile(treeJSON);
-			treePromise.then(() => {
-				console.log("INFO: Layer tree specification has been read.");
-				if(callback != null) callback();
-			});
-		});
+		this._dataRegistry.loadMetaData(rootDir, callback);
 	}
 
 	/**
-	 * Recurses depth-wise to find the first leaf group then plots that. Useful 
-	 * as the default state of the map.
+	 * Reads and displays the Fixed Data sets as described in the previously
+	 * read metadata files.
 	 */
-	plotFirstGroup(updateSelects = true) {
-		this.plotGroup(this._registry.getFirstGroup(), updateSelects);
+	plotFixedData() {
+		this._sourceHandler.addFixedSources();
+
+		let newLayers = this._layerHandler.addFixedLayers();
+		newLayers.forEach(layer => {
+			
+			if(layer[1] === "line") {
+				this._interactionHandler.registerInteractions([layer[0] + "_clickable", "line"]);
+			} else {
+				this._interactionHandler.registerInteractions(layer);
+			}
+		})
 	}
 
 	/**
 	 * Given an array of strings signifying the grouping, this method will
-	 * read and display data from the corresponding directory as defined by
-	 * each level's meta.json file.
+	 * read and display the corresponding Additional Data set as described
+	 * in the previously read metadata files.
 	 * 
-	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
-	 * @param {Boolean} updateSelects force dropdowns to match the group selection
+	 * @param {string[]} groups group selection (e.g. ["scenario-0", "time-0"]) 
 	 */
-	plotGroup(group, updateSelects = true) {
-		// Remove previously added layers
-		this._layerHandler.removeLayers();
+	plotAdditionalData(groups) {
+		if(!DT.currentAdditionals.includes(groups)) {
+			DT.currentAdditionals.push(groups);
+        }
 
-		// Remove previously added sources
-		this._sourceHandler.removeSources();
+		this._sourceHandler.addAdditionalSources(groups);
+		let newLayers = this._layerHandler.addAdditionalLayers(groups);
+		newLayers.forEach(layer => {
 
-		// Remember the group we're currently plotting
-		DT.currentGroup = group;
-
-		// Get the metadata defining that group
-		var groupMeta = this._registry.getGroup(group);
-
-		// Get each data set and add it as a source
-		var groupData = groupMeta["dataSets"];
-		var groupDir = groupMeta["thisDirectory"];
-		for(var i = 0; i < groupData.length; i++) {
-			this._sourceHandler.addSource(groupDir, groupData[i]);
-		}
-
-		// Add layer(s) for each dataset
-		for(var i = 0; i < groupData.length; i++) {
-			this._layerHandler.addLayer(groupData[i]);
-			
-			// Register interactions slightly differently for line layers
-			if(groupData[i]["locationType"] === "line") {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"] + "_clickable", 
-					groupData[i]["locationType"]
-				]);
+			if(layer[1] === "line") {
+				this._interactionHandler.registerInteractions([layer[0] + "_clickable", "line"]);
 			} else {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"],
-					groupData[i]["locationType"]
-				]);
+				this._interactionHandler.registerInteractions(layer);
 			}
-		}
-
-		// Rebuild the layer selection tree
+		})
+		
 		this._controlHandler.rebuildTree();
 
-		// If a location was already selected, update the side panel
 		if(DT.currentFeature != null) {
+			// A location was already selected, update the side panel
 			this._interactionHandler.mouseClick(DT.currentFeature);
 		}
-
-		// Force selections to match this group
-		if(updateSelects) {
-			this.#forceSelects(group, 0);
-		}
 	}
 
 	/**
-	 * Recursively force the selection dropdowns to match the input
-	 * group. Useful to ensure they represent the correct data after
-	 * calling plotGroup manually.
+	 * Given an array of strings signifying the grouping, this method will
+	 * find the corresponding MapBox sources and layers, and remove them
+	 * from the map.
 	 * 
-	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
-	 * @param {Integer} depth depth in recursive stack
+	 * @param {*} groups group selection (e.g. ["scenario-0", "time-0"]) 
 	 */
-	#forceSelects(group, depth) {
-		let selectionsContainer = document.getElementById("selectionsContainer");
-		let selects = selectionsContainer.querySelectorAll("select");
+	removeAdditionalData(groups) {
+		if(DT.currentAdditionals.includes(groups)) {
+            let index = DT.currentAdditionals.indexOf(groups);
+            DT.currentAdditionals.splice(index, 1);
+        }
 
-		for(var i = depth; i < selects.length; i++) {
-			if(selects[i].id === "root-dir-select") continue;
-
-			let selectOptions = selects.item(i).options;
-			for(var j = 0; j < selectOptions.length; j++) {
-
-				if(selectOptions[j].value.endsWith(group[depth])) {
-
-					selects[i].value = selectOptions[j].value;
-					if(depth != (group.length - 1)) {
-						selects[i].onchange();
-						this.#forceSelects(group, depth + 1);
-					}
-				}
-			}
-		}
+		this._layerHandler.removeAdditionalLayers(groups);
+		this._sourceHandler.removeAdditionalSources(groups);
+		
+		this._controlHandler.rebuildTree();
 	}
 
 	/**
-	 * Adds a special sky effects layer.
+	 * Will remove all Additional Data sets that are currently shown 
+	 * on the map.
 	 */
-	setSkyDetails() {
-		if(this._layerHandler != null) {
-			this._layerHandler.addSkyLayer();
-		}
+	removeAllAdditionalData() {
+		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
+            this.removeAdditionalData(DT.currentAdditionals[i]);
+        }
+		console.log("REMOVED ADDITIONAL?");
 	}
 
+	/**
+	 * Will replot any previously plotted Additional Data sets.
+	 */
+	restoreAllAdditionalData() {
+		for(var i = (DT.currentAdditionals.length - 1); i >= 0; i--) {
+            this.plotAdditionalData(DT.currentAdditionals[i]);
+        }
+		console.log("RESTORE ADDITIONAL?");
+	}
+	
 	/**
 	 * Create a new MapBox map instance.
 	 * 
@@ -207,7 +178,7 @@ class DigitalTwinManager {
 	 * @returns {MapBox map}
 	 */
 	createMap(containerName) {
-		if(this._registry == null) {
+		if(this._dataRegistry == null) {
 			console.log("ERROR: Cannot create map until metadata has been initialised!");
 			return;
 		}
@@ -233,30 +204,30 @@ class DigitalTwinManager {
 		let defaultOptions = {
 			container: containerName,
 			style: terrainURL,
-			center: this._registry.globalMeta["defaultCenter"],
-			zoom: this._registry.globalMeta["defaultZoom"],
-			pitch: this._registry.globalMeta["defaultPitch"],
-			bearing: this._registry.globalMeta["defaultBearing"]
+			center: this._dataRegistry.overallMeta["defaultCenter"],
+			zoom: this._dataRegistry.overallMeta["defaultZoom"],
+			pitch: this._dataRegistry.overallMeta["defaultPitch"],
+			bearing: this._dataRegistry.overallMeta["defaultBearing"]
 		};
 
 		// Create the map instance
-		mapboxgl.accessToken = mapboxAPI;
+		mapboxgl.accessToken = this._dataRegistry.overallMeta["apiKey"];
 		this._map = new mapboxgl.Map(defaultOptions);
+		console.log("INFO: Map object has been initialised.");
 		
 		// Now that we have a map, do some initialisation of handlers
-		this._sourceHandler = new SourceHandler(this._map);
-		this._layerHandler = new LayerHandler(this._map);
+		this._sourceHandler = new SourceHandler(this._dataRegistry, this._map);
+		this._layerHandler = new LayerHandler(this._dataRegistry, this._map);
 		this._panelHandler = new PanelHandler(this._map);
 		this._timeseriesHandler = new TimeseriesHandler();
 
 		this._interactionHandler = new InteractionHandler(
 			this._map, 
-			this._registry, 
+			this._dataRegistry, 
 			this._panelHandler,
 			this._timeseriesHandler
 		);
 		
-		console.log("INFO: Map object has been initialised.");
 		return this._map;
 	}
 
@@ -284,11 +255,13 @@ class DigitalTwinManager {
 	 * @param {function} treeCallback Optional callback to fire when tree selections change.
 	 * @param {function} treeCallback Optional callback to fire when dropdown selections change.
 	 */
-	 showControls(treeCallback = null, selectCallback = null) {
+	 showControls(treeFile, treeCallback = null, selectCallback = null) {
 		// Initialise map controls
-		this._controlHandler.initialise(
+		this._controlHandler = new ControlHandler(
 			this._map, 
-			this._registry,
+			this._dataRegistry,
+			this._map.getCenter(), 
+			this._map.getZoom(), 
 			treeCallback
 		);
 		
@@ -299,7 +272,8 @@ class DigitalTwinManager {
 		}
 		rootDir = (rootDir.endsWith("/")) ? rootDir : rootDir + "/";
 
-		this._controlHandler.showControls(this._rootDirectories, this._currentRootDirName, selectCallback);
+		let fullTreeFile = rootDir + treeFile;
+		this._controlHandler.showControls(fullTreeFile, this._rootDirectories, this._currentRootDirName, selectCallback);
 	}
 
 	/**
@@ -335,9 +309,6 @@ class DigitalTwinManager {
 	 */
 	changeTerrain(mode) {
 		this._controlHandler.changeTerrain(mode);
-		this._layerHandler.setSunPosition(
-			(mode === "dark") ? "sunsetStart" : "solarNoon"
-		);
 	}
 
 	/**
@@ -378,27 +349,7 @@ class DigitalTwinManager {
 	 */
 	onGroupSelectChange(selectID, selectValue) {
 		if(selectID == "root-dir-select") {
-			let that = this;
-
-			this.readMetadata(selectValue, function() {
-				$("#selectionsContainer").children(":not(#rootSelectContainer)").remove();
-
-				let selectString = that._controlHandler.buildDropdown(that._registry.meta);
-				let newSelects = document.createElement("div");
-				newSelects.innerHTML = selectString;
-				document.getElementById("selectionsContainer").appendChild(newSelects);
-
-				// Update map position
-				that._map.jumpTo({
-					center: that._registry.globalMeta["defaultCenter"],
-					zoom: that._registry.globalMeta["defaultZoom"],
-					pitch: that._registry.globalMeta["defaultPitch"],
-					bearing: that._registry.globalMeta["defaultBearing"]
-				});
-
-				// Plot first leaf group by default
-				that.plotFirstGroup();
-			});
+			this.readMetadata(selectValue, this._metaCallback);
 		} else {
 			this._controlHandler.onGroupSelectChange(selectID, selectValue);
 		}
@@ -430,6 +381,7 @@ class DigitalTwinManager {
 	 * @param {*} lat 
 	 */
 	zoomTo(lon, lat) {
+		console.log("Zooming to " + lon + ", " + lat);
 		this._map.flyTo({
 			center: [lon, lat],
 			essential: true,

@@ -7,7 +7,7 @@ services:
   dtvf_example_visualisation:
     image: docker.cmclinnovations.com/example-dtvf:1.0.0-SNAPSHOT
     container_name: dtvf_example_visualisation
-    build:
+    build: 
       context: "../"
       dockerfile: "./docker/Dockerfile"
       target: "dev"

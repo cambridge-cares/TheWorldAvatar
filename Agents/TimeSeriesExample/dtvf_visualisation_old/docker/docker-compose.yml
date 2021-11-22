@@ -4,10 +4,10 @@ version: "3.8"
 services:
 
   # Example DT Visualisation
-  example-dt-vis:
+  dtvf_example_visualisation_old:
     image: docker.cmclinnovations.com/example-dtvf:1.0.0-SNAPSHOT
-    container_name: example-dtvf
-    build: 
+    container_name: dtvf_example_visualisation_old
+    build:
       context: "../"
       dockerfile: "./docker/Dockerfile"
       target: "dev"
@@ -15,5 +15,5 @@ services:
         authors: "support@cmclinnovations"
         description: "Example implementation of the Digital Twin Visualisation Framework."
     ports:
-      - "65080:80"
+      - "65082:80"
  
