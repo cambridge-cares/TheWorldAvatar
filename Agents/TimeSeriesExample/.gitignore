@@ -15,6 +15,5 @@ dist/
 # Miscellaneous files/folders:
 *.geojson
 *.json
-!layer-tree.json
-!overall-meta.json
+!tree.json
 !meta.json
