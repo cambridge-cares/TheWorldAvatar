@@ -16,6 +16,7 @@ from custom_errors import *
 server = 'localhost'
 port = '9999'
 namespace = 'kings-lynn'
+namespace = 'interior_rings'
 #namespace = "geospatial_offset_analysis_epsg27700"
 #namespace = 'geospatial_offset_analysis_ocg-crs84'
 
@@ -152,6 +153,8 @@ def get_coordinates(polygon_data, transformation, dimensions=3):
     '''
         Extracts and transforms polygon coordinates as retrieved from Blazegraph
         to suit GeoJSON polygon requirements (and target CRS)
+        - lon, lat are transformed to specified target CRS
+        - elevation remains in original CRS
 
         Arguments:
             polygon_data - polygon data as returned from Blazegraph
@@ -180,11 +183,11 @@ def get_coordinates(polygon_data, transformation, dimensions=3):
         nodes = int(len(coordinate_str) / 3)
         for i in range(nodes):
             node = i * 3
-            # Transform (x,y) values and append (x,y,z) to output list
+            # Transform (x,y) values - required for correct plotting in Mapbox
             x, y = transformation.transform(coordinate_str[node], coordinate_str[node + 1])
-            #x = coordinate_str[node]
-            #y = coordinate_str[node + 1]
+            # Keep z value as Ordnance Survey Newlyn height - more tangible value for flooding analysis, etc.
             z = coordinate_str[node + 2]
+            # Append (x,y,z) to output list
             coordinates.append([x, y, z])
 
         # Check if first and last polygon vertices are equivalent and fix if necessary
