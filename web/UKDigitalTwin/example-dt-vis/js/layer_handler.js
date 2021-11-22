@@ -216,7 +216,6 @@ class LayerHandler {
                 'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.35, 16, 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true,
-                
                 'text-field': '{point_count_abbreviated}',
                 'text-font': ['Arial Unicode MS Bold'],
                 'text-size': 12,
@@ -225,7 +224,7 @@ class LayerHandler {
                 'text-ignore-placement': true
             },
             paint: {
-                 'text-color': ["get", "text-color"]
+                'text-color':  ["case", ["has", "text-color"], ["get", "text-color"], "#000000"]
             }
         };
 
