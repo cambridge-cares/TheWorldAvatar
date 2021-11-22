@@ -21,15 +21,15 @@ python -m venv <venv_name>
 
 4) Install requirements listed in `requirements.txt`:
 ```
-python -m pip install --upgrade pip
+python -m pip install --upgrade pip  
 python -m pip install -r requirements.txt
 ```
 
 ### 2. Setup local Blazegraph instance and PostgreSQL database 
 
-Start up Blazegraph and ensure that the local instance is available (i.e. via Blazegraph workbench in the Browser). Populate the `sparql.query.endpoint` and `sparql.update.endpoint` fields in the [requirements file] with the wanted SPARQL endpoints. Please note that the specified namespace will be created automatically by the `instantiate_data.py` script. In other words, if the specified SPARQL endpoint is `http://localhost:9999/blazegraph/namespace/<ts_example>/sparql`, the program will automatically create the namespace `<ts_example>` with geospatial capability enabled before uploading any triples. In case the respective namespace already exists, a message is printed out and the namespace should be deleted manually (if required).
+Start up Blazegraph and ensure that the local instance is available (i.e. via Blazegraph workbench in the Browser). Populate the `sparql.query.endpoint` and `sparql.update.endpoint` fields in the [properties file] with the wanted SPARQL endpoints. Please note that the specified namespace will be created automatically by the `instantiate_data.py` script. In other words, if the specified SPARQL endpoint is `http://localhost:9999/blazegraph/namespace/<ts_example>/sparql`, the program will automatically create the namespace `<ts_example>` with geospatial capability enabled before uploading any triples. In case the respective namespace already exists, a message is printed out and the namespace should be deleted manually (if required).
 
-Start postgreSQL and ensure that the local server is available (i.e. via pgAdmin ). Update the fields `db.url`, `db.user`, and `db.password` in the [requirements file] according to your local PostgreSQL settings. The default URL (with default `host` (i.e. _localhost_) and `port` (i.e. _5432_)) looks like `jdbc:postgresql:<database_name>`. Please note that the specified database `<database_name>` will be created automatically by the `instantiate_data.py` script. In case the respective database already exists, a message is printed out and the database should be deleted manually (if required).
+Start postgreSQL and ensure that the local server is available (i.e. via pgAdmin ). Update the fields `db.url`, `db.user`, and `db.password` in the [properties file] according to your local PostgreSQL settings. The default URL (with default `host` (i.e. _localhost_) and `port` (i.e. _5432_)) looks like `jdbc:postgresql:<database_name>`. Please note that the specified database `<database_name>` will be created automatically by the `instantiate_data.py` script. In case the respective database already exists, a message is printed out and the database should be deleted manually (if required).
 
 ## Usage
 
@@ -90,8 +90,8 @@ The `<root>\dtvf_visualisation\docker` folder contains the required files to bui
 
 Please note the caveats below before attempting to build the service using Docker:
 
-* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [requirements file] is not changed.
-* A valid Mapbox API key (which can be obtained for free by signing up) must be provided in the [requirements file]
+* The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [properties file] is not changed.
+* A valid Mapbox API key (which can be obtained for free by signing up) must be provided in the [properties file]
 * A connection to the internet is required to contact remote resources and use the mapping libraries.
 
 #### 3.2. Docker Commands
@@ -114,4 +114,4 @@ Once the requirements have been addressed, the Image can be built using the foll
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
-[requirements file]: resources/ts_example.properties
+[properties file]: resources/ts_example.properties
