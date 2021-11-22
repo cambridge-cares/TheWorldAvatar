@@ -28,6 +28,7 @@ class LayerHandler {
     addLayer(dataSet) {
         switch(dataSet["locationType"]) {
             default:
+            case "circle":
             case "point":
                 this.#addPointLayer(dataSet);
                 break;
@@ -41,6 +42,7 @@ class LayerHandler {
                 this.#addFillLayer(dataSet);
                 break;
 
+            case "building":
             case "extrusion":
                 this.#addExtrusionLayer(dataSet);
                 break;
@@ -141,7 +143,7 @@ class LayerHandler {
 				'circle-color':  ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
 				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
 				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
-                'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 0.75]
+                'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 1.0]
 			}
 		});
 
