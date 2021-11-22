@@ -51,9 +51,7 @@ geo    : http://www.bigdata.com/rdf/geospatial#
 
 ### 1. Instantiate Geospatial Time Series Data
 
-Assumptions regarding the geospatial data representation:
-- Elevation (Z coordinate) neglected
-- Coordinates in EPSG:4326 to use Blazegraph's built-in geospatial search functionality
+All coordinates in the sample date are in EPSG:4326 to use Blazegraph's built-in geospatial search functionality.
 
 To instantiate the sample data, please run (from within the `<root>` directory and with **activated** virtual environment `<venv_name>`)
 ```
@@ -64,7 +62,8 @@ Upon instantiation, the following triples get created for each `dataIRI`:
 ex:consumerIRI rdf:type ex:Consumer ;
                rdfs:label <description> ; 
                ex:consumes ex:dataIRI ; 
-               ex:hasLocation <lat#lon> .
+               ex:hasLocation <lat#lon> ;
+               ex:hasGeometry <lat#lon#elevation coordinate list> .
 ex:dataIRI rdf:type ex:Consumption ;
            rdfs:label <description> ;
            ex:unit <unit> .

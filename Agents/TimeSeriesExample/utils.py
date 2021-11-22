@@ -226,7 +226,7 @@ def create_blazegraph_namespace():
     if response.status_code == 201:
         print('New namespace \"{}\" successfully created.\n'.format(ns))
     elif response.status_code == 409:
-        print('Namespace \"{}\" exists already.\n'.format(ns))
+        print('Namespace \"{}\" already exists\n'.format(ns))
     else:
         print('Request status code: {}\n'.format(response.status_code))
 
