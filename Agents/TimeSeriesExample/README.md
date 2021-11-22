@@ -31,6 +31,8 @@ Start up Blazegraph and ensure that the local instance is available (i.e. via Bl
 
 Start postgreSQL and ensure that the local server is available (i.e. via pgAdmin ). Update the fields `db.url`, `db.user`, and `db.password` in the [properties file] according to your local PostgreSQL settings. The default URL (with default `host` (i.e. _localhost_) and `port` (i.e. _5432_)) looks like `jdbc:postgresql:<database_name>`. Please note that the specified database `<database_name>` will be created automatically by the `instantiate_data.py` script. In case the respective database already exists, a message is printed out and the database should be deleted manually (if required).
 
+**Please note**: It is recommended to populate/adjust all fields in the [properties file] (**except** for the `output.directory`) before executing any of the scripts below.
+
 ## Usage
 
 The example uses the following namespaces:
@@ -53,7 +55,7 @@ Assumptions regarding the geospatial data representation:
 - Elevation (Z coordinate) neglected
 - Coordinates in EPSG:4326 to use Blazegraph's built-in geospatial search functionality
 
-To instantiate the sample data, please run (from within the `<root>` directory and with activated virtual environment `<venv_name>`)
+To instantiate the sample data, please run (from within the `<root>` directory and with **activated** virtual environment `<venv_name>`)
 ```
 python instantiate_data.py
 ```
@@ -75,27 +77,32 @@ A `consumerIRI` describes any entity which consumes a particular utility (e.g. P
 
 ### 2. Query Geospatial Time Series Data
 
-To query the triple store and write the retrieved data to respective files for later visualisation, please run (from within the `<root>` directory and with activated virtual environment `<venv_name>`)
+A valid Mapbox API key (which can be obtained for free by signing up) is required for later data visualisation and must be provided in the [properties file] **before** querying the data.
+
+To query the triple store and write the retrieved data to respective files for later visualisation, please run (from within the `<root>` directory and with **activated** virtual environment `<venv_name>`)
 ```
 python query_data.py
 ```
-Within the main function of this module, on can specify, whether to query for all consumers or just consumers within a certain radius from Cambridge's city center (around line 250).
+
+Within the main function of this module, one can specify, whether to query for all consumers or just consumers within a certain radius from Cambridge's city center (around line 250).
 
 ### 3. Visualise Geospatial Time Series Data using the DTVF
 
 The previously queried data will be visualised using the Digital Twin Visualisation Framework (DTVF). A brief introduction on how to use this framework is provided below; however, for more detailed instructions, please read the [DTVF] TWA wiki page.
 
 #### 3.1. Building the Image
+
+Before building the image, please start up Docker Desktop (Previous users reported potential issues in case Docker Desktop is not run as Administrator). 
+
 The `<root>\dtvf_visualisation\docker` folder contains the required files to build a Docker Image for the example visualisation. The `Dockerfile` file contains the instructions to build an Image; before making any changes to it, please consult the application's developer or the system administrators at CMCL (Michael Hillman <mdhillman@cmclinnovations.com>).
 
 Please note the caveats below before attempting to build the service using Docker:
 
 * The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [properties file] is not changed.
-* A valid Mapbox API key (which can be obtained for free by signing up) must be provided in the [properties file]
 * A connection to the internet is required to contact remote resources and use the mapping libraries.
 
 #### 3.2. Docker Commands
-Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository and with deactivated virtual environment `<venv_name>`):
+Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository and with **deactivated** virtual environment `<venv_name>`):
 
 + To build the Image:
   + `docker-compose -f ./docker/docker-compose.yml build --force-rm`
@@ -103,10 +110,10 @@ Once the requirements have been addressed, the Image can be built using the foll
   + `docker-compose -f ./docker/docker-compose.yml up -d --force-recreate`
 
 #### 3.3. Afterwards the visualisation can be viewed via Docker Desktop 
-1. Open Docker Desktop
-2. Select "Container/Apps" in left panel
-3. Select container "dtvf_example_visualisation" in docker stack "docker"
-4. Select `Open in Browser` to open visualisation in Browser
+In Docker Desktop:
+1. Select "Container/Apps" in left panel
+2. Select container "dtvf_example_visualisation" in docker stack "docker"
+3. Select `Open in Browser` to open visualisation in Browser
 
 
 
