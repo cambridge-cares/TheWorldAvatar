@@ -100,6 +100,7 @@ Please note the caveats below before attempting to build the service using Docke
 
 * The example visualisation within the Docker image will be based on the current content of the `<root>\dtvf_visualisation\queried_data` repository at the point of building the image. This is also the repository to which all queried data files are written automatically  if the `output.directory` field in the [properties file] is not changed.
 * A connection to the internet is required to contact remote resources and use the mapping libraries.
+* At the time of writing, the JS and CSS files comprising the framework are stored within the  visualisation folder (in the `js` and `css` directories). In the future, these files will be separated from the data, hosted remotely (perhaps on the kg.cmclinnovations.com site), then imported as remote resources in any visualisation.
 
 #### 3.2. Docker Commands
 Once the requirements have been addressed, the Image can be built using the following commands (to be run in CMD from within the `<root>\dtvf_visualisation` repository and with **deactivated** virtual environment `<venv_name>`):
