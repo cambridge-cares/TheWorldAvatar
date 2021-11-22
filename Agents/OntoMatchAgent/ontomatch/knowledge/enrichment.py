@@ -28,6 +28,12 @@ class Agent():
         path = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/' + handle
         logging.info('storing graph to path=%s', path)
         graph.serialize(path, format='xml')
+
+        handle_turtle = ontomatch.utils.blackboard.Agent.create_handle(addr) + '.ttl'
+        path = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/' + handle_turtle
+        logging.info('additionally, storing graph in turtle format to path=%s', path)
+        graph.serialize(path, format='turtle')
+
         return enriched, handle
 
     def load_rdflib_graph(self, addr, add_knowledge):

@@ -158,15 +158,6 @@ def call_agent_blackboard_for_reading(handle:str, http:bool=False) -> str:
     logging.info('called blackboard for reading')
     return object
 
-def call_agent_blackboard_for_upload(name:str, object_for_upload:object, do_pickle=False, http:bool=False) -> str:
-    logging.info('calling blackboard for reading, handle=%s, http=%s', handle, http)
-    if http:
-        raise NotImplementedError()
-    else:
-        serialized_object = ontomatch.utils.blackboard.Agent().upload(name, upload_from)
-    logging.info('called blackboard for reading')
-    return serialized_object
-
 def load_ontology(graph_handle, blackboard=True):
     logging.info('loading ontology for %s', graph_handle)
 
