@@ -11,12 +11,12 @@ if __name__ == "__main__":
     from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
     from location import JPS_DICT_DIR
 else:
-    from AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
-    from AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
-    from AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
-    from AgentUtil.util.UnitConversion import convertPressure, convertTemperature
-    from AgentUtil.util.Lookup import find_nearest_match
-    from location import JPS_DICT_DIR
+    from .AgentUtil.util.SPARQLWarehouse import ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY
+    from .AgentUtil.util.UniversalQuery import query_blazegraph, make_simple_http_request
+    from .AgentUtil.util.MarieLogger import MarieError, MarieIOLog, MarieMessage
+    from .AgentUtil.util.UnitConversion import convertPressure, convertTemperature
+    from .AgentUtil.util.Lookup import find_nearest_match
+    from .location import JPS_DICT_DIR
 
 
 def find_ontocompchem_IRI(ontospecies_iri):
@@ -65,11 +65,14 @@ def select_data(temperature, pressure, multi_point_result, single_point_result, 
 
 
 def filter_response(_result, _attribute, temperature=None, pressure=None):
+    candidates = ['heat capacity', 'heat capacity at constant volume', 'heat capacity at constant pressure',
+                  'internal energy', 'gibbs energy', 'entropy', 'enthalpy']
+
+    _attribute = process.extractOne(_attribute.strip().lower(), candidates, scorer=fuzz.ratio)[0]
     _original_attribute = _attribute
     if 'result' in _result:
         single_point_result = _result['result']['Thermodynamic data for a single T, P point']
         multi_point_result = _result['result']['Thermodynamic data over a selected T range at a single P point']
-
     else:
         return None
 
@@ -88,7 +91,6 @@ def filter_response(_result, _attribute, temperature=None, pressure=None):
         filtered_response = {"multiple_results": [filtered_response_constant_v, filtered_response_constant_p]}
     else:
         filtered_response = select_data(temperature, pressure, multi_point_result, single_point_result, _attribute)
-
     return filtered_response
 
 
@@ -168,8 +170,8 @@ if __name__ == '__main__':
     # _species = 'benzene'
     # t = 'roomtemperature'
     t = None
-    #p = '100000 Pa'
-    #attribute = 'entropy'
+    # p = '100000 Pa'
+    # attribute = 'entropy'
     # attribute = None
     # p = None
     # _species = 'geometry c=c=c'

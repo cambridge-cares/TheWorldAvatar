@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from pprint import pprint
 
 from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
 from util.StopWords import removeStopWords
@@ -85,32 +86,41 @@ if __name__ == '__main__':
     #     ca.run('aromatic hydrocarbons with mass less than 170')
     # rst = ca.run('what is the pce of CC')
     # print(rst)
-    for i in range(0, 2):
-        with open('test_questions') as f:
-            questions = f.readlines()
-            random.shuffle(questions)
-            for q in questions:
-                time.sleep(10)
-                rst = ca.run(q)
+    # for i in range(0, 2):
+    #     with open('test_questions') as f:
+    #         questions = f.readlines()
+    #         random.shuffle(questions)
+    #         for q in questions:
+    #             time.sleep(10)
+    #             rst = ca.run(q)
 
     # TODO: more fine-grained tests
     # TODO: remove v2 from SPARQLs
-    # thermo_agent_questions = [
-    #     'what is the molecular weight of C=C=C=C',
-    #     'geometry of C=C',
-    #     'what is benzene',
-    #     'what is the gibbs energy of H2O2',
-    #     'what is the internal energy of methane at 100 K',
-    #     'plot the heat capacity of CO2',
-    #     'heat capacity of c1cccc1 at 1 atm',
-    #     'heat capacity of c1cccc1 at room temperature',
-    #     'heat capacity of c1cccc1',
-    #     'heat capacity of co2 at room temperature',
-    #     'heat capacity of carbon dioxide at room temperature',
-    #     'find the entropy of benzene at 100000 Pa',
-    #     'what is the enthalpy of InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3 at 1522.1 Pa and 123245 K']
-    # for t_a_q in thermo_agent_questions:
-    #     ca.run(t_a_q)
+    thermo_agent_questions = [
+        'what is the molecular weight of C=C=C=C',
+        'geometry of C=C',
+        'what is benzene',
+        'what is the gibbs energy of H2O2',
+        'what is the internal energy of methane at 100 K',
+        'plot the heat capacity of CO2',
+        'heat capacity of c1cccc1 at 1 atm',
+        'heat capacity of c1cccc1 at room temperature',
+        'heat capacity of c1cccc1',
+        'heat capacity of co2 at room temperature',
+        'heat capacity of carbon dioxide at room temperature',
+        'heat capacity at constant pressure of carbon dioxide at room temperature',
+        'find the entropy of benzene at 100000 Pa',
+        'what is the enthalpy of InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3 at 1522.1 Pa and 123245 K']
+    for t_a_q in thermo_agent_questions:
+        print('\n===========================================')
+        print(t_a_q)
+        print('===========================================\n')
+        rst = ca.run(t_a_q)
+        print('##############################################')
+        print(json.dumps(rst, indent=4))
+        print('##############################################')
+
+
     # ca.run('what is the enthalpy of InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3 at 1522.1 Pa and 123245 K')
 
     # wiki_questions = ['geometry c=c=c=c', 'heat capacity of methane', 'mass of benzene', 'molecular weight of ch4',
