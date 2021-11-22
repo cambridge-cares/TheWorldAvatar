@@ -524,6 +524,15 @@ public class TimeSeriesClient<T> {
 			List<String> dataIRIs = ts.getDataIRIs();
 			ts_jo.put("id", id.get(i));
 			
+			// classes
+			if (ts.getTimes().size() > 0) {
+				if (ts.getTimes().get(0) instanceof Number) {
+					ts_jo.put("timeClass", Number.class.getSimpleName());
+				} else {
+					ts_jo.put("timeClass", ts.getTimes().get(0).getClass().getSimpleName());
+				}
+			}
+			
 			// for table headers
 			if (table_header != null) {
 				ts_jo.put("data", table_header.get(i));
@@ -539,12 +548,21 @@ public class TimeSeriesClient<T> {
 	    	// values columns
 	    	// values columns, one array for each data
 	    	JSONArray values = new JSONArray();
-	    	
+	    	JSONArray valuesClass = new JSONArray();
 	    	for (int j = 0; j < dataIRIs.size(); j++) {
-	    		values.put(ts.getValuesAsDouble(dataIRIs.get(j)));
+	    		List<?> valueslist = ts.getValues(dataIRIs.get(j));
+	    		values.put(valueslist);
+	    		if (valueslist.size() > 0) {
+	    			if (valueslist.get(0) instanceof Number) {
+	    				valuesClass.put(Number.class.getSimpleName());
+	    			} else {
+	    				valuesClass.put(valueslist.get(0).getClass().getSimpleName());
+	    			}
+	    		}
 	    	}
 	    	
 	    	ts_jo.put("values", values);
+	    	ts_jo.put("valuesClass", valuesClass);
 			
 			ts_array.put(ts_jo);
 		}
