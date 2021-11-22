@@ -5,7 +5,7 @@ import ontomatch.knowledge.geoNames
 class TestAgent(unittest.TestCase):
 
     def test_pkl(self):
-        agent = ontomatch.knowledge.geoNames.Agent("UnitedKingdom", isOnline=False, save = "./data/UK_geonames.pkl")
+        agent = ontomatch.knowledge.geoNames.Agent("UnitedKingdom", isOnline=False, save = "./tests/data/UK_geonames.pkl")
         lat, long = agent.query("Norwich")
         self.assertAlmostEqual(lat, 52.62783)
         self.assertAlmostEqual(long, 1.29834)

@@ -28,7 +28,7 @@ class TestCaseOntoMatch(unittest.TestCase):
     def load_kwl_with_geo_coordinates_gppd_ontologies(self):
         with open('./data/power_plant_DEU/kwl_geo.pkl','rb') as file:
             src_onto = pickle.load(file)
-        with open('./data/power_plant_DEU/gppd_DEU_geo.pkl','rb') as file:
+        with open('./data/power_plant_DEU/gppd_DEU.pkl','rb') as file:
             tgt_onto = pickle.load(file)
         return src_onto, tgt_onto
 

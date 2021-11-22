@@ -67,6 +67,8 @@ def init(config_dev=None):
     parser.add_argument('--config', type=str)
     parser.add_argument('--logconfdir', type=str, default='./conf')
     parser.add_argument('--logdir', type=str, default='../logs')
+    data_path_default = './data'
+    parser.add_argument('--datadir', type=str, default=data_path_default)
     args = parser.parse_args()
     print('args = ', args)
 
@@ -78,6 +80,16 @@ def init(config_dev=None):
     init_logging(args.logconfdir, args.logdir)
     logging.info('current working directory=%s', os.getcwd())
     logging.info('args=%s', args)
+
+    if args.datadir != data_path_default:
+        logging.info('changing data paths from %s to %s', data_path_default, args.datadir)
+        path = config['dataset']['src']
+        config['dataset']['src'] = path.replace(data_path_default, args.datadir)
+        path = config['dataset']['tgt']
+        config['dataset']['tgt'] = path.replace(data_path_default, args.datadir)
+        path = config['post_processing']['evaluation_file']
+        config['post_processing']['evaluation_file'] = path.replace(data_path_default, args.datadir)
+
     logging.info('config=%s', config)
     try:
         seed = config['numerical_settings']['seed']
