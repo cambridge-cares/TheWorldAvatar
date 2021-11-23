@@ -168,7 +168,7 @@ public class TimeSeriesClient<T> {
     	// In case any exception occurs, nothing will be created in kb, since JPSRuntimeException will be thrown before 
     	// interacting with triple store and SPARQL query is either executed fully or not at all (no partial execution possible)
    		try {
-   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), null);
+   			rdfClient.bulkInitTS(tsIRIs, dataIRIs, rdbClient.getRdbURL(), timeUnit);
 		}
 		catch (Exception e_RdfCreate) {
 			throw new JPSRuntimeException(exceptionPrefix + "Timeseries was not created!", e_RdfCreate);
@@ -327,6 +327,14 @@ public class TimeSeriesClient<T> {
 			throw new JPSRuntimeException(exceptionPrefix + "Not all timeseries were deleted from database! " +
 					  "Potentially inconsistent state between KG and database", e_RdbDelete);
 		}
+    }
+    
+    public TimeSeries<T> getLatestData(String dataIRI) {
+    	return rdbClient.getLatestData(dataIRI);
+    }
+    
+    public TimeSeries<T> getOldestData(String dataIRI) {
+    	return rdbClient.getOldestData(dataIRI);
     }
     
     /** 

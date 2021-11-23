@@ -327,15 +327,21 @@ public class TimeSeriesSparql {
 	 * Remove all time series from kb
 	 */
 	protected void removeAllTimeSeries() {
-		// Get all time series in kb
-		List<String> tsIRI = getAllTimeSeries();
+		SubSelect sub = GraphPatterns.select(); // only used as variable generator
+		Variable predicate1 = sub.var();
+		Variable predicate2 = sub.var();
+		Variable subject = sub.var();
+		Variable object = sub.var();
+		Variable timeseries = sub.var();
 		
-		// Remove all time series
-		if (!tsIRI.isEmpty()) {
-			for (String ts : tsIRI) {
-				removeTimeSeries(ts);
-			}
-		}
+		TriplePattern delete_tp1 = timeseries.has(predicate1, object);
+		TriplePattern delete_tp2 = subject.has(predicate2, timeseries);		
+		
+		// insert subquery into main sparql update
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp1, delete_tp2).where(timeseries.isA(TimeSeries),delete_tp1,delete_tp2).prefix(prefix_ontology);
+		
+		kbClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
