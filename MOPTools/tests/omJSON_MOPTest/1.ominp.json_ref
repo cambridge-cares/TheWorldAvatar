@@ -14,7 +14,7 @@
     "Mops_Reference_DOI": "10.1021/ja042802q",
     "Mops_Chemical_Building_Units": [
         {
-            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_78a425be-01fa-41de-9937-ea45cb5c5ed0",
+            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_57aa727b-3191-48ee-b5ba-519da56b87e8",
             "CBU_Formula": "[Fe3O(SO4)3(C5H5N)3]",
             "Binding_Site": "Inorganic",
             "Binding_Site_Label": "Metal",
@@ -29,7 +29,7 @@
             "GenericUnitNumber": "4"
         },
         {
-            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_9cc790f5-5836-4227-8507-a01fcc3209e4",
+            "OntoSpecies_IRI": "http://www.theworldavatar.com/kb/ontospecies/Species_65ce0c21-0e92-45a7-8844-de2f9712fd2b",
             "CBU_Formula": "[C6H4(CO2)2]",
             "Binding_Site": "Organic",
             "Binding_Site_Label": "CO2",
