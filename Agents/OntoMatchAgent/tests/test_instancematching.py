@@ -101,7 +101,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        symmetric = False
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, symmetric, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
@@ -141,7 +142,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        symmetric = False
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, symmetric, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_scores_geo_2.csv')
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_best_scores_geo_2.csv')

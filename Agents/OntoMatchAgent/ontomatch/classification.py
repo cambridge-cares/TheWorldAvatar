@@ -106,6 +106,30 @@ class TrainTestGenerator():
         logging.info('x_train=%s, y_train=%s, x_test=%s, y_test=%s', len(x_train), len(y_train), len(x_test), len(y_test))
         return x_train, x_test, y_train, y_test
 
+    @staticmethod
+    def create_full_evaluation_set(match_file, nonmatch_file, column_ml_phase, prop_columns=None, minus_train=False):
+        keep_columns = prop_columns.copy()
+        keep_columns.extend(['y', column_ml_phase])
+
+        df_matches = ontomatch.utils.util.read_csv(match_file)
+        if minus_train:
+            mask = (df_matches[column_ml_phase] == 'test')
+            df_matches = df_matches[mask]
+        df_matches = df_matches[keep_columns].copy()
+
+        df_nonmatches = ontomatch.utils.util.read_csv(nonmatch_file)
+        if minus_train:
+            mask = (df_nonmatches[column_ml_phase] == 'test')
+            df_nonmatches = df_nonmatches[mask]
+        df_nonmatches = df_nonmatches[keep_columns].copy()
+
+        dframe = pd.concat([df_matches, df_nonmatches])
+        x_full = dframe[prop_columns].copy()
+        y_full = dframe['y'].copy()
+
+        logging.info('x_full=%s, y_full=%s', len(x_full), len(y_full))
+        return x_full, y_full
+
 class Utils():
 
     @staticmethod

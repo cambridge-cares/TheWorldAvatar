@@ -107,21 +107,6 @@ class InstanceMatcherMaxSVC(InstanceMatcherBase):
         df_train.to_csv('./debug/df_train.csv')
         labels_train.to_csv('./debug/labels_train.csv')
 
-        '''
-        params_classification = [{
-            'kernel': ['rbf'],
-            'gamma': ['scale'],
-            'C': [1.0]
-        }]
-        '''
-
-        '''
-        model  = ontomatch.classification.hpo_svm(df_train, labels_train, params_classification, crossvalidation=5)
-        train_score = model.score(df_train, labels_train)
-        test_score = model.score(df_test, labels_test)
-        logging.debug('SVC train_score=%s, test_score=%s', train_score, test_score)
-        '''
-
         df_scores_cleaned = ontomatch.classification.calculate_confidence_scores_from_hpo_svm(params_classification, df_train, labels_train, df_test, labels_test, df_scores_cleaned)
         df_scores['score'] = 0.
         #df_scores.loc[df_scores_cleaned.index]['score'] = df_scores_cleaned['score']
@@ -144,9 +129,13 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         self.df_total_scores = None
         self.df_total_best_scores = None
 
+    def get_scores(self):
+        return self.df_total_best_scores
+
     def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
         params = ontomatch.utils.util.convert_json_to_dict(config_json)
+        symmetric = params['matching']['model_specific']['symmetric']
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_post_processing = params['post_processing']
@@ -154,156 +143,70 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
         tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
 
-        self.start_internal(srconto, tgtonto, params_blocking, params_post_processing, params_mapping)
+        self.start_internal(srconto, tgtonto, symmetric, params_blocking, params_post_processing, params_mapping)
 
-    def start_internal(self, srconto, tgtonto, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
-        logging.info('starting InstanceMatcherWithAutoCalibration')
+    def start_internal(self, srconto, tgtonto, symmetric, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
+        logging.info('starting InstanceMatcherWithAutoCalibration, symmetric=%s', symmetric)
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
         df_scores = self.score_manager.get_scores()
-        #TODO-AE asymmetry
         df_max_scores = self.score_manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
+        #TODO-AE asymmetry
+        if symmetric:
+            # df_max_scores_2 has multi index of form (idx_2, idx_1)
+            df_max_scores_2 = self.score_manager.get_max_scores_2()
+            # change the order of idx_1 and idx_2 (score functions are symmetric. Thus, the score value are the same)
+            #df-_scores_2 = self.score_manager.get_scores().reorder_levels(['idx_2', 'idx_1'])
+            df_scores_2 = self.score_manager.get_scores()
+            _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, dataset_id=2)
+            logging.debug('first row of df_total_best_score_2 before reordering index=%s, row=%s', df_total_best_scores_2.index[0], df_total_best_scores_2.iloc[0])
+            # 1. method calculate_auto_calibrated_total_scores store idx_2 in index with name 'idx_1. Thus, we have to change the name
+            #df_total_best_scores_2 = df_total_best_scores_2.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
+            # 2. revert the above change of the index order
+            #df_total_best_scores_2 = df_total_best_scores_2.reorder_levels(['idx_1', 'idx_2'])
+            logging.debug('first row of df_total_best_score_2 after reordering index=%s, row=%s', df_total_best_scores_2.index[0], df_total_best_scores_2.iloc[0])
+
+            # combine best score pairs from df_total_best_scores and df_total_best_scores_2
+            self.df_total_best_scores = self.combine_total_best_scores(self.df_total_best_scores, df_total_best_scores_2)
 
         if params_post_processing:
             postprocess(params_post_processing, self)
 
         return self.df_total_scores, self.df_total_best_scores
 
-    '''
-    def calculate_auto_calibrated_total_scores_for_index_OLD(self, df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = 1):
-        best_score = 0
-        best_pos = None
-        total_score_rows = []
+    def combine_total_best_scores(self, df_total_1, df_total_2):
+        df_combined = df_total_1[['score']].copy()
+        #df_combined['score'] = df_combined['score']
+        logging.info('combining total best scores, total_1=%s, total_2=%s', len(df_total_1), len(df_total_2))
 
-        for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
-            score = 0
-            number_columns = len(property_mapping)
-            prop_score = {}
-            for propmap  in property_mapping:
-
-                c_max = propmap['key']
-                c = int(c_max.split('_')[0])
-                value = row[c]
-
-                #TODO-AE changed at 210926
-                #if (not value is None) and (type(value) is float and not np.isnan(value)):
-                if not (value is None or type(value) is str or np.isnan(value)):
-                    # TODO-AE check: <= in line 1 and 3 leads to worse results than <
-                    # TODO-AE experimental idea: problem with just a few 'discrete values' (e.g. 0 and 1 for match and mismatch fuel, or 0, 1, 2 edit distance)
-                    # is: matches are penalized when using <= (around 0) but when using < instead nonmatches benefit (around 1)
-                    # idea: use <= around 0 and < around 1 and "interpolate" in between
-                    # this idea should not have much effect if there are many 'discrete values' and there is no lumping on values around 0
-                    mask = (df_scores[c] >= value)
-                    count_m_plus_n = len(df_scores[mask])
-                    mask = (df_max_scores[c_max] >= value)
-                    count_m = len(df_max_scores[mask])
-                    if count_m_plus_n == 0:
-                        column_score = 1
-                    else:
-
-                        #TODO-AE URGENT 211022
-                        column_score = count_m / count_m_plus_n
-    '''
-    '''
-                        mask = (df_scores[c] == value)
-                        count_m_plus_n_equal = len(df_scores[mask])
-                        mask = (df_scores[c] < value)
-                        count_m_plus_n_greater = len(df_scores[mask])
-                        if count_m_plus_n_equal == 1:
-                            denom = count_m_plus_n
-                        else:
-                            denom = count_m_plus_n + count_m_plus_n_equal * (count_m_plus_n / (count_m_plus_n + count_m_plus_n_greater))
-
-
-                        mask = (df_max_scores[c_max] == value)
-                        count_m_equal = len(df_max_scores[mask])
-                        mask = (df_max_scores[c_max] < value)
-                        count_m_greater = len(df_max_scores[mask])
-                        if count_m_equal == 1:
-                            nom = count_m
-                        else:
-                            #TODO-AE: better (count_m_equal - 1)
-                            nom = count_m + count_m_equal * (count_m / (count_m + count_m_greater))
-                        column_score = nom / denom
-
-
-                        column_score = count_m / denom
-    '''
-    '''
-                    if log:
-                        if count_m_plus_n == 0:
-                            print(c, value, 'ZERO', column_score)
-                        else:
-                            print(c, value, count_m, count_m_plus_n, 'orginal score=', count_m / count_m_plus_n, 'new score=', column_score)
-                            print('\t', count_m, count_m_equal, count_m_greater, 'nom=', nom)
-                            print('\t', count_m_plus_n, count_m_plus_n_equal, count_m_plus_n_greater, 'denom=', denom)
-    '''
-    '''
-                    score += column_score
-
-
-                    #TODO-AE 211015 calibrated score for each prop
-                    prop_score.update({c: column_score})
-
-
-                else:
-                    #TODO-AE how to score missing data?
-                    number_columns = number_columns - 1
-
-
-            # TODO-AE 211026 replace by get_total_score function
-            if number_columns <= skip_column_number:
-                score = 0.
-                print('score = 0 since number columns=', number_columns, idx_1, idx_2)
-            else:
-                score = score / number_columns
-
-            total_score_row = {
-                'idx_1': idx_1,
-                'idx_2': idx_2,
-                'score': score,
-                'best': False,
-                'pos_1': row['pos_1'],
-                'pos_2': row['pos_2'],
-            }
-
-            total_score_row.update(prop_score)
-
-            total_score_rows.append(total_score_row)
-
-            # TODO-AE what about equality?
-            if score > best_score or best_pos is None:
-                best_score = score
-                best_pos = pos
-
-        total_score_rows[best_pos]['best'] = True
-
-        return total_score_rows
-
-    def calculate_auto_calibrated_total_scores_OLD(self, df_scores, df_max_scores, property_mapping):
-
-        logging.info('calculating auto calibrated total scores')
-
-        df_scores['score'] = 0.
-
+        index_1 = df_combined.index
+        count = 0
         rows = []
-        for idx_1, _ in tqdm(df_max_scores.iterrows()):
-            #TODO-AE URGENT
-            #  skip_column_number = 1
-            #TODO-AE 211102 URGENT restaurant, for phone prop only, set skip_column_number = 0
-            skip_column_number = 0
-            total_score_rows = self.calculate_auto_calibrated_total_scores_for_index_OLD(df_scores, df_max_scores, property_mapping, idx_1, skip_column_number = skip_column_number)
-            rows.extend(total_score_rows)
+        '''
+        for (idx_2, idx_1), row in tqdm(df_total_2.iterrows()):
+            score_2 = row['score']
+            idx_inv = (idx_1, idx_2)
+            if idx_inv in index_1:
+                count += 1
+                score_1 = df_combined.loc[idx_inv]['score']
+                df_combined.at[(idx_1, idx_2), 'score'] = max(score_1, score_2)
+            else:
+                rows.append({'idx_1': idx_1, 'idx_2': idx_2, 'score': score_2})
+        '''
+        for idx, row in tqdm(df_total_2.iterrows()):
+            score_2 = row['score']
+            if idx in index_1:
+                count += 1
+                score_1 = df_combined.loc[idx]['score']
+                df_combined.at[idx, 'score'] = max(score_1, score_2)
+            else:
+                rows.append({'idx_1': idx[0], 'idx_2': idx[1], 'score': score_2})
 
-        df_total_scores = pd.DataFrame(rows)
-        df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)
-        mask = (df_total_scores['best'] == True)
-        df_total_best_scores = df_total_scores[mask]
-
-        logging.info('calculated auto calibrated total scores')
-
-        return df_total_scores, df_total_best_scores
-    '''
+        df_diff = pd.DataFrame(rows)
+        df_diff.set_index(['idx_1', 'idx_2'], inplace=True)
+        df_combined = pd.concat([df_combined, df_diff])
+        logging.debug('combined total best scores, count=%s, rows=%s, df_combined=%s', count, len(rows), len(df_combined))
+        return df_combined
 
     def calculate_auto_calibrated_total_scores_for_index(self, df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = 1):
         best_score = 0
@@ -386,9 +289,15 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         return total_score_rows
 
-    def calculate_auto_calibrated_total_scores(self, df_scores, df_max_scores, property_mapping):
+    def calculate_auto_calibrated_total_scores(self, df_scores_orig, df_max_scores, property_mapping, dataset_id=1):
 
-        logging.info('calculating auto calibrated total scores')
+        logging.info('calculating auto calibrated total scores, dataset_id=%s', dataset_id)
+
+        if dataset_id == 1:
+            df_scores = df_scores_orig.copy()
+        else:
+            df_scores = df_scores_orig.reorder_levels(['idx_2', 'idx_1'])
+            logging.info('reordered levels of df_scores since dataset_id=%s', dataset_id)
 
         df_scores['score'] = 0.
 
@@ -417,11 +326,16 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             rows.extend(total_score_rows)
 
         df_total_scores = pd.DataFrame(rows)
+
+        if dataset_id == 2:
+            df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1', 'pos_1': 'pos_2', 'pos_2': 'pos_1'})
+            logging.info('reordered index and position names of df_total scores since dataset_id=%s', dataset_id)
+
         df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)
         mask = (df_total_scores['best'] == True)
         df_total_best_scores = df_total_scores[mask]
 
-        logging.info('calculated auto calibrated total scores')
+        logging.info('calculated auto calibrated total scores, dataset_id=%s', dataset_id)
 
         return df_total_scores, df_total_best_scores
 
@@ -434,10 +348,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         sorted_series = series.sort_values(ascending=True).copy()
         return sliding_count_internal
-
-    def get_scores(self):
-        return self.df_total_best_scores
-
 
 class InstanceMatcherWithScoringWeights():
 
@@ -556,7 +466,7 @@ def postprocess(params_post_processing, matcher):
                     sm.df_max_scores_1.to_csv(dir_name + '/max_scores_1.csv')
                 if sm.df_max_scores_2 is not None:
                     sm.df_max_scores_2.to_csv(dir_name + '/max_scores_2.csv')
-                matcher.df_total_scores.to_csv(dir_name + '/total_scores.csv')
+                matcher.df_total_scores.to_csv(dir_name + '/total_scores_1.csv')
                 matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
                 sm.df_scores.to_csv(dir_name + '/scores.csv')
             else:

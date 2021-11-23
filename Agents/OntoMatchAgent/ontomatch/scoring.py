@@ -260,14 +260,24 @@ class ScoreManager():
 
     def calculate_maximum_scores(self, switch_to_min_of_distance=False):
         self.df_max_scores_1 = self.__calculate_maximum_scores(1, switch_to_min_of_distance)
-        #TODO-AE
-        #self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
+        self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
         return self.df_max_scores_1, self.df_max_scores_2
 
     def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
-        logging.info('calculating maximum scores, dataset_id=%s, number of scores=%s', dataset_id, len(self.prop_prop_fct_tuples) )
-        idx_values = self.df_scores.index.get_level_values(dataset_id-1).unique()
+        logging.info('calculating maximum scores, dataset_id=%s, number of scores=%s', dataset_id, len(self.prop_prop_fct_tuples))
+
+        if dataset_id == 1:
+            idx_values = self.df_scores.index.get_level_values(0).unique()
+            df_scores_tmp = self.df_scores
+            index_column_name = 'idx_1'
+            other_index_column_name = 'idx_2'
+        else:
+            idx_values = self.df_scores.index.get_level_values(1).unique()
+            df_scores_tmp = self.df_scores.reorder_levels(['idx_2', 'idx_1'])
+            index_column_name = 'idx_2'
+            other_index_column_name = 'idx_1'
+
         logging.info('number of entities=%s', len(idx_values))
 
         #TODO-AE store the position of column in score_fct ...
@@ -277,15 +287,12 @@ class ScoreManager():
             columns.append(c)
             str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
 
-        index_column_name = 'idx_1' if dataset_id==1 else 'idx_2'
-        other_index_column_name = 'idx_2' if dataset_id==1 else 'idx_1'
-
         result_rows = []
         count = 0
 
         for idx in tqdm(idx_values):
             result_row = {}
-            cand = self.df_scores.loc[idx]
+            cand = df_scores_tmp.loc[idx]
             count += len(cand)
 
             for c in columns:
@@ -325,6 +332,7 @@ class ScoreManager():
         df_result.set_index([index_column_name, other_index_column_name], inplace=True)
 
         logging.info('calculated maximum scores, number of entities=%s, number of pairs=%s', len(df_result), count)
+        logging.debug('MY first row=%s', df_result.iloc[0])
         logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 

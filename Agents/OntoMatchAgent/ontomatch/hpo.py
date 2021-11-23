@@ -75,6 +75,12 @@ def evaluate_with_pred_proba(model, x, y, number_of_thresholds=41):
     ontomatch.evaluate.log_result(result)
     return result
 
+def add_pred_proba_as_total_scores(model, x):
+    y_pred_proba = model.predict_proba(x)
+    y_pred_proba_match = [ ymatch for (_, ymatch) in y_pred_proba]
+    x['score'] = y_pred_proba_match
+    return x
+
 def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_threshold, upper_threshold, prop_columns, nonmatch_match_ratio = 1):
 
     logging.info('get train set from total scores=%s, scores=%s, lower=%s, upper=%s, columns%s, ratio=%s',
@@ -118,10 +124,11 @@ def start_from_console():
 
     params, _ = ontomatch.utils.util.init()
     params_classification = params['classification']
+    evaluation_file = params['post_processing']['evaluation_file']
     # KWL
     match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
     nonmatch_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_N_random_blocking_tfidf.csv'
-    scores_dir = 'C:/my/repos/ontomatch_20210924/experiments/211118_XGB_ratio_2/power_plant_DEU/scores_no_geo'
+    scores_dir = './scores_1'
     total_scores_file = scores_dir + '/total_scores.csv'
     scores_file = scores_dir + '/scores.csv'
     # DUKES
@@ -134,7 +141,7 @@ def start_from_console():
     #match_file = 'C:/my/tmp/ontomatch/20211118_tmp/product_M_ground_truth_tfidf.csv'
     #nonmatch_file = 'C:/my/tmp/ontomatch/20211118_tmp/product_N_random_blocking_tfidf.csv'
 
-    nonmatch_match_ratio = 2
+    nonmatch_match_ratio = 1
     nonmatch_file = nonmatch_file[:-4] + '_ratio_' + str(nonmatch_match_ratio) + '.csv'
 
     train_size = 0.2
@@ -146,7 +153,29 @@ def start_from_console():
     if True:
         logging.info('classifying similarity vectors')
         model = start_hpo(params_classification, x_train, y_train)
-        result = ontomatch.evaluate.evaluate_with_pred_proba(model, x_test, y_test)
+
+        logging.info('evaluate on test set')
+        result = evaluate_with_pred_proba(model, x_test, y_test)
+        logging.info('evaluate on full blocking set')
+        x_full, y_full = ontomatch.classification.TrainTestGenerator.create_full_evaluation_set(
+            match_file, nonmatch_file, column_ml_phase, prop_columns)
+        result = evaluate_with_pred_proba(model, x_full, y_full)
+
+        logging.info('evaluate on full blocking set concerning ground truth')
+        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
+        x_full = add_pred_proba_as_total_scores(model, x_full)
+        logging.info('ground truth matches=%s', len(index_set_matches))
+        logging.info('length of scores=%s', len(x_full))
+        result = ontomatch.evaluate.evaluate(x_full, index_set_matches)
+
+        logging.info('evaluate on full blocking set concerning ground truth minus training samples')
+        index_set_matches_minus_train = index_set_matches.difference(x_train.index)
+        x_full, y_full = ontomatch.classification.TrainTestGenerator.create_full_evaluation_set(
+            match_file, nonmatch_file, column_ml_phase, prop_columns, minus_train=True)
+        x_full = add_pred_proba_as_total_scores(model, x_full)
+        logging.info('ground truth matches minus train=%s', len(index_set_matches_minus_train))
+        logging.info('length of scores=%s', len(x_full))
+        result = ontomatch.evaluate.evaluate(x_full, index_set_matches_minus_train)
 
     if False:
         logging.info('classifying similarity vectors selected by means of autocalibrated total scores')
@@ -156,7 +185,7 @@ def start_from_console():
         model = start_hpo(params_classification, x_train, y_train)
         #TODO-AE 211119 evaluate on the entire ground truth and all matches?
         # evaluate on the same test set as above
-        result = ontomatch.evaluate.evaluate_with_pred_proba(model, x_test, y_test)
+        result = evaluate_with_pred_proba(model, x_test, y_test)
 
     if False:
         logging.info('classifying auto sim vectors')
@@ -167,7 +196,7 @@ def start_from_console():
         model = start_hpo(params_classification, x_train, y_train)
         #TODO-AE 211119 evaluate on the entire ground truth and all matches?
         # evaluate on the same test set as above
-        result = ontomatch.evaluate.evaluate_with_pred_proba(model, x_test, y_test)
+        result = evaluate_with_pred_proba(model, x_test, y_test)
 
 if __name__ == '__main__':
     start_from_console()

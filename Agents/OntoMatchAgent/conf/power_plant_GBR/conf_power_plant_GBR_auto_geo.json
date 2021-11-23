@@ -41,6 +41,7 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
+		"symmetric": true
 	}
 },
 "classification":{
