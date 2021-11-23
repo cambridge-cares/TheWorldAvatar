@@ -9,19 +9,17 @@
 from math import sin, cos, sqrt, atan2, radians
 
 def DistanceBasedOnGPSLocation(GPSLocationArray): # GPSLocationArray = [Point1_lat, Point1_long, Point2_lat, Point2_long]
-    if len(GPSLocationArray) == 4:
-        pass
-    else:
-        print('GPS location is not sufficient.')
-        return None
+    if not len(GPSLocationArray) == 4:       
+        raise Exception('GPS location is not sufficient.')
+        
     # print('The input [Point1_lat, Point1_long, Point2_lat, Point2_long] are: ', GPSLocationArray)
     # approximate radius of earth in km
     R = 6371.0
         
-    lon1 = radians(float(GPSLocationArray[0]))
-    lon2 = radians(float(GPSLocationArray[2]))
-    lat1 = radians(float(GPSLocationArray[1]))
-    lat2 = radians(float(GPSLocationArray[3]))
+    lat1 = radians(float(GPSLocationArray[0]))
+    lon1 = radians(float(GPSLocationArray[1]))
+    lat2 = radians(float(GPSLocationArray[2]))   
+    lon2 = radians(float(GPSLocationArray[3]))
            
     dlon = lon2 - lon1
     dlat = lat2 - lat1
@@ -32,5 +30,5 @@ def DistanceBasedOnGPSLocation(GPSLocationArray): # GPSLocationArray = [Point1_l
     
     return round(distance, 4)
 
-# d = DistanceBasedOnGPDLocation(['-0.1373639', '50.8223711', '-2.5879675', '51.4545085'])
-# print(d)
+d = DistanceBasedOnGPSLocation([52.6365868, -1.1395656, 53.8007312, -1.5492442])
+print(d)
