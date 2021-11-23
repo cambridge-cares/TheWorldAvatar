@@ -329,6 +329,14 @@ public class TimeSeriesClient<T> {
 		}
     }
     
+    public TimeSeries<T> getLatestData(String dataIRI) {
+    	return rdbClient.getLatestData(dataIRI);
+    }
+    
+    public TimeSeries<T> getOldestData(String dataIRI) {
+    	return rdbClient.getOldestData(dataIRI);
+    }
+    
     /** 
      * Retrieve time series data within given bounds (time bounds are inclusive and optional)
      * <p>Returned time series are in ascending order with respect to time (from oldest to newest)
