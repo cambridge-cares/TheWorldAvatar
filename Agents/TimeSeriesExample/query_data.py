@@ -2,12 +2,14 @@
 # and creates output files suitable for use with the DTVF
 # ===============================================================================
 
+import copy
 import os.path
 import json
 
-
 # Get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module to access
 # the TimeSeriesClient in the JPB_BASE_LIB
+import random
+
 from jpsSingletons import jpsBaseLibView
 # Get settings and functions from utils module
 import utils
@@ -21,15 +23,28 @@ center = '52.205363#0.119115'
 # Search radius in km
 radius = 1
 
-# Specify plotting parameter for GeoJSON features
-geojson_props = { 'displayName': '',
-                  'description': '',
-                  'circle-color': '#FF0000',
-                  'circle-stroke-width': 1,
-                  'circle-stroke-color': '#000000',
-                  'circle-stroke-opacity': 0.75,
-                  'circle-opacity': 0.75
-                  }
+# Specify plotting parameters for GeoJSON features (points, polygons, extruded polygons)
+circle_props = {'displayName': '',
+                'description': '',
+                'circle-color': '#ff0000',
+                'circle-stroke-width': 1,
+                'circle-stroke-color': '#000000',
+                'circle-stroke-opacity': 0.75,
+                'circle-opacity': 0.66
+                }
+fill_props = {'displayName': '',
+              'description': '',
+              'fill-color': '#2669c7',
+              'fill-outline-color': '#000000',
+              'fill-opacity': 0.66
+              }
+extrusion_props = {'displayName': '',
+                   'description': '',
+                   'fill-extrusion-base': 0,
+                   'fill-extrusion-height': 0,
+                   'fill-extrusion-color': '#666666',
+                   'fill-extrusion-opacity': 0.66
+                   }
 
 # ===============================================================================
 # Functions to Query Example Data from KG
@@ -91,14 +106,14 @@ def get_consumers_in_circle(center, radius):
 
 def get_geojson_data(consumer):
     '''
-        Returns coordinates ([lon, lat]) and name (label) for given 'consumer'
+        Returns coordinates ([lon, lat]), ground elevation (z), and name (label) for given 'consumer'
     '''
 
     # Define query
     query = utils.create_sparql_prefix('ex') + \
             utils.create_sparql_prefix('rdfs') + \
-            '''SELECT ?loc ?name \
-               WHERE { <%s> ex:hasLocation ?loc ; \
+            '''SELECT ?geom ?name \
+               WHERE { <%s> ex:hasGeometry ?geom ; \
                             rdfs:label ?name }''' % consumer
     # Execute query
     response = KGClient.execute(query)
@@ -108,12 +123,17 @@ def get_geojson_data(consumer):
 
     # Unpack consumer name
     name = response[0]['name']
-    # Unpack consumer location, and convert to [lon, lat] format
-    coordinates = response[0]['loc'].split('#')
-    coordinates = [float(i) for i in coordinates]
-    coordinates = coordinates[::-1]
+    # Unpack consumer location geometry, and convert to [lon, lat] format
+    coords = response[0]['geom'].split('#')
+    coords = [float(i) for i in coords]
+    # Swap lat and lon
+    if not len(coords) % 3 == 0:
+        raise IndexError('ERROR: Not all points/vertices are properly defined with 3 coordinates (lat, lon, height)')
+    coordinates = [[coords[i+1], coords[i]] for i in range(0, len(coords), 3)]
+    # Extract ground elevation
+    z = coords[2]
 
-    return coordinates, name
+    return coordinates, z, name
 
 
 def get_metadata(consumer):
@@ -198,13 +218,15 @@ def geojson_initialise_dict():
     return geojson
 
 
-def geojson_add_consumer(feature_id, properties, coordinates):
+def geojson_add_consumer(feature_id, properties, geom_type, coordinates):
     # Define new GeoJSON feature
     feature = {'type': 'Feature',
                'id': int(feature_id),
-               'properties': properties.copy(),
-               'geometry': {'type': 'Point',
-                            'coordinates': coordinates
+               'properties': properties,
+               'geometry': {'type': geom_type,
+                            # Condition coordinates to match GeoJSON requirements:
+                            # unwrap by one layers for Points, nest deeper by one layer for Polygons
+                            'coordinates': coordinates[0] if geom_type == 'Point' else [coordinates]
                             }
                }
     return feature
@@ -226,7 +248,7 @@ def json_add_metadata(feature_id, lon, lat, elec, water, gas):
 
 if __name__ == '__main__':
 
-    # Set Mapbox API key in DTVF 'overall-meta.json' file
+    # Set Mapbox API key in DTVF 'index.html' file
     utils.set_mapbox_apikey()
 
     # Initialise remote KG client with only query endpoint specified
@@ -239,13 +261,31 @@ if __name__ == '__main__':
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, utils.PROPERTIES_FILE)
 
     # Initialise output files/dictionaries
-    geojson = geojson_initialise_dict()
-    metadata = []
-    ts_data = { 'ts': [],
-                'id': [],
-                'units': [],
-                'headers': []
-                }
+    # Please note: This is intentionally not very elegant. It shall highlight what files need to be created for each
+    # data set to visualise and respective constraints (i.e. a single data set is restricted to a single locationType)
+    # For more details, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/DTVF:-Data-Structure
+    geojson_colleges_points = geojson_initialise_dict()
+    geojson_colleges_polygons = geojson_initialise_dict()
+    geojson_colleges_buildings = geojson_initialise_dict()
+    geojson_departments_polygons = geojson_initialise_dict()
+    geojson_departments_buildings = geojson_initialise_dict()
+    metadata_colleges_points = []
+    metadata_colleges_polygons = []
+    metadata_colleges_buildings = []
+    metadata_departments_polygons = []
+    metadata_departments_buildings = []
+    ts_dict = {'ts': [],
+               'id': [],
+               'units': [],
+               'headers': []
+               }
+    ts_data_colleges_points = copy.deepcopy(ts_dict)
+    ts_data_colleges_polygons = copy.deepcopy(ts_dict)
+    ts_data_colleges_buildings = copy.deepcopy(ts_dict)
+    ts_data_departments_polygons = copy.deepcopy(ts_dict)
+    ts_data_departments_buildings = copy.deepcopy(ts_dict)
+
+    # Initialise feature_id count (required to map meta and timeseries data to GeoJSON objects)
     feature_id = 0
 
     # Get consumers of interest
@@ -257,41 +297,89 @@ if __name__ == '__main__':
         feature_id += 1
 
         # 1) Retrieve data for GeoJSON output
-        coords, name = get_geojson_data(c)
+        coords, z, name = get_geojson_data(c)
 
-        # Update GeoJSON properties
-        geojson_props['description'] = str(c)
-        geojson_props['displayName'] = name
-        # Append results to overall GeoJSON FeatureCollection
-        geojson['features'].append(geojson_add_consumer(feature_id, geojson_props, coords))
+        # Map retrieved output to correct files/dictionaries
+        if 'College' in name:
+            # Sample data contains colleges represented as point and polygon
+            if len(coords) == 1:
+                geometry_type = 'Point'
+                geojson_props = [circle_props.copy()]
+                geojson = [geojson_colleges_points]
+                metadata = [metadata_colleges_points]
+                ts_data = [ts_data_colleges_points]
+            else:
+                geometry_type = 'Polygon'
+                # Generate random building height
+                building_height = random.randint(20, 30)
+                geojson_props = [fill_props.copy(), extrusion_props.copy()]
+                geojson = [geojson_colleges_polygons, geojson_colleges_buildings]
+                metadata = [metadata_colleges_polygons, metadata_colleges_buildings]
+                ts_data = [ts_data_colleges_polygons, ts_data_colleges_buildings]
+        elif 'Department' in name:
+            # Sample data contains only departments represented as polygon
+            geometry_type = 'Polygon'
+            # Generate random building height
+            building_height = random.randint(20, 30)
+            geojson_props = [fill_props.copy(), extrusion_props.copy()]
+            geojson = [geojson_departments_polygons, geojson_departments_buildings]
+            metadata = [metadata_departments_polygons, metadata_departments_buildings]
+            ts_data = [ts_data_departments_polygons, ts_data_departments_buildings]
+        else:
+            # Clear output file collections for non-matching results
+            geojson_props = []
+            geojson = []
+            metadata = []
+            ts_data = []
 
-        # 2) Retrieve data for metadata output
-        lon, lat, elec, water, gas = get_metadata(c)
-        metadata.append(json_add_metadata(feature_id, lon, lat, elec, water, gas))
+        # Populate output file/dictionary collections
+        for i in range(len(geojson)):
+            # Update GeoJSON properties
+            geojson_props[i]['description'] = str(c)
+            geojson_props[i]['displayName'] = name
+            if 'fill-extrusion-base' in geojson_props[i].keys():
+                geojson_props[i]['fill-extrusion-base'] = z
+                geojson_props[i]['fill-extrusion-height']= building_height
+            # Append results to overall GeoJSON FeatureCollection
+            geojson[i]['features'].append(geojson_add_consumer(feature_id, geojson_props[i], geometry_type, coords))
 
-        # 3) Retrieve time series data
-        timeseries, utilities, units = get_all_time_series(c)
-        ts_data['ts'].append(timeseries)
-        ts_data['id'].append(feature_id)
-        ts_data['units'].append(units)
-        ts_data['headers'].append(utilities)
+            # 2) Retrieve data for metadata output
+            lon, lat, elec, water, gas = get_metadata(c)
+            metadata[i].append(json_add_metadata(feature_id, lon, lat, elec, water, gas))
 
-    # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
-    ts_json = TSClient.convertToJSON(ts_data['ts'], ts_data['id'], ts_data['units'], ts_data['headers'])
-    # Make JSON file readable in Python
-    ts_json = json.loads(ts_json.toString())
+            # 3) Retrieve time series data
+            timeseries, utilities, units = get_all_time_series(c)
+            ts_data[i]['ts'].append(timeseries)
+            ts_data[i]['id'].append(feature_id)
+            ts_data[i]['units'].append(units)
+            ts_data[i]['headers'].append(utilities)
 
-    # Write GeoJSON dictionary formatted to file
-    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers.geojson')
-    with open(file_name, 'w') as f:
-        json.dump(geojson, indent=4, fp=f)
-    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers-meta.json')
-    with open(file_name, 'w') as f:
-        json.dump(metadata, indent=4, fp=f)
-    file_name = os.path.join(utils.OUTPUT_DIR, 'consumers-timeseries.json')
-    with open(file_name, 'w') as f:
-        json.dump(ts_json, indent=4, fp=f)
+    # Create lists for all files to write incl. respective folder and filenames
+    geojson = [geojson_colleges_points, geojson_colleges_polygons, geojson_colleges_buildings,
+               geojson_departments_polygons, geojson_departments_buildings]
+    metadata = [metadata_colleges_points, metadata_colleges_polygons, metadata_colleges_buildings,
+                metadata_departments_polygons, metadata_departments_buildings]
+    ts_data = [ts_data_colleges_points, ts_data_colleges_polygons, ts_data_colleges_buildings,
+               ts_data_departments_polygons, ts_data_departments_buildings]
+    ts_json = []
+    for ts in ts_data:
+        # Retrieve all time series data for collected 'ts_data' from Java TimeSeriesClient at once
+        ts = TSClient.convertToJSON(ts['ts'], ts['id'], ts['units'], ts['headers'])
+        # Make JSON file readable in Python
+        ts = json.loads(ts.toString())
+        ts_json.append(ts)
+    folder = ['2D', '2D', '3D', '2D', '3D']
+    filename = ['colleges-2', 'colleges-1', 'colleges-1', 'departments-1', 'departments-1']
 
-
-
-
+    # Write all output files
+    for i in range(len(geojson)):
+        # Write GeoJSON dictionaries formatted to file
+        file_name = os.path.join(utils.OUTPUT_DIR, folder[i], filename[i] + '.geojson')
+        with open(file_name, 'w') as f:
+            json.dump(geojson[i], indent=4, fp=f)
+        file_name = os.path.join(utils.OUTPUT_DIR, folder[i], filename[i] + '-meta.json')
+        with open(file_name, 'w') as f:
+            json.dump(metadata[i], indent=4, fp=f)
+        file_name = os.path.join(utils.OUTPUT_DIR, folder[i], filename[i] + '-timeseries.json')
+        with open(file_name, 'w') as f:
+            json.dump(ts_json[i], indent=4, fp=f)

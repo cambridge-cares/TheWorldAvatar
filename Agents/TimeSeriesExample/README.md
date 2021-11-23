@@ -113,7 +113,7 @@ Once the requirements have been addressed, the Image can be built using the foll
 In Docker Desktop:
 1. Select "Container/Apps" in left panel
 2. Select container "dtvf_example_visualisation" in docker stack "docker"
-3. Select `Open in Browser` to open visualisation in Browser
+3. Select `Open in Browser` to open visualisation in Browser (in case the visualisation does not automatically show up, please refresh the page)
 
 
 

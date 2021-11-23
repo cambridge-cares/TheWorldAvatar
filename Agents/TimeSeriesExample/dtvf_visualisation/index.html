@@ -72,14 +72,12 @@
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
-			"Mock Data #1": "./data/set-1",
-			"Mock Data #2": "./data/set-2",
-			"Cluster Test": "./data/set-3"
+			"Utility consumers": "./queried_data",
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Cluster Test", function() {
+		manager.readMetadata("Utility consumers", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});

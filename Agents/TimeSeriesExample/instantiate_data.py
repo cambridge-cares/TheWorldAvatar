@@ -96,7 +96,6 @@ consumer3 = {'consumer': 'Department of Chemical Engineering and Biotechnology',
                          '.2093866345562#0.08566467664441715#10.0#52.209397526580155#0.08574539811222488#10.0#52'
                          '.209382870570835#0.08595387605914039#10.0#52.209464415411276#0.0859698442124265#10.0#52'
                          '.20940935053205#0.08670907445906056#10.0',
-             'building_height': 10.0,
              'times': [(dt.datetime.now() - dt.timedelta(minutes=30*i)).strftime(utils.FORMAT) for i in range(n)],
              'timeseries': {
                  'Electricity': [float(random.randrange(10, 50000)/10) for i in range(n)],
