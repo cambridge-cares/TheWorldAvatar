@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -321,6 +322,58 @@ public class TimeSeriesRDBClient<T> {
 	 */
 	public TimeSeries<T> getTimeSeries(List<String> dataIRI) {
 		return getTimeSeriesWithinBounds(dataIRI, null, null);
+	}
+	
+	/**
+	 * returns a TimeSeries object with the latest value of the given IRI
+	 * @param dataIRI
+	 */
+	public TimeSeries<T> getLatestData(String dataIRI) {
+		connect();
+		
+		try {
+			Table<?> tsTable = getTimeseriesTable(dataIRI);
+			String columnName = getColumnName(dataIRI);
+			
+			Field<Object> dataField = DSL.field(DSL.name(columnName));
+
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
+			.orderBy(timeColumn.desc()).limit(1).fetch();
+			
+			List<T> timeValues = queryResult.getValues(timeColumn);
+			List<?> dataValues = queryResult.getValues(dataField);
+			
+			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
+		} catch (Exception e) {
+			disconnect();
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+		}
+	}
+	
+	/**
+	 * returns a TimeSeries object with the oldest value of the given IRI
+	 * @param dataIRI
+	 */
+	public TimeSeries<T> getOldestData(String dataIRI) {
+		connect();
+		
+		try {
+			Table<?> tsTable = getTimeseriesTable(dataIRI);
+			String columnName = getColumnName(dataIRI);
+			
+			Field<Object> dataField = DSL.field(DSL.name(columnName));
+
+			Result<? extends Record> queryResult = context.select(timeColumn, dataField).from(tsTable).where(dataField.isNotNull())
+			.orderBy(timeColumn.asc()).limit(1).fetch();
+			
+			List<T> timeValues = queryResult.getValues(timeColumn);
+			List<?> dataValues = queryResult.getValues(dataField);
+			
+			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
+		} catch (Exception e) {
+			disconnect();
+			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
+		}
 	}
 	
 	/**
