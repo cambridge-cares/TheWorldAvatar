@@ -61,7 +61,7 @@
 		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
 		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
 		// domains via your MapBox account settings.
-		let mapboxAPI = "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw";
+		let mapboxAPI = "";
 
 	</script>
 
@@ -88,15 +88,11 @@
 			var map = manager.createMap("map");
 
 			// Provide some default content for the side panel
-			let title = `Example Visualisation`;
+			let title = `Example Visualisation of Queried Data`;
 			let content = `
 					This section of default text should be used to give a brief introduction on the purpose of the
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
 					some junk content to pad it out has been added.
-					<br/><br/>
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mi turpis, posuere a nibh in, tincidunt
-					mollis eros. Cras imperdiet ornare enim, et luctus augue iaculis at. Ut tellus ex, auctor non sagittis quis,
-					feugiat vitae turpis. Cras efficitur, arcu sed condimentum mattis, quam est tempus lectus, eu faucibus.
 				`;
 			let legend = `	
 					<b>Example Legend:</b>
