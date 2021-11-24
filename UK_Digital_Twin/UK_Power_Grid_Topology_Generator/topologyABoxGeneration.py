@@ -160,6 +160,7 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
     g.add((URIRef(root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))  
     
+    # construct the aggragatedBusList
     aggragatedBusList = []
     for busInfo in busInfoArrays:
         if busInfo[5] != None or str(busInfo[5]).strip('\n') != topo_info.headerBusTopologicalInformation[5].strip('\n'):  

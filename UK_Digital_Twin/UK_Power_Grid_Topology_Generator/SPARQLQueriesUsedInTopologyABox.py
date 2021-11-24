@@ -239,10 +239,14 @@ def queryWithinRegion(LACode, ONS_Endpoint_label):
             res = json.loads(performQuery(ONS_Endpoint_label, queryStr))
             print('queryWithinRegion is done')
             if len(res) != 1:
-                raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+                # raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+                print('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+                return None
             RegionOrCountry = [str(res[0]['LACode_Region'])]
         else :
-            raise Exception('The given LA coed is ', LACode,' which is not within any region of England.')
+            # raise Exception('The given LA coed is ', LACode,' which is not within any region of England.')
+            print('The given LA coed is ', LACode,' which is not within any region of England.')
+            return None
     elif LACode[0] == 'W':
         RegionOrCountry = ['W92000004', 'W08000001']    
     elif LACode[0] == 'S':
@@ -250,7 +254,9 @@ def queryWithinRegion(LACode, ONS_Endpoint_label):
     elif LACode[0] == 'N':
         RegionOrCountry = ['N92000002', 'N07000001']
     else:     
-        raise Exception('The given area does not have a within region, please check the given LA code.')    
+        # raise Exception('The given area does not have a within region, please check the given LA code.')   
+        print('The given area does not have a within region, please check the given LA code.')
+        return None
     return RegionOrCountry
   
 ###########################ENDENDEND#################################################################################################
