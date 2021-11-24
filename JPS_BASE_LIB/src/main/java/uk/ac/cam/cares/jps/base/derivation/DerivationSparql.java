@@ -89,9 +89,6 @@ public class DerivationSparql{
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		}
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
@@ -121,12 +118,76 @@ public class DerivationSparql{
 	    	modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
 	    }
 	    
-	    modify.prefix(p_time,p_derived,p_agent);
-	    
 	    storeClient.setQuery(modify.prefix(p_time,p_derived,p_agent).getQueryString());
 	    storeClient.executeUpdate();
 	    
 	    return derivedQuantity;
+	}
+	
+	/**
+	 * same method as above but this creates multiple derivations in 1 go
+	 * @param entities
+	 * @param agentIRI
+	 * @param agentURL
+	 * @param inputs
+	 */
+	List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		if (entitiesList.size() != agentIRIList.size()) {
+			String errmsg = "Size of entities list is different from agent IRI list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		if (entitiesList.size() != agentURLList.size()) {
+			String errmsg = "Size of entities list is different from agent URL list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		if (entitiesList.size() != inputsList.size()) {
+			String errmsg = "Size of entities list is different from inputs list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		List<String> derivations = new ArrayList<>();
+		
+		for (int i = 0; i < entitiesList.size(); i++) {
+			List<String> entities = entitiesList.get(i);
+			List<String> inputs = inputsList.get(i);
+			String agentIRI = agentIRIList.get(i);
+			String agentURL = agentURLList.get(i);
+			// create a unique IRI for this new derived quantity
+			String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+			derivations.add(derivedQuantity);
+			Iri derived_iri = iri(derivedQuantity);
+			
+			modify.insert(derived_iri.isA(Derivation));
+			
+			// add belongsTo
+			for (String entity : entities) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			}
+			
+			// link inputs
+			for (String input : inputs) {
+				modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+			}
+			
+			// link to agent
+			// here it is assumed that an agent only has one operation
+			modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+			String operation_iri = derivednamespace + UUID.randomUUID().toString();
+			// add agent url
+			modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
+			modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
+		}
+		
+		modify.prefix(p_derived,p_agent);
+		storeClient.executeUpdate(modify.getQueryString());
+		return derivations;
 	}
 	
 	/**
@@ -143,9 +204,6 @@ public class DerivationSparql{
 		
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		}
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
@@ -180,6 +238,72 @@ public class DerivationSparql{
 	    storeClient.executeUpdate();
 	    
 	    return derivedQuantity;
+	}
+	
+	/**
+	 * same method as above but initialise a large number of derivations in 1 go
+	 * @param entitiesList
+	 * @param agentIRIList
+	 * @param agentURLList
+	 * @param inputsList
+	 */
+	List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		if (entitiesList.size() != agentIRIList.size()) {
+			String errmsg = "Size of entities list is different from agent IRI list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		if (entitiesList.size() != agentURLList.size()) {
+			String errmsg = "Size of entities list is different from agent URL list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		if (entitiesList.size() != inputsList.size()) {
+			String errmsg = "Size of entities list is different from inputs list";
+			LOGGER.fatal(errmsg);
+			throw new JPSRuntimeException(errmsg);
+		}
+		
+		List<String> derivations = new ArrayList<>();
+		
+		for (int i = 0; i < entitiesList.size(); i++) {
+			List<String> entities = entitiesList.get(i);
+			List<String> inputs = inputsList.get(i);
+			String agentIRI = agentIRIList.get(i);
+			String agentURL = agentURLList.get(i);
+			// create a unique IRI for this new derived quantity
+			String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+			derivations.add(derivedQuantity);
+			Iri derived_iri = iri(derivedQuantity);
+			
+			modify.insert(derived_iri.isA(DerivationWithTimeSeries));
+			
+			// add belongsTo
+			for (String entity : entities) {
+				modify.insert(iri(entity).has(belongsTo, derived_iri));
+			}
+			
+			// link inputs
+			for (String input : inputs) {
+				modify.insert(derived_iri.has(isDerivedFrom, iri(input)));
+			}
+			
+			// link to agent
+			// here it is assumed that an agent only has one operation
+			modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
+			String operation_iri = derivednamespace + UUID.randomUUID().toString();
+			// add agent url
+			modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
+			modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
+		}
+		
+		modify.prefix(p_derived,p_agent);
+		storeClient.executeUpdate(modify.getQueryString());
+		return derivations;
 	}
 	
 	/**
