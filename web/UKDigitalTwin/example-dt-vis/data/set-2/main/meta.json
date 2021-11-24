@@ -1,0 +1,17 @@
+{
+    "dataSets": [
+        {
+            "name": "point-layer",
+            "dataType": "geojson",
+            "dataLocation": "points.geojson",
+            "locationType": "point"
+        },
+        {
+            "name": "line-layer",
+            "dataType": "geojson",
+            "dataLocation": "lines.geojson",
+            "locationType": "line",
+            "minzoom": 10
+        }
+    ]
+}

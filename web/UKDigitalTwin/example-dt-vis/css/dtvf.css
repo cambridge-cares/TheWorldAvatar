@@ -527,3 +527,11 @@ h1, h2, h3, h4, h5, h6 {
 	display: table-cell;
 	vertical-align: middle;
   }
+
+  #developerContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	padding: 10px;
+	margin-top: 10px;
+	min-height: 100px;
+}

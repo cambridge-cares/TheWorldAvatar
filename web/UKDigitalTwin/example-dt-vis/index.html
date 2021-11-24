@@ -24,7 +24,7 @@
 	-->
 	
 	<!-- Framework CSS -->
-	<link href='./css/digital_twin_style.css' rel='stylesheet' />
+	<link href='./css/dtvf.css' rel='stylesheet' />
 	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
 
 	<!-- Framework JS -->
@@ -72,14 +72,15 @@
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
-			"Mock Data #1": "./data/set-1",
-			"Mock Data #2": "./data/set-2",
-			"Cluster Test": "./data/set-3"
+			"Mixed": "./data/set-1",
+			"Zoom Limited": "./data/set-2",
+			"Clustered": "./data/set-3"
+			//"Raster Tile Data": "./data/set-4"
 		};
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Cluster Test", function() {
+		manager.readMetadata("Mixed", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -88,6 +89,7 @@
 		function startUp() {
 			// Create the MapBox map
 			var map = manager.createMap("map");
+			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
 			let title = `Example Visualisation`;
@@ -120,27 +122,17 @@
 
 			map.on('style.load', function() {
 				console.log("INFO: A new style has been loaded.");
+				var imagePromises = [];
 
-				// Re-register icon images used by this visualisation
-				let winURL = window.location;
-				let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
-
-				var iconHandler = new IconHandler(map);
-				EXAMPLE_ICONS.forEach(relativeURL => {
-					let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
-					iconHandler.registerIcon(imageURL);
-				});
-
-				// Re-add the sky layer
-				manager.setSkyDetails();
-
-				// Re-plot the previously selected group
-				if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-					manager.plotGroup(DT.currentGroup, false);
-				}
- 
-				// On first load only
 				if(!loadedOnce) {
+					// Load and cache icon images used by this visualisation
+					let winURL = window.location;
+					let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+					EXAMPLE_ICONS.forEach(relativeURL => {
+						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+						imagePromises.push(iconHandler.loadIcon(imageURL));
+					});
+
 					// This callback will be fired when a final group is selected in the dropdowns
 					let selectCallback = function(selectedGroups) {
 						manager.plotGroup(selectedGroups, false);
@@ -148,10 +140,28 @@
 
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
-					manager.plotFirstGroup();
 
+					// Only enable this during testing, remove the line for production visualisations
+					manager.showDeveloperControls();
+					
 					loadedOnce = true;
 				}
+				
+				// Add all cached icons to the new style. Using promises here
+				// ensures we only do this AFTER all images are loaded.
+				Promise.all(imagePromises).then(() => {
+					iconHandler.addAllIcons();
+
+					// Re-add the sky layer
+					manager.setSkyDetails();
+
+					// Re-plot the previously selected group
+					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+						manager.plotGroup(DT.currentGroup, false);
+					} else {
+						manager.plotFirstGroup();
+					}
+				});
 			});
 		}
 	</script>

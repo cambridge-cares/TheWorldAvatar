@@ -1,21 +1,16 @@
 [
     {
-        "groupName": "Connections",
+        "groupName": "Locations",
         "layers": [               
             {
-                "layerName": "Asset Owner #1 Connections",
+                "layerName": "Points",
                 "defaultState": "visible",
-                "layerIDs": ["assets-1-connections"]
+                "layerIDs": ["point-layer"]
             },
             {
-                "layerName": "Asset Owner #2 Connections",
+                "layerName": "Lines",
                 "defaultState": "visible",
-                "layerIDs": ["assets-2-connections"]
-            },
-            {
-                "layerName": "Interasset Connections",
-                "defaultState": "visible",
-                "layerIDs": ["inter-asset-connections"]
+                "layerIDs": ["line-layer"]
             }
         ]
     }

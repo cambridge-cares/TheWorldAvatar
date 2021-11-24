@@ -32,6 +32,7 @@ class ControlHandler {
 			</div>
 			<div id="layerContainer">TREE-GOES-HERE</div>
 			<div id="selectionsContainer"></div>
+			<div id="developerContainer"></div>
 		</div>
 	`;
 
@@ -94,6 +95,50 @@ class ControlHandler {
 		let selectString = this.buildDropdown(this._registry.meta);
 		document.getElementById("selectionsContainer").innerHTML += selectString;
 	}
+
+	/**
+	 * Shows debugging info, should only be used for developers during testing.
+	 */
+	showDeveloperControls() {
+		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block";
+
+		let self = this;
+		this._map.on("move", function() {
+			self.#updateDeveloperControls();
+		});
+		this._map.on("zoom", function() {
+			self.#updateDeveloperControls();
+		});
+		this._map.on("rotate", function() {
+			self.#updateDeveloperControls();
+		});
+		this._map.on("pitch", function() {
+			self.#updateDeveloperControls();
+		});
+
+		this.#updateDeveloperControls();
+	}
+
+	/**
+	 * Update developer info panel.
+	 */
+	#updateDeveloperControls() {
+		let developerInfo = document.getElementById("developerContainer");
+
+		let lng = this._map.getCenter().lng.toFixed(5)
+		let lat = this._map.getCenter().lat.toFixed(5)
+
+		developerInfo.innerHTML = `
+			<b>Developer Info:</b><br/>
+			Longitude: ` + lng + `<br/>
+			Latitude : ` + lat + `<br/>
+			Zoom: ` + this._map.getZoom().toFixed(2) + `<br/>
+			Pitch: ` + this._map.getPitch().toFixed(2) + `<br/>
+			Bearing: ` + this._map.getBearing().toFixed(2) + `
+		`;
+	}
+
 
 	/**
 	 * 

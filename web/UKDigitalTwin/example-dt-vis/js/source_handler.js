@@ -100,7 +100,7 @@ class SourceHandler {
         let options = {
             "type": "geojson",
             "data": location,
-            "generateId": false,
+            "generateId": false
         };
 
         // Add clustering settings if present in dataSet definition
@@ -128,13 +128,13 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "raster",
-            "url": location,
+            "tiles": [location],
             "attribution": "cmcl"
         };
 
         // Add additional raster settings if present in dataSet definition
         if(dataSet["bounds"]) options["bounds"] = dataSet["bounds"];
-        if(dataSet["tiles"]) options["tiles"] = dataSet["tiles"];
+        //if(dataSet["tiles"]) options["tiles"] = dataSet["tiles"];
         if(dataSet["tileSize"]) options["tileSize"] = dataSet["tileSize"];
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];

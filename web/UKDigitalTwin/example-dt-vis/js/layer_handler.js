@@ -50,6 +50,10 @@ class LayerHandler {
             case "line":
                 this.#addLineLayer(dataSet);
                 break;
+
+            case "raster":
+                this.#addRasterLayer(dataSet);
+                break;
         }
 
         // Order the layers so that points are on top.
@@ -123,11 +127,10 @@ class LayerHandler {
     #addPointLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
-
         let backupFillColor = this.#getRandomColor();
         let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
-        this._map.addLayer({
+        let options = {
 			id: layerName,
 			source: sourceName,
             metadata: {
@@ -145,8 +148,11 @@ class LayerHandler {
 				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
                 'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 1.0]
 			}
-		});
+		};
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
+        this._map.addLayer(options);
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
@@ -170,11 +176,13 @@ class LayerHandler {
             type: 'symbol',
             layout: {
                 "icon-image": ["get", "icon-image"],
-                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.35, 16, 1.0],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 18, 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true
             }
         };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // If clustering is on, then we want separate layers for clustered and non-clustered points.
         // The above can become the unclustered points, and we'll deal with the clusterd points in a
@@ -182,8 +190,8 @@ class LayerHandler {
         // Note that it is possible to handle clustering within a single layer, but this seems to
         // cause strange behaviour in MapBox.
         if(eval(dataSet["cluster"])) {
-             options["filter"] = ['!', ['has', 'point_count']];
-             this.#addClusterLayers(dataSet);
+            options["filter"] = ['!', ['has', 'point_count']];
+            this.#addClusterLayers(dataSet);
         }
         this._map.addLayer(options);
 
@@ -213,7 +221,7 @@ class LayerHandler {
             filter: ['has', 'point_count'],
             layout: {
                 "icon-image": ["get", "icon-image"],
-                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.35, 16, 1.0],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 18, 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true,
                 'text-field': '{point_count_abbreviated}',
@@ -227,6 +235,8 @@ class LayerHandler {
                 'text-color':  ["case", ["has", "text-color"], ["get", "text-color"], "#000000"]
             }
         };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         this._map.addLayer(options);
         console.log("INFO: Added special '" + layerName + "' cluster layer to MapBox.");
@@ -241,10 +251,9 @@ class LayerHandler {
     #addFillLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
-
         let backupFillColor = this.#getRandomColor();
 
-        this._map.addLayer({
+        let options = {
 			id: layerName,
 			source: sourceName,
             metadata: {
@@ -263,7 +272,11 @@ class LayerHandler {
                     0.33
                 ]
 			}
-		});
+		};
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        this._map.addLayer(options);
         
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
@@ -278,8 +291,8 @@ class LayerHandler {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
-        this._map.addLayer({
-			id: layerName,
+        let options = {
+            id: layerName,
 			source: sourceName,
             metadata: {
                 provider: "cmcl"
@@ -300,7 +313,11 @@ class LayerHandler {
                     ["case", ["has", "fill-extrusion-color"], ["get", "fill-extrusion-color"], "hsl(190, 25%, 25%)"]
                 ]
 			}
-		});
+        };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        this._map.addLayer(options);
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
@@ -314,12 +331,11 @@ class LayerHandler {
     #addLineLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
-
         let backupColor = this.#getRandomColor();
 
         // Visible layer
-        this._map.addLayer({
-			id: layerName,
+        let options = {
+            id: layerName,
 			source: sourceName,
             metadata: {
                 provider: "cmcl"
@@ -330,12 +346,15 @@ class LayerHandler {
 			},
 			paint: {
                 'line-color': ["case", ["has", "line-color"], ["get", "line-color"], backupColor],
-                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.5],
-                'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3]
+                'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3],
+                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.5]
 			}
-		});
+        };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        this._map.addLayer(options);
 
-        // Interaction layer
+        // Transparent interaction layer
         this._map.addLayer({
 			id: layerName + "_clickable",
 			source: sourceName,
@@ -344,7 +363,7 @@ class LayerHandler {
             },
 			type: 'line',
 			layout: {
-				'visibility': 'visible'
+				'visibility': "visible"
 			},
 			paint: {
                 'line-color': "#000000",
@@ -355,6 +374,36 @@ class LayerHandler {
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         console.log("INFO: Added special '" + layerName + "' interaction layer to MapBox.");
+        return layerName;
+    }
+
+    /**
+     * Adds a layer to create rasters for location data.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+      #addRasterLayer(dataSet) {
+        let layerName = dataSet["name"];
+        let sourceName = dataSet["name"];
+
+        // Visible layer
+        let options = {
+            id: layerName,
+			source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+			type: 'raster',
+			layout: {
+				'visibility': 'visible'
+			}
+        };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        this._map.addLayer(options);
+
+        console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
     

@@ -303,6 +303,13 @@ class DigitalTwinManager {
 	}
 
 	/**
+	 * Shows debugging info, should only be used for developers during testing.
+	 */
+	showDeveloperControls() {
+		if(this._controlHandler != null) this._controlHandler.showDeveloperControls();
+	}
+
+	/**
 	 * Rebuilds the tree based on the tree specification file AND the current
 	 * state of the map.
 	 */

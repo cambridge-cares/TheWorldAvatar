@@ -7,6 +7,9 @@ class IconHandler {
     // Mapbox map
     _map;
 
+    //
+    _loadedImages = [];
+
     /**
      * 
      * @param {*} map 
@@ -17,24 +20,43 @@ class IconHandler {
 
     /**
      * 
-     * @param {*} imageURL absolute image URL
+     * @param {*} imageURL 
+     * @param {*} callback 
      */
-    registerIcon(imageURL) {
+    loadIcon(imageURL) {
         var imageName = imageURL.replace(/^.*[\\\/]/, '');
         imageName = imageName.replace(/\.[^/.]+$/, "");
 
-        this._map.loadImage(
-            imageURL,
-            (error, image) => {
-                if(error) {
-                    console.log("ERROR: Could not load image at URL " + imageURL);
-                    throw error;
-                } else {
-                    this._map.addImage(imageName, image);
-                    console.log("INFO: Image '" + imageName + "' has been added to the map.");
+        return new Promise((resolve, reject) => {
+
+            this._map.loadImage(
+                imageURL,
+                (error, image) => {
+                    if(error) {
+                        console.log("ERROR: Could not load image at URL " + imageURL);
+                        reject(error);
+                    } else {
+                        this._loadedImages[imageName] = image;
+                        console.log("INFO: Image '" + imageName + "' has been loaded.");
+                        resolve();
+                    }
                 }
-            }
-        )
-}
+            )
+
+        });
+    }
+
+    /**
+     * 
+     */
+    addAllIcons() {    
+        for(const [key, value] of Object.entries(this._loadedImages)) {
+            var imageName = key.replace(/^.*[\\\/]/, '');
+            imageName = imageName.replace(/\.[^/.]+$/, "");
+
+            this._map.addImage(imageName, value);
+            console.log("INFO: Image '" + imageName + "' has been added.");
+        }
+    }
 }
 // End of class.

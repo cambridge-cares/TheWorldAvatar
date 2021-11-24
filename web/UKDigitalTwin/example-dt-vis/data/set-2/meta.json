@@ -1,16 +1,16 @@
 {
     "global": {
         "defaultCenter": [0.39713859558105463, 52.75354199742786],
-        "defaultZoom": 12,
-        "defaultBearing": 0,
+        "defaultZoom": 8,
+        "defaultBearing":0,
         "defaultPitch": 0
     },
     "local": {
         "label": "Group",
         "groups": [
             {
-                "name": "Group #0",
-                "directory": "group-0"
+                "name": "Main",
+                "directory": "main"
             }
         ]
     }
