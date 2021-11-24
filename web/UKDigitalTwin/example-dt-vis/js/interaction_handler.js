@@ -293,7 +293,6 @@ class InteractionHandler {
 
         var self = this;
         Promise.all(timePromises).then((values) => {
-
             if(values == null || values.length == 0 || values[0] == null) {
                 // No time series data
                 document.getElementById("time-series-container").innerHTML = `
@@ -303,8 +302,9 @@ class InteractionHandler {
                 `;
             } else {
                 // Data present, show it
+                var flatEntries = [].concat(...values);
                 document.getElementById("time-series-container").innerHTML = "";
-                self._timeseriesHandler.parseData(values);
+                self._timeseriesHandler.parseData(flatEntries);
                 self._timeseriesHandler.showData("time-series-container");
             }
         });
@@ -374,7 +374,6 @@ class InteractionHandler {
 
                         // Load file asynchronously
                         var promise = $.getJSON(metaFile).then(json => {
-
                             // Once read, only return the node with the matching feature id
                             for(var i = 0; i < json.length; i++) {
                                 if(json[i]["id"] == feature.id) {
@@ -421,13 +420,15 @@ class InteractionHandler {
 
                         // Load file asynchronously
                         var promise = $.getJSON(timeFile).then(json => {
+                            var timeSeriesNodes = [];
 
                             // Once read, only return the node with the matching feature id
                             for(var i = 0; i < json.length; i++) {
                                 if(json[i]["id"] == feature.id) {
-                                    return json[i];
+                                    timeSeriesNodes.push(json[i]);
                                 }
                             }
+                            return timeSeriesNodes;
                         });
                     
                         // Pool promises
