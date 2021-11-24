@@ -113,7 +113,7 @@ Once the requirements have been addressed, the Image can be built using the foll
 In Docker Desktop:
 1. Select "Container/Apps" in left panel
 2. Select container "dtvf_example_visualisation" in docker stack "docker"
-3. Select `Open in Browser` to open visualisation in Browser (in case the visualisation does not automatically show up, please refresh the page)
+3. Select `Open in Browser` to open visualisation in Browser (in case the visualisation does not automatically show up, please refresh the page. If nothing is shown on any web browser, you can open the visualisation at [http://localhost:65080/])
 
 
 
@@ -122,3 +122,4 @@ In Docker Desktop:
 [TimeSeriesClient]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries
 [py4jps]: https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/python_wrapper
 [properties file]: resources/ts_example.properties
+[http://localhost:65080/]: http://localhost:65080/
