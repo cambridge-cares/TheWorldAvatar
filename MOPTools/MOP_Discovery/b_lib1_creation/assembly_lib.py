@@ -19,19 +19,27 @@ def cbu_gbu_lib(model):
             cbu2name = item['CBU2_Modularity'] + "-" + item['CBU2_Planarity']
             cbu1number = item['CBU1_Number']
             cbu2number = item['CBU2_Number']
-            cbu1type = item['CBU1_Type']
-            cbu2type = item['CBU2_Type']
             mop_symmetry = item['Symmetry']             
             if item['CBU1'] in cbu1lib:
                 pass
-            else:
-                cbu1lib.append(item['CBU2'])
-                cbu1libtype.append({"CBU":item['CBU1'], "BindingSite":cbu1type})   
+            if item['CBU1'] not in cbu1lib:
+                cbu1lib.append(item['CBU1'])
+                cbu1libtype.append({"CBU":item['CBU1'],
+                    "BindingSite":item['CBU1_Type'],
+                    "SpeciesIRI":item['CBU1_SpeciesIRI'],
+                    "OuterCoordination":item['CBU1_OuterCoordination'],
+                    "CBU1_Direction":item['CBU1_Direction'],
+                    "FunctionalGroup":item['CBU1_FunctionalGroup']})   
             if item['CBU2'] in cbu2lib:
                 pass
-            else: 
+            if item['CBU2'] not in cbu2lib: 
                 cbu2lib.append(item['CBU2'])
-                cbu2libtype.append({"CBU":item['CBU2'], "BindingSite":cbu2type})
+                cbu2libtype.append({"CBU":item['CBU2'],
+                    "BindingSite":item['CBU2_Type'],
+                    "SpeciesIRI":item['CBU2_SpeciesIRI'],
+                    "OuterCoordination":item['CBU2_OuterCoordination'],
+                    "Direction":item['CBU2_Direction'],
+                    "FunctionalGroup":item['CBU2_FunctionalGroup']})  
         cbu1libout = json.dumps(cbu1lib, indent=4)
         cbu2libout = json.dumps(cbu2lib, indent=4)
         cbu1libtypeout = json.dumps(cbu1libtype, indent=4)

@@ -1,8 +1,11 @@
 from a_kg_overview.local_manager import kgoverview
 from b_lib1_creation.local_manager import lib1_Creation
+from d_cbu_overlap.cbuoverlap import cbuoverlap
+
 def workflow():
     output_kgoverview = kgoverview() # the output of kg overview is [0] List_AM_GBU and [1] List_preR2
-    lib1_Creation(output_kgoverview) # this function is running and creating the first batch of files
+    lib1_Creation(output_kgoverview[0]) # this function is running and creating the first batch of files
+    cbuoverlap(output_kgoverview[1])
     return output_kgoverview
     #list_AM_GBU = output_kgoverview[0]
     #list_preR2 =  output_kgoverview[1]

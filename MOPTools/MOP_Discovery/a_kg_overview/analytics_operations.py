@@ -91,7 +91,7 @@ def assemblyModelGroups(listofMOPs):
     list_preR2 = mergeR2(list_pregbus, list_gbus)
     preR2_json(list_preR2) 
     print(list_preR2)
-    return uniques
+    return uniques, list_pregbus
 
 def mergeR2(list_pregbus, list_gbus):
     list_preR2 = {}
@@ -118,22 +118,38 @@ def order(cbuA, cbuB):
         gbu['CBU1_Modularity'] = cbuA['Modularity']
         gbu['CBU1_Planarity'] = cbuA['Planarity']
         gbu['CBU1_Type'] = cbuA['CBUType']
+        gbu['CBU1_SpeciesIRI'] = cbuA['speciesIRI']
+        gbu['CBU1_OuterCoordination'] = cbuA['OuterCoordination']
+        gbu['CBU1_FunctionalGroup'] = cbuA['CBUFunctionalGroup']
+        gbu['CBU1_Direction'] = cbuA['Direction']    
         gbu['CBU2'] = cbuB['CBUFormula']
         gbu['CBU2_Number'] = cbuB['NumberValue']
         gbu['CBU2_Modularity'] = cbuB['Modularity']
         gbu['CBU2_Planarity'] = cbuB['Planarity']
         gbu['CBU2_Type'] = cbuB['CBUType']
+        gbu['CBU2_SpeciesIRI'] = cbuB['speciesIRI']
+        gbu['CBU2_OuterCoordination'] = cbuB['OuterCoordination']
+        gbu['CBU2_FunctionalGroup'] = cbuB['CBUFunctionalGroup']
+        gbu['CBU2_Direction'] = cbuB['Direction']
     else:
         gbu['CBU1'] = cbuB['CBUFormula']
         gbu['CBU1_Number'] = cbuB['NumberValue']
         gbu['CBU1_Modularity'] = cbuB['Modularity']
         gbu['CBU1_Planarity'] = cbuB['Planarity']
         gbu['CBU1_Type'] = cbuB['CBUType']
+        gbu['CBU1_SpeciesIRI'] = cbuB['speciesIRI']
+        gbu['CBU1_OuterCoordination'] = cbuB['OuterCoordination']
+        gbu['CBU1_FunctionalGroup'] = cbuB['CBUFunctionalGroup']
+        gbu['CBU1_Direction'] = cbuB['Direction']    
         gbu['CBU2'] = cbuA['CBUFormula']
         gbu['CBU2_Number'] = cbuA['NumberValue']
         gbu['CBU2_Modularity'] = cbuA['Modularity']
         gbu['CBU2_Planarity'] = cbuA['Planarity']
         gbu['CBU2_Type'] = cbuA['CBUType']
+        gbu['CBU2_SpeciesIRI'] = cbuA['speciesIRI']
+        gbu['CBU2_OuterCoordination'] = cbuA['OuterCoordination']
+        gbu['CBU2_FunctionalGroup'] = cbuA['CBUFunctionalGroup']
+        gbu['CBU2_Direction'] = cbuA['Direction']
     return gbu
 
 def createAssemblyString(assemblyModel):

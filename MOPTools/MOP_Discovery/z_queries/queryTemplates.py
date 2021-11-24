@@ -30,7 +30,7 @@ def mop_GBUs(mopIRI):
 	PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 	PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-    SELECT ?mopIRI ?MOPFormula ?CBUFormula ?NumberValue ?Planarity ?Modularity ?Symmetry ?MOPReference ?CBUType
+    SELECT ?mopIRI ?MOPFormula ?CBUFormula ?NumberValue ?Planarity ?Modularity ?Symmetry ?MOPReference ?CBUType ?speciesIRI ?OuterCoordination ?CBUFunctionalGroup ?Direction
     WHERE
     {   
     ?mopIRI OntoMOPs:hasMOPFormula ?MOPFormula .
@@ -47,6 +47,9 @@ def mop_GBUs(mopIRI):
     ?CBU OntoMOPs:isFunctioningAs ?GBU .
     ?CBU OntoMOPs:hasCBUFormula ?CBUFormula .
     ?CBU OntoMOPs:hasBindingSite ?CBUBindingSite .
+    ?CBU OntoMOPs:hasBindingDirection ?BindingDirection .
+    ?BindingDirection rdf:type ?Direction.
+    ?CBUBindingSite OntoMOPs:hasOuterCoordinationNumber ?OuterCoordination .
     ?CBUBindingSite rdfs:label ?CBUFunctionalGroup.  
     ?CBUBindingSite rdf:type ?CBUType.
     ?CBU OntoSpecies:hasUniqueSpecies ?speciesIRI .

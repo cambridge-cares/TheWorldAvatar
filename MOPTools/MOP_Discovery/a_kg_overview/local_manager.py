@@ -5,5 +5,5 @@ from a_kg_overview.analytics_operations import mopsoverview
 def kgoverview():
     listofMOPs = mopsoverview()
     uniques = assemblyModelGroups(listofMOPs)
-    analytics1_csv(uniques)
+    analytics1_csv(uniques[0])
     return uniques
