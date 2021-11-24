@@ -20,14 +20,16 @@ Initialising any new time series using the `TimeSeriesClient` creates all requir
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
-kb : http://www.theworldavatar.com/kb/ontotimeseries/
+ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+kb  : http://www.theworldavatar.com/kb/ontotimeseries/
 ```
 
 ### Instantiation in KG ###
 Upon instantiation of a time series for any `<entity>` in the KG, the following triples will be created:
 ```
 <entity>  ts:hasTimeSeries  kb:TimeSeries_UUID
+kb:TimeSeries_UUID  rdf:type  ts:TimeSeries
 kb:TimeSeries_UUID  ts:hasRDB  <Postgres URL>
 kb:TimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
 ```

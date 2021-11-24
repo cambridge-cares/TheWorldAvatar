@@ -1,0 +1,28 @@
+{
+    "dataSets": [
+        {
+            "name": "colleges-1",
+            "dataType": "geojson",
+            "dataLocation": "colleges-1.geojson",
+            "locationType": "fill",
+            "metaFiles": ["colleges-1-meta.json"],
+            "timeseriesFiles": ["colleges-1-timeseries.json"]
+        },
+        {
+            "name": "colleges-2",
+            "dataType": "geojson",
+            "dataLocation": "colleges-2.geojson",
+            "locationType": "point",
+            "metaFiles": ["colleges-2-meta.json"],
+            "timeseriesFiles": ["colleges-2-timeseries.json"]
+        },
+        {
+            "name": "departments-1",
+            "dataType": "geojson",
+            "dataLocation": "departments-1.geojson",
+            "locationType": "fill",
+            "metaFiles": ["departments-1-meta.json"],
+            "timeseriesFiles": ["departments-1-timeseries.json"]
+        }
+    ]
+}
