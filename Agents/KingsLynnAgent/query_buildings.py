@@ -1,9 +1,10 @@
 import json
-
-from geojson_rewind import rewind
 import numpy as np
 import pandas as pd
 import pyproj
+import re
+
+from geojson_rewind import rewind
 from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLExceptions
 
 import geojson_creator
@@ -15,10 +16,8 @@ from custom_errors import *
 # Specify (local) Blazegraph properties
 server = 'localhost'
 port = '9999'
-namespace = 'kings-lynn'
-namespace = 'interior_rings'
-#namespace = "geospatial_offset_analysis_epsg27700"
-#namespace = 'geospatial_offset_analysis_ocg-crs84'
+#namespace = 'kings-lynn'
+namespace = 'churchill'
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
 PREFIXES = {
@@ -35,7 +34,11 @@ CRSs = {
 }
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+n = 100
+
+# Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
+# 3D data is required to identify the ground polygon of buildings to be visualised)
+output_dimension = 3
 
 # Specify output CRS: Both GeoJSON and the TWA Mapbox plotting framework require "OGC::CRS84", see
 # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
@@ -96,10 +99,10 @@ def get_buildings(number=None):
         subquery = ''
 
     # Construct query
-    # Consider only surface polygons with provided geometries/polygons (some only refer to "told blank nodes")
+    # Consider only surface polygons with provided geometries/polygon data (some only refer to "told blank nodes")
     query = create_sparql_prefix('ocgl') + \
             create_sparql_prefix('xsd') + \
-            '''SELECT ?bldg ?surf ?geom \
+            '''SELECT DISTINCT ?bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom \
                WHERE { ?surf ocgl:cityObjectId ?bldg ; \
        		                 ocgl:GeometryType ?geom . \
        		   FILTER (!isBlank(?geom)) ''' + \
@@ -149,7 +152,7 @@ def execute_query(query, query_endpoint):
     return results
 
 
-def get_coordinates(polygon_data, transformation, dimensions=3):
+def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3):
     '''
         Extracts and transforms polygon coordinates as retrieved from Blazegraph
         to suit GeoJSON polygon requirements (and target CRS)
@@ -157,38 +160,48 @@ def get_coordinates(polygon_data, transformation, dimensions=3):
         - elevation remains in original CRS
 
         Arguments:
-            polygon_data - polygon data as returned from Blazegraph
+            polygon_data - list of all polygon coordinates as retrieved from Blazegraph, i.e. with coordinates of
+                           potential linear rings simply appended to coordinates of exterior rings
+            polygon_datatype - data type of 'polygon_data' as retrieved from Blazegraph
             transformation - pyproj transformation object
-            dimensions - number of dimension of output data as integer
+            dimensions - number of dimension of output data as integer [2 or 3]
 
         Returns:
-            List of polygon coordinates as required for GeoJSON objects
+            List of polygon coordinates as required for GeoJSON objects (incl. interior rings)
             Minimum elevation (Z value) of polygon surface
             Maximum elevation (Z value) of polygon surface
     '''
 
-    # Initialise output and input coordinate collections
-    coordinates = []
-    coordinate_str = polygon_data.split("#")
-    coordinate_str = [float(c) for c in coordinate_str]
+    # Initialise output coordinate collection
+    polygon = []
+    z_min, z_max = None, None
 
-    # If all input coordinates have proper (X,Y,Z) values ...
-    if len(coordinate_str) % 3 == 0:
+    # Retrieve list of polygon's linear rings
+    linear_rings, available_dimensions = split_polygon_data(polygon_data, polygon_datatype)
 
-        # Initialise minimum and maximum elevation of polygon
-        z_min = np.inf
-        z_max = -np.inf
+    # Check whether required output dimension for data is covered in available data
+    if available_dimensions < dimensions:
+        raise ValueError('Specified dimension of coordinates exceeds native format of stored data.')
+
+    # Iterate through all linear rings
+    for ring in linear_rings:
+        # Initialise ring's coordinate list
+        coordinates = []
 
         # Iterate through all polygon points
-        nodes = int(len(coordinate_str) / 3)
+        nodes = int(len(ring) / available_dimensions)
         for i in range(nodes):
-            node = i * 3
+            node = i * available_dimensions
             # Transform (x,y) values - required for correct plotting in Mapbox
-            x, y = transformation.transform(coordinate_str[node], coordinate_str[node + 1])
-            # Keep z value as Ordnance Survey Newlyn height - more tangible value for flooding analysis, etc.
-            z = coordinate_str[node + 2]
-            # Append (x,y,z) to output list
-            coordinates.append([x, y, z])
+            x, y = transformation.transform(ring[node], ring[node + 1])
+            if available_dimensions == 2:
+                # Append (x,y) to output list
+                coordinates.append([x, y])
+            elif available_dimensions == 3:
+                # Keep z value as Ordnance Survey Newlyn height - more tangible value for flooding analysis, etc.
+                z = ring[node + 2]
+                # Append (x,y,z) to output list
+                coordinates.append([x, y, z])
 
         # Check if first and last polygon vertices are equivalent and fix if necessary
         if coordinates[0] != coordinates[-1]:
@@ -197,9 +210,11 @@ def get_coordinates(polygon_data, transformation, dimensions=3):
 
         # Convert to numpy array
         coordinates = np.array(coordinates)
-        # Extract min and max Z values of polygon
-        z_min = min(coordinates[:, 2])
-        z_max = max(coordinates[:, 2])
+
+        if not z_min and not z_max and dimensions == 3:
+            # Extract min and max Z values of polygon
+            z_min = min(coordinates[:, 2])
+            z_max = max(coordinates[:, 2])
 
         # Potentially trim dimensions from 3D to 2D by dropping Z value
         coordinates = coordinates[:, :dimensions]
@@ -207,11 +222,75 @@ def get_coordinates(polygon_data, transformation, dimensions=3):
         # Convert coordinates back to regular list
         coordinates = coordinates.tolist()
 
-    # ... otherwise print error
-    else:
-        print('Erroneous polygon coordinates:', coordinate_str)
+        # Append linear ring to polygon
+        polygon.append(coordinates)
 
-    return coordinates, z_min, z_max
+    return polygon, z_min, z_max
+
+
+def split_polygon_data(polygon_data, polygon_datatype):
+    '''
+        Transforms coordinate string describing the polygon (as retrieved from Blazegraph) into a list of linear rings
+        - exterior ring as first list element
+        - potential interior rings as further list elements
+
+        Arguments:
+            polygon_data - list of all polygon coordinates as retrieved from Blazegraph, i.e. with coordinates of
+                           potential linear rings simply appended to coordinates of exterior rings
+            polygon_datatype - data type of 'polygon_data' as retrieved from Blazegraph
+
+        Returns:
+            List of linear rings to describe polygon [[exterior ring], [interior ring1], [interior ring2], ... ]
+            dimension of polygon coordinates data
+    '''
+
+    # Initialise list of linear rings
+    rings = []
+
+    # Check whether polygon_datatype indicates any interior rings, i.e. a datatype like
+    # "...\POLYGON-3-45" indicates 3 coordinates per point and an exterior ring consisting of (45/3=)15 points
+    # "...\POLYGON-3-45-15" indicates a polygon with an interior ring consisting of (15/3=)5 points and an exterior
+    #                       ring consisting of (15-5=)10 points
+    # "...\POLYGON-3-45-15-15" indicates a polygon with two interior rings consisting of (15/3=)5 points each and an
+    #                          exterior ring consisting of (15-5-5=)5 points
+    match = re.search('\w+-\d+-\d+-\d+$', polygon_datatype)
+
+    while match:
+        # Extract number of points in (last) interior ring
+        match = match.group()
+        m = match.rfind('-')
+        n = len(match)
+        inner = int(match[m + 1:n])
+        # Extract respective part of the coordinate string
+        switch = [m.start() for m in re.finditer('#', polygon_data)][-inner]
+
+        # Append string representing (last) interior ring to overall rings list
+        rings.append(polygon_data[switch + 1:])
+
+        # Update coordinate string and data type for next iteration (strip already extracted interior ring data)
+        polygon_datatype = polygon_datatype[:-(n-m)]
+        polygon_data = polygon_data[:switch]
+        match = re.search('\w+-\d+-\d+-\d+$', polygon_datatype)
+
+    # Add exterior linear ring and reverse element order to start with linear ring
+    rings.append(polygon_data)
+    rings = rings[::-1]
+
+    # Extract dimension from polygon datatype
+    match = re.search('\w+-\d+-\d+$', polygon_datatype)
+    match = match.group()
+    m = match.find('-')
+    n = match.rfind('-')
+    dimension = int(match[m + 1:n])
+
+    # Split coordinate strings into number lists and check alignment with specified dimension
+    for i in range(len(rings)):
+        split = rings[i].split("#")
+        if len(split) % 3 != 0:
+            raise IndexError('Number of linear ring coordinates does not match specified dimension.')
+        rings[i] = [float(c) for c in split]
+
+    return rings, dimension
 
 
 if __name__ == '__main__':
@@ -239,6 +318,7 @@ if __name__ == '__main__':
         # Create own dictionary for each surface geometry (to form own row in later DataFrame)
         row = {'building': s['bldg']['value'],
                'surface': s['surf']['value'],
+               'datatype': s['datatype']['value'],
                'geometry': s["geom"]["value"]}
         rows_list.append(row)
     # Create DataFrame from dictionary list
@@ -279,33 +359,42 @@ if __name__ == '__main__':
         # Initialise list of surface geometry coordinates (polygons)
         all_polygons = []
         # Initialise minimum and maximum elevation of building
-        zmin = np.inf
-        zmax = -np.inf
+        base_elevation = np.inf
+        top_elevation = -np.inf
+
         # Iterate through all surface geometries
         for s in surf['surface'].unique():
+            # Extract list of linear rings forming this surface polygon
+            polytype = surf[surf['surface'] == s]['datatype'].values[0]
+            polydata = surf[surf['surface'] == s]['geometry'].values[0]
+
             # Transform coordinates for surface geometry
-            coords, z_min, z_max = get_coordinates(surf[surf['surface'] == s]['geometry'].values[0], trans)
+            polygon, zmin, zmax = get_coordinates(polydata, polytype, trans, output_dimension)
             # Append transformed polygon coordinate list as sublist to overall list for building
-            all_polygons.append(coords)
+            all_polygons.append(polygon)
             # Potentially update min and max elevation
-            if z_min < zmin:
-                zmin = z_min
-            if z_max > zmax:
-                zmax = z_max
+            if zmin < base_elevation:
+                base_elevation = zmin
+            if zmax > top_elevation:
+                top_elevation = zmax
 
         # Prepare GeoJSON as required by Digital Twin Visualisation Framework (DTVF):
         # Each building is represented by 2D base polygon only (ground and building elevation only properties)
         for p in all_polygons:
-            poly = np.array(p)
+            # Extract only exterior ring per polygon to check for base polygon
+            poly = np.array(p[0])
             # Define small uncertainty range to account for conversion inaccuracies
             eps = 0.001
-            # Check if all Z values of polygon are the same and (aprrox.) equal to building elevation
+            # Check if all Z values of polygon are the same and (approx.) equal to building elevation
             if (poly[:, 2] == poly[:, 2][0]).all() and \
                ((poly[:, 2][0] >= (zmin - eps)) and (poly[:, 2][0] <= (zmin + eps))):
-                # Trim dimensions from 3D to 2D by dropping Z value
-                poly = poly[:, :2]
-                # Create list to allow for composite ground surfaces
-                base_polygon = [poly.tolist()]
+                # Once found, get entire base polygon (incl. interior rings) and convert to 2D
+                base_polygon = [[]]
+                for poly in p:
+                    # Trim dimensions from 3D to 2D by dropping Z value
+                    poly = np.array(poly)[:, :2]
+                    # Create list to allow for composite ground surfaces
+                    base_polygon[0].append(poly.tolist())
 
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
@@ -315,14 +404,14 @@ if __name__ == '__main__':
                          # Building ground elevation
                          'fill-extrusion-base': round(zmin, 3),
                          # Building height
-                         'fill-extrusion-height': round(zmax-zmin, 3)
+                         'fill-extrusion-height': round(zmax, 3)
                          }
 
         # Specify metadata properties to consider
         metadata_props = {'id': feature_id,
                           'Building': str(b),
                           'Ground elevation (m)': round(zmin, 3),
-                          'Building height (m)': round(zmax-zmin, 3)
+                          'Building height (m)': round(zmax, 3)
                           }
 
         # Append building/feature to GeoJSON FeatureCollection

@@ -1,7 +1,5 @@
 # Creates dictionary for GeoJSON output
 
-# TODO: include proper handling for interior rings
-
 def initialise_geojson(crs_name='urn:ogc:def:crs:OGC::CRS84'):
     '''
         Initialises dictionary for GeoJSON output
@@ -43,25 +41,31 @@ def add_geometry(coordinates):
     if len(coordinates) == 1:
         # Add single Polygon geometry member if coordinates list contains only coordinates for one surface geometry
         geometry = {'type': 'Polygon',
-                    'coordinates': coordinates
+                    'coordinates': coordinates[0]
                     }
     else:
         # Add MultiPolygon geometry member if coordinates list contains coordinates for multiple surface geometries
         geometry = {'type': 'MultiPolygon',
-                    'coordinates': [coordinates]
+                    'coordinates': coordinates
                     }
 
     return geometry
 
 
-def add_feature(feature_id, properties, coordinates):
+def add_feature(feature_id, properties, polygon_coordinates):
     '''
         Returns single GeoJSON feature for overall GeoJSON FeatureCollection
 
         Arguments:
             feature_id - numerical feature identifier
             properties - feature properties as dictionary
-            coordinates - list of coordinates in the form [[[x1,y1,z1],...], [[x2,y2,z2],...], ...]
+            coordinates - list of polygon coordinates (incl. interior rings) in the form
+                          [ [ [[x1,y1,z1], ... ],     poly1 exterior ring
+                              [[x1,y1,z1], ... ],     poly1 interior ring1
+                              ... ],
+                            [ [[x2,y2,z2], ... ],     poly2 exterior ring
+                              ... ],                  poly2 interior ring1
+                          ]
 
         Returns:
             GeoJSON Feature object as dictionary
@@ -70,7 +74,7 @@ def add_feature(feature_id, properties, coordinates):
     feature = {'type': 'Feature',
                'id': int(feature_id),
                'properties': properties,
-               'geometry': add_geometry(coordinates)
+               'geometry': add_geometry(polygon_coordinates)
                }
 
     return feature
