@@ -212,11 +212,12 @@ def queryRegionBoundaries(ONS_Endpoint_label):
       r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
     return res_england_region
 
+# This function is designed to find the region which the given area within in 
 def queryWithinRegion(LACode, ONS_Endpoint_label):
     LACode = str(LACode)
     typeCode = int(LACode[1] + LACode[2])
     if LACode[0] == 'E':
-        if not typeCode >= 11:
+        if not typeCode >= 11: # E11, E12 and other places whose code is larger than 11 are not included in any areas
             queryStr = """
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -234,37 +235,22 @@ def queryWithinRegion(LACode, ONS_Endpoint_label):
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }
             """%LACode
+            print('remoteQuery WithinRegion of a given LA code')
+            res = json.loads(performQuery(ONS_Endpoint_label, queryStr))
+            print('queryWithinRegion is done')
+            if len(res) != 1:
+                raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
+            RegionOrCountry = [str(res[0]['LACode_Region'])]
         else :
-            raise Exception('The given LA coed is ' + LACode + ' which is not within any region of England.')
-        
-        
-        
-    # queryStr = """
-    #     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    #     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    #     PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-    #     PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-    #     PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
-    #     SELECT DISTINCT ?LACode_Region
-    #     WHERE
-    #     {
-    #     ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
-    #     ?area <http://publishmydata.com/def/ontology/foi/within> ?Region .
-    #     ?Region ons:status "live" .
-    #     { ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION 
-    #     { ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
-    #     { ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .} UNION
-    #     { ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} 
-    #     ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
-    #     }
-    #     """%LACode
-    print('remoteQuery WithinRegion of a given LA code')
-    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))
-    print('queryWithinRegion is done')
-    
-    if len(res) != 1:
-        raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
-    RegionOrCountry = str(res[0]['LACode_Region'])
+            raise Exception('The given LA coed is ', LACode,' which is not within any region of England.')
+    elif LACode[0] == 'W':
+        RegionOrCountry = ['W92000004', 'W08000001']    
+    elif LACode[0] == 'S':
+        RegionOrCountry = ['S92000003', 'S04000001']      
+    elif LACode[0] == 'N':
+        RegionOrCountry = ['N92000002', 'N07000001']
+    else:     
+        raise Exception('The given area does not have a within region, please check the given LA code.')    
     return RegionOrCountry
   
 ###########################ENDENDEND#################################################################################################
@@ -465,7 +451,7 @@ if __name__ == '__main__':
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
     
-    res = queryWithinRegion('E12000007', 'ons')
+    # res = queryWithinRegion('E12000007', 'ons')
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-001"
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-002"
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006"
