@@ -1,9 +1,0 @@
-{
-    "label": "Timestep",
-    "groups": [
-        {
-            "name": "Timestep #1",
-            "directory": "time-0"
-        }
-    ]
-}
