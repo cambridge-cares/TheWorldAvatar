@@ -61,6 +61,10 @@ public class DerivationClient {
     public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
     	List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
     	LOGGER.info("Instantiated derivations " + derivations);
+    	
+    	// add timestamp to each derivation
+    	this.sparqlClient.addTimeInstance(derivations);
+    	
     	return derivations;
     }
     
@@ -84,6 +88,10 @@ public class DerivationClient {
     public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
     	List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, agentURLList, inputsList);
     	LOGGER.info("Instantiated derivations with time series " + derivations);
+    	
+    	// add timestamp to each derivation
+    	this.sparqlClient.addTimeInstance(derivations);
+    	
     	return derivations;
     }
     
@@ -95,6 +103,15 @@ public class DerivationClient {
     public void addTimeInstance(String entity) {
     	this.sparqlClient.addTimeInstance(entity);
     	LOGGER.info("Added timestamp to <" + entity + ">");
+    }
+    
+    /**
+     * same method as above but in bulk
+     * @param entities
+     */
+    public void addTimeInstance(List<String> entities) {
+    	this.sparqlClient.addTimeInstance(entities);
+    	LOGGER.info("Added timestamps to <" + entities + ">");
     }
     
     /**
