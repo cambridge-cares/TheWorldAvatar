@@ -31,13 +31,25 @@ public class DerivedQuantitySparqlTest {
 	private String entity2 = "http://entity2"; 
 	private String entity3 = "http://entity3";
     private List<String> entities = Arrays.asList(entity1,entity2);
+    
+    private String entity4 = "http://entity4"; 
+	private String entity5 = "http://entity5"; 
+	private List<String> entities2 = Arrays.asList(entity4,entity5);
+    
     private String input1 = "http://input1"; 
     private String input2 = "http://input2"; 
     private List<String> inputs = Arrays.asList(input1,input2);
+    
+    private String input3 = "http://input3"; 
+    private List<String> inputs2 = Arrays.asList(input3);
+    
     private String derivedAgentIRI = "http://derivedagent1";
     private String derivedAgentURL = "http://localhost:8080/derivedagent1";
     private String derivedAgentIRI2 = "http://derivedagent2";
     private String derivedAgentURL2 = "http://localhost:8080/derivedagent2";
+    
+    private List<String> agentIRIList = Arrays.asList(derivedAgentIRI,derivedAgentIRI2);
+    private List<String> agentURLList = Arrays.asList(derivedAgentURL,derivedAgentURL2);
     
 	@Before
     public void initialiseSparqlClient() {
@@ -238,6 +250,66 @@ public class DerivedQuantitySparqlTest {
 			Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
 					ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
 					ResourceFactory.createResource(derived)));
+		}
+	}
+	
+	@Test
+	public void testBulkCreateDerivations() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
+		List<List<String>> inputsList = Arrays.asList(inputs,inputs2);
+		
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "Derivation");
+		
+		List<String> derivations = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
+		for (int i = 0; i < derivations.size(); i++) {
+			List<String> entities = entitiesList.get(i);
+			List<String> inputs = inputsList.get(i);
+			
+			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
+			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
+			
+			for (String entity : entities) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+						ResourceFactory.createResource(derivations.get(i))));
+			}
+			
+			for (String input : inputs) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(input)));
+			}
+		}
+	}
+	
+	@Test
+	public void testBulkCreateDerivationsWithTimeSeries() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
+		List<List<String>> inputsList = Arrays.asList(inputs,inputs2);
+		
+		Resource derivationType = ResourceFactory.createResource(DerivationSparql.derivednamespace + "DerivationWithTimeSeries");
+		
+		List<String> derivations = devClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, agentURLList, inputsList);
+		for (int i = 0; i < derivations.size(); i++) {
+			List<String> entities = entitiesList.get(i);
+			List<String> inputs = inputsList.get(i);
+			
+			Assert.assertEquals(derivationType, testKG.getIndividual(derivations.get(i)).getRDFType());
+			Assert.assertEquals(agentURLList.get(i), devClient.getAgentUrl(derivations.get(i)));
+			
+			for (String entity : entities) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(entity),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "belongsTo"),
+						ResourceFactory.createResource(derivations.get(i))));
+			}
+			
+			for (String input : inputs) {
+				Assert.assertTrue(testKG.contains(ResourceFactory.createResource(derivations.get(i)),
+						ResourceFactory.createProperty(DerivationSparql.derivednamespace + "isDerivedFrom"),
+						ResourceFactory.createResource(input)));
+			}
 		}
 	}
 }

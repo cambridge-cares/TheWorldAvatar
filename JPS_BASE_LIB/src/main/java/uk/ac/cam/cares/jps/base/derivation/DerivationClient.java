@@ -60,6 +60,12 @@ public class DerivationClient {
     	return createdDerivation;
     }
     
+    public List<String> bulkCreateDerivations(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+    	List<String> derivations = this.sparqlClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
+    	LOGGER.info("Instantiated derivations " + derivations);
+    	return derivations;
+    }
+    
 	/**
 	 * This method creates a new derived instance and adds the following statements
 	 * <entity> <belongsTo> <derived>, <derived> <isDerivedUsing> <agentIRI>, <derived> <isDerivedFrom> <inputsIRI>
@@ -94,6 +100,12 @@ public class DerivationClient {
     	LOGGER.debug("<" + createdDerivation + "> isDerivedFrom <" + inputsIRI + ">");
     	LOGGER.debug("<" + createdDerivation + "> isDerivedUsing <" + agentIRI + "> located at " + agentURL);
     	return createdDerivation;
+    }
+    
+    public List<String> bulkCreateDerivationsWithTimeSeries(List<List<String>> entitiesList, List<String> agentIRIList, List<String> agentURLList, List<List<String>> inputsList) {
+    	List<String> derivations = this.sparqlClient.bulkCreateDerivationsWithTimeSeries(entitiesList, agentIRIList, agentURLList, inputsList);
+    	LOGGER.info("Instantiated derivations with time series " + derivations);
+    	return derivations;
     }
     
     /**
