@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.bio;
 
+import jdk.nashorn.internal.parser.JSONParser;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.bio.json.parser.JSonRequestParser;
 
@@ -46,14 +48,21 @@ public class CrossDomainQuery extends JSONObject{
         String lowerBounds                          = JSonRequestParser.getLOWER_LIMITS(jsonObject.toString());
         String equipmentCost                        = JSonRequestParser.getEQUIP_COST(jsonObject.toString());
 
-        JSONArray geoSpatialQueryResult             = runQuery(buildGeoSpatialQuery(lowerBounds,upperBounds), queryEndpointGeo);
+        String georesult              = AccessAgentCaller.query("singaporeEPSG24500", buildGeoSpatialQuery(lowerBounds, upperBounds));
+        JSONObject georesultjson = new JSONObject(georesult);
+        String geoSpatialResultString = georesultjson.getString("result");
+        JSONArray geoSpatialQueryResult = new JSONArray(geoSpatialResultString);
 
         for (int i = 0; i < geoSpatialQueryResult.length(); i++) {
             JSONObject geoS = geoSpatialQueryResult.getJSONObject(i);
             String geoIRIs = geoS.getString("IRIs");
 
+            String chemresult              = AccessAgentCaller.query("sgbiodieselplants", buildChemEngQuery(equipmentCost, bioIRIs));
+            JSONObject chemresultjson = new JSONObject(chemresult);
+            String chemEngQueryResultString = chemresultjson.getString("result");
+            JSONArray chemEngQueryResult = new JSONArray(chemEngQueryResultString);
 
-            JSONArray chemEngQueryResult = runQuery(buildChemEngQuery(equipmentCost,bioIRIs), queryEndpointChem);
+
             for (int j = 0; j< chemEngQueryResult.length(); j++) {
                 JSONObject chemS = chemEngQueryResult.getJSONObject(j);
                 String chemIRIs = chemS.getString("IRIs");
@@ -180,13 +189,13 @@ public class CrossDomainQuery extends JSONObject{
         return chemEngQuery.toString();
     }
 
-    // Execute a query at its specified end-point
+/*    // Execute a query at its specified end-point
 
     public static JSONArray runQuery(String query,String queryEndpoint) throws SQLException{
         RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
         JSONArray queryResult      = kbClient.executeQuery(query);
         return queryResult;
-    }
+    }*/
 
 
 
