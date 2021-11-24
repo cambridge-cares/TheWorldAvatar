@@ -721,6 +721,31 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * same method as above, but update in bulk
+	 * @param entities
+	 */
+	void addTimeInstance(List<String> entities) {
+		ModifyQuery modify = Queries.MODIFY();
+			
+		for (String entity : entities) {
+			// add time stamp instance for the given entity
+			String time_instant = derivednamespace + "time" + UUID.randomUUID().toString();
+			String time_unix = derivednamespace + "time" + UUID.randomUUID().toString();
+	
+			long timestamp = 0;
+			Iri time_instant_iri = iri(time_instant);
+			Iri time_unix_iri = iri(time_unix);
+			
+			// unix time following the w3c standard
+		    modify.insert(iri(entity).has(hasTime,time_instant_iri));
+		    modify.insert(time_instant_iri.isA(InstantClass).andHas(inTimePosition, time_unix_iri));
+		    modify.insert(time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, iri("http://dbpedia.org/resource/Unix_time")));
+		}
+
+	    storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
+	}
+	
+	/**
 	 * This method removes the time instance of the given entity. 
 	 * @param kbClient
 	 * @param entity
