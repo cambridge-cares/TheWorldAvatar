@@ -2,9 +2,6 @@ package uk.ac.cam.cares.jps.base.interfaces;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
@@ -50,10 +47,4 @@ public interface JPSAgentInterface {
      * @param sparqlUpdate
      */
     void update(String targetResourceID, String sparqlUpdate);
-    
-    /**
-     * Shall implement logic to monitor the derivation that isDerivedUsing the instantiated agent.
-     * @param agentIRI
-     */
-    void monitorDerivation(String agentIRI, JPSAgent agent);
 }

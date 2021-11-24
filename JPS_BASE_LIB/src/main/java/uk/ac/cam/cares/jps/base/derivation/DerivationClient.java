@@ -13,7 +13,6 @@ import org.jgrapht.graph.DirectedAcyclicGraph;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.SetupJobInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 /**
@@ -213,29 +212,35 @@ public class DerivationClient {
 		}
 	}
 	
-	public void monitorDerivation(String agentIRI, SetupJobInterface setupJob) {
-		List<String> listOfDerivation = this.sparqlClient.getDerivations(agentIRI);
-		
-		for (String derivation : listOfDerivation) {
-			// check if the derivation is an instance of asynchronous derivation
-			if (this.sparqlClient.isDerivedAsynchronous(derivation)) {
-				if (this.sparqlClient.isRequested(derivation)) {
-					JSONObject agentInputs = new JSONObject();
-					agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
-					this.sparqlClient.markAsInProgress(derivation);
-					List<String> newDerivedIRI = setupJob.setupJob(agentInputs);
-					updateStatusAtJobCompletion(derivation, newDerivedIRI);
-				} else if (this.sparqlClient.isInProgress(derivation)) {
-					// at the moment the design is the agent just pass when it's detected as "InProgress"
-				} else if (this.sparqlClient.isFinished(derivation)) {
-					cleanUpFinishedDerivationUpdate(derivation);
-				}
-			} else {
-				// TODO ideally this should call the update or other functions in synchronous derivation function
-				LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
-			}
-		}
-    }
+//	public void monitorDerivation(String agentIRI, SetupJobInterface setupJob) {
+//		List<String> listOfDerivation = this.sparqlClient.getDerivations(agentIRI);
+//		
+//		for (String derivation : listOfDerivation) {
+//			// check if the derivation is an instance of asynchronous derivation
+//			if (this.sparqlClient.isDerivedAsynchronous(derivation)) {
+//				if (this.sparqlClient.isRequested(derivation)) {
+//					JSONObject agentInputs = new JSONObject();
+//					agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
+//					this.sparqlClient.markAsInProgress(derivation);
+//					List<String> newDerivedIRI = setupJob.setupJob(agentInputs);
+//					updateStatusAtJobCompletion(derivation, newDerivedIRI);
+//				} else if (this.sparqlClient.isInProgress(derivation)) {
+//					// at the moment the design is the agent just pass when it's detected as "InProgress"
+//				} else if (this.sparqlClient.isFinished(derivation)) {
+//					cleanUpFinishedDerivationUpdate(derivation);
+//				}
+//			} else {
+//				// TODO ideally this should call the update or other functions in synchronous derivation function
+//				LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
+//			}
+//		}
+//    }
+	
+	public JSONObject retrieveAgentInputs(String derivation, String agentIRI) {
+		JSONObject agentInputs = new JSONObject();
+		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
+		return agentInputs;
+	}
 	
 //	
 //	public void monitorDerivation(String agentIRI) {
@@ -446,7 +451,7 @@ public class DerivationClient {
 	 * @param derivation
 	 * @param newDerivedIRI
 	 */
-	private void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
+	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		// mark as Finished
 		String statusIRI = this.sparqlClient.markAsFinished(derivation);
 		// add newDerivedIRI to Finished status
@@ -457,7 +462,7 @@ public class DerivationClient {
 	 * This method cleans up the "Finished" derivation by reconnecting the new generated derived IRI with derivations and deleting all status. 
 	 * @param derivation
 	 */
-	private void cleanUpFinishedDerivationUpdate(String derivation) {
+	public void cleanUpFinishedDerivationUpdate(String derivation) {
 		// this method largely follows the part of code after obtaining the response from Agent in method updateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph)
 		// the additional part in this method (compared to the above mentioned method) is: (1) how we get newDerivedIRI; (2) we delete all triples connected to the status of the derivation
 		// in the future development, there's a potential these two methods can be merged into one
@@ -573,6 +578,9 @@ public class DerivationClient {
 	    return outOfDate;
 	}
 	
+	public boolean isDerivedAsynchronous(String derivation) {
+		return this.sparqlClient.isDerivedAsynchronous(derivation);
+	}
 	/**
 	 * returns the derivation instance linked to this entity
 	 * @param entity
@@ -582,56 +590,56 @@ public class DerivationClient {
 		return this.sparqlClient.getDerivedIRI(entity);
 	}
 
-//	/**
-//	 * Checks if the derivation status is "Requested".
-//	 * @param derivation
-//	 * @return
-//	 */
-//	public boolean isRequested(String derivation) {
-//		return DerivationSparql.isRequested(this.kbClient, derivation);
-//	}
-//
-//	/**
-//	 * Checks if the derivation status is "InProgress".
-//	 * @param derivation
-//	 * @return
-//	 */
-//	public boolean isInProgress(String derivation) {
-//		return DerivationSparql.isInProgress(this.kbClient, derivation);
-//	}
-//
-//	/**
-//	 * Checks if the derivation status is "Finished".
-//	 * @param derivation
-//	 * @return
-//	 */
-//	public boolean isFinished(String derivation) {
-//		return DerivationSparql.isFinished(this.kbClient, derivation);
-//	}
+	/**
+	 * Checks if the derivation status is "Requested".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isRequested(String derivation) {
+		return this.sparqlClient.isRequested(derivation);
+	}
 
-//	/**
-//	 * Marks the derivation status as "Requested".
-//	 * @param derivation
-//	 */
-//	public void markAsRequested(String derivation) {
-//		DerivationSparql.markAsRequested(this.kbClient, derivation);
-//	}
-//
-//	/**
-//	 * Marks the derivation status as "InProgress".
-//	 * @param derivation
-//	 */
-//	public void markAsInProgress(String derivation) {
-//		DerivationSparql.markAsInProgress(this.kbClient, derivation);
-//	}
-//
-//	/**
-//	 * Marks the derivation status as "Finished".
-//	 * @param derivation
-//	 */
-//	public void markAsFinished(String derivation) {
-//		DerivationSparql.markAsFinished(this.kbClient, derivation);
-//	}
+	/**
+	 * Checks if the derivation status is "InProgress".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isInProgress(String derivation) {
+		return this.sparqlClient.isInProgress(derivation);
+	}
+
+	/**
+	 * Checks if the derivation status is "Finished".
+	 * @param derivation
+	 * @return
+	 */
+	public boolean isFinished(String derivation) {
+		return this.sparqlClient.isFinished(derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "Requested".
+	 * @param derivation
+	 */
+	public void markAsRequested(String derivation) {
+		this.sparqlClient.markAsRequested(derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "InProgress".
+	 * @param derivation
+	 */
+	public void markAsInProgress(String derivation) {
+		this.sparqlClient.markAsInProgress(derivation);
+	}
+
+	/**
+	 * Marks the derivation status as "Finished".
+	 * @param derivation
+	 */
+	public void markAsFinished(String derivation) {
+		this.sparqlClient.markAsFinished(derivation);
+	}
 
 	/**
 	 * Checks if a derivation has status.
@@ -669,12 +677,12 @@ public class DerivationClient {
 		return this.sparqlClient.getAgentUrl(derivedQuantity);
 	}
 
-//	/**
-//	 * Gets a list of derivations that is derived using a given agent IRI.
-//	 * @param agentIRI
-//	 * @return
-//	 */
-//	public List<String> getDerivations(String agentIRI) {
-//		return DerivationSparql.getDerivations(this.kbClient, agentIRI);
-//	}
+	/**
+	 * Gets a list of derivations that is derived using a given agent IRI.
+	 * @param agentIRI
+	 * @return
+	 */
+	public List<String> getDerivations(String agentIRI) {
+		return this.sparqlClient.getDerivations(agentIRI);
+	}
 }
