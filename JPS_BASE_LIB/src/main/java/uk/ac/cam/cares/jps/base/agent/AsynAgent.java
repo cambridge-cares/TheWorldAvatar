@@ -38,25 +38,6 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
         this.devClient = new DerivationClient(storeClient);
     }
 	
-//	public void init() throws ServletException {
-//		logger.info("\n---------- Sensitivity Analysis Agent has started ----------");
-//		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
-//		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-////		RemoteStoreClient storeClient = new RemoteStoreClient();
-////    	DerivationClient devClient = new DerivationClient(storeClient);
-//		AsynAgent asynAgent = new AsynAgent();
-//		
-//		executorService.scheduleAtFixedRate(() -> {
-//			try {
-//				asynAgent.monitorDerivation("http://example/agent_iri");
-//			} catch (JPSRuntimeException e) 
-//			{e.printStackTrace();
-//			}
-//		}, 120, 120, TimeUnit.SECONDS);
-//		logger.info("\n---------- Derivation instances are being monitored  ----------");
-//		System.out.println("---------- Derivation instances are being monitored  ----------");
-//	}
-	
 	/**
      * Monitor the derivation that isDerivedUsing the agentIRI.
      * @param agentIRI
@@ -82,7 +63,6 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     			LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
     		}
     	}
-    	
     }
 
     /**
