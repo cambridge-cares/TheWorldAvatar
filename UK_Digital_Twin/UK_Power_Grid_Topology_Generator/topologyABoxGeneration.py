@@ -160,12 +160,18 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
     g.add((URIRef(root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))  
     
+    aggragatedBusList = []
+    for busInfo in busInfoArrays:
+        if busInfo[5] != None or str(busInfo[5]).strip('\n') != topo_info.headerBusTopologicalInformation[5].strip('\n'):  
+            aggragatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
+            aggragatedBusList.append(aggragatedBus)
+    
     if addEBusNodes != None:
         g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace, uk_topo)
     if addELineNodes != None:    
         g, nodeName = addELineNodes(g, numOfBus, numOfBranch, branchTopoInfoArrays, topo_info.headerBranchTopologicalInformation, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment, uk_topo)
     if addEGenNodes != None:
-        g, nodeName = addEGenNodes(g, numOfBus, numOfBranch, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo)
+        g, nodeName = addEGenNodes(g, numOfBus, numOfBranch, aggragatedBusList, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -315,7 +321,7 @@ def addELineNodes(graph, numOfBus, numOfBranch, branchTopoArray, branchTopoHeade
 
 """Add nodes represent Branches"""
 #generatorClusterFunctionName is the name of the cluster function in the class generatorCluster 
-def addEGenNodes(graph, numOfBus, numOfBranch, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo): 
+def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo): 
     print("Adding the triples of EGen of the grid topology.")
     print('#########START addEGenNodes for', numOfBus, '-bus model##############')
     nodeName = "EGen"
@@ -329,12 +335,19 @@ def addEGenNodes(graph, numOfBus, numOfBranch, generatorClusterFunctionName, Con
     #### power plant: PowerGenerator, Region, lat, lon, PrimaryFuel, GenerationTechnology ####
     res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endpoint_label))
     
+    # Map the full Bus node iri with the agrregated place (denoted with LA code)
+    if len(aggragatedBusList) != 0:
+        for aggragatedBus in aggragatedBusList:
+            for bus in res_queryBusTopologicalInformation:
+                if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggragatedBus[0]):
+                    aggragatedBus[0] = bus['Bus_node']
+    
     # create an instance of class generatorCluster
     gc = genCluster.generatorCluster()
     # get the cluster method via getattr function 
     genClusterMethod = getattr(gc, generatorClusterFunctionName)
     # pass the arrguments to the cluster method
-    bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes)
+    bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
                              
     for busGen in bus_generator_assignment_list: # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
         # build up iris
@@ -344,7 +357,7 @@ def addEGenNodes(graph, numOfBus, numOfBranch, generatorClusterFunctionName, Con
         EGen_context_locator = uk_egen_model.EGenKey + str(counter).zfill(3)
         EGen_node = EGen_namespace + EGen_context_locator
         
-        # link the generator_node, EGen_node and their PowerGenerator of the power plant
+        # Link the generator_node, EGen_node and their PowerGenerator of the power plant
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
         graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(busGen[1])))
         graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
@@ -353,7 +366,6 @@ def addEGenNodes(graph, numOfBus, numOfBranch, generatorClusterFunctionName, Con
         graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen[0])))
         # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
         graph = AddCostAttributes(graph, counter, busGen[2].split('#')[1], busGen[3].split('#')[1], modelFactorArrays, numOfBus, uk_topo)
-        
         counter += 1               
     return graph, nodeName   
 

@@ -19,7 +19,7 @@ class TopologicalInformation:
            
         """Data file header"""
         self.voltageLevel = voltageLevel
-        self.headerBusTopologicalInformation = ["BusNumber", "Region", "LocalAuthority", "x-axis", "y-axis", "Agrregated", "LACode\n"]
+        self.headerBusTopologicalInformation = ["BusNumber", "Region", "LocalAuthority", "x-axis", "y-axis", "Agrregated\n"]
         
         self.headerBranchTopologicalInformation = ["FromBus", "ToBus"] # the 400 and 275 refers tp the PARALLEL_CONNECTIONS       
         for voltage in self.voltageLevel:

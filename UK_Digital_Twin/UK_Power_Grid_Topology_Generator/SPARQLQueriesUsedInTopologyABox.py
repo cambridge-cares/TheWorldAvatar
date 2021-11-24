@@ -134,15 +134,15 @@ def queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endPoint_label):
     """
     global qres    
     if localQuery == False and endPoint_label != None: 
-        print('remoteQuery queryPowerPlantsLocatedInGB')
+        print('remoteQuery queryPowerPlantAttributes')
         res = json.loads(performQuery(endPoint_label, queryStr))
-        print('queryPowerPlantsLocatedInGB is done')
+        print('queryPowerPlantAttributes is done')
         # qres = [[ str(r['PowerGenerator']), str(r['Region']), float(r['lat']), float(r['lon']), str(r['PrimaryFuel'].split('#')[1]), \
         #          str(r['GenerationTechnology'].split('#')[1]) ] for r in res]
         return res
     
     elif ConjunctiveGraph != None and localQuery == True:  
-        print('localQuery queryPowerPlantsLocatedInGB')
+        print('localQuery queryPowerPlantAttributes')
         print('##################WARNING: The returen will be an array instead of a dictionary.###################')
         res = ConjunctiveGraph.query(queryStr)
         qres = [[ str(r[0]), str(r[1]), float(r[2]), float(r[3]), str(r[4])] for r in res]   
@@ -444,10 +444,10 @@ if __name__ == '__main__':
     #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
+    res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # print(res)
-    res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
+    # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
     
