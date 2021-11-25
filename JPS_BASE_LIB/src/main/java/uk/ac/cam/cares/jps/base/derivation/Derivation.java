@@ -32,8 +32,10 @@ public class Derivation{
 	}
 	
 	public void addEntity(Entity entity) {
-		this.entities.add(entity);
-		entity.setBelongsTo(this);
+		if (!entities.stream().anyMatch(e -> e.getIri().equals(entity.getIri()))) {
+			this.entities.add(entity);
+			entity.setBelongsTo(this);
+		}
 	}
 	
 	public List<Entity> getEntities() {
@@ -41,8 +43,10 @@ public class Derivation{
 	}
 	
 	public void addInput(Entity input) {
-		this.inputs.add(input);
-		input.setAsInput(this);
+		if (!inputs.stream().anyMatch(i -> i.getIri().equals(input.getIri()))) {
+			this.inputs.add(input);
+			input.setAsInput(this);
+		}
 	}
 	
 	public List<Entity> getInputs() {
