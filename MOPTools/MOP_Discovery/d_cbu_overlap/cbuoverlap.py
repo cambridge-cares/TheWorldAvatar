@@ -45,4 +45,8 @@ def cbuoverlap(list_pregbus):
                     originalpairs.append(ampairs)
                     mydict = {item:overlaps}
                 list_R2.update(mydict)
+        list_R2_jsonpath = FILE_PATHS['list_R2']
+        outR2 = json.dumps(list_R2)
+        jsonoutput = open(list_R2_jsonpath, 'w') 
+        jsonoutput.write(outR2)
         print(list_R2)
