@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
@@ -1107,7 +1108,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	void updateTimeStamp(String instance) {
+	long updateTimeStamp(String instance) {
 		long timestamp = Instant.now().getEpochSecond();
 		
 		// obtain time IRI through sub query
@@ -1132,6 +1133,8 @@ public class DerivationSparql{
 		
 		storeClient.setQuery(modify.getQueryString());
 		storeClient.executeUpdate();
+		
+		return timestamp;
 	}
 	
 	/** 
@@ -1314,6 +1317,82 @@ public class DerivationSparql{
 			}
 			return inputs;
 		}
+	}
+	
+	List<Derivation> getDerivations() {
+		SelectQuery query = Queries.SELECT();
+		
+		Variable derivation = query.var();
+		Variable input = query.var();
+		Variable entity = query.var();
+		Variable agentURL = query.var();
+		Variable derivationTimestamp = query.var();
+		Variable inputTimestamp = query.var();
+		Variable derivationType = query.var();
+		
+		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
+				.andHas(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), agentURL)
+				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
+				.andIsA(derivationType);
+		GraphPattern entityPattern = entity.has(belongsTo, derivation);
+		GraphPattern inputTimestampPattern = input.has(
+				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
+		
+		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType)
+		.where(derivationPattern,entityPattern,inputTimestampPattern).prefix(p_derived,p_time,p_agent);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<Derivation> derivations = new ArrayList<>();
+		List<Entity> entities = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
+			String inputIRI = queryResult.getJSONObject(i).getString(input.getQueryString().substring(1));
+			String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+			String urlString = queryResult.getJSONObject(i).getString(agentURL.getQueryString().substring(1));
+			String derivedType = queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1));
+			long derivedTimestamp = queryResult.getJSONObject(i).getLong(derivationTimestamp.getQueryString().substring(1));
+			
+			Derivation derived;
+			try {
+				derived = derivations.stream().filter(e -> e.getIri().equals(derivationIRI)).findFirst().get();
+			} catch (NoSuchElementException e) {
+				derived = new Derivation(derivationIRI,derivedType);
+				derivations.add(derived);
+			}
+			
+			 // input of this derivation
+			Entity input_entity;
+			// don't want to end up with duplicates
+			try {
+				input_entity = entities.stream().filter(e -> e.getIri().equals(inputIRI)).findFirst().get();
+			} catch (NoSuchElementException e) {
+				input_entity = new Entity(inputIRI);
+				entities.add(input_entity);
+			}
+			
+			// if it's a pure input it will have a timestamp
+			if (queryResult.getJSONObject(i).has(inputTimestamp.getQueryString().substring(1))) {
+				long input_timestamp = queryResult.getJSONObject(i).getLong(inputTimestamp.getQueryString().substring(1));
+				input_entity.setTimestamp(input_timestamp);
+			}
+			
+			Entity entity_entity;
+			try {
+				entity_entity = entities.stream().filter(e -> e.getIri().equals(entityIRI)).findFirst().get();
+			} catch (NoSuchElementException e) {
+				entity_entity = new Entity(entityIRI);
+				entities.add(entity_entity);
+			}
+			
+			// set properties of derivation
+			derived.addEntity(entity_entity);
+			derived.addInput(input_entity);
+			derived.setAgentURL(urlString);
+			derived.setTimestamp(derivedTimestamp);
+		}
+		
+		return derivations;
 	}
 	
 	/**

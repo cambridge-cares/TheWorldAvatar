@@ -186,8 +186,11 @@ public class DerivationClient {
 	public void updateDerivation(String derivedIRI) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
+		// cached data of all derivations
+		List<Derivation> derivations = this.sparqlClient.getDerivations(); 
+		Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
 		try {
-			updateDerivation(derivedIRI, graph);
+			updateDerivation(derivation, graph);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -221,13 +224,13 @@ public class DerivationClient {
 	public void updateDerivations(List<String> derivedIRIs) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+		List<Derivation> derivations = this.sparqlClient.getDerivations();
 		try {
 			for (String derivedIRI : derivedIRIs) {
-				updateDerivation(derivedIRI, graph);
+				Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
+				updateDerivation(derivation, graph);
 			}
-		} catch (
-
-		Exception e) {
+		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
@@ -525,54 +528,54 @@ public class DerivationClient {
 	 * @param instance
 	 * @param derivedList
 	 */
-	private void updateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph) {
-		// this will query the direct inputs, as well as the derived instance of any of the inputs if the input is part of a derived instance
-		List<String> inputsAndDerived = this.sparqlClient.getInputsAndDerived(instance);
+	private void updateDerivation(Derivation derivation, DirectedAcyclicGraph<String,DefaultEdge> graph) {
+		// inputs that are part of another derivation (for recursive call)
+		// don't need direct inputs here
+		List<Derivation> inputsWithBelongsTo = derivation.getInputsWithBelongsTo();
 
-		if (!graph.containsVertex(instance)) {
-			graph.addVertex(instance);
+		if (!graph.containsVertex(derivation.getIri())) {
+			graph.addVertex(derivation.getIri());
 		}
 		
-		for (String input : inputsAndDerived) {
-			if (!graph.containsVertex(input)) {
-				graph.addVertex(input);
+		for (Derivation input : inputsWithBelongsTo) {
+			if (!graph.containsVertex(input.getIri())) {
+				graph.addVertex(input.getIri());
 			}
-			if (null != graph.addEdge(instance, input)) { // will throw an error here if there is circular dependency
+			if (null != graph.addEdge(derivation.getIri(), input.getIri())) { // will throw an error here if there is circular dependency
 				// addEdge will return 'null' if the edge has already been added as DAGs can't
 				// have duplicated edges so we can stop traversing this branch.
-			updateDerivation(input, graph);
+				updateDerivation(input, graph);
 			}
 		}
 
 		// inputs required by the agent
-		List<String> inputs = this.sparqlClient.getInputs(instance);
+		List<String> inputs = derivation.getAgentInputs();
 		if (inputs.size() > 0) {
 			// at this point, "instance" is a derived instance for sure, any other instances will not go through this code
 			// getInputs queries for <instance> <isDerivedFrom> ?x
-			if (isOutOfDate(instance,inputs)) {
-				LOGGER.info("Updating <" + instance + ">");
-				LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
+			if (derivation.isOutOfDate()) {
+				LOGGER.info("Updating <" + derivation.getIri() + ">");
 				// calling agent to create a new instance
-				String agentURL = this.sparqlClient.getAgentUrl(instance);
+				String agentURL = derivation.getAgentURL();
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray(inputs);
 				requestParams.put(AGENT_INPUT_KEY, iris);
-				requestParams.put(DERIVATION_KEY, instance);
+				requestParams.put(DERIVATION_KEY, derivation.getIri());
 				
-				LOGGER.debug("Updating <" + instance + "> using agent at <" + agentURL + "> with http request " + requestParams);
+				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL + "> with http request " + requestParams);
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 				
 				LOGGER.debug("Obtained http response from agent: " + response);
 				
 				// if it is a derived quantity with time series, there will be no changes to the instances
-				if (!this.sparqlClient.isDerivedWithTimeSeries(instance)) {
+				if (!derivation.isDerivationWithTimeSeries()) {
 					// collect new instances created by agent
 					List<String> newEntities = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY).toList()
 							.stream().map(iri -> (String) iri).collect(Collectors.toList());
 
 					// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
 					// query for ?x <belongsTo> <instance>
-					List<String> entities = this.sparqlClient.getDerivedEntities(instance);
+					List<String> entities = this.sparqlClient.getDerivedEntities(derivation.getIri());
 					
 					// check if any of the old entities is an input for another derived quantity
 					// query ?x <isDerivedFrom> <entity>, <entity> a ?y
@@ -585,8 +588,8 @@ public class DerivationClient {
 					LOGGER.debug("Deleted old instances: " + Arrays.asList(entities));
 					
 					// link new entities to derived instance, adding ?x <belongsTo> <instance>
-					this.sparqlClient.addNewEntitiesToDerived(instance, newEntities);
-					LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + instance + ">");
+					this.sparqlClient.addNewEntitiesToDerived(derivation.getIri(), newEntities);
+					LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + derivation.getIri() + ">");
 					
 					if (derivedAndType.get(0).size() > 0) {
 						LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
@@ -621,8 +624,9 @@ public class DerivationClient {
 					}
 				}
 				// if there are no errors, assume update is successful
-				this.sparqlClient.updateTimeStamp(instance);
-				LOGGER.info("Updated timestamp of <" + instance + ">");
+				long newTimestamp = this.sparqlClient.updateTimeStamp(derivation.getIri());
+				derivation.setTimestamp(newTimestamp);
+				LOGGER.info("Updated timestamp of <" + derivation.getIri() + ">");
 			}
 		}
 	}
