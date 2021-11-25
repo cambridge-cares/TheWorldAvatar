@@ -258,7 +258,63 @@ def queryWithinRegion(LACode, ONS_Endpoint_label):
         print('The given area does not have a within region, please check the given LA code.')
         return None
     return RegionOrCountry
-  
+
+# This query is used to query the boundary of the GB and Northern Ireland
+def queryGBOrNIBoundary(ONS_Endpoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE
+    {
+    ?area ons:status "live" .
+    ?area rdf:type ons:Statistical-Geography .
+    { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K03> .} UNION 
+    { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
+    ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode_area .
+    ?area ons_geosparql:hasGeometry ?geometry .
+    ?geometry ons_geosparql:asWKT ?areaBoundary .
+    } GROUP BY ?LACode_area
+    """
+    print('query GBOrNIBoundary')
+    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    print('queryGBOrNIBoundary is done')
+    # clear the symbols in the query results
+    for r in res:
+      for key in r.keys():
+          if '\"^^' in  r[key]:
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+    for r in res:
+      if len(r["Geo_InfoList"]) == 0: 
+          raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
+      elif "***" in r['Geo_InfoList']:
+          r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
+      r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
+    return res         
+
+def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    PREFIX foi: <http://publishmydata.com/def/ontology/foi/>
+    ASK  
+    {
+    ?areaToBeChecked <http://publishmydata.com/def/ontology/foi/code> "%s" .
+    ?areaGiven <http://publishmydata.com/def/ontology/foi/code> "%s" .
+    ?areaToBeChecked foi:within ?areaGiven .
+    }
+    """%(str(LACode_toBeCheck), str(givenLACode))
+    print('query ifWithin condition')
+    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    print('queryifWithin is done')
+    res = res[0]['ASK']
+    return res
 ###########################ENDENDEND#################################################################################################
 
 # query the bus node iri and its located region
@@ -450,13 +506,13 @@ if __name__ == '__main__':
     #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
+    # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # print(res)
     # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
-    
+    # res = queryGBOrNIBoundary('ons')
     # res = queryWithinRegion('E12000007', 'ons')
     # FromBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-001"
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-002"
@@ -464,7 +520,9 @@ if __name__ == '__main__':
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 10, 14, FromBus_iri, ToBus_iri, False)
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 29, 99, FromBus_iri, ToBus_iri, False)
-    print(res, len(res))
+    
+    # res = queryifWithin('E12000007', 'K03000001', 'ons')
+    print(res, len(res), type(res))
     
    
    
