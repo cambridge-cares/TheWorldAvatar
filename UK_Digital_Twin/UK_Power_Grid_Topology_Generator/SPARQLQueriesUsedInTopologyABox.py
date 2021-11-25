@@ -131,6 +131,7 @@ def queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endPoint_label):
     
     ?powerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?PP_lat_lon .
     }
+    # LIMIT 200
     """
     global qres    
     if localQuery == False and endPoint_label != None: 
@@ -506,7 +507,7 @@ if __name__ == '__main__':
     #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
+    res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # print(res)
     # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
@@ -522,7 +523,8 @@ if __name__ == '__main__':
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 29, 99, FromBus_iri, ToBus_iri, False)
     
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
-    print(res, len(res), type(res))
+    # print(res, len(res), type(res))
+    print(res)
     
    
    
