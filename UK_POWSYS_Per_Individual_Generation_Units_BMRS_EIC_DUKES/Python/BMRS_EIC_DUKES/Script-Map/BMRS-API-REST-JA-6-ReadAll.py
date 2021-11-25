@@ -125,6 +125,14 @@ def run_query(Key, Year, Month, Day, Period):
     
     return IDOutput
 
+def str0_2(value):
+    #Converts the day or month int to a string of length 2. Thus, 12 -> "12", and 1 -> "01", the leading 0 is important.
+    #This function thus performs a similar role as str(), but also can add the 0 at the start, and is applied to length 2 instances.
+    #Must use for day or month, but use for period is optional, as length 1 and 2 is accepted by the API format the period, but not the month or day. 
+    value = str(value)
+    if len(value) == 1:
+        value = "0"+value
+    return value
 
 def empty_query_response(liveGeneratorData):
     #See if there are a few outputs recieved. If not, this should not replace the old data.
@@ -132,10 +140,49 @@ def empty_query_response(liveGeneratorData):
         return 0 #It is NOT empty.
     return 1 #It is empty
 
+def check_valid_time(Key, Year, Month, Day, Period):
+    #Very similar to the Primary Function (live_power), but does not proceed to proces the data...
+    #... instead, it only checks if data for a given time was recieved.
+    #Returns 0 if data is not recieved, and 1 if it was. 
+    liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
+    if empty_query_response(liveGeneratorData):
+        #See if anything was recieved in this query.
+        return 0
+    return 1
+
+def incriment_time(TryYear, TryMonth, TryDay, TryPeriod):
+    #Incriment the checked time by 1 period.
+    TryPeriod += 1 #1 for a 1 period increase, in testing make this 48 to go up in days. 
+    if TryPeriod > 48:
+        #Have incrimented to a new day. 
+        TryPeriod = 1
+        date = datetime(TryYear, TryMonth, TryDay)
+        date += timedelta(days=1)
+        TryYear = int(date.year)
+        TryMonth = int(date.month)
+        TryDay = int(date.day)
+    return TryYear, TryMonth, TryDay, TryPeriod
+
+def find_recent_time(Key, Year, Month, Day, Period):
+    #Keep incrimenting (not in excess of the current day), to try to find the most recent time since the one given as a starting point (Year, Month, Day Period).
+    TryYear = int(Year)
+    TryMonth = int(Month)
+    TryDay = int(Day)
+    TryPeriod = int(Period)
+    today = datetime.today() #Loop breaks if it tries to look past this date, as data won't exist for the future, given that it notes past data. 
+    while ((check_valid_time(Key, str(TryYear), str0_2(TryMonth), str0_2(TryDay), str0_2(TryPeriod)) == 1) and (today > datetime(TryYear, TryMonth, TryDay))):
+        #This time works, so accept it. 
+        Year = str(TryYear)
+        Month = str0_2(TryMonth)
+        Day = str0_2(TryDay)
+        Period = str0_2(TryPeriod)
+        #Incriment the tried time again.
+        TryYear, TryMonth, TryDay, TryPeriod = incriment_time(TryYear, TryMonth, TryDay, TryPeriod)
+    return Year, Month, Day, Period
 
 
 ###Primary Function###
-def live_power(ExcelName, Key, Year, Month, Day, Period):
+def live_power(ExcelName, Key, Year, Month, Day, Period, Search):
     #The first input is the name of the excel spreadsheet to use.
     #The Key is the API key for BMRS. 
     #The other are for the time (
@@ -143,10 +190,19 @@ def live_power(ExcelName, Key, Year, Month, Day, Period):
         #Month, eg. 01 (two characters, the first being a zero if it is <10, and a number, not the name of the month),
         #Day, eg. 01 (two characters, the first being a zero if it is <10, this being the day into the month, so 1-31),
         #Period, eg. 01 (could be 1 or two characters, as using a zero if it is <10 is optional).  The period is the half hour into the day, from 1-48.
-    #The same time is used for the whole query. 
+        #Search (0 or 1), if set to 0, the only time queried will be the one given. If it is 1, it will continue to try until it obtains the most recent time (incrimenting by periods).
+
+    #As only a length of 2 is accepted for the day or month, (period can be either), i.e. "01" used instead of "1" ("20" would stay as "20"), we can make sure they are converted if they aren't already in this form.
+    Month = str0_2(Month)
+    Day = str0_2(Day)
+    Period = str0_2(Period) #Optional step, but do it for consistency. 
+    
+    #The same time is used for the whole query.
+    if Search == 1:
+        Year, Month, Day, Period = find_recent_time(Key, Year, Month, Day, Period)
     liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
     if empty_query_response(liveGeneratorData):
-        #See if anything was recieved in this query. 
+        #See if anything was recieved in this query.
         return 0
     
     #Read DUKES Stations from Excel
@@ -186,6 +242,5 @@ def live_power(ExcelName, Key, Year, Month, Day, Period):
 
 ###Main Function###
 if __name__ == "__main__":
-    #NEED KEY
-    live_power('Input.xlsx', '', '2021', '01', '01', '01')
+    live_power('Input.xlsx', '', '2021', '11', '14', '46', 0)
 

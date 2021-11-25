@@ -15,13 +15,14 @@ These columns are:
 Year, Month, Day, Period, Output
 
 ## Inputs
-The script takes two inputs (both the primary function, and running it through __main__ with args). These are the name of the excel spreadsheet, and a sensitivity value. So: 
+The script runs the Primary Function. The Primary Function's inputs are: 
 - Excel Spreadsheet Name (contents similar to the notepad example noted above). 
-- Key. 
-- Year. 
-- Month. 
-- Day. 
-- Period. 
+- Key (API Key for BMRS). 
+- Year (The year to search or begin searching). 
+- Month (The year to search or begin searching). 
+- Day (The year to search or begin searching). 
+- Period (The year to search or begin searching). 
+- Search (0 or 1. Whether to just look into the given date (0 - don't search ahead), or to try sequential future dates (1 - search ahead). If set to 1 this will incriment in periods and see if more recent data exists. If so, it will use that date. This search begins from the above provided date, and will terminate if the current date is reached. 
 
 The Key is the BMRS API key to access the website. 
 The Time is the time of the query is broken down into the Year, Month, Day, and Period (eg. 2021, 01, 01, 01). The year is four characters. The Month, and Day are two characters (starting with a 0 if the value is <10). Finally the period is the half hour into the given day (1-48). Starting with a 0 if it is <10 is optional. 
