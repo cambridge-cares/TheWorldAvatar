@@ -211,8 +211,33 @@ public class DerivationClient {
 	}
 	
 	/**
-	 * This checks for any circular dependency and ensures that all the linked inputs have a suitable timestamp attached
-	 * This does not check for everything, e.g. instances having appropriate rdf:types, and the agent design
+	 * makes sure the given instances are up-to-date by comparing their timestamps
+	 * to all of their inputs. The input, derivedIRIs, should have rdf:type
+	 * DerivedQuantity or DerivedQuantityWithTimeSeries
+	 * 
+	 * @param kbClient
+	 * @param derivedIRI
+	 */
+	public void updateDerivations(List<String> derivedIRIs) {
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+		try {
+			for (String derivedIRI : derivedIRIs) {
+				updateDerivation(derivedIRI, graph);
+			}
+		} catch (
+
+		Exception e) {
+			LOGGER.fatal(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
+	}
+
+	/**
+	 * This checks for any circular dependency and ensures that all the linked
+	 * inputs have a suitable timestamp attached. This does not check for
+	 * everything, e.g. instances having appropriate rdf:types, and the agent design
+	 * 
 	 * @param derived
 	 * @return
 	 */
@@ -512,8 +537,11 @@ public class DerivationClient {
 			if (!graph.containsVertex(input)) {
 				graph.addVertex(input);
 			}
-			graph.addEdge(instance, input); // will throw an error here if there is circular dependency
+			if (null != graph.addEdge(instance, input)) { // will throw an error here if there is circular dependency
+				// addEdge will return 'null' if the edge has already been added as DAGs can't
+				// have duplicated edges so we can stop traversing this branch.
 			updateDerivation(input, graph);
+			}
 		}
 
 		// inputs required by the agent
