@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 22 Nov 2021          #
+# Last Update Date: 25 Nov 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid topology graph."""
@@ -163,7 +163,9 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     # construct the aggragatedBusList
     aggragatedBusList = []
     for busInfo in busInfoArrays:
-        if busInfo[5] != None or str(busInfo[5]).strip('\n') != topo_info.headerBusTopologicalInformation[5].strip('\n'):  
+        if str(busInfo[5]).strip('\n') == str(topo_info.headerBusTopologicalInformation[5].strip('\n')):
+            continue
+        elif str(busInfo[5].strip('\n') ) != str(None):  
             aggragatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
             aggragatedBusList.append(aggragatedBus)
     
@@ -212,20 +214,7 @@ def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_nam
         # link EquipmentConnection_EBus node with EBus node
         graph.add((URIRef(bus_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(Ebus_node)))
         graph.add((URIRef(Ebus_node), RDF.type, URIRef(ontopowsys_PowSysRealization.BusNode.iri)))
-        
-        
-        ####****The address and LA code is removed from the Bus node in the new A-box, all geographical information will be obtained from ONS****####
-        
-        # Add location of bus        
-        # graph.add((URIRef(bus_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + busTopoData[1].strip('\n')))) # region, rdf.type is t_box.dbo + 'Region'
-        # if busTopoData[5].strip('\n') != 'None': 
-        #    graph.add((URIRef(bus_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + busTopoData[5].strip('\n').strip('&')))) # Agrregated bus node
-        # graph.add((URIRef(bus_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + busTopoData[2].strip('\n')))) # city, rdf.type is ontoecape_space_and_time_extended.AddressArea
-        # # graph.add((URIRef(t_box.dbr + busTopoData[2]), URIRef(t_box.ontoenergysystem + 'hasLocalAuthorityCode'), Literal(busTopoData[6].strip('\n')))) #the LA code of the local authority of where the bus located
-        # graph.add((URIRef(t_box.dbr + busTopoData[2]), RDF.type, URIRef(ontoecape_space_and_time_extended.AddressArea.iri))) 
-        # graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(t_box.ontoenergysystem + 'AdministrativeDivision')))
-        # graph.add((URIRef(t_box.dbr + region), URIRef(t_box.ontoenergysystem + 'hasLocalAuthorityCode'), Literal(str(LACode[region]))))
-        
+    
         # Apply the OntoEnergySystem for representing the lat-lon
         graph.add((URIRef(bus_node), URIRef(t_box.ontoenergysystem + 'hasWGS84LatitudeLongitude'), Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
         counter += 1
@@ -332,7 +321,7 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClust
         
     # query the Bus Topological Information and power plant attributes  
     #### Bus: Bus_node, Bus_lat, Bus_lon (The located region of the bus cannot be returned from the query, will use the ONS data to check its located area)#### 
-    res_queryBusTopologicalInformation = list(query_topo.queryBusTopologicalInformation(numOfBus, ConjunctiveGraph, localQuery, endpoint_label))
+    res_queryBusTopologicalInformation = list(query_topo.queryBusTopologicalInformation(numOfBus, numOfBranch, ConjunctiveGraph, localQuery, endpoint_label))
     #### power plant: PowerGenerator, Region, lat, lon, PrimaryFuel, GenerationTechnology ####
     res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endpoint_label))
     
@@ -342,7 +331,7 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClust
             for bus in res_queryBusTopologicalInformation:
                 if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggragatedBus[0]):
                     aggragatedBus[0] = bus['Bus_node']
-    
+                    break
     # create an instance of class generatorCluster
     gc = genCluster.generatorCluster()
     # get the cluster method via getattr function 
@@ -350,7 +339,8 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClust
     # pass the arrguments to the cluster method
     bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
                              
-    for busGen in bus_generator_assignment_list: # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
+    for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
+        # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
         # build up iris
         generator_context_locator = uk_topo.PowerGeneration_EGenKey + str(counter).zfill(3) 
         generator_node = tp_namespace + generator_context_locator
@@ -360,13 +350,13 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClust
         
         # Link the generator_node, EGen_node and their PowerGenerator of the power plant
         graph.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(generator_node)))
-        graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(busGen[1])))
+        graph.add((URIRef(generator_node), URIRef(meta_model_topology.isConnectedTo.iri), URIRef(busGen['Bus_node'])))
         graph.add((URIRef(generator_node), RDF.type, URIRef(ontopowsys_PowSysFunction.PowerGeneration.iri)))
         graph.add((URIRef(generator_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(EGen_node)))
         graph.add((URIRef(EGen_node), RDF.type, URIRef(ontopowsys_PowSysRealization.PowerGenerator.iri)))
-        graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen[0])))
+        graph.add((URIRef(EGen_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(busGen['PowerGenerator'])))
         # Add attributes: FixedOperatingCostandMaintenanceCost, VariableOperatingCostandMaintenanceCost, FuelCost, CarbonFactor
-        graph = AddCostAttributes(graph, counter, busGen[2].split('#')[1], busGen[3].split('#')[1], modelFactorArrays, numOfBus, uk_topo)
+        graph = AddCostAttributes(graph, counter, busGen['PrimaryFuel'].split('#')[1], busGen['GenerationTechnology'].split('#')[1], modelFactorArrays, numOfBus, uk_topo)
         counter += 1               
     return graph, nodeName   
 
@@ -433,11 +423,11 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
 
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
+    # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
     # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
-    createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
-    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
     
     print('**************Terminated**************')

@@ -1,6 +1,6 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 24 Nov 2021                   #
+# Last Update Date: 25 Nov 2021                   #
 ###################################################
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -20,7 +20,7 @@ class generatorCluster(object):
     which is to assign the genenrators to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this cluster method may not be suitable anymore."""   
     def sameRegionWithBus(self, res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList):     
-        # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon (LA code region) ]
+        # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[], Bus_LACode ]
         # res_queryPowerPlantAttributes = [PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology]
         ons_label = endpointList.ONS['lable']
         #### Query the ONS endpoint for the boundary of each region ###
