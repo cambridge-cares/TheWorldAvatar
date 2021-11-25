@@ -7,9 +7,10 @@ import re
 from geojson_rewind import rewind
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-import utils
-from utils import geojson_creator
-from utils.custom_errors import *
+# get settings and functions from kg_utils module
+from utilities import utils
+from utilities import geojson_creator
+from utilities.custom_errors import *
 
 
 ###   SPECIFY INPUTS   ###
