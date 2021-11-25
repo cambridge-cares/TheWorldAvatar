@@ -94,14 +94,11 @@
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
 					some junk content to pad it out has been added.
 				`;
-			let legend = `	
-					<b>Example Legend:</b>
-					<br/>
-					<div style="display: flex; justify-content: center;">
-						<img src="./img/sample-legend.png" width="350px"/>
-					</div>
-				`;
-			let footer = `Here is an example footer.`;
+			let legend = `<b>Legend</b>
+			`;
+			let footer = `<b>Data sources and copyright</b>:<br>
+			&copy; Crown copyright and database rights 2021 Ordnance Survey (100025252)<br>
+			`;
 
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);

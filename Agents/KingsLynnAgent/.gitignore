@@ -16,5 +16,4 @@ dist/
 *.geojson
 *.json
 !meta.json
-!layer-tree.json
-!overall-meta.json
+!tree.json

@@ -1,9 +1,9 @@
 {
     "global": {
-        "defaultCenter": [0.39713859558105463, 52.75354199742786],
-        "defaultZoom": 15,
-        "defaultBearing": -30,
-        "defaultPitch": 65
+        "defaultCenter": [0.395, 52.750],
+        "defaultZoom": 13,
+        "defaultBearing": 0,
+        "defaultPitch": 50
     },
     "local": {
         "label": "Data set",
