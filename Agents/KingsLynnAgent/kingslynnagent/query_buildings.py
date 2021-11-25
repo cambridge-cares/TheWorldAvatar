@@ -1,4 +1,6 @@
 import json
+import os.path
+
 import numpy as np
 import pandas as pd
 import pyproj
@@ -352,9 +354,9 @@ if __name__ == '__main__':
                          'fill-extrusion-color': '#666666',
                          'fill-extrusion-opacity': 0.66,
                          # Building ground elevation
-                         'fill-extrusion-base': round(zmin, 3),
-                         # Building height
-                         'fill-extrusion-height': round(zmax, 3)
+                         'fill-extrusion-base': 0, #round(zmin, 3)
+                         # Building (absolute) height, i.e. NOT relative height above base
+                         'fill-extrusion-height': round(zmax-zmin, 3) #round(zmax, 3)
                          }
 
         # Specify metadata properties to consider
@@ -365,27 +367,27 @@ if __name__ == '__main__':
                           }
 
         # Append building/feature to GeoJSON FeatureCollection
-        output_3d['features'].append(geojson_creator.add_feature(feature_id, geojson_props, all_polygons))
+        #output_3d['features'].append(geojson_creator.add_feature(feature_id, geojson_props, all_polygons))
         output_2d['features'].append(geojson_creator.add_feature(feature_id, geojson_props, base_polygon))
         metadata.append(metadata_props)
 
     # Ensure that ALL linear rings follow the right-hand rule, i.e. exterior rings specified counterclockwise
     # as required per standard: https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.6
-    rewound_3d = rewind(output_3d)
+    #rewound_3d = rewind(output_3d)
     rewound_2d = rewind(output_2d)
     # Restore json dictionary from returned String by rewind method
-    if type(rewound_3d) is str:
-        output_3d = json.loads(rewound_3d)
+    # if type(rewound_3d) is str:
+    #     output_3d = json.loads(rewound_3d)
     if type(rewound_2d) is str:
         output_2d = json.loads(rewound_2d)
 
     # Write GeoJSON dictionary nicely formatted to file
-    file_name = 'Buildings_3D.geojson'
-    with open(file_name, 'w') as f:
-        json.dump(output_3d, indent=4, fp=f)
-    file_name = 'Buildings_2D.geojson'
+    # file_name = 'buildings_3d.geojson'
+    # with open(file_name, 'w') as f:
+    #     json.dump(output_3d, indent=4, fp=f)
+    file_name = os.path.join(utils.OUTPUT_DIR, 'built_environment', 'buildings_2d.geojson')
     with open(file_name, 'w') as f:
         json.dump(output_2d, indent=4, fp=f)
-    file_name = 'Buildings_2D-meta.json'
+    file_name = os.path.join(utils.OUTPUT_DIR, 'built_environment', 'buildings_2d-meta.json')
     with open(file_name, 'w') as f:
         json.dump(metadata, indent=4, fp=f)

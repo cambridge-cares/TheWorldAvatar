@@ -135,4 +135,4 @@ def set_mapbox_apikey():
 
 # Run when module is imported
 read_properties_file(PROPERTIES_FILE)
-#set_mapbox_apikey()
+set_mapbox_apikey()

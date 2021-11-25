@@ -1,0 +1,17 @@
+{
+    "global": {
+        "defaultCenter": [0.39713859558105463, 52.75354199742786],
+        "defaultZoom": 15,
+        "defaultBearing": -30,
+        "defaultPitch": 65
+    },
+    "local": {
+        "label": "Data set",
+        "groups": [
+            {
+                "name": "Built environment",
+                "directory": "built_environment"
+            }
+        ]
+    }
+}

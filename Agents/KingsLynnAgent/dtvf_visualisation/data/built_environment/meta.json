@@ -1,0 +1,12 @@
+{
+    "dataSets": [
+        {
+            "name": "buildings",
+            "dataType": "geojson",
+            "dataLocation": "buildings_2d.geojson",
+            "locationType": "extrusion",
+            "metaFiles": ["buildings_2d-meta.json"],
+            "timeseriesFiles": ["buildings_2d-timeseries.json"]
+        }
+    ]
+}

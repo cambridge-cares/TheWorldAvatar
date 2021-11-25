@@ -54,7 +54,9 @@ class TimeseriesHandler {
                     "id": entry["id"],
                     "unit": tableUnit,
                     "times": tableTimes,
-                    "values": tableValues
+                    "values": tableValues,
+                    "timeClass": entry["timeClass"],
+                    "valuesClass": entry["valuesClass"][j]
                 });
             }            
         }
@@ -186,6 +188,10 @@ class TimeseriesHandler {
         }
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
+
+        var xAxisType = ("Instant" === data["timeClass"]) ? "time" : "linear";
+        var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
+
         this._currentChart = new Chart(ctx, 
             {
                 type: "line",
@@ -199,7 +205,7 @@ class TimeseriesHandler {
                     },
                     scales: {
                         x: {
-                            type: 'time',
+                            type: xAxisType,
                             distribution: 'linear',
                             ticks: {
                                 font: {
@@ -217,6 +223,8 @@ class TimeseriesHandler {
                             }
                         },
                         y: {
+                            type: yAxisType,
+                            labels: [true, false],
                             ticks: {
                                 font: {
                                     weight: 400,

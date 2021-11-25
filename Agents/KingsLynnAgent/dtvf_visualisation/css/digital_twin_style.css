@@ -191,7 +191,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 #titleContainer {
 	width: 100%;
-	height: 40px;
+	min-height: 40px;
+	max-height: 80px;
 	text-align: center;
 	margin-bottom: 20px;
 }
@@ -396,7 +397,7 @@ h1, h2, h3, h4, h5, h6 {
 	border-radius: 8px;
 	padding: 10px;
 	margin-top: 10px;
-	min-height: 150px;
+	min-height: 100px;
 }
 #selectionsContainer p {
 	margin-bottom: 10px;
@@ -411,6 +412,21 @@ h1, h2, h3, h4, h5, h6 {
 	height: 25px;
 }
 #selectContainer select {
+	width: 69%;
+	height: 25px;
+	font-size: 9pt;
+}
+
+#rootSelectContainer {
+	height: 25px;
+	margin-top: 5px;
+}
+#rootSelectContainer label {
+	display: inline-block;
+	width: 29%;
+	height: 25px;
+}
+#rootSelectContainer select {
 	width: 69%;
 	height: 25px;
 	font-size: 9pt;
@@ -498,4 +514,16 @@ h1, h2, h3, h4, h5, h6 {
 	border-top: none;
   }
   
-  
+  #no-meta-container {
+	  background-color: rgb(240, 240, 240);
+	  color: rgb(100, 100, 100);
+	  text-align: center;
+	  height: 100%;
+	  width: 100%;
+	  display: table;
+  }
+
+  #no-meta-container p {
+	display: table-cell;
+	vertical-align: middle;
+  }
