@@ -250,6 +250,9 @@ def split_polygon_data(polygon_data, polygon_datatype):
 
 if __name__ == '__main__':
 
+    # Set Mapbox API key
+    utils.set_mapbox_apikey()
+
     # Retrieve SPARQL results from Blazegraph
     try:
         kg_buildings = execute_query(get_buildings(n), utils.QUERY_ENDPOINT)
