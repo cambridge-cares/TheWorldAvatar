@@ -214,7 +214,6 @@ def addEBusNodes(graph, header, dataArray, numOfBus, root_node, root_uri, tp_nam
         # link EquipmentConnection_EBus node with EBus node
         graph.add((URIRef(bus_node), URIRef(ontoecape_technical_system.isRealizedBy.iri), URIRef(Ebus_node)))
         graph.add((URIRef(Ebus_node), RDF.type, URIRef(ontopowsys_PowSysRealization.BusNode.iri)))
-    
         # Apply the OntoEnergySystem for representing the lat-lon
         graph.add((URIRef(bus_node), URIRef(t_box.ontoenergysystem + 'hasWGS84LatitudeLongitude'), Literal(latlon, datatype = 'http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon')))
         counter += 1

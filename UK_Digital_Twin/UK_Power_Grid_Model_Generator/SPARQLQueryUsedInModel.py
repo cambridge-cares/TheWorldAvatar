@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 27 Oct 2021          #
+# Last Update Date: 25 Nov 2021          #
 ##########################################
 
 """This module lists out the SPARQL queries used in generating the UK Grid Model A-boxes"""
@@ -10,12 +10,14 @@ from rdflib.store import NO_STORE
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Digital_Twin_Package.queryInterface import performQuery, performUpdate, performFederatedQuery
+from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 # import numpy as np 
 from shapely.wkt import loads
 from shapely.geometry import mapping
 import geojson
 import ast
-
+from UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox import queryGBOrNIBoundary
+import shapely.geometry
 
 qres = []
 qres_ = []
@@ -54,8 +56,8 @@ def queryDigitalTwinLocation(ukdigitaltwin_Endpoint, SleepycatPath, localQuery):
 # queryStr_Egen: Query the model EGen and its corresponding power plant iri as well as its cost factors (fixed m&o, varialbe m&o, fuel cost), CO2 emission factor and its connected bus
 # queryStr_capacityAndPrimaryFuel: query the capacity and primary fuel of the EGen's corresponding power plant.  
 
-def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endPoint_label): # endpoints: topology_Endpoint, powerPlant_Endpoint
-    label = "_" + str(numOfBus) + "_"  
+def queryEGenInfo(numOfBus, numOfBranch, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endPoint_label): # endpoints: topology_Endpoint, powerPlant_Endpoint
+    label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -205,20 +207,18 @@ def queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, 
             return None      
 
 # query the total electricity consumption of a UK official region 
-def queryRegionalElecConsumption(endPoint_label, numOfBus, startTime_of_EnergyConsumption, consumption_Sleepycat, localQuery):
-    queryStr = """
+def queryTotalElecConsumptionofGBOrUK(endPoint_label, numOfBus, numOfBranch, startTime_of_EnergyConsumption):
+    label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
+    
+    queryStr_BusAndLatlon = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
-    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    SELECT DISTINCT  ?v_TotalELecConsumption
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+    SELECT DISTINCT ?Bus_node ?Bus_lat_lon
     WHERE 
     {   
     ?Topology rdf:type ontocape_network_system:NetworkSystem .
@@ -226,41 +226,76 @@ def queryRegionalElecConsumption(endPoint_label, numOfBus, startTime_of_EnergyCo
     FILTER regex(?label, "%s") .
     ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?Bus_node .
     ?Bus_node rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
-    ?Bus_node ontocape_upper_level_system:hasAddress ?RegionName .
-    ?RegionName rdf:type <https://dbpedia.org/ontology/Region> .   
+    ?Bus_node ontoenergysystem:hasWGS84LatitudeLongitude ?Bus_lat_lon .
+    }"""%label
     
-    ?Region ontoeip_system_function:consumes ?Total_ele_consumption . 
+    ons_label = endpointList.ONS['lable']
+
+    print('remoteQuery BusAndLatlon and GBOrNIBoundary')
+    res_BusAndLatlon = json.loads(performQuery(endPoint_label, queryStr_BusAndLatlon))
+    boundaries = queryGBOrNIBoundary(ons_label)
+    print('query of BusAndLatlon and GBOrNIBoundary is done')
+    
+    # Query the boundaries of GB and NI
+    countryBoundaryDict = {}
+    for boundary in boundaries:
+        countryBoundaryDict.update({boundary['LACode_area']: boundary['Geo_InfoList']})
+    
+    # Check which area, GB or NI, being located with buses
+    GBAndNI = ['K03000001', 'N92000002']
+    for bus in res_BusAndLatlon:
+        bus['Bus_lat_lon'] = [float(bus['Bus_lat_lon'].split('#')[0]), float(bus['Bus_lat_lon'].split('#')[1])]
+        bus_lonlat_point = shapely.geometry.Point(bus['Bus_lat_lon'][1], bus['Bus_lat_lon'][0])
+        interior_GB = countryBoundaryDict['K03000001'].intersects(bus_lonlat_point)
+        interior_NI = countryBoundaryDict['N92000002'].intersects(bus_lonlat_point)
+        if interior_GB == True:
+            if 'K03000001' in GBAndNI:
+                GBAndNI.remove('K03000001')
+            elif len(GBAndNI) == 0: break
+        elif interior_NI == True:
+            if 'N92000002' in GBAndNI:
+                GBAndNI.remove('N92000002')
+            elif len(GBAndNI) == 0: break
+    # Based on the bus location, decide the electricity consumption area
+    query_Area = ''
+    if len(GBAndNI) == 0:
+        query_Area = 'K02000001'
+    elif len(GBAndNI) == 1 and 'N92000002' in GBAndNI:
+        query_Area = 'K03000001'
+    elif len(GBAndNI) == 1 and 'K03000001' in GBAndNI:
+        query_Area = 'N92000002'
+    if len(query_Area) == 0:
+        raise Exception('The queried buses do not located in the UK, please check the bus query result.')
+    
+    queryStr_electricity_consumption = """
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    SELECT DISTINCT  ?v_TotalELecConsumption
+    WHERE 
+    {   
     ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
     ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
     ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
     ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
     
-    ?Region ontocape_upper_level_system:hasAddress ?RegionName .
+    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode "%s" .
     ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
     }
-    """% (numOfBus, startTime_of_EnergyConsumption)
-    global qres
+    """% (startTime_of_EnergyConsumption, query_Area)
     
-    if localQuery == False and endPoint_label != None: 
-        print('remoteQuery')
-        res = json.loads(performQuery(endPoint_label, queryStr))
-        print('query is done')
-        regionalConsumption = []
-        for r in res: 
-            regionalConsumption.append(float(r['v_TotalELecConsumption']))           
-    elif consumption_Sleepycat != None and localQuery == True:  
-        dt_cg = ConjunctiveGraph('Sleepycat')
-        sl = dt_cg.open(consumption_Sleepycat, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the UK electricity consumption store')
-            return None
-        qres = list(dt_cg.query(queryStr))
-        dt_cg.close()
-        regionalConsumption = []
-        for con in qres:        
-            con_ = float(con[0])
-            regionalConsumption.append(con_)        
-    return regionalConsumption   
+    print('remoteQuery electricity_consumption')
+    res_electricity_consumption = json.loads(performQuery(endPoint_label, queryStr_electricity_consumption))
+    print('query of electricity_consumption is done')
+    if str(res_electricity_consumption) == '[]':
+        raise Exception('Cannot find the total consumtion of the area', query_Area)
+    res = float(res_electricity_consumption[0]['v_TotalELecConsumption']) 
+    return res
 
 ###############EBus#############
 # query the EBus iri and its located area's total electricity consumption 
@@ -527,11 +562,12 @@ if __name__ == '__main__':
     # iri = 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/10_bus_model/Model_EGen-479.owl#EGen-479'   
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
-    # res = queryEGenInfo('ukpowergridtopology', 'ukpowerplantkg', None, None, False)
+    
+    res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
     # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
-    res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
+    # res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])
@@ -539,9 +575,10 @@ if __name__ == '__main__':
     # res = queryDigitalTwinLocation(None, SleepycatStoragePath, True)
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
     # geo = res[0]['Geo_InfoList']
-    #print(geo.geom_type)    
-    # print(res)
-    for r in res:
-        print(r['ELine'])
+    #print(geo.geom_type)   
+    res = queryTotalElecConsumptionofGBOrUK( "ukdigitaltwin", 10, 14, "2017-01-31")
+    print(res)
+    # for r in res:
+    #     print(r['ELine'])
     
 

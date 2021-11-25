@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 Oct 2021          #
+# Last Update Date: 25 Nov 2021          #
 ##########################################
 
 import os
@@ -14,12 +14,9 @@ from UK_Digital_Twin_Package.UKPowerGridModel import UKEGenModel_CostFunc
 dt = UKDT.UKDigitalTwin()
 
 def costFuncPara(uk_egen_costFunc, egen, located_country, localQuery):    
-    if isinstance (uk_egen_costFunc, UKEGenModel_CostFunc):
-        pass
-    else:
-        print('The first argument should be an instence of UKEGenModel_CostFunc')
-        return None
-    
+    if not isinstance (uk_egen_costFunc, UKEGenModel_CostFunc):      
+        raise Exception('The first argument should be an instence of UKEGenModel_CostFunc')
+       
     if str(located_country) == uk_egen_costFunc.location:
         # if uk_egen_costFunc.version == 2019:
             uk_egen_costFunc.a = 0

@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 08 Oct 2021          #
+# Last Update Date: 25 Nov 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EGen."""
@@ -99,7 +99,7 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, numOfBranch, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
     uk_egen_model = UK_PG.UKEGenModel(version_of_DUKES, numOfBus)
     defaultStoredPath = uk_egen_model.StoreGeneratedOWLs
     defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
@@ -132,13 +132,12 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
     else:
         print('Store is IOMemery')        
             
-    EGenInfo = list(query_model.queryEGenInfo(numOfBus, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endpoint_label))
-                    
+    EGenInfo = list(query_model.queryEGenInfo(numOfBus, numOfBranch, topoAndConsumpPath_Sleepycat, powerPlant_Sleepycat, localQuery, endpoint_label))
+
     if EGenInfo == None:
-        print('EGenInfo is empty')
-        return None
-    
-    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, numOfBus, startTime_of_EnergyConsumption, localQuery)
+        raise Exception('EGenInfo is empty')
+       
+    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption)
     
     # TODO: The location should be the address of the top node UK digital twin which should be specified in the level one when the power plant instance being created 
     #  location = query_model.queryDigitalTwinLocation(endpoint_label, dt.SleepycatStoragePath, localQuery)  
@@ -162,11 +161,12 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus")))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch" )))
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'GeneratorModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
+        g.add((URIRef(father_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         # link with EGen node in topology
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(egen[0])))
         g.add((URIRef(egen[0]), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
@@ -175,13 +175,7 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         # calculate a, b, c
         uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax) # declear an instance of the UKEGenModel_CostFunc
         uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location, localQuery)
-        
-        if uk_egen_costFunc != None:
-            pass
-        else: 
-            print ('uk_egen_costFunc should be an instance of UKEGenModel_CostFunc')
-            return None 
-        
+        # assign value to attributes
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_costFunc.CostFuncFormatKey, uk_egen_costFunc.MODEL, None, \
                              ontopowsys_PowerSystemModel.CostModel.iri, ontocape_mathematical_model.Parameter.iri)
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_costFunc.StartupCostKey, uk_egen_costFunc.STARTUP, ontocape_derived_SI_units.USD.iri, \
@@ -199,15 +193,10 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_aKey + node_locator), RDFS.label, Literal('Parameter_a')))   
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_bKey + node_locator), RDFS.label, Literal('Parameter_b')))   
         g.add((URIRef(namespace + uk_egen_costFunc.genCost_cKey + node_locator), RDFS.label, Literal('Parameter_c')))   
+        
         ###add EGen model parametor###
         # uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
         uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen)
-        
-        if uk_egen_model_ != None:
-            pass
-        else: 
-            print ('uk_egen_model_ should be an instance of UKEGenModel')
-            return None 
         
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_model_.BUSNUMKey, int(uk_egen_model_.BUS), None, \
                                  ontopowsys_PowerSystemModel.BusNumber.iri, ontocape_mathematical_model.Parameter.iri)
@@ -266,11 +255,9 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
     return
 
 def initialiseEGenModelVar(EGen_Model, egen):
-    if isinstance (EGen_Model, UK_PG.UKEGenModel):
-        pass
-    else:
-        print('The first argument should be an instence of UKEGenModel')
-        return None
+    if not isinstance (EGen_Model, UK_PG.UKEGenModel):
+        raise Exception('The first argument should be an instence of UKEGenModel')
+
     EGen_Model.BUS = egen[6]
     capa = egen[7]
     EGen_Model.PG_INPUT = capa * capa_demand_ratio    
@@ -289,18 +276,19 @@ def initialiseEGenModelVar(EGen_Model, egen):
     return EGen_Model
 
 """Calculate the sum of capacity and total demanding"""
-def capa_demand_ratio_calculator(EGenInfo, numOfBus, startTime_of_EnergyConsumption, localQuery):
+def capa_demand_ratio_calculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption):
     sum_of_capa = 0
     for eg in EGenInfo:
         sum_of_capa += eg[7]
     print('sum_of_capa is: ', sum_of_capa)
-    total_demand = sum(query_model.queryRegionalElecConsumption(endpoint_label, numOfBus, startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery)) * 1000 / (24 * 365) 
+    total_demand = query_model.queryTotalElecConsumptionofGBOrUK(endpoint_label, numOfBus, numOfBranch, startTime_of_EnergyConsumption) * 1000 / (24 * 365) 
+    print('######total_demand:', total_demand)
     print('total_demand is: ', total_demand)
     capa_demand_ratio = total_demand/sum_of_capa
     print('capa_demand_ratio is: ', capa_demand_ratio)
     return capa_demand_ratio
 
 if __name__ == '__main__':    
-    # createModel_EGen('default', False, 2019, "2017-01-31", 29, 50, None, True)    
-    createModel_EGen('default', False, 2019, "2017-01-31", 10, 50, None, True) 
+    createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, None, True) 
+    # createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, None, True)
     print('Terminated')
