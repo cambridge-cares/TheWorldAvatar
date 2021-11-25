@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -1177,6 +1178,50 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * used when an agent produces a list of new entities
+	 * @param instances
+	 * @return
+	 */
+	List<Entity> initialiseNewEntities(List<String> instances) {
+		// query rdf types of these new instances
+		SelectQuery query = Queries.SELECT();
+		Variable type = query.var();
+		Variable instance = query.var();
+		
+		List<Iri> instances_iri = instances.stream().map(i -> iri(i)).collect(Collectors.toList());
+		
+		// ignore certain rdf:type
+		Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
+		}
+		
+		ValuesPattern valuePattern = new ValuesPattern(instance, instances_iri);
+		GraphPattern typePattern = instance.isA(type).filter(Expressions.and(filters));
+		
+		query.select(type,instance).where(valuePattern,typePattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+	    
+		List<Entity> newEntities = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String iri = queryResult.getJSONObject(i).getString(instance.getQueryString().substring(1));
+			
+			if (newEntities.stream().anyMatch(e -> e.getIri().equals(iri))) {
+				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + iri);
+			}
+			
+			Entity entity = new Entity(iri);
+			if (queryResult.getJSONObject(i).has(type.getQueryString().substring(1))) {
+				entity.setRdfType(queryResult.getJSONObject(i).getString(type.getQueryString().substring(1)));
+			}
+			newEntities.add(entity);
+		}
+		
+		return newEntities;
+	}
+	
+	/**
 	 * This method retrieves the rdf:type of a given instance, whereas ignoring certain perdefined rdf:type. 
 	 * @param kbClient
 	 * @param instance
@@ -1221,6 +1266,27 @@ public class DerivationSparql{
 		TriplePattern insert_tp = iri(derived).has(isDerivedFrom, iri(input));
 		
 		modify.prefix(p_derived).insert(insert_tp);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * this is used to reconnect a newly created instance to an existing derived instance
+	 * @param kbClient
+	 * @param input
+	 * @param derived
+	 */
+	void reconnectInputToDerived(List<String> inputs, List<String> derivations) {
+		if (inputs.size() != derivations.size()) {
+			throw new JPSRuntimeException("reconnectInputToDerived has incorrect inputs");
+		}
+		
+		ModifyQuery modify = Queries.MODIFY();
+		
+		for (int i = 0; i < inputs.size(); i++) {
+			modify.insert(iri(derivations.get(i)).has(isDerivedFrom, iri(inputs.get(i))));
+		}
+		modify.prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
@@ -1324,7 +1390,9 @@ public class DerivationSparql{
 		
 		Variable derivation = query.var();
 		Variable input = query.var();
+		Variable inputType = query.var();
 		Variable entity = query.var();
+		Variable entityType = query.var();
 		Variable agentURL = query.var();
 		Variable derivationTimestamp = query.var();
 		Variable inputTimestamp = query.var();
@@ -1337,9 +1405,12 @@ public class DerivationSparql{
 		GraphPattern entityPattern = entity.has(belongsTo, derivation);
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional();
+		GraphPattern entityTypePattern = entity.isA(entityType).optional();
 		
-		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType)
-		.where(derivationPattern,entityPattern,inputTimestampPattern).prefix(p_derived,p_time,p_agent);
+		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType,inputType,entityType)
+		.where(derivationPattern,entityPattern,inputTimestampPattern,inputTypePattern,entityTypePattern)
+		.prefix(p_derived,p_time,p_agent);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -1363,12 +1434,17 @@ public class DerivationSparql{
 			
 			 // input of this derivation
 			Entity input_entity;
-			// don't want to end up with duplicates
+			
 			try {
 				input_entity = entities.stream().filter(e -> e.getIri().equals(inputIRI)).findFirst().get();
 			} catch (NoSuchElementException e) {
 				input_entity = new Entity(inputIRI);
 				entities.add(input_entity);
+			}
+			
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(inputType.getQueryString().substring(1))) {
+				input_entity.setRdfType(queryResult.getJSONObject(i).getString(inputType.getQueryString().substring(1)));
 			}
 			
 			// if it's a pure input it will have a timestamp
@@ -1385,6 +1461,11 @@ public class DerivationSparql{
 				entities.add(entity_entity);
 			}
 			
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(entityType.getQueryString().substring(1))) {
+				entity_entity.setRdfType(queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1)));
+			}
+			
 			// set properties of derivation
 			derived.addEntity(entity_entity);
 			derived.addInput(input_entity);
@@ -1393,6 +1474,17 @@ public class DerivationSparql{
 		}
 		
 		return derivations;
+	}
+	
+	void deleteBelongsTo(String derivation) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		TriplePattern deleteTP =  entity.has(belongsTo, iri(derivation));
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(deleteTP).where(deleteTP).prefix(p_derived);
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**

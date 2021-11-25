@@ -38,6 +38,10 @@ public class Derivation{
 		}
 	}
 	
+	public void replaceEntities(List<Entity> entities) {
+		this.entities = entities;
+	}
+	
 	public List<Entity> getEntities() {
 		return this.entities;
 	}
@@ -47,6 +51,10 @@ public class Derivation{
 			this.inputs.add(input);
 			input.setAsInput(this);
 		}
+	}
+	
+	public void removeInput(Entity input) {
+		this.inputs.remove(input);
 	}
 	
 	public List<Entity> getInputs() {

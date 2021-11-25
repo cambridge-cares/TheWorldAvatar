@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -570,57 +571,51 @@ public class DerivationClient {
 				// if it is a derived quantity with time series, there will be no changes to the instances
 				if (!derivation.isDerivationWithTimeSeries()) {
 					// collect new instances created by agent
-					List<String> newEntities = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY).toList()
+					List<String> newEntitiesString = new JSONObject(response).getJSONArray(AGENT_OUTPUT_KEY).toList()
 							.stream().map(iri -> (String) iri).collect(Collectors.toList());
 
-					// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
-					// query for ?x <belongsTo> <instance>
-					List<String> entities = this.sparqlClient.getDerivedEntities(derivation.getIri());
-					
-					// check if any of the old entities is an input for another derived quantity
-					// query ?x <isDerivedFrom> <entity>, <entity> a ?y
-					// where ?x = a derived instance, ?y = class of entity
-					// index 0 = derivedIRIs list, index 1 = type IRI list
-					List<List<String>> derivedAndType = this.sparqlClient.getIsDerivedFromEntities(entities);
-					
 					// delete old instances
-					this.sparqlClient.deleteInstances(entities);
-					LOGGER.debug("Deleted old instances: " + Arrays.asList(entities));
+					this.sparqlClient.deleteBelongsTo(derivation.getIri());
+					LOGGER.debug("Deleted old instances of: " + derivation.getIri());
 					
 					// link new entities to derived instance, adding ?x <belongsTo> <instance>
-					this.sparqlClient.addNewEntitiesToDerived(derivation.getIri(), newEntities);
-					LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + derivation.getIri() + ">");
+					this.sparqlClient.addNewEntitiesToDerived(derivation.getIri(), newEntitiesString);
+					LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <" + derivation.getIri() + ">");
 					
-					if (derivedAndType.get(0).size() > 0) {
+					// entities that are input to another derivation
+					List<Entity> inputToAnotherDerivation = derivation.getEntities()
+							.stream().filter(e -> e.isInputToDerivation()).collect(Collectors.toList());
+					
+					List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+					
+					if (inputToAnotherDerivation.size() > 0) {
 						LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 						LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 						// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
-						List<String> classOfNewEntities = this.sparqlClient.getInstanceClass(newEntities);
-						
-						// look for the entity with the same rdf:type that we need to reconnect
-						List<String> oldDerivedList = derivedAndType.get(0);
-						List<String> oldTypeList = derivedAndType.get(1);
-				
-						// for each instance in the old derived instance that is connected to another derived instance, reconnect it
-						for (int i = 0; i < oldDerivedList.size(); i++) {
-							LOGGER.debug("Searching within <" + newEntities + "> with rdf:type <" + oldTypeList.get(i) + ">");
-							// index in the new array with the matching type
-							Integer matchingIndex = null;
-							for (int j = 0; j < classOfNewEntities.size(); j++) {
-								if (classOfNewEntities.get(j).contentEquals(oldTypeList.get(i))) {
-									if (matchingIndex != null) {
-										throw new JPSRuntimeException("Duplicate rdf:type found within output, the DerivationClient does not support this");
-									}
-									matchingIndex = j;
-								}
+						List<String> newInputs = new ArrayList<>();
+						List<String> derivationsToReconnect = new ArrayList<>();
+						for (Entity oldInput : inputToAnotherDerivation) {
+							// find within new Entities with the same rdf:type
+							List<Entity> matchingEntity = newEntities.stream().filter(e -> e.getRdfType().equals(oldInput.getRdfType())).collect(Collectors.toList());
+							
+							if (matchingEntity.size() != 1) {
+								String errmsg = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set";
+								LOGGER.error(errmsg);
+								LOGGER.error("Number of matching entities = " + matchingEntity.size());
+								throw new JPSRuntimeException(errmsg);
 							}
-							if (matchingIndex == null) {
-								String reconnectError = "Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i);
-								throw new JPSRuntimeException(reconnectError);
-							}
-						    // reconnect
-							this.sparqlClient.reconnectInputToDerived(newEntities.get(matchingIndex), oldDerivedList.get(i));
+							
+							// update cached data
+							Derivation derivationToReconnect = oldInput.getInputOf();
+							derivationToReconnect.addInput(matchingEntity.get(0));
+							derivationToReconnect.removeInput(oldInput);
+							
+							newInputs.add(matchingEntity.get(0).getIri());
+							derivationsToReconnect.add(derivationToReconnect.getIri());
 						}
+						// update triple-store and cached data
+						this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
+						derivation.replaceEntities(newEntities);
 					}
 				}
 				// if there are no errors, assume update is successful
