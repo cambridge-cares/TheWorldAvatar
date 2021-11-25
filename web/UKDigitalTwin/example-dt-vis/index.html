@@ -113,7 +113,7 @@
 
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);
-			
+		
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
 			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
@@ -143,7 +143,6 @@
 
 					// Only enable this during testing, remove the line for production visualisations
 					manager.showDeveloperControls();
-					
 					loadedOnce = true;
 				}
 				
@@ -152,15 +151,15 @@
 				Promise.all(imagePromises).then(() => {
 					iconHandler.addAllIcons();
 
-					// Re-add the sky layer
-					manager.setSkyDetails();
-
 					// Re-plot the previously selected group
 					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
 						manager.plotGroup(DT.currentGroup, false);
 					} else {
 						manager.plotFirstGroup();
 					}
+					
+					// Re-add the sky and (optionally) 3D terrain
+					manager.addSkyAndTerrain();
 				});
 			});
 		}

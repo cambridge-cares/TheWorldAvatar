@@ -191,11 +191,22 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Adds a special sky effects layer.
+	 * Adds a special sky effects layer and (if enabled) 3D terrain.
 	 */
-	setSkyDetails() {
+	addSkyAndTerrain() {
 		if(this._layerHandler != null) {
 			this._layerHandler.addSkyLayer();
+			this._layerHandler.setSunPosition(
+				(DT.terrain === "dark") ? "sunsetStart" : "solarNoon"
+			);
+			console.log("INFO: Added special Sky layer.");
+		}
+
+		if(this._registry != null && this._sourceHandler != null) {
+			if(eval(this._registry.globalMeta["add3DTerrain"])) {
+				this._sourceHandler.add3DTerrain();
+				console.log("INFO: Added special 3D terrain layer.");
+			}
 		}
 	}
 
@@ -212,27 +223,10 @@ class DigitalTwinManager {
 			return;
 		}
 
-		// If there was a previously selected terrain
-		let terrainURL = null;
-		switch(DT.terrain) {
-			default:
-				terrainURL = "mapbox://styles/mapbox/light-v10?optimize=true";
-				break;
-			case "dark":
-				terrainURL = "mapbox://styles/mapbox/dark-v10?optimize=true";
-				break;
-			case "satellite":
-				terrainURL = "mapbox://styles/mapbox/satellite-v9?optimize=true";
-				break;
-			case "satellite-streets":
-				terrainURL = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
-				break;
-		}
-
 		// Specify default options
 		let defaultOptions = {
 			container: containerName,
-			style: terrainURL,
+			style: "mapbox://styles/mapbox/light-v10?optimize=true",
 			center: this._registry.globalMeta["defaultCenter"],
 			zoom: this._registry.globalMeta["defaultZoom"],
 			pitch: this._registry.globalMeta["defaultPitch"],
@@ -273,6 +267,12 @@ class DigitalTwinManager {
 		this._panelHandler.setContent(content);
 		this._panelHandler.setLegend(legend);
 		this._panelHandler.setFooter(footer);
+
+		// Show linked files (if they've been set)
+		if(null != this._registry.globalMeta["linkedFiles"])  {
+			let rootDir = this._rootDirectories[this._currentRootDirName];
+			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
+		}
 
 		this._panelHandler.storeDefault();
 	}
@@ -342,9 +342,6 @@ class DigitalTwinManager {
 	 */
 	changeTerrain(mode) {
 		this._controlHandler.changeTerrain(mode);
-		this._layerHandler.setSunPosition(
-			(mode === "dark") ? "sunsetStart" : "solarNoon"
-		);
 	}
 
 	/**

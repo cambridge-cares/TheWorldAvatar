@@ -23,6 +23,26 @@ class SourceHandler {
     }
 
     /**
+     * Adds 3D terrain provided by MapBox. 
+     * WARNING: This may not be compatible with 3D building data unless the
+     * building's base height has been set correctly.
+     */
+    add3DTerrain() {
+        this._map.addSource('mapbox-3d-terrain', {
+            type: 'raster-dem',
+            url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+            tileSize: 512,
+            maxzoom: 14
+        });
+
+        // add the DEM source as a terrain layer with exaggerated height
+        this._map.setTerrain({
+            source: 'mapbox-3d-terrain', 
+            exaggeration: 2.0 
+        });
+    }
+
+    /**
      * Generates a new MapBox source from the definition taken
      * from the meta.json file.
      * 
@@ -128,8 +148,7 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "raster",
-            "tiles": [location],
-            "attribution": "cmcl"
+            "tiles": [location]
         };
 
         // Add additional raster settings if present in dataSet definition
@@ -158,8 +177,7 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "vector",
-            "data": location,
-            "attribution": "cmcl"
+            "data": location
         };
 
         // Add additional vector settings if present in dataSet definition

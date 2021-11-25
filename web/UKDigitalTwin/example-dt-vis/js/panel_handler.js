@@ -62,6 +62,42 @@ class PanelHandler {
 	}
 
 	/**
+	 * Generate and show links for any linked files listed
+	 * in the global meta for the current data set.
+	 */
+	showLinkedFiles(globalMeta, rootDataDir) {
+		let linkedFiles = globalMeta["linkedFiles"];
+		if(linkedFiles == null || linkedFiles.length == 0) return;
+
+		let contentContainer = document.getElementById("contentContainer");
+		let newHTML = "<div id='linkedFilesContainer'>";
+		newHTML += "<b>Additional Files:</b><br/>";
+
+		let winURL = window.location;
+		let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+
+		for(var i = 0; i < linkedFiles.length; i++) {
+			let text = linkedFiles[i]["text"];
+			let url = linkedFiles[i]["url"];
+			
+			if(!url.startsWith("http")) {
+				// Not an absolute URL, preprend base URL of visualisation
+				if(url.startsWith("./")) url = url.replace("./", "");
+				url = (rootDataDir.endsWith("/")) ? (rootDataDir + linkedFiles[i]["url"]) : (rootDataDir + "/" + linkedFiles[i]["url"]);
+				url = (baseURL.endsWith("/")) ? (baseURL + url) : (baseURL + "/" + url);
+			}
+
+			// Add link to HTML
+			newHTML += "<a href='" + url + "' target='_blank'>"
+			newHTML += text;
+			newHTML += "</a><br/>"
+		}
+
+		newHTML += "</div>";
+		contentContainer.innerHTML += newHTML;
+	}
+
+	/**
 	 * Toggles the visibility of the title element.
 	 * 
 	 * @param {boolean} visible 

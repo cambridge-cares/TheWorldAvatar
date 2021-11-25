@@ -24,11 +24,17 @@ class ControlHandler {
 				<input type="radio" name="terrain" id="dark" onclick="manager.changeTerrain('dark')">
 				<label for="dark">Dark</label>
 				<br>
+				<input type="radio" name="terrain" id="outdoors" onclick="manager.changeTerrain('outdoors')">
+				<label for="outdoors">Outdoors</label>
+				<br>
+				<input type="radio" name="terrain" id="blueprint" onclick="manager.changeTerrain('blueprint')">
+				<label for="blueprint">Blueprint</label>
+				<br>
 				<input type="radio" name="terrain" id="satellite" onclick="manager.changeTerrain('satellite')">
-				<label for="satellite">Satellite</label>
+				<label for="satellite">Satellite (Raw)</label>
 				<br>
 				<input type="radio" name="terrain" id="satellite-streets" onclick="manager.changeTerrain('satellite-streets')">
-				<label for="satellite-streets">Satellite (with Streets)</label>
+				<label for="satellite-streets">Satellite (Labelled)</label>
 			</div>
 			<div id="layerContainer">TREE-GOES-HERE</div>
 			<div id="selectionsContainer"></div>
@@ -267,6 +273,10 @@ class ControlHandler {
 			this._map.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
 		} else if(mode === "dark") {
 			this._map.setStyle("mapbox://styles/mapbox/dark-v10?optimize=true");
+		} else if(mode === "outdoors") {
+			this._map.setStyle("mapbox://styles/mapbox/outdoors-v11?optimize=true");
+		} else if(mode === "blueprint") {
+			this._map.setStyle("mapbox://styles/cmclinnovations/ckweqsj667xkx15qnilos1kzj");
 		} else if(mode === "satellite") {
 			this._map.setStyle("mapbox://styles/mapbox/satellite-v9?optimize=true");
 		} else if(mode === "satellite-streets") {

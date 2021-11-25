@@ -304,8 +304,7 @@ class LayerHandler {
 			paint: {
                 'fill-extrusion-base': ["case", ["has", "fill-extrusion-base"], ["get", "fill-extrusion-base"], 0],
                 'fill-extrusion-height': ["case", ["has", "fill-extrusion-height"], ["get", "fill-extrusion-height"], 25],
-                'fill-extrusion-opacity': 0.33,
-
+                'fill-extrusion-opacity': 0.75,
                 'fill-extrusion-color': [
                     "case", 
                     ['boolean', ['feature-state', 'hover'], false],

@@ -3,7 +3,26 @@
         "defaultCenter": [0.39713859558105463, 52.75354199742786],
         "defaultZoom": 15,
         "defaultBearing": -30,
-        "defaultPitch": 65
+        "defaultPitch": 65,
+        "add3DTerrain": true,
+        "linkedFiles": [
+            {
+                "text": "Test File #1",
+                "url": "linked-files/test-file-1.txt"
+            },
+            {
+                "text": "Test File #2",
+                "url": "linked-files/test-file-2.txt"
+            },
+            {
+                "text": "Test File #3",
+                "url": "linked-files/test-file-3.txt"
+            },
+            {
+                "text": "A funny video",
+                "url": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+            }
+        ]
     },
     "local": {
         "label": "Scenario",
