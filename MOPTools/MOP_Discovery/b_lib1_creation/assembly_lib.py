@@ -25,16 +25,22 @@ def cbu_gbu_lib(model):
             if item['CBU1'] not in cbu1lib:
                 cbu1lib.append(item['CBU1'])
                 cbu1libtype.append({"CBU":item['CBU1'],
+                    "Modularity":item['CBU1_Modularity'],
+                    "Planarity":item['CBU1_Planarity'],
+                    "Symmetry":item['Symmetry'],
                     "BindingSite":item['CBU1_Type'],
                     "SpeciesIRI":item['CBU1_SpeciesIRI'],
                     "OuterCoordination":item['CBU1_OuterCoordination'],
-                    "CBU1_Direction":item['CBU1_Direction'],
+                    "Direction":item['CBU1_Direction'],
                     "FunctionalGroup":item['CBU1_FunctionalGroup']})   
             if item['CBU2'] in cbu2lib:
                 pass
             if item['CBU2'] not in cbu2lib: 
                 cbu2lib.append(item['CBU2'])
                 cbu2libtype.append({"CBU":item['CBU2'],
+                    "Modularity":item['CBU2_Modularity'],
+                    "Planarity":item['CBU2_Planarity'],
+                    "Symmetry":item['Symmetry'],
                     "BindingSite":item['CBU2_Type'],
                     "SpeciesIRI":item['CBU2_SpeciesIRI'],
                     "OuterCoordination":item['CBU2_OuterCoordination'],

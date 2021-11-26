@@ -3,6 +3,7 @@ from b_lib1_creation.local_manager import lib1_Creation
 from d_cbu_overlap.cbuoverlap import cbuoverlap
 from e_lib2_creation.lib2_creation import lib2_creation
 from e_lib2_creation.missing_files import add_missing_files
+from f_assembler.assembler import searchRadius
 
 def workflow():
     output_kgoverview = kgoverview() # the output of kg overview is [0] List_AM_GBU and [1] List_preR2
@@ -10,6 +11,7 @@ def workflow():
     cbuoverlap(output_kgoverview[1])
     lib2_creation(output_kgoverview[1])
     add_missing_files(output_kgoverview[0])
+    searchRadius(output_kgoverview[0], output_kgoverview[2])
     return output_kgoverview
     #list_AM_GBU = output_kgoverview[0]
     #list_preR2 =  output_kgoverview[1]

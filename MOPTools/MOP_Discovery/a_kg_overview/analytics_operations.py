@@ -25,6 +25,7 @@ def assemblyModelGroups(listofMOPs):
     list_pregbus = []
     list_gbus = []
     list_R1 = [] # list of type [{AM_string:{GBU_information, GB2_information}}]
+    list_R1_number = []
     for mopIRI in listofMOPs:     #### This loops over the MOPs list
         MOPandGBUs  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_GBUs(mopIRI))
         i = 0
@@ -48,6 +49,8 @@ def assemblyModelGroups(listofMOPs):
         print(assemblyModel['MOPFormula'], "_________________",  string)        
         gbu1 = str(gbu['CBU1_Modularity']+"-"+gbu['CBU1_Planarity'])
         gbu2 = str(gbu['CBU2_Modularity']+"-"+gbu['CBU2_Planarity'])
+        gbu1_number = gbu['CBU1_Number']
+        gbu2_number = gbu['CBU2_Number']
         gbu1dict = {gbu1:string}
         gbu2dict = {gbu2:string}
         if gbu1 not in list_pregbus:
@@ -75,6 +78,7 @@ def assemblyModelGroups(listofMOPs):
             assemblyModel_json(assemblyModel, string)
             assemblyModel_json_ext(assemblyModel, string, frequency)
             list_R1.append({string:[str(gbu['CBU1_Modularity']+"-"+gbu['CBU1_Planarity']),str(gbu['CBU2_Modularity']+"-"+gbu['CBU2_Planarity'])]})
+            list_R1_number.append({string:[gbu1_number, gbu2_number]})
         if string in uniques.keys():
             uniques[str(string)] += 1/2
             frequency = uniques[str(string)] 
@@ -91,7 +95,7 @@ def assemblyModelGroups(listofMOPs):
     list_preR2 = mergeR2(list_pregbus, list_gbus)
     preR2_json(list_preR2) 
     print(list_preR2)
-    return uniques, list_pregbus
+    return uniques, list_pregbus, list_R1_number
 
 def mergeR2(list_pregbus, list_gbus):
     list_preR2 = {}

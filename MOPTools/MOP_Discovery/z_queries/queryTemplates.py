@@ -58,27 +58,7 @@ def mop_GBUs(mopIRI):
     queryStr = queryStr.replace('#MOPIRI', str(mopIRI))
     return queryStr
 
-def mop_reference(string):
-    queryStr = """
-    PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
-	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-	PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT ?MOPReference ?MOPFormula ?mopIRI ?Symmetry 
-    WHERE
-    {   
-    ?mopIRI OntoMOPs:hasMOPFormula ?MOPFormula .
-    ?mopIRI OntoMOPs:hasProvenance ?Provenance .
-    ?Provenance OntoMOPs:hasReferenceDOI ?MOPReference .   
-    FILTER ((?MOPFormula) = "#MOPReference").
-    ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
-    ?AssemblyModel OntoMOPs:hasSymmetryPointGroup ?Symmetry .
-    FILTER ((?Symmetry) = "#SYMMETRY").
-    }"""
-    queryStr = queryStr.replace('#MOPReference', str(string))
-    return queryStr
-
-def mop_reference1(string, mop_symmetry):
+def mop_reference(string, mop_symmetry):
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>

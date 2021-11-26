@@ -8,6 +8,8 @@ FILE_PATHS = {
     'list_R1': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\list_R1.json',
     'list_preR2': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\list_preR2.json',
     'list_R2': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\list_R2.json',
-    'arrange': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\arrange\\'
+    'arrange': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\arrange\\',
+    'mops_r1': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\4_mops_r1\\',
+    'mops_r2': 'C:\\Users\\ak2332\\Documents\\SandboxPrograms\\Discovery_Output\\4_mops_r2\\'
 }
 
