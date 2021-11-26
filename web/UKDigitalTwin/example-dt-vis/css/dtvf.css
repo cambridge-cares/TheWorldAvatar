@@ -28,11 +28,12 @@ h6 {
 }
 
 .mapboxgl-popup-content {
-  text-align: center;
-  font-size: 9pt;
-  min-width: 100px;
-  max-width: 350px;
+  text-align: left;
+  font-size: 8pt;
+  width: auto;
+  max-width: 400px;
   pointer-events: none;
+  background: linear-gradient(180deg, rgba(245,245,255,1) 80%,rgba(230,230,240,1) 100%);
 }
 .mapboxgl-popup-content p {
   font-style: italic;
@@ -539,6 +540,7 @@ li {
   padding: 10px;
   margin-top: 10px;
   min-height: 100px;
+  display: none !important;
 }
 
 #linkedFilesContainer {
@@ -548,4 +550,73 @@ li {
 }
 #linkedFilesContainer a {
 	padding-left: 20px;
+}
+
+#terrainTitle {
+  width: 100%;
+  height: 24px;
+}
+#terrainTitle p {
+  width: 50%;
+  float: left;
+}
+
+.switch {
+  position: relative;
+  display: block;
+  width: 30px;
+  height: 16px;
+  float: right;
+  margin-top: 2px;
+  margin-right: 16px;
+}
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 2px;
+  bottom: 2px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+input:checked + .slider {
+  background-color: #2196F3;
+}
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+input:checked + .slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+.slider.round {
+  border-radius: 34px;
+}
+.slider.round p {
+  float: right;
+  padding-left: 34px;
+  padding-top: 2px;
+  font-size: 9pt !important;
+}
+.slider.round:before {
+  border-radius: 50%;
 }

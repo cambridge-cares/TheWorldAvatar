@@ -6,7 +6,9 @@
         "id": 1,
         "properties": {
             "displayName": "Asset 2.1 to Asset 2.2",
-            "line-color": "#0000FF"
+            "line-color": "#0000FF",
+            "fromID": "assets-2/1",
+            "toID": "assets-2/2"
         },
         "geometry": {
           "type": "LineString",
@@ -21,7 +23,9 @@
         "id": 2,
         "properties": {
             "displayName": "Asset 2.2 to Asset 2.3",
-            "line-color": "#0000FF"
+            "line-color": "#0000FF",
+            "fromID": "assets-2/2",
+            "toID": "assets-2/3"
         },
         "geometry": {
           "type": "LineString",
@@ -36,7 +40,9 @@
         "id": 3,
         "properties": {
             "displayName": "Asset 2.3 to Asset 2.4",
-            "line-color": "#0000FF"
+            "line-color": "#0000FF",
+            "fromID": "assets-2/3",
+            "toID": "assets-2/4"
         },
         "geometry": {
           "type": "LineString",
@@ -51,7 +57,9 @@
         "id": 4,
         "properties": {
             "displayName": "Asset 2.4 to Asset 2.1",
-            "line-color": "#0000FF"
+            "line-color": "#0000FF",
+            "fromID": "assets-2/4",
+            "toID": "assets-2/1"
         },
         "geometry": {
           "type": "LineString",

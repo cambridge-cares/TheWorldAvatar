@@ -41,6 +41,7 @@
 
 	<!-- Implementation specific -->
 	<script src='./local_icons.js'></script>
+	<script src='./temp-utils.js'></script>
 </head>
 </head>
 
@@ -75,7 +76,6 @@
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
 			"Clustered": "./data/set-3"
-			//"Raster Tile Data": "./data/set-4"
 		};
 		manager.registerDirectories(rootDirectories);
 
@@ -89,6 +89,7 @@
 		function startUp() {
 			// Create the MapBox map
 			var map = manager.createMap("map");
+			
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
@@ -141,8 +142,14 @@
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
 
+					// --- TEST ---
 					// Only enable this during testing, remove the line for production visualisations
-					manager.showDeveloperControls();
+					// manager.showDeveloperControls();
+					// --- TEST ---
+
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
 					loadedOnce = true;
 				}
 				
@@ -160,6 +167,7 @@
 					
 					// Re-add the sky and (optionally) 3D terrain
 					manager.addSkyAndTerrain();
+					manager.set3DTerrain(DT.terrain3D);
 				});
 			});
 		}

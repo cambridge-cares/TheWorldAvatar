@@ -1,157 +1,193 @@
 {
-    "type": "FeatureCollection",
-    "features": [
-      {
-        "type": "Feature",
-        "id": 1,
-        "properties": {
-            "displayName": "This is Asset #1, it has a long name to test the side panel layout.",
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-stroke-opacity": 0.75,
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.3959798812866211,
-            52.75998314460815
-          ]
-        }
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": 1,
+      "properties": {
+        "displayName": "This is Asset #1, it has a long name to test the side panel layout.",
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-stroke-opacity": 0.75,
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/1",
+          "assets-1-connections/8"
+        ]
       },
-      {
-        "type": "Feature",
-        "id": 2,
-        "properties": {
-            "displayName": "Asset #2",
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-stroke-opacity": 0.75,
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.39679527282714844,
-            52.7465543536107
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 3,
-        "properties": {
-            "displayName": "Asset #3",
-            "circle-radius": 5,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.38512229919433594,
-            52.753593945972895
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 4,
-        "properties": {
-            "displayName": "Asset #4",
-            "circle-radius": 5,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.4071807861328125,
-            52.753593945972895
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 5,
-        "properties": {
-            "displayName": "Asset #5",
-            "circle-radius": 5,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.40340423583984375,
-            52.75858071787245
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 6,
-        "properties": {
-            "displayName": "Asset #6",
-            "circle-radius": 5,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.38786888122558594,
-            52.7576457416276
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 7,
-        "properties": {
-            "displayName": "Asset #7",
-            "circle-radius": 5,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.40387630462646484,
-            52.74845073949719
-          ]
-        }
-      },
-      {
-        "type": "Feature",
-        "id": 8,
-        "properties": {
-            "displayName": "Asset #8",
-            "circle-radius": 15,
-            "circle-color": "#FF0000",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
-        },
-        "geometry": {
-          "type": "Point",
-          "coordinates": [
-            0.3888130187988281,
-            52.748918328812024
-          ]
-        }
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.3959798812866211,
+          52.75998314460815
+        ]
       }
-    ]
-  }
+    },
+    {
+      "type": "Feature",
+      "id": 2,
+      "properties": {
+        "displayName": "Asset #2",
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-stroke-opacity": 0.75,
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/4",
+          "assets-1-connections/5"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.39679527282714844,
+          52.7465543536107
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 3,
+      "properties": {
+        "displayName": "Asset #3",
+        "circle-radius": 5,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/6",
+          "assets-1-connections/7"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.38512229919433594,
+          52.753593945972895
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 4,
+      "properties": {
+        "displayName": "Asset #4",
+        "circle-radius": 5,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/1",
+          "assets-1-connections/8"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.4071807861328125,
+          52.753593945972895
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 5,
+      "properties": {
+        "displayName": "Asset #5",
+        "circle-radius": 5,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/1",
+          "assets-1-connections/2",
+          "inter-asset-connections/2"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.40340423583984375,
+          52.75858071787245
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 6,
+      "properties": {
+        "displayName": "Asset #6",
+        "circle-radius": 5,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/7",
+          "assets-1-connections/8",
+          "inter-asset-connections/1"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.38786888122558594,
+          52.7576457416276
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 7,
+      "properties": {
+        "displayName": "Asset #7",
+        "circle-radius": 5,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/3",
+          "assets-1-connections/4",
+          "inter-asset-connections/3"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.40387630462646484,
+          52.74845073949719
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": 8,
+      "properties": {
+        "displayName": "Asset #8",
+        "circle-radius": 15,
+        "circle-color": "#FF0000",
+        "circle-stroke-width": 1,
+        "circle-stroke-color": "#000000",
+        "circle-opacity": 0.75,
+        "connections": [
+          "assets-1-connections/5",
+          "assets-1-connections/6",
+          "inter-asset-connections/8"
+        ]
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0.3888130187988281,
+          52.748918328812024
+        ]
+      }
+    }
+  ]
+}

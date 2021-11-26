@@ -55,8 +55,8 @@ class TimeseriesHandler {
                     "unit": tableUnit,
                     "times": tableTimes,
                     "values": tableValues,
-                    "timeClass": entry["timeClass"],
-                    "valuesClass": entry["valuesClass"][j]
+                    "timeClass": (entry["timeClass"]) ? entry["timeClass"] : "Instant",
+                    "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
                 });
             }            
         }

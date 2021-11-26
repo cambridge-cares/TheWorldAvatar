@@ -17,7 +17,10 @@ class ControlHandler {
 				<a href="#" onclick="manager.changeCamera('pitch')">Pitched</a>
 			</div>
 			<div id="terrainContainer">
-				<p>Terrain:</p>
+				<div id="terrainTitle">
+					<p>Terrain:</p><label class="switch"><input type="checkbox" onclick="manager.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></span></label>
+				</div>
+			
 				<input type="radio" name="terrain" id="light" onclick="manager.changeTerrain('light')" checked>
 				<label for="light">Light</label>
 				<br>

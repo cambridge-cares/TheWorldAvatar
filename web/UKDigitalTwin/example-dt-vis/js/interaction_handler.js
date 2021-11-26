@@ -92,14 +92,13 @@ class InteractionHandler {
                     if(name == null) name = feature.properties["name"];
 
                     // Build HTML for popup
-                    var html = "<b>" + name + "</b></br>";
+                    var html = "<h3>" + name + "</h3>";
                     if(feature.properties["description"]) {
                         html += feature.properties["description"] + "</br></br>"
                     }
 
                     if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
                         // Add coordinate details if a point
-                        html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
                         this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
 
                     } else if(coordinates.length >= 2) {

@@ -4,7 +4,6 @@
         "defaultZoom": 15,
         "defaultBearing": -30,
         "defaultPitch": 65,
-        "add3DTerrain": true,
         "linkedFiles": [
             {
                 "text": "Test File #1",

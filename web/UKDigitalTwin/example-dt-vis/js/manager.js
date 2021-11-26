@@ -97,7 +97,7 @@ class DigitalTwinManager {
 	 * as the default state of the map.
 	 */
 	plotFirstGroup(updateSelects = true) {
-		this.plotGroup(this._registry.getFirstGroup(), updateSelects);
+		return this.plotGroup(this._registry.getFirstGroup(), updateSelects);
 	}
 
 	/**
@@ -122,42 +122,49 @@ class DigitalTwinManager {
 		var groupMeta = this._registry.getGroup(group);
 
 		// Get each data set and add it as a source
+		var sourcePromises = [];
+
 		var groupData = groupMeta["dataSets"];
 		var groupDir = groupMeta["thisDirectory"];
 		for(var i = 0; i < groupData.length; i++) {
-			this._sourceHandler.addSource(groupDir, groupData[i]);
+			let sourcePromise = this._sourceHandler.addSource(groupDir, groupData[i]);
+			sourcePromises.push(sourcePromise);
 		}
 
-		// Add layer(s) for each dataset
-		for(var i = 0; i < groupData.length; i++) {
-			this._layerHandler.addLayer(groupData[i]);
-			
-			// Register interactions slightly differently for line layers
-			if(groupData[i]["locationType"] === "line") {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"] + "_clickable", 
-					groupData[i]["locationType"]
-				]);
-			} else {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"],
-					groupData[i]["locationType"]
-				]);
+		// Wait until all sources are loaded before adding layers
+		return Promise.all(sourcePromises).then(() => {
+
+			// Add layer(s) for each dataset
+			for(var i = 0; i < groupData.length; i++) {
+				this._layerHandler.addLayer(groupData[i]);
+				
+				// Register interactions slightly differently for line layers
+				if(groupData[i]["locationType"] === "line") {
+					this._interactionHandler.registerInteractions([
+						groupData[i]["name"] + "_clickable", 
+						groupData[i]["locationType"]
+					]);
+				} else {
+					this._interactionHandler.registerInteractions([
+						groupData[i]["name"],
+						groupData[i]["locationType"]
+					]);
+				}
 			}
-		}
 
-		// Rebuild the layer selection tree
-		this._controlHandler.rebuildTree();
+			// Rebuild the layer selection tree
+			this._controlHandler.rebuildTree();
 
-		// If a location was already selected, update the side panel
-		if(DT.currentFeature != null) {
-			this._interactionHandler.mouseClick(DT.currentFeature);
-		}
+			// If a location was already selected, update the side panel
+			if(DT.currentFeature != null) {
+				this._interactionHandler.mouseClick(DT.currentFeature);
+			}
 
-		// Force selections to match this group
-		if(updateSelects) {
-			this.#forceSelects(group, 0);
-		}
+			// Force selections to match this group
+			if(updateSelects) {
+				this.#forceSelects(group, 0);
+			}
+		});
 	}
 
 	/**
@@ -202,12 +209,12 @@ class DigitalTwinManager {
 			console.log("INFO: Added special Sky layer.");
 		}
 
-		if(this._registry != null && this._sourceHandler != null) {
-			if(eval(this._registry.globalMeta["add3DTerrain"])) {
-				this._sourceHandler.add3DTerrain();
-				console.log("INFO: Added special 3D terrain layer.");
-			}
-		}
+		// if(this._registry != null && this._sourceHandler != null) {
+		// 	if(eval(this._registry.globalMeta["add3DTerrain"])) {
+		// 		this._sourceHandler.add3DTerrain();
+		// 		console.log("INFO: Added special 3D terrain layer.");
+		// 	}
+		// }
 	}
 
 	/**
@@ -238,7 +245,7 @@ class DigitalTwinManager {
 		this._map = new mapboxgl.Map(defaultOptions);
 		
 		// Now that we have a map, do some initialisation of handlers
-		this._sourceHandler = new SourceHandler(this._map);
+		this._sourceHandler = new SourceHandler(this._map, this._registry);
 		this._layerHandler = new LayerHandler(this._map);
 		this._panelHandler = new PanelHandler(this._map);
 		this._timeseriesHandler = new TimeseriesHandler();
@@ -341,6 +348,7 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeTerrain(mode) {
+		if(mode === DT.terrain) return;
 		this._controlHandler.changeTerrain(mode);
 	}
 
@@ -367,11 +375,18 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	setDefaultPanelCallback(callback) {
+		this._defaultPanelCallback = callback;
+
+	}
 	/**
 	 * Returns to the default state of the side panel
 	 */
 	goToDefaultPanel() {
 		this._panelHandler.returnToDefault();
+		if(this._defaultPanelCallback != null) {
+			this._defaultPanelCallback();
+		}
 	}
 
 	/**
@@ -441,6 +456,18 @@ class DigitalTwinManager {
 			bearing: 0,
 			speed: 0.75
 		});
+	}
+
+	/**
+	 * Enable (or disable) 3D terrain provided by MapBox.
+	 * 
+	 * @param {Boolean} enabled 3D terrain state.
+	 */
+	set3DTerrain(enabled) {
+		if(this._sourceHandler != null) {
+			this._sourceHandler.set3DTerrain(enabled);
+			DT.terrain3D = enabled;
+		}
 	}
 
 }
