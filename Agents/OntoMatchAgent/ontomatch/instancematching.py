@@ -8,6 +8,7 @@ import pandas as pd
 from tqdm import tqdm
 
 import ontomatch.classification
+import ontomatch.hpo
 import ontomatch.matchManager
 import ontomatch.scoring
 import ontomatch.utils.blackboard
@@ -121,6 +122,51 @@ class InstanceMatcherMaxSVC(InstanceMatcherBase):
         df_scores.to_csv('./debug/scores.csv')
 
         return df_scores
+
+class InstanceMatcherXGB(InstanceMatcherBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
+        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
+        params = ontomatch.utils.util.convert_json_to_dict(config_json)
+
+        srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
+        tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
+
+        self.start_internal(srconto, tgtonto, params)
+
+    def start_internal(self, srconto, tgtonto, params):
+        logging.info('starting InstanceMatcherXGB')
+
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        params_post_processing = params['post_processing']
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
+        df_scores = self.score_manager.get_scores()
+
+        params_model_specific = params['matching']['model_specific']
+        train_size = params_model_specific['match_train_size']
+        ratio = params_model_specific['nonmatch_ratio']
+        evaluation_file = params['post_processing']['evaluation_file']
+        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
+        # TODO-AE 211123: just a few matches might not be contained in df_scores
+        # thus we skip them here, since there are just a few, training XGB would not improve much if they are considere
+        # but then we have to calculate their similarity vectores
+        intersection = index_set_matches.intersection(df_scores.index)
+        df_matches = df_scores.loc[intersection]
+        prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
+        x_train, y_train = ontomatch.classification.TrainTestGenerator.generate_training_set(
+            df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
+
+        params_classification = params['classification']
+        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, x_train, y_train, df_scores, prop_columns)
+
+        if params_post_processing:
+            #TODO-AE 211123 configure whether training set is considered or not
+            #postprocess(params_post_processing, self)
+            postprocess(params_post_processing, self, minus_train_set=x_train)
 
 class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
@@ -349,10 +395,10 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         sorted_series = series.sort_values(ascending=True).copy()
         return sliding_count_internal
 
-class InstanceMatcherWithScoringWeights():
+class InstanceMatcherWithScoringWeights(InstanceMatcherBase):
 
     def __init__(self):
-        self.score_manager = None
+        super().__init__()
 
     def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
@@ -367,35 +413,14 @@ class InstanceMatcherWithScoringWeights():
 
         return self.start_internal(srconto, tgtonto, params_blocking, scoring_weights, params_post_processing, params_mapping)
 
-    def start_internal(self, srconto, tgtonto, params_blocking, scoring_weights, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
+    def start_internal(self, srconto, tgtonto, params_blocking, scoring_weights, params_post_processing=None, params_mapping=None, params_classification=None):
 
         logging.info('starting InstanceMatcherWithScoringWeightsAgent')
 
-        self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking)
-
-        if params_mapping:
-            prop_prop_sim_tuples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
-            logging.info('created from params_mapping prop_prop_sim_tuples=%s', len(prop_prop_sim_tuples))
-        else:
-            logging.info('prop_prop_sim_tuples=%s', len(prop_prop_sim_tuples))
-
-        property_mapping = []
-        for pos, t in enumerate(prop_prop_sim_tuples):
-            prop1, prop2, sim_fct = t
-            self.score_manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
-            row = {
-                'key': str(pos) + '_max',
-                'prop1': prop1,
-                'prop2': prop2,
-                'score_fct': sim_fct
-            }
-            property_mapping.append(row)
-        logging.info('added prop_prop_sim_tuples, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
-
-        self.score_manager.calculate_similarities_between_datasets()
-
-        prop_column_names = [ c for c in range(len(prop_prop_sim_tuples)) ]
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
+        prop_column_names = [ c for c in range(len(property_mapping)) ]
         df_scores = self.get_scores()
+
         ontomatch.instancematching.add_total_scores(df_scores, props=prop_column_names, scoring_weights=scoring_weights,
                         missing_score=None, aggregation_mode='sum', average_min_prop_count=2)
 
@@ -403,9 +428,6 @@ class InstanceMatcherWithScoringWeights():
             postprocess(params_post_processing, self)
 
         return df_scores
-
-    def get_scores(self):
-        return self.score_manager.get_scores()
 
 def add_total_scores(df_scores, props, scoring_weights=None, missing_score=None, aggregation_mode='sum', average_min_prop_count=2):
 
@@ -443,7 +465,7 @@ def get_total_score_for_row(prop_scores, scoring_weights=None, missing_score=Non
     else:
         raise RuntimeError('unknown aggregation mode=', aggregation_mode)
 
-def postprocess(params_post_processing, matcher):
+def postprocess(params_post_processing, matcher, minus_train_set=None):
 
     logging.info('post processing')
     dump = params_post_processing['dump']
@@ -452,7 +474,7 @@ def postprocess(params_post_processing, matcher):
         logging.info('dumping results to %s', dir_name)
         os.mkdir(dir_name)
 
-        if isinstance(matcher, ontomatch.matchManager.matchManager):
+        if isinstance(matcher, ontomatch.matchManager.matchManager) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherXGB):
             matcher.get_scores().to_csv(dir_name + '/total_scores.csv')
         else:
             sm = matcher.score_manager
@@ -474,10 +496,16 @@ def postprocess(params_post_processing, matcher):
 
     matchfile = params_post_processing['evaluation_file']
     index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
-    logging.info('ground truth matches=%s', len(index_set_matches))
-
     df_scores = matcher.get_scores()
+    logging.info('ground truth matches=%s, df_scores=%s', len(index_set_matches), len(df_scores))
+
     logging.info('length of scores=%s', len(df_scores))
+    if minus_train_set is not None:
+        diff = df_scores.index.difference(minus_train_set.index)
+        df_scores = df_scores.loc[diff].copy()
+        index_set_matches = index_set_matches.difference(minus_train_set.index)
+        logging.info('training set is not considered for evaluation, diff=%s, ground truth matches=%s, df_scores=%s', len(diff), len(index_set_matches), len(df_scores))
+
     result = ontomatch.evaluate.evaluate(df_scores, index_set_matches)
     logging.info('post processing finished')
     return result

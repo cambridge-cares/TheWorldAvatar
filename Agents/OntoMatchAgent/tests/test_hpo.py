@@ -67,7 +67,7 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
         train_size = 0.2
         column_ml_phase = 'ml_phase_' + str(train_size)
         prop_columns=['0', '1', '2', '3', '4']
-        x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split(
+        x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split_OLD(
                 match_file, nonmatch_file, column_ml_phase, prop_columns)
 
         model = ontomatch.hpo.start_hpo(params_classification, x_train, y_train)

@@ -120,8 +120,27 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
     logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
     return x_train, y_train
 
-def start_from_console():
+def start(params_classification, x_train, y_train, df_scores, prop_columns):
 
+    logging.info('classifying similarity vectors')
+    model = start_hpo(params_classification, x_train, y_train)
+    logging.info('predicting probability of match or nonmatch')
+    y_pred_proba = model.predict_proba(df_scores[prop_columns])
+    y_pred_proba_match = [ ymatch for (_, ymatch) in y_pred_proba]
+    df_scores['score'] = y_pred_proba_match
+
+    return df_scores
+
+    logging.info('evaluate on full blocking set concerning ground truth minus training samples')
+    index_set_matches_minus_train = index_set_matches.difference(x_train.index)
+    x_full, y_full = ontomatch.classification.TrainTestGenerator.create_full_evaluation_set(
+        match_file, nonmatch_file, column_ml_phase, prop_columns, minus_train=True)
+    x_full = add_pred_proba_as_total_scores(model, x_full)
+    logging.info('ground truth matches minus train=%s', len(index_set_matches_minus_train))
+    logging.info('length of scores=%s', len(x_full))
+    result = ontomatch.evaluate.evaluate(x_full, index_set_matches_minus_train)
+
+def start_from_console():
     params, _ = ontomatch.utils.util.init()
     params_classification = params['classification']
     evaluation_file = params['post_processing']['evaluation_file']
@@ -147,7 +166,7 @@ def start_from_console():
     train_size = 0.2
     column_ml_phase = 'ml_phase_' + str(train_size)
     prop_columns=['0', '1', '2', '3', '4']
-    x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split(
+    x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split_OLD(
         match_file, nonmatch_file, column_ml_phase, prop_columns)
 
     if True:

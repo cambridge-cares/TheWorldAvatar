@@ -82,7 +82,35 @@ class TrainTestGenerator():
         return df_nonmatches
 
     @staticmethod
-    def train_test_split(match_file, nonmatch_file, column_ml_phase, prop_columns=None):
+    def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonmatch_ratio, prop_columns=None):
+        logging.info('splitting, match=%s, candidate_pairs=%s, match_train_size=%s, nonmatch_ratio=%s',
+            len(df_matches), len(df_candidate_pairs), match_train_size, nonmatch_ratio)
+
+        # sample from matches
+        number_m = int(match_train_size * len(df_matches))
+        df_matches['y'] = 1 # 1 means match
+        # y = df_matches['y']
+        df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
+
+        # sample from nonmatches
+        number_n = int(nonmatch_ratio * number_m)
+        # only subtract the matching pairs in the training set
+        #diff = df_candidate_pairs.index.difference(df_train_m.index)
+        # substract all matching pairs in the ground truth
+        diff = df_candidate_pairs.index.difference(df_matches.index)
+        df_diff = df_candidate_pairs.loc[diff]
+        df_diff['y'] = 0 # 0 means nonmatch
+        df_n_train, _ = sklearn.model_selection.train_test_split(df_diff, train_size=number_n, shuffle=True)
+
+        df_train = pd.concat([df_m_train, df_n_train])
+        x_train = df_train[prop_columns].copy()
+        y_train = df_train['y'].copy()
+
+        logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
+        return x_train, y_train
+
+    @staticmethod
+    def train_test_split_OLD(match_file, nonmatch_file, column_ml_phase, prop_columns=None):
         logging.info('splitting, match=%s, nonmatch=%s, ml_phase=%s, columns=%s',
             match_file, nonmatch_file, column_ml_phase, prop_columns)
 
