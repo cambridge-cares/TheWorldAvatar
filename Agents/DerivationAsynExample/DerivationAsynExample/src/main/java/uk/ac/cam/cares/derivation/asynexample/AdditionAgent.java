@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.agent_eg;
+package uk.ac.cam.cares.derivation.asynexample;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
