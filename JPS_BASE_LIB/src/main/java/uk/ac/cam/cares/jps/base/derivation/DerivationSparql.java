@@ -1476,13 +1476,23 @@ public class DerivationSparql{
 		return derivations;
 	}
 	
+	/**
+	 * delete all entities of a given derivation
+	 * @param derivation
+	 */
 	void deleteBelongsTo(String derivation) {
 		SelectQuery query = Queries.SELECT();
 		Variable entity = query.var();
-		TriplePattern deleteTP =  entity.has(belongsTo, iri(derivation));
+		Variable predicate1 = query.var();
+		Variable predicate2 = query.var();
+		Variable subject = query.var();
+		Variable object = query.var();
+		
+		TriplePattern delete_tp1 = entity.has(predicate1, object);
+		TriplePattern delete_tp2 = subject.has(predicate2, entity);	
 		
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(deleteTP).where(deleteTP).prefix(p_derived);
+		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, delete_tp2).prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
