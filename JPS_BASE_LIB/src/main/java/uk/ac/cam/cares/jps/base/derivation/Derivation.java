@@ -39,7 +39,11 @@ public class Derivation{
 	}
 	
 	public void replaceEntities(List<Entity> entities) {
-		this.entities = entities;
+		this.entities = new ArrayList<>();
+		for (Entity entity: entities) {
+			this.entities.add(entity);
+			entity.setBelongsTo(this);
+		}
 	}
 	
 	public List<Entity> getEntities() {
