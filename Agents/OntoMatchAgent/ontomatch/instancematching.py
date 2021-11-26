@@ -76,53 +76,6 @@ class InstanceMatcherBase():
     def set_scores(self, df_scores):
         self.score_manager.df_scores = df_scores
 
-class InstanceMatcherMaxSVC(InstanceMatcherBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def start(self, srconto, tgtonto, params_blocking, params_mapping, params_classification, prop_prop_sim_tuples=None):
-        logging.info('starting InstanceMatcherMaxSVC')
-        #TODO-AE 211110 auto property mapping
-        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
-        #TODO-AE asymmetry
-        df_max_scores = self.score_manager.get_max_scores_1()
-        df_scores = self.get_scores()
-        df_scores = self.classify_with_svc(df_max_scores, df_scores, params_classification)
-        self.set_scores(df_scores)
-        return self.get_scores()
-
-    def classify_with_svc(self, df_max_scores, df_scores, params_classification):
-
-        #columns = ['0','1','2','3','4']
-        #df_train, df_test, labels_train, labels_test = ontomatch.classification.select_seeds_for_max_scores_OLD(df_max_scores, df_scores, columns)
-
-        df_max_scores_cleaned = ontomatch.classification.clean(df_max_scores)
-        df_scores_cleaned = ontomatch.classification.clean(df_scores)
-        logging.info('max_scores=%s, cleaned=%s, scores=%s, cleaned=%s', len(df_max_scores), len(df_max_scores_cleaned), len(df_scores), len(df_scores_cleaned))
-        df_train, df_test, labels_train, labels_test = ontomatch.classification.select_seeds_for_max_scores(df_max_scores_cleaned, df_scores_cleaned)
-
-        # TODO-AE 211110 remove dumping to debug folder or find a better solution
-        if not os.path.exists('./debug'):
-            os.mkdir('./debug')
-        df_train.to_csv('./debug/df_train.csv')
-        labels_train.to_csv('./debug/labels_train.csv')
-
-        df_scores_cleaned = ontomatch.classification.calculate_confidence_scores_from_hpo_svm(params_classification, df_train, labels_train, df_test, labels_test, df_scores_cleaned)
-        df_scores['score'] = 0.
-        #df_scores.loc[df_scores_cleaned.index]['score'] = df_scores_cleaned['score']
-        count = 0
-        for i, row in df_scores_cleaned.iterrows():
-            df_scores.at[i, 'score'] = row['score']
-            count += 1
-        logging.info('number of scores transferred from df_scores_cleaned to df_scores=%s', count)
-
-
-        df_scores_cleaned.to_csv('./debug/scores_cleaned.csv')
-        df_scores.to_csv('./debug/scores.csv')
-
-        return df_scores
-
 class InstanceMatcherXGB(InstanceMatcherBase):
 
     def __init__(self):
