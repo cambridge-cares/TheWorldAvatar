@@ -76,6 +76,52 @@ class InstanceMatcherBase():
     def set_scores(self, df_scores):
         self.score_manager.df_scores = df_scores
 
+class InstanceMatcherClassifier(InstanceMatcherBase):
+
+    def __init__(self):
+        super().__init__()
+
+    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
+        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
+        params = ontomatch.utils.util.convert_json_to_dict(config_json)
+
+        srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
+        tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
+
+        self.start_internal(srconto, tgtonto, params)
+
+    def start_internal(self, srconto, tgtonto, params):
+        logging.info('starting InstanceMatcherClassifier')
+
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        params_post_processing = params['post_processing']
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
+        df_scores = self.score_manager.get_scores()
+
+        params_model_specific = params['matching']['model_specific']
+        train_size = params_model_specific['match_train_size']
+        ratio = params_model_specific['nonmatch_ratio']
+        evaluation_file = params['post_processing']['evaluation_file']
+        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
+        # TODO-AE 211123: just a few matches might not be contained in df_scores
+        # thus we skip them here, since there are just a few, training XGB would not improve much if they are considere
+        # but then we have to calculate their similarity vectores
+        intersection = index_set_matches.intersection(df_scores.index)
+        df_matches = df_scores.loc[intersection]
+        prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
+        x_train, y_train = ontomatch.classification.TrainTestGenerator.generate_training_set(
+            df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
+
+        params_classification = params['classification']
+        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, x_train, y_train, df_scores, prop_columns)
+
+        if params_post_processing:
+            #TODO-AE 211123 configure whether training set is considered or not
+            #postprocess(params_post_processing, self)
+            postprocess(params_post_processing, self, minus_train_set=x_train)
+
+'''
 class InstanceMatcherXGB(InstanceMatcherBase):
 
     def __init__(self):
@@ -120,6 +166,7 @@ class InstanceMatcherXGB(InstanceMatcherBase):
             #TODO-AE 211123 configure whether training set is considered or not
             #postprocess(params_post_processing, self)
             postprocess(params_post_processing, self, minus_train_set=x_train)
+'''
 
 class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
@@ -427,14 +474,14 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
         logging.info('dumping results to %s', dir_name)
         os.mkdir(dir_name)
 
-        if isinstance(matcher, ontomatch.matchManager.matchManager) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherXGB):
+        if isinstance(matcher, ontomatch.matchManager.matchManager) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherClassifier):
             matcher.get_scores().to_csv(dir_name + '/total_scores.csv')
         else:
             sm = matcher.score_manager
             sm.data1.to_csv(dir_name + '/data1.csv')
             sm.data2.to_csv(dir_name + '/data2.csv')
 
-            if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherMaxSVC):
+            if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights):
                 sm.df_scores.to_csv(dir_name + '/total_scores.csv')
             elif isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
                 if sm.df_max_scores_1 is not None:

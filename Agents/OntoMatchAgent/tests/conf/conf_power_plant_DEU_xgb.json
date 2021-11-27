@@ -38,7 +38,7 @@
 	]
 },
 "matching":{
-	"name": "instancematching.InstanceMatcherXGB",
+	"name": "instancematching.InstanceMatcherClassifier",
 	"model_specific": {
 		"match_train_size": 0.2,
 		"nonmatch_ratio": 1

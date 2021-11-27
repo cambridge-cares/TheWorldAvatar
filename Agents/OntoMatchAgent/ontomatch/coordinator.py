@@ -44,8 +44,8 @@ class Agent():
                 self.__call_matching_with_auto_calibration(config_handle, src_graph_handle, tgt_graph_handle, http)
             elif matching_name == 'instancematching.InstanceMatcherWithScoringWeights':
                 self.__call_matching_with_scoring_weights(config_handle, src_graph_handle, tgt_graph_handle, http)
-            elif matching_name == 'instancematching.InstanceMatcherXGB':
-                self.__call_matching_with_XGB(config_handle, src_graph_handle, tgt_graph_handle, http)
+            elif matching_name == 'instancematching.InstanceMatcherClassifier':
+                self.__call_matching_with_Classifier(config_handle, src_graph_handle, tgt_graph_handle, http)
             else:
                 raise RuntimeError('unknown matcher', matching_name)
 
@@ -75,14 +75,14 @@ class Agent():
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
         logging.info('called InstanceMatcherWithAutoCalibration')
 
-    def __call_matching_with_XGB(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
-        logging.info('calling InstanceMatcherXGB, http=%s', http)
+    def __call_matching_with_Classifier(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
+        logging.info('calling InstanceMatcherClassifier, http=%s', http)
         if http:
             raise NotImplementedError()
         else:
-            matcher = ontomatch.instancematching.InstanceMatcherXGB()
+            matcher = ontomatch.instancematching.InstanceMatcherClassifier()
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
-        logging.info('called InstanceMatcherXGB')
+        logging.info('called InstanceMatcherClassifier')
 
     def __call_matching_with_scoring_weights(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
         logging.info('calling InstanceMatcherWithScoringWeights, http=%s', http)

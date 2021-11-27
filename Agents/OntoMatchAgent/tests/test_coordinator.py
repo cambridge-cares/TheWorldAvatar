@@ -43,12 +43,8 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_instance_matching_with_XGB(self):
 
-        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO
+        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_XGB
         params = ontomatch.utils.util.read_json_from_path(config_file)
-        # since the config file defines pickled files as src and tgt,
-        # step 1 loading and step 2 adding geo coordinates are omitted
-
-        params['matching']['name'] = 'instancematching.InstanceMatcherXGB'
 
         # write the config params to the blackboard
         params_str = json.dumps(params)

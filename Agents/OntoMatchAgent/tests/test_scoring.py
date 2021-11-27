@@ -341,7 +341,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         expected = {
             'name': ('name', 0.75249, 4),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.52053, 0)
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.73332, 5)
         }
 
         self.assertEqual(len(property_mapping), len(expected))
@@ -405,7 +405,6 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         ]
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        #src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
@@ -416,10 +415,10 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
             'name' : ('name', 0.78602, 4),
             'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.99758, 3),
             'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.70326, 3),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54737, 1),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54674, 1),
             # for OwnedBy/hasName score function 1 is slightly behind 4
             #'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.547, 1),
-            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 0),
+            'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 1),
             #both fuel and type have been identified for property mapping
             'type': ('type', 0.87609, 0),
             'http://www.w3.org/2000/01/rdf-schema#label': ('http://www.w3.org/2000/01/rdf-schema#label', 0.78345, 4)
@@ -429,6 +428,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         self.assertEqual(len(property_mapping), len(expected))
         for mapping in property_mapping:
+            logging.debug('mapping=%s', mapping)
             prop1 = mapping['prop1']
             prop2, mean, pos_sfct = expected[prop1]
             self.assertEqual(mapping['prop2'], prop2)

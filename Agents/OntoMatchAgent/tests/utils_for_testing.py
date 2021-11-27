@@ -10,6 +10,7 @@ import ontomatch.utils.util
 PATH_MATCHES_PP_DEU = './data/matches_power_plant_DEU.csv'
 PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
 PATH_CONF_PP_DEU_AUTO_GEO = './tests/conf/conf_power_plant_DEU_auto_geo.json'
+PATH_CONF_PP_DEU_XGB = './tests/conf/conf_power_plant_DEU_xgb.json'
 
 class TestCaseOntoMatch(unittest.TestCase):
 

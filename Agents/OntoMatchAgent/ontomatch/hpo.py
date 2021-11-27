@@ -1,10 +1,13 @@
 import logging
 
+from sklearn.experimental import enable_iterative_imputer
 import sklearn
 import sklearn.ensemble
+import sklearn.impute
 import sklearn.metrics.pairwise
 import sklearn.model_selection
-import sklearn.svm
+import sklearn.neural_network
+import sklearn.pipeline
 import xgboost
 
 import ontomatch.classification
@@ -17,18 +20,51 @@ def create_classifier_RF():
 def create_classifier_XGB():
     return xgboost.XGBClassifier()
 
-def start_hpo(params_classification, x, y):
+def create_classifier_MLP(params_hpo):
+    #imputer = sklearn.impute.IterativeImputer()
+    imputer = sklearn.impute.KNNImputer(n_neighbors=7, weights='uniform')
+    #imputer = sklearn.impute.KNNImputer(n_neighbors=7, weights='distance')
+    classifier = sklearn.neural_network.MLPClassifier(solver='adam') #, max_iter='400')
+    estimator = sklearn.pipeline.make_pipeline(imputer, classifier)
 
-    cross_validation = params_classification['cross_validation']
+    logging.debug('available parameter keys for MLP=%s', estimator.get_params().keys())
+
+    params_hpo_mlp = {}
+    for key, value in params_hpo.items():
+
+        if key == 'hidden_layer_sizes':
+            # e.g. ['10', '5', '10,5,3']
+            current_value = value.copy()
+            value = []
+            for v in current_value:
+                t = tuple(map(int, v.split(',')))
+                value.append(t)
+
+        if key in ['hidden_layer_sizes', 'learning_rate', 'learning_rate_init', 'alpha', 'beta_1', 'beta_2']:
+            # add 'mlpclassifier__' because estimator is a pipeline
+            params_hpo_mlp['mlpclassifier__' + key] = value
+        else:
+            params_hpo_mlp[key] = value
+
+    return estimator, params_hpo_mlp
+
+def get_params_for_hpo(params_model_specific):
     params_hpo = {}
-    for key, value in params_classification['model_specific'].items():
+    for key, value in params_model_specific.items():
         if not value:
             continue
         elif isinstance(value, list):
             params_hpo[key] = value
         else:
             params_hpo[key] = [value]
-    logging.info('cross_validation=%s, params_hpo=%s', cross_validation, params_hpo)
+    return params_hpo
+
+def start_hpo(params_classification, x, y):
+
+    name = params_classification['name']
+    cross_validation = params_classification['cross_validation']
+    logging.info('name=%s, cross_validation=%s', name, cross_validation)
+    params_hpo = get_params_for_hpo(params_classification['model_specific'])
 
     logging.info('y value counts=%s', y.value_counts())
     count_nonmatch = y.value_counts().loc[0]
@@ -36,7 +72,6 @@ def start_hpo(params_classification, x, y):
     scale_pos_weight = count_nonmatch / count_match
     logging.info('unbalanced classification with nonmatches=%s, matches=%s, ratio=%s', count_nonmatch, count_match, scale_pos_weight)
 
-    name = params_classification['name']
     if name == 'RF':
         model = create_classifier_RF()
     elif name == 'XGB':
@@ -48,6 +83,11 @@ def start_hpo(params_classification, x, y):
         # To remove this warning, do the following: 1) Pass option use_label_encoder=False when constructing XGBClassifier
         # object; and 2) Encode your labels (y) as integers starting with 0, i.e. 0, 1, 2, ..., [num_class - 1].
         #params_hpo.update({'use_label_encoder': [True]})
+    elif name == 'MLP':
+        model, params_hpo = create_classifier_MLP(params_hpo)
+
+    logging.info('params_hpo=%s', params_hpo)
+
 
     #hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3)
     #TODO-AE 211119: scoring function for XGB
