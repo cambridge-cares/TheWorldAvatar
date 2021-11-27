@@ -8,49 +8,6 @@ import tests.utils_for_testing
 
 class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
 
-    def xxx_test_start_RF_total_scores(self):
-        params_classification = {
-            "name": "RF",
-            "model_specific":{
-                "bootstrap": True, "max_depth": 50, "max_features": 0.5, "max_samples": 50, "min_samples_leaf": 1, "min_samples_split": 2, "n_estimators": 128
-            },
-            "cross_validation": 5
-        }
-        path = 'C:/my/repos/ontomatch_20210924/experiments/211115_visualization/KWL/scores_1/total_scores.csv'
-        dframe = pd.read_csv(path, index_col=['idx_1', 'idx_2'])
-        fct_to_int = lambda b: 1 if b else 0
-        y_column = 'y'
-        dframe[y_column] = dframe['best'].apply(fct_to_int)
-
-        x_columns = ['0', '1', '2', '3', '4']
-        train_size = 0.8
-        result = ontomatch.hpo.split_hpo_evaluate(dframe, params_classification,
-                x_columns=x_columns, y_column=y_column, train_size=train_size)
-
-    def xxx_test_start_RF_scores(self):
-        params_classification = {
-            "name": "RF",
-            "model_specific":{
-                "bootstrap": True, "max_depth": 50, "max_features": 0.5, "max_samples": 50, "min_samples_leaf": 1, "min_samples_split": 2, "n_estimators": 128
-            },
-            "cross_validation": 5
-        }
-        path = 'C:/my/repos/ontomatch_20210924/experiments/211115_visualization/KWL/scores_1/scores.csv'
-        dframe = pd.read_csv(path, index_col=['idx_1', 'idx_2'])
-
-        # mark true matches in the scores data
-        df_matches = pd.read_csv(tests.utils_for_testing.PATH_MATCHES_PP_DEU, index_col=['idx_1', 'idx_2'])
-        index_intersection = dframe.index.intersection(df_matches.index)
-        logging.info('df_matches=%s, intersection with scores=%s', len(df_matches), len(index_intersection))
-        y_column = 'y'
-        dframe[y_column] = 0
-        dframe.at[index_intersection, y_column] = 1
-
-        x_columns = ['0', '1', '2', '3', '4']
-        train_size = 0.02
-        result = ontomatch.hpo.split_hpo_evaluate(dframe, params_classification,
-                x_columns=x_columns, y_column=y_column, train_size=train_size)
-
     def test_start_XGB_scores(self):
         params_classification = {
             "name": "XGB",
@@ -62,6 +19,12 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
             },
             "cross_validation": 5
         }
+        params_training = {
+	        "match_train_size": 0.2,
+	        "nonmatch_ratio": 1,
+	        "train_file": None,
+	        "cross_validation": 5
+        }
         match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
         nonmatch_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_N_random_blocking_tfidf_ratio_1.csv'
         train_size = 0.2
@@ -70,7 +33,7 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
         x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split_OLD(
                 match_file, nonmatch_file, column_ml_phase, prop_columns)
 
-        model = ontomatch.hpo.start_hpo(params_classification, x_train, y_train)
+        model = ontomatch.hpo.start_hpo(params_classification, params_training, x_train, y_train)
         result = ontomatch.hpo.evaluate_with_pred_proba(model, x_test, y_test, 11)
 
         # max f1-score=0.864373783257625 for threshold t=0.7

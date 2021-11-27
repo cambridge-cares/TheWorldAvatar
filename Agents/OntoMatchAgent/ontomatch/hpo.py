@@ -59,10 +59,10 @@ def get_params_for_hpo(params_model_specific):
             params_hpo[key] = [value]
     return params_hpo
 
-def start_hpo(params_classification, x, y):
+def start_hpo(params_classification, params_training, x, y):
 
     name = params_classification['name']
-    cross_validation = params_classification['cross_validation']
+    cross_validation = params_training['cross_validation']
     logging.info('name=%s, cross_validation=%s', name, cross_validation)
     params_hpo = get_params_for_hpo(params_classification['model_specific'])
 
@@ -160,10 +160,10 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
     logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
     return x_train, y_train
 
-def start(params_classification, x_train, y_train, df_scores, prop_columns):
+def start(params_classification, params_training, x_train, y_train, df_scores, prop_columns):
 
     logging.info('classifying similarity vectors')
-    model = start_hpo(params_classification, x_train, y_train)
+    model = start_hpo(params_classification, params_training, x_train, y_train)
     logging.info('predicting probability of match or nonmatch')
     y_pred_proba = model.predict_proba(df_scores[prop_columns])
     y_pred_proba_match = [ ymatch for (_, ymatch) in y_pred_proba]
@@ -183,6 +183,7 @@ def start(params_classification, x_train, y_train, df_scores, prop_columns):
 def start_from_console():
     params, _ = ontomatch.utils.util.init()
     params_classification = params['classification']
+    params_training = params['training']
     evaluation_file = params['post_processing']['evaluation_file']
     # KWL
     match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
@@ -211,7 +212,7 @@ def start_from_console():
 
     if True:
         logging.info('classifying similarity vectors')
-        model = start_hpo(params_classification, x_train, y_train)
+        model = start_hpo(params_classification, params_training, x_train, y_train)
 
         logging.info('evaluate on test set')
         result = evaluate_with_pred_proba(model, x_test, y_test)
@@ -241,7 +242,7 @@ def start_from_console():
         lower_threshold = 0.2
         upper_threshold = 0.5
         x_train, y_train = get_train_set_from_auto_scores(total_scores_file, scores_file, lower_threshold, upper_threshold, prop_columns, nonmatch_match_ratio)
-        model = start_hpo(params_classification, x_train, y_train)
+        model = start_hpo(params_classification, params_training, x_train, y_train)
         #TODO-AE 211119 evaluate on the entire ground truth and all matches?
         # evaluate on the same test set as above
         result = evaluate_with_pred_proba(model, x_test, y_test)
@@ -252,7 +253,7 @@ def start_from_console():
         upper_threshold = 0.5
         scores_file = None
         x_train, y_train = get_train_set_from_auto_scores(total_scores_file, scores_file, lower_threshold, upper_threshold, prop_columns, nonmatch_match_ratio)
-        model = start_hpo(params_classification, x_train, y_train)
+        model = start_hpo(params_classification, params_training, x_train, y_train)
         #TODO-AE 211119 evaluate on the entire ground truth and all matches?
         # evaluate on the same test set as above
         result = evaluate_with_pred_proba(model, x_test, y_test)

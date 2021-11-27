@@ -96,12 +96,14 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_post_processing = params['post_processing']
+
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
         df_scores = self.score_manager.get_scores()
 
         params_model_specific = params['matching']['model_specific']
-        train_size = params_model_specific['match_train_size']
-        ratio = params_model_specific['nonmatch_ratio']
+        params_training = params['training']
+        train_size = params_training['match_train_size']
+        ratio = params_training['nonmatch_ratio']
         evaluation_file = params['post_processing']['evaluation_file']
         index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
         # TODO-AE 211123: just a few matches might not be contained in df_scores
@@ -114,7 +116,8 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
             df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
 
         params_classification = params['classification']
-        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, x_train, y_train, df_scores, prop_columns)
+
+        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, params_training, x_train, y_train, df_scores, prop_columns)
 
         if params_post_processing:
             #TODO-AE 211123 configure whether training set is considered or not
