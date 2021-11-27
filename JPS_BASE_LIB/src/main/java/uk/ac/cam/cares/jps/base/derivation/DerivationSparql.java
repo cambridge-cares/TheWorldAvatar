@@ -57,6 +57,7 @@ public class DerivationSparql{
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
     private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
     private static Iri Status = p_derived.iri("Status");
+    private static Iri PendingUpdate = p_derived.iri("PendingUpdate");
     private static Iri Requested = p_derived.iri("Requested");
     private static Iri InProgress = p_derived.iri("InProgress");
     private static Iri Finished = p_derived.iri("Finished");
@@ -453,6 +454,29 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * This method checks if the status of the derivation is marked as "PendingUpdate".
+	 * @param derivation
+	 * @return
+	 */
+	boolean isPendingUpdate(String derivation) {
+		String statusQueryKey = "status";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		SelectQuery query = Queries.SELECT();
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(PendingUpdate);
+		query.prefix(p_derived).where(queryPattern, queryPattern2);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.isEmpty()) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	/**
 	 * This method checks if the status of the derivation is marked as "Requested".
 	 * @param storeClient
 	 * @param derivation
@@ -522,6 +546,26 @@ public class DerivationSparql{
 		} else {
 			return true;
 		}
+	}
+	
+	/**
+	 * This method marks the status of the derivation as "PendingUpdate".
+	 * @param derivation
+	 */
+	void markAsPendingUpdate(String derivation) {
+		ModifyQuery modify = Queries.MODIFY();
+		
+		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		while (checkInstanceExists(statusIRI)) {
+			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
+		}
+		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
+		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(PendingUpdate);
+		
+		modify.prefix(p_derived).insert(insert_tp);
+		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
