@@ -267,6 +267,32 @@ public class DerivationClient {
 	}
 	
 	/**
+	 * This method checks at the status "PendingUpdate" to decide whether change it to "Requested".
+	 * @param derivation
+	 */
+	public void checkAtPendingUpdate(String derivation) {
+		// assume this derivation can be updated now
+		boolean toRequest = true;
+		
+		// get a list of previous derivations
+		List<String> previousDerivations = this.sparqlClient.getPreviousDerivations(derivation);
+		
+		// for each of the derivation, check if they are up-to-date, and no status associated
+		for (String dev : previousDerivations) {
+			List<String> inputs = this.sparqlClient.getInputs(dev);
+			if (isOutOfDate(dev, inputs) || hasStatus(dev)) {
+				toRequest = false;
+				break;
+			}
+		}
+		
+		// only when flag toRequest is not changed during checking, mark as Requested
+		if (toRequest) {
+			this.sparqlClient.markAsRequested(derivation);			
+		}
+	}
+	
+	/**
 	 * This method cleans up the "Finished" derivation by reconnecting the new generated derived IRI with derivations and deleting all status. 
 	 * @param derivation
 	 */

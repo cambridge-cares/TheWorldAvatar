@@ -553,6 +553,7 @@ public class DerivationSparql{
 	 * @param derivation
 	 */
 	void markAsPendingUpdate(String derivation) {
+		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
@@ -574,6 +575,7 @@ public class DerivationSparql{
 	 * @param derivation
 	 */
 	void markAsRequested(String derivation) {
+		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
@@ -927,6 +929,34 @@ public class DerivationSparql{
 		}
 		
 		return derivations;
+	}
+	
+	/**
+	 * This method retrieves a list of previous derivations that directly linked with the given derivation in the chain.
+	 * @param derivation
+	 * @return
+	 */
+	List<String> getPreviousDerivations(String derivation) {
+		String derivedQueryKey = "previousDerivation";
+		
+		SelectQuery query = Queries.SELECT();
+		
+		Variable previousDerivation = SparqlBuilder.var(derivedQueryKey);
+		
+		// direct inputs to derive this
+		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), previousDerivation);
+		
+		query.prefix(p_derived).where(derivedPattern).select(previousDerivation);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<String> listOfPreviousDerivation = new ArrayList<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			String derivedIRI = queryResult.getJSONObject(i).getString(derivedQueryKey);
+			listOfPreviousDerivation.add(derivedIRI);
+		}
+		
+		return listOfPreviousDerivation;
 	}
 	
 	/**

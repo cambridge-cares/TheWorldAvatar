@@ -48,7 +48,9 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     	for (String derivation : listOfDerivation) {
     		// check if the derivation is an instance of asynchronous derivation
     		if (devClient.isDerivedAsynchronous(derivation)) {
-    			if (devClient.isRequested(derivation)) {
+    			if (devClient.isPendingUpdate(derivation)) {
+    				devClient.checkAtPendingUpdate(derivation);
+    			} else if (devClient.isRequested(derivation)) {
     				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
     				devClient.markAsInProgress(derivation);
     				List<String> newDerivedIRI = setupJob(agentInputs);
