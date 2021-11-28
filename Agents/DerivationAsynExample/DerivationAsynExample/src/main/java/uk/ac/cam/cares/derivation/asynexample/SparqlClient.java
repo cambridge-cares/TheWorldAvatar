@@ -18,6 +18,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class SparqlClient {
@@ -44,6 +45,21 @@ public class SparqlClient {
 	public static Iri hasValue = p_namespace.iri("hasValue");
 	public static Iri numericalValue = p_namespace.iri("numericalValue");
 	
+	// OntoAgent related
+	public static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
+	public static Iri Service = p_agent.iri("Service");
+	public static Iri Operation = p_agent.iri("Operation");
+	public static Iri MessageContent = p_agent.iri("MessageContent");
+	public static Iri MessagePart = p_agent.iri("MessagePart");
+	
+	public static Iri hasHttpUrl = p_agent.iri("hasHttpUrl");
+	public static Iri hasOperation = p_agent.iri("hasOperation");
+	public static Iri hasInput = p_agent.iri("hasInput");
+	public static Iri hasOutput = p_agent.iri("hasOutput");
+	public static Iri hasMandatoryPart = p_agent.iri("hasMandatoryPart");
+	public static Iri hasType = p_agent.iri("hasType");
+	public static Iri hasName = p_agent.iri("hasName");
+	
 	public static void main(String[] args) {
 		System.out.println(SparqlClient.MaxValue.getQueryString().replaceAll(prefix+":", namespace));
 	}
@@ -52,6 +68,20 @@ public class SparqlClient {
 		this.storeClient = storeClient;
 	}
 	
+	/**
+     * clears kg before initialising anything
+     */
+    public void clearKG() {
+    	Variable x = SparqlBuilder.var("x");
+    	Variable y = SparqlBuilder.var("y");
+    	Variable z = SparqlBuilder.var("z");
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.delete(x.has(y,z)).where(x.has(y,z));
+    	
+    	storeClient.executeUpdate(modify.getQueryString());
+    }
+    
 	/**
      * query <instance> <hasValue> ?x, ?x <numericalValue> ?value
      * @param instance
@@ -70,6 +100,32 @@ public class SparqlClient {
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
     	return queryResult.getJSONObject(0).getInt(key);
+    }
+    
+    /**
+     * This method updates the numerical value of a value instance to the given numerical value.
+     * update value in <property> <hasValue> <valueIRI>, <valueIRI> a <ScalarValue>, <valueIRI> <numericalValue> value
+     * @param property
+     * @param value
+     */
+    public void updateValue(String property, int value) {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String valueKey = "value";
+    	String numvalKey = "numValue";
+    	Variable value_iri = SparqlBuilder.var(valueKey);
+    	Variable numVal_iri = SparqlBuilder.var(numvalKey);
+    	GraphPattern queryPattern = GraphPatterns.and(iri(property).has(hasValue,value_iri), value_iri.has(numericalValue,numVal_iri));
+    	
+    	query.prefix(p_namespace).select(value_iri,numVal_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.delete(iri(queryResult.getJSONObject(0).getString(valueKey)).has(numericalValue,queryResult.getJSONObject(0).getInt(numvalKey)));
+    	modify.insert(iri(queryResult.getJSONObject(0).getString(valueKey)).has(numericalValue,value));
+    	
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     }
     
     public boolean isMaxValue(String instance) {
@@ -97,7 +153,6 @@ public class SparqlClient {
      * create a new max value instance, return the IRI of the new instance
      * <iri> a <MasValue>
      * <iri> a owl:NamedIndividual
-     * @param maxtime
      * @return
      */
     public String createMaxValue() {
@@ -112,7 +167,6 @@ public class SparqlClient {
      * creates a new min value instance
      * <iri> a <MinValue>
      * <iri> a owl:NamedIndividual
-     * @param mintime
      * @return
      */
     public String createMinValue() {
@@ -125,9 +179,8 @@ public class SparqlClient {
     
     /**
      * creates a difference instance. 
-     * <iri> a <CalculatedDifference>
+     * <iri> a <Difference>
      * <iri> a owl:NamedIndividual
-     * @param difference
      * @return
      */
     public String createDifference() {
@@ -136,6 +189,156 @@ public class SparqlClient {
     	modify.insert(iri(difference_iri).isA(Difference).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return difference_iri;
+    }
+    
+    /**
+     * This method creates a UpperLimit instance. 
+     * <iri> a <UpperLimit>
+     * <iri> a owl:NamedIndividual
+     * @return
+     */
+    public String createUpperLimit() {
+    	String upperlimit_iri = namespace + UUID.randomUUID().toString();    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.insert(iri(upperlimit_iri).isA(UpperLimit).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	return upperlimit_iri;
+    }
+    
+    /**
+     * This method creates a LowerLimit instance. 
+     * <iri> a <LowerLimit>
+     * <iri> a owl:NamedIndividual
+     * @return
+     */
+    public String createLowerLimit() {
+    	String lowerlimit_iri = namespace + UUID.randomUUID().toString();    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.insert(iri(lowerlimit_iri).isA(LowerLimit).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	return lowerlimit_iri;
+    }
+    
+    /**
+     * This method creates a NumberOfPoints instance. 
+     * <iri> a <NumberOfPoints>
+     * <iri> a owl:NamedIndividual
+     * @return
+     */
+    public String createNumberOfPoints() {
+    	String numberOfPoints_iri = namespace + UUID.randomUUID().toString();    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	modify.insert(iri(numberOfPoints_iri).isA(NumberOfPoints).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+    	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+    	return numberOfPoints_iri;
+    }
+    
+    /**
+     * This method queries ?x a <UpperLimit>.
+     * @return
+     */
+    public String getUpperLimitIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "upperlimit";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(UpperLimit);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one UpperLimit instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("UpperLimit is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+    
+    /**
+     * This method queries ?x a <LowerLimit>.
+     * @return
+     */
+    public String getLowerLimitIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "lowerlimit";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(LowerLimit);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one LowerLimit instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("LowerLimit is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+    
+    /**
+     * This method queries ?x a <NumberOfPoints>.
+     * @return
+     */
+    public String getNumberOfPointsIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "numberofpoints";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(NumberOfPoints);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one NumberOfPoints instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("NumberOfPoints is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+    
+    /**
+     * This method queries ?x a <Difference>.
+     * @return
+     */
+    public String getDifferenceIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "difference";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(Difference);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one Difference instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("Difference is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
     }
     
     /**
@@ -154,6 +357,18 @@ public class SparqlClient {
     	return value_iri;
     }
     
+    /**
+     * This method creates a ListOfRandomPoints instance given a list of value.
+     * <iri> a <ListOfRandomPoints>,
+     * <iri> a owl:NamedIndividual,
+     * <iri> <hasPoint> <pointIRI>,
+     * <pointIRI> a <Point>,
+     * <pointIRI> <hasValue> <valueIRI>,
+     * <valueIRI> a <ScalarValue>, 
+     * <valueIRI> <numericalValue> value
+     * @param listOfRandomPoints
+     * @return
+     */
     public String createListOfRandomPoints(List<Integer> listOfRandomPoints) {
     	String listOfRandomPoints_iri = namespace + UUID.randomUUID().toString();    	
     	ModifyQuery modify = Queries.MODIFY();
@@ -169,6 +384,12 @@ public class SparqlClient {
     	return listOfRandomPoints_iri;
     }
     
+    /**
+     * This method creates a Point instance. 
+     * <iri> a <Point>
+     * <iri> a owl:NamedIndividual
+     * @return
+     */
     public String createPoint() {
     	String point_iri = namespace + UUID.randomUUID().toString();    	
     	ModifyQuery modify = Queries.MODIFY();
@@ -177,6 +398,11 @@ public class SparqlClient {
     	return point_iri;
     }
     
+    /**
+     * This method links point_iri to the listOfRandomPoints_iri it belongs to.
+     * @param listOfRandomPoints_iri
+     * @param point_iri
+     */
     public void addPointInstance(String listOfRandomPoints_iri, String point_iri) {
     	ModifyQuery modify = Queries.MODIFY();
     	modify.insert(iri(listOfRandomPoints_iri).has(hasPoint,iri(point_iri)));
@@ -207,5 +433,68 @@ public class SparqlClient {
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
     	return queryResult.getJSONObject(0).getInt(key);
+    }
+    
+    /**
+     * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
+     * @param service
+     * @param httpUrl
+     * @param inputTypes
+     * @param outputTypes
+     */
+    public void createOntoAgentInstance(String service, String httpUrl, List<String> inputTypes, List<String> outputTypes) {
+    	String operation = getNameSpace(service) + "_" + UUID.randomUUID().toString();
+    	String mcInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
+    	String mcOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
+    	
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	modify.insert(iri(service).isA(Service).andHas(hasOperation, iri(operation)));
+    	modify.insert(iri(operation).isA(Operation).andHas(hasInput, iri(mcInput)).andHas(hasOutput, iri(mcOutput)).andHas(hasHttpUrl, iri(httpUrl)));
+    	modify.insert(iri(mcInput).isA(MessageContent));
+    	for (String input : inputTypes) {
+    		String mpInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
+    		modify.insert(iri(mcInput).has(hasMandatoryPart, iri(mpInput)));
+    		modify.insert(iri(mpInput).isA(MessagePart).andHas(hasType, iri(input)));
+    	}
+    	
+    	modify.insert(iri(mcOutput).isA(MessageContent));
+    	for (String output : outputTypes) {
+    		String mpOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
+    		modify.insert(iri(mcOutput).has(hasMandatoryPart, iri(mpOutput)));
+    		modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
+    	}
+    	
+    	storeClient.executeUpdate(modify.prefix(p_namespace,p_agent).getQueryString());
+    }
+    
+    /**
+	 * This method chunks the given iri and returns its namespace. 
+	 * @param iri
+	 * @return
+	 */
+	private String getNameSpace(String iri) {
+    	iri = trimIRI(iri);
+    	if (iri.contains("#")) {
+    		iri = iri.substring(0, iri.lastIndexOf("#")+1);
+    	} else if (iri.contains("/")) {
+    		iri = iri.substring(0, iri.lastIndexOf("/")+1);
+    	}
+    	return iri;
+    }
+    
+	/**
+	 * This method trims the given iri by removing the "<" at the start and the ">" at the end.
+	 * @param iri
+	 * @return
+	 */
+    private String trimIRI(String iri) {
+    	if (iri.startsWith("<")) {
+    		iri = iri.substring(1);
+    	}
+    	if (iri.endsWith(">")) {
+    		iri = iri.substring(0, iri.length()-1);
+    	}
+    	return iri;
     }
 }
