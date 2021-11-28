@@ -19,6 +19,11 @@ public class Config {
 	public static String agentIriMinValue;
 	public static String agentIriRNG;
 	
+	public static String agentHttpUrlDifference;
+	public static String agentHttpUrlMaxValue;
+	public static String agentHttpUrlMinValue;
+	public static String agentHttpUrlRNG;
+		
 	public static long initDelayAgentDifference;
 	public static long initDelayAgentMaxValue;
 	public static long initDelayAgentMinValue;
@@ -37,7 +42,7 @@ public class Config {
 	public static void initProperties() {
 		if (props == null) {
 			try {
-				String agentProps = Paths.get("main", "resources", "agents.properties").toString();
+				String agentProps = Paths.get("agents.properties").toString();
 				InputStream inputStream = new ClassPathResource(agentProps).getInputStream();
 				
 				Config.props = new Properties();
@@ -47,6 +52,11 @@ public class Config {
 				Config.agentIriMaxValue = Config.props.getProperty("agent.iri.maxvalue");
 				Config.agentIriMinValue= Config.props.getProperty("agent.iri.minvalue");
 				Config.agentIriRNG = Config.props.getProperty("agent.iri.rng");
+				
+				Config.agentHttpUrlDifference = Config.props.getProperty("agent.http.url.difference");
+				Config.agentHttpUrlMaxValue = Config.props.getProperty("agent.http.url.maxvalue");
+				Config.agentHttpUrlMinValue= Config.props.getProperty("agent.http.url.minvalue");
+				Config.agentHttpUrlRNG = Config.props.getProperty("agent.http.url.rng");
 				
 				Config.initDelayAgentDifference = Long.parseLong(Config.props.getProperty("initial.delay.agent.difference"));
 				Config.initDelayAgentMaxValue = Long.parseLong(Config.props.getProperty("initial.delay.agent.maxvalue"));
