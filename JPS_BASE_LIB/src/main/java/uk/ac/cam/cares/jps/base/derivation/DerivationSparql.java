@@ -1131,8 +1131,10 @@ public class DerivationSparql{
 	 * @param instance
 	 */
 	void deleteStatus(String instance) {
-		String status = getStatus(instance);
-		deleteInstances(Arrays.asList(status));
+		if (hasStatus(instance)) {
+			String status = getStatus(instance);
+			deleteInstances(Arrays.asList(status));			
+		}
 	}
 	
 	/**
