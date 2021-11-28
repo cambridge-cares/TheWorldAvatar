@@ -18,6 +18,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+/**
+ * This min value agent determines the minimum value given a list of random points.
+ * @author Jiaru Bai (jb2197@cam.ac.uk)
+ *
+ */
 public class MinValueAgent extends AsynAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);

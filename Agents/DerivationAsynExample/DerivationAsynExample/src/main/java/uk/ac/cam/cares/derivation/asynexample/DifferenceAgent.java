@@ -18,6 +18,11 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
+/**
+ * This difference agent takes two inputs as maximum value and minimum value and compute their difference.
+ * @author Jiaru Bai (jb2197@cam.ac.uk)
+ *
+ */
 public class DifferenceAgent extends AsynAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(DifferenceAgent.class);
