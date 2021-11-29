@@ -29,6 +29,7 @@ public class InputAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
 		
+		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient);
