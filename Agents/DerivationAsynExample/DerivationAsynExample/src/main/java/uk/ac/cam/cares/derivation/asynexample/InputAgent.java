@@ -16,13 +16,15 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {"/InputAgent"})
+@WebServlet(urlPatterns = {InputAgent.API_PATTERN})
 public class InputAgent extends JPSAgent {
 	// this agent should be a servlet that developer can send request to give the inputs
 	
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger LOGGER = LogManager.getLogger(InputAgent.class);
+	
+	static final String API_PATTERN = "/InputAgent";
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {

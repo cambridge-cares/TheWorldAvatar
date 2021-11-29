@@ -19,12 +19,14 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {"/InitialiseInstances"})
+@WebServlet(urlPatterns = {InitialiseInstances.API_PATTERN})
 public class InitialiseInstances extends JPSAgent {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger LOGGER = LogManager.getLogger(InitialiseInstances.class);
+	
+	static final String API_PATTERN = "/InitialiseInstances";
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {

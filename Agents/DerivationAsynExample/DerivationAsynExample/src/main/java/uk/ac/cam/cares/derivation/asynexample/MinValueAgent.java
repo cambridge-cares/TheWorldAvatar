@@ -7,6 +7,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,14 +24,21 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
+@WebServlet(urlPatterns = {MinValueAgent.API_PATTERN})
 public class MinValueAgent extends AsynAgent {
 	
 	private static final Logger LOGGER = LogManager.getLogger(MinValueAgent.class);
 	
 	private static final long serialVersionUID = 1L;
 	
+	static final String API_PATTERN = "/MinValueAgent";
+	
 	SparqlClient sparqlClient;
-
+	
+	public MinValueAgent() {
+		LOGGER.info("MinValueAgent is initialised.");
+	}
+	
 	public MinValueAgent(StoreClientInterface storeClient) {
 		super(storeClient);
 		this.sparqlClient = new SparqlClient(storeClient);

@@ -15,11 +15,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  *
  */
-@WebServlet(urlPatterns = {"/UpdateDerivations"})
+@WebServlet(urlPatterns = {UpdateDerivations.API_PATTERN})
 public class UpdateDerivations extends JPSAgent {
 	private static final long serialVersionUID = 1L;
 	
 	private static final Logger LOGGER = LogManager.getLogger(UpdateDerivations.class);
+	
+	static final String API_PATTERN = "/UpdateDerivations";
 	
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
