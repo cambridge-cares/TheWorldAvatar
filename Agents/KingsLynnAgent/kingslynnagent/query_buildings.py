@@ -102,7 +102,7 @@ def get_uprns(building_iri, query_endpoint):
     # Construct query
     query = utils.create_sparql_prefix('ocgl') + \
             ''' SELECT ?uprns
-                where { ?attribute ocgl:cityObjectId %s ;
+                WHERE { ?attribute ocgl:cityObjectId %s ;
 	              ocgl:attrName "OS_UPRNs" ;
       		      ocgl:strVal ?uprns . }
             ''' % city_object
@@ -117,6 +117,37 @@ def get_uprns(building_iri, query_endpoint):
         uprn_list = uprn_list.split(',')
 
     return uprn_list
+
+
+def get_building_height(building_iri, query_endpoint):
+    """
+        Retrieves building height attached (as OntoCityGML attribute) to given building (i.e. building iri)
+
+        Returns:
+            measured building height as float
+    """
+
+    # Potentially condition given building IRI
+    if not building_iri.startswith('<'):
+        building_iri = '<' + building_iri
+    if not building_iri.endswith('>'):
+        building_iri = building_iri + '>'
+
+    # Construct query
+    query = utils.create_sparql_prefix('ocgl') + \
+            ''' SELECT ?height
+                WHERE { %s ocgl:measuredHeight ?height . }
+            ''' % building_iri
+
+    # Execute query
+    height_result = execute_query(query, query_endpoint)
+
+    # Unpack SPARQL output
+    height = None
+    if len(height_result['results']['bindings']) > 0:
+        height = float(height_result['results']['bindings'][0]['height']['value'])
+
+    return height
 
 
 def execute_query(query, query_endpoint):
@@ -202,7 +233,7 @@ def get_coordinates(polygon_data, polygon_datatype, transformation, dimensions=3
         coordinates = np.array(coordinates)
 
         if not z_min and not z_max and dimensions == 3:
-            # Extract min and max Z values of polygon
+            # Extract min and max Z values from exterior polygon ring
             z_min = min(coordinates[:, 2])
             z_max = max(coordinates[:, 2])
 
@@ -375,9 +406,9 @@ if __name__ == '__main__':
             poly = np.array(p[0])
             # Define small uncertainty range to account for conversion inaccuracies
             eps = 0.001
-            # Check if all Z values of polygon are the same and (approx.) equal to building elevation
+            # Check if all Z values of polygon are the same and (approx.) equal to building's base elevation
             if (poly[:, 2] == poly[:, 2][0]).all() and \
-               ((poly[:, 2][0] >= (zmin - eps)) and (poly[:, 2][0] <= (zmin + eps))):
+               ((poly[:, 2][0] >= (base_elevation - eps)) and (poly[:, 2][0] <= (base_elevation + eps))):
                 # Once found, get entire base polygon (incl. interior rings) and convert to 2D
                 base_polygon = [[]]
                 for poly in p:
@@ -385,6 +416,9 @@ if __name__ == '__main__':
                     poly = np.array(poly)[:, :2]
                     # Create list to allow for composite ground surfaces
                     base_polygon[0].append(poly.tolist())
+
+        # Retrieve building's citygml height attribute
+        height = get_building_height(b, utils.QUERY_ENDPOINT)
 
         # Retrieve UPRNs attached to current building
         uprns = get_uprns(b, utils.QUERY_ENDPOINT)
@@ -395,16 +429,16 @@ if __name__ == '__main__':
                          'fill-extrusion-color': '#666666',
                          'fill-extrusion-opacity': 0.66,
                          # Building ground elevation
-                         'fill-extrusion-base': 0, #round(zmin, 3)
+                         'fill-extrusion-base': 0, #round(base_elevation, 3)
                          # Building (absolute) height, i.e. NOT relative height above base
-                         'fill-extrusion-height': round(zmax-zmin, 3) #round(zmax, 3)
+                         'fill-extrusion-height': round(top_elevation-base_elevation, 3) #round(top_elevation, 3)
                          }
 
         # Specify metadata properties to consider
         metadata_props = {'id': feature_id,
                           'Building': str(b),
-                          'Ground elevation (m)': round(zmin, 3),
-                          'Building height (m)': round(zmax, 3),
+                          'Ground elevation (m)': str(round(base_elevation, 2)),
+                          'Building height (m)': str(round(height, 2)),
                           'UPRNs': uprns
                           }
 
