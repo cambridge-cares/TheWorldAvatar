@@ -29,6 +29,7 @@ public class DerivationClient {
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
+	boolean upstreamDerivationPendingUpdate;
 	
      /**
      * Logger for error output.
@@ -204,7 +205,8 @@ public class DerivationClient {
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
 		try {
 			// the flag upstreamDerivationRequested is set as false by default
-			updateDerivationAsyn(derivationIRI, graph, false);
+			upstreamDerivationPendingUpdate = false;
+			updateDerivationAsyn(derivationIRI, graph);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -501,7 +503,7 @@ public class DerivationClient {
 	 * @param instance
 	 * @param graph
 	 */
-	private void updateDerivationAsyn(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph, boolean upstreamDerivationRequested) {
+	private void updateDerivationAsyn(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph) {
 		// this method follows the first a few steps of method updateDerivation(String instance, DirectedAcyclicGraph<String, DefaultEdge> graph)
 		// TODO in future development, ideally these two method should be merged into the same method?
 		List<String> inputsAndDerived = this.sparqlClient.getInputsAndDerived(instance);
@@ -515,48 +517,66 @@ public class DerivationClient {
 				graph.addVertex(input);
 			}
 			graph.addEdge(instance, input);
-			updateDerivationAsyn(input, graph, upstreamDerivationRequested);
+			updateDerivationAsyn(input, graph);
 		}
 		
 		List<String> inputs = this.sparqlClient.getInputs(instance);
 		if (inputs.size() > 0) {
 			// here only derivation instance will enter, first we check if it is an asynchronous derivation
 			if (isDerivedAsynchronous(instance)) {
-				// then we check if this derivation is part of a chain and if any upstream one is already requested
-				// as the upstreamDerivationRequested flag is false by default, the code will directly go to the else part
-				if (upstreamDerivationRequested) {
-					// here it means one of the upstream derivation is already requested
-					// so we check if the current derivation has status already
-					// if there is status already, the derivation framework just pass
-					// otherwise, we mark it as PendingUpdate
+				if (isOutOfDate(instance, inputs)) {
 					if (!this.sparqlClient.hasStatus(instance)) {
-						LOGGER.info("Pending to update <" + instance + ">, marked as PendingUpdate");
 						this.sparqlClient.markAsPendingUpdate(instance);
 					}
+					upstreamDerivationPendingUpdate = true;
 				} else {
-					// only if all upstream ones are up-to-date, we check if the current derivation is out-of-date
-					// this applies to the first derivation in the chain by default
-					if (isOutOfDate(instance,inputs)) {
-						// if the Derivation is out of date, the first thing we do is checking its status
-						if (!this.sparqlClient.hasStatus(instance)) {
-							// if there's no status, then mark as requested - a job need to be started to update the derivation
-							LOGGER.info("Updating <" + instance + ">, marked as Requested");
-							LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
-							this.sparqlClient.markAsRequested(instance);
-						} else {
-							// for now, if there's any status, the derivation framework just pass
-						}
-						// as at this point, this should be the first derivation in the chain to be updated
-						// we set the flag to remind all downstream derivations
-						upstreamDerivationRequested = true;
-					} else {
-						// if the derivation is up to date, then delete <hasStatus> <Status> if applies
-						// as in theory, here flag upstreamDerivationRequested is false, so this derivation remains up-to-date
-						if (this.sparqlClient.hasStatus(instance)) {
-							this.sparqlClient.deleteStatus(instance);
-						}
+					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance) && !this.sparqlClient.hasUpstreamDerivation(instance)) {
+						this.sparqlClient.markAsPendingUpdate(instance);
 					}
 				}
+//				// then we check if this derivation is part of a chain and if any upstream one is already requested
+//				// as the upstreamDerivationRequested flag is false by default, the code will directly go to the else part
+//				if (upstreamDerivationRequested) {
+//					// it is likely the flag is up but we are at the start of the chain
+//					// this will happen if one derivation has two downstream branches
+//					if (this.sparqlClient.isFirstDerivation(instance)) {
+//						if (isOutOfDate(instance, inputs) && !this.sparqlClient.hasStatus(instance)) {
+//							this.sparqlClient.markAsRequested(instance);
+//						}
+//					} else {
+//						// here it means one of the upstream derivation is already requested
+//						// so we check if the current derivation has status already
+//						// if there is status already, the derivation framework just pass
+//						// otherwise, we mark it as PendingUpdate
+//						if (!this.sparqlClient.hasStatus(instance)) {
+//							LOGGER.info("Pending to update <" + instance + ">, marked as PendingUpdate");
+//							this.sparqlClient.markAsPendingUpdate(instance);
+//						}						
+//					}
+//				} else {
+//					// only if all upstream ones are up-to-date, we check if the current derivation is out-of-date
+//					// this applies to the first derivation in the chain by default
+//					if (isOutOfDate(instance,inputs)) {
+//						// if the Derivation is out of date, the first thing we do is checking its status
+//						if (!this.sparqlClient.hasStatus(instance)) {
+//							// if there's no status, then mark as requested - a job need to be started to update the derivation
+//							LOGGER.info("Updating <" + instance + ">, marked as Requested");
+//							LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
+//							this.sparqlClient.markAsRequested(instance);
+//						} else {
+//							// for now, if there's any status, the derivation framework just pass
+//						}
+//						// as at this point, this should be the first derivation in the chain to be updated
+//						// we set the flag to remind all downstream derivations
+//						upstreamDerivationRequested = true;
+//					} else {
+//						// if the derivation is up to date, then delete <hasStatus> <Status> if applies
+//						// as in theory, here flag upstreamDerivationRequested is false, so this derivation remains up-to-date
+//						if (this.sparqlClient.hasStatus(instance)) {
+//							this.sparqlClient.deleteStatus(instance);
+//						}
+//					}
+//				}
 			}
 		}
 	}
