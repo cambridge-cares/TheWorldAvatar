@@ -26,10 +26,19 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     *
     */
 	private static final long serialVersionUID = 1L;
-   
+	
+	static final String msg = "This agent is an instance of AsynAgent, which monitors the derivation and should NOT be used as an HTTP servlet.";
+	
 	StoreClientInterface storeClient;
 	DerivationClient devClient;
 	
+	/**
+	 * Provide default constructor to enable agent initialisation.
+	 */
+	public AsynAgent() {
+		LOGGER.info("A new AsynAgent has been initialised.");
+	}
+		
 	/**
      * Initialise a new AsynAgent with StoreClientInterface.
      */
@@ -37,6 +46,18 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
         this.storeClient = storeClient;
         this.devClient = new DerivationClient(storeClient);
     }
+	
+	/**
+	 * Display default response message when accidentally invoking agent via an HTTP request.
+	 */
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+		
+		JSONObject response = new JSONObject();
+		response.put("status", AsynAgent.msg);
+		
+		return response;
+	}
 	
 	/**
      * Monitor the derivation that isDerivedUsing the agentIRI.
