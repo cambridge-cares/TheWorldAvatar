@@ -28,6 +28,7 @@ from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import demandLoadAllocator as DLA
+from UK_Digital_Twin_Package import TopologicalInformationProperty as TopoInfo 
 
 
 """Notation used in URI construction"""
@@ -118,15 +119,35 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, numOfBra
     res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery, endpoint_iri, ONS_JSON))
     res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, endpoint_iri, ONS_JSON))
     
+    # Find the aggragatedBus
+    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch)  
+    busInfoArrays = readFile(topo_info.BusInfo)
+    aggragatedBusList = []
+    for busInfo in busInfoArrays:
+        if str(busInfo[5]).strip('\n') == str(topo_info.headerBusTopologicalInformation[5].strip('\n')):
+            continue
+        elif str(busInfo[5].strip('\n') ) != str(None):  
+            aggragatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
+            aggragatedBusList.append(aggragatedBus)
+            
+    # Map the full Bus node iri with the agrregated place (denoted with LA code)
+    if len(aggragatedBusList) != 0:
+        for aggragatedBus in aggragatedBusList:
+            for bus in res_queryBusLocation:
+                if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggragatedBus[0]):
+                    aggragatedBus[0] = bus['Bus_node']
+                    break
+            
     # create an instance of class demandLoadAllocator
     dla = DLA.demandLoadAllocator()
     # get the load allocation method via getattr function 
     allocator = getattr(dla, loadAllocatorName)
     # pass the arrguments to the cluster method
-    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: TotalELecConsumption 
+    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea, aggragatedBusList) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: TotalELecConsumption 
     
     EBus_Load_List = checkAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
     
+    # TODO:The EBus_Load_List is a dictionary; check the aggragated bus load values
     if EBus_Load_List == None:
         raise Exception('EBus_Load_List is empty')
         

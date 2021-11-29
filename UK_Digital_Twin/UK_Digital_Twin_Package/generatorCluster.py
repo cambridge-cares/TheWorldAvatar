@@ -28,7 +28,7 @@ class generatorCluster(object):
         res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')
             
         print(res_queryBusTopologicalInformation[0])
-        # identify the aggragatedBus: same bus but represents different areas (regions
+        # identify the aggragatedBus: same bus but represents different areas (regions)
         if len(aggragatedBusList) != 0:
             for aggragatedBus in aggragatedBusList:               
                 for bus in res_queryBusTopologicalInformation:

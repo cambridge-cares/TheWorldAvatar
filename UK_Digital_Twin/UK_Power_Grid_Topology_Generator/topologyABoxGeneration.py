@@ -64,18 +64,6 @@ uk_ebus_model = UK_PG.UKEbusModel()
 uk_eline_model = UK_PG.UKElineModel()
 uk_egen_model = UK_PG.UKEGenModel()
 
-# """Decommissioned:OWL file storage path"""
-#defaultStoredPath = uk_topo.StoreGeneratedOWLs
-
-# """Decommissioned: Sleepycat storage path"""
-#defaultPath_Sleepycat = uk_topo.SleepycatStoragePath
-
-# """Decommissioned: Remote Endpoint lable"""
-# powerPlant_Endpoint = ukpp.endpoint['lable']
-# topology_Endpoint = uk_topo.endpoint['lable']
-# topology_federated_query_ep = uk_topo.endpoint['queryendpoint_iri']
-# energyConsumption_federated_query_ep = ukec.endpoint['queryendpoint_iri']
-
 """Blazegraph UK digital tiwn"""
 endpoint_label = endpointList.ukdigitaltwin['lable']
 endpoint_url = endpointList.ukdigitaltwin['queryendpoint_iri']
