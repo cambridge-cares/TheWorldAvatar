@@ -33,29 +33,17 @@ public class InputAgent extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient);
 		
-		// get the input from the request
-		Integer upperLimit = Integer.parseInt(requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.UpperLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace)));
-		Integer lowerLimit = Integer.parseInt(requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.LowerLimit.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace)));
-		Integer numberOfPoints = Integer.parseInt(requestParams.getJSONObject(DerivationClient.AGENT_INPUT_KEY).getString(SparqlClient.NumberOfPoints.getQueryString().replaceAll(SparqlClient.prefix+":", SparqlClient.namespace)));
+		if (InstanceDatabase.NumberOfPoints == null) {
+			InstanceDatabase.NumberOfPoints = sparqlClient.getNumberOfPointsIRI();
+		}
 		
-		// update the instances with the new input values, also update the timestamp to make it current
-		String ul_iri = sparqlClient.getUpperLimitIRI();
-		sparqlClient.updateValue(ul_iri, upperLimit);
-		devClient.updateTimestamp(ul_iri);
-		
-		String ll_iri = sparqlClient.getLowerLimitIRI();
-		sparqlClient.updateValue(ll_iri, lowerLimit);
-		devClient.updateTimestamp(ll_iri);
-		
-		String np_iri = sparqlClient.getNumberOfPointsIRI();
-		sparqlClient.updateValue(np_iri, numberOfPoints);
-		devClient.updateTimestamp(np_iri);
+		// update the NumberOfPoints by adding 1 to its current value, also update the timestamp to make it current
+		sparqlClient.updateValue(InstanceDatabase.NumberOfPoints, sparqlClient.getValue(InstanceDatabase.NumberOfPoints) + 1);
+		devClient.updateTimestamp(InstanceDatabase.NumberOfPoints);
 		
 		JSONObject response = new JSONObject();
 		JSONObject iris = new JSONObject();
-		iris.put("UpperLimit instance", ul_iri);
-		iris.put("LowerLimit instance", ll_iri);
-		iris.put("NumberOfPoints instance", np_iri);
+		iris.put("NumberOfPoints instance", InstanceDatabase.NumberOfPoints);
 		response.put("Updated successfully", iris);
 		
 		return response;
