@@ -123,12 +123,7 @@ def assetFinder(givenLACode, assetsKGendpoint, assetsKGendpointLabel, ONS_Endpoi
         ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode .
         {?area <http://publishmydata.com/def/ontology/foi/within>  ?within .
         ?within <http://publishmydata.com/def/ontology/foi/code> '%s' .} UNION { ?area <http://publishmydata.com/def/ontology/foi/code> '%s' .} .
-        
-        #?area ons:status ?status . 
-        #?Asset space_and_time_extended:hasGISCoordinateSystem ?CoordinateSystem .
-        #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_x/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?x_coordinate . # longitude is east/west
-        #?CoordinateSystem space_and_time_extended:hasProjectedCoordinate_y/ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?y_coordinate . # latitude is north/south
-        
+
         }
         """%(str(assetTypeTripleTemplate), givenLACode, givenLACode)    
         res_assetWithinGivenLACode = json.loads(performFederatedQuery(query_assetWithinGivenLACode, assetsKGendpoint, ONS_Endpoint))

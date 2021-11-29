@@ -137,7 +137,7 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
     if EGenInfo == None:
         raise Exception('EGenInfo is empty')
        
-    capa_demand_ratio = capa_demand_ratio_calculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption)
+    capa_demand_ratio = demandAndCapacityRatioCalculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption)
     
     # TODO: The location should be the address of the top node UK digital twin which should be specified in the level one when the power plant instance being created 
     #  location = query_model.queryDigitalTwinLocation(endpoint_label, dt.SleepycatStoragePath, localQuery)  
@@ -196,7 +196,7 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         
         ###add EGen model parametor###
         # uk_egen_model_ = UK_PG.UKEGenModel(DUKESVersion = version_of_DUKES, numOfBus = numOfBus)
-        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen)
+        uk_egen_model_ = initialiseEGenModelVar(uk_egen_model, egen, capa_demand_ratio)
         
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_model_.BUSNUMKey, int(uk_egen_model_.BUS), None, \
                                  ontopowsys_PowerSystemModel.BusNumber.iri, ontocape_mathematical_model.Parameter.iri)
@@ -245,7 +245,7 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         if updateLocalOWLFile == True: 
             # Store/update the generated owl files      
             if filepath[-2:] != "\\": 
-                filepath_ = filepath + '\\' + str(numOfBus) + '_Bus_Model_' + node_locator + OWL
+                filepath_ = filepath + "\\" + str(numOfBus) + '_Bus_Model_' + node_locator + OWL
             else:
                 filepath_ = filepath + str(numOfBus) + '_Bus_Model_'+ node_locator + OWL
             storeGeneratedOWLs(g, filepath_)
@@ -254,13 +254,13 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         cg_model_EGen.close()       
     return
 
-def initialiseEGenModelVar(EGen_Model, egen):
+def initialiseEGenModelVar(EGen_Model, egen, demand_capa_ratio):
     if not isinstance (EGen_Model, UK_PG.UKEGenModel):
         raise Exception('The first argument should be an instence of UKEGenModel')
 
     EGen_Model.BUS = egen[6]
     capa = egen[7]
-    EGen_Model.PG_INPUT = capa * capa_demand_ratio    
+    EGen_Model.PG_INPUT = capa * demand_capa_ratio    
     primaryFuel = egen[8]
     
     if primaryFuel in ukmf.Renewable:
@@ -276,19 +276,18 @@ def initialiseEGenModelVar(EGen_Model, egen):
     return EGen_Model
 
 """Calculate the sum of capacity and total demanding"""
-def capa_demand_ratio_calculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption):
+def demandAndCapacityRatioCalculator(EGenInfo, numOfBus, numOfBranch, startTime_of_EnergyConsumption):
     sum_of_capa = 0
     for eg in EGenInfo:
         sum_of_capa += eg[7]
-    print('sum_of_capa is: ', sum_of_capa)
+    print('\\\\\sum_of_capa is: ', sum_of_capa)
     total_demand = query_model.queryTotalElecConsumptionofGBOrUK(endpoint_label, numOfBus, numOfBranch, startTime_of_EnergyConsumption) * 1000 / (24 * 365) 
     print('######total_demand:', total_demand)
-    print('total_demand is: ', total_demand)
-    capa_demand_ratio = total_demand/sum_of_capa
-    print('capa_demand_ratio is: ', capa_demand_ratio)
-    return capa_demand_ratio
+    demand_capa_ratio = total_demand/sum_of_capa
+    print('demand_capa_ratio is: ', demand_capa_ratio)
+    return demand_capa_ratio
 
 if __name__ == '__main__':    
-    createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, None, True) 
-    # createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, None, True)
+    # createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, None, True) 
+    createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, None, True)
     print('Terminated')

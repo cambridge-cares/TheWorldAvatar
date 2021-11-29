@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 27 Oct 2021          #
+# Last Update Date: 29 Nov 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power grid model_EBus."""
@@ -76,7 +76,7 @@ model_EBus_cg_id = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_gr
 
 ### Functions ### 
 """Main function: create the named graph Model_EBus and their sub graphs each EBus"""
-def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTime_of_EnergyConsumption, loadAllocatorName, defaultInitialisation, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, numOfBranch, startTime_of_EnergyConsumption, loadAllocatorName, defaultInitialisation, OWLFileStoragePath, updateLocalOWLFile = True):
     uk_ebus_model = UK_PG.UKEbusModel(version_of_DUKES, numOfBus)
     uk_topo = UK_Topo.UKPowerGridTopology(numOfBus)
     defaultStoredPath = uk_ebus_model.StoreGeneratedOWLs
@@ -115,7 +115,7 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
     # Query the bus loaction
     res_queryBusLocation = list(queryBusTopologicalInformation(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label)) # this query reused the one for creating topology
     # Query the local electricity consumption for both region and local areas
-    res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption,topoAndConsumpPath_Sleepycat, localQuery, endpoint_label))
+    res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery, endpoint_iri, ONS_JSON))
     res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, endpoint_iri, ONS_JSON))
     
     # create an instance of class demandLoadAllocator
@@ -149,7 +149,7 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, startTim
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_Model")))  
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch_Model")))  
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'BusModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent

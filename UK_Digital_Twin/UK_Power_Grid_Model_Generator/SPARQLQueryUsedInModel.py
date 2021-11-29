@@ -209,7 +209,6 @@ def queryEGenInfo(numOfBus, numOfBranch, topoAndConsumpPath_Sleepycat, powerPlan
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, numOfBus, numOfBranch, startTime_of_EnergyConsumption):
     label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
-    
     queryStr_BusAndLatlon = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -299,84 +298,89 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, numOfBus, numOfBranch, sta
 
 ###############EBus#############
 # query the EBus iri and its located area's total electricity consumption 
-def queryEBusandRegionalDemand(numOfBus, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
-    label = "_" + str(numOfBus) + "_"  
-    queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-    PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    SELECT DISTINCT ?EBus ?TotalELecConsumption
-    WHERE
-    {
-    ?Topology rdf:type ontocape_network_system:NetworkSystem .
-    ?Topology rdfs:label ?label .
-    FILTER regex(?label, "%s") .
-    ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
-    ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
-    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location_region . 
+# def queryEBusandRegionalDemand(numOfBus, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
+#     label = "_" + str(numOfBus) + "_"  
+#     queryStr = """
+#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+#     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
+#     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
+#     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+#     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
+#     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
+#     SELECT DISTINCT ?EBus ?TotalELecConsumption
+#     WHERE
+#     {
+#     ?Topology rdf:type ontocape_network_system:NetworkSystem .
+#     ?Topology rdfs:label ?label .
+#     FILTER regex(?label, "%s") .
+#     ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
+#     ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
+#     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location_region . 
     
-    ?EquipmentConnection_EBus ontoecape_technical_system:isRealizedBy ?EBus . 
-    ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location .
-    ?Location rdf:type <https://dbpedia.org/ontology/Region> .
+#     ?EquipmentConnection_EBus ontoecape_technical_system:isRealizedBy ?EBus . 
+#     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location .
+#     ?Location rdf:type <https://dbpedia.org/ontology/Region> .
     
-    ?regionalConsumption ontocape_upper_level_system:hasAddress ?Location .
-    ?regionalConsumption ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
-    }
-    """ % label  
-    global qres
-    if localQuery == False and len(endPoint_label) > 0:
-       print('remoteQuery')     
-       res = json.loads(performQuery(endPoint_label, queryStr))            
-       qres = [[ str(r['EBus']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
-    elif topo_Consumption_SleepycatPath != None and localQuery == True:  
-        ebus_cg = ConjunctiveGraph('Sleepycat')
-        sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
-        if sl == NO_STORE:
-            print('Cannot find the UK topology sleepycat store')
-            return None        
-        qres = list(ebus_cg.query(queryStr))
-        ebus_cg.close()
-    return qres 
+#     ?regionalConsumption ontocape_upper_level_system:hasAddress ?Location .
+#     ?regionalConsumption ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
+#     ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
+#     }
+#     """ % label  
+#     global qres
+#     if localQuery == False and len(endPoint_label) > 0:
+#        print('remoteQuery')     
+#        res = json.loads(performQuery(endPoint_label, queryStr))            
+#        qres = [[ str(r['EBus']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
+#     elif topo_Consumption_SleepycatPath != None and localQuery == True:  
+#         ebus_cg = ConjunctiveGraph('Sleepycat')
+#         sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
+#         if sl == NO_STORE:
+#             print('Cannot find the UK topology sleepycat store')
+#             return None        
+#         qres = list(ebus_cg.query(queryStr))
+#         ebus_cg.close()
+#     return qres 
 
 
 # Query the total consumption of the regions
-def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
+def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):
     queryStr = """
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
     PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-	PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
-    SELECT DISTINCT  ?Region ?TotalELecConsumption 
-    WHERE
-    {
-    
-    ?Region rdf:type <https://dbpedia.org/ontology/Region> .    
-    ?place ontocape_upper_level_system:hasAddress ?Region .
-    ?place ontoeip_system_function:consumes ?regionalConsumption . 
-    ?regionalConsumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    SELECT DISTINCT ?RegionOrCountry_LACode ?v_TotalELecConsumption
+    WHERE 
+    {   
+    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
     ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
     ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
     ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
-    ?regionalConsumption ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
+    
+    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?RegionOrCountry_LACode .
+    ?RegionOrCountry <http://publishmydata.com/def/ontology/foi/code> ?RegionOrCountry_LACode .
+    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .} UNION 
+    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION
+    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
+    {?RegionOrCountry ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .}
+    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
     }
-    """ % startTime_of_EnergyConsumption  
+    """% (startTime_of_EnergyConsumption)
+    
     global qres
-    if localQuery == False and len(endPoint_label) > 0:
+    if localQuery == False:
        print('remoteQuery')     
-       res = json.loads(performQuery(endPoint_label, queryStr)) 
+       res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri)) 
+       for r in res:
+           for key in r.keys():
+              if '\"^^' in  r[key] :
+                r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
        return res            
        # qres = [[ str(r['Region']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
     elif topo_Consumption_SleepycatPath != None and localQuery == True:  
@@ -391,44 +395,42 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Cons
          
 # query the total electricity consumption of each address area
 def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ONS):    
-    queryStr = """  
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    queryStr = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-    PREFIX bibtex: <https://zeitkunst.org/bibtex/0.2/bibtex.owl#> 
-    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
-    PREFIX ont_sparql: <http://www.opengis.net/ont/geosparql#>
-    PREFIX db: <https://dbpedia.org/ontology/>
-    PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-    PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-    PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
     PREFIX ontoecape_space_and_time: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#>
-	PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
-    SELECT DISTINCT  ?Area_LACode ?TotalELecConsumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
-    WHERE
+    PREFIX ontocape_derived_SI_units: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>
+    PREFIX ontocape_coordinate_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>    
+    PREFIX ontoenergysystem: <http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ont: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?Area_LACode ?v_TotalELecConsumption (GROUP_CONCAT(?Geo_Info;SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE 
     {   
-    ?AddressArea rdf:type <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#AddressArea> .
-    ?AddressArea bibtex:hasURL ?Area_id_url .   
-    ?AddressArea db:areaCode ?Area_LACode .
-    ?place ontocape_upper_level_system:hasAddress ?AddressArea .
-    ?place ontoeip_system_function:consumes ?regionalConsumption . 
-    ?regionalConsumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
+    ?Total_ele_consumption ontocape_derived_SI_units:hasTimePeriod/ontocape_upper_level_system:hasValue ?TimePeriod .
     ?TimePeriod ontoecape_space_and_time:hasStartingTime ?startTime .
     ?startTime rdf:type ontocape_coordinate_system:CoordinateValue . 
     ?startTime ontocape_upper_level_system:numericalValue "%s"^^xsd:dateTime .
-    ?regionalConsumption ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-    ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
     
-    OPTIONAL { ?Area_id_url a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
-    ?Area_id_url ont:hasGeometry ?geometry . 
-    ?geometry ont_sparql:asWKT ?Geo_Info . }      
+    ?Total_ele_consumption ontoenergysystem:isObservedIn/ontoenergysystem:hasLocalAuthorityCode ?Area_LACode .
+    ?Area <http://publishmydata.com/def/ontology/foi/code> ?Area_LACode . 
+    ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> . }  
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> . }
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> . }
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> . }
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K03> . }
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/K02> . }
     
-    } GROUP BY ?TotalELecConsumption ?Area_LACode
-    """ % startTime_of_EnergyConsumption  
-      
+    OPTIONAL { ?Area a <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography> .
+    ?Area ont:hasGeometry ?geometry . 
+    ?geometry ont:asWKT ?Geo_Info . }      
+    
+    }GROUP BY ?Area_LACode ?v_TotalELecConsumption
+    """% (startTime_of_EnergyConsumption)
+
     res = json.loads(performFederatedQuery(queryStr, ukdigitaltwin_iri, ONS)) 
     for r in res:
       for key in r.keys():
@@ -437,14 +439,12 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
        
     for r in res: 
         if len(r["Geo_InfoList"]) == 0:
-            raise Exception(r["Area_id_url"], "does't have the geographical attributes.")
+            raise Exception(r["Area_LACode"], "does't have the geographical attributes.")
         elif "***" in r['Geo_InfoList']:
             r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]            
         r['Geo_InfoList'] = loads(r['Geo_InfoList'])
-    
     return res            
     
-
 ###############ELine#############
 # branchGeometryQueryCreator is developed to constuct a query string used to retrieve the branch's geometry information according to its parallel connection of each branch
 def branchGeometryQueryCreator(label, branch_voltage_level): 
@@ -563,10 +563,10 @@ if __name__ == '__main__':
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
     
-    res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
+    # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    # res = queryElectricityConsumption_Region("2017-01-31", None, False, 'ukdigitaltwin')
-    # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    # res = queryElectricityConsumption_Region("2017-01-31", None, False, ukdigitaltwinendpoint, ONS_json)
+    res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
@@ -576,8 +576,8 @@ if __name__ == '__main__':
     # res = queryEBusandRegionalDemand(10, None, False, "ukdigitaltwin")
     # geo = res[0]['Geo_InfoList']
     #print(geo.geom_type)   
-    res = queryTotalElecConsumptionofGBOrUK( "ukdigitaltwin", 10, 14, "2017-01-31")
-    print(res)
+    # res = queryTotalElecConsumptionofGBOrUK( "ukdigitaltwin", 10, 14, "2017-01-31")
+    print(res, len(res))
     # for r in res:
     #     print(r['ELine'])
     
