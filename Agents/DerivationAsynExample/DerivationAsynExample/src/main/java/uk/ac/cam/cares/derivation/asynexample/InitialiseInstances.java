@@ -56,34 +56,37 @@ public class InitialiseInstances extends JPSAgent {
 		
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
-		String ul_value = sparqlClient.addValueInstance(upperLimit, 0);
+		String ul_value = sparqlClient.addValueInstance(upperLimit, 20);
 		devClient.addTimeInstance(upperLimit);
+		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
+		InstanceDatabase.UpperLimit = upperLimit;
 		
 		String lowerLimit = sparqlClient.createLowerLimit();
-		String ll_value = sparqlClient.addValueInstance(lowerLimit, 0);
+		String ll_value = sparqlClient.addValueInstance(lowerLimit, 3);
 		devClient.addTimeInstance(lowerLimit);
+		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
+		InstanceDatabase.LowerLimit = lowerLimit;
 		
 		String numOfPoints = sparqlClient.createNumberOfPoints();
-		String np_value = sparqlClient.addValueInstance(numOfPoints, 0);
+		String np_value = sparqlClient.addValueInstance(numOfPoints, 6);
 		devClient.addTimeInstance(numOfPoints);
+		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
+		InstanceDatabase.NumberOfPoints = numOfPoints;
 		
 		// create listofrandompoints, points
 		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
-		devClient.addTimeInstance(listOfRandomPoints);
 		LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
 		
 		// create maxvalue, minvalue
 		String maxValue = sparqlClient.createMaxValue();
 		String max = sparqlClient.addValueInstance(maxValue, 0);
-		devClient.addTimeInstance(maxValue);
 		LOGGER.info("Created MaxValue instance <" + maxValue + ">");
 		
 		String minValue = sparqlClient.createMinValue();
 		String min = sparqlClient.addValueInstance(minValue, 0);
-		devClient.addTimeInstance(minValue);
 		LOGGER.info("Created MinValue instance <" + minValue + ">");
 		
 		// create difference

@@ -6,5 +6,8 @@ package uk.ac.cam.cares.derivation.asynexample;
  *
  */
 public class InstanceDatabase {
+	public static String UpperLimit = null;
+	public static String LowerLimit = null;
+	public static String NumberOfPoints = null;
     public static String DerivedDifference = null;
 }
