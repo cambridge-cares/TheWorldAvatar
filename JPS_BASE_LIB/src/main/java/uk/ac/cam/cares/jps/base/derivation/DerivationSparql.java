@@ -1547,6 +1547,25 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	void dropAllTimestamps() {
+		ModifyQuery modify = Queries.MODIFY();
+		SelectQuery query = Queries.SELECT();
+		
+		Variable entity = query.var();
+		Variable time = query.var();
+		Variable time_unix_iri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+		
+		TriplePattern tp1 = entity.has(hasTime, time);
+		TriplePattern tp2 = time.isA(InstantClass).andHas(inTimePosition,time_unix_iri);
+		TriplePattern tp3 = time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, trs);
+		
+		modify.delete(tp1,tp2,tp3).where(tp1,tp2,tp3).prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
 	/**
 	 * This method chunks the given iri and returns its namespace. 
 	 * @param iri

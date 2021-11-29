@@ -189,13 +189,13 @@ public class DerivedQuantityClientTest{
 			devClient.addTimeInstance(input);
 		}
 		Assert.assertNotNull(testKG.getIndividual(derivation));
-		devClient.dropAllDerivationsAndTimestamps();
+		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
 		
 		// case 2: with time series
 		derivation = devClient.createDerivationWithTimeSeries(entities, derivation, derivation, inputs);
 		Assert.assertNotNull(testKG.getIndividual(derivation));
-		devClient.dropAllDerivationsAndTimestamps();
+		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
 		
 		// case 3: both types present
@@ -203,8 +203,24 @@ public class DerivedQuantityClientTest{
 		String derivation2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI, derivedAgentURL, Arrays.asList(input2));
 		Assert.assertNotNull(testKG.getIndividual(derivation));
 		Assert.assertNotNull(testKG.getIndividual(derivation2));
-		devClient.dropAllDerivationsAndTimestamps();
+		devClient.dropAllDerivations();
 		Assert.assertNull(testKG.getIndividual(derivation));
 		Assert.assertNull(testKG.getIndividual(derivation2));
+	}
+	
+	@Test
+	public void testDropTimestamps() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		for (String input : inputs) {
+			devClient.addTimeInstance(input);
+			Assert.assertNotNull(testKG.getIndividual(input));
+		}
+		
+		devClient.dropAllTimestamps();
+		
+		for (String input : inputs) {
+			Assert.assertNull(testKG.getIndividual(input));
+		}
 	}
 }

@@ -271,15 +271,20 @@ public class DerivationClient {
 	}
 	
 	/**
-	 * clears all derivations from the kg, including timestamps of inputs
+	 * clears all derivations from the kg, only removes timestamps directly attached
+	 * to derivations, does not remove timestamps of inputs
 	 */
-	public void dropAllDerivationsAndTimestamps() {
-		// get all inputs with a time stamp
-		List<String> inputs = this.sparqlClient.getInputsWithTimestamps();
-		for (String input : inputs) {
-			this.sparqlClient.removeTimeInstance(input);
-		}
+	public void dropAllDerivations() {
 		this.sparqlClient.dropAllDerivations();
+		LOGGER.info("Dropped all derivations");
+	}
+	
+	/**
+	 * optional, removes timestamps of inputs that you added manually with addTimeInstance
+	 */
+	public void dropAllTimestamps() {
+		this.sparqlClient.dropAllTimestamps();
+		LOGGER.info("Dropped all timestamps");
 	}
 	
 	/**
