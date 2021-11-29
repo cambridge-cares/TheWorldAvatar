@@ -99,13 +99,15 @@ def queryBusTopologicalInformation(numOfBus, numOfBranch, ConjunctiveGraph, loca
         print('remoteQuery queryBusLocatedRegion')
         res = json.loads(performQuery(endPoint, queryStr))
         print('queryBusLocatedRegion is done')
+        for r in res:
+            r['Bus_lat_lon'] = [float(r['Bus_lat_lon'].split('#')[0]), float(r['Bus_lat_lon'].split('#')[1])]        
         return res
         
     elif ConjunctiveGraph != None and localQuery == True:  
         print('localQuery queryBusLocatedRegion')
         print('##################WARNING: The returen will be an array instead of a dictionary.###################')
         res = ConjunctiveGraph.query(queryStr)
-        qres = [[ str(r[0]), str(r[1]), float(r[2])] for r in res]  
+        qres = [[ str(r[0]), str(r[1]), [float(r[2].split('#')[0]), float(r[2].split('#')[1])]] for r in res]  
         return qres
 
 # query all PowerGenerators and their located region, latitude, longitude, PrimaryFuel and GenerationTechnology
@@ -138,15 +140,17 @@ def queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endPoint_label):
         print('remoteQuery queryPowerPlantAttributes')
         res = json.loads(performQuery(endPoint_label, queryStr))
         print('queryPowerPlantAttributes is done')
+        for r in res:
+            r['PP_lat_lon'] = [float(r['PP_lat_lon'].split('#')[0]), float(r['PP_lat_lon'].split('#')[1])]
         # qres = [[ str(r['PowerGenerator']), str(r['Region']), float(r['lat']), float(r['lon']), str(r['PrimaryFuel'].split('#')[1]), \
         #          str(r['GenerationTechnology'].split('#')[1]) ] for r in res]
         return res
     
     elif ConjunctiveGraph != None and localQuery == True:  
         print('localQuery queryPowerPlantAttributes')
-        print('##################WARNING: The returen will be an array instead of a dictionary.###################')
+        print('##################WARNING: The returen will be an array instead of a dictionary###################')
         res = ConjunctiveGraph.query(queryStr)
-        qres = [[ str(r[0]), str(r[1]), float(r[2]), float(r[3]), str(r[4])] for r in res]   
+        qres = [[ str(r[0]), str(r[1]), [float(r[2].split('#')[0]), float(r[2].split('#')[1])], float(r[3]), str(r[4])] for r in res]   
         return qres
 
 # The query for the Region Boundaries returned from ONS
@@ -507,7 +511,8 @@ if __name__ == '__main__':
     #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
+    # res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
+    res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # print(res)
     # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
