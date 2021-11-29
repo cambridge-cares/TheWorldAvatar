@@ -18,7 +18,7 @@ from utilities.custom_errors import *
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 100
+n = None
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -32,7 +32,7 @@ target_crs = utils.CRSs['crs_84']
 
 ###   FUNCTIONS   ###
 
-def get_buildings(number=None):
+def get_buildings_query(number=None):
     """
         Create SPARQL query to retrieve buildings and associated (surface) geometries
 
@@ -68,7 +68,7 @@ def get_buildings(number=None):
     return query
 
 
-def get_crs():
+def get_crs_query():
     """
         Create SPARQL query to retrieve coordinate reference system of triple store
 
@@ -82,6 +82,41 @@ def get_crs():
                WHERE { ?s ocgl:srsname ?crs . }'''
 
     return query
+
+
+def get_uprns(building_iri, query_endpoint):
+    """
+        Retrieves all UPRNs attached (as generic citygml attribute) to given building (i.e. building iri)
+
+        Returns:
+            List of UPRNs (as strings) attached with given building
+    """
+
+    # Derive city_object IRI for given building IRI
+    if not building_iri.startswith('<'):
+        building_iri = '<' + building_iri
+    if not building_iri.endswith('>'):
+        building_iri = building_iri + '>'
+    city_object = building_iri.replace('building', 'cityobject')
+
+    # Construct query
+    query = utils.create_sparql_prefix('ocgl') + \
+            ''' SELECT ?uprns
+                where { ?attribute ocgl:cityObjectId %s ;
+	              ocgl:attrName "OS_UPRNs" ;
+      		      ocgl:strVal ?uprns . }
+            ''' % city_object
+
+    # Execute query
+    uprns = execute_query(query, query_endpoint)
+
+    # Construct output list
+    uprn_list = []
+    if len(uprns['results']['bindings']) > 0:
+        uprn_list = uprns['results']['bindings'][0]['uprns']['value']
+        uprn_list = uprn_list.split(',')
+
+    return uprn_list
 
 
 def execute_query(query, query_endpoint):
@@ -255,8 +290,8 @@ if __name__ == '__main__':
 
     # Retrieve SPARQL results from Blazegraph
     try:
-        kg_buildings = execute_query(get_buildings(n), utils.QUERY_ENDPOINT)
-        kg_crs = execute_query(get_crs(), utils.QUERY_ENDPOINT)
+        kg_buildings = execute_query(get_buildings_query(n), utils.QUERY_ENDPOINT)
+        kg_crs = execute_query(get_crs_query(), utils.QUERY_ENDPOINT)
     except Exception as e:
         raise QueryError('Error while executing SPARQL query on specified endpoint: ' + e.__class__.__name__).\
               with_traceback(e.__traceback__)
@@ -351,6 +386,9 @@ if __name__ == '__main__':
                     # Create list to allow for composite ground surfaces
                     base_polygon[0].append(poly.tolist())
 
+        # Retrieve UPRNs attached to current building
+        uprns = get_uprns(b, utils.QUERY_ENDPOINT)
+
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
                          'description': str(b),
@@ -366,7 +404,8 @@ if __name__ == '__main__':
         metadata_props = {'id': feature_id,
                           'Building': str(b),
                           'Ground elevation (m)': round(zmin, 3),
-                          'Building height (m)': round(zmax, 3)
+                          'Building height (m)': round(zmax, 3),
+                          'UPRNs': uprns
                           }
 
         # Append building/feature to GeoJSON FeatureCollection
