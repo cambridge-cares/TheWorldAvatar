@@ -375,10 +375,12 @@ public class SparqlClient {
     	modify.insert(iri(listOfRandomPoints_iri).isA(ListOfRandomPoints).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	
-    	for (Integer pt : listOfRandomPoints) {
-    		String pt_iri = createPoint();
-    		addValueInstance(pt_iri, pt);
-    		addPointInstance(listOfRandomPoints_iri, pt_iri);
+    	if (listOfRandomPoints != null) {
+        	for (Integer pt : listOfRandomPoints) {
+        		String pt_iri = createPoint();
+        		addValueInstance(pt_iri, pt);
+        		addPointInstance(listOfRandomPoints_iri, pt_iri);
+        	}
     	}
     	
     	return listOfRandomPoints_iri;

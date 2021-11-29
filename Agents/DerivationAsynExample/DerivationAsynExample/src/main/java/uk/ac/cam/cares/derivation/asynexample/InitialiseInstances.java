@@ -71,7 +71,7 @@ public class InitialiseInstances extends JPSAgent {
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		
 		// create listofrandompoints, points
-		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(Arrays.asList(0));
+		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
 		devClient.addTimeInstance(listOfRandomPoints);
 		LOGGER.info("Created ListOfRandomPoints instance <" + listOfRandomPoints + ">");
 		
