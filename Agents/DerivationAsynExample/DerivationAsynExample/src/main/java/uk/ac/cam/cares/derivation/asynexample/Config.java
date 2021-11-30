@@ -53,10 +53,10 @@ public class Config {
 				Config.agentIriMinValue= Config.props.getProperty("agent.iri.minvalue");
 				Config.agentIriRNG = Config.props.getProperty("agent.iri.rng");
 				
-				Config.agentHttpUrlDifference = Config.props.getProperty("agent.http.url.difference");
-				Config.agentHttpUrlMaxValue = Config.props.getProperty("agent.http.url.maxvalue");
-				Config.agentHttpUrlMinValue= Config.props.getProperty("agent.http.url.minvalue");
-				Config.agentHttpUrlRNG = Config.props.getProperty("agent.http.url.rng");
+				Config.agentHttpUrlDifference = Config.props.getProperty("deploy.host.base.url") + DifferenceAgent.API_PATTERN;
+				Config.agentHttpUrlMaxValue = Config.props.getProperty("deploy.host.base.url") + MaxValueAgent.API_PATTERN;
+				Config.agentHttpUrlMinValue= Config.props.getProperty("deploy.host.base.url") + MinValueAgent.API_PATTERN;
+				Config.agentHttpUrlRNG = Config.props.getProperty("deploy.host.base.url") + RNGAgent.API_PATTERN;
 				
 				Config.initDelayAgentDifference = Long.parseLong(Config.props.getProperty("initial.delay.agent.difference"));
 				Config.initDelayAgentMaxValue = Long.parseLong(Config.props.getProperty("initial.delay.agent.maxvalue"));
@@ -68,8 +68,8 @@ public class Config {
 				Config.periodAgentMinValue = Long.parseLong(Config.props.getProperty("period.agent.minvalue"));
 				Config.periodAgentRNG = Long.parseLong(Config.props.getProperty("period.agent.rng"));
 				
-				Config.sparqlEndpointQuery = Config.props.getProperty("kg.sparql.endpoint.query");
-				Config.sparqlEndpointUpdate = Config.props.getProperty("kg.sparql.endpoint.update");
+				Config.sparqlEndpointQuery = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.query");
+				Config.sparqlEndpointUpdate = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.update");
 			} catch (IOException e) {
 				LOGGER.error(e.getMessage());
 				throw new JPSRuntimeException(e);
