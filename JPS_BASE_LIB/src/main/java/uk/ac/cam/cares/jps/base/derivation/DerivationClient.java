@@ -530,7 +530,7 @@ public class DerivationClient {
 					}
 					upstreamDerivationPendingUpdate = true;
 				} else {
-					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance) && !this.sparqlClient.hasUpstreamDerivation(instance)) {
+					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance) && this.sparqlClient.hasUpstreamDerivation(instance)) {
 						this.sparqlClient.markAsPendingUpdate(instance);
 					}
 				}
