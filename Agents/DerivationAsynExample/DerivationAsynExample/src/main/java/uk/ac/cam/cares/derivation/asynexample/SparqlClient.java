@@ -41,7 +41,7 @@ public class SparqlClient {
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
 	
 	// property
-	public static Iri hasPoint = p_namespace.iri("hasValue");
+	public static Iri hasPoint = p_namespace.iri("hasPoint");
 	public static Iri hasValue = p_namespace.iri("hasValue");
 	public static Iri numericalValue = p_namespace.iri("numericalValue");
 	
