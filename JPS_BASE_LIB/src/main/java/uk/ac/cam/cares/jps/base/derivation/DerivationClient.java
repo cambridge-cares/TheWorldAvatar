@@ -238,12 +238,30 @@ public class DerivationClient {
 	}
 
 	/**
-	 * updates all derivations in a given graph as efficiently as possible
+	 * updates all derivations in the triple-store
 	 */
 	public void updateDerivations() {
+		List<Derivation> derivations = this.sparqlClient.getDerivations();
+		
+		// find derivations with entities that are not input of anything (the top nodes)
+		List<Derivation> topNodes = new ArrayList<>();
+		for (Derivation derivation : derivations) {
+			// all entities need to match the condition
+			if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
+				topNodes.add(derivation);
+			}
+		}
+		
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
-		List<Derivation> derivations = this.sparqlClient.getDerivations();
+		try {
+			for (Derivation derivation : topNodes) {
+				updateDerivation(derivation, graph);
+			}
+		} catch (Exception e) {
+			LOGGER.fatal(e.getMessage());
+			throw new JPSRuntimeException(e);
+		}
 	}
 	
 	/**

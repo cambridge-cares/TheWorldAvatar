@@ -1345,9 +1345,9 @@ public class DerivationSparql{
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		List<Derivation> derivations = new ArrayList<>();
-		Map<String,Derivation> derivationsMap = new HashMap<>();
-		List<Entity> entities = new ArrayList<>();
+		Map<String, Derivation> derivationsMap = new HashMap<>();
+		List<Derivation> derivationList = new ArrayList<>();
+		Map<String, Entity> entitiesMap = new HashMap<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
 			String inputIRI = queryResult.getJSONObject(i).getString(input.getQueryString().substring(1));
@@ -1357,21 +1357,21 @@ public class DerivationSparql{
 			long derivedTimestamp = queryResult.getJSONObject(i).getLong(derivationTimestamp.getQueryString().substring(1));
 			
 			Derivation derived;
-			try {
-				derived = derivations.stream().filter(e -> e.getIri().equals(derivationIRI)).findFirst().get();
-			} catch (NoSuchElementException e) {
+			if (derivationsMap.containsKey(derivationIRI)) {
+				derived = derivationsMap.get(derivationIRI);
+			} else {
 				derived = new Derivation(derivationIRI,derivedType);
-				derivations.add(derived);
+				derivationsMap.put(derivationIRI, derived);
+				derivationList.add(derived);
 			}
 			
 			 // input of this derivation
 			Entity input_entity;
-			
-			try {
-				input_entity = entities.stream().filter(e -> e.getIri().equals(inputIRI)).findFirst().get();
-			} catch (NoSuchElementException e) {
+			if (entitiesMap.containsKey(inputIRI)) {
+				input_entity = entitiesMap.get(inputIRI);
+			} else {
 				input_entity = new Entity(inputIRI);
-				entities.add(input_entity);
+				entitiesMap.put(inputIRI, input_entity);
 			}
 			
 			// if rdf type exists
@@ -1386,11 +1386,11 @@ public class DerivationSparql{
 			}
 			
 			Entity entity_entity;
-			try {
-				entity_entity = entities.stream().filter(e -> e.getIri().equals(entityIRI)).findFirst().get();
-			} catch (NoSuchElementException e) {
+			if (entitiesMap.containsKey(entityIRI)) {
+				entity_entity = entitiesMap.get(entityIRI);
+			} else {
 				entity_entity = new Entity(entityIRI);
-				entities.add(entity_entity);
+				entitiesMap.put(entityIRI, entity_entity);
 			}
 			
 			// if rdf type exists
@@ -1405,7 +1405,7 @@ public class DerivationSparql{
 			derived.setTimestamp(derivedTimestamp);
 		}
 		
-		return derivations;
+		return derivationList;
 	}
 	
 	/**
