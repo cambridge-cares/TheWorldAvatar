@@ -2,6 +2,7 @@ import json
 import logging
 import time
 import traceback
+import requests
 
 import ontomatch.evaluate
 import ontomatch.instancematching
@@ -58,7 +59,11 @@ class Agent():
         logging.info('calling ontomatch.knowledge.enrichment.Agent, addr=%s, add_knowledge=%s, http=%s',
                 addr, add_knowledge, http)
         if http:
-            raise NotImplementedError()
+            r = requests.get('https://httpbin.org/get', params={"addr":addr, "add_knowledge":add_knowledge})
+            if r.status_code !=200:
+                raise ConnectionError()
+            data = r.json
+            return data['enriched'], data['handle']
         else:
             enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=False)
         logging.info('called ontomatch.knowledge.enrichment.Agent, enriched=%s, handle=%s', enriched, handle)
