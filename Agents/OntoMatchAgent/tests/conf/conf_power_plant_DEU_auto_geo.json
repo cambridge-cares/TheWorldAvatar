@@ -4,7 +4,7 @@
 },
 "dataset":{
 	"src": "./data/power_plant_DEU/kwl_geo.pkl",
-	"tgt": "./data/power_plant_DEU/gppd_DEU_geo.pkl"
+	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
 },
 "pre_processing":{
 	"add_knowledge": null
@@ -42,7 +42,14 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
+		"symmetric": false
 	}
+},
+"training":{
+	"match_train_size": 0.2,
+	"nonmatch_ratio": 1,
+	"train_file": null,
+	"cross_validation": 5
 },
 "classification":{
 	"name": "XGB",
@@ -51,8 +58,7 @@
 		"max_depth": [2,4,8],
 		"learning_rate": [0.05, 0.1, 0.3, 0.5],
 		"scale_pos_weight": null
-	},
-	"cross_validation": 5
+	}
 },
 "post_processing":{
 	"dump": "./scores",

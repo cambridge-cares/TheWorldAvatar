@@ -101,7 +101,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        symmetric = False
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, symmetric, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
@@ -141,7 +142,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        symmetric = False
+        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, symmetric, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
 
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_scores_geo_2.csv')
         df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_best_scores_geo_2.csv')
@@ -155,20 +157,19 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         self.assertEqual(len(df_total_best_scores), 1298)
 
-        # max f1-score=0.9069003285870756 for threshold t=0.29999999999999993
-        # area under curve=0.9104694783118478
+        # max f1-score=0.9031903190319032 for threshold t=0.29999999999999993
+        # area under curve=0.9093646330565498
         expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.7, 1.0, 0.007543103448275862, 7, 0, 921, 0.014973262032085563],
+            [0.7, 1.0, 0.00646551724137931, 6, 0, 922, 0.012847965738758032],
             [0.6, 1.0, 0.07758620689655173, 72, 0, 856, 0.144],
-            [0.5, 0.9940652818991098, 0.3609913793103448, 335, 2, 593, 0.5296442687747035],
-            [0.3999999999999999, 0.981679389312977, 0.6928879310344828, 643, 12, 285, 0.8123815540113708],
-            [0.29999999999999993, 0.9220489977728286, 0.8922413793103449, 828, 70, 100, 0.9069003285870756],
-            [0.19999999999999996, 0.7726872246696035, 0.9450431034482759, 877, 258, 51, 0.8502181289384392],
+            [0.5, 0.9940298507462687, 0.3588362068965517, 333, 2, 595, 0.5273159144893111],
+            [0.3999999999999999, 0.9816232771822359, 0.6907327586206896, 641, 12, 287, 0.8108791903858317],
+            [0.29999999999999993, 0.9224719101123595, 0.884698275862069, 821, 69, 107, 0.9031903190319032],
+            [0.19999999999999996, 0.7747349823321554, 0.9450431034482759, 877, 255, 51, 0.8514563106796116],
             [0.09999999999999998, 0.678516228748068, 0.9461206896551724, 878, 416, 50, 0.7902790279027904],
             [0.0, 0.6764252696456087, 0.9461206896551724, 878, 420, 50, 0.788858939802336]]
-
 
         for i, expected in enumerate(expected_result):
             actual = result[i]

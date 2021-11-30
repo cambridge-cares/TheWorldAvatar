@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/power_plant_DEU/kwl.pkl",
-	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
+	"src": "./data/power_plant_GBR/dukes.pkl",
+	"tgt": "./data/power_plant_GBR/gppd_GBR.pkl"
 },
 "pre_processing":{
 	"add_knowledge": null
@@ -15,7 +15,7 @@
 		"min_token_length": 3,
 		"max_token_occurrences_src": 20,
 		"max_token_occurrences_tgt": 20,
-		"blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
+		"blocking_properties": ["name", "isOwnedBy/hasName"],
 		"reset_index": false
 	}
 },
@@ -32,7 +32,6 @@
 	"triples": [
 		{"prop1": "name", "prop2": "name", "sim": 4},
 		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4},
-		{"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 1},
 		{"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2},
 		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3}
 	]
@@ -40,7 +39,7 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"symmetric": false
+		"symmetric": true
 	}
 },
 "training":{
@@ -54,12 +53,12 @@
 	"model_specific":{
 		"n_estimators": [16, 32, 64, 128],
 		"max_depth": [2,4,8],
-		"learning_rate": [0.05, 0.1, 0.3, 0.5],
+		"learning_rate": [0.5, 0.1, 0.3, 0.5],
 		"scale_pos_weight": null
 	}
 },
 "post_processing":{
 	"dump": "./scores",
-	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
+	"evaluation_file": "./data/power_plant_GBR/matches_power_plant_GBR.csv"
 }
 }

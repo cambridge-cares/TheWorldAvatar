@@ -38,9 +38,10 @@
 	]
 },
 "matching":{
-	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"name": "instancematching.InstanceMatcherClassifier",
 	"model_specific": {
-		"symmetric": false
+		"match_train_size": 0.2,
+		"nonmatch_ratio": 1
 	}
 },
 "training":{

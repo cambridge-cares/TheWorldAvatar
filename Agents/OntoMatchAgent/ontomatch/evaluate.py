@@ -140,13 +140,13 @@ def log_result(result):
     logging.info('max f1-score=%s for threshold t=%s', max_f1score, max_t)
     logging.info('area under curve=%s', area_under_curve)
 
-def evaluate(df_alignment, matches, number_of_thresholds=41):
+def evaluate(df_scores, matches, number_of_thresholds=41):
 
     result = []
     thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
     for t in thresholds:
-        mask = (df_alignment['score'] >= t)
-        predicted_matches =  df_alignment[mask].index
+        mask = (df_scores['score'] >= t)
+        predicted_matches =  df_scores[mask].index
         true_matches, false_matches, false_nonmatches, precision, recall, f1score = calculate_precision_recall(
             predicted_matches, matches)
         entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches), f1score]

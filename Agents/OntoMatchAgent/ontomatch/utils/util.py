@@ -67,6 +67,8 @@ def init(config_dev=None):
     parser.add_argument('--config', type=str)
     parser.add_argument('--logconfdir', type=str, default='./conf')
     parser.add_argument('--logdir', type=str, default='../logs')
+    data_path_default = './data'
+    parser.add_argument('--datadir', type=str, default=data_path_default)
     args = parser.parse_args()
     print('args = ', args)
 
@@ -78,6 +80,16 @@ def init(config_dev=None):
     init_logging(args.logconfdir, args.logdir)
     logging.info('current working directory=%s', os.getcwd())
     logging.info('args=%s', args)
+
+    if args.datadir != data_path_default:
+        logging.info('changing data paths from %s to %s', data_path_default, args.datadir)
+        path = config['dataset']['src']
+        config['dataset']['src'] = path.replace(data_path_default, args.datadir)
+        path = config['dataset']['tgt']
+        config['dataset']['tgt'] = path.replace(data_path_default, args.datadir)
+        path = config['post_processing']['evaluation_file']
+        config['post_processing']['evaluation_file'] = path.replace(data_path_default, args.datadir)
+
     logging.info('config=%s', config)
     try:
         seed = config['numerical_settings']['seed']
@@ -157,15 +169,6 @@ def call_agent_blackboard_for_reading(handle:str, http:bool=False) -> str:
         object = ontomatch.utils.blackboard.Agent().read(handle)
     logging.info('called blackboard for reading')
     return object
-
-def call_agent_blackboard_for_upload(name:str, object_for_upload:object, do_pickle=False, http:bool=False) -> str:
-    logging.info('calling blackboard for reading, handle=%s, http=%s', handle, http)
-    if http:
-        raise NotImplementedError()
-    else:
-        serialized_object = ontomatch.utils.blackboard.Agent().upload(name, upload_from)
-    logging.info('called blackboard for reading')
-    return serialized_object
 
 def load_ontology(graph_handle, blackboard=True):
     logging.info('loading ontology for %s', graph_handle)

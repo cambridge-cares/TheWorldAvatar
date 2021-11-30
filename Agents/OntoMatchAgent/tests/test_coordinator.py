@@ -40,3 +40,15 @@ class TestCoordinator(tests.utils_for_testing.TestCaseOntoMatch):
 
         agent = ontomatch.coordinator.Agent()
         agent.start(config_handle, http=False)
+
+    def test_instance_matching_with_XGB(self):
+
+        config_file = tests.utils_for_testing.PATH_CONF_PP_DEU_XGB
+        params = ontomatch.utils.util.read_json_from_path(config_file)
+
+        # write the config params to the blackboard
+        params_str = json.dumps(params)
+        config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(config_file, params_str, http=False)
+
+        agent = ontomatch.coordinator.Agent()
+        agent.start(config_handle, http=False)

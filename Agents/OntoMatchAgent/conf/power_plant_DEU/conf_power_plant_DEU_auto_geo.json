@@ -3,7 +3,7 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/power_plant_DEU/kwl.pkl",
+	"src": "./data/power_plant_DEU/kwl_geo.pkl",
 	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
 },
 "pre_processing":{
@@ -34,13 +34,15 @@
 		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4},
 		{"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 1},
 		{"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 2},
-		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3}
+		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 3},
+		{"prop1": "geo:wgs84_pos#long", "prop2": "hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue", "sim": 1},
+		{"prop1": "geo:wgs84_pos#lat", "prop2": "hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue", "sim": 1}
 	]
 },
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"symmetric": false
+		"symmetric": true
 	}
 },
 "training":{

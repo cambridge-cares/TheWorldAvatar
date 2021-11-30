@@ -10,6 +10,7 @@ import ontomatch.utils.util
 PATH_MATCHES_PP_DEU = './data/matches_power_plant_DEU.csv'
 PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
 PATH_CONF_PP_DEU_AUTO_GEO = './tests/conf/conf_power_plant_DEU_auto_geo.json'
+PATH_CONF_PP_DEU_XGB = './tests/conf/conf_power_plant_DEU_xgb.json'
 
 class TestCaseOntoMatch(unittest.TestCase):
 
@@ -28,7 +29,7 @@ class TestCaseOntoMatch(unittest.TestCase):
     def load_kwl_with_geo_coordinates_gppd_ontologies(self):
         with open('./data/power_plant_DEU/kwl_geo.pkl','rb') as file:
             src_onto = pickle.load(file)
-        with open('./data/power_plant_DEU/gppd_DEU_geo.pkl','rb') as file:
+        with open('./data/power_plant_DEU/gppd_DEU.pkl','rb') as file:
             tgt_onto = pickle.load(file)
         return src_onto, tgt_onto
 

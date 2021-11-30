@@ -40,7 +40,7 @@
 "matching":{
 	"name": "instancematching.InstanceMatcherWithAutoCalibration",
 	"model_specific": {
-		"symmetric": false
+		"symmetric": true
 	}
 },
 "training":{

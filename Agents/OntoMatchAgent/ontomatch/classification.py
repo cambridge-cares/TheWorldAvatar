@@ -82,7 +82,34 @@ class TrainTestGenerator():
         return df_nonmatches
 
     @staticmethod
-    def train_test_split(match_file, nonmatch_file, column_ml_phase, prop_columns=None):
+    def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonmatch_ratio, prop_columns=None):
+        logging.info('splitting, match=%s, candidate_pairs=%s, match_train_size=%s, nonmatch_ratio=%s',
+            len(df_matches), len(df_candidate_pairs), match_train_size, nonmatch_ratio)
+
+        # sample from matches
+        number_m = int(match_train_size * len(df_matches))
+        df_matches['y'] = 1 # 1 means match
+        df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
+
+        # sample from nonmatches
+        number_n = int(nonmatch_ratio * number_m)
+        # only subtract the matching pairs in the training set
+        #diff = df_candidate_pairs.index.difference(df_train_m.index)
+        # substract all matching pairs in the ground truth
+        diff = df_candidate_pairs.index.difference(df_matches.index)
+        df_diff = df_candidate_pairs.loc[diff]
+        df_diff['y'] = 0 # 0 means nonmatch
+        df_n_train, _ = sklearn.model_selection.train_test_split(df_diff, train_size=number_n, shuffle=True)
+
+        df_train = pd.concat([df_m_train, df_n_train])
+        x_train = df_train[prop_columns].copy()
+        y_train = df_train['y'].copy()
+
+        logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
+        return x_train, y_train
+
+    @staticmethod
+    def train_test_split_OLD(match_file, nonmatch_file, column_ml_phase, prop_columns=None):
         logging.info('splitting, match=%s, nonmatch=%s, ml_phase=%s, columns=%s',
             match_file, nonmatch_file, column_ml_phase, prop_columns)
 
@@ -105,6 +132,30 @@ class TrainTestGenerator():
 
         logging.info('x_train=%s, y_train=%s, x_test=%s, y_test=%s', len(x_train), len(y_train), len(x_test), len(y_test))
         return x_train, x_test, y_train, y_test
+
+    @staticmethod
+    def create_full_evaluation_set(match_file, nonmatch_file, column_ml_phase, prop_columns=None, minus_train=False):
+        keep_columns = prop_columns.copy()
+        keep_columns.extend(['y', column_ml_phase])
+
+        df_matches = ontomatch.utils.util.read_csv(match_file)
+        if minus_train:
+            mask = (df_matches[column_ml_phase] == 'test')
+            df_matches = df_matches[mask]
+        df_matches = df_matches[keep_columns].copy()
+
+        df_nonmatches = ontomatch.utils.util.read_csv(nonmatch_file)
+        if minus_train:
+            mask = (df_nonmatches[column_ml_phase] == 'test')
+            df_nonmatches = df_nonmatches[mask]
+        df_nonmatches = df_nonmatches[keep_columns].copy()
+
+        dframe = pd.concat([df_matches, df_nonmatches])
+        x_full = dframe[prop_columns].copy()
+        y_full = dframe['y'].copy()
+
+        logging.info('x_full=%s, y_full=%s', len(x_full), len(y_full))
+        return x_full, y_full
 
 class Utils():
 
@@ -283,120 +334,10 @@ def select_seeds_for_ground_truth(df1, df2, match_index, params_mapping, split=[
 
     return df_train, df_test, labels_train, labels_test
 
-def clean(dframe):
-    df_cleaned = dframe.copy()
-    frame_columns = [ str(c) for c in df_cleaned.columns]
-    if 'pos_1' in frame_columns:
-        df_cleaned.drop(columns=['pos_1', 'pos_2'], inplace=True)
-
-    columns_dict = {}
-    frame_columns = [ c for c in df_cleaned.columns]
-    for c in frame_columns:
-        c_new = c
-        if isinstance(c, int):
-            # TODO-AE 211110 change from int to str for column names - HACK
-            c_new = str(c)
-        elif c.endswith('_max'):
-            c_new = c.split('_')[0]
-        columns_dict.update({c: c_new})
-    df_cleaned.rename(columns=columns_dict, inplace=True)
-
-    #TODO-AE 2111010 fill nan values with average values or 0. or ...
-    before = len(dframe)
-    df_cleaned.dropna(inplace=True)
-    logging.info('dropping nan columns, before=%s, now=%s', before, len(df_cleaned))
-    return df_cleaned
-
-def select_seeds_for_max_scores(df_max_scores, df_scores):
-
-    df_max_scores.dropna(inplace=True)
-    df_max_scores['label'] = 1 # match
-
-    diff = df_scores.index.difference(df_max_scores.index)
-    df_scores = df_scores.loc[diff]
-    df_scores.dropna(inplace=True)
-    size = len(df_max_scores)
-    df_scores, _ = sklearn.model_selection.train_test_split(df_scores, train_size=size, shuffle=True)
-    df_scores = df_scores.copy()
-    df_scores['label'] = 0 # nonmatch
-
-    log_columns = [ (str(c), type(c)) for c in df_max_scores.columns]
-    logging.info('columns for max scores=%s', log_columns)
-    log_columns = [ (str(c), type(c)) for c in df_scores.columns]
-    logging.info('columns for scores=%s', log_columns)
-
-    df_samples = pd.concat([df_max_scores, df_scores])
-    labels = df_samples['label']
-    df_samples.drop(labels='label', axis='columns', inplace=True)
-    logging.debug('max scores=%s, non max scores=%s, total=%s', len(df_max_scores), len(df_scores), len(df_samples))
-
-    df_train, df_test, labels_train, labels_test = sklearn.model_selection.train_test_split(df_samples, labels, train_size=0.8, shuffle=True, stratify=labels)
-
-    logging.debug('X train=%s, X test=%s, y train=%s, y test=%s', len(df_train), len(df_test), len(labels_train), len(labels_test))
-    return df_train, df_test, labels_train, labels_test
-
 def store_nonmatch_file(df1, df2, params_mapping, match_index, nonmatch_file, nonmatch_number):
     nonmatch_index = Utils.get_random_nonmatches(df1, df2, match_index, nonmatch_number)
     df_scores_nonmatches, _, _ = calculate_scores_for_index_set(df1, df2, params_mapping, nonmatch_index)
     df_scores_nonmatches.to_csv(nonmatch_file, index=True)
-
-def select_samples(df1, df2, params_mapping, match_index, nonmatch_file=None, nonmatch_number=-1):
-    if nonmatch_file:
-        df_scores_nonmatches = pd.read_csv(nonmatch_file, index_col=['idx_1', 'idx_2'])
-    else:
-        nonmatch_index = Utils.get_random_nonmatches(df1, df2, match_index, nonmatch_number)
-        df_scores_nonmatches, _, _ = calculate_scores_for_index_set(df1, df2, params_mapping, nonmatch_index)
-
-    df_scores_nonmatches = clean(df_scores_nonmatches)
-    df_scores_nonmatches_filtered = filter_scores_for_index_set(df_scores_nonmatches, number=10, mode='random', center=0, p=2, radius=1)
-
-
-def hpo_svm(x, y, params_hpo, crossvalidation):
-
-    # set probability=True to get confidence scores after training when using SVC for prediction
-    model = sklearn.svm.SVC( probability=True)
-
-    hpo_model = sklearn.model_selection.GridSearchCV(model, params_hpo, cv = crossvalidation)
-    logging.info('tuning hyperparameters for SVM')
-    hpo_model.fit(x, y)
-    logging.info('tuned hyperparameters for SVM')
-
-    return hpo_model
-
-def calculate_confidence_scores_from_hpo_svm(params_classification, df_train, labels_train, df_test, labels_test, df_scores_cleaned):
-
-    params_hpo = {}
-    cross_validation = None
-    for key, value in params_classification.items():
-        if key == 'cross_validation':
-            cross_validation = value
-            continue
-        if isinstance(value, list):
-            params_hpo[key] = value
-        else:
-            params_hpo[key] = [value]
-    logging.info('cross_validation=%s, params_hpo=%s', cross_validation, params_hpo)
-
-    model  = hpo_svm(df_train, labels_train, params_hpo, crossvalidation=cross_validation)
-    train_score = model.score(df_train, labels_train)
-    test_score = model.score(df_test, labels_test)
-    logging.info('SVC mean acurray: train_score=%s, test_score=%s', train_score, test_score)
-
-    logging.info('predicting confidence scores')
-    # http://scikit-learn.sourceforge.net/stable/modules/generated/sklearn.svm.SVC.html
-    # Returns the probability of the sample for each class in the model.
-    # The columns correspond to the classes in sorted order, as they appear in the attribute classes_.
-    pos_match = 1 if model.classes_[1] == 1 else 0
-    logging.info('label order for confidence scores=%s (0=nonmatch, 1=match), pos_match=%s', model.classes_, pos_match)
-    assert pos_match == 1
-    confidence_scores = model.predict_proba(df_scores_cleaned)
-    logging.info('len df_scores_cleaned=%s, confidence_scores=%s', len(df_scores_cleaned), len(confidence_scores))
-    df_scores_cleaned['score'] = 0.
-    for row_pos, (idx, _) in enumerate(df_scores_cleaned.iterrows()):
-        score = confidence_scores[row_pos][pos_match]
-        df_scores_cleaned.at[idx, 'score'] = score
-
-    return df_scores_cleaned
 
 def start_M():
 
