@@ -34,17 +34,15 @@ public class InputAgent extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient);
 		
-		if (InstanceDatabase.NumberOfPoints == null) {
-			InstanceDatabase.NumberOfPoints = sparqlClient.getNumberOfPointsIRI();
-		}
+		String numberOfPoints_iri = sparqlClient.getNumberOfPointsIRI();
 		
 		// update the NumberOfPoints by adding 1 to its current value, also update the timestamp to make it current
-		sparqlClient.updateValue(InstanceDatabase.NumberOfPoints, sparqlClient.getValue(InstanceDatabase.NumberOfPoints) + 1);
-		devClient.updateTimestamp(InstanceDatabase.NumberOfPoints);
+		sparqlClient.updateValue(numberOfPoints_iri, sparqlClient.getValue(numberOfPoints_iri) + 1);
+		devClient.updateTimestamp(numberOfPoints_iri);
 		
 		JSONObject response = new JSONObject();
 		JSONObject iris = new JSONObject();
-		iris.put("NumberOfPoints instance", InstanceDatabase.NumberOfPoints);
+		iris.put("NumberOfPoints instance", numberOfPoints_iri);
 		response.put("Updated successfully", iris);
 		
 		return response;

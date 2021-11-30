@@ -30,14 +30,12 @@ public class UpdateDerivations extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient);
 		
-		if (InstanceDatabase.DerivedDifference == null) {
-			String difference = sparqlClient.getDifferenceIRI();
-			InstanceDatabase.DerivedDifference = devClient.getDerivationOf(difference);
-		}
+		String difference = sparqlClient.getDifferenceIRI();
+		String difference_derivation = devClient.getDerivationOf(difference);
 		
-		devClient.updateDerivationAsyn(InstanceDatabase.DerivedDifference);
+		devClient.updateDerivationAsyn(difference_derivation);
 		
-		String res_msg = "Checked derivation of difference <" + InstanceDatabase.DerivedDifference + ">, the update should be done in a few minutes";
+		String res_msg = "Checked derivation of difference <" + difference_derivation + ">, the update should be done in a few minutes";
 		LOGGER.info(res_msg);
 		
 		JSONObject response = new JSONObject();

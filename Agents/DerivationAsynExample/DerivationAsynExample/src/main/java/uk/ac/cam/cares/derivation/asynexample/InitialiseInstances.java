@@ -60,21 +60,18 @@ public class InitialiseInstances extends JPSAgent {
 		devClient.addTimeInstance(upperLimit);
 		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
-		InstanceDatabase.UpperLimit = upperLimit;
 		
 		String lowerLimit = sparqlClient.createLowerLimit();
 		String ll_value = sparqlClient.addValueInstance(lowerLimit, 3);
 		devClient.addTimeInstance(lowerLimit);
 		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
-		InstanceDatabase.LowerLimit = lowerLimit;
 		
 		String numOfPoints = sparqlClient.createNumberOfPoints();
 		String np_value = sparqlClient.addValueInstance(numOfPoints, 6);
 		devClient.addTimeInstance(numOfPoints);
 		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
-		InstanceDatabase.NumberOfPoints = numOfPoints;
 		
 		// create listofrandompoints, points
 		String listOfRandomPoints = sparqlClient.createListOfRandomPoints(null);
@@ -99,7 +96,6 @@ public class InitialiseInstances extends JPSAgent {
 		String max_dev = devClient.createAsynDerivation(Arrays.asList(maxValue), Config.agentIriMaxValue, Arrays.asList(listOfRandomPoints));
 		String min_dev = devClient.createAsynDerivation(Arrays.asList(minValue), Config.agentIriMinValue, Arrays.asList(listOfRandomPoints));
 		String diff_dev = devClient.createAsynDerivation(Arrays.asList(difference), Config.agentIriDifference, Arrays.asList(maxValue,minValue));
-		InstanceDatabase.DerivedDifference = diff_dev;
 		
 		// check all connections between the derived quantities
 		// as the validate method traverse down, checking difference derivation checks all other derivations in the chain
