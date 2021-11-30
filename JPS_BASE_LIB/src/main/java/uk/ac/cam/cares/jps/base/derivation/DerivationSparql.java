@@ -5,7 +5,9 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -800,6 +802,7 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
+	@Deprecated
 	List<String> getInputs(String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
@@ -894,6 +897,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
+	@Deprecated
 	List<String> getInputsAndDerived(String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
@@ -955,6 +959,7 @@ public class DerivationSparql{
 	 * @param derivedIRI
 	 * @return
 	 */
+	@Deprecated
 	List<String> getDerivedEntities(String derivedIRI) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "entity";
@@ -978,6 +983,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
+	@Deprecated
 	List<List<String>> getIsDerivedFromEntities(List<String> entities) {
 		String derivedkey = "derived";
 		String typeKey = "type";
@@ -1024,6 +1030,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
+	@Deprecated
 	void deleteInstances(List<String> entities) {
 		for (String entity : entities) {
 			SubSelect sub = GraphPatterns.select();
@@ -1068,6 +1075,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
+	@Deprecated
 	long getTimestamp(String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -1145,6 +1153,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
+	@Deprecated
 	List<String> getInstanceClass(List<String> instances) {
 		String queryKey = "class";
 		
@@ -1222,44 +1231,12 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves the rdf:type of a given instance, whereas ignoring certain perdefined rdf:type. 
-	 * @param kbClient
-	 * @param instance
-	 * @return
-	 */
-	String getInstanceClass(String instance) {
-		String queryKey = "class";
-		
-		SelectQuery query = Queries.SELECT();
-		Variable type = SparqlBuilder.var(queryKey);
-		
-		// ignore certain rdf:type
-		Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
-		for (int j = 0; j < classesToIgnore.size(); j++) {
-			filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
-		}
-		GraphPattern queryPattern = iri(instance).isA(type).filter(Expressions.and(filters));
-		
-		query.select(type).where(queryPattern);
-		storeClient.setQuery(query.getQueryString());
-		
-		JSONArray queryResult = storeClient.executeQuery();
-		// not having an rdf:type may be fine, but having more than 1 is an issue
-		if (queryResult.length() > 1) {
-			throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instance);
-		} else if (queryResult.length() == 1) {
-			return queryResult.getJSONObject(0).getString(queryKey);
-		} else {
-			return "";
-		}
-	}
-	
-	/**
 	 * this is used to reconnect a newly created instance to an existing derived instance
 	 * @param kbClient
 	 * @param input
 	 * @param derived
 	 */
+	@Deprecated
 	void reconnectInputToDerived(String input, String derived) {
 		ModifyQuery modify = Queries.MODIFY();
 		
@@ -1289,28 +1266,6 @@ public class DerivationSparql{
 		modify.prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
-	}
-	
-	/**
-	 * returns true if it is a derived quantity with time series
-	 * @param kbClient
-	 * @param derived_iri
-	 */
-	boolean isDerivedWithTimeSeries(String derived_iri) {
-		SelectQuery query = Queries.SELECT();
-		Variable type = query.var();
-		TriplePattern tp = iri(derived_iri).isA(type);
-		Expression<?> constraint = Expressions.equals(type, DerivationWithTimeSeries);
-		
-		// this query will return one result if the constraint matches
-		GraphPattern queryPattern = tp.filter(constraint);
-		
-		query.prefix(p_derived).select(type).where(queryPattern);
-		if (storeClient.executeQuery(query.getQueryString()).length() == 1) {
-			return true;
-		} else {
-			return false;
-		}
 	}
 	
 	/**
@@ -1361,30 +1316,6 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
-	List<String> getInputsWithTimestamps() {
-		SelectQuery query = Queries.SELECT();
-		
-		Variable time = query.var();
-		Variable input = query.var();
-		Variable derivation = query.var();
-		
-		GraphPattern queryPattern = GraphPatterns.and(derivation.has(isDerivedFrom, input),
-				input.has(hasTime,time));
-		query.select(input).where(queryPattern).prefix(p_time,p_derived);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.length() == 0) {
-			return new ArrayList<>();
-		} else {
-			List<String> inputs = new ArrayList<>();
-			for (int i = 0; i < queryResult.length(); i++) {
-				inputs.add(queryResult.getJSONObject(i).getString(input.getQueryString().substring(1)));
-			}
-			return inputs;
-		}
-	}
-	
 	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 		
@@ -1415,6 +1346,7 @@ public class DerivationSparql{
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		List<Derivation> derivations = new ArrayList<>();
+		Map<String,Derivation> derivationsMap = new HashMap<>();
 		List<Entity> entities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));

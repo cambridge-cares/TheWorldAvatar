@@ -238,6 +238,15 @@ public class DerivationClient {
 	}
 
 	/**
+	 * updates all derivations in a given graph as efficiently as possible
+	 */
+	public void updateDerivations() {
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
+		List<Derivation> derivations = this.sparqlClient.getDerivations();
+	}
+	
+	/**
 	 * This checks for any circular dependency and ensures that all the linked
 	 * inputs have a suitable timestamp attached. This does not check for
 	 * everything, e.g. instances having appropriate rdf:types, and the agent design
@@ -272,7 +281,7 @@ public class DerivationClient {
 	
 	/**
 	 * clears all derivations from the kg, only removes timestamps directly attached
-	 * to derivations, does not remove timestamps of inputs
+	 * to derivations, does not remove timestamps of pure inputs
 	 */
 	public void dropAllDerivations() {
 		this.sparqlClient.dropAllDerivations();
@@ -667,6 +676,7 @@ public class DerivationClient {
 	 * @param instance
 	 * @return
 	 */
+	@Deprecated
 	private boolean isOutOfDate(String instance, List<String> inputs) {
 	    boolean outOfDate = false;
 	    long instanceTimestamp = this.sparqlClient.getTimestamp(instance);
