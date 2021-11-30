@@ -16,8 +16,7 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
 		        "max_depth": [2,4],
 		        "learning_rate": [0.05, 0.3],
 		        "scale_pos_weight": None
-            },
-            "cross_validation": 5
+            }
         }
         params_training = {
 	        "match_train_size": 0.2,
@@ -25,6 +24,15 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
 	        "train_file": None,
 	        "cross_validation": 5
         }
+
+        params_impution = {
+		    "name": "sklearn.impute.KNNImputer",
+		    "model_specific": {
+			    "n_neighbors": [5],
+			    "weights": ["uniform"]
+		    }
+        }
+
         match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
         nonmatch_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_N_random_blocking_tfidf_ratio_1.csv'
         train_size = 0.2
@@ -33,7 +41,8 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
         x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split_OLD(
                 match_file, nonmatch_file, column_ml_phase, prop_columns)
 
-        model = ontomatch.hpo.start_hpo(params_classification, params_training, x_train, y_train)
+        cross_validation = params_training['cross_validation']
+        model = ontomatch.hpo.start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
         result = ontomatch.hpo.evaluate_with_pred_proba(model, x_test, y_test, 11)
 
         # max f1-score=0.864373783257625 for threshold t=0.7

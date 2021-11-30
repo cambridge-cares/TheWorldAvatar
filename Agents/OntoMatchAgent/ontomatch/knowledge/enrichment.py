@@ -108,15 +108,16 @@ class Agent():
         count_geo = 0
         for row in tqdm(graph.query(query)):
             count_total += 1
-            #print(row.subj.n3())
-            address = graph.triples((row.subj, rdflib.SDO['address'], None))
-            address = [obj for _, _, obj in address][0]
-            #print(address, type(address))
+            # rdflib v5
+            # address = graph.triples((row.subj, rdflib.SDO['address'], None))
+            # rdflib v6.0.2
+            address = graph.triples((row.subj, rdflib.term.URIRef('https://schema.org/address'), None))
+            address_tmp = [obj for _, _, obj in address]
+            address = address_tmp[0]
 
             location = None
             zipcode = None
             for _, pred, obj in graph.triples((address, None, None)):
-                #print(pred, obj)
                 obj = obj.toPython()
                 if 'Locality' in pred.n3():
                     location = obj
@@ -131,7 +132,6 @@ class Agent():
                     if location is None:
                         continue
                     latitude, longitude = geocoding_agent.query(location)
-                #print('coord=', latitude, longitude)
                 if latitude and longitude:
 
                     latitude = rdflib.Literal(latitude, datatype=rdflib.namespace.XSD.float)
@@ -140,7 +140,6 @@ class Agent():
                     graph.add((row.subj, geo['long'], longitude ))
                     count_geo += 1
                 else:
-                    #print('no coordinates found for ', row.subj.n3())
                     pass
 
         logging.info('finished adding geographic coordinates, enriched individuals=%s, total individuals=%s', count_geo, count_total)

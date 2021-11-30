@@ -14,23 +14,26 @@ import ontomatch.classification
 import ontomatch.evaluate
 import ontomatch.utils.util
 
-def create_classifier_RF():
-    return sklearn.ensemble.RandomForestClassifier(n_jobs=1, verbose=0, class_weight='balanced')
-
 def create_classifier_XGB():
     return xgboost.XGBClassifier()
 
-def create_classifier_MLP(params_hpo):
-    #imputer = sklearn.impute.IterativeImputer()
-    imputer = sklearn.impute.KNNImputer(n_neighbors=7, weights='uniform')
-    #imputer = sklearn.impute.KNNImputer(n_neighbors=7, weights='distance')
+def create_classifier_MLP(params_hpo, params_impution):
+    if params_impution['name'] == 'sklearn.impute.KNNImputer':
+        imputer = sklearn.impute.KNNImputer()
+        #imputer = sklearn.impute.IterativeImputer()
+        #imputer = sklearn.impute.KNNImputer(n_neighbors=5, weights='uniform')
+        #imputer = sklearn.impute.KNNImputer(n_neighbors=7, weights='distance')
+    else:
+        raise ValueError('unknown imputer with name=%s', params_impution['name'])
     classifier = sklearn.neural_network.MLPClassifier(solver='adam') #, max_iter='400')
-    estimator = sklearn.pipeline.make_pipeline(imputer, classifier)
+    estimator = sklearn.pipeline.Pipeline([('imputer', imputer), ('mlp', classifier)])
 
-    logging.debug('available parameter keys for MLP=%s', estimator.get_params().keys())
+    #logging.debug('available parameter keys for MLP=%s', estimator.get_params().keys())
 
+    all_params = params_impution["model_specific"].copy()
+    all_params.update(params_hpo)
     params_hpo_mlp = {}
-    for key, value in params_hpo.items():
+    for key, value in all_params.items():
 
         if key == 'hidden_layer_sizes':
             # e.g. ['10', '5', '10,5,3']
@@ -40,9 +43,12 @@ def create_classifier_MLP(params_hpo):
                 t = tuple(map(int, v.split(',')))
                 value.append(t)
 
-        if key in ['hidden_layer_sizes', 'learning_rate', 'learning_rate_init', 'alpha', 'beta_1', 'beta_2']:
-            # add 'mlpclassifier__' because estimator is a pipeline
-            params_hpo_mlp['mlpclassifier__' + key] = value
+        if key in ['n_neighbors', 'weights']:
+            # add prefix 'imputer__' because estimator is a pipeline
+            params_hpo_mlp['imputer__' + key] = value
+        elif key in ['hidden_layer_sizes', 'learning_rate', 'learning_rate_init', 'alpha', 'beta_1', 'beta_2']:
+            # add prefix 'mlp__' because estimator is a pipeline
+            params_hpo_mlp['mlp__' + key] = value
         else:
             params_hpo_mlp[key] = value
 
@@ -59,22 +65,17 @@ def get_params_for_hpo(params_model_specific):
             params_hpo[key] = [value]
     return params_hpo
 
-def start_hpo(params_classification, params_training, x, y):
+def start_hpo(params_classification, cross_validation, params_impution, x, y):
 
     name = params_classification['name']
-    cross_validation = params_training['cross_validation']
     logging.info('name=%s, cross_validation=%s', name, cross_validation)
     params_hpo = get_params_for_hpo(params_classification['model_specific'])
-
-    logging.info('y value counts=%s', y.value_counts())
     count_nonmatch = y.value_counts().loc[0]
     count_match = y.value_counts().loc[1]
     scale_pos_weight = count_nonmatch / count_match
-    logging.info('unbalanced classification with nonmatches=%s, matches=%s, ratio=%s', count_nonmatch, count_match, scale_pos_weight)
+    logging.info('classification with nonmatches=%s, matches=%s, scale_pos_weight=%s', count_nonmatch, count_match, scale_pos_weight)
 
-    if name == 'RF':
-        model = create_classifier_RF()
-    elif name == 'XGB':
+    if name == 'XGB':
         #params_hpo['scale_pos_weight'] = [scale_pos_weight]
         model = create_classifier_XGB()
         # 'use_label_encoder' is no HPO parameter. If it is not set as parameter for GridSearchCV,
@@ -84,7 +85,7 @@ def start_hpo(params_classification, params_training, x, y):
         # object; and 2) Encode your labels (y) as integers starting with 0, i.e. 0, 1, 2, ..., [num_class - 1].
         #params_hpo.update({'use_label_encoder': [True]})
     elif name == 'MLP':
-        model, params_hpo = create_classifier_MLP(params_hpo)
+        model, params_hpo = create_classifier_MLP(params_hpo, params_impution)
 
     logging.info('params_hpo=%s', params_hpo)
 
@@ -160,10 +161,8 @@ def get_train_set_from_auto_scores(total_scores_file, scores_file, lower_thresho
     logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
     return x_train, y_train
 
-def start(params_classification, params_training, x_train, y_train, df_scores, prop_columns):
-
-    logging.info('classifying similarity vectors')
-    model = start_hpo(params_classification, params_training, x_train, y_train)
+def start(params_classification, cross_validation, params_impution, x_train, y_train, df_scores, prop_columns):
+    model = start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
     logging.info('predicting probability of match or nonmatch')
     y_pred_proba = model.predict_proba(df_scores[prop_columns])
     y_pred_proba_match = [ ymatch for (_, ymatch) in y_pred_proba]
@@ -171,19 +170,11 @@ def start(params_classification, params_training, x_train, y_train, df_scores, p
 
     return df_scores
 
-    logging.info('evaluate on full blocking set concerning ground truth minus training samples')
-    index_set_matches_minus_train = index_set_matches.difference(x_train.index)
-    x_full, y_full = ontomatch.classification.TrainTestGenerator.create_full_evaluation_set(
-        match_file, nonmatch_file, column_ml_phase, prop_columns, minus_train=True)
-    x_full = add_pred_proba_as_total_scores(model, x_full)
-    logging.info('ground truth matches minus train=%s', len(index_set_matches_minus_train))
-    logging.info('length of scores=%s', len(x_full))
-    result = ontomatch.evaluate.evaluate(x_full, index_set_matches_minus_train)
-
 def start_from_console():
     params, _ = ontomatch.utils.util.init()
     params_classification = params['classification']
     params_training = params['training']
+    params_impution = params_training['impution']
     evaluation_file = params['post_processing']['evaluation_file']
     # KWL
     match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
@@ -212,7 +203,8 @@ def start_from_console():
 
     if True:
         logging.info('classifying similarity vectors')
-        model = start_hpo(params_classification, params_training, x_train, y_train)
+        cross_validation = params_training['cross_validation']
+        model = start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
 
         logging.info('evaluate on test set')
         result = evaluate_with_pred_proba(model, x_test, y_test)

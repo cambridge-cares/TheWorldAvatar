@@ -89,7 +89,6 @@ class TrainTestGenerator():
         # sample from matches
         number_m = int(match_train_size * len(df_matches))
         df_matches['y'] = 1 # 1 means match
-        # y = df_matches['y']
         df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
 
         # sample from nonmatches
