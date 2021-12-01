@@ -46,7 +46,7 @@ def test_extraction_of_linear_rings(polygon):
 
 @pytest.mark.parametrize("polygon, geojson", [(coords1, geojson1), (coords2, geojson2), (coords3, geojson3),
                                               (coords4, geojson4)])
-def test_extraction_of_linear_rings(polygon, geojson):
+def test_creation_of_geojson(polygon, geojson):
     # Define geojson properties
     geojson_props = {'displayName': 'test'}
     feature_id = 1
