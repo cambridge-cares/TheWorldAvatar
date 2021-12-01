@@ -418,6 +418,7 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
     ?Area <http://publishmydata.com/def/ontology/foi/code> ?Area_LACode . 
     ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> . }  
+    FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E13> . }  
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> . }
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> . }
     FILTER NOT EXISTS { ?Area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> . }
@@ -430,8 +431,9 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
     
     }GROUP BY ?Area_LACode ?v_TotalELecConsumption
     """% (startTime_of_EnergyConsumption)
-
+    print('Query ElectricityConsumption_LocalArea')
     res = json.loads(performFederatedQuery(queryStr, ukdigitaltwin_iri, ONS)) 
+    print('Query ElectricityConsumption_LocalArea is done')
     for r in res:
       for key in r.keys():
           if '\"^^' in  r[key] :

@@ -148,21 +148,15 @@ def createTopologyGraph(storeType, localQuery, numOfBus, numOfBranch, addEBusNod
     g.add((URIRef(root_node), RDF.type, URIRef(ontocape_network_system.NetworkSystem.iri)))
     g.add((URIRef(root_node), RDFS.label, Literal("UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch")))  
     
-    # construct the aggragatedBusList
-    aggragatedBusList = []
-    for busInfo in busInfoArrays:
-        if str(busInfo[5]).strip('\n') == str(topo_info.headerBusTopologicalInformation[5].strip('\n')):
-            continue
-        elif str(busInfo[5].strip('\n') ) != str(None):  
-            aggragatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
-            aggragatedBusList.append(aggragatedBus)
+    # check the aggregatedBus and return aggregatedBusList
+    aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)
     
     if addEBusNodes != None:
         g, nodeName = addEBusNodes(g, topo_info.headerBusTopologicalInformation, busInfoArrays, numOfBus, root_node, root_uri, tp_namespace, uk_topo)
     if addELineNodes != None:    
         g, nodeName = addELineNodes(g, numOfBus, numOfBranch, branchTopoInfoArrays, topo_info.headerBranchTopologicalInformation, localQuery, root_node, root_uri, tp_namespace, gridModelNodeSegment, uk_topo)
     if addEGenNodes != None:
-        g, nodeName = addEGenNodes(g, numOfBus, numOfBranch, aggragatedBusList, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo)
+        g, nodeName = addEGenNodes(g, numOfBus, numOfBranch, aggregatedBusList, generatorClusterFunctionName, cg_topo_ukec, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo)
     
     # generate/update OWL files
     if updateLocalOWLFile == True:  
@@ -298,7 +292,7 @@ def addELineNodes(graph, numOfBus, numOfBranch, branchTopoArray, branchTopoHeade
 
 """Add nodes represent Branches"""
 #generatorClusterFunctionName is the name of the cluster function in the class generatorCluster 
-def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo): 
+def addEGenNodes(graph, numOfBus, numOfBranch, aggregatedBusList, generatorClusterFunctionName, ConjunctiveGraph, modelFactorArrays, localQuery, root_node, root_uri, tp_namespace, uk_topo): 
     print("Adding the triples of EGen of the grid topology.")
     print('#########START addEGenNodes for', numOfBus, '-bus model##############')
     nodeName = "EGen"
@@ -311,20 +305,12 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggragatedBusList, generatorClust
     res_queryBusTopologicalInformation = list(query_topo.queryBusTopologicalInformation(numOfBus, numOfBranch, ConjunctiveGraph, localQuery, endpoint_label))
     #### power plant: PowerGenerator, Region, lat, lon, PrimaryFuel, GenerationTechnology ####
     res_queryPowerPlantAttributes = list(query_topo.queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endpoint_label))
-    
-    # Map the full Bus node iri with the agrregated place (denoted with LA code)
-    if len(aggragatedBusList) != 0:
-        for aggragatedBus in aggragatedBusList:
-            for bus in res_queryBusTopologicalInformation:
-                if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggragatedBus[0]):
-                    aggragatedBus[0] = bus['Bus_node']
-                    break
     # create an instance of class generatorCluster
     gc = genCluster.generatorCluster()
     # get the cluster method via getattr function 
     genClusterMethod = getattr(gc, generatorClusterFunctionName)
     # pass the arrguments to the cluster method
-    bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
+    bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList)
                              
     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
@@ -408,13 +394,26 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
    
     return graph
 
+"""Check the aggregated bus"""
+def checkaggregatedBus(numOfBus, numOfBranch):
+    topo_info = TopoInfo.TopologicalInformation(numOfBus, numOfBranch)  
+    busInfoArrays = readFile(topo_info.BusInfo)
+    aggregatedBusList = []
+    for busInfo in busInfoArrays:
+        if str(busInfo[5]).strip('\n') == str(topo_info.headerBusTopologicalInformation[5].strip('\n')):
+            continue
+        elif str(busInfo[5].strip('\n') ) != str(None):  
+            aggregatedBus = [str(busInfo[0]).strip('\n'), str(busInfo[5]).strip('\n')]
+            aggregatedBusList.append(aggregatedBus)
+    return aggregatedBusList
+
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
+    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
-    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
     
     print('**************Terminated**************')
