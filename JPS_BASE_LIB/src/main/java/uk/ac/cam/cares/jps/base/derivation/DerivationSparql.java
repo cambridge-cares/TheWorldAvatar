@@ -5,8 +5,11 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
@@ -159,9 +162,6 @@ public class DerivationSparql{
 
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		}
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -746,28 +746,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method removes the time instance of the given entity. 
-	 * @param kbClient
-	 * @param entity
-	 */
-	void removeTimeInstance(String entity) {
-		ModifyQuery modify = Queries.MODIFY();
-		
-		SelectQuery query = Queries.SELECT();
-		Variable time_instant = query.var();
-		Variable time_unix = query.var();
-		Variable timestamp = query.var();
-		Variable TRS = query.var();
-		
-		TriplePattern[] queryPattern = {iri(entity).has(hasTime,time_instant),
-				time_instant.isA(InstantClass).andHas(inTimePosition, time_unix),
-				time_unix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, TRS)};
-		
-		modify.delete(queryPattern).where(queryPattern).prefix(p_time);
-		storeClient.executeUpdate(modify.getQueryString());
-	}
-	
-	/**
 	 * returns the url of the agent used to calculate the given derived quantity
 	 * @param kbClient
 	 * @param derivedQuantity
@@ -798,6 +776,7 @@ public class DerivationSparql{
 	 * @param derivedQuantity
 	 * @return
 	 */
+	@Deprecated
 	List<String> getInputs(String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
@@ -892,6 +871,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
+	@Deprecated
 	List<String> getInputsAndDerived(String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
@@ -953,6 +933,7 @@ public class DerivationSparql{
 	 * @param derivedIRI
 	 * @return
 	 */
+	@Deprecated
 	List<String> getDerivedEntities(String derivedIRI) {
 		SelectQuery query = Queries.SELECT();
 		String queryKey = "entity";
@@ -976,6 +957,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
+	@Deprecated
 	List<List<String>> getIsDerivedFromEntities(List<String> entities) {
 		String derivedkey = "derived";
 		String typeKey = "type";
@@ -1022,6 +1004,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param entities
 	 */
+	@Deprecated
 	void deleteInstances(List<String> entities) {
 		for (String entity : entities) {
 			SubSelect sub = GraphPatterns.select();
@@ -1066,6 +1049,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
+	@Deprecated
 	long getTimestamp(String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();
@@ -1107,7 +1091,7 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	void updateTimeStamp(String instance) {
+	long updateTimeStamp(String instance) {
 		long timestamp = Instant.now().getEpochSecond();
 		
 		// obtain time IRI through sub query
@@ -1132,6 +1116,8 @@ public class DerivationSparql{
 		
 		storeClient.setQuery(modify.getQueryString());
 		storeClient.executeUpdate();
+		
+		return timestamp;
 	}
 	
 	/** 
@@ -1141,6 +1127,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
+	@Deprecated
 	List<String> getInstanceClass(List<String> instances) {
 		String queryKey = "class";
 		
@@ -1174,36 +1161,47 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves the rdf:type of a given instance, whereas ignoring certain perdefined rdf:type. 
-	 * @param kbClient
-	 * @param instance
+	 * used when an agent produces a list of new entities
+	 * @param instances
 	 * @return
 	 */
-	String getInstanceClass(String instance) {
-		String queryKey = "class";
-		
+	List<Entity> initialiseNewEntities(List<String> instances) {
+		// query rdf types of these new instances
 		SelectQuery query = Queries.SELECT();
-		Variable type = SparqlBuilder.var(queryKey);
+		Variable type = query.var();
+		Variable instance = query.var();
+		
+		List<Iri> instances_iri = instances.stream().map(i -> iri(i)).collect(Collectors.toList());
 		
 		// ignore certain rdf:type
 		Expression<?>[] filters = new Expression<?>[classesToIgnore.size()];
 		for (int j = 0; j < classesToIgnore.size(); j++) {
 			filters[j] = Expressions.notEquals(type, classesToIgnore.get(j));
 		}
-		GraphPattern queryPattern = iri(instance).isA(type).filter(Expressions.and(filters));
 		
-		query.select(type).where(queryPattern);
-		storeClient.setQuery(query.getQueryString());
+		ValuesPattern valuePattern = new ValuesPattern(instance, instances_iri);
+		GraphPattern typePattern = instance.isA(type).filter(Expressions.and(filters));
 		
-		JSONArray queryResult = storeClient.executeQuery();
-		// not having an rdf:type may be fine, but having more than 1 is an issue
-		if (queryResult.length() > 1) {
-			throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + instance);
-		} else if (queryResult.length() == 1) {
-			return queryResult.getJSONObject(0).getString(queryKey);
-		} else {
-			return "";
+		query.select(type,instance).where(valuePattern,typePattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+	    
+		List<Entity> newEntities = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String iri = queryResult.getJSONObject(i).getString(instance.getQueryString().substring(1));
+			
+			if (newEntities.stream().anyMatch(e -> e.getIri().equals(iri))) {
+				throw new JPSRuntimeException("DerivedQuantitySparql.getInstanceClass: more than 1 rdf:type for " + iri);
+			}
+			
+			Entity entity = new Entity(iri);
+			if (queryResult.getJSONObject(i).has(type.getQueryString().substring(1))) {
+				entity.setRdfType(queryResult.getJSONObject(i).getString(type.getQueryString().substring(1)));
+			}
+			newEntities.add(entity);
 		}
+		
+		return newEntities;
 	}
 	
 	/**
@@ -1212,6 +1210,7 @@ public class DerivationSparql{
 	 * @param input
 	 * @param derived
 	 */
+	@Deprecated
 	void reconnectInputToDerived(String input, String derived) {
 		ModifyQuery modify = Queries.MODIFY();
 		
@@ -1223,25 +1222,24 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * returns true if it is a derived quantity with time series
+	 * this is used to reconnect a newly created instance to an existing derived instance
 	 * @param kbClient
-	 * @param derived_iri
+	 * @param input
+	 * @param derived
 	 */
-	boolean isDerivedWithTimeSeries(String derived_iri) {
-		SelectQuery query = Queries.SELECT();
-		Variable type = query.var();
-		TriplePattern tp = iri(derived_iri).isA(type);
-		Expression<?> constraint = Expressions.equals(type, DerivationWithTimeSeries);
-		
-		// this query will return one result if the constraint matches
-		GraphPattern queryPattern = tp.filter(constraint);
-		
-		query.prefix(p_derived).select(type).where(queryPattern);
-		if (storeClient.executeQuery(query.getQueryString()).length() == 1) {
-			return true;
-		} else {
-			return false;
+	void reconnectInputToDerived(List<String> inputs, List<String> derivations) {
+		if (inputs.size() != derivations.size()) {
+			throw new JPSRuntimeException("reconnectInputToDerived has incorrect inputs");
 		}
+		
+		ModifyQuery modify = Queries.MODIFY();
+		
+		for (int i = 0; i < inputs.size(); i++) {
+			modify.insert(iri(derivations.get(i)).has(isDerivedFrom, iri(inputs.get(i))));
+		}
+		modify.prefix(p_derived);
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
@@ -1292,28 +1290,140 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
-	List<String> getInputsWithTimestamps() {
+	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 		
-		Variable time = query.var();
-		Variable input = query.var();
 		Variable derivation = query.var();
+		Variable input = query.var();
+		Variable inputType = query.var();
+		Variable entity = query.var();
+		Variable entityType = query.var();
+		Variable agentURL = query.var();
+		Variable derivationTimestamp = query.var();
+		Variable inputTimestamp = query.var();
+		Variable derivationType = query.var();
 		
-		GraphPattern queryPattern = GraphPatterns.and(derivation.has(isDerivedFrom, input),
-				input.has(hasTime,time));
-		query.select(input).where(queryPattern).prefix(p_time,p_derived);
+		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
+				.andHas(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), agentURL)
+				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
+				.andIsA(derivationType);
+		GraphPattern entityPattern = entity.has(belongsTo, derivation);
+		GraphPattern inputTimestampPattern = input.has(
+				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional();
+		GraphPattern entityTypePattern = entity.isA(entityType).optional();
+		
+		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType,inputType,entityType)
+		.where(derivationPattern,entityPattern,inputTimestampPattern,inputTypePattern,entityTypePattern)
+		.prefix(p_derived,p_time,p_agent);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		if (queryResult.length() == 0) {
-			return new ArrayList<>();
-		} else {
-			List<String> inputs = new ArrayList<>();
-			for (int i = 0; i < queryResult.length(); i++) {
-				inputs.add(queryResult.getJSONObject(i).getString(input.getQueryString().substring(1)));
+		Map<String, Derivation> derivationsMap = new HashMap<>();
+		List<Derivation> derivationList = new ArrayList<>();
+		Map<String, Entity> entitiesMap = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			String derivationIRI = queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1));
+			String inputIRI = queryResult.getJSONObject(i).getString(input.getQueryString().substring(1));
+			String entityIRI = queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1));
+			String urlString = queryResult.getJSONObject(i).getString(agentURL.getQueryString().substring(1));
+			String derivedType = queryResult.getJSONObject(i).getString(derivationType.getQueryString().substring(1));
+			long derivedTimestamp = queryResult.getJSONObject(i).getLong(derivationTimestamp.getQueryString().substring(1));
+			
+			Derivation derived;
+			if (derivationsMap.containsKey(derivationIRI)) {
+				derived = derivationsMap.get(derivationIRI);
+			} else {
+				derived = new Derivation(derivationIRI,derivedType);
+				derivationsMap.put(derivationIRI, derived);
+				derivationList.add(derived);
 			}
-			return inputs;
+			
+			 // input of this derivation
+			Entity input_entity;
+			if (entitiesMap.containsKey(inputIRI)) {
+				input_entity = entitiesMap.get(inputIRI);
+			} else {
+				input_entity = new Entity(inputIRI);
+				entitiesMap.put(inputIRI, input_entity);
+			}
+			
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(inputType.getQueryString().substring(1))) {
+				input_entity.setRdfType(queryResult.getJSONObject(i).getString(inputType.getQueryString().substring(1)));
+			}
+			
+			// if it's a pure input it will have a timestamp
+			if (queryResult.getJSONObject(i).has(inputTimestamp.getQueryString().substring(1))) {
+				long input_timestamp = queryResult.getJSONObject(i).getLong(inputTimestamp.getQueryString().substring(1));
+				input_entity.setTimestamp(input_timestamp);
+			}
+			
+			Entity entity_entity;
+			if (entitiesMap.containsKey(entityIRI)) {
+				entity_entity = entitiesMap.get(entityIRI);
+			} else {
+				entity_entity = new Entity(entityIRI);
+				entitiesMap.put(entityIRI, entity_entity);
+			}
+			
+			// if rdf type exists
+			if (queryResult.getJSONObject(i).has(entityType.getQueryString().substring(1))) {
+				entity_entity.setRdfType(queryResult.getJSONObject(i).getString(entityType.getQueryString().substring(1)));
+			}
+			
+			// set properties of derivation
+			derived.addEntity(entity_entity);
+			derived.addInput(input_entity);
+			derived.setAgentURL(urlString);
+			derived.setTimestamp(derivedTimestamp);
 		}
+		
+		return derivationList;
+	}
+	
+	/**
+	 * pure inputs with timestamps cannot be part of a derivation
+	 */
+	boolean validatePureInputs() {
+		SelectQuery query = Queries.SELECT();
+		Variable input = query.var();
+		Variable derivation = query.var();
+		Variable inputTimestamp = query.var();
+		
+		GraphPattern queryPattern = input.has(belongsTo, derivation)
+				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp);
+		
+		query.prefix(p_time,p_derived).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	/**
+	 * delete all entities of a given derivation
+	 * @param derivation
+	 */
+	void deleteBelongsTo(String derivation) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		Variable predicate1 = query.var();
+		Variable predicate2 = query.var();
+		Variable subject = query.var();
+		Variable object = query.var();
+		
+		TriplePattern delete_tp1 = entity.has(predicate1, object);
+		TriplePattern delete_tp2 = subject.has(predicate2, entity);	
+		
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, delete_tp2).prefix(p_derived);
+		
+		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
@@ -1366,6 +1476,25 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	void dropAllTimestamps() {
+		ModifyQuery modify = Queries.MODIFY();
+		SelectQuery query = Queries.SELECT();
+		
+		Variable entity = query.var();
+		Variable time = query.var();
+		Variable time_unix_iri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+		
+		TriplePattern tp1 = entity.has(hasTime, time);
+		TriplePattern tp2 = time.isA(InstantClass).andHas(inTimePosition,time_unix_iri);
+		TriplePattern tp3 = time_unix_iri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, trs);
+		
+		modify.delete(tp1,tp2,tp3).where(tp1,tp2,tp3).prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
 	/**
 	 * This method chunks the given iri and returns its namespace. 
 	 * @param iri

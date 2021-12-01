@@ -92,20 +92,19 @@ public class InitialiseInstances extends JPSAgent{
     	
     	String derived_difference = devClient.createDerivation(Arrays.asList(diff_property,diff_value), difference_agent_iri, difference_agent_url, Arrays.asList(min_property,max_property));
     	LOGGER.info("Created derived quantity for calculated difference <" + derived_difference + ">");
-    	InstancesDatabase.DerivedDifference = derived_difference;
     	
     	// average is a derivation with a time series
     	String derived_average = devClient.createDerivationWithTimeSeries(Arrays.asList(average), average_agent_iri, average_agent_url, Arrays.asList(input));
     	LOGGER.info("Created derivation for average <" + derived_average + ">");
-    	InstancesDatabase.DerivedAverage = derived_average;
     	
     	// check all connections between the derived quantities
     	// as calculated difference is derived from min value and max value, they get checked too
     	// the validate method only traverse down, not up
     	LOGGER.info("Validating " + derived_difference);
     	try {
-    		devClient.validateDerivation(derived_difference);
-    		LOGGER.info("Validated derived difference successfully");
+    		if (devClient.validateDerivations()) {
+    			LOGGER.info("Validated derived difference successfully");
+    		}
     	} catch (Exception e) {
     		LOGGER.error("Validation failure for derived difference" + e.getMessage());
     		throw new JPSRuntimeException(e);
@@ -113,8 +112,9 @@ public class InitialiseInstances extends JPSAgent{
     	
     	LOGGER.info("Validating " + derived_average);
     	try {
-    		devClient.validateDerivation(derived_average);
-    		LOGGER.info("Validated derivation of average successfully");
+    		if (devClient.validateDerivations()) {
+    			LOGGER.info("Validated derivation of average successfully");
+    		}
     	} catch (Exception e) {
     		LOGGER.error("Validation failure for derived average: " + e.getMessage());
     		throw new JPSRuntimeException(e);
