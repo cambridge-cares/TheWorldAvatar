@@ -164,7 +164,8 @@ public class DerivedQuantityClientTest{
 		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
-		Assert.assertFalse(devClient.validateDerivations());
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("does not have a timestamp"));
 
 		for (String input:inputs) {
 			devClient.addTimeInstance(input);
@@ -179,7 +180,7 @@ public class DerivedQuantityClientTest{
 		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
 		
 		devClient.dropAllDerivations();
@@ -190,7 +191,8 @@ public class DerivedQuantityClientTest{
 			devClient.addTimeInstance(input);
 		}
 		devClient.createDerivation(inputs, derivedAgentIRI, derivedAgentURL, inputs);
-		Assert.assertFalse(devClient.validateDerivations());
+		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
+		Assert.assertTrue(e.getMessage().contains("Entities belonging to a derivation should not have timestamps attached"));
 	}
 	
 	@Test

@@ -268,7 +268,7 @@ public class DerivationClient {
 	public boolean validateDerivations() {
 		// check if any instances that should be pure inputs but part of a derivation
 		if (!this.sparqlClient.validatePureInputs()) {
-			return false;
+			throw new JPSRuntimeException("Entities belonging to a derivation should not have timestamps attached");
 		}
 		List<Derivation> derivations = this.sparqlClient.getDerivations();
 		
@@ -285,15 +285,14 @@ public class DerivationClient {
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 		try {
 			for (Derivation derivation : topNodes) {
-				if (!validateDerivation(derivation, graph)) {
-					return false;
-				}
+				validateDerivation(derivation, graph);
 			}
-			return true;
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
+		
+		return true;
 	}
 	
 	/**
@@ -669,7 +668,7 @@ public class DerivationClient {
 		}
 	}
 	
-	private boolean validateDerivation(Derivation derivation, DirectedAcyclicGraph<String,DefaultEdge> graph) {
+	private void validateDerivation(Derivation derivation, DirectedAcyclicGraph<String,DefaultEdge> graph) {
 		List<Derivation> inputsWithBelongsTo = derivation.getInputsWithBelongsTo();
 		
 		if (!graph.containsVertex(derivation.getIri())) {
@@ -683,9 +682,7 @@ public class DerivationClient {
 			if (null != graph.addEdge(derivation.getIri(), input.getIri())) { // will throw an error here if there is circular dependency
 				// addEdge will return 'null' if the edge has already been added as DAGs can't
 				// have duplicated edges so we can stop traversing this branch.
-				if (!validateDerivation(input, graph)) {
-					return false;
-				}
+				validateDerivation(input, graph);
 			}
 		}
 
@@ -694,12 +691,10 @@ public class DerivationClient {
 		for (Entity input : inputs) {
 			if (!input.hasBelongsTo()) {
 				if (input.getTimestamp() == null) {
-					return false;
+					throw new JPSRuntimeException(input.getIri() + " does not have a timestamp");
 				}
 			}
 		}
-		
-		return true;
 	}
 	
 	/**
