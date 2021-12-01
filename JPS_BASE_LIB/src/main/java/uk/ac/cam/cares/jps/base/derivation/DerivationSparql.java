@@ -681,29 +681,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves the status of a derivation.
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	String getStatus(String derivation) {
-		if (hasStatus(derivation)) {
-			String statusQueryKey = "status";
-			Variable status = SparqlBuilder.var(statusQueryKey);
-			SelectQuery query = Queries.SELECT();
-			
-			GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-			query.prefix(p_derived).where(queryPattern).select(status);
-			
-			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-			
-			return queryResult.getJSONObject(0).getString(statusQueryKey);
-		} else {
-			throw new JPSRuntimeException("Unable to retrieve the status of derivation <" + derivation + ">.");
-		}
-	}
-	
-	/**
 	 * This method retrieves the new derived IRI of a derivation after the job completed.
 	 * @param storeClient
 	 * @param derivation
@@ -711,18 +688,15 @@ public class DerivationSparql{
 	 */
 	List<String> getNewDerivedIRI(String derivation) {
 		if (isFinished(derivation)) {
-			String statusQueryKey = "status";
 			String derivedQueryKey = "newDerivedIRI";
 			
 			SelectQuery query = Queries.SELECT();
 			
-			Variable status = SparqlBuilder.var(statusQueryKey);
 			Variable newDerivedIRI = SparqlBuilder.var(derivedQueryKey);
 			
-			GraphPattern statusPattern = iri(derivation).has(hasStatus, status);
-			GraphPattern derivedPattern = status.has(hasNewDerivedIRI, newDerivedIRI);
+			GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(hasStatus,hasNewDerivedIRI), newDerivedIRI);
 			
-			query.prefix(p_derived).where(statusPattern, derivedPattern).select(newDerivedIRI);
+			query.prefix(p_derived).where(derivedPattern).select(newDerivedIRI);
 			JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 			
 			List<String> newDerived = new ArrayList<>();
@@ -840,11 +814,12 @@ public class DerivationSparql{
 	
 	/** 
 	 * query the list of inputs for the given derived quantity
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedQuantity
 	 * @return
 	 */
-	@Deprecated
 	List<String> getInputs(String derivedQuantity) {
 		String queryKey = "input";
 		Variable input = SparqlBuilder.var(queryKey);
@@ -964,10 +939,11 @@ public class DerivationSparql{
 	 * This is used at the stage to detect circular dependency
 	 * if the input is part of a derived quantity, this will add the derived instance
 	 * if the input is not a derived instance, it will add the input itself
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedQuantity
 	 */
-	@Deprecated
 	List<String> getInputsAndDerived(String derived) {
 		String inputQueryKey = "input";
 		String derivedQueryKey = "derived";
@@ -1042,6 +1018,56 @@ public class DerivationSparql{
 		List<String> entities = new ArrayList<>();
 		for (int i = 0; i < queryResult.length(); i++) {
 			entities.add(queryResult.getJSONObject(i).getString(queryKey));
+		}
+		
+		return entities;
+	}
+	
+	/**
+	 * This method returns entities belonging to this derived instance
+	 * ?x <derived:belongsTo> <derivation>.
+	 * ?x <rdf:type> ?rdfType.
+	 * ?upstreamDerivation <derived:isDerivedFrom> ?x.
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
+	 * @param kbClient
+	 * @param derivedIRI
+	 * @return
+	 */
+	List<Entity> getDerivedEntitiesAndUpstreamDerivation(String derivation) {
+		SelectQuery query = Queries.SELECT();
+		String entityQueryKey = "entity";
+		String rdfTypeQueryKey = "class";
+		String upstreamDevQueryKey = "upstreamDerivation";
+		String upsDevRdfTypeQueryKey = "upsDevClass";
+		
+		Variable entity = SparqlBuilder.var(entityQueryKey);
+		Variable rdfType = SparqlBuilder.var(rdfTypeQueryKey);
+		Variable upstreamDerivation = SparqlBuilder.var(upstreamDevQueryKey);
+		Variable upsDevRdfType= SparqlBuilder.var(upsDevRdfTypeQueryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(rdfType, classesToIgnore.get(j));
+		}
+		Expression<?>[] upsDevFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			upsDevFilters[j] = Expressions.notEquals(upsDevRdfType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = entity.has(belongsTo, iri(derivation)).andIsA(rdfType).filter(Expressions.and(entityFilters));
+		GraphPattern upstreamDevPattern = upstreamDerivation.has(isDerivedFrom, entity).andIsA(upsDevRdfType).filter(Expressions.and(upsDevFilters));
+		query.prefix(p_derived).select(entity,rdfType,upstreamDerivation,upsDevRdfType).where(queryPattern,upstreamDevPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		List<Entity> entities = new ArrayList<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			Entity e = new Entity(queryResult.getJSONObject(i).getString(entityQueryKey));
+			e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
+			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(upstreamDevQueryKey), queryResult.getJSONObject(i).getString(upsDevRdfTypeQueryKey)));
+			entities.add(e);
 		}
 		
 		return entities;
@@ -1135,19 +1161,29 @@ public class DerivationSparql{
 	 * @param kbClient
 	 * @param instance
 	 */
-	void deleteStatus(String instance) {
-		if (hasStatus(instance)) {
-			String status = getStatus(instance);
-			deleteInstances(Arrays.asList(status));			
+	void deleteStatus(String derivation) {
+		if (hasStatus(derivation)) {			
+			SelectQuery query = Queries.SELECT();
+			Variable status = query.var();
+			Variable type = query.var();
+			
+			TriplePattern tp1 = iri(derivation).has(hasStatus, status);
+			TriplePattern tp2 = status.isA(type);
+			
+			ModifyQuery modify = Queries.MODIFY();
+			modify.delete(tp1,tp2).where(tp1,tp2).prefix(p_derived);
+			
+			storeClient.executeUpdate(modify.getQueryString());
 		}
 	}
 	
 	/**
 	 * This methods retrieves the timestamp of a derivation instance. 
+	 * TODO SPARQL query string duplication with method getDerivations()
+	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param instance
 	 */
-	@Deprecated
 	long getTimestamp(String instance) {
 		String queryKey = "timestamp";
 		SelectQuery query = Queries.SELECT();

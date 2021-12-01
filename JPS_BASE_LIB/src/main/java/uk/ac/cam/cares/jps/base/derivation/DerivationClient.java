@@ -374,57 +374,49 @@ public class DerivationClient {
 		// the additional part in this method (compared to the above mentioned method) is: (1) how we get newDerivedIRI; (2) we delete all triples connected to the status of the derivation
 		// in the future development, there's a potential these two methods can be merged into one
 		
-		// (1) get newDerivedIRI
-		List<String> newEntities = this.sparqlClient.getNewDerivedIRI(derivation);
+		// (1) get newDerivedIRI as the new instances created by agent
+		List<String> newEntitiesString = this.sparqlClient.getNewDerivedIRI(derivation);
 		
-		// get all the other entities linked to the derived quantity, to be deleted and replaced with new entities
-		// query for ?x <belongsTo> <instance>
-		List<String> entities = this.sparqlClient.getDerivedEntities(derivation);
-		
-		// check if any of the old entities is an input for another derived quantity
-		// query ?x <isDerivedFrom> <entity>, <entity> a ?y
-		// where ?x = a derived instance, ?y = class of entity
-		// index 0 = derivedIRIs list, index 1 = type IRI list
-		List<List<String>> derivedAndType = this.sparqlClient.getIsDerivedFromEntities(entities);
+		// get those old entities that are inputs as other derivations
+		// query for ?x <belongsTo> <derivation>; ?previousDerivation <isDerivedFrom> ?x.		
+		// also ?x <rdf:type> ?xType; ?previousDerivation <rdf:type> ?preDevType.
+		List<Entity> oldEntitiesAsInput = this.sparqlClient.getDerivedEntitiesAndUpstreamDerivation(derivation);
 		
 		// delete old instances
-		this.sparqlClient.deleteInstances(entities);
-		LOGGER.debug("Deleted old instances: " + Arrays.asList(entities));
+		// IT SHOULD BE NOTED THAT DELETION OF OLD ENTITIES SHOULD ONLY BE DONE AFTER YOU STORED THE OLD ENTITIES INTO LOCAL VARIABLE "oldEntitiesAsInput"
+		this.sparqlClient.deleteBelongsTo(derivation);
+		LOGGER.debug("Deleted old instances of derivation: " + derivation);
 		
 		// link new entities to derived instance, adding ?x <belongsTo> <instance>
-		this.sparqlClient.addNewEntitiesToDerived(derivation, newEntities);
-		LOGGER.debug("Added new instances <" + newEntities + "> to the derivation <" + derivation + ">");
+		this.sparqlClient.addNewEntitiesToDerived(derivation, newEntitiesString);
+		LOGGER.debug("Added new instances <" + newEntitiesString + "> to the derivation <" + derivation + ">");
 		
-		if (derivedAndType.get(0).size() > 0) {
+		// create local variable for the new entities for reconnecting purpose
+		List<Entity> newEntities = this.sparqlClient.initialiseNewEntities(newEntitiesString);
+		
+		if (oldEntitiesAsInput.size() > 0) {
 			LOGGER.debug("This derivation contains at least one entity which is an input to another derivation");
 			LOGGER.debug("Relinking new instance(s) to the derivation by matching their rdf:type");
 			// after deleting the old entity, we need to make sure that it remains linked to the appropriate derived instance
-			List<String> classOfNewEntities = this.sparqlClient.getInstanceClass(newEntities);
-			
-			// look for the entity with the same rdf:type that we need to reconnect
-			List<String> oldDerivedList = derivedAndType.get(0);
-			List<String> oldTypeList = derivedAndType.get(1);
-	
-			// for each instance in the old derived instance that is connected to another derived instance, reconnect it
-			for (int i = 0; i < oldDerivedList.size(); i++) {
-				LOGGER.debug("Searching within <" + newEntities + "> with rdf:type <" + oldTypeList.get(i) + ">");
-				// index in the new array with the matching type
-				Integer matchingIndex = null;
-				for (int j = 0; j < classOfNewEntities.size(); j++) {
-					if (classOfNewEntities.get(j).contentEquals(oldTypeList.get(i))) {
-						if (matchingIndex != null) {
-							throw new JPSRuntimeException("Duplicate rdf:type found within output, the DerivationClient does not support this");
-						}
-						matchingIndex = j;
-					}
+			List<String> newInputs = new ArrayList<>();
+			List<String> derivationsToReconnect = new ArrayList<>();
+			for (Entity oldInput : oldEntitiesAsInput) {
+				// find within new Entities with the same rdf:type
+				List<Entity> matchingEntity = newEntities.stream().filter(e -> e.getRdfType().equals(oldInput.getRdfType())).collect(Collectors.toList());
+				
+				if (matchingEntity.size() != 1) {
+					String errmsg = "When the agent writes new instances, make sure that there is 1 instance with matching rdf:type over the old set";
+					LOGGER.error(errmsg);
+					LOGGER.error("Number of matching entities = " + matchingEntity.size());
+					throw new JPSRuntimeException(errmsg);
 				}
-				if (matchingIndex == null) {
-					String reconnectError = "Unable to find an instance with the same rdf:type to reconnect to " + oldDerivedList.get(i);
-					throw new JPSRuntimeException(reconnectError);
-				}
-			    // reconnect
-				this.sparqlClient.reconnectInputToDerived(newEntities.get(matchingIndex), oldDerivedList.get(i));
+				
+				// add IRI of the matched instance and the derivation it should connect to
+				newInputs.add(matchingEntity.get(0).getIri());
+				derivationsToReconnect.add(oldInput.getInputOf().getIri());
 			}
+			// reconnect within the triple store
+			this.sparqlClient.reconnectInputToDerived(newInputs, derivationsToReconnect);
 		}
 		
 		// (2) delete all triples connected to status of the derivation
@@ -528,16 +520,7 @@ public class DerivationClient {
 	public boolean hasStatus(String derivation) {
 		return this.sparqlClient.hasStatus(derivation);
 	}
-
-	/**
-	 * Gets the status of a derivation.
-	 * @param derivation
-	 * @return
-	 */
-	public String getStatus(String derivation) {
-		return this.sparqlClient.getStatus(derivation);
-	}
-
+	
 	/**
 	 * Gets the new derived IRI at derivation update (job) completion.
 	 * @param derivation
@@ -595,59 +578,26 @@ public class DerivationClient {
 		if (inputs.size() > 0) {
 			// here only derivation instance will enter, first we check if it is an asynchronous derivation
 			if (isDerivedAsynchronous(instance)) {
+				// we start with checking if this derivation is OutOfDate
 				if (isOutOfDate(instance, inputs)) {
+					// if it is OutOfDate and no status, just mark it as PendingUpdate
+					// from PendingUpdate to other status will be handled from AsynAgent side
 					if (!this.sparqlClient.hasStatus(instance)) {
 						this.sparqlClient.markAsPendingUpdate(instance);
 					}
+					// set the flag to true so that other derivations will know there is one derivation upstream already PendingUpdate
+					// thus they can be marked as PendingUpdate as well
 					upstreamDerivationPendingUpdate = true;
 				} else {
+					// if the Derivation is not OutOfDate, then only consider mark it as PendingUpdate if meet all below situations
+					// (1) there is upstream derivation being marked as PendingUpdate;
+					// (2) this Derivation does NOT have any status, otherwise just leave it with its existing status;
+					// (3) this Derivation has upstream derivations, i.e. it is not the first derivation in the chain, 
+					// continuing... (3) otherwise we have the risk of adding PendingUpdate to the first derivation twice
 					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance) && this.sparqlClient.hasUpstreamDerivation(instance)) {
 						this.sparqlClient.markAsPendingUpdate(instance);
 					}
 				}
-//				// then we check if this derivation is part of a chain and if any upstream one is already requested
-//				// as the upstreamDerivationRequested flag is false by default, the code will directly go to the else part
-//				if (upstreamDerivationRequested) {
-//					// it is likely the flag is up but we are at the start of the chain
-//					// this will happen if one derivation has two downstream branches
-//					if (this.sparqlClient.isFirstDerivation(instance)) {
-//						if (isOutOfDate(instance, inputs) && !this.sparqlClient.hasStatus(instance)) {
-//							this.sparqlClient.markAsRequested(instance);
-//						}
-//					} else {
-//						// here it means one of the upstream derivation is already requested
-//						// so we check if the current derivation has status already
-//						// if there is status already, the derivation framework just pass
-//						// otherwise, we mark it as PendingUpdate
-//						if (!this.sparqlClient.hasStatus(instance)) {
-//							LOGGER.info("Pending to update <" + instance + ">, marked as PendingUpdate");
-//							this.sparqlClient.markAsPendingUpdate(instance);
-//						}						
-//					}
-//				} else {
-//					// only if all upstream ones are up-to-date, we check if the current derivation is out-of-date
-//					// this applies to the first derivation in the chain by default
-//					if (isOutOfDate(instance,inputs)) {
-//						// if the Derivation is out of date, the first thing we do is checking its status
-//						if (!this.sparqlClient.hasStatus(instance)) {
-//							// if there's no status, then mark as requested - a job need to be started to update the derivation
-//							LOGGER.info("Updating <" + instance + ">, marked as Requested");
-//							LOGGER.debug("<" + instance + "> is out-of-date when compared to <" + inputs + ">");
-//							this.sparqlClient.markAsRequested(instance);
-//						} else {
-//							// for now, if there's any status, the derivation framework just pass
-//						}
-//						// as at this point, this should be the first derivation in the chain to be updated
-//						// we set the flag to remind all downstream derivations
-//						upstreamDerivationRequested = true;
-//					} else {
-//						// if the derivation is up to date, then delete <hasStatus> <Status> if applies
-//						// as in theory, here flag upstreamDerivationRequested is false, so this derivation remains up-to-date
-//						if (this.sparqlClient.hasStatus(instance)) {
-//							this.sparqlClient.deleteStatus(instance);
-//						}
-//					}
-//				}
 			}
 		}
 	}
@@ -789,7 +739,6 @@ public class DerivationClient {
 	 * @param instance
 	 * @return
 	 */
-	@Deprecated
 	private boolean isOutOfDate(String instance, List<String> inputs) {
 	    boolean outOfDate = false;
 	    long instanceTimestamp = this.sparqlClient.getTimestamp(instance);
