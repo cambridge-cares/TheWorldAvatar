@@ -21,6 +21,7 @@ import traceback
 import wget
 import csv
 import pandas as pd
+import kg_utils as kg
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from gasgridagent.jpsSingletons import jpsBaseLibView
@@ -330,6 +331,12 @@ def single_update():
 
 
 def main():
+    
+    # Create specified PostgreSQL database
+    kg.create_postgres_db()
+    # Create specified Blazegraph namespace
+    kg.create_blazegraph_namespace()
+
     """
         Main method, parses arguments.
     """                                                                                          
