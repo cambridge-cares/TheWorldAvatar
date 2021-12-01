@@ -163,9 +163,6 @@ public class DerivationSparql{
 
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
-		}
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -1406,6 +1403,29 @@ public class DerivationSparql{
 		}
 		
 		return derivationList;
+	}
+	
+	/**
+	 * pure inputs with timestamps cannot be part of a derivation
+	 */
+	boolean validatePureInputs() {
+		SelectQuery query = Queries.SELECT();
+		Variable input = query.var();
+		Variable derivation = query.var();
+		Variable inputTimestamp = query.var();
+		
+		GraphPattern queryPattern = input.has(belongsTo, derivation)
+				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp);
+		
+		query.prefix(p_time,p_derived).where(queryPattern);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() > 0) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 	
 	/**

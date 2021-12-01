@@ -272,16 +272,34 @@ public class DerivationClient {
 	 * @param derived
 	 * @return
 	 */
-	public boolean validateDerivation(String derived) {
-		// keep track of quantities to avoid circular dependencies
-		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
-        
+	public boolean validateDerivations() {
+		// check if any instances that should be pure inputs but part of a derivation
+		if (!this.sparqlClient.validatePureInputs()) {
+			return false;
+		}
+		List<Derivation> derivations = this.sparqlClient.getDerivations();
+		
+		// find derivations with entities that are not input of anything (the top nodes)
+		List<Derivation> topNodes = new ArrayList<>();
+		for (Derivation derivation : derivations) {
+			// all entities need to match the condition
+			if (derivation.getEntities().stream().allMatch(e -> !e.isInputToDerivation())) {
+				topNodes.add(derivation);
+			}
+		}
+		
+		// the graph object makes sure that there is no circular dependency
+		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
 		try {
-			validateDerivation(derived, graph);
+			for (Derivation derivation : topNodes) {
+				if (!validateDerivation(derivation, graph)) {
+					return false;
+				}
+			}
 			return true;
 		} catch (Exception e) {
-			LOGGER.warn(e.getMessage());
-		    throw new JPSRuntimeException(e);
+			LOGGER.fatal(e.getMessage());
+			throw new JPSRuntimeException(e);
 		}
 	}
 	
@@ -658,34 +676,37 @@ public class DerivationClient {
 		}
 	}
 	
-	/**
-	 * called by the public function validateDerived
-	 * @param instance
-	 * @param derivedList
-	 */
-	private void validateDerivation(String instance, DirectedAcyclicGraph<String,DefaultEdge> graph) {
-		List<String> inputsAndDerived = this.sparqlClient.getInputsAndDerived(instance);
-		if (!graph.containsVertex(instance)) {
-			graph.addVertex(instance);
+	private boolean validateDerivation(Derivation derivation, DirectedAcyclicGraph<String,DefaultEdge> graph) {
+		List<Derivation> inputsWithBelongsTo = derivation.getInputsWithBelongsTo();
+		
+		if (!graph.containsVertex(derivation.getIri())) {
+			graph.addVertex(derivation.getIri());
 		}
 		
-		for (String input : inputsAndDerived) {
-			if (!graph.containsVertex(input)) {
-				graph.addVertex(input);
+		for (Derivation input : inputsWithBelongsTo) {
+			if (!graph.containsVertex(input.getIri())) {
+				graph.addVertex(input.getIri());
 			}
-			graph.addEdge(instance, input); // will throw an error here if there is circular dependency
-			validateDerivation(input, graph);
+			if (null != graph.addEdge(derivation.getIri(), input.getIri())) { // will throw an error here if there is circular dependency
+				// addEdge will return 'null' if the edge has already been added as DAGs can't
+				// have duplicated edges so we can stop traversing this branch.
+				if (!validateDerivation(input, graph)) {
+					return false;
+				}
+			}
+		}
+
+		// this mainly checks for the presence of timestamp in pure inputs
+		List<Entity> inputs = derivation.getInputs();
+		for (Entity input : inputs) {
+			if (!input.hasBelongsTo()) {
+				if (input.getTimestamp() == null) {
+					return false;
+				}
+			}
 		}
 		
-		// check that for each derived quantity, there is a timestamp to compare to
-		List<String> inputs = this.sparqlClient.getInputs(instance);
-		if (inputs.size() > 0) {
-			// getTimestamp will throw an exception if there is no timestamp
-			this.sparqlClient.getTimestamp(instance);
-			for (String input : inputs) {
-				this.sparqlClient.getTimestamp(input);
-			}
-		}
+		return true;
 	}
 	
 	/**

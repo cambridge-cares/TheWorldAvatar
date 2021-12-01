@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 public class Derivation{
 	private String iri;
 	private List<Entity> inputs; // isDerivedFrom
-	private long timestamp;
+	private Long timestamp;
 	private String agentURL; // isDerivedUsing
 	private List<Entity> entities; // entities belongsTo this derivation
 	private String rdfType;
@@ -23,7 +23,7 @@ public class Derivation{
 		return this.iri;
 	}
 	
-	public void setTimestamp(long timestamp) {
+	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
 	
@@ -65,7 +65,7 @@ public class Derivation{
 		return this.inputs;
 	}
 	
-	public long getTimestamp() {
+	public Long getTimestamp() {
 		return this.timestamp;
 	}
     

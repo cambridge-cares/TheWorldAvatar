@@ -161,22 +161,36 @@ public class DerivedQuantityClientTest{
 	@Test
 	public void testValidateDerived() {
 		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
-		String derived2 = devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
+		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
 		
 		// inputs do not have timestamps yet
-		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived2));
-		Assert.assertTrue(e.getMessage().contains("No timestamp"));
+		Assert.assertFalse(devClient.validateDerivations());
 
 		for (String input:inputs) {
 			devClient.addTimeInstance(input);
 		}
 		
-		Assert.assertTrue(devClient.validateDerivation(derived2));
+		Assert.assertTrue(devClient.validateDerivations());
+		
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
 		
 	    // intentionally create a circular dependency
-		String derived3 = devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
-		e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivation(derived3));
+		devClient.createDerivation(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
+		devClient.createDerivation(Arrays.asList(entity2), derivedAgentIRI2, derivedAgentURL2, Arrays.asList(entity1));
+		devClient.createDerivation(inputs, derivedAgentIRI3, derivedAgentURL3, Arrays.asList(entity1));
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class, () -> devClient.validateDerivations());
 		Assert.assertTrue(e.getMessage().contains("Edge would induce a cycle"));
+		
+		devClient.dropAllDerivations();
+		devClient.dropAllTimestamps();
+		
+		// pure inputs part of a derivation
+		for (String input:inputs) {
+			devClient.addTimeInstance(input);
+		}
+		devClient.createDerivation(inputs, derivedAgentIRI, derivedAgentURL, inputs);
+		Assert.assertFalse(devClient.validateDerivations());
 	}
 	
 	@Test

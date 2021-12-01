@@ -7,7 +7,7 @@ public class Entity {
     private boolean hasBelongsTo;
     private Derivation inputOf; // input of this derivation
     private boolean isInputToDerivation;
-    private long timestamp; // only if this is a pure input
+    private Long timestamp; // only if this is a pure input
     
     public Entity(String iri) {
     	this.iri = iri;
@@ -37,11 +37,11 @@ public class Entity {
 		return this.isInputToDerivation;
 	}
 	
-	public void setTimestamp(long timestamp) {
+	public void setTimestamp(Long timestamp) {
 		this.timestamp = timestamp;
 	}
 	
-	public long getTimestamp() {
+	public Long getTimestamp() {
 		return this.timestamp;
 	}
 	
