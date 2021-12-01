@@ -155,15 +155,6 @@ public class DerivationClient {
     }
     
     /**
-     * removes time instance added using addTimeInstance
-     * @param entity
-     */
-    public void removeTimeInstance(String entity) {
-    	this.sparqlClient.removeTimeInstance(entity);
-    	LOGGER.info("Removed timestamp for <" + entity + ">");
-    }
-    
-    /**
      * you may want to use this to update an input's timestamp, the DerivationClient does not deal with inputs directly
      */
     public void updateTimestamp(String entity) {
@@ -184,6 +175,7 @@ public class DerivationClient {
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
+    @Deprecated
 	public void updateDerivation(String derivedIRI) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
@@ -222,6 +214,7 @@ public class DerivationClient {
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
+	@Deprecated
 	public void updateDerivations(List<String> derivedIRIs) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);

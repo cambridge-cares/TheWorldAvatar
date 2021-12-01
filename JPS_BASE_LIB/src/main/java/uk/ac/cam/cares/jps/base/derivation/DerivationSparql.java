@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -744,28 +743,6 @@ public class DerivationSparql{
 		}
 
 	    storeClient.executeUpdate(modify.prefix(p_time).getQueryString());
-	}
-	
-	/**
-	 * This method removes the time instance of the given entity. 
-	 * @param kbClient
-	 * @param entity
-	 */
-	void removeTimeInstance(String entity) {
-		ModifyQuery modify = Queries.MODIFY();
-		
-		SelectQuery query = Queries.SELECT();
-		Variable time_instant = query.var();
-		Variable time_unix = query.var();
-		Variable timestamp = query.var();
-		Variable TRS = query.var();
-		
-		TriplePattern[] queryPattern = {iri(entity).has(hasTime,time_instant),
-				time_instant.isA(InstantClass).andHas(inTimePosition, time_unix),
-				time_unix.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, TRS)};
-		
-		modify.delete(queryPattern).where(queryPattern).prefix(p_time);
-		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**
