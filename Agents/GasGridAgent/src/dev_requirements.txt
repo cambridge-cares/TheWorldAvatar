@@ -4,6 +4,8 @@ py4jps
 pytz
 tqdm
 wget
+psycopg2
+requests
 
 # Only needed for unit and integration tests
 pytest

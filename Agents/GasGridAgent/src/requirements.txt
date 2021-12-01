@@ -5,3 +5,5 @@ pytz
 tqdm
 wget
 numpy
+psycopg2
+requests
