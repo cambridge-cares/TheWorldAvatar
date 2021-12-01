@@ -549,28 +549,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method checks if the given derivation has any upstream derivation.
-	 * <derivation> <isDerivedFrom> <input>.
-	 * <input> <belongsTo> ?upstreamDerivation.
-	 * @param derivation
-	 * @return
-	 */
-	boolean hasUpstreamDerivation(String derivation) {
-		SelectQuery query = Queries.SELECT();
-		
-		TriplePattern queryPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), query.var());
-		query.prefix(p_derived).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
 	 * This method marks the status of the derivation as "PendingUpdate".
 	 * @param derivation
 	 */

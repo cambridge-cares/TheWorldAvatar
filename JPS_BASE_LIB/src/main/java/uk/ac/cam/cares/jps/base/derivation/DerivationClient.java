@@ -570,8 +570,11 @@ public class DerivationClient {
 			if (!graph.containsVertex(input)) {
 				graph.addVertex(input);
 			}
-			graph.addEdge(instance, input);
-			updateDerivationAsyn(input, graph);
+			if (null != graph.addEdge(instance, input)) { // will throw an error here if there is circular dependency
+				// addEdge will return 'null' if the edge has already been added as DAGs can't
+				// have duplicated edges so we can stop traversing this branch.
+				updateDerivationAsyn(input, graph);				
+			}
 		}
 		
 		List<String> inputs = this.sparqlClient.getInputs(instance);
@@ -591,10 +594,8 @@ public class DerivationClient {
 				} else {
 					// if the Derivation is not OutOfDate, then only consider mark it as PendingUpdate if meet all below situations
 					// (1) there is upstream derivation being marked as PendingUpdate;
-					// (2) this Derivation does NOT have any status, otherwise just leave it with its existing status;
-					// (3) this Derivation has upstream derivations, i.e. it is not the first derivation in the chain, 
-					// continuing... (3) otherwise we have the risk of adding PendingUpdate to the first derivation twice
-					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance) && this.sparqlClient.hasUpstreamDerivation(instance)) {
+					// (2) this Derivation does NOT have any status, otherwise just leave it with its existing status
+					if (upstreamDerivationPendingUpdate && !this.sparqlClient.hasStatus(instance)) {
 						this.sparqlClient.markAsPendingUpdate(instance);
 					}
 				}
