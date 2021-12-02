@@ -46,6 +46,7 @@ def read_properties_file(filepath):
     # Extract output directory for JSON file containing retrieved time series data from KG
     try:
         OUTPUT_DIR = props['output.directory']
+        OUTPUT_DIR = os.path.abspath(os.path.join(filepath, '..', OUTPUT_DIR))
     except KeyError:
         raise KeyError('Key "output.directory" is missing in properties file: ' + filepath)
     if OUTPUT_DIR == '':
