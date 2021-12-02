@@ -1,8 +1,8 @@
 #!/bin/bash
 # Initial version by D. Nurkowski (danieln@cmclinnovations.com)
-echo "--------------------------------------------------"
-echo "--   python kingslynnagent installation script  --"
-echo "--------------------------------------------------"
+echo "------------------------------------------------------"
+echo "--   Python \"kingslynnagent\" installation script  --"
+echo "------------------------------------------------------"
 echo ""
 #
 
@@ -58,7 +58,7 @@ function usage {
     exit
 }
 
-function create_env {
+function create_venv {
 	  echo "Creating virtual environment for this project"
     echo "-----------------------------------------------"
     echo
@@ -157,7 +157,7 @@ done
 
 if [[ $CREATE_VENV == 'y' ]]
 then
-    create_env
+    create_venv
 fi
 if [[ $INSTALL_PROJ == 'y' ]]
 then
