@@ -9,13 +9,13 @@ from pathlib import Path
 
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, '..', 'resources', 'properties.properties'))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent, 'resources', 'properties.properties'))
 
 # Initialise global variables to be read from properties file
 global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY
 
 # Define PREFIXES for SPARQL queries (WITHOUT trailing '<' and '>')
-PREFIXES = {'ocgl': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
+PREFIXES = {'ocgml': 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#',
             'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
             'rdfs': 'http://www.w3.org/2000/01/rdf-schema#',
             'xsd': 'http://www.w3.org/2001/XMLSchema#',

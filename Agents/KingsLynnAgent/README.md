@@ -5,7 +5,7 @@ The target of this agent is to provide functionality for an interoperable city e
 Please note, that this project is still **highly work in progress**!
 
 ## Preparation
-### 1. Installing the project
+### 1. Installing the project (on Windows)
 
 1) Open `cmd` terminal and navigate into project's root repository (referred to as `<root>` in the following)
 
@@ -13,6 +13,8 @@ Please note, that this project is still **highly work in progress**!
 ```
 install_script_pip.sh -v -i -e
 ```
+
+Please note: The `install_script_pip.sh` only works on Windows OS. For usage on Mac, please create virtual environment, install requirements and the project itself manually.
 
 ### 2. Instantiate buildings
 

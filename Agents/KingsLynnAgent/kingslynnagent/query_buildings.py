@@ -12,13 +12,13 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 # get settings and functions from kg_utils module
 from utilities import utils
 from utilities import geojson_creator
-from utilities.custom_errors import *
+from utilities.SparqlErrors import *
 
 
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+n = 10
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -32,38 +32,73 @@ target_crs = utils.CRSs['crs_84']
 
 ###   FUNCTIONS   ###
 
-def get_buildings_query(number=None):
+def get_buildings_named_graph(query_endpoint):
     """
-        Create SPARQL query to retrieve buildings and associated (surface) geometries
+        Retrieves named graph which holds all building information according to CitiesKG (and OntoCityGml) convention
 
         Arguments:
+            query_endpoint - SPARQl endpoint to execute query on.
+
+        Returns:
+            IRI of named building graph (without trailing '<' and '>')
+    """
+
+    # Initialise named graph output variable
+    buildings_graph = None
+
+    # Construct query
+    query = '''SELECT DISTINCT ?g \
+               WHERE { GRAPH ?g {?s ?p ?o} } \
+               ORDER BY ?g'''
+
+    # Execute query
+    graphs = execute_query(query, query_endpoint)
+
+    # Extract named graph holding all building data (based on naming convention)
+    for g in graphs['results']['bindings']:
+        if 'building' in g['g']['value']:
+            buildings_graph = g['g']['value']
+
+    if not buildings_graph:
+        raise ResultsError('Specified namespace does not contain any "building" named graph as per CitiesKG convention.')
+
+    return buildings_graph
+
+
+def get_buildings_query(buildings_graph, number=None):
+    """
+        Create SPARQL query to retrieve buildings, associated surfaces, and respective geometries incl. data types
+
+        Arguments:
+            buildings_graph - IRI of named graph holding all building data (without trailing '<' and '>')
             number - Number of buildings to retrieve data for
 
         Returns:
             SPARQL query to pass to Blazegraph
     """
 
-    # Create subquery to limit number of buildings for which to retrieve surface geometries
+    # Create SPARQL LIMIT to limit number of retrieved buildings
     if number:
-        subquery = '''{ SELECT distinct ?bldg \
-                        WHERE { ?surf ocgl:cityObjectId ?bldg ; \
-                                      ocgl:GeometryType ?geom . } \
-                        LIMIT %i \
-                        }''' % number
+        limit = 'LIMIT %s' % str(number)
     else:
-        subquery = ''
+        limit = ''
 
     # Construct query
     # Consider only surface polygons with provided geometries/polygon data (some only refer to "told blank nodes")
-    query = utils.create_sparql_prefix('ocgl') + \
+    # Subquery to limit retrieved data to specified number of buildings
+    query = utils.create_sparql_prefix('ocgml') + \
             utils.create_sparql_prefix('xsd') + \
             '''SELECT DISTINCT ?bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom \
-               WHERE { ?surf ocgl:cityObjectId ?bldg ; \
-       		                 ocgl:GeometryType ?geom . \
-       		   FILTER (!isBlank(?geom)) ''' + \
-            subquery + \
-            '''} \
-       		   ORDER BY ?bldg'''
+               WHERE { ?surf ocgml:cityObjectId ?bldg ; \
+       		                 ocgml:GeometryType ?geom . \
+       		   FILTER (!isBlank(?geom)) \
+               { SELECT distinct ?bldg \
+                 WHERE { GRAPH <%s> \
+                            { ?bldg ocgml:objectClassId 26 } \
+                       } ''' % buildings_graph + \
+            limit + \
+            '''} } \
+       		ORDER BY ?bldg'''
 
     return query
 
@@ -77,9 +112,9 @@ def get_crs_query():
     """
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgl') + \
+    query = utils.create_sparql_prefix('ocgml') + \
             '''SELECT ?crs \
-               WHERE { ?s ocgl:srsname ?crs . }'''
+               WHERE { ?s ocgml:srsname ?crs . }'''
 
     return query
 
@@ -87,6 +122,10 @@ def get_crs_query():
 def get_uprns(building_iri, query_endpoint):
     """
         Retrieves all UPRNs attached (as generic citygml attribute) to given building (i.e. building iri)
+
+        Arguments:
+            building_iri - IRI of building (within building named graph) to retrieve UPRNs for.
+            query_endpoint - SPARQl endpoint to execute query on.
 
         Returns:
             List of UPRNs (as strings) attached with given building
@@ -100,11 +139,11 @@ def get_uprns(building_iri, query_endpoint):
     city_object = building_iri.replace('building', 'cityobject')
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgl') + \
+    query = utils.create_sparql_prefix('ocgml') + \
             ''' SELECT ?uprns
-                WHERE { ?attribute ocgl:cityObjectId %s ;
-	              ocgl:attrName "OS_UPRNs" ;
-      		      ocgl:strVal ?uprns . }
+                WHERE { ?attribute ocgml:cityObjectId %s ;
+	              ocgml:attrName "OS_UPRNs" ;
+      		      ocgml:strVal ?uprns . }
             ''' % city_object
 
     # Execute query
@@ -123,6 +162,10 @@ def get_building_height(building_iri, query_endpoint):
     """
         Retrieves building height attached (as OntoCityGML attribute) to given building (i.e. building iri)
 
+        Arguments:
+            building_iri - IRI of building (within building named graph) to retrieve building height for.
+            query_endpoint - SPARQl endpoint to execute query on.
+
         Returns:
             measured building height as float
     """
@@ -134,9 +177,9 @@ def get_building_height(building_iri, query_endpoint):
         building_iri = building_iri + '>'
 
     # Construct query
-    query = utils.create_sparql_prefix('ocgl') + \
+    query = utils.create_sparql_prefix('ocgml') + \
             ''' SELECT ?height
-                WHERE { %s ocgl:measuredHeight ?height . }
+                WHERE { %s ocgml:measuredHeight ?height . }
             ''' % building_iri
 
     # Execute query
@@ -321,7 +364,8 @@ if __name__ == '__main__':
 
     # Retrieve SPARQL results from Blazegraph
     try:
-        kg_buildings = execute_query(get_buildings_query(n), utils.QUERY_ENDPOINT)
+        buildings_graph = get_buildings_named_graph(utils.QUERY_ENDPOINT)
+        kg_buildings = execute_query(get_buildings_query(buildings_graph, n), utils.QUERY_ENDPOINT)
         kg_crs = execute_query(get_crs_query(), utils.QUERY_ENDPOINT)
     except Exception as e:
         raise QueryError('Error while executing SPARQL query on specified endpoint: ' + e.__class__.__name__).\
