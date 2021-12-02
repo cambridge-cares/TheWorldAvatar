@@ -350,12 +350,18 @@ public class DerivationClient {
 		// get a list of previous derivations
 		List<String> previousDerivations = this.sparqlClient.getPreviousDerivations(derivation);
 		
-		// for each of the derivation, check if they are up-to-date, and no status associated
-		for (String dev : previousDerivations) {
-			List<String> inputs = this.sparqlClient.getInputs(dev);
-			if (isOutOfDate(dev, inputs) || hasStatus(dev)) {
-				toRequest = false;
-				break;
+		if (previousDerivations.size() > 0) {
+			// for each of the derivation, check if they are up-to-date, and no status associated
+			for (String dev : previousDerivations) {
+				List<String> inputs = this.sparqlClient.getInputs(dev);
+				if (isOutOfDate(dev, inputs) || hasStatus(dev)) {
+					toRequest = false;
+					break;
+				}
+			}
+		} else { // means this is the first derivation in the chain
+			if (!isOutOfDate(derivation, this.sparqlClient.getInputs(derivation))) {
+				throw new JPSRuntimeException("Derivation <" + derivation + "> is marked as PendingUpdate INCORRECTLY given it is the first derivation in the chain and is up-to-date.");
 			}
 		}
 		
