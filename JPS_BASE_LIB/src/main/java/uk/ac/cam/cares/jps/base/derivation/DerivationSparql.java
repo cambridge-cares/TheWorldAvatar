@@ -45,6 +45,7 @@ import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
  */
 public class DerivationSparql{
 	private StoreClientInterface storeClient;
+	private String derivationInstanceBaseURL; // an example of this can be "https://www.example.com/triplestore/repository/"
 	
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
 	// prefix/namespace
@@ -90,8 +91,24 @@ public class DerivationSparql{
 	
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
+	/**
+	 * This constructor is tagged as @Deprecated as ideally user should provide based URL when creating derivation instances.
+	 * @param storeClient
+	 */
+	@Deprecated
 	public DerivationSparql(StoreClientInterface storeClient) {
 		this.storeClient = storeClient;
+		this.derivationInstanceBaseURL = derivednamespace; // this line is added to the original constructor so that the current codes will not break
+	}
+	
+	/**
+	 * This constructor should be used to enable customised derivation instance base URL.
+	 * @param storeClient
+	 * @param derivationInstanceBaseURL
+	 */
+	public DerivationSparql(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		this.storeClient = storeClient;
+		this.derivationInstanceBaseURL = derivationInstanceBaseURL;
 	}
 	
 	/**
@@ -107,7 +124,7 @@ public class DerivationSparql{
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
@@ -127,7 +144,7 @@ public class DerivationSparql{
 		// link to agent
 		// here it is assumed that an agent only has one operation
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
-		String operation_iri = derivednamespace + UUID.randomUUID().toString();
+		String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
@@ -161,7 +178,7 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -230,7 +247,7 @@ public class DerivationSparql{
 			String agentIRI = agentIRIList.get(i);
 			String agentURL = agentURLList.get(i);
 			// create a unique IRI for this new derived quantity
-			String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+			String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 			derivations.add(derivedQuantity);
 			Iri derived_iri = iri(derivedQuantity);
 			
@@ -249,7 +266,7 @@ public class DerivationSparql{
 			// link to agent
 			// here it is assumed that an agent only has one operation
 			modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
-			String operation_iri = derivednamespace + UUID.randomUUID().toString();
+			String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
 			// add agent url
 			modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 			modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
@@ -273,7 +290,7 @@ public class DerivationSparql{
 	    ModifyQuery modify = Queries.MODIFY();
 		
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 		
 		Iri derived_iri = iri(derivedQuantity);
 		
@@ -292,7 +309,7 @@ public class DerivationSparql{
 		
 		// link to agent
 		modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
-		String operation_iri = derivednamespace + UUID.randomUUID().toString();
+		String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
 		// add agent url
 		modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 		modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
@@ -346,7 +363,7 @@ public class DerivationSparql{
 			String agentIRI = agentIRIList.get(i);
 			String agentURL = agentURLList.get(i);
 			// create a unique IRI for this new derived quantity
-			String derivedQuantity = derivednamespace + "derived" + UUID.randomUUID().toString();
+			String derivedQuantity = derivationInstanceBaseURL + "derived" + UUID.randomUUID().toString();
 			derivations.add(derivedQuantity);
 			Iri derived_iri = iri(derivedQuantity);
 			
@@ -365,7 +382,7 @@ public class DerivationSparql{
 			// link to agent
 			// here it is assumed that an agent only has one operation
 			modify.insert(derived_iri.has(isDerivedUsing,iri(agentIRI)));
-			String operation_iri = derivednamespace + UUID.randomUUID().toString();
+			String operation_iri = derivationInstanceBaseURL + UUID.randomUUID().toString();
 			// add agent url
 			modify.insert(iri(agentIRI).isA(Service).andHas(hasOperation, iri(operation_iri)));
 			modify.insert(iri(operation_iri).isA(Operation).andHas(hasHttpUrl, iri(agentURL)));
@@ -394,9 +411,9 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 
 		// create a unique IRI for this new derived quantity
-		String derivedQuantity = derivednamespace + "derivedAsyn_" + UUID.randomUUID().toString();
+		String derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
 		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivednamespace + "derivedAsyn_" + UUID.randomUUID().toString();
+			derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
 		}
 
 		Iri derived_iri = iri(derivedQuantity);
@@ -704,8 +721,8 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		// add time stamp instance for the given entity
-		String time_instant = derivednamespace + "time" + UUID.randomUUID().toString();
-		String time_unix = derivednamespace + "time" + UUID.randomUUID().toString();
+		String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
+		String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
 
 		long timestamp = 0;
 		Iri time_instant_iri = iri(time_instant);
@@ -729,8 +746,8 @@ public class DerivationSparql{
 			
 		for (String entity : entities) {
 			// add time stamp instance for the given entity
-			String time_instant = derivednamespace + "time" + UUID.randomUUID().toString();
-			String time_unix = derivednamespace + "time" + UUID.randomUUID().toString();
+			String time_instant = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
+			String time_unix = derivationInstanceBaseURL + "time" + UUID.randomUUID().toString();
 	
 			long timestamp = 0;
 			Iri time_instant_iri = iri(time_instant);
