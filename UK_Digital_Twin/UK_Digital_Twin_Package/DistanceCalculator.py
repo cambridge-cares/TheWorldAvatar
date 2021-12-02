@@ -30,5 +30,5 @@ def DistanceBasedOnGPSLocation(GPSLocationArray): # GPSLocationArray = [Point1_l
     
     return round(distance, 4)
 
-d = DistanceBasedOnGPSLocation([52.6365868, -1.1395656, 53.8007312, -1.5492442])
-print(d)
+# d = DistanceBasedOnGPSLocation([52.6365868, -1.1395656, 53.8007312, -1.5492442])
+# print(d)

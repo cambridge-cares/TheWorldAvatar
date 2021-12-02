@@ -116,38 +116,33 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, numOfBra
         print('Store is IOMemery')
         
     # Query the bus loaction
-    res_queryBusLocation = list(queryBusTopologicalInformation(numOfBus, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label)) # this query reused the one for creating topology
-    # Query the local electricity consumption for both region and local areas
-    res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topoAndConsumpPath_Sleepycat, localQuery, endpoint_iri, ONS_JSON))
-    res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, endpoint_iri, ONS_JSON))
-    
-    # Find the aggregatedBus
-    if loadAllocatorName == 'regionalDemandLoad':
-        aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)  
-    else:
-        aggregatedBusList = []
-        
+    res_queryBusTopologicalInformation = list(queryBusTopologicalInformation(numOfBus, numOfBranch, topoAndConsumpPath_Sleepycat, localQuery, endpoint_label)) # this query reused the one for creating topology     
     # create an instance of class demandLoadAllocator
     dla = DLA.demandLoadAllocator()
     # get the load allocation method via getattr function 
     allocator = getattr(dla, loadAllocatorName)
     # pass the arrguments to the cluster method
-    EBus_Load_List = allocator(res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea, aggregatedBusList) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: v_TotalELecConsumption 
+    EBus_Load_List, aggregatedBusFlag = allocator(res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: v_TotalELecConsumption 
     
+    # check if the allocator method is applicable
+    while EBus_Load_List == None:
+        loadAllocatorName = str(input('The current allocator is not applicable. Please choose another allocator: '))
+        # get the load allocation method via getattr function 
+        allocator = getattr(dla, loadAllocatorName)
+        # pass the arrguments to the cluster method
+        EBus_Load_List, aggregatedBusFlag = allocator(res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch) # EBus_Load_List[0]: EquipmentConnection_EBus, EBus_Load_List[1]: v_TotalELecConsumption 
+             
     #The sum up of the load of the aggegated bus is done in the loadAllocatorName
-    if len(aggregatedBusList) != 0:
+    if aggregatedBusFlag == True:
         EBus_Load_List = addUpConsumptionForAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
-
-    if EBus_Load_List == None:
-        raise Exception('EBus_Load_List is empty')
         
     print('################START createModel_EBus#################')
     for ebus in EBus_Load_List:         
     # if EBus_Load_List[0] != None: # test
-    #     ebus = EBus_Load_List[0] # test           
-        root_uri = ebus['Bus_node'].split('#')[0]
+    #     ebus = EBus_Load_List[0] # test  
+        root_uri = ebus['EBus'].split('#')[0]
         namespace = root_uri + HASH
-        node_locator = ebus['Bus_node'].split('#')[1]
+        node_locator = ebus['EBus'].split('#')[1]
         root_node = namespace + 'Model_' + node_locator
         father_node = UKDT.nodeURIGenerator(4, dt.powerGridModel, numOfBus, "EBus")
         
@@ -166,8 +161,8 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, numOfBra
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'BusModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
         # link with EBus node in topology
-        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(ebus['Bus_node'])))
-        g.add((URIRef(ebus['Bus_node']), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
+        g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.models.iri), URIRef(ebus['EBus'])))
+        g.add((URIRef(ebus['EBus']), URIRef(ontocape_upper_level_system.isModeledBy.iri), URIRef(root_node)))
             
         ###add EBus model parametor###
         # create an instance of class initialiseEBusModelVariable
@@ -222,7 +217,6 @@ def createModel_EBus(storeType, localQuery, version_of_DUKES, numOfBus, numOfBra
 
 # The demanding of an AggregatedBus is the sum of their regional consumption (elec demanding)
 def addUpConsumptionForAggregatedBus(EBus_Load_List):
-    #EBus_ = [ [str(ebus['Bus_node']), float(ebus['v_TotalELecConsumption'])] for ebus in EBus]
     bus_node  = []
     for ebus in EBus_Load_List:
         if ebus['Bus_node'] in bus_node:
@@ -230,7 +224,7 @@ def addUpConsumptionForAggregatedBus(EBus_Load_List):
             counter_2 = EBus_Load_List.index(ebus) 
             if counter_2 > counter_1:
                 EBus_Load_List[counter_1]['v_TotalELecConsumption'] += EBus_Load_List[counter_2]['v_TotalELecConsumption']
-                EBus_Load_List[counter_1]['v_TotalELecConsumption'] = round(EBus_Load_List[counter_1]['v_TotalELecConsumption'], 2)
+                EBus_Load_List[counter_1]['v_TotalELecConsumption'] = round(float(EBus_Load_List[counter_1]['v_TotalELecConsumption']), 2)
                 del EBus_Load_List[counter_2]
             else:
                 print('counter_2 should be larger than counter_1')
@@ -239,44 +233,8 @@ def addUpConsumptionForAggregatedBus(EBus_Load_List):
             bus_node.append(ebus['Bus_node'])
     return EBus_Load_List
 
-# def initialiseEBusModelVar(EBus_Model, EBus, defaultInitialisation):
-#     if isinstance (EBus_Model, UK_PG.UKEbusModel):
-#         pass
-#     else:
-#         print('The first argument should be an instence of UKEbusModel.')
-#         return None
-    
-#     if defaultInitialisation == True:
-#         EBus_Model.BUS = int((EBus['Bus_node'].split('#EBus-')[1]).split('_')[0])
-#         if EBus_Model.BUS == 1: # assign slack bus
-#             EBus_Model.TYPE = 3
-#     elif defaultInitialisation == False and os.path.exists(EBus_Model.BusModelInitialisation):
-#           BusModelInitialisationArrays = readFile(EBus_Model.BusModelInitialisation)  
-#           if BusModelInitialisationArrays[0] != EBus_Model.headerBusModel:
-#             raise Exception('The Bus Model Initialisation header is not matched, please check the data file')
-            
-#           EBus_Model.BUS = int((EBus['Bus_node'].split('#EBus-')[1]).split('_')[0])
-#           EBus_Model.TYPE = BusModelInitialisationArrays[EBus_Model.BUS][1].strip('\n')
-#           EBus_Model.PD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][2].strip('\n')
-#           EBus_Model.GD_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][3].strip('\n')
-#           EBus_Model.GS = BusModelInitialisationArrays[EBus_Model.BUS][4].strip('\n')
-#           EBus_Model.BS = BusModelInitialisationArrays[EBus_Model.BUS][5].strip('\n')
-#           EBus_Model.AREA = BusModelInitialisationArrays[EBus_Model.BUS][6].strip('\n')
-#           EBus_Model.VM_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][7].strip('\n')
-#           EBus_Model.VA_INPUT = BusModelInitialisationArrays[EBus_Model.BUS][8].strip('\n')
-#           EBus_Model.BASEKV = BusModelInitialisationArrays[EBus_Model.BUS][9].strip('\n')
-#           EBus_Model.ZONE = BusModelInitialisationArrays[EBus_Model.BUS][10].strip('\n')
-#           EBus_Model.VMAX = BusModelInitialisationArrays[EBus_Model.BUS][11].strip('\n')
-#           EBus_Model.VMIN = BusModelInitialisationArrays[EBus_Model.BUS][12].strip('\n')     
-#     else:
-#         raise NotImplementedError('When the defaultInitialisation flag turns off, the assigment of sluck bus needs more information.')
-    
-#     # initialise Pd
-#     EBus_Model.PD_INPUT = round((float(EBus['v_TotalELecConsumption']) * 1000 / (24 * 365)), 3) 
-    
-#     return EBus_Model
-
 if __name__ == '__main__':    
-    createModel_EBus('default', False, 2019, 10, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", True, None, True)  
-    # createModel_EBus('default', False, 2019, 29, "2017-01-31", "closestDemandLoad", "preSpecified", False, None, True)            
+    # createModel_EBus('default', False, 2019, 10, 14, "2017-01-31", "regionalDemandLoad", "defaultInitialisation", None, True)  
+    # createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "closestDemandLoad", "preSpecified", None, True)  
+    createModel_EBus('default', False, 2019, 29, 99, "2017-01-31", "regionalDemandLoad", "preSpecified", None, True)           
     print('*****************Terminated*****************')

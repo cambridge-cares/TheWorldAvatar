@@ -1,6 +1,6 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 01 Dec 2021                   #
+# Last Update Date: 02 Dec 2021                   #
 ###################################################
 from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from collections import Counter
@@ -9,9 +9,10 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, BASE)
 from UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel import queryElectricityConsumption_LocalArea
 import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
+import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
-#import UK_Power_Grid_Topology_Generator.SPARQLQueriesUsedInTopologyABox as query_topo
-from UK_Digital_Twin_Package.busLocatedRangeFinder import busLocatedRegionFinder, busLocatedCountryFinder
+from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import checkaggregatedBus
+from UK_Digital_Twin_Package.busLocatedRangeFinder import busLocatedRegionFinder
 from UK_Digital_Twin_Package.generatorCluster import busLocationFinderForGBOrNI
 from math import sin, cos, sqrt, atan2, radians, degrees
 
@@ -21,15 +22,34 @@ class demandLoadAllocator(object):
     """"This allocation principle is firstly appoled in the 10-bus model (UK) as a most strightforward way. 
     which is to assign the regional demanding to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this method may not be suitable anymore."""   
-    def regionalDemandLoad(self, res_queryBusTopologicalInformation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea, aggregatedBusList):
+    def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
         # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
-        # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
+
+        # The query endpoints
         ons_label = endpointList.ONS['lable']
+        ons_iri = endpointList.ONS['queryendpoint_iri']
+        ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+        # query regional consumption
+        res_queryElectricityConsumption_Region = list(query_model.queryElectricityConsumption_Region(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
         # Find the located region of each bus
         res_queryBusTopologicalInformation = busLocatedRegionFinder(res_queryBusTopologicalInformation, ons_label, 'Bus_lat_lon')   
+        # Check one region has at most one bus as this cluster method can only be used in this occasion 
+        region = [ str(r['Bus_LACode']) for r in res_queryBusTopologicalInformation]
+        duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
+        if len(duplicatesOfRegion) > 0:
+            print("The duplicatesOfRegion are: ", duplicatesOfRegion, 'the method regionalDemandLoad cannot deal with this situation, please choose another demand load allocater.')
+            return None, None
+            # raise Exception("More than one buses located in the same region. This cluster principle cannot deal with this situation.")
+        elif len(region) > 12:
+            raise Exception('The total number of the region exceeds 12.')
+        
+        # check the aggregatedBus 
+        aggregatedBusList = checkaggregatedBus(numOfBus, numOfBranch)  
+        aggregatedBusFlag = False
         # identify the aggregatedBus: same bus but represents different areas (regions)
         if len(aggregatedBusList) != 0:
+            aggregatedBusFlag = True
             for aggregatedBus in aggregatedBusList:               
                 for bus in res_queryBusTopologicalInformation:
                     if int(bus['Bus_node'].split('_EBus-')[1]) == int(aggregatedBus[0]):
@@ -38,46 +58,35 @@ class demandLoadAllocator(object):
                         aggregatedBusDict['Bus_LACode'] = str(aggregatedBus[1])
                         res_queryBusTopologicalInformation.append(aggregatedBusDict)
                         break
-               
-        # Check one region has at most one bus as this cluster method can only be used in this occasion 
-        region = [ str(r['Bus_LACode']) for r in res_queryBusTopologicalInformation]
-        duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
-        if len(duplicatesOfRegion) > 0:
-            # TODO: automatically change the demand assign method
-            print("The duplicatesOfRegion are: ", duplicatesOfRegion)
-            raise Exception("More than one buses located in the same region. This cluster principle cannot deal with this situation.")
-        elif len(region) > 12:
-            raise Exception('The total number of the region exceeds 12.')
-        
+      
         print('****The demanding allocation principle is regionalDemandLoad****')
         
         busAndDemandPairList = []
         
         for consumption in res_queryElectricityConsumption_Region: 
             busAndDemandPair = {}
-            if str(consumption['RegionOrCountry_LACode']) in region:
-                indexOfBus = region.index(str(consumption['RegionOrCountry_LACode']))
-                busAndDemandPair = {**consumption, **res_queryBusTopologicalInformation[indexOfBus]}
-                # connectedBusNode = str(res_queryBusLocation[indexOfBus]['EBus'])               
-                # busAndDemandPair = []               
-                # busAndDemandPair.append(connectedBusNode)
-                # busAndDemandPair.append(consumption['TotalELecConsumption'])
-                busAndDemandPairList.append(busAndDemandPair)  
-            else:
-                continue
-        
-        return busAndDemandPairList
+            for bus in res_queryBusTopologicalInformation:
+                if str(consumption['RegionOrCountry_LACode']) == str(bus['Bus_LACode']):
+                    busAndDemandPair = {**consumption, **bus}
+                    busAndDemandPairList.append(busAndDemandPair)  
+                    break
+      
+        return busAndDemandPairList, aggregatedBusFlag
         
    
     """This method is firstly employed in the 29-bus model (UK) which assign the consumption loads to its closest bus on the straight line.
     However, it may generate some unpractical design. For example, a place located in Walse will be allocated to a bus across the Bristol channel,
     which is aginst the reality."""
     # This function is modified from: John Atherton (ja685@cam.ac.uk) #   
-    def closestDemandLoad(self, res_queryBusLocation, res_queryElectricityConsumption_Region, res_queryElectricityConsumption_LocalArea, aggregatedBusList):
-      # res_queryBusLocation = [Bus_node, EBus, Bus_lat_lon[]]
-      # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
+    def closestDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
+      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
       # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
       ons_label = endpointList.ONS['lable']
+      ons_iri = endpointList.ONS['queryendpoint_iri']
+      ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+      # query the local consumption
+      res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+    
       print('****The cluster principle is closestDemandLoad****')
       # find the centroid of the polygon, the value of the 
       for ec in res_queryElectricityConsumption_LocalArea:
@@ -89,22 +98,24 @@ class demandLoadAllocator(object):
               ec['Geo_InfoList'] = [lat, lon] 
       
       # detect the location of the bus, in GB or in NI
-      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusLocation, ons_label)   
+      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)   
 
       busAndDemandPairList = []
-      busNumberArray = list(range(1, len(res_queryBusLocation) + 1)) 
+      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
       for ec in res_queryElectricityConsumption_LocalArea:
         busAndDemandPair = {}  
         if len(busInGB) > 0: 
             demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'K03000001', ons_label)
             if demandArea_within_flag == True: # power plant located in GB
                 j = 0
+                distances_check = [65534, '']*len(busInGB) # the large number is the earth's circumference
                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
                 for bus in busInGB:
                   GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
                   distances[j] = GPS_distance(GPSLocationPair)
+                  distances_check[j] = [GPS_distance(GPSLocationPair), bus['Bus_node']]
                   j += 1
-                bus_index = distances.index(min(distances))    
+                bus_index = distances.index(min(distances))  
                 busAndDemandPair = {**busInGB[bus_index], **ec}
                 if len(busAndDemandPairList) != 0:
                     hitFlag = False
@@ -156,8 +167,8 @@ class demandLoadAllocator(object):
           print("WARNING: There are buses not being assigned with any load, which are number:", busNumberArray)
       else:
           print("************All buses are assigned with demand loads************") 
-            
-      return busAndDemandPairList 
+      aggregatedBusFlag = False      
+      return busAndDemandPairList, aggregatedBusFlag 
 
 # This method is developed to find an approximal centroid of the Multipolygon. 
 # The centroid of each polygon made up the multipolygon is found at first and the centroid of the multipolygon is approximated by the centre of those centroids.
@@ -208,5 +219,5 @@ if __name__ == '__main__':
     res_ec = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     cl = demandLoadAllocator()
     res =cl.closestDemandLoad(res_29_bus, None, res_ec, [])
-    print(res)
+    print(res, len(res))
     

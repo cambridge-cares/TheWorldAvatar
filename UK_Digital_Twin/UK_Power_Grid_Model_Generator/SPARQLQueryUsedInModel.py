@@ -297,54 +297,8 @@ def queryTotalElecConsumptionofGBOrUK(endPoint_label, numOfBus, numOfBranch, sta
     return res
 
 ###############EBus#############
-# query the EBus iri and its located area's total electricity consumption 
-# def queryEBusandRegionalDemand(numOfBus, topo_Consumption_SleepycatPath, localQuery, endPoint_label):
-#     label = "_" + str(numOfBus) + "_"  
-#     queryStr = """
-#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX ontopowsys_PowSysFunction: <http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#>
-#     PREFIX ontoecape_technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>
-#     PREFIX ontocape_upper_level_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-#     PREFIX ontoeip_system_function: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#>
-#     PREFIX ontocape_network_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#>
-#     SELECT DISTINCT ?EBus ?TotalELecConsumption
-#     WHERE
-#     {
-#     ?Topology rdf:type ontocape_network_system:NetworkSystem .
-#     ?Topology rdfs:label ?label .
-#     FILTER regex(?label, "%s") .
-#     ?Topology ontocape_upper_level_system:isComposedOfSubsystem ?EquipmentConnection_EBus .
-#     ?EquipmentConnection_EBus rdf:type ontopowsys_PowSysFunction:PowerEquipmentConnection .
-#     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location_region . 
-    
-#     ?EquipmentConnection_EBus ontoecape_technical_system:isRealizedBy ?EBus . 
-#     ?EquipmentConnection_EBus ontocape_upper_level_system:hasAddress ?Location .
-#     ?Location rdf:type <https://dbpedia.org/ontology/Region> .
-    
-#     ?regionalConsumption ontocape_upper_level_system:hasAddress ?Location .
-#     ?regionalConsumption ontoeip_system_function:consumes/ontocape_upper_level_system:hasValue ?v_TotalELecConsumption .   
-#     ?v_TotalELecConsumption ontocape_upper_level_system:numericalValue ?TotalELecConsumption .
-#     }
-#     """ % label  
-#     global qres
-#     if localQuery == False and len(endPoint_label) > 0:
-#        print('remoteQuery')     
-#        res = json.loads(performQuery(endPoint_label, queryStr))            
-#        qres = [[ str(r['EBus']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
-#     elif topo_Consumption_SleepycatPath != None and localQuery == True:  
-#         ebus_cg = ConjunctiveGraph('Sleepycat')
-#         sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
-#         if sl == NO_STORE:
-#             print('Cannot find the UK topology sleepycat store')
-#             return None        
-#         qres = list(ebus_cg.query(queryStr))
-#         ebus_cg.close()
-#     return qres 
-
-
 # Query the total consumption of the regions
-def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Consumption_SleepycatPath, localQuery, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):
+def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):
     queryStr = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -372,29 +326,19 @@ def queryElectricityConsumption_Region(startTime_of_EnergyConsumption, topo_Cons
     ?Total_ele_consumption ontocape_upper_level_system:hasValue/ontocape_upper_level_system:numericalValue ?v_TotalELecConsumption .
     }
     """% (startTime_of_EnergyConsumption)
-    
-    global qres
-    if localQuery == False:
-       print('remoteQuery')     
-       res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri)) 
-       for r in res:
-           for key in r.keys():
-              if '\"^^' in  r[key] :
-                r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-       return res            
-       # qres = [[ str(r['Region']), float((r['TotalELecConsumption'].split('\"^^')[0]).replace('\"',''))] for r in res]
-    elif topo_Consumption_SleepycatPath != None and localQuery == True:  
-        ebus_cg = ConjunctiveGraph('Sleepycat')
-        sl = ebus_cg.open(topo_Consumption_SleepycatPath, create = False)
-        if sl == NO_STORE:
-            raise Exception('Cannot find the UK topology sleepycat store')
-                 
-        qres = list(ebus_cg.query(queryStr))
-        ebus_cg.close()
-    return qres 
+     
+    print('stars queryElectricityConsumption_Region')     
+    res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri))
+    print('queryElectricityConsumption_Region is done') 
+    for r in res:
+        for key in r.keys():
+           if '\"^^' in  r[key] :
+             r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+        r['v_TotalELecConsumption'] = float(r['v_TotalELecConsumption'])
+    return res                  
          
 # query the total electricity consumption of each address area
-def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ONS):    
+def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri):    
     queryStr = """
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -432,13 +376,15 @@ def queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigi
     }GROUP BY ?Area_LACode ?v_TotalELecConsumption
     """% (startTime_of_EnergyConsumption)
     print('Query ElectricityConsumption_LocalArea')
-    res = json.loads(performFederatedQuery(queryStr, ukdigitaltwin_iri, ONS)) 
+    res = json.loads(performFederatedQuery(queryStr, UKDigitalTwinEndPoint_iri, ONSEndPoint_iri)) 
     print('Query ElectricityConsumption_LocalArea is done')
+          
     for r in res:
       for key in r.keys():
           if '\"^^' in  r[key] :
             r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-       
+      r['v_TotalELecConsumption'] = float(r['v_TotalELecConsumption'])    
+          
     for r in res: 
         if len(r["Geo_InfoList"]) == 0:
             raise Exception(r["Area_LACode"], "does't have the geographical attributes.")
@@ -567,8 +513,8 @@ if __name__ == '__main__':
     
     # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    # res = queryElectricityConsumption_Region("2017-01-31", None, False, ukdigitaltwinendpoint, ONS_json)
-    res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )

@@ -10,25 +10,25 @@ from UK_Digital_Twin_Package.OWLfileStorer import readFile
 class initialiseEBusModelVariable(object):
     
     """This method is the default initialisation"""
-    def defaultInitialisation(EBus_Model_instance, EBus):
+    def defaultInitialisation(self, EBus_Model_instance, EBus):
         if not isinstance (EBus_Model_instance, UK_PG.UKEbusModel):
             raise Exception('The first argument should be an instence of UKEbusModel.')
         print('****The Bus model variables initialiser is defaultInitialisation****')
-        EBus_Model_instance.BUS = int((EBus['Bus_node'].split('#EBus-')[1]).split('_')[0])
+        EBus_Model_instance.BUS = int((EBus['EBus'].split('#EBus-')[1]).split('_')[0])
         if EBus_Model_instance.BUS == 1: # assign slack bus
             EBus_Model_instance.TYPE = 3
         EBus_Model_instance.PD_INPUT = round((float(EBus['v_TotalELecConsumption']) * 1000 / (24 * 365)), 3) 
         return EBus_Model_instance
     
     """This method uses the pre defined initailised values""" 
-    def preSpecified(EBus_Model_instance, EBus):
+    def preSpecified(self, EBus_Model_instance, EBus):
         if not isinstance (EBus_Model_instance, UK_PG.UKEbusModel):
             raise Exception('The first argument should be an instence of UKEbusModel.')
         BusModelInitialisationArrays = readFile(EBus_Model_instance.BusModelInitialisation)  
         if BusModelInitialisationArrays[0] != EBus_Model_instance.headerBusModel:
           raise Exception('The Bus Model Initialisation header is not matched, please check the data file')
         print('****The Bus model variables initialiser is preSpecified****')
-        EBus_Model_instance.BUS = int((EBus['Bus_node'].split('#EBus-')[1]).split('_')[0])
+        EBus_Model_instance.BUS = int((EBus['EBus'].split('#EBus-')[1]).split('_')[0])
         EBus_Model_instance.TYPE = BusModelInitialisationArrays[EBus_Model_instance.BUS][1].strip('\n')
         EBus_Model_instance.PD_INPUT = BusModelInitialisationArrays[EBus_Model_instance.BUS][2].strip('\n')
         EBus_Model_instance.GD_INPUT = BusModelInitialisationArrays[EBus_Model_instance.BUS][3].strip('\n')
