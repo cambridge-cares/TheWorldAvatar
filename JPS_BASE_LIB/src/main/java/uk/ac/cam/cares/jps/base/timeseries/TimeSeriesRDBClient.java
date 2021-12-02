@@ -14,6 +14,8 @@ import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jooq.CreateTableColumnStep;
 import org.jooq.DSLContext;
 import org.jooq.Field;
@@ -23,6 +25,8 @@ import org.jooq.Record;
 import org.jooq.Result;
 import org.jooq.SQLDialect;
 import org.jooq.Table;
+import org.jooq.UpdateSetFirstStep;
+import org.jooq.exception.DataAccessException;
 import org.jooq.impl.DSL;
 import org.jooq.impl.DefaultDataType;
 import static org.jooq.impl.DSL.*;
@@ -36,7 +40,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  */
 
 public class TimeSeriesRDBClient<T> {
-	
+	/**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(TimeSeriesRDBClient.class);
 	// URL and credentials for the relational database
 	private String rdbURL = null; 
 	private String rdbUser = null;
@@ -185,6 +192,7 @@ public class TimeSeriesRDBClient<T> {
 			throw e;
 		} catch (Exception e) {
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 		
@@ -193,6 +201,8 @@ public class TimeSeriesRDBClient<T> {
     /**
      * Append time series data to an already existing RDB table
 	 * If certain columns within the table are not provided, they will be nulls
+	 * if a row with the equivalent time value exists, the values provided will overwrite
+	 * the existing data in the table
 	 * @param ts TimeSeries object to add
      */
 	protected void addTimeSeriesData(TimeSeries<T> ts) {
@@ -222,12 +232,13 @@ public class TimeSeriesRDBClient<T> {
 			}
 			
 			// Append time series data to time series table
+			// if a row with the time value exists, that row will be updated instead of creating a new row
 			populateTimeSeriesTable(tsTableName, ts, dataColumnNames);
-			
 		} catch (JPSRuntimeException e) {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -286,7 +297,7 @@ public class TimeSeriesRDBClient<T> {
 				upperBound = context.select(max(timeColumn)).from(table).fetch(max(timeColumn)).get(0);
 			}
 	    	
-	    	// Perform query (including potential time duplicates)
+	    	// Perform query
 	    	Result<? extends Record> queryResult = context.select(columnList).from(table).where(timeColumn.between(lowerBound, upperBound))
 	    			 									  .orderBy(timeColumn.asc()).fetch();
 	    	
@@ -304,6 +315,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -339,6 +351,7 @@ public class TimeSeriesRDBClient<T> {
 			
 			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 	}
@@ -364,6 +377,7 @@ public class TimeSeriesRDBClient<T> {
 			
 			return new TimeSeries<T>(timeValues, Arrays.asList(dataIRI), Arrays.asList(dataValues));
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
 	}
@@ -419,6 +433,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -448,6 +463,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -478,6 +494,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -520,6 +537,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -553,6 +571,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
@@ -589,6 +608,7 @@ public class TimeSeriesRDBClient<T> {
 			}
 			
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException("Error while executing SQL command", e);
 		}
@@ -609,6 +629,7 @@ public class TimeSeriesRDBClient<T> {
 	        	System.out.println("Connecting successful: " + this.rdbURL); 
 			}
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			System.out.println("Connecting failed: " + this.rdbURL);
 			throw new JPSRuntimeException(exceptionPrefix + "Establishing database connection failed");
 		}
@@ -622,6 +643,7 @@ public class TimeSeriesRDBClient<T> {
 			conn.close();
 			System.out.println("Disconnecting successful"); 
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			System.out.println("Disconnecting failed");
 			throw new JPSRuntimeException(exceptionPrefix + "Closing database connection failed");
 		}
@@ -703,18 +725,42 @@ public class TimeSeriesRDBClient<T> {
     		columnList.add(DSL.field(DSL.name(dataColumnNames.get(data))));
     	}
     	
+    	// collect the list of time values that exist in the table
+    	// these rows are treated specially to avoid duplicates
+    	List<Integer> rowsWithMatchingTime = new ArrayList<>();
     	// Populate columns row by row
         InsertValuesStepN<?> insertValueStep = context.insertInto(table, columnList);
         for (int i=0; i<ts.getTimes().size(); i++) {
         	// newValues is the row elements
-			Object[] newValues = new Object[dataIRIs.size()+1];
-			newValues[0] = ts.getTimes().get(i); 
-			for (int j = 0; j < ts.getDataIRIs().size(); j++) {
-				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
-			}
-			insertValueStep = insertValueStep.values(newValues);
+        	if (!checkTimeRowExists(tsTable, ts.getTimes().get(i))) {
+        		Object[] newValues = new Object[dataIRIs.size()+1];
+    			newValues[0] = ts.getTimes().get(i); 
+    			for (int j = 0; j < ts.getDataIRIs().size(); j++) {
+    				newValues[j+1] = (ts.getValues(dataIRIs.get(j)).get(i));
+    			}
+    			insertValueStep = insertValueStep.values(newValues);
+        	} else {
+        		rowsWithMatchingTime.add(i);
+        	}
 		}
 		insertValueStep.execute();
+		
+		// update existing rows with matching time value
+		// only one row can be updated in a single query
+		for (int rowIndex : rowsWithMatchingTime) {
+			UpdateSetFirstStep<?> updateStep = context.update(table);
+			
+			for (int i = 0; i < ts.getDataIRIs().size(); i++) {
+				String dataIRI = ts.getDataIRIs().get(i);
+				
+				if (i == (ts.getDataIRIs().size()-1)) {
+					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex))
+					.where(timeColumn.eq(ts.getTimes().get(rowIndex))).execute();
+				} else {
+					updateStep.set(DSL.field(DSL.name(dataColumnNames.get(dataIRI))), ts.getValues(dataIRI).get(rowIndex));
+				}	
+			}
+		}
 	}
 	
 	/**
@@ -764,6 +810,7 @@ public class TimeSeriesRDBClient<T> {
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance"); 
 		}
 	}
@@ -782,6 +829,7 @@ public class TimeSeriesRDBClient<T> {
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance"); 
 		}
 	}
@@ -800,6 +848,7 @@ public class TimeSeriesRDBClient<T> {
 			// Throws IndexOutOfBoundsException if dataIRI is not present in central lookup table (i.e. queryResult is empty)
 			return queryResult.get(0);
 		} catch (IndexOutOfBoundsException e) {
+			LOGGER.error(e.getMessage());
 			throw new JPSRuntimeException(exceptionPrefix + "<" + dataIRI + "> does not have an assigned time series instance"); 
 		}
 	}
@@ -815,6 +864,21 @@ public class TimeSeriesRDBClient<T> {
 		String tableName = getTimeseriesTableName(dataIRI);
 
 		return DSL.table(DSL.name(tableName));
+	}
+	
+	/**
+	 * check if a row exists to prevent duplicate rows with the same time value
+	 * @param tsTable
+	 * @param time
+	 * @return
+	 */
+	private boolean checkTimeRowExists(String tsTableName, T time) {
+		try {
+			return context.fetchExists(selectFrom(DSL.table(DSL.name(tsTableName))).where(timeColumn.eq(time)));
+		} catch (DataAccessException e) {
+			LOGGER.error(e.getMessage());
+			throw new JPSRuntimeException(exceptionPrefix + "Error in checking if a row exists for a given time value"); 
+		}
 	}
 
 	/**
@@ -852,6 +916,7 @@ public class TimeSeriesRDBClient<T> {
 			// Re-throw JPSRuntimeExceptions
 			throw e;
 		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
 			// Throw all exceptions incurred by jooq (i.e. by SQL interactions with database) as JPSRuntimeException with respective message
 			throw new JPSRuntimeException(exceptionPrefix + "Error while executing SQL command", e);
 		}
