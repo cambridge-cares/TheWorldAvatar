@@ -38,14 +38,14 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 	public AsynAgent() {
 		LOGGER.info("A new AsynAgent has been initialised.");
 	}
-		
+	
 	/**
-     * Initialise a new AsynAgent with StoreClientInterface.
+     * Initialise a new AsynAgent with StoreClientInterface and base URL for derivation instances.
      */
-	public AsynAgent(StoreClientInterface storeClient) {
-        this.storeClient = storeClient;
-        this.devClient = new DerivationClient(storeClient);
-    }
+	public AsynAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		this.storeClient = storeClient;
+		this.devClient = new DerivationClient(storeClient, derivationInstanceBaseURL);
+	}
 	
 	/**
 	 * Display default response message when accidentally invoking agent via an HTTP request.
