@@ -39,8 +39,8 @@ public class MaxValueAgent extends AsynAgent {
 		LOGGER.info("MaxValueAgent is initialised.");
 	}
 	
-	public MaxValueAgent(StoreClientInterface storeClient) {
-		super(storeClient);
+	public MaxValueAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		super(storeClient, derivationInstanceBaseURL);
 		this.sparqlClient = new SparqlClient(storeClient);
 	}
 	
@@ -70,7 +70,7 @@ public class MaxValueAgent extends AsynAgent {
 		Config.initProperties();
 		
 		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
-		MaxValueAgent maxAgent = new MaxValueAgent(kbClient);
+		MaxValueAgent maxAgent = new MaxValueAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {

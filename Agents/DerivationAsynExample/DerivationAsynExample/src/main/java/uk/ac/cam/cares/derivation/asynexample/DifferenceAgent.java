@@ -39,8 +39,8 @@ public class DifferenceAgent extends AsynAgent {
 		LOGGER.info("DifferenceAgent is initialised.");
 	}
 	
-	public DifferenceAgent(StoreClientInterface storeClient) {
-		super(storeClient);
+	public DifferenceAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		super(storeClient, derivationInstanceBaseURL);
 		this.sparqlClient = new SparqlClient(storeClient);
 	}
 	
@@ -71,7 +71,7 @@ public class DifferenceAgent extends AsynAgent {
 		Config.initProperties();
 		
 		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
-		DifferenceAgent diffAgent = new DifferenceAgent(kbClient);
+		DifferenceAgent diffAgent = new DifferenceAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {

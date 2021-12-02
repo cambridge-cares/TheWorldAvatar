@@ -41,8 +41,8 @@ public class RNGAgent extends AsynAgent {
 		LOGGER.info("RNGAgent is initialised.");
 	}
 	
-	public RNGAgent(StoreClientInterface storeClient) {
-		super(storeClient);
+	public RNGAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		super(storeClient, derivationInstanceBaseURL);
 		this.sparqlClient = new SparqlClient(storeClient);
 	}
 	
@@ -90,7 +90,7 @@ public class RNGAgent extends AsynAgent {
 		Config.initProperties();
 		
 		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
-		RNGAgent rngAgent = new RNGAgent(kbClient);
+		RNGAgent rngAgent = new RNGAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {

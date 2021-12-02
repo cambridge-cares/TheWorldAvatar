@@ -39,8 +39,8 @@ public class MinValueAgent extends AsynAgent {
 		LOGGER.info("MinValueAgent is initialised.");
 	}
 	
-	public MinValueAgent(StoreClientInterface storeClient) {
-		super(storeClient);
+	public MinValueAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
+		super(storeClient, derivationInstanceBaseURL);
 		this.sparqlClient = new SparqlClient(storeClient);
 	}
 	
@@ -70,7 +70,7 @@ public class MinValueAgent extends AsynAgent {
 		Config.initProperties();
 		
 		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
-		MinValueAgent minAgent = new MinValueAgent(kbClient);
+		MinValueAgent minAgent = new MinValueAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {

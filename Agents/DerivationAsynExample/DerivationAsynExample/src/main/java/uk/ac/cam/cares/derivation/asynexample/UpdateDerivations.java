@@ -28,7 +28,7 @@ public class UpdateDerivations extends JPSAgent {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
-		DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		
 		String difference = sparqlClient.getDifferenceIRI();
 		String difference_derivation = devClient.getDerivationOf(difference);

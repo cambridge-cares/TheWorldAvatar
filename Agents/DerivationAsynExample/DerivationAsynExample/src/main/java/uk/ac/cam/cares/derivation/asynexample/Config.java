@@ -34,6 +34,8 @@ public class Config {
 	public static long periodAgentMinValue;
 	public static long periodAgentRNG;
 	
+	public static String derivationInstanceBaseURL;
+	
 	public static String sparqlEndpointQuery;
 	public static String sparqlEndpointUpdate;
 	
@@ -67,6 +69,8 @@ public class Config {
 				Config.periodAgentMaxValue = Long.parseLong(Config.props.getProperty("period.agent.maxvalue"));
 				Config.periodAgentMinValue = Long.parseLong(Config.props.getProperty("period.agent.minvalue"));
 				Config.periodAgentRNG = Long.parseLong(Config.props.getProperty("period.agent.rng"));
+				
+				Config.derivationInstanceBaseURL = Config.props.getProperty("derivation.instance.base.url");
 				
 				Config.sparqlEndpointQuery = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.query");
 				Config.sparqlEndpointUpdate = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.update");

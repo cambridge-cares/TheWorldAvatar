@@ -34,7 +34,7 @@ public class InitialiseInstances extends JPSAgent {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
-		DerivationClient devClient = new DerivationClient(storeClient);
+		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		
 		// clear KG when initialising
 		LOGGER.info("Initialising new instances, all existing instances will get deleted");
