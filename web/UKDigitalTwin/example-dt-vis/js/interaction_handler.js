@@ -202,17 +202,24 @@ class InteractionHandler {
         var title = feature.properties["displayName"];
         if(title == null) title = feature.properties["name"];
         if(title == null) title = "ID " + feature.id;
+        title = "<h3>" + title + "</h3>";
 
         if(feature["geometry"]["type"] === "Point") {
             var coordinates = feature.geometry.coordinates;
-
-            var titleHTML = title + `
-                <div class="tooltip">
-                    <img src="./img/target.png" onclick="manager.zoomTo(` + coordinates + `);"/>
-                    <span class="tooltiptext">Zoom to this location</span>
-                </div>
+            var html = `
+                <table width="100%">
+                    <tr>
+                        <td width="90%">` + title + `</td>
+                        <td width="10%">
+                            <div class="tooltip">
+                                <img src="./img/target.png" onclick="manager.zoomTo(` + coordinates + `);"/>
+                                <span class="tooltiptext">Zoom to this location</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
             `;
-            this._panelHandler.setTitle(titleHTML);
+            this._panelHandler.setTitle(html);
         } else {
             this._panelHandler.setTitle(title);
         }
@@ -232,6 +239,9 @@ class InteractionHandler {
             this._panelHandler.toggleExpansion();
         }
 
+        document.getElementById("footerContainer").style.display = "block";
+        document.getElementById("contentContainer").style.flexGrow = 1;
+        
         // Remember the currently selected feature
         DT.currentFeature = feature;
     }

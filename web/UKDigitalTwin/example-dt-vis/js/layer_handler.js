@@ -57,7 +57,9 @@ class LayerHandler {
         }
 
         // Order the layers so that points are on top.
-        this.#orderLayers();
+        this.#orderLayers(["fill", "polygon"]);
+        this.#orderLayers(["line"]);
+        this.#orderLayers(["circle", "point", "symbol"]);
     }
 
     /**
@@ -410,7 +412,7 @@ class LayerHandler {
      * Bump all point locations to the top of the stack, for better interactions
      * they should really be above any line or fill layers.
      */
-    #orderLayers() {
+    #orderLayers(types) {
         var layers = this._map.getStyle().layers
         layers.forEach(layer => {
 
@@ -418,7 +420,7 @@ class LayerHandler {
                 let provider = layer["metadata"]["provider"];
 
                 if(provider === "cmcl"){
-                    if(layer["type"] == "circle" || layer["type"] === "symbol") {
+                    if(types.includes(layer["type"])) {
                         this._map.moveLayer(layer["id"]);
                     }
                 }

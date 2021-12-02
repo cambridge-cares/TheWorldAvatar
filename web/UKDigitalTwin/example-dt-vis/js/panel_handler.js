@@ -69,9 +69,8 @@ class PanelHandler {
 		let linkedFiles = globalMeta["linkedFiles"];
 		if(linkedFiles == null || linkedFiles.length == 0) return;
 
-		let contentContainer = document.getElementById("contentContainer");
-		let newHTML = "<div id='linkedFilesContainer'>";
-		newHTML += "<b>Additional Files:</b><br/>";
+		let contentContainer = document.getElementById("linkedFilesContainer");
+		let newHTML = "";
 
 		let winURL = window.location;
 		let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
@@ -93,8 +92,7 @@ class PanelHandler {
 			newHTML += "</a><br/>"
 		}
 
-		newHTML += "</div>";
-		contentContainer.innerHTML += newHTML;
+		contentContainer.innerHTML = newHTML;
 	}
 
 	/**
@@ -150,19 +148,9 @@ class PanelHandler {
 	 * 
 	 * @param {Stirng} title desired title HTML
 	 */
-	setTitle(title) {
-		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("titleContainer").innerHTML = "<h3>" + title + "</h3>";
-	}
-
-	/**
-	 * Sets the title of the side panel.
-	 * 
-	 * @param {Stirng} title desired title HTML
-	 */
 	 setTitle(title) {
 		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("titleContainer").innerHTML = "<h2>" + title + "</h2>";
+		document.getElementById("titleContainer").innerHTML = title;
 	}
 
 	/** 

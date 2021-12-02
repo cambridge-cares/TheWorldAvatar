@@ -506,6 +506,11 @@ class ControlHandler {
 			} else {
 				treeEntry["currentState"] = "hidden";
 				this._treeHTML += `>`;
+				
+				// Now actually hide the layer
+				treeEntry["layerIDs"].forEach(layerID => {
+					this.#toggleLayer(layerID, false);
+				});
 			}
 			this._treeHTML += "<label for='" + layerName + "'>" + layerName + "</label>";
 			this._treeHTML += `</li>`		

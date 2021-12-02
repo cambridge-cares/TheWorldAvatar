@@ -223,18 +223,17 @@ li {
 #contentContainer {
   margin-top: 10px;
   width: 100%;
-
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   overflow-y: hidden;
-
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  justify-content: space-between;
+  /* flex-grow: 1; */
+  /* justify-content: space-between; */
 }
 
 #meta-tree {
-  flex: 1 0 auto;
+  flex: 1;
+  overflow-y: scroll;
 }
 #legendContainer {
   width: 100%;
@@ -475,6 +474,7 @@ li {
 }
 .empty-icon {
   width: 12px !important;
+  min-width: 12px !important;
 }
 .fa-caret-right:before {
   content: "" !important;
@@ -547,9 +547,6 @@ li {
 	background-color: rgba(0, 0, 0, 0.05);
 	border-radius: 8px;
 	padding: 10px;
-}
-#linkedFilesContainer a {
-	padding-left: 20px;
 }
 
 #terrainTitle {

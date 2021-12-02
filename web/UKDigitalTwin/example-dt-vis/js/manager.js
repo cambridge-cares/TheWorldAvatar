@@ -281,6 +281,10 @@ class DigitalTwinManager {
 			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
 		}
 
+	
+	}
+
+	storePanelDefault() {
 		this._panelHandler.storeDefault();
 	}
 
@@ -387,6 +391,102 @@ class DigitalTwinManager {
 		if(this._defaultPanelCallback != null) {
 			this._defaultPanelCallback();
 		}
+	}
+	
+	/**
+	 * Given a link to a markdown file, this method opens
+	 * and renders the file in a new tab.
+	 */
+	openMarkdownLink(url) {
+		let directories = null;
+		let fileName = url;
+		if(url.includes("/")) {
+			let index = url.lastIndexOf("/");
+			directories = url.substring(0, index);
+			fileName = url.substring(index + 1, url.length);
+		}
+
+		$.get(url, function(contents) {
+			var newContents = contents;
+
+			if(directories != null) {
+				// Assume image src in markdown files are relative to the MD file.
+				// We need to update them in-memory to be relative to this HTML file.
+				let regex = new RegExp(`src="(?!http)[^"]*`, `g`);
+				let matches = [];
+
+				let match;
+				while ((match = regex.exec(contents)) !== null) {
+					matches.push(match[0]);
+				}
+
+				matches.forEach(match => {
+					let replacement = match.replace("src=\"", "");
+					replacement = replacement.replace("./", "");
+					replacement = "src=\"" + directories + "/" + replacement;
+					newContents = newContents.replace(match, replacement);
+				});
+			}
+
+			// Open the (potentially adjusted) markdown contents in a new document
+			var newWindow = window.open("", fileName, "");
+			newWindow.document.write(`
+				<html>
+					<head>
+						<title>` + fileName + `</title>
+						<meta charset="utf-8">
+					</head>
+					<body style="background-color: rgb(240, 240, 240); border-radius: 8px;">
+						<div style="margin: 30px 90px; padding: 25px 50px; background-color: white;">
+							` +  marked.parse(newContents) + `
+						</div>
+					</body>
+				</html>
+			`);
+			newWindow.document.close();
+		});
+	}
+
+	/**
+	 * Given a link to a JSON file, this method opens
+	 * and renders the file in a new tab.
+	 */
+	 openJSONLink(url) {
+		let directories = null;
+		let fileName = url;
+		if(url.includes("/")) {
+			let index = url.lastIndexOf("/");
+			directories = url.substring(0, index);
+			fileName = url.substring(index + 1, url.length);
+		}
+
+		$.get(url, function(contents) {
+			var newContents = contents;
+
+			// Open the (potentially adjusted) JSON contents in a new document
+			var newWindow = window.open("", fileName, "");
+			newWindow.json = newContents;
+			newWindow.document.write(`
+				<html>
+					<head>
+						<title>` + fileName + `</title>
+						<meta charset="utf-8">
+						<link href="./css/framework/jsonview.bundle.css" rel="stylesheet"> 
+						<script src='./js/framework/jsonview.bundle.js'></script>
+					</head>
+					<body style="background-color: rgb(240, 240, 240); border-radius: 8px;">
+						<div id="container" style="margin: 30px 90px; padding: 25px 50px; background-color: white;">
+						</div>
+						<script>
+							var tree = JsonView.renderJSON(window.json, document.getElementById("container"));
+                			JsonView.expandChildren(tree);
+							console.log("INFO: JSON tree has been rendered.");
+						</script>
+					</body>
+				</html>
+			`);
+			newWindow.document.close();
+		});
 	}
 
 	/**
