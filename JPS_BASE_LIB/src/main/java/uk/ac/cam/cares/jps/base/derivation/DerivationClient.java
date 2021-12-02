@@ -567,13 +567,26 @@ public class DerivationClient {
 		}
 		
 		for (String input : inputsAndDerived) {
-			if (!graph.containsVertex(input)) {
-				graph.addVertex(input);
-			}
-			if (null != graph.addEdge(instance, input)) { // will throw an error here if there is circular dependency
-				// addEdge will return 'null' if the edge has already been added as DAGs can't
-				// have duplicated edges so we can stop traversing this branch.
-				updateDerivationAsyn(input, graph);				
+			if (graph.addVertex(input) && (null != graph.addEdge(instance, input))) {
+				// (1) graph.addVertex(input) will try to add input as vertex if not already exist in the graph
+				// (2) (null != graph.addEdge(instance, input)) will throw an error here if there is circular dependency
+				// continuing... (2) addEdge will return 'null' if the edge has already been added as DAGs can't
+				// continuing... (2) have duplicated edges so we can stop traversing this branch.
+				// only when both (1) and (2) are true, we can update input
+				// otherwise, node <D1> will be traversed multiple times if we have below chain of derivations
+				// and we run updateDerivationAsyn(<D3>, graph):
+				// <I3> <belongsTo> <D3> .
+				// <D3> <isDerivedFrom> <I2.1> .
+				// <D3> <isDerivedFrom> <I2.2> .
+				// <I2.1> <belongsTo> <D2.1> .
+				// <I2.2> <belongsTo> <D2.2> .
+				// <D2.1> <isDerivedFrom> <I1> .
+				// <D2.2> <isDerivedFrom> <I1> .
+				// <I1> <belongsTo> <D1> .
+				// <D1> <isDerivedFrom> <I0.1> .
+				// <D1> <isDerivedFrom> <I0.2> .
+				// <D1> <isDerivedFrom> <I0.3> .
+				updateDerivationAsyn(input, graph);
 			}
 		}
 		
