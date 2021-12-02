@@ -100,12 +100,12 @@ public class InitialiseInstances extends JPSAgent {
 		
 		// check all connections between the derived quantities
 		// as the validate method traverse down, checking difference derivation checks all other derivations in the chain
-		LOGGER.info("Validating " + diff_dev);
+		LOGGER.info("Validating derivations: " + rng_dev + ", " + max_dev + ", " + min_dev + ", and " + diff_dev);
 		try {
-			devClient.validateDerivation(diff_dev);
-			LOGGER.info("Validated Difference Derivation successfully");
+			devClient.validateDerivations();
+			LOGGER.info("Validated chain of derivations successfully");
 		} catch (Exception e) {
-			LOGGER.error("Validation failure for Difference Derivation" + e.getMessage());
+			LOGGER.error("Validation failure for chain of derivations: " + e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
 		
