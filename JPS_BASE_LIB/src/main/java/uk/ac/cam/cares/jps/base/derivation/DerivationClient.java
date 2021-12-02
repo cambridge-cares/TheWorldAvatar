@@ -37,10 +37,24 @@ public class DerivationClient {
      */
     private static final Logger LOGGER = LogManager.getLogger(DerivationClient.class);
     
+    /**
+     * This constructor is tagged as @Deprecated as ideally user should provide based URL when creating derivation instances.
+     * @param kbClient
+     */
+    @Deprecated
     public DerivationClient(StoreClientInterface kbClient) {
     	this.kbClient = kbClient;
-    	this.sparqlClient = new DerivationSparql(kbClient);
-    	
+    	this.sparqlClient = new DerivationSparql(kbClient);	
+    }
+    
+    /**
+     * This constructor should be used to enable customised derivation instance base URL.
+     * @param kbClient
+     * @param derivationInstanceBaseURL
+     */
+    public DerivationClient(StoreClientInterface kbClient, String derivationInstanceBaseURL) {
+    	this.kbClient = kbClient;
+    	this.sparqlClient = new DerivationSparql(kbClient, derivationInstanceBaseURL);
     }
     
     /**
