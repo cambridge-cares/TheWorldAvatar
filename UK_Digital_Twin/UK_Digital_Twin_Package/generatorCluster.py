@@ -41,10 +41,9 @@ class generatorCluster(object):
         region = [ str(r['Bus_LACode']) for r in res_queryBusTopologicalInformation ]
         duplicatesOfRegion = [k for k, v in Counter(region).items() if v > 1]
         if len(duplicatesOfRegion) > 0:
-            #TODO: change the cluster method by as the user to specify a cluster method
-            # print("The duplicatesOfRegion are: ", duplicatesOfRegion, "The ")
-            # return True
-            raise Exception("More than one buses located in the same region. This cluster principle cannot deal with this situation.")
+            print("The duplicatesOfRegion are: ", duplicatesOfRegion, 'the method sameRegionWithBus cannot deal with this situation, please choose another demand load allocater.')
+            return None
+            # raise Exception("More than one buses located in the same region. This cluster principle cannot deal with this situation.")
         elif len(region) > 12:
             raise Exception('The total number of the region exceeds 12.')
         # region = sorted(set(region),key=region.index) # remove the duplicated item and keep the order of the list as original

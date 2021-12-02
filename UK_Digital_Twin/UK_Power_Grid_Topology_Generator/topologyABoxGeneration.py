@@ -311,6 +311,14 @@ def addEGenNodes(graph, numOfBus, numOfBranch, aggregatedBusList, generatorClust
     genClusterMethod = getattr(gc, generatorClusterFunctionName)
     # pass the arrguments to the cluster method
     bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList)
+    
+    # check if the allocator method is applicable
+    while bus_generator_assignment_list == None:
+        generatorClusterFunctionName = str(input('The current generator cluster is not applicable. Please choose another cluster: '))
+        # get the load allocation method via getattr function 
+        genClusterMethod = getattr(gc, generatorClusterFunctionName)
+        # pass the arrguments to the cluster method
+        bus_generator_assignment_list = genClusterMethod(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggregatedBusList)    
                              
     for busGen in bus_generator_assignment_list: # Bus_node, EBus, Bus_lat_lon[], Bus_LACode; PowerGenerator, LACode_PP, PP_lat_lon, PrimaryFuel, GenerationTechnology
         # busGen: busGen[0]: generator; busGen[1]: bus node; busGen[2]: PrimaryFuel; busGen[3]: GenerationTechnology
@@ -410,10 +418,11 @@ def checkaggregatedBus(numOfBus, numOfBranch):
 if __name__ == '__main__': 
     # createTopologyGraph('default', False, 10, 14, addEBusNodes, None, None, 'sameRegionWithBus', ["275", "400"], None, True)
     # createTopologyGraph('default', False, 10, 14, None, addELineNodes, None, 'sameRegionWithBus', ["275", "400"], None, True)
-    createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
+    # createTopologyGraph('default', False, 10, 14, None, None, addEGenNodes, 'sameRegionWithBus', ["275", "400"], None, True)
     
     # createTopologyGraph('default', False, 29, 99, addEBusNodes, None, None, 'closestBus', [], None, True)
     # createTopologyGraph('default', False, 29, 99, None, addELineNodes, None, 'closestBus', [], None, True)
-    # createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'closestBus', [], None, True) 
+    ## createTopologyGraph('default', False, 29, 99, None, None, addEGenNodes, 'sameRegionWithBus', [], None, True) 
     
     print('**************Terminated**************')
