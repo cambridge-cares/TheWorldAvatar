@@ -2,8 +2,7 @@ import json
 import logging
 import time
 import traceback
-import requests
-
+import ontomatch.httpCaller.httpcaller as httpcaller
 import ontomatch.evaluate
 import ontomatch.instancematching
 import ontomatch.knowledge.enrichment
@@ -57,15 +56,18 @@ class Agent():
             logging.fatal(full_traceback)
             raise
 
-    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> str:
+    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> (str, str):
         logging.info('calling ontomatch.knowledge.enrichment.Agent, addr=%s, add_knowledge=%s, http=%s',
                 addr, add_knowledge, http)
         if http:
-            r = requests.get('https://httpbin.org/get', params={"addr":addr, "add_knowledge":add_knowledge})
-            if r.status_code !=200:
-                raise ConnectionError()
-            data = r.json
-            return data['enriched'], data['handle']
+            #TODO: check error handling
+            try:
+                params = dict(addr=addr, add_knowledge=add_knowledge)
+                data = httpcaller .caller().callAgent("enrichment", params)
+                return data["enriched"], data["handle"]
+            except Exception as e:
+                raise Exception
+
         else:
             enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=False)
         logging.info('called ontomatch.knowledge.enrichment.Agent, enriched=%s, handle=%s', enriched, handle)
@@ -74,7 +76,9 @@ class Agent():
     def __call_matching_with_auto_calibration(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
         logging.info('calling InstanceMatcherWithAutoCalibration, http=%s', http)
         if http:
-            raise NotImplementedError()
+            params = dict(config_handle=config_handle, src_graph_handle=src_graph_handle,
+                          tgt_graph_handle=tgt_graph_handle)
+            self.__call_matching_agent_http("autocalibration", params)
         else:
             matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
@@ -83,7 +87,9 @@ class Agent():
     def __call_matching_with_Classifier(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
         logging.info('calling InstanceMatcherClassifier, http=%s', http)
         if http:
-            raise NotImplementedError()
+            params = dict(config_handle=config_handle, src_graph_handle=src_graph_handle,
+                          tgt_graph_handle=tgt_graph_handle)
+            self.__call_matching_agent_http("classifier", params)
         else:
             matcher = ontomatch.instancematching.InstanceMatcherClassifier()
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
@@ -92,7 +98,9 @@ class Agent():
     def __call_matching_with_scoring_weights(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
         logging.info('calling InstanceMatcherWithScoringWeights, http=%s', http)
         if http:
-            raise NotImplementedError()
+            params = dict(config_handle=config_handle, src_graph_handle=src_graph_handle,
+                          tgt_graph_handle=tgt_graph_handle)
+            self.__call_matching_agent_http("scoring_weight", params)
         else:
             matcher = ontomatch.instancematching.InstanceMatcherWithScoringWeights()
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
@@ -101,11 +109,20 @@ class Agent():
     def __call_match_manager(self, config_handle:str, src_graph_handle:str, tgt_graph_handle:str, http:bool=False):
         logging.info('calling matchManager, http=%s', http)
         if http:
-            raise NotImplementedError()
+            params = dict(config_handle=config_handle, src_graph_handle=src_graph_handle, tgt_graph_handle=tgt_graph_handle)
+            self.__call_matching_agent_http("default", params)
         else:
             matcher = ontomatch.matchManager.matchManager()
             matcher.start(config_handle, src_graph_handle, tgt_graph_handle, http=False)
         logging.info('called matchManager, http=%s', http)
+
+    def __call_matching_agent_http(self, choice, params):
+        try:
+            params['choice'] = choice
+            data = httpcaller.caller().callAgent("matcher", params)
+        except Exception as e:
+            raise Exception
+
 
 def start(config_dev=None):
     params, config_file = ontomatch.utils.util.init(config_dev)
