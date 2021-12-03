@@ -89,7 +89,7 @@ public class RNGAgent extends AsynAgent {
 		
 		Config.initProperties();
 		
-		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
+		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 		RNGAgent rngAgent = new RNGAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {

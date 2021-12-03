@@ -70,7 +70,7 @@ public class DifferenceAgent extends AsynAgent {
 		
 		Config.initProperties();
 		
-		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpointQuery, Config.sparqlEndpointUpdate);
+		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 		DifferenceAgent diffAgent = new DifferenceAgent(kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {

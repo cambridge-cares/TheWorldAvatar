@@ -36,8 +36,9 @@ public class Config {
 	
 	public static String derivationInstanceBaseURL;
 	
-	public static String sparqlEndpointQuery;
-	public static String sparqlEndpointUpdate;
+	public static String sparqlEndpoint;
+	public static String kgUser;
+	public static String kgPassword;
 	
 	private static final Logger LOGGER = LogManager.getLogger(Config.class);
 	
@@ -72,8 +73,9 @@ public class Config {
 				
 				Config.derivationInstanceBaseURL = Config.props.getProperty("derivation.instance.base.url");
 				
-				Config.sparqlEndpointQuery = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.query");
-				Config.sparqlEndpointUpdate = Config.props.getProperty("deploy.host.base.url") + Config.props.getProperty("kg.sparql.endpoint.update");
+				Config.sparqlEndpoint = Config.props.getProperty("kg.url");
+				Config.kgUser = Config.props.getProperty("kg.user");
+				Config.kgPassword = Config.props.getProperty("kg.password");
 			} catch (IOException e) {
 				LOGGER.error(e.getMessage());
 				throw new JPSRuntimeException(e);
