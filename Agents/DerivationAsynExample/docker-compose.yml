@@ -10,7 +10,7 @@ services:
       - external_maven_repo:/root/.m2
       - logs:/root/.jps
     ports:
-      - "8081:8080"
+      - "58085:8080"
 
   blazegraph:
     container_name: "blazegraph"
