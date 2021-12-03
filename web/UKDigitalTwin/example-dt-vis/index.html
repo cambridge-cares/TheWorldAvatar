@@ -42,12 +42,14 @@
 	<!-- Implementation specific -->
 	<script src='./local_icons.js'></script>
 	<script src='./temp-utils.js'></script>
+	<script src='./focus-view.js'></script>
 </head>
 </head>
 
 <body>
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
+	<div id="tiltShift"></div>
 	
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
@@ -93,7 +95,7 @@
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
-			let title = `Example Visualisation`;
+			let title = `<h1>Example Visualisation</h1>`;
 			let content = `
 					This section of default text should be used to give a brief introduction on the purpose of the
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
@@ -102,6 +104,8 @@
 					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mi turpis, posuere a nibh in, tincidunt
 					mollis eros. Cras imperdiet ornare enim, et luctus augue iaculis at. Ut tellus ex, auctor non sagittis quis,
 					feugiat vitae turpis. Cras efficitur, arcu sed condimentum mattis, quam est tempus lectus, eu faucibus.
+					<br/><br/>
+					<div id="linkedFilesContainer"></div>
 				`;
 			let legend = `	
 					<b>Example Legend:</b>
@@ -144,12 +148,13 @@
 
 					// --- TEST ---
 					// Only enable this during testing, remove the line for production visualisations
-					// manager.showDeveloperControls();
+					manager.showDeveloperControls();
 					// --- TEST ---
 
 					// Set up a callback that hides all connections whenever the user
 					// returns to the default side panel.
 					manager.setDefaultPanelCallback();
+
 					loadedOnce = true;
 				}
 				
@@ -158,17 +163,28 @@
 				Promise.all(imagePromises).then(() => {
 					iconHandler.addAllIcons();
 
+					// Promise for loading data as sources and layers
+					var dataPromise;
+
 					// Re-plot the previously selected group
 					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-						manager.plotGroup(DT.currentGroup, false);
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
 					} else {
-						manager.plotFirstGroup();
+						dataPromise = manager.plotFirstGroup();
 					}
-					
-					// Re-add the sky and (optionally) 3D terrain
-					manager.addSkyAndTerrain();
-					manager.set3DTerrain(DT.terrain3D);
+
+					if(dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+
+							// --- TEST ---
+							//hideAllConnections(map);
+						});
+					}
 				});
+				
 			});
 		}
 	</script>

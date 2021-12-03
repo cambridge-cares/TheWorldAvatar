@@ -74,6 +74,7 @@ class InteractionHandler {
                 // Mouse enter
                 this._map.on("mouseenter", layerName, (event) => {
                     let feature = this._map.queryRenderedFeatures(event.point)[0];
+                    if(feature == null || feature.geometry == null) return;
 
                     // Change cursor
                     this._map.getCanvas().style.cursor = 'pointer';
@@ -242,6 +243,10 @@ class InteractionHandler {
         document.getElementById("footerContainer").style.display = "block";
         document.getElementById("contentContainer").style.flexGrow = 1;
         
+     
+        // TEST
+        showConnectionsForFeature(this._map, this._registry, feature);
+
         // Remember the currently selected feature
         DT.currentFeature = feature;
     }

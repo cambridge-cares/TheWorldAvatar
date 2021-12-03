@@ -143,8 +143,7 @@ class LayerHandler {
 				'visibility': 'visible'
 			},
 			paint: {
-				'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 10],
-                'circle-opacity': 1.0,
+    			'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 10],
 				'circle-color':  ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
 				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
 				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
@@ -177,7 +176,7 @@ class LayerHandler {
             },
             type: 'symbol',
             layout: {
-                "icon-image": ["get", "icon-image"],
+                'icon-image': ["get", "icon-image"],
                 'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 18, 1.0],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true

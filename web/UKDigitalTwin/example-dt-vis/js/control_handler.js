@@ -11,14 +11,24 @@ class ControlHandler {
 	#controlHTML = `
 		<div id="controlContainer">
 			<div id="cameraContainer">
-				<p>Camera:</p>
+				<div id="controlTitle">
+					<p>Camera:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.setTiltshift(this.checked)"><span class="slider round"><p>DoF</p></label>
+						<span class="tooltiptext">Enable/Disable depth of field</span>
+					</div>
+				</div>
 				<a href="#" onclick="manager.changeCamera('bird')">Bird's Eye</a>
 				<br>
 				<a href="#" onclick="manager.changeCamera('pitch')">Pitched</a>
 			</div>
 			<div id="terrainContainer">
-				<div id="terrainTitle">
-					<p>Terrain:</p><label class="switch"><input type="checkbox" onclick="manager.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></span></label>
+				<div id="controlTitle">
+					<p>Terrain:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.set3DTerrain(this.checked)"><span class="slider round"><p>3D</p></label>
+						<span class="tooltiptext">Enable/Disable 3D terrain</span>
+					</div>
 				</div>
 			
 				<input type="radio" name="terrain" id="light" onclick="manager.changeTerrain('light')" checked>

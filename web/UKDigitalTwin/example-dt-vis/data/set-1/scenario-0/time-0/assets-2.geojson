@@ -12,8 +12,9 @@
             "circle-stroke-color": "#000000",
             "circle-opacity": 0.75,
             "connections": [
-              "assets-2/1",
-              "assets-2/4"
+              "assets-2-connections/1",
+              "assets-2-connections/4",
+              "inter-asset-connections/1"
             ]
         },
         "geometry": {
@@ -35,8 +36,9 @@
             "circle-stroke-color": "#000000",
             "circle-opacity": 0.75,
             "connections": [
-              "assets-2/1",
-              "assets-2/2"
+              "assets-2-connections/1",
+              "assets-2-connections/2",
+              "inter-asset-connections/2"
             ]
         },
         "geometry": {
@@ -58,8 +60,9 @@
             "circle-stroke-color": "#000000",
             "circle-opacity": 0.75,
             "connections": [
-              "assets-2/2",
-              "assets-2/3"
+              "assets-2-connections/2",
+              "assets-2-connections/3",
+              "inter-asset-connections/3"
             ]
         },
         "geometry": {
@@ -81,8 +84,9 @@
             "circle-stroke-color": "#000000",
             "circle-opacity": 0.75,
             "connections": [
-              "assets-2/2",
-              "assets-2/3"
+              "assets-2-connections/3",
+              "assets-2-connections/4",
+              "inter-asset-connections/4"
             ]
         },
         "geometry": {

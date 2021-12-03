@@ -81,8 +81,8 @@
         "circle-stroke-color": "#000000",
         "circle-opacity": 0.75,
         "connections": [
-          "assets-1-connections/1",
-          "assets-1-connections/8"
+          "assets-1-connections/2",
+          "assets-1-connections/3"
         ]
       },
       "geometry": {
@@ -178,7 +178,7 @@
         "connections": [
           "assets-1-connections/5",
           "assets-1-connections/6",
-          "inter-asset-connections/8"
+          "inter-asset-connections/4"
         ]
       },
       "geometry": {

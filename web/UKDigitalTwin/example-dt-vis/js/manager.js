@@ -566,7 +566,53 @@ class DigitalTwinManager {
 	set3DTerrain(enabled) {
 		if(this._sourceHandler != null) {
 			this._sourceHandler.set3DTerrain(enabled);
-			DT.terrain3D = enabled;
+		}
+	}
+
+	/**
+	 * Enable (or disable) depth of field effect.
+	 * 
+	 * @param {Boolean} enabled depth of field state. 
+	 */
+	setTiltshift(enabled) {
+		var tiltShiftComponent = document.getElementById("tiltShift");
+		tiltShiftComponent.style.display = (enabled) ? "block" : "none";
+
+		if(enabled) {
+			var self = this;
+			this._map.on("zoom", function() {
+				self.#updateTiltShift();
+			});
+			this._map.on("pitch", function() {
+				self.#updateTiltShift();
+			});
+			this.#updateTiltShift();
+		}
+	}
+
+	/**
+	 * Updates the tiltshift effect based on the current zoom and pitch.
+	 */
+	#updateTiltShift() {
+		var tiltShiftComponent = document.getElementById("tiltShift");
+
+		if(tiltShiftComponent.style.display === "block") {
+			var blurAmount = 5;
+
+			var pitch = this._map.getPitch();
+			var zoom = this._map.getZoom() / 20;
+			var fractionPitched = zoom * (pitch / 90);
+
+			tiltShiftComponent.style.backdropFilter = "blur(" + blurAmount + "px)";
+			tiltShiftComponent.style.webkitBackdropFilter = "blur(" + blurAmount + "px)";
+
+			var topStart = "black " + (5 * fractionPitched) + "%";
+			var topEnd = "rgba(0, 0, 0, 0) " +  (60 * fractionPitched) + "%";
+			var bottomStart = "rgba(0, 0, 0, 0) " + (100 - (15 * fractionPitched)) + "%";
+			var bottomEnd ="rgba(0, 0, 0, 0.5) 100%";
+		
+			tiltShiftComponent.style.webkitMaskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
+			tiltShiftComponent.style.maskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
 		}
 	}
 

@@ -1,7 +1,7 @@
 {
     "global": {
         "defaultCenter": [0.39713859558105463, 52.75354199742786],
-        "defaultZoom": 15,
+        "defaultZoom": 14,
         "defaultBearing": -30,
         "defaultPitch": 65,
         "linkedFiles": [

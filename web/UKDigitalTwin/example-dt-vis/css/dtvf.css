@@ -540,7 +540,7 @@ li {
   padding: 10px;
   margin-top: 10px;
   min-height: 100px;
-  display: none !important;
+  display: none;
 }
 
 #linkedFilesContainer {
@@ -549,13 +549,25 @@ li {
 	padding: 10px;
 }
 
-#terrainTitle {
+
+#controlTitle {
   width: 100%;
   height: 24px;
 }
-#terrainTitle p {
+#controlTitle p {
   width: 50%;
   float: left;
+}
+#controlTitle .tooltip {
+  padding-right: 5px;
+  float: right;
+}
+#controlTitle .tooltip p {
+  text-align: left;
+  width: 20px;
+  height: 18px;
+  line-height: 18px; 
+  padding-top: 0px;
 }
 
 .switch {
@@ -612,8 +624,19 @@ input:checked + .slider:before {
   float: right;
   padding-left: 34px;
   padding-top: 2px;
-  font-size: 9pt !important;
+  font-size: 8pt !important;
 }
 .slider.round:before {
   border-radius: 50%;
+}
+
+#tiltShift {
+	display: block;
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 0;
+	pointer-events: none;
 }
