@@ -445,8 +445,8 @@ def branchGeometryQueryCreator(label, branch_voltage_level):
     return queryStr    
     
 # queryELineTopologicalInformation is developed to perform the query for branch topological information and its geometry information
-def queryELineTopologicalInformation(numOfBus, ukdigitaltwin_endpointlabel, topology_Sleepycat, localQuery):
-    label = "_" + str(numOfBus) + "_"  
+def queryELineTopologicalInformation(numOfBus, numOfBranch, ukdigitaltwin_endpointlabel, topology_Sleepycat, localQuery):
+    label = "UK_Topology_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch"
     
     query_branch_voltage_level = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -513,9 +513,10 @@ if __name__ == '__main__':
     
     # res = queryEGenInfo(10, 14, None, None, False, "ukdigitaltwin")
     # res = queryRegionalElecConsumption('ukdigitaltwin', 10, "2017-01-31", None, False)
-    res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    # res = queryElectricityConsumption_Region("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     # res = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
-    # res, a = queryELineTopologicalInformation(29, 'ukdigitaltwin', None, False)
+    # res, a = queryELineTopologicalInformation(29, 99, 'ukdigitaltwin', None, False)
+    res, a = queryELineTopologicalInformation(10, 14, 'ukdigitaltwin', None, False)
     # res = branchGeometryQueryCreator('10', ['275kV', '400kV'])
     # res = queryEGenInfo(None, None, False, "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlantKG" )
     # print (res[0])

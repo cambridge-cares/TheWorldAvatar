@@ -108,12 +108,10 @@ class demandLoadAllocator(object):
             demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'K03000001', ons_label)
             if demandArea_within_flag == True: # power plant located in GB
                 j = 0
-                distances_check = [65534, '']*len(busInGB) # the large number is the earth's circumference
                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
                 for bus in busInGB:
                   GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
                   distances[j] = GPS_distance(GPSLocationPair)
-                  distances_check[j] = [GPS_distance(GPSLocationPair), bus['Bus_node']]
                   j += 1
                 bus_index = distances.index(min(distances))  
                 busAndDemandPair = {**busInGB[bus_index], **ec}

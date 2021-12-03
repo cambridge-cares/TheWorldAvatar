@@ -105,7 +105,7 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
         print('Store is IOMemery')
     
     # Query the eline topological information and geometry information, the return is a dictionary 
-    ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(numOfBus, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery)
+    ELineTopoAndGeometryInfo, branchVoltageLevel = query_model.queryELineTopologicalInformation(numOfBus, numOfBranch, endpoint_label, topoAndConsumpPath_Sleepycat, localQuery)
     
     if len(ELineTopoAndGeometryInfo) == 0:
         raise Exception('ELineTopoAndGeometryInfo is empty, please check the return from queryELineTopologicalInformation.')
@@ -115,7 +115,6 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
     # if ELineTopoAndGeometryInfo[0] != None: # test
     #     eline = ELineTopoAndGeometryInfo[0] # test
         print('################START createModel_ELine#################')
-        # 
         root_uri = eline['ELine'].split('#')[0]
         namespace = root_uri + HASH
         node_locator = eline['ELine'].split('#')[1]
@@ -131,7 +130,7 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_Model")))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch_Model")))
         g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'ElectricalBranchModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
@@ -191,6 +190,6 @@ def createModel_ELine(storeType, localQuery, numOfBus, numOfBranch, version_of_D
     return
 
 if __name__ == '__main__':    
-    createModel_ELine('default', False, 10, 14, 2019, 'defaultBranchInitialiser', None, True)    
+    # createModel_ELine('default', False, 10, 14, 2019, 'defaultBranchInitialiser', None, True)    
     createModel_ELine('default', False, 29, 99, 2019, 'preSpecifiedBranchInitialiser', None, True)  
     print('Terminated')
