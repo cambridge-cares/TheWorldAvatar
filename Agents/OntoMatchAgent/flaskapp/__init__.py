@@ -12,9 +12,12 @@ def create_app(test_config=None):
         # Import parts of our application
         import flaskapp.geonames.routes as geonames
         import flaskapp.enrichment.routes as enrichment
+        import flaskapp.blackboard.routes as blackboard
+        import flaskapp.blackboard.routes as blackboard
 
         # Register Blueprints
         app.register_blueprint(geonames.geonames_bp)
         app.register_blueprint(enrichment.enrichment_bp)
+        app.register_blueprint(blackboard.blackboard_bp)
 
     return app
