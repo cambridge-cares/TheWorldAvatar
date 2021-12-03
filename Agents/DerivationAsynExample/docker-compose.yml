@@ -12,18 +12,18 @@ services:
     ports:
       - "8081:8080"
 
-blazegraph:
-  container_name: "blazegraph"
-  environment:
-    BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-  image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-  # Add a secret to set the password for BASIC authentication
-  secrets: # username is bg_user
-    - blazegraph_password
-  ports:
-    - "8889:8080"
-  volumes:
-    - blazegraph_data:/data
+  blazegraph:
+    container_name: "blazegraph"
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    # Add a secret to set the password for BASIC authentication
+    secrets: # username is bg_user
+      - blazegraph_password
+    ports:
+      - "8889:8080"
+    volumes:
+      - blazegraph_data:/data
 
 secrets:
   blazegraph_password:
