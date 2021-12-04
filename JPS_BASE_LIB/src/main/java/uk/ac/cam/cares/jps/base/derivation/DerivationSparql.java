@@ -1161,12 +1161,15 @@ public class DerivationSparql{
 			SelectQuery query = Queries.SELECT();
 			Variable status = query.var();
 			Variable type = query.var();
+			Variable newDerivedIRI = query.var();
 			
 			TriplePattern tp1 = iri(derivation).has(hasStatus, status);
 			TriplePattern tp2 = status.isA(type);
+			TriplePattern tp3 = status.has(hasNewDerivedIRI, newDerivedIRI);
+			GraphPattern gp = status.has(hasNewDerivedIRI, newDerivedIRI).optional();
 			
 			ModifyQuery modify = Queries.MODIFY();
-			modify.delete(tp1,tp2).where(tp1,tp2).prefix(p_derived);
+			modify.delete(tp1,tp2,tp3).where(tp1,tp2,gp).prefix(p_derived);
 			
 			storeClient.executeUpdate(modify.getQueryString());
 		}
@@ -1550,7 +1553,7 @@ public class DerivationSparql{
 		TriplePattern delete_tp2 = subject.has(predicate2, entity);	
 		
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, delete_tp2).prefix(p_derived);
+		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, subject.has(predicate2, entity).optional()).prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
