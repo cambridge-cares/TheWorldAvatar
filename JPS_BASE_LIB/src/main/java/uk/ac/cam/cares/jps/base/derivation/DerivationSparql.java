@@ -1553,7 +1553,7 @@ public class DerivationSparql{
 		TriplePattern delete_tp2 = subject.has(predicate2, entity);	
 		
 		ModifyQuery modify = Queries.MODIFY();
-		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, delete_tp2).prefix(p_derived);
+		modify.delete(delete_tp1,delete_tp2).where(entity.has(belongsTo, iri(derivation)), delete_tp1, subject.has(predicate2, entity).optional()).prefix(p_derived);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
