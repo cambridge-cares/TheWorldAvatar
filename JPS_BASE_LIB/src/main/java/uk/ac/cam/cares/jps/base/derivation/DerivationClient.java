@@ -26,7 +26,7 @@ public class DerivationClient {
 	// input and output of agents need to be a JSONArray consisting a list of IRIs with the do
 	public static final String AGENT_INPUT_KEY = "agent_input";
 	public static final String AGENT_OUTPUT_KEY = "agent_output";
-	public static final String DERIVATION_KEY = "derivation";
+	public static final String BELONGSTO_KEY = "belongsTo";
 	// defines the endpoint DerivedQuantityClient should act on
 	StoreClientInterface kbClient;
 	DerivationSparql sparqlClient;
@@ -319,6 +319,14 @@ public class DerivationClient {
 		JSONObject agentInputs = new JSONObject();
 		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
 		return agentInputs;
+	}
+	
+	/**
+	 * drops absolutely everything
+	 */
+	public void dropAllDerivationsAndTimestamps() {
+		dropAllDerivations();
+		dropAllTimestamps();
 	}
 	
 	/**
@@ -617,7 +625,7 @@ public class DerivationClient {
 				JSONObject requestParams = new JSONObject();
 				JSONArray iris = new JSONArray(inputs);
 				requestParams.put(AGENT_INPUT_KEY, iris);
-				requestParams.put(DERIVATION_KEY, derivation.getIri());
+				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
 				
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL + "> with http request " + requestParams);
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
