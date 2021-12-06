@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.query.algebra.Count;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -340,6 +341,110 @@ public class SparqlClient {
     		throw new JPSRuntimeException("Difference is probably not initialised yet/properly, please run InitialiseInstances");
     	}
     }
+
+	/**
+     * This method queries ?x a <ListOfRandomPoints>.
+     * @return
+     */
+    public String getListOfRandomPointsIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "listofrandompoints";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(ListOfRandomPoints);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one ListOfRandomPoints instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("ListOfRandomPoints is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+	
+	/**
+     * This method queries ?x a <MaxValue>.
+     * @return
+     */
+    public String getMaxValueIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "maxvalue";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(MaxValue);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one MaxValue instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("MaxValue is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+
+	/**
+     * This method queries ?x a <MinValue>.
+     * @return
+     */
+    public String getMinValueIRI() {
+    	SelectQuery query = Queries.SELECT();
+    	
+    	String key = "minvalue";
+    	Variable ul_iri = SparqlBuilder.var(key);
+    	GraphPattern queryPattern = ul_iri.isA(MinValue);
+    	
+    	query.prefix(p_namespace).select(ul_iri).where(queryPattern);
+    	
+    	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+    	
+    	if (queryResult.length() != 1) {
+    		throw new JPSRuntimeException("There should only be one MinValue instance, consider a reset by running InitialiseInstances");
+    	}
+    	
+    	try {
+    		return queryResult.getJSONObject(0).getString(key);
+    	} catch (Exception e) {
+    		System.out.println(e.getMessage());
+    		throw new JPSRuntimeException("MinValue is probably not initialised yet/properly, please run InitialiseInstances");
+    	}
+    }
+
+	/**
+	 * This method counts the number of ?pt in below triples
+	 * ?list a <ListOfRandomPoints>.
+	 * ?list <hasPoint> ?pt.
+	 * @return
+	 */
+	public int getAmountOfPointsInList() {
+		SelectQuery query = Queries.SELECT();
+
+		String listKey = "list";
+		String pointKey = "pt";
+		
+		Variable lst = SparqlBuilder.var(listKey);
+		Variable pt = SparqlBuilder.var(pointKey);
+		GraphPattern queryPattern = lst.isA(ListOfRandomPoints).andHas(hasPoint, pt);
+
+		query.prefix(p_namespace).select(pt).where(queryPattern);
+
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+
+		return queryResult.length();
+	}
     
     /**
      * adds a value instance to the given property
@@ -418,7 +523,7 @@ public class SparqlClient {
      * @param max
      * @return
      */
-    public Integer getExtremeValueInList(String listOfRandomPoints_iri, boolean max) {
+    public int getExtremeValueInList(String listOfRandomPoints_iri, boolean max) {
     	SelectQuery query = Queries.SELECT();
     	
     	String key = "value";
