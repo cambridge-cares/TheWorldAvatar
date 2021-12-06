@@ -50,6 +50,10 @@ public class Derivation{
 		return this.entities;
 	}
 	
+	public List<String> getEntitiesIri() {
+		return this.entities.stream().map(e -> e.getIri()).collect(Collectors.toList());
+	}
+
 	public void addInput(Entity input) {
 		if (!inputs.stream().anyMatch(i -> i.getIri().equals(input.getIri()))) {
 			this.inputs.add(input);
