@@ -11,12 +11,40 @@ PROJECT_NAME='py4jps'
 TEST_PYPI="https://test.pypi.org/legacy/"
 DEP_FILE='dependencies.yml'
 STEP_NR=1
+NEXT_VERSION=$1
 
+usage() {
+    echo "==============================================================================================================="
+    echo $PROJECT_NAME" project release script."
+    echo
+    echo "Please run the script with following options:"
+    echo "---------------------------------------------------------------------------------------------------------------"
+    echo " Usage:"
+    echo "  -v NEXT_VERSION"
+    echo "  -h"
+    echo ""
+    echo "Options"
+	echo "  -v              : Release the $PROJECT_NAME with the following version."
+	echo "  -h              : Print this usage message."
+    echo ""
+	echo "Example usage:"
+    echo "./release_py4jps_to_pypi.sh -v 1.0.14   - release version 1.0.14"
+	echo "==============================================================================================================="
+	read -n 1 -s -r -p "Press any key to continue"
+    exit
+}
 
 main() {
-    #clean_and_build_jps_base_lib
-    #package_jps_base_lib_with_py4jps
-    #build_py4jps_for_release
+    if [ $# -eq 0 ]; then
+        echo "No version number provided. Aborting the release."
+        echo "Please see the following usage statement:"
+        echo ; echo
+        usage
+    fi
+    bump_py4jps_version_number
+    clean_and_build_jps_base_lib
+    package_jps_base_lib_with_py4jps
+    build_py4jps_for_release
     release_to_pypi test-pypi
     test_release test-pypi
     release_to_pypi main-pypi
@@ -24,12 +52,23 @@ main() {
     read -n 1 -s -r -p "Press any key to continue"
 }
 
+bump_py4jps_version_number() {
+    echo "-------------------------------------------------------------------------"
+    echo "$STEP_NR. Bumping the $PROJECT_NAME version number to $NEXT_VERSION"
+    echo "-------------------------------------------------------------------------"
+    echo ; echo
+
+    sed -bi "s/version=.*,/version='$NEXT_VERSION',/" $SPATH/setup.py
+    sed -bi "s/__version__ = .*/__version__ = \"$NEXT_VERSION\"/" $SPATH/$PROJECT_NAME/__init__.py
+
+    STEP_NR=$((STEP_NR+1))
+}
+
 clean_and_build_jps_base_lib() {
     echo "-------------------------------------------------------------------------"
     echo "$STEP_NR. Building the JPS_BASE_LIB"
     echo "-------------------------------------------------------------------------"
-    echo
-    echo
+    echo ; echo
     cd $SPATH/..
     mvn clean install -DskipTests
     if [ $? -ne 0 ]; then
@@ -133,8 +172,10 @@ release_to_pypi() {
     read -s -p "Enter your password: " password
     echo
     if [ $1 = "main-pypi" ]; then
+        echo "main release"
         twine upload -u $username -p $password $SPATH/dist/*
     else
+        echo "test release"
         twine upload -u $username -p $password --repository-url $TEST_PYPI $SPATH/dist/*
     fi
     if [ $? -ne 0 ]; then
@@ -164,11 +205,24 @@ test_release() {
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/Scripts/python
     fi
 
+    echo "Waiting 2 minutes for the $1 to update its package index"
+    sleep 24
+    echo -ne '####                      (20%)\r'
+    sleep 24
+    echo -ne '########                  (40%)\r'
+    sleep 24
+    echo -ne '############              (60%)\r'
+    sleep 24
+    echo -ne '################          (80%)\r'
+    sleep 24
+    echo -ne '####################      (100%)\r'
+    echo -ne '\n'
+
     $PYTHON_EXEC -m pip install --upgrade pip
     if [ $1 = "test-pypi" ]; then
-        $PYTHON_EXEC -m pip install --no-cache-dir --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple $PROJECT_NAME
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple $PROJECT_NAME
     else
-        $PYTHON_EXEC -m pip install --no-cache-dir $PROJECT_NAME
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $PROJECT_NAME
     fi
     $PYTHON_EXEC -m pip install pytest
 
