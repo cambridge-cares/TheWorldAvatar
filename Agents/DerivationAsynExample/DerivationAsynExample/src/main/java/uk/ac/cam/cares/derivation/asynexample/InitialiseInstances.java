@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -33,6 +34,19 @@ public class InitialiseInstances extends JPSAgent {
 		RemoteStoreClient storeClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
+		
+		JSONObject response = initialise(sparqlClient, devClient);
+
+		// invoke all asynchronous agents so that they can be initialised
+        AgentCaller.executeGet(Config.agentHttpUrlRNG);
+		AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
+		AgentCaller.executeGet(Config.agentHttpUrlMinValue);
+		AgentCaller.executeGet(Config.agentHttpUrlDifference);
+		
+		return response;
+	}
+
+	JSONObject initialise(SparqlClient sparqlClient, DerivationClient devClient) {
 		
 		// clear KG when initialising
 		LOGGER.info("Initialising new instances, all existing instances will get deleted");
@@ -119,7 +133,7 @@ public class InitialiseInstances extends JPSAgent {
 		response.put("MinValue instance", minValue);
 		response.put("Difference Derivation", diff_dev);
 		response.put("Difference instance", difference);
-		
+
 		return response;
 	}
 }
