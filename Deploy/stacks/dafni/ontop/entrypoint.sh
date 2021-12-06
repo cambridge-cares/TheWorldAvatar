@@ -2,7 +2,9 @@
 
 # Get the postgres password from a Docker secret, or set a default if none was supplied.
 # Write the result to the relevant properties file
-if [ -e "$POSTGRES_PASSWORD_FILE" ]; then
+if [ ! -z "$POSTGRES_PASSWORD" ]; then
+  postgres_password="$POSTGRES_PASSWORD"
+elif [ -e "$POSTGRES_PASSWORD_FILE" ]; then
   postgres_password=$(cat $POSTGRES_PASSWORD_FILE)
 else 
   postgres_password="postpass"
