@@ -30,6 +30,12 @@ public class UpdateDerivations extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		
+		JSONObject response = updateDerivations(sparqlClient, devClient);
+
+		return response;
+	}
+
+	JSONObject updateDerivations(SparqlClient sparqlClient, DerivationClient devClient) {
 		String difference = sparqlClient.getDifferenceIRI();
 		String difference_derivation = devClient.getDerivationOf(difference);
 		
@@ -40,6 +46,7 @@ public class UpdateDerivations extends JPSAgent {
 		
 		JSONObject response = new JSONObject();
 		response.put("status", res_msg);
+		
 		return response;
 	}
 }

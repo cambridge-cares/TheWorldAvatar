@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
 import javax.servlet.annotation.WebServlet;
-import javax.ws.rs.BadRequestException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +33,12 @@ public class InputAgent extends JPSAgent {
 		SparqlClient sparqlClient = new SparqlClient(storeClient);
 		DerivationClient devClient = new DerivationClient(storeClient, Config.derivationInstanceBaseURL);
 		
+		JSONObject response = updateNumberOfPoints(sparqlClient, devClient);
+		
+		return response;
+	}
+
+	JSONObject updateNumberOfPoints(SparqlClient sparqlClient, DerivationClient devClient) {
 		String numberOfPoints_iri = sparqlClient.getNumberOfPointsIRI();
 		
 		// update the NumberOfPoints by adding 1 to its current value, also update the timestamp to make it current
@@ -44,7 +49,6 @@ public class InputAgent extends JPSAgent {
 		JSONObject iris = new JSONObject();
 		iris.put("NumberOfPoints instance", numberOfPoints_iri);
 		response.put("Updated successfully", iris);
-		
 		return response;
 	}
 }
