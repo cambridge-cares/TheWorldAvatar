@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.swing.Spring;
+
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 /**
@@ -21,24 +23,47 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 	
 	public final boolean queryFlag = true;
 	
+	// top node identifier and type
+	public final String busEntityCollectionName = "Model_EBus_Collection";
+	public final String branchEntityCollectionName = "Model_ELine_Collection";
+	public final String genEntityCollectionName = "Model_EGen_Collection";
+	
+	public final String entityCollectionTypePrefix = OCPMATH;
+	public final String entityCollectionTypeName = "Submodel";
+	public final String entityCollectionType = entityCollectionTypePrefix + ":" + entityCollectionTypeName;
+	
+	// model entity 
 	public final String busEntityName = "Model_EBus";
 	public final String branchEntityName = "Model_ELine";
 	public final String genEntityName = "Model_EGen";
 	
-	public final String entityTypeName = "Submodel";
-	public final String entityTypePrefix = OCPMATH;
-	public final String entityType = entityTypePrefix + ":" + entityTypeName;
+	public final String entityTypePrefix = OPSMODE;
+	public final String busentityTypeName = "ElectricalBusModel";
+	public final String branchentityTypeName = "ElectricalBranchModel";
+	public final String genentityTypeName = "ElectricalGeneratorModel";
+	public final String busentityType = entityTypePrefix + ":" + busentityTypeName;
+	public final String branchentityType = entityTypePrefix + ":" + branchentityTypeName;
+	public final String genentityType = entityTypePrefix + ":" + genentityTypeName;
 	
+	// model key for the data map
 	public final String busModelKey = "BusModelVariables";
 	public final String branchModelKey = "BranchModelVariables";
 	public final String genModelKey = "GeneratorModelVariables";
 	public final String genCostFuncKey = "GenCostFuncVariables";
 	
+	// prefix list
 	public final List<String> PrefixAbbrList = Arrays.asList(OCPMATH, RDF, OPSMODE, RDFS, OCPSYST, OCPSYST);
 	
 	public final String varNameIdentifier = "?varName_";
 	public final List<String> queryModelVariableSentence = Arrays.asList(OCPMATH + ":hasModelVariable", varNameIdentifier, OCPSYST + ":hasValue", "?varValue_", OCPSYST + ":numericalValue", "?ValueOf");
 	
+	// model top node label (number of bus, number of branches)
+	public final String electricityLabel = "UK_Electrical_Grid_";
+	public final String busLabel = "_Bus_";
+	public final String branchLabel = "_Branch_Model";
+	public String UK_Electrical_Grid_Label;
+	
+	// model variables
 	public final List<String> BusModelVariables = Arrays.asList("BusNumber", "BusType", "PdBus", "GdBus", "Gs", "Bs", "Area", 
 			"Vm", "Va", "baseKV", "Zone", "VmMax", "VmMin");
 	public final List<String> BranchModelVariables = Arrays.asList("BusFrom", "BusTo", "R", "X", "B", "RateA", "RateB", "RateC", 
@@ -48,6 +73,7 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 	private final List<String> GenCostFuncVariablesBASE = Arrays.asList("CostModel", "StartCost", "StopCost", "genCostn");
 	public final String variableTypePrefix = OPSMODE;
 	
+	// gen cost parameters
 	private final String[] GenCostFuncPara = {"genCostcn-1", "genCostcn-2"};
 	private final String[] GenCostFuncParameterLabelList = {"Parameter_a", "Parameter_b", "Parameter_c", "Parameter_d", "Parameter_e", "Parameter_f"};
 	
@@ -55,13 +81,14 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 	public List<String> GenCostFuncParaLabel = new ArrayList<String>();
 	public List<String> GenCostFuncVariables = new ArrayList<String>();
 
+	HashMap<String, String> PowerFlowModelTopNodeMap = new HashMap<String, String>();
 	HashMap<String, List<String>> PowerFlowModelVariablesMap = new HashMap<String, List<String>>();
 	HashMap<String, String> PowerFlowModelEntityMap = new HashMap<String, String>();
 	LinkedHashMap<String, List<String>> labelMap = new LinkedHashMap<String, List<String>>();
 	HashMap<String, String> labelVarCalssNameSpaceMap = new HashMap<String, String>();
 	HashMap<String, List<String>> labeledVariable_querySentence = new HashMap<String, List<String>>();
 	
-	public PowerFlowModelVariableForQuery(boolean piecewiseOrPolynomial, int pointsOfPiecewiseOrcostFuncOrder) {  // True: piecewise;  False: Polynomial;
+	public PowerFlowModelVariableForQuery(boolean piecewiseOrPolynomial, int pointsOfPiecewiseOrcostFuncOrder, String numOfBus, String numOfBranch) {  // True: piecewise;  False: Polynomial;
 		
 		if(piecewiseOrPolynomial == true) { // the cost objective function is piecewise
 			this.GenCostFuncParaName = GenCostFuncPara[0];} //The parameter class is genCostcn-1	
@@ -81,19 +108,30 @@ public class PowerFlowModelVariableForQuery implements Prefixes {
 			this.GenCostFuncVariables.add(label);
 		}
 		
-		PowerFlowModelVariablesMap.put(busModelKey, BusModelVariables);
-		PowerFlowModelVariablesMap.put(branchModelKey, BranchModelVariables);
-		PowerFlowModelVariablesMap.put(genModelKey, GeneratorModelVariables);
-		PowerFlowModelVariablesMap.put(genCostFuncKey, GenCostFuncVariablesBASE);
+		PowerFlowModelTopNodeMap.put(busEntityCollectionName, entityCollectionType);
+		PowerFlowModelTopNodeMap.put(branchEntityCollectionName, entityCollectionType);
+		PowerFlowModelTopNodeMap.put(genEntityCollectionName, entityCollectionType);
 		
-		PowerFlowModelEntityMap.put(busModelKey, busEntityName);
-		PowerFlowModelEntityMap.put(branchModelKey, branchEntityName);
-		PowerFlowModelEntityMap.put(genModelKey, genEntityName);
-		PowerFlowModelEntityMap.put(genCostFuncKey, genEntityName);
+		// PowerFlowModelVariablesMap.put(busModelKey, BusModelVariables);
+		// PowerFlowModelVariablesMap.put(branchModelKey, BranchModelVariables);
+		// PowerFlowModelVariablesMap.put(genModelKey, GeneratorModelVariables);
+		// PowerFlowModelVariablesMap.put(genCostFuncKey, GenCostFuncVariablesBASE);
+		
+		PowerFlowModelVariablesMap.put(busEntityName, BusModelVariables);
+		PowerFlowModelVariablesMap.put(branchEntityName, BranchModelVariables);
+		PowerFlowModelVariablesMap.put(genEntityName, GeneratorModelVariables);
+		PowerFlowModelVariablesMap.put(genEntityName, GenCostFuncVariablesBASE);
+		
+		PowerFlowModelEntityMap.put(busEntityName, busentityType);
+		PowerFlowModelEntityMap.put(branchEntityName, branchentityType);
+		PowerFlowModelEntityMap.put(genEntityName, genentityType);
+		// PowerFlowModelEntityMap.put(genCostFuncKey, genEntityName);
 		
 		labelMap.put(this.GenCostFuncParaName, this.GenCostFuncParaLabel);
 		labelVarCalssNameSpaceMap.put(this.GenCostFuncParaName, variableTypePrefix);
 		labeledVariable_querySentence.put(this.GenCostFuncParaName, queryModelVariableSentence);
+		
+		this.UK_Electrical_Grid_Label = this.electricityLabel + numOfBus.replaceAll("\\s+","") + this.busLabel + numOfBranch.replaceAll("\\s+","") + this.branchLabel; 
 
 	}	
 }

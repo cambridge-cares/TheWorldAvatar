@@ -126,7 +126,7 @@ public class SPARQLQueryBuilder {
 	
 	 public static void main(String[] args) {
 		 
-		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
+		 PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2, "10", "14");	
 		 ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
 		 List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
 		 HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();

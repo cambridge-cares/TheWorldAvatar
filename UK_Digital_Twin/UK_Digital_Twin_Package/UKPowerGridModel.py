@@ -209,13 +209,13 @@ class UKEGenModel_CostFunc(UKEGenModel):
     genCost_cKey = "genCostcn-2_c_"
     
     """Initialise the cost function"""
-    def __init__(self, DUKESVersion = 2019, CarbonTax = 16, Location = 'http://dbpedia.org/resource/United_Kingdom'): # 2019 base world UK carbon tax is £16/tCO2 eq.
+    def __init__(self, DUKESVersion = 2019, CarbonTax = 16, piecewiseOrPolynomial = 2, pointsOfPiecewiseOrcostFuncOrder = 3, Location = 'http://dbpedia.org/resource/United_Kingdom'): # 2019 base world UK carbon tax is £16/tCO2 eq.
             self.DUKESVersion = DUKESVersion
             self.location = Location
-            self.MODEL = 2
+            self.MODEL = piecewiseOrPolynomial # 1: piecewise linear;  2: polynomial
             self.STARTUP = 0
             self.SHUTDOWN = 0
-            self.NCOST = 3
+            self.NCOST = pointsOfPiecewiseOrcostFuncOrder
             self.CarbonTax = CarbonTax
 
 

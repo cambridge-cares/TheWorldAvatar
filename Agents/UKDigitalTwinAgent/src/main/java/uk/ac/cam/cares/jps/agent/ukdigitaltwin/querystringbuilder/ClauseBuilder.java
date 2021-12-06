@@ -34,7 +34,7 @@ public class ClauseBuilder implements Prefixes{
 	public boolean queryFlag;
 	public boolean updateFlag;
 	public boolean distinctFlag = true;
-	public boolean reducedFlag = false;
+	public boolean reducedFlag = false; // reduce and distinct flag cannot be true at the same time, as REDUCE is much sufficient than DISTINCT but cannot guarantee a no duplicated results
 	public int limit = -1;
 	
 	/**
@@ -87,7 +87,7 @@ public class ClauseBuilder implements Prefixes{
 	
 	public void selectClauseAndWhereClauseBuilderWithoutLabels(String varNameIdentifier, HashMap<String, List<String>> classPrefix_unlabeledVariable, 
 			LinkedHashMap<String, List<String>> unlabeledVariable_querySentence){
-		// initialise selectClause and whereClause with the query entity
+		  // initialise selectClause and whereClause with the query entity
 		  //case 1: set the selectClause and whereClause without labels
 		if(entityName.indexOf("?") != 0) {
 			this.entityName = "?" + entityName;}
@@ -235,16 +235,14 @@ public class ClauseBuilder implements Prefixes{
 //					if(labeledVariable_classPrefix != null || labeledVariable_querySentence != null) {
 //						System.out.print("The labeledVariable_labels, labeledVariable_classPrefix and labeledVariable_querySentence should be all null or all having content.");
 //					    System.exit(0);}
-//				}
-				
-	
+//				}	
 
 	
 	 public static void main(String[] args) {
 		  
-		  PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2);	
-		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType);
-		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey);
+		  PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2, "10", "14");// initialise a object of PowerFlowModelVariableForQuery
+		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType); // initialise a object of ClauseBuilder
+		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey); // gets a list of variable names of selected entity, for this example, the vl is the variables name of the GenCostFuncVariables of power grid model
 		  HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
 		  classPre_var.put(pfmv.variableTypePrefix, vl);
 		  LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();

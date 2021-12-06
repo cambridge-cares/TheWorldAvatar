@@ -99,7 +99,7 @@ capa_demand_ratio = 0
 
 ### Functions ### 
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
-def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, numOfBranch, CarbonTax, OWLFileStoragePath, updateLocalOWLFile = True):
+def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_EnergyConsumption, numOfBus, numOfBranch, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, OWLFileStoragePath, updateLocalOWLFile = True):
     uk_egen_model = UK_PG.UKEGenModel(version_of_DUKES, numOfBus)
     defaultStoredPath = uk_egen_model.StoreGeneratedOWLs
     defaultPath_Sleepycat = uk_egen_model.SleepycatStoragePath
@@ -161,8 +161,8 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         g.add((g.identifier, OWL_NS['imports'], URIRef(t_box.ontopowsys_PowerSystemModel))) 
         # Add root node type and the connection between root node and its father node   
         g.add((URIRef(root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri), URIRef(father_node)))
-        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch" )))
-        g.add((URIRef(root_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
+        g.add((URIRef(father_node), RDFS.label, Literal("UK_Electrical_Grid_" + str(numOfBus) + "_Bus_" + str(numOfBranch) + "_Branch_Model" )))
+        g.add((URIRef(father_node), RDF.type, URIRef(ontocape_mathematical_model.Submodel.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(ontopowsys_PowerSystemModel.PowerFlowModelAgent.iri)))
         g.add((URIRef(root_node), RDF.type, URIRef(t_box.ontopowsys_PowerSystemModel + 'GeneratorModel'))) # undefined T-box class, the sub-class of PowerFlowModelAgent
         g.add((URIRef(father_node), URIRef(ontocape_upper_level_system.isComposedOfSubsystem.iri), URIRef(root_node)))
@@ -173,8 +173,8 @@ def createModel_EGen(storeType, localQuery, version_of_DUKES, startTime_of_Energ
         
         ###add cost function parameters###
         # calculate a, b, c
-        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax) # declear an instance of the UKEGenModel_CostFunc
-        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location, localQuery)
+        uk_egen_costFunc = UK_PG.UKEGenModel_CostFunc(version_of_DUKES, CarbonTax, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder) # declear an instance of the UKEGenModel_CostFunc
+        uk_egen_costFunc = costFuncPara(uk_egen_costFunc, egen, location, localQuery) # TODO: the initialisation of the function parameters needs to be changed to base on the piecewiseOrPolynomial
         # assign value to attributes
         g = AddModelVariable(g, root_node, namespace, node_locator, uk_egen_costFunc.CostFuncFormatKey, uk_egen_costFunc.MODEL, None, \
                              ontopowsys_PowerSystemModel.CostModel.iri, ontocape_mathematical_model.Parameter.iri)
@@ -288,6 +288,6 @@ def demandAndCapacityRatioCalculator(EGenInfo, numOfBus, numOfBranch, startTime_
     return demand_capa_ratio
 
 if __name__ == '__main__':    
-    # createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, None, True) 
-    createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, None, True)
+    # createModel_EGen('default', False, 2019, "2017-01-31", 10, 14, 50, 2, 3, None, True) 
+    createModel_EGen('default', False, 2019, "2017-01-31", 29, 99, 50, 2, 3, None, True)
     print('Terminated')
