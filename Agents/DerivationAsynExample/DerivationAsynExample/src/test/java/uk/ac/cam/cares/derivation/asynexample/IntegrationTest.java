@@ -51,6 +51,12 @@ public class IntegrationTest extends TestCase {
     static MaxValueAgent maxValueAgent;
     static MinValueAgent minValueAgent;
     static DifferenceAgent differenceAgent;
+
+    // timestamps
+    static long currentTimestamp_rng_derivation;
+    static long currentTimestamp_maxvalue_derivation;
+    static long currentTimestamp_minvalue_derivation;
+    static long currentTimestamp_difference_derivation;
     
     // note that the URLs in the properties file are the URLs when they are accessed from within the docker
     static String kgUrl;
@@ -163,16 +169,16 @@ public class IntegrationTest extends TestCase {
         String rng_derivation = response.getString("RandomNumberGeneration Derivation");
         
         // get the timestamp added to the derivations
-        long difference_derivation_timestamp = (long) getTimestamp.invoke(devSparql, difference_derivation);
-        long maxvalue_derivation_timestamp = (long) getTimestamp.invoke(devSparql, maxvalue_derivation);
-        long minvalue_derivation_timestamp = (long) getTimestamp.invoke(devSparql, minvalue_derivation);
-        long rng_derivation_timestamp = (long) getTimestamp.invoke(devSparql, rng_derivation);
+        currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        currentTimestamp_maxvalue_derivation = (long) getTimestamp.invoke(devSparql, maxvalue_derivation);
+        currentTimestamp_minvalue_derivation = (long) getTimestamp.invoke(devSparql, minvalue_derivation);
+        currentTimestamp_rng_derivation = (long) getTimestamp.invoke(devSparql, rng_derivation);
         
         // test if timestamps are added correctly
-        Assert.assertEquals(difference_derivation_timestamp, 0);
-        Assert.assertEquals(maxvalue_derivation_timestamp, 0);
-        Assert.assertEquals(minvalue_derivation_timestamp, 0);
-        Assert.assertEquals(rng_derivation_timestamp, 0);
+        Assert.assertEquals(currentTimestamp_difference_derivation, 0);
+        Assert.assertEquals(currentTimestamp_maxvalue_derivation, 0);
+        Assert.assertEquals(currentTimestamp_minvalue_derivation, 0);
+        Assert.assertEquals(currentTimestamp_rng_derivation, 0);
 
         // get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
         // instances
@@ -231,8 +237,10 @@ public class IntegrationTest extends TestCase {
         String rng_derivation = response.getString("RandomNumberGeneration Derivation");
         
         // once timestamp updated, the iri of listofrandompoints should be different from previous value
-        while ((long) getTimestamp.invoke(devSparql, rng_derivation) == 0) {
+        currentTimestamp_rng_derivation = (long) getTimestamp.invoke(devSparql, rng_derivation);
+        while (currentTimestamp_rng_derivation == 0) {
             TimeUnit.SECONDS.sleep(30);
+            currentTimestamp_rng_derivation = (long) getTimestamp.invoke(devSparql, rng_derivation);
         }
         Assert.assertNotEquals(response.getString("ListOfRandomPoints instance"), sparqlClient.getListOfRandomPointsIRI());
         // test if it contains correct number of points
@@ -246,8 +254,10 @@ public class IntegrationTest extends TestCase {
         String maxvalue_derivation = response.getString("MaxValue Derivation");
 
         // once timestamp updated, the iri of maxvalue should be different from previous one
-        while ((long) getTimestamp.invoke(devSparql, maxvalue_derivation) == 0) {
+        currentTimestamp_maxvalue_derivation = (long) getTimestamp.invoke(devSparql, maxvalue_derivation);
+        while (currentTimestamp_maxvalue_derivation == 0) {
             TimeUnit.SECONDS.sleep(30);
+            currentTimestamp_maxvalue_derivation = (long) getTimestamp.invoke(devSparql, maxvalue_derivation);
         }
         String maxvalue_instance = sparqlClient.getMaxValueIRI();
         Assert.assertNotEquals(response.getString("MaxValue instance"), maxvalue_instance);
@@ -261,8 +271,10 @@ public class IntegrationTest extends TestCase {
     public void testMinValueDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String minvalue_derivation = response.getString("MinValue Derivation");
         // once timestamp updated, the iri of maxvalue should be different from previous one
-        while ((long) getTimestamp.invoke(devSparql, minvalue_derivation) == 0) {
+        currentTimestamp_minvalue_derivation = (long) getTimestamp.invoke(devSparql, minvalue_derivation);
+        while (currentTimestamp_minvalue_derivation == 0) {
             TimeUnit.SECONDS.sleep(30);
+            currentTimestamp_minvalue_derivation = (long) getTimestamp.invoke(devSparql, minvalue_derivation);
         }
         String minvalue_instance = sparqlClient.getMinValueIRI();
         Assert.assertNotEquals(response.getString("MinValue instance"), minvalue_instance);
@@ -276,8 +288,10 @@ public class IntegrationTest extends TestCase {
     public void testDifferenceDerivation() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException, InterruptedException {
         String difference_derivation = response.getString("Difference Derivation");
         // once timestamp updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
-        while ((long) getTimestamp.invoke(devSparql, difference_derivation) == 0) {
+        currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        while (currentTimestamp_difference_derivation == 0) {
             TimeUnit.SECONDS.sleep(30);
+            currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
         }
         String difference_instance = sparqlClient.getDifferenceIRI();
         Assert.assertNotEquals(response.getString("Difference instance"), difference_instance);
@@ -322,8 +336,10 @@ public class IntegrationTest extends TestCase {
         updateDerivations.updateDerivations(sparqlClient, devClient);
 
         // once timestamp of difference derivation updated, the iri of difference should be different from the previous one, it should have the value same as the max - min value
-        while ((long) getTimestamp.invoke(devSparql, difference_derivation) <= difference_derivation_timestamp) {
+        currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
+        while (currentTimestamp_difference_derivation <= difference_derivation_timestamp) {
             TimeUnit.SECONDS.sleep(100);
+            currentTimestamp_difference_derivation = (long) getTimestamp.invoke(devSparql, difference_derivation);
         }
         String difference_instance_new = sparqlClient.getDifferenceIRI();
         Assert.assertNotEquals(difference_instance_old, difference_instance_new);
