@@ -47,10 +47,10 @@ public class IntegrationTest extends TestCase {
     static SparqlClient sparqlClient;
 
     // agents
-    RNGAgent rngAgent;
-    MaxValueAgent maxValueAgent;
-    MinValueAgent minValueAgent;
-    DifferenceAgent differenceAgent;
+    static RNGAgent rngAgent;
+    static MaxValueAgent maxValueAgent;
+    static MinValueAgent minValueAgent;
+    static DifferenceAgent differenceAgent;
     
     // note that the URLs in the properties file are the URLs when they are accessed from within the docker
     static String kgUrl;
@@ -104,10 +104,22 @@ public class IntegrationTest extends TestCase {
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();
         response = initialisation.initialise(sparqlClient, devClient);
+
+        // create the instance of the asyn agents, init() method will be called later in the test case
+        rngAgent = new RNGAgent(storeClient, Config.derivationInstanceBaseURL);
+        maxValueAgent = new MaxValueAgent(storeClient, Config.derivationInstanceBaseURL);
+        minValueAgent = new MinValueAgent(storeClient, Config.derivationInstanceBaseURL);
+        differenceAgent = new DifferenceAgent(storeClient, Config.derivationInstanceBaseURL);
     }
 
     @AfterAll
     public static void stopContainers() {
+        // destroy all asyn agents after all tests
+        rngAgent.destroy();
+        maxValueAgent.destroy();
+        minValueAgent.destroy();
+        differenceAgent.destroy();
+
         // close containers after all tests
         if (blazegraph.isRunning()) {
             blazegraph.stop();
@@ -206,17 +218,10 @@ public class IntegrationTest extends TestCase {
     @Order(3)
     public void testInitialiseAgents() throws ServletException {
         // now initialise all agents
-        this.rngAgent = new RNGAgent(storeClient, Config.derivationInstanceBaseURL);
-        this.rngAgent.init();
-
-        this.maxValueAgent = new MaxValueAgent(storeClient, Config.derivationInstanceBaseURL);
-        this.maxValueAgent.init();
-
-        this.minValueAgent = new MinValueAgent(storeClient, Config.derivationInstanceBaseURL);
-        this.minValueAgent.init();
-
-        this.differenceAgent = new DifferenceAgent(storeClient, Config.derivationInstanceBaseURL);
-        this.differenceAgent.init();
+        rngAgent.init();
+        maxValueAgent.init();
+        minValueAgent.init();
+        differenceAgent.init();
     }
 
     @Test
