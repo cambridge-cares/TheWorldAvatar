@@ -322,6 +322,14 @@ public class DerivationClient {
 	}
 	
 	/**
+	 * drops absolutely everything
+	 */
+	public void dropAllDerivationsAndTimestamps() {
+		dropAllDerivations();
+		dropAllTimestamps();
+	}
+	
+	/**
 	 * clears all derivations from the kg, only removes timestamps directly attached
 	 * to derivations, does not remove timestamps of pure inputs
 	 */
