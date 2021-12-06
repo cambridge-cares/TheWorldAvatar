@@ -8,10 +8,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.derivation.asynexample.Config;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -108,13 +106,7 @@ public class InitialiseInstances extends JPSAgent {
 			LOGGER.error("Validation failure for chain of derivations: " + e.getMessage());
 			throw new JPSRuntimeException(e);
 		}
-		
-		// invoke all asynchronous agents so that they can be initialised
-		AgentCaller.executeGet(Config.agentHttpUrlRNG);
-		AgentCaller.executeGet(Config.agentHttpUrlMaxValue);
-		AgentCaller.executeGet(Config.agentHttpUrlMinValue);
-		AgentCaller.executeGet(Config.agentHttpUrlDifference);
-		
+
 		JSONObject response = new JSONObject();
 		response.put("UpperLimit instance", upperLimit);
 		response.put("LowerLimit instance", lowerLimit);
