@@ -27,7 +27,7 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     */
 	private static final long serialVersionUID = 1L;
 	
-	static final String msg = "This agent is an instance of AsynAgent, which monitors the derivation and should NOT be used as an HTTP servlet.";
+	public static final String msg = "This agent is an instance of AsynAgent, which monitors the derivation and should NOT be used as an HTTP servlet.";
 	
 	StoreClientInterface storeClient;
 	DerivationClient devClient;
