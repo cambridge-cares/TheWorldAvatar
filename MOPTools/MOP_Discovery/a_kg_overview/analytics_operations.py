@@ -9,8 +9,8 @@ from a_kg_overview.analytics_output import r1_json
 from a_kg_overview.analytics_output import preR2_json
 
 def mopsoverview():
-    """This Function runs preset query that returns back all of the MOP IRIs found in the OntoMOP KG"""
-    result  = querykg(SPARQL_ENDPOINTS['ontomops'], getMOPIRIs()) #The query gets a full list of IRIs
+    """Collects all MOP IRIs found in the OntoMOP KG"""
+    result  = querykg(SPARQL_ENDPOINTS['ontomops'], getMOPIRIs())
     refinedlist = [] # Each IRI is saved in the list of refined IRIs
     for item in result:
         refined = item['mopIRI']
@@ -18,25 +18,23 @@ def mopsoverview():
     return refinedlist 
 
 def assemblyModelGroups(listofMOPs):
-    """Takes a list of MOP IRIs, queries the building untis, orders and gets formulas and counts assembly model."""
+    """For each MOP IRI we collect GBU, CBU and other information.
+    The information is used to derive assembly models and R1 and pre-R2 lists."""
     uniques = {}
-    mopFormulaList = []
-    mopProvenance = []
+    mop_symmetry = None
     list_pregbus = []
     list_gbus = []
     list_R1 = [] # list of type [{AM_string:{GBU_information, GB2_information}}]
     list_R1_number = []
-    for mopIRI in listofMOPs:     #### This loops over the MOPs list
+    for mopIRI in listofMOPs:
         MOPandGBUs  = querykg(SPARQL_ENDPOINTS['ontomops'], mop_GBUs(mopIRI))
         i = 0
-        savedMOPReferences = {} # Saved info so we do not need to requery again
         assemblyModel = {} # At this stage we create two parallel things 
         for MOPandGBU in MOPandGBUs: # for each queried MOP IRI we get two GBU lines as an output.
             assemblyModel['MOPFormula'] = MOPandGBU['MOPFormula']
             assemblyModel['mopIRI'] = MOPandGBU['mopIRI']
             assemblyModel['Symmetry'] = MOPandGBU['Symmetry'] # Ideally we should have the symmetry aslo as part of the MolFormRef
-            savedMOPReferences['MOPReference'] = MOPandGBU['MOPReference'] # Saved so no need to requery
-            savedMOPReferences['MOPFormula'] = MOPandGBU['MOPFormula'] # Saved so no need to requery
+            mop_symmetry = assemblyModel['Symmetry']
             i += 1
             gbu = {}
             if i == 1:
@@ -69,35 +67,29 @@ def assemblyModelGroups(listofMOPs):
             pass        
         if gbu2dict in list_gbus:
             pass            
-        if savedMOPReferences['MOPReference'] not in mopFormulaList: 
-            mopFormulaList.append(savedMOPReferences['MOPReference'])
-            mopProvenance.append(savedMOPReferences)
         if string not in uniques.keys():
             uniques[str(string)] = 0
             frequency = uniques[str(string)]
             assemblyModel_json(assemblyModel, string)
             assemblyModel_json_ext(assemblyModel, string, frequency)
-            list_R1.append({string:[str(gbu['CBU1_Modularity']+"-"+gbu['CBU1_Planarity']),str(gbu['CBU2_Modularity']+"-"+gbu['CBU2_Planarity'])]})
+            list_R1.append({string:[str(gbu['CBU1_Modularity']+"-"+gbu['CBU1_Planarity']),str(gbu['CBU2_Modularity']+"-"+gbu['CBU2_Planarity']), mop_symmetry]})
             list_R1_number.append({string:[gbu1_number, gbu2_number]})
         if string in uniques.keys():
             uniques[str(string)] += 1/2
             frequency = uniques[str(string)] 
             assemblyModel_json_ext(assemblyModel, string, frequency)
             assemblyModel_json_update(string, frequency)
-    print("UNIQUES\n")
-    print(uniques)
-    print("\n")
-    print("LIST_R1\n")
-    print(list_R1)
     r1_json(list_R1)
-    print("\n")
-    print("LIST_preR2\n")
     list_preR2 = mergeR2(list_pregbus, list_gbus)
     preR2_json(list_preR2) 
-    print(list_preR2)
+    print("UNIQUES:"+"\n"+ uniques)
+    print("LIST_R1:"+"\n"+list_R1)
+    print("LIST_preR2:"+"\n"+list_preR2)
     return uniques, list_pregbus, list_R1_number
 
 def mergeR2(list_pregbus, list_gbus):
+    """This function takes a list of the unique gbus in the kg.
+    For each gbu in the kg connects all possible assembly models."""
     list_preR2 = {}
     for gbu_string in list_pregbus:
         list_ams = []
@@ -155,18 +147,6 @@ def order(cbuA, cbuB):
         gbu['CBU2_FunctionalGroup'] = cbuA['CBUFunctionalGroup']
         gbu['CBU2_Direction'] = cbuA['Direction']
     return gbu
-
-def createAssemblyString(assemblyModel):
-    """The properties of an assembly model dictionary are transformed into single line string. The string is used for grouping."""
-    ind_1 = assemblyModel['CBU1_Number']
-    mod_1 = assemblyModel['CBU1_Modularity']
-    pln_1 = assemblyModel['CBU1_Planarity']
-    ind_2 = assemblyModel['CBU2_Number']
-    mod_2 = assemblyModel['CBU2_Modularity']
-    pln_2 = assemblyModel['CBU2_Planarity']
-    symMOP = assemblyModel['Symmetry']
-    assemblyStr = "("+ mod_1 + "-" + pln_1 + ")x" + ind_1 + "(" + mod_2 + "-" + pln_2 + ")x" + ind_2 + "___(" + symMOP + ")" 
-    return assemblyStr
 
 def createAssemblyString(assemblyModel):
     """The properties of an assembly model dictionary are transformed into single line string. The string is used for grouping."""

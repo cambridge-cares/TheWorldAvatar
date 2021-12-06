@@ -1,4 +1,6 @@
 def getMOPIRIs():
+    """This function collects all MOPs from the KG."""
+
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -24,6 +26,8 @@ def getMOPIRIs():
     return queryStr
 
 def mop_GBUs(mopIRI):
+    """Queries and collects MOP data relating to the GBUs/CBUs.
+    As every MOP has two GBUs, returns back information on both. """
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -59,6 +63,7 @@ def mop_GBUs(mopIRI):
     return queryStr
 
 def mop_reference(string, mop_symmetry):
+    """Using a MOP formula and Symmetry point group, checks if the MOP exists in the KG."""
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -77,4 +82,27 @@ def mop_reference(string, mop_symmetry):
     }"""
     queryStr = queryStr.replace('#MOPReference', str(string))
     queryStr = queryStr.replace('#SYMMETRY', str(mop_symmetry))   
+    return queryStr
+
+
+
+def species_properties(speciesIRI):
+    """Queries the molecular weight and mass of every CBU. """
+    queryStr = """
+	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+	PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+	PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?MolecularWeightValue ?MolecularChargeValue
+    WHERE
+    {
+    ?species OntoSpecies:hasMolecularWeight ?MolecularWeight .
+    ?MolecularWeight OntoSpecies:value ?MolecularWeightValue .
+    ?species OntoSpecies:hasCharge ?MolecularCharge .
+    ?MolecularCharge OntoSpecies:value ?MolecularChargeValue .
+
+    FILTER ((?species) = <#SPECIESIRI>) . 
+    }"""
+
+    queryStr = queryStr.replace('#SPECIESIRI', str(speciesIRI))
     return queryStr
