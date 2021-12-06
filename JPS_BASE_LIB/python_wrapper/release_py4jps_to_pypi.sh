@@ -11,7 +11,7 @@ PROJECT_NAME='py4jps'
 TEST_PYPI="https://test.pypi.org/legacy/"
 DEP_FILE='dependencies.yml'
 STEP_NR=1
-NEXT_VERSION=$1
+NEXT_VERSION=''
 
 usage() {
     echo "==============================================================================================================="
@@ -35,12 +35,6 @@ usage() {
 }
 
 main() {
-    if [ $# -eq 0 ]; then
-        echo "No version number provided. Aborting the release."
-        echo "Please see the following usage statement:"
-        echo ; echo
-        usage
-    fi
     bump_py4jps_version_number
     clean_and_build_jps_base_lib
     package_jps_base_lib_with_py4jps
@@ -233,5 +227,23 @@ test_release() {
 
     STEP_NR=$((STEP_NR+1))
 }
+
+# Scan command-line arguments
+if [[ $# = 0 ]]
+then
+   usage
+fi
+while [[ $# > 0 ]]
+do
+    key="$1"
+    case $key in
+        -h)
+        usage;;
+        -v) NEXT_VERSION=$2; shift 2;;
+        *)
+        # otherwise print the usage
+        usage;;
+    esac
+done
 
 main "$@"; exit
