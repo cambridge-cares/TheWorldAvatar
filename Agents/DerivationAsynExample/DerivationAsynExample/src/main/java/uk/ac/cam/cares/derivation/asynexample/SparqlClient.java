@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.OWL;
-import org.eclipse.rdf4j.query.algebra.Count;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -60,10 +59,6 @@ public class SparqlClient {
 	public static Iri hasMandatoryPart = p_agent.iri("hasMandatoryPart");
 	public static Iri hasType = p_agent.iri("hasType");
 	public static Iri hasName = p_agent.iri("hasName");
-	
-	public static void main(String[] args) {
-		System.out.println(SparqlClient.MaxValue.getQueryString().replaceAll(prefix+":", namespace));
-	}
 	
 	public SparqlClient(StoreClientInterface storeClient) {
 		this.storeClient = storeClient;
