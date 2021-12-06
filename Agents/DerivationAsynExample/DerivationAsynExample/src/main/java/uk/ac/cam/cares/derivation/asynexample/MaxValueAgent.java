@@ -33,6 +33,7 @@ public class MaxValueAgent extends AsynAgent {
 	
 	static final String API_PATTERN = "/MaxValueAgent";
 	
+	StoreClientInterface kbClient;
 	SparqlClient sparqlClient;
 	
 	public MaxValueAgent() {
@@ -41,6 +42,7 @@ public class MaxValueAgent extends AsynAgent {
 	
 	public MaxValueAgent(StoreClientInterface storeClient, String derivationInstanceBaseURL) {
 		super(storeClient, derivationInstanceBaseURL);
+		this.kbClient = storeClient;
 		this.sparqlClient = new SparqlClient(storeClient);
 	}
 	
@@ -69,8 +71,10 @@ public class MaxValueAgent extends AsynAgent {
 		
 		Config.initProperties();
 		
-		RemoteStoreClient kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
-		MaxValueAgent maxAgent = new MaxValueAgent(kbClient, Config.derivationInstanceBaseURL);
+		if (this.kbClient == null) {
+			this.kbClient = new RemoteStoreClient(Config.sparqlEndpoint, Config.sparqlEndpoint, Config.kgUser, Config.kgPassword);
+		}
+		MaxValueAgent maxAgent = new MaxValueAgent(this.kbClient, Config.derivationInstanceBaseURL);
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
