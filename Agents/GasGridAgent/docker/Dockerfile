@@ -1,11 +1,9 @@
 #########################
 #
-# This docker file builds an image for the Example Digital Twin visualistion.
-# It can also be used as starting point for any custom DT visualisations that
-# are created in future.
+# This docker file builds an image for the Gas Grid Agent visualistion.
 #
 # NOTE: The "docker build" command used to build this file into an Image should
-# be run from the "example-dt-vis" folder, not from within this "docker" directory.
+# be run from the "GasGridAgent" folder, not from within this "docker" directory.
 # See the README for more details.
 # 
 # Stages:
@@ -22,7 +20,7 @@ FROM  alpine:3.14.0 as dev
 # Meta data
 LABEL authors = "support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Example Digital Twin"
+LABEL description = "Gas Grid Agent"
 
 # Install utilities
 RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix

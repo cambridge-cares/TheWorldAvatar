@@ -3,17 +3,20 @@ version: "3.8"
 # All Services
 services:
 
-  # Example DT Visualisation
-  example-dt-vis:
-    image: docker.cmclinnovations.com/example-dtvf:1.0.0-SNAPSHOT
-    container_name: example-dtvf
+  # Gas Grid Agent Visualisation
+  gas-grid-agent:
+    image: docker.cmclinnovations.com/gas-grid-agent:1.0.0-SNAPSHOT
+    container_name: gas-grid-agent
     build:
       context: "../"
       dockerfile: "./docker/Dockerfile"
       target: "dev"
       labels:
         authors: "support@cmclinnovations"
-        description: "Example implementation of the Digital Twin Visualisation Framework."
+        description: "Gas Grid Agent."
+    # Mounts local directory to a destination directory on docker.
+    volumes:
+    - ../:/var/www/html
     ports:
       - "65080:80"
  
