@@ -1,62 +1,65 @@
 #########################
 #
-# This Dockerfile creates an image with an environment appropriate for running the Gas Grid Agent.
-# It builds on the Python agent example located at '/Deploy/examples/python_agent'.
+# This docker file builds an image for the Example Digital Twin visualistion.
+# It can also be used as starting point for any custom DT visualisations that
+# are created in future.
 #
+# NOTE: The "docker build" command used to build this file into an Image should
+# be run from the "example-dt-vis" folder, not from within this "docker" directory.
 # See the README for more details.
+# 
+# Stages:
+#	- dev:	vis will use development versions of remote JS and CSS
+#	- prod:	vis will use production versions of remote JS and CSS
 #
 #########################
 
-# Use Python as a base image
-FROM python:3.7.10 as common
+
+##### DEVELOPMENT STAGE #####
+# Using Alpine as the base image
+FROM  alpine:3.14.0 as dev
 
 # Meta data
-LABEL authors = "support<@>cmclinnovations.com, trs53<@>cam.ac.uk, mh807<@>cam.ac.uk"
+LABEL authors = "support@cmclinnovations.com"
 LABEL version = "1.0.0-SNAPSHOT"
-LABEL description = "Gas Grid Agent"
+LABEL description = "Example Digital Twin"
 
 # Install utilities
-RUN apt update && apt-get install -y rsyslog cron bash procps nano dos2unix wget software-properties-common
+RUN apk update && apk add procps nano wget bash busybox-initscripts dos2unix
 
-# Install Java 8 (for JPS base library)
-RUN wget -qO - https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public | apt-key add -
-RUN add-apt-repository --yes https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/
-RUN apt update && apt install -y adoptopenjdk-8-hotspot
+# Install Apache and PHP
+RUn apk update && apk add apache2 php7-apache2
 
-# Install web server (to host geojson files for download)
-RUN apt update && apt install -y apache2
-COPY ./docker/httpd.conf /usr/local/apache2/conf/httpd.conf
-RUN mkdir -p /var/www/html/gas-grid
-RUN chown -R www-data:www-data /var/www/
+# Copy in the start-up script
+COPY ./docker/start-up.sh /usr/local/start-up.sh
+RUN chmod 777 /usr/local/start-up.sh
+RUN chmod +x /usr/local/start-up.sh
+RUN dos2unix /usr/local/start-up.sh
+
+# Copy in the files
+RUN mkdir -p /var/www/html
+WORKDIR /var/www/html
+COPY . .
+
+# Custom HTTPD configuration
+COPY docker/httpd.conf /etc/apache2/httpd.conf
+
+# Permissions
 RUN chmod -R 775 /var/www/
 
-# Copy in required scripts/files
-COPY ./docker/start-up.sh /root/start-up.sh
-COPY ./docker/run-outputs.sh /root/run-outputs.sh
-COPY ./docker/cron-jobs /root/cron-jobs
-
-# Copy in the Python source code
-COPY ./src /root/code
-RUN chmod +x /root/code/install_script_pip.sh
-RUN dos2unix /root/code/install_script_pip.sh
-
-# Permissions & line endings
-WORKDIR /root
-RUN chmod -R 755 ./
-RUN dos2unix /root/start-up.sh
-RUN dos2unix /root/run-outputs.sh
-RUN dos2unix /root/cron-jobs
-
-# Make a directory for the gas-grid logs
-RUN mkdir /var/log/gas-grid
-RUN chmod 755 /var/log/gas-grid
-
-# Set environment variables
-ENV PYTHONPATH=/usr/local/lib/python3.7/site-packages
-
-# Expose port for HTTP server
+# Expose port 80
 EXPOSE 80
 
-# Run cron daemon and boot script at start
-ENTRYPOINT [ "/bin/bash", "/root/start-up.sh" ]
+# Copy in the HTML file that designates the DEVELOPMENT imports
+#COPY head-dev.html head.html
 
+# Run cron daemon and boot script at start
+CMD [ "/bin/bash", "-c", "/usr/local/start-up.sh" ]
+
+
+##### PRODUCTION STAGE #####
+# Using development image as the base 
+FROM dev as prod
+
+# Copy in the HTML file that designates the PRODUCTION imports
+#COPY head-prod.html head.html
