@@ -21,6 +21,9 @@ COPY --from=jar_fetcher \
      /root/.m2/repository/org/postgresql/postgresql/${ONTOP_POSTGRES_VERSION}/postgresql-${ONTOP_POSTGRES_VERSION}.jar \
      /opt/ontop/jdbc/
 
+# Copy in a script used by the entrypoint to ensure that the postgres server is ready
+COPY ./wait-for-it/wait-for-it.sh /opt/wait-for-it/
+
 COPY entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 #==================================================================================================
