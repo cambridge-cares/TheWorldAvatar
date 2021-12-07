@@ -287,7 +287,6 @@ WHERE {
   OPTIONAL {?derivation OntoDerivation:hasStatus ?status .
             ?status a ?status_type}
 }
-}
 ```
 Once the update is finished, you may get results from SPARQL query similar to below:
 | derivation | devTime | inputTime | status | status_type |
