@@ -225,8 +225,6 @@ public class AccessAgentCaller{
 			joparams.put(JPSConstants.TARGETIRI, cutHashFragment(targetUrl));
 		}
 	
-		requestUrl = ResourcePathConverter.convert(requestUrl);
-	
 		Object[] a = new Object[] {requestUrl, joparams};			
 		return a;
 	}	

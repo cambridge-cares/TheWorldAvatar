@@ -20,14 +20,16 @@ Initialising any new time series using the `TimeSeriesClient` creates all requir
 The namespaces used in this document:  
 (`ts` denotes the time series ontology and `kb` refers to the namespace to which the time series shall be added)
 ```
-ts : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
-kb : http://www.theworldavatar.com/kb/ontotimeseries/
+ts  : https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#
+rdf : http://www.w3.org/1999/02/22-rdf-syntax-ns#
+kb  : http://www.theworldavatar.com/kb/ontotimeseries/
 ```
 
 ### Instantiation in KG ###
 Upon instantiation of a time series for any `<entity>` in the KG, the following triples will be created:
 ```
 <entity>  ts:hasTimeSeries  kb:TimeSeries_UUID
+kb:TimeSeries_UUID  rdf:type  ts:TimeSeries
 kb:TimeSeries_UUID  ts:hasRDB  <Postgres URL>
 kb:TimeSeries_UUID  ts:hasTimeUnit  <timeUnit>
 ```
@@ -67,7 +69,8 @@ This table contains all information for `time series 2`.
 
 ## Examples on how to use the TimeSeriesClient
 - **Integration tests**:
-Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed.
+Detailed integration tests for the `TimeSeriesClient` as well as the (underlying) `TimeSeriesRDBClient` and `TimeSeriesSparql` are provided in the respective [test repository]. Please note that all integration tests use the Testcontainers Java library and, hence, require Docker to be installed. Furthermore, access to the `docker.cmclinnovations.com registry` is required from the machine the test is run on to pull docker images.  
+You can request login details by emailing `support<at>cmclinnovations.com` with the subject 'Docker registry access'
    
 - **Agent examples**:
    Several agents provide working examples of how to use the `TimeSeriesClient`, e.g.  
