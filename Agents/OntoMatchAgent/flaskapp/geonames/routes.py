@@ -32,7 +32,7 @@ def api():
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Invalid request'})
+        return jsonify({'errormsg': 'Invalid request'}), 500
 
 def checkCountry(c):
     if c.lower() is not 'germany' and c.lower is not 'unitedkingdom':

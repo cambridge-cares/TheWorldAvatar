@@ -26,7 +26,7 @@ def read():
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': str(traceback.format_exc())})
+        return jsonify({'errormsg': 'Invalid request'}), 500
 
 @blackboard_bp.route('/api/blackboard', methods=['POST'])
 def api():
@@ -47,7 +47,7 @@ def api():
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': str(traceback.format_exc())})
+        return jsonify({'errormsg': 'Invalid request'}), 500
 
 def checkAddr(filePath):
     #TODO: handle relative path

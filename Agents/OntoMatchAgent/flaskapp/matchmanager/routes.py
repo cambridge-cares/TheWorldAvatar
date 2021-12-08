@@ -25,15 +25,13 @@ def api():
         agent = checkChoice(choice)
 
         # Run the agent
-        enriched, handle = agent.start()
-        response = {}
-        response["enriched"] = enriched
-        response["handle"] = handle
-        return jsonify({"result": response})
+        agent.start(config_handle, src_graph_handle, tgt_graph_handle)
+
+        return jsonify({"result": {"done":True}})
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': str(traceback.format_exc())})
+        return jsonify({'errormsg': 'Invalid request'}), 500
 
 def checkAddr(filePath):
     #TODO: handle relative path

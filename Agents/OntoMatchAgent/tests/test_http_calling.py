@@ -29,7 +29,6 @@ class TestGeocoding(unittest.TestCase):
         #TODO: assert content
 
     def test_blackboard_write_http(self):
-        #TODO: bug, writing directory wrong when calling from flask
         addr = './conf/conf_power_plant_DEU_auto.json'
         params = ontomatch.utils.util.read_json_from_path(addr)
         params_str = json.dumps(params)
@@ -41,3 +40,16 @@ class TestGeocoding(unittest.TestCase):
         object = ontomatch.utils.util.call_agent_blackboard_for_reading(handle, http=True)
         print("object")
         #TODO: assert content
+
+    def test_coordinator_http(self):
+        import time
+        addr = './conf/power_plant_DEU/conf_test_webagent.json'
+        params = ontomatch.utils.util.read_json_from_path(addr)
+        # write the config params to the blackboard
+        params_str = json.dumps(params)
+        config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(addr, params_str, http=False)
+
+        starttime = time.time()
+        ontomatch.coordinator.Agent().start(config_handle, http=True)
+        timenow = time.time() - starttime
+        logging.info('elapsed time in seconds=%s', timenow)
