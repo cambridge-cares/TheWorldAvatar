@@ -5,7 +5,8 @@ Created on Dec 1, 2021
 '''
     
 FILE_PATHS = {
-    'mops_lib2': 'mops_output\\3_mops_lib2\\',
+    'r1_mops_csv': 'mops_output\\r1_mops.csv',
+    'r2_mops_csv': 'mops_output\\r2_mops.csv',
     'mops_lib1': 'mops_output\\2_mops_lib1\\',
     'mops_lib1_type': 'mops_output\\2_mops_lib1_type\\',
     'mops_lib2_type': 'mops_output\\3_mops_lib2_type\\',
