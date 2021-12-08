@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 from query_operations.queryKG import querykg
 from query_operations.queryendpoint import SPARQL_ENDPOINTS
 from query_operations.queryTemplates import getMOPIRIs
@@ -83,8 +89,6 @@ def assemblyModelGroups(listofMOPs):
     list_preR2 = mergeR2(list_pregbus, list_gbus)
     preR2_json(list_preR2) 
     print("UNIQUES:\n", uniques)
-    print("LIST_R1:\n",list_R1)
-    print("LIST_preR2:\n", list_preR2)
     return uniques, list_pregbus, list_R1_number
 
 def mergeR2(list_pregbus, list_gbus):

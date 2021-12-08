@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 import csv
 import json
 from manager.file_paths import FILE_PATHS

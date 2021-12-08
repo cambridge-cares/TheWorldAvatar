@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 def getMOPIRIs():
     """This function collects all MOPs from the KG."""
 

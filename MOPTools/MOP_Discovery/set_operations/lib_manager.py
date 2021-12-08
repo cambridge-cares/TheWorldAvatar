@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 from set_operations.lib1_creation import lib1_Creation
 from set_operations.cbuoverlap import cbuoverlap
 from set_operations.lib2_creation import lib2_creation

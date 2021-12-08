@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 import json
 import  itertools
 from manager.file_paths import FILE_PATHS
@@ -10,7 +16,6 @@ def cbuoverlap(list_pregbus):
         list_R2 = {}
         for item in list_pregbus: # you are at the level of gbu 
             gbu_am_lib = data[item]
-            #am_cbus = []
             overlaps = []
             for ampairs in  itertools.combinations(gbu_am_lib,2):  # you are at the level of an assembly model  
                 originalpairs = []
@@ -48,4 +53,3 @@ def cbuoverlap(list_pregbus):
         outR2 = json.dumps(list_R2)
         jsonoutput = open(list_R2_jsonpath, 'w') 
         jsonoutput.write(outR2)
-        print(list_R2)

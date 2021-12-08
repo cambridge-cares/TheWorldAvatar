@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 from kg_overview.analytics_output import kgoverview_csv
 from kg_overview.analytics_operations import assemblyModelGroups
 from kg_overview.analytics_operations import mopsoverview

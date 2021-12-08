@@ -1,3 +1,10 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
+
 This software package allows traversing the OntoMOPs knowledge graph, while returning information on:
 
     a) the different assembly models in the OntoMOPs KG and the associated MOP instances;
