@@ -1,4 +1,8 @@
-import os
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
     
 FILE_PATHS = {
     'mops_lib2': 'mops_output\\3_mops_lib2\\',
@@ -12,5 +16,6 @@ FILE_PATHS = {
     'list_R2': 'mops_output\\list_R2.json',
     'arrange': 'mops_output\\arrange\\',
     'mops_r1': 'mops_output\\4_mops_r1\\',
-    'mops_r2': 'mops_output\\4_mops_r2\\'
+    'mops_r2': 'mops_output\\4_mops_r2\\',
+    'r1andr2_csv': 'mops_output\\r1_r2.csv'
 }

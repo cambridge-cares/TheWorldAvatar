@@ -1,4 +1,9 @@
-from manager.foldergenerator import outputfolder
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 from kg_overview.local_manager import kgoverview
 from set_operations.lib_manager import lib_manager
 from assembler.assembler import searchRadius
