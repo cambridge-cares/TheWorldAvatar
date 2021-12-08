@@ -1,3 +1,9 @@
+'''
+Created on Dec 1, 2021
+
+@author: Aleksandar Kondinski
+'''
+
 from manager.assembly_workflow import workflow
 import datetime
 import os
@@ -5,12 +11,6 @@ import os
 def start():
     mops_output()
     workflow()
-    #print("Running Discovery Workflow")
-    #searchanalytics = workflow()
-    #print("Overall results from R1")
-    #print(searchanalytics[0])
-    #print("Overall results from R2")
-    #print(searchanalytics[1])
 
 def mops_output():
     FOLDER_NAME = 'mops_output'
