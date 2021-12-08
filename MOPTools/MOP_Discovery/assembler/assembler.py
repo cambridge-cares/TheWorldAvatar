@@ -15,7 +15,8 @@ def searchRadius(uniques, model_numbers):
     """Takes the uniques from the kg analytics, and returns back how many new 
     and how many known references of search radius 1. """
     r1_list_jsonpath = FILE_PATHS['list_R1']
-    allMOPs = []
+    r1_mops = []
+    r2_mops = []
     mops_output_overviewR1 = []
     mops_output_overviewR2 = []
     with open(r1_list_jsonpath , 'r') as jsonfile:
@@ -36,15 +37,18 @@ def searchRadius(uniques, model_numbers):
                         paths_r2 = (FILE_PATHS['mops_lib2_type'], FILE_PATHS['mops_lib2_type'],FILE_PATHS['mops_r2'])
                         mops_r1 = assembler(paths_r1, model, gbu1, gbu2, gbu1_number, gbu2_number, mop_symmetry)
                         mops_r2 = assembler(paths_r2, model, gbu1, gbu2, gbu1_number, gbu2_number, mop_symmetry)
-                        mops_radii = {'Assembly Model':model, 'Radius 1': mops_r1, 'Radius 2': mops_r2 }
-                        allMOPs.append(mops_radii)
+                        am_radius1 = {'Assembly Model':model, 'Set': mops_r1}
+                        am_radius2 = {'Assembly Model':model, 'Set': mops_r2}
+                        r1_mops.append(am_radius1)
+                        r2_mops.append(am_radius2)
                         r1_analytics = overview_radius(paths_r1, model)
                         r2_analytics = overview_radius(paths_r2, model)
                         mops_output_overviewR1.append(r1_analytics)
                         mops_output_overviewR2.append(r2_analytics)
                 else:
                     pass
-    #allMOPs_csv(allMOPs)
+    mops_csv(1, r1_mops)
+    mops_csv(2, r2_mops)
     searchRoverview(mops_output_overviewR1, mops_output_overviewR2)
     return mops_output_overviewR1, mops_output_overviewR2
  
@@ -198,12 +202,28 @@ def searchRoverview(mops_output_overviewR1, mops_output_overviewR2):
                 else:
                     pass
 
-# def allMOPs_csv(allMOPs):
-#     csv_file_path = FILE_PATHS['allmops_csv']
-#     r1_r2_model = {}
-#     with open(csv_file_path, 'w', newline='') as csvfile:
-#         fieldnames = ['Assembly Model', 'MOP', 'In R1','In R2', 'MOP Charge', 'MOP MW']
-#         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-#         writer.writeheader()
-#         my_dict = {}
-#         for assemblyModel in allMOPs:
+def mops_csv(r, r_mops):
+    if r == 1:
+        csv_file_path = FILE_PATHS['r1_mops_csv']
+    if r == 2:
+        csv_file_path = FILE_PATHS['r2_mops_csv']
+    mops = {}
+    with open(csv_file_path, 'w', newline='') as csvfile:
+        fieldnames = ['Assembly Model', 'MOP Formula', 'MOP Charge', 'MOP MW', 'ReferenceDOI']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        my_dict = {}
+        for mops_radius in r_mops:
+            set_mops = mops_radius['Set']
+            for list_item in set_mops:
+                for item in list_item:
+                    print(item)
+                    mops['Assembly Model'] = mops_radius['Assembly Model']
+                    mops['MOP Formula'] = item['MOPFormula']
+                    mops['MOP Charge'] = item["MOPCharge"] 
+                    mops['MOP MW'] = item["MOPWeight"]
+                    mops['ReferenceDOI'] = item["ReferenceDOI"]
+                    my_dict.update(mops)
+                    writer.writerow(my_dict)
+            else:
+                pass
