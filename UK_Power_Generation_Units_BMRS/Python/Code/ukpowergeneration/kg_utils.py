@@ -10,11 +10,11 @@ from pathlib import Path
 from configobj import ConfigObj
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
-from gasgridagent.jpsSingletons import jpsBaseLibView
+from jpsSingletons import jpsBaseLibView
 
 
 # Define location of properties file (with Triple Store and RDB settings)
-PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "gasgridagent.properties"))
+PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent, "..", "resources", "ukpowergeneration.properties"))
 
 # Initialise global variables to be read from properties file
 global QUERY_ENDPOINT, UPDATE_ENDPOINT, OUTPUT_DIR
