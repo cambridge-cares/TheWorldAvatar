@@ -74,16 +74,18 @@ public class IntegrationTest {
 		String derived_diff = response.getString("derivation of difference");
 		String derived_average = response.getString("derivation of average");
 		
-		Method getTimestamp = DerivationSparql.class.getDeclaredMethod("getTimestamp", StoreClientInterface.class, String.class);
+		DerivationSparql devClient = new DerivationSparql(storeClient);
+		
+		Method getTimestamp = devClient.getClass().getDeclaredMethod("getTimestamp", String.class);
 		getTimestamp.setAccessible(true);
 		
-		long oldtimestamp_diff = (long) getTimestamp.invoke(DerivationSparql.class, storeClient, derived_diff);
-		long oldtimestamp_average = (long) getTimestamp.invoke(DerivationSparql.class, storeClient, derived_average);
+		long oldtimestamp_diff = (long) getTimestamp.invoke(devClient, derived_diff);
+		long oldtimestamp_average = (long) getTimestamp.invoke(devClient, derived_average);
 		
 		AgentCaller.executeGet("http://localhost:8081/DerivationExample/UpdateDerivations");
 		
-		long newtimestamp_diff = (long) getTimestamp.invoke(DerivationSparql.class, storeClient, derived_diff);
-		long newtimestamp_average = (long) getTimestamp.invoke(DerivationSparql.class, storeClient, derived_average);
+		long newtimestamp_diff = (long) getTimestamp.invoke(devClient, derived_diff);
+		long newtimestamp_average = (long) getTimestamp.invoke(devClient, derived_average);
 		
 		Assert.assertTrue(newtimestamp_diff > oldtimestamp_diff);
 		Assert.assertTrue(newtimestamp_average > oldtimestamp_average);
