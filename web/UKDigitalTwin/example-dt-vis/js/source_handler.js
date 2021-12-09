@@ -59,25 +59,29 @@ class SourceHandler {
      * @param {JSONObject} dataSet data set definition
      */
     addSource(rootDir, dataSet) {
-        let name = dataSet["name"];
-        let type = dataSet["dataType"];
-        let location = dataSet["dataLocation"];
+        try {
+            let name = dataSet["name"];
+            let type = dataSet["dataType"];
+            let location = dataSet["dataLocation"];
 
-        // If the data location is NOT a URL, it will be a relative file path.
-        // If that's the case, make it absolute
-        if(!this.#isURL(location)) {
-            location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
-        }
+            // If the data location is NOT a URL, it will be a relative file path.
+            // If that's the case, make it absolute
+            if(!this.#isURL(location)) {
+                location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
+            }
 
-        // Add source depending on type
-        switch(type) {
-            default:
-            case "geojson":
-                return this.#addGeoJSONSource(dataSet, name, location);
-            case "raster":
-                return this.#addRasterSource(dataSet, name, location);
-            case "vector":
-                return this.#addVectorSource(dataSet, name, location);
+            // Add source depending on type
+            switch(type) {
+                default:
+                case "geojson":
+                    return this.#addGeoJSONSource(dataSet, name, location);
+                case "raster":
+                    return this.#addRasterSource(dataSet, name, location);
+                case "vector":
+                    return this.#addVectorSource(dataSet, name, location);
+            }
+        } catch(error) {
+            console.log("ERROR: Could not load source '" + name + "', it will be skipped.");
         }
     }
 

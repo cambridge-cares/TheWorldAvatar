@@ -38,40 +38,45 @@ class LayerHandler {
      * @param {JSONObject} dataSet metadata for single dataset.
      */
     addLayer(dataSet) {
-        switch(dataSet["locationType"]) {
-            default:
-            case "circle":
-            case "point":
-                this.#addPointLayer(dataSet);
-                break;
+        try {
+            switch(dataSet["locationType"]) {
+                default:
+                case "circle":
+                case "point":
+                    this.#addPointLayer(dataSet);
+                    break;
 
-            case "symbol":
-                this.#addSymbolLayer(dataSet);
-                break;
+                case "symbol":
+                    this.#addSymbolLayer(dataSet);
+                    break;
 
-            case "fill":
-            case "polygon":
-                this.#addFillLayer(dataSet);
-                break;
+                case "fill":
+                case "polygon":
+                    this.#addFillLayer(dataSet);
+                    break;
 
-            case "building":
-            case "extrusion":
-                this.#addExtrusionLayer(dataSet);
-                break;
+                case "building":
+                case "extrusion":
+                    this.#addExtrusionLayer(dataSet);
+                    break;
 
-            case "line":
-                this.#addLineLayer(dataSet);
-                break;
+                case "line":
+                    this.#addLineLayer(dataSet);
+                    break;
 
-            case "raster":
-                this.#addRasterLayer(dataSet);
-                break;
+                case "raster":
+                    this.#addRasterLayer(dataSet);
+                    break;
+            }
+
+            // Order the layers so that points are on top.
+            this.#orderLayers(["fill", "polygon"]);
+            this.#orderLayers(["line"]);
+            this.#orderLayers(["circle", "point", "symbol"]);
+
+        } catch(error) {
+            console.log("ERROR: Could not create layer '" + dataSet["name"] + "', it will be skipped...");
         }
-
-        // Order the layers so that points are on top.
-        this.#orderLayers(["fill", "polygon"]);
-        this.#orderLayers(["line"]);
-        this.#orderLayers(["circle", "point", "symbol"]);
     }
 
     /**
