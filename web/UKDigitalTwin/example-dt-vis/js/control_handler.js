@@ -113,6 +113,9 @@ class ControlHandler {
 		// Build the initial dropdown selections
 		let selectString = this.buildDropdown(this._registry.meta);
 		document.getElementById("selectionsContainer").innerHTML += selectString;
+
+		// Show/hide selections box is empty
+		selectionsContainer.style.display = (selectionsContainer.childElementCount > 0) ? "block" : "none";
 	}
 
 	/**
@@ -201,6 +204,7 @@ class ControlHandler {
 		if(currentMeta["label"]) {
 			let label = currentMeta["label"];
 			let groups = currentMeta["groups"];
+			if(groups.length <= 1) return htmlString;
 
 			htmlString += `
 				<div id="selectContainer">
@@ -450,6 +454,15 @@ class ControlHandler {
 			if(this._map.getLayer(layerID + "_cluster") != null) {
 				this._map.setLayoutProperty(
 					layerID + "_cluster",
+					"visibility",
+					(visible ? "visible" : "none")
+				);
+			}
+
+			// Is there a corresponding _arrows layer?
+			if(this._map.getLayer(layerID + "_arrows") != null) {
+				this._map.setLayoutProperty(
+					layerID + "_arrows",
 					"visibility",
 					(visible ? "visible" : "none")
 				);

@@ -9,14 +9,26 @@ class LayerHandler {
       */
     _map;
 
+    /**
+     * Cache of the original properties used to create each layer.
+     */
+    _layerProperties = {}
+
 
     /**
       * Initialise a new LayerHandler.
       * 
-      * @param {Object} map MapBox map 
+      * @param {Object} map MapBox map
       */
     constructor(map) {
         this._map = map;
+    }
+
+    /**
+     * Returns the cache of original layer properties.
+     */
+    get layerProperties() {
+        return this._layerProperties;
     }
 
     /**
@@ -153,8 +165,10 @@ class LayerHandler {
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
+        // Add the layer then cache its properties
         this._map.addLayer(options);
-        console.log("INFO: Added '" + layerName + "' layer to MapBox.");
+        this._layerProperties[layerName] = options;
+
         return layerName;
     }
 
@@ -194,7 +208,10 @@ class LayerHandler {
             options["filter"] = ['!', ['has', 'point_count']];
             this.#addClusterLayers(dataSet);
         }
+
+        // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._layerProperties[layerName] = options;
 
         // Note that we only return the name of the non-clustered layer here. At the moment, I
         // only want mouse interactions on that layer (i.e. no clicks on clusters).
@@ -277,7 +294,9 @@ class LayerHandler {
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
+        // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._layerProperties[layerName] = options;
         
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
@@ -317,7 +336,9 @@ class LayerHandler {
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
+        // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._layerProperties[layerName] = options;
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
@@ -352,7 +373,10 @@ class LayerHandler {
         };
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        
+        // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._layerProperties[layerName] = options;
 
         // Transparent interaction layer
         this._map.addLayer({
@@ -368,21 +392,66 @@ class LayerHandler {
 			paint: {
                 'line-color': "#000000",
                 'line-opacity': 0.0,
-                'line-width': ['interpolate', ['linear'], ['zoom'], 10, 5, 15, 12.5]
+                'line-width': ['interpolate', ['linear'], ['zoom'], 10, 10, 15, 15]
 			}
 		});
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         console.log("INFO: Added special '" + layerName + "' interaction layer to MapBox.");
+
+        // If specified, add arrows to these lines
+        if(dataSet["arrows"] === true) {
+            this.#addArrowLayer(dataSet);
+        }
         return layerName;
     }
+
+    /**
+     * Adds a symbol layer that adds SDF arrow icons to the line source.
+     * 
+     * Note that for this to function, the "arrow-sdf.png" image must have been
+     * added to the MapBox map before the layer is presented.
+     * 
+     * @param {JSONObject} dataSet 
+     */
+    #addArrowLayer(dataSet) {
+       let layerName = dataSet["name"] + "_arrows";
+       let sourceName = dataSet["name"];
+
+        // Layer options
+        let options = {
+            id: layerName,
+            source: sourceName,
+            metadata: {
+                provider: "cmcl"
+            },
+            type: 'symbol',
+            layout: {
+                'symbol-placement': 'line',
+                'symbol-spacing': 50,
+                'icon-rotate': 90,
+                'icon-image': 'arrow-sdf',
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.175, 18, 0.35],
+                'icon-allow-overlap': true
+            },
+            paint: {
+                'icon-color': ["get", "line-color"]
+            }
+        };
+        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
+        this._map.addLayer(options);
+        console.log("INFO: Added special '" + layerName + "' layer to MapBox.");
+        return layerName;
+   }
 
     /**
      * Adds a layer to create rasters for location data.
      * 
      * @param {JSONObject} dataSet 
      */
-      #addRasterLayer(dataSet) {
+    #addRasterLayer(dataSet) {
         let layerName = dataSet["name"];
         let sourceName = dataSet["name"];
 
@@ -401,7 +470,9 @@ class LayerHandler {
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
         if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
+        // Add the layer then cache its properties
         this._map.addLayer(options);
+        this._layerProperties[layerName] = options;
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;

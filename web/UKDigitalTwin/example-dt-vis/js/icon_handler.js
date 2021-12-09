@@ -28,7 +28,6 @@ class IconHandler {
         imageName = imageName.replace(/\.[^/.]+$/, "");
 
         return new Promise((resolve, reject) => {
-
             this._map.loadImage(
                 imageURL,
                 (error, image) => {
@@ -53,8 +52,12 @@ class IconHandler {
         for(const [key, value] of Object.entries(this._loadedImages)) {
             var imageName = key.replace(/^.*[\\\/]/, '');
             imageName = imageName.replace(/\.[^/.]+$/, "");
-
-            this._map.addImage(imageName, value);
+            
+            if(key.includes("-sdf")) {
+                this._map.addImage(imageName, value, { 'sdf': true });
+            } else {
+                this._map.addImage(imageName, value);
+            }
             console.log("INFO: Image '" + imageName + "' has been added.");
         }
     }

@@ -33,7 +33,6 @@ class PanelHandler {
 	// Store previous legendContainer visibility
 	_previousLegendVisibility;
 
-	//
 	_defaultHTML;
 
 	/**
@@ -246,8 +245,9 @@ class PanelHandler {
 	 * 
 	 */
 	returnToDefault() {
-		document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
-
+		if(this._defaultHTML != null) {
+			document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
+		}
 		// Clear currently selected feature
 		DT.currentFeature = null;
 	}

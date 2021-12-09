@@ -41,8 +41,6 @@
 
 	<!-- Implementation specific -->
 	<script src='./local_icons.js'></script>
-	<script src='./temp-utils.js'></script>
-	<script src='./focus-view.js'></script>
 </head>
 </head>
 
@@ -91,7 +89,6 @@
 		function startUp() {
 			// Create the MapBox map
 			var map = manager.createMap("map");
-			
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
@@ -118,7 +115,7 @@
 
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);
-		
+
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
 			// Note: There does not seem to be a nice way to preverse the sources and layers when changing

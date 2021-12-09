@@ -47,11 +47,37 @@ class DigitalTwinManager {
 		window.DT = {};
 		DT.terrain = "light";
 		DT.currentGroup = [];
+		DT.clickEvents = true;
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
 		});
 	}
+
+	getMap() {
+		return this._map;
+	}
+
+	getLayerHandler() {
+		return this._layerHandler;
+	}
+
+	getRegistry() {
+		return this._registry;
+	}
+
+	/**
+     * Add a callback what will fire after a feature within the 
+     * input MapBox layer has been selected.
+     * 
+     * @param {String} layerName MapBox layerID
+     * @param {Function} callback function to execute 
+     */
+	addSelectionCallback(layerName, callback) {
+		if(this._interactionHandler != null) {
+       		this._interactionHandler.addSelectionCallback(layerName, callback);
+		}
+    }
 
     /**
      * Register multpiple possible root directories.
@@ -109,6 +135,9 @@ class DigitalTwinManager {
 	 * @param {Boolean} updateSelects force dropdowns to match the group selection
 	 */
 	plotGroup(group, updateSelects = true) {
+		DT.currentFeature = null;
+		this.goToDefaultPanel();
+
 		// Remove previously added layers
 		this._layerHandler.removeLayers();
 
@@ -138,17 +167,21 @@ class DigitalTwinManager {
 			for(var i = 0; i < groupData.length; i++) {
 				this._layerHandler.addLayer(groupData[i]);
 				
-				// Register interactions slightly differently for line layers
-				if(groupData[i]["locationType"] === "line") {
-					this._interactionHandler.registerInteractions([
-						groupData[i]["name"] + "_clickable", 
-						groupData[i]["locationType"]
-					]);
-				} else {
-					this._interactionHandler.registerInteractions([
-						groupData[i]["name"],
-						groupData[i]["locationType"]
-					]);
+				// Register mouse interactions if enabled
+				let clickable = groupData[i]["clickable"];
+				if(clickable == null || clickable == true) {
+					// Register interactions slightly differently for line layers
+					if(groupData[i]["locationType"] === "line") {
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"] + "_clickable", 
+							groupData[i]["locationType"]
+						]);
+					} else {
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"],
+							groupData[i]["locationType"]
+						]);
+					}
 				}
 			}
 
@@ -254,7 +287,8 @@ class DigitalTwinManager {
 			this._map, 
 			this._registry, 
 			this._panelHandler,
-			this._timeseriesHandler
+			this._timeseriesHandler,
+			this._layerHandler
 		);
 		
 		console.log("INFO: Map object has been initialised.");

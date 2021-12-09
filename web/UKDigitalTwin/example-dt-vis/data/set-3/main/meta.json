@@ -29,6 +29,7 @@
             "dataType": "geojson",
             "dataLocation": "gamma.geojson",
             "locationType": "symbol",
+            "clickable": false,
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {

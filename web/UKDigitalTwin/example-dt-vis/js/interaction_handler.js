@@ -16,9 +16,13 @@ class InteractionHandler {
 
     _timeseriesHandler;
 
+    _layerHander;
+
     _hoveredStateId = null;
 
     _lastClick;
+
+    _selectionCallbacks = {};
 
     /**
      * Initialise a new interaction handler.
@@ -26,15 +30,25 @@ class InteractionHandler {
      * @param {*} map 
      * @param {*} dataRegistry 
      */
-    constructor(map, dataRegistry, panelHandler, timeseriesHandler) {
+    constructor(map, dataRegistry, panelHandler, timeseriesHandler, layerHandler) {
         this._map = map;
         this._registry = dataRegistry;
         this._panelHandler = panelHandler;
         this._timeseriesHandler = timeseriesHandler;
-
+        this._layerHander = layerHandler;
         this._popup = DT.popup;
     }
 
+    /**
+     * Add a callback what will fire after a feature within the 
+     * input MapBox layer has been selected.
+     * 
+     * @param {String} layerName MapBox layerID
+     * @param {Function} callback function to execute 
+     */
+    addSelectionCallback(layerName, callback) {
+        this._selectionCallbacks[layerName] = callback;
+    }
 
     /**
      * Register default mouse interactions with the input layer.
@@ -51,6 +65,8 @@ class InteractionHandler {
 
         // Mouse click
         this._map.on("click", layerName, (event) => {
+            if(!DT.clickEvents) return;
+
              // Fudge to ensure that only one click per 500ms
             let thisClick = Date.now();
             if(this._lastClick != null) {
@@ -62,7 +78,7 @@ class InteractionHandler {
 
             // Trigger on top most feature
             let feature = event.features[event.features.length - 1];
-            this.mouseClick(feature);
+            this.mouseClick(layerName, feature);
         });
 
         // Interactions per layer type
@@ -77,7 +93,7 @@ class InteractionHandler {
                     if(feature == null || feature.geometry == null) return;
 
                     // Change cursor
-                    this._map.getCanvas().style.cursor = 'pointer';
+                    if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
 
                     // Get correct co-ords
                     var coordinates = feature.geometry.coordinates.slice();
@@ -125,7 +141,7 @@ class InteractionHandler {
                     // Mouse enter
                     this._map.on("mouseenter", layerName, (event) => {
                         // Change cursor
-                        this._map.getCanvas().style.cursor = 'pointer';
+                        if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
                     });
 
                     // When the user moves their mouse over the fill area
@@ -192,7 +208,9 @@ class InteractionHandler {
      * @param {*} layerName 
      * @param {*} feature 
      */
-    mouseClick(feature) {
+    mouseClick(layerName, feature) {
+        if(feature == null) return;
+        
         // Clear existing side panel content
         this._panelHandler.setContent("");
 
@@ -239,16 +257,19 @@ class InteractionHandler {
         if(sidePanel.classList.contains("collapsed")) {
             this._panelHandler.toggleExpansion();
         }
-
         document.getElementById("footerContainer").style.display = "block";
         document.getElementById("contentContainer").style.flexGrow = 1;
-        
-     
-        // TEST
-        showConnectionsForFeature(this._map, this._registry, feature);
 
-        // Remember the currently selected feature
         DT.currentFeature = feature;
+
+        // Fire optional selection callback
+        let callback = this._selectionCallbacks[layerName];
+        if(callback != null) {
+            callback(feature);
+        } else {
+            callback = this._selectionCallbacks["*"];
+            if(callback != null) callback(feature);
+        }
     }
 
     /**
