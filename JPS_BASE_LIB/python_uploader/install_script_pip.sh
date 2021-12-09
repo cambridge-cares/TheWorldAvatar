@@ -70,6 +70,12 @@ function create_env {
 			echo ""
 			echo "    INFO: Virtual environment created."
 			echo "-----------------------------------------"
+            if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
+                PYTHON_EXEC=$VENV_DIR/$VENV_NAME/bin/python
+            else
+                PYTHON_EXEC=$VENV_DIR/$VENV_NAME/Scripts/python
+            fi
+
 		else
 			echo ""
 			echo "    ERROR: Failed to create virtual environment."
@@ -80,28 +86,16 @@ function create_env {
 		echo ""
 }
 
-function get_pip_path {
-    if [[ $CREATE_VENV == 'y' ]]
-	then
-	    if [ -d "$VENV_DIR/$VENV_NAME/bin/pip3" ]; then
-            PIPPATH=$VENV_DIR"/"$VENV_NAME/bin/pip3
-		else
-		    PIPPATH=$VENV_DIR"/"$VENV_NAME/Scripts/pip3
-		fi
-	else
-        PIPPATH=pip3
-	fi
-}
 
 function install_project {
 	echo "Installing the project"
     echo "-----------------------------------------------"
     echo
-    get_pip_path
-    $PIPPATH --disable-pip-version-check install $DEV_INSTALL $SPATH
+    $PYTHON_EXEC -m pip install --upgrade pip
+    $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $DEV_INSTALL $SPATH
     if [[ "${DEV_INSTALL}" == "-e" ]];
     then
-        $PIPPATH --disable-pip-version-check install -r $SPATH"/"dev_requirements.txt
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade -r $SPATH"/"dev_requirements.txt
     fi
     if [ $? -eq 0 ]; then
     	echo ""
