@@ -42,7 +42,7 @@ public class RemoteStoreIntegrationTest {
 		// upload the file testOWL.owl to the test container
 		String filepath = new URI(getClass().getClassLoader().getResource(Paths.get("KBClientTest","testOWL.owl").toString()).toString()).getPath();
 		File testOwl = new File(filepath);
-		storeClient.uploadRDFFile(testOwl);
+		storeClient.uploadFileToBlazegraph(testOwl);
 		
 		// construct a simple query to check that triples have been uploaded
 		SelectQuery query = Queries.SELECT();
