@@ -10,6 +10,8 @@ resources/
 .coverage
 *.gv
 *.png
+assets/
+pytest_report*
 
 ## User defined
 *.egg-info
