@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.*;
 import java.nio.file.Paths;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -643,6 +644,44 @@ public class TimeSeriesSparqlTest {
     	Assert.assertEquals("test_update", kbcl.getUpdateEndpoint());
 
     }
+    
+    @Test
+	public void testBulkInitTs() {
+		String tsIRI1 = "http://tsIRI1";
+		List<String> dataIRI1 = Arrays.asList("http://data1", "http://data2", "http://data3");
+		String tsIRI2 = "http://tsIRI2";
+		List<String> dataIRI2 = Collections.singletonList("http://data4");
+		String dbURL = "jdbc:postgresql:timeseries";
+		List<String> timeUnits = Arrays.asList("s", "s");
+		
+		List<String> tsList = Arrays.asList(tsIRI1, tsIRI2);
+		List<List<String>> dataIRIs = new ArrayList<>();
+		dataIRIs.add(dataIRI1); dataIRIs.add(dataIRI2);
+		
+		sparqlClient.bulkInitTS(tsList, dataIRIs, dbURL, timeUnits);
+		
+		OntModel testKnowledgeBase = mockClient.getKnowledgeBase();
+		
+		Property hasRDB = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasRDB");
+		Property hasTimeUnit = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeUnit");
+		Property hasTimeSeries = ResourceFactory.createProperty(TimeSeriesSparql.ns_ontology + "hasTimeSeries");
+		Resource TimeSeries = ResourceFactory.createResource(TimeSeriesSparql.ns_ontology + "TimeSeries");
+		
+		for (String dataIRI : dataIRI1) {
+			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI1)));
+		}
+		
+		for (String dataIRI : dataIRI2) {
+			Assert.assertTrue(testKnowledgeBase.contains(ResourceFactory.createResource(dataIRI), hasTimeSeries, ResourceFactory.createResource(tsIRI2)));
+		}
+		
+		for (String tsIRI : tsList) {
+			Resource ts = ResourceFactory.createResource(tsIRI);
+			Assert.assertEquals(testKnowledgeBase.getIndividual(tsIRI).getRDFType(),TimeSeries);
+			Assert.assertTrue(testKnowledgeBase.contains(ts, hasRDB, ResourceFactory.createStringLiteral(dbURL)));
+			Assert.assertTrue(testKnowledgeBase.contains(ts, hasTimeUnit, ResourceFactory.createStringLiteral("s")));
+		}
+	}
     
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file

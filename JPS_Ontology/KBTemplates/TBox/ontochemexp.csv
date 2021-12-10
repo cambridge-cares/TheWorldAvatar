@@ -1,208 +1,212 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-Experiment,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Copyright,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-BibliographyLink,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,EQUIVALENT-TO,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Apparatus,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-CommonProperties,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DataGroup,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-AdditionalDataItem,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-ExpSpecs,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Provenance,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Modification,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-IgnitionType,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-TimeShift,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Kind,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Mode,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DimensionalQuantity,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Velocity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-SootYield,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-MassBurningRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Mass,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-SpecificSurfaceArea,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Material,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Fraction,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Voltage,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Temperature,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Length,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Pressure,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Density,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Volume,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-FlowRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Time,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-VolumetricFlowRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-ResidenceTime,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-LaminarBurningVelocity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Distance,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-InitialComposition,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-IgnitionDelay,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Composition,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Concentration,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-EquivalenceRatio,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-TemperatureInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-PressureInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-VolumetricFlowRateInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-ReactorLength,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Diameter,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-JunctionArchitecture,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DonorConstructionType,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Acceptor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Donor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-HomoEnergy,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-LumoEnergy,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-HomoLumoEnergyGap,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-OpticalEnergyGap,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-OpenCircuitPotential,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-ShortCircuitCurrentDensity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-PowerConversionEfficiency,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-FillFactor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DataPoint,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X1,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X2,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X3,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X4,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X5,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X6,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X7,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X8,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X9,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X10,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-X11,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Component,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Uncertainty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-SpeciesLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DerivedProperty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Amount,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Feature,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Indicator,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-Observable,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-PropertyLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DataAttributeLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-DataGroupLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/Person,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/Organization,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
-http://purl.org/ontology/bibo/Journal,Class,,,,,,Describes the title and ISSN of a journal.,http://purl.org/ontology/bibo
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Class,,,,,,"Specification of a publication for describing its author(s), title, year of publication, journal or conference, publisher, etc.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a journal describing the page number and volume.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ProceedingsSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a conference.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PreprintSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a preprint.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#specifies,Object Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPublicationSpecification,Object Property,,,BibliographyLink,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,only,"A relation between a reference and a publication specification that can be a journal specification, a proceedings specification or a preprint specification.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
-http://purl.org/dc/terms/contributor,Object Property,,,BibliographyLink,http://xmlns.com/foaf/0.1/Agent,only,,http://purl.org/dc/terms/contributor
-hasApparatus,Object Property,,,Experiment,Apparatus,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasAdditionalDataItem,Object Property,,,Experiment,AdditionalDataItem,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasCommonProperties,Object Property,,,Experiment,CommonProperties,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasCopyright,Object Property,,,Experiment,Copyright,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasBibliographyLink,Object Property,,,Experiment,BibliographyLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataGroup,Object Property,,,Experiment,DataGroup,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasPerformer,Object Property,,,Experiment,http://xmlns.com/foaf/0.1/Agent,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasExpSpecs,Object Property,,,Experiment,ExpSpecs,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasProvenance,Object Property,,,Experiment,Provenance,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasModification,Object Property,,,Provenance,Modification,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-createdBy,Object Property,,,Provenance,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-modifiedBy,Object Property,,,Modification,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasIgnitionType,Object Property,,,ExpSpecs,IgnitionType,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasTimeShift,Object Property,,,ExpSpecs,TimeShift,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasKind,Object Property,,,Apparatus,Kind,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasMode,Object Property,,,Apparatus,Mode,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDimensionalQuantity,Object Property,,,Apparatus,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUncertainty,Object Property,,,DimensionalQuantity,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasComponent,Object Property,,,InitialComposition,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasComponent,Object Property,,,Acceptor,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasComponent,Object Property,,,Donor,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSpeciesLink,Object Property,,,Composition,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSpeciesLink,Object Property,,,Concentration,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDerivedProperty,Object Property,,,DimensionalQuantity,DerivedProperty,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDimensionalQuantity,Object Property,,,CommonProperties,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDimensionalQuantity,Object Property,,,DataGroup,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataPoint,Object Property,,,DataGroup,DataPoint,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataPointX,Object Property,,,DataPoint,X,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-refersTo,Object Property,,,X,DimensionalQuantity,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasFeature,Object Property,,,DerivedProperty,Feature,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasIndicator,Object Property,,,Feature,Indicator,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasObservable,Object Property,,,Feature,Observable,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasPropertyLink,Object Property,,,Indicator,PropertyLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataAttributeLink,Object Property,,,Indicator,DataAttributeLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataGroupLink,Object Property,,,DataGroup,DataGroupLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUncertainty,Object Property,,,X,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasMIME,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasItemType,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDescription,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatPreferredKey,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDOI,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasLabel,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataPointForm,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasLabel,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUnits,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDescription,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasSourceType,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDerivedPropertyExists,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatPreferredKey,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
-http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
-hasUnits,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasBound,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatKind,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasTransformation,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasType,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,DataPoint,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDescription,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasLabel,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasName,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUnits,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,Feature,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasType,Data Property,,,Feature,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasTransformation,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasVariableID,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasVariableID,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasPropertyID,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataGroupID,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasID,Data Property,,,DataAttributeLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataGroupID,Data Property,,,DataGroupLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataPointID,Data Property,,,DataGroupLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasExpType,Data Property,,,ExpSpecs,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDataSource,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasPatent,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-createdAt,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-modifiedAt,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasModificationDetails,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatTarget,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatType,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatAmount,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasUnits,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatTarget,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatType,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasDatAmount,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Kind,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Mode,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Copyright,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Component,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,DataAttributeLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-hasValue,Data Property,,,X,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl
-http://purl.org/ontology/bibo/volume,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/ontology/bibo/pageStart,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/ontology/bibo/pageEnd,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/dc/terms/publisher,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,String,,,http://purl.org/dc/terms
-http://purl.org/dc/terms/title,Data Property,,,BibliographyLink UNION http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/dc/terms
-http://purl.org/ontology/bibo/issn,Data Property,,,http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/ontology/bibo
-http://xmlns.com/foaf/0.1/familyName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/givenName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/name,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoChemExp,TBox,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoChemExp,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoChemExp,TBox,OntoChemExp is an ontology developed for representing chemical experiments.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoChemExp,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Experiment,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Copyright,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+BibliographyLink,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Reference,EQUIVALENT-TO,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Apparatus,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+CommonProperties,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DataGroup,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+AdditionalDataItem,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+ExpSpecs,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Provenance,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Modification,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+IgnitionType,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+TimeShift,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Kind,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Mode,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DimensionalQuantity,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Velocity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+SootYield,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+MassBurningRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Mass,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+SpecificSurfaceArea,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Material,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Fraction,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Voltage,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Temperature,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Length,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Pressure,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Density,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Volume,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+FlowRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Time,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+VolumetricFlowRate,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+ResidenceTime,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+LaminarBurningVelocity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Distance,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+InitialComposition,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+IgnitionDelay,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Composition,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Concentration,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+EquivalenceRatio,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+TemperatureInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+PressureInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+VolumetricFlowRateInReferenceState,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+ReactorLength,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Diameter,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+JunctionArchitecture,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DonorConstructionType,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Acceptor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Donor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+HomoEnergy,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+LumoEnergy,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+HomoLumoEnergyGap,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+OpticalEnergyGap,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+OpenCircuitPotential,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+ShortCircuitCurrentDensity,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+PowerConversionEfficiency,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+FillFactor,Class,DimensionalQuantity,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DataPoint,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X1,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X2,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X3,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X4,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X5,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X6,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X7,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X8,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X9,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X10,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+X11,Class,X,IS-A,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Component,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Uncertainty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+SpeciesLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DerivedProperty,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Amount,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Feature,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Indicator,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+Observable,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+PropertyLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DataAttributeLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+DataGroupLink,Class,,,,,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/Person,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/Organization,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1,
+http://purl.org/ontology/bibo/Journal,Class,,,,,,Describes the title and ISSN of a journal.,http://purl.org/ontology/bibo,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Class,,,,,,"Specification of a publication for describing its author(s), title, year of publication, journal or conference, publisher, etc.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a journal describing the page number and volume.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#ProceedingsSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a conference.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PreprintSpecification,Class,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,IS-A,,,,Specification of a preprint.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#specifies,Object Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasPublicationSpecification,Object Property,,,BibliographyLink,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,only,"A relation between a reference and a publication specification that can be a journal specification, a proceedings specification or a preprint specification.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://purl.org/dc/terms/contributor,Object Property,,,BibliographyLink,http://xmlns.com/foaf/0.1/Agent,only,,http://purl.org/dc/terms/contributor,
+hasApparatus,Object Property,,,Experiment,Apparatus,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasAdditionalDataItem,Object Property,,,Experiment,AdditionalDataItem,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasCommonProperties,Object Property,,,Experiment,CommonProperties,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasCopyright,Object Property,,,Experiment,Copyright,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasBibliographyLink,Object Property,,,Experiment,BibliographyLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataGroup,Object Property,,,Experiment,DataGroup,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasPerformer,Object Property,,,Experiment,http://xmlns.com/foaf/0.1/Agent,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasExpSpecs,Object Property,,,Experiment,ExpSpecs,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasProvenance,Object Property,,,Experiment,Provenance,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasModification,Object Property,,,Provenance,Modification,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+createdBy,Object Property,,,Provenance,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+modifiedBy,Object Property,,,Modification,http://xmlns.com/foaf/0.1/Agent,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasIgnitionType,Object Property,,,ExpSpecs,IgnitionType,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasTimeShift,Object Property,,,ExpSpecs,TimeShift,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasKind,Object Property,,,Apparatus,Kind,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasMode,Object Property,,,Apparatus,Mode,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDimensionalQuantity,Object Property,,,Apparatus,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUncertainty,Object Property,,,DimensionalQuantity,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasComponent,Object Property,,,InitialComposition,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasComponent,Object Property,,,Acceptor,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasComponent,Object Property,,,Donor,Component,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasSpeciesLink,Object Property,,,Composition,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasSpeciesLink,Object Property,,,Concentration,SpeciesLink,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDerivedProperty,Object Property,,,DimensionalQuantity,DerivedProperty,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDimensionalQuantity,Object Property,,,CommonProperties,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDimensionalQuantity,Object Property,,,DataGroup,DimensionalQuantity,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataPoint,Object Property,,,DataGroup,DataPoint,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataPointX,Object Property,,,DataPoint,X,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+refersTo,Object Property,,,X,DimensionalQuantity,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasSpeciesLink,Object Property,,,Component,SpeciesLink,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasAmount,Object Property,,,Component,Amount,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUncertainty,Object Property,,,Component,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUniqueSpecies,Object Property,,,SpeciesLink,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species,maximum 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasFeature,Object Property,,,DerivedProperty,Feature,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasIndicator,Object Property,,,Feature,Indicator,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasObservable,Object Property,,,Feature,Observable,exactly 1,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasPropertyLink,Object Property,,,Indicator,PropertyLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataAttributeLink,Object Property,,,Indicator,DataAttributeLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataGroupLink,Object Property,,,DataGroup,DataGroupLink,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUncertainty,Object Property,,,X,Uncertainty,only,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasMIME,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasItemType,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDescription,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatPreferredKey,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDOI,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasLabel,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataPointForm,Data Property,,,DataGroup,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasLabel,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUnits,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDescription,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasSourceType,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDerivedPropertyExists,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatPreferredKey,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#casRegistryID,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#inChI,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,
+http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#SMILES,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl,
+hasUnits,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasBound,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatKind,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasTransformation,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasType,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,DataPoint,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDescription,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasLabel,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasName,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUnits,Data Property,,,DerivedProperty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,Feature,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasType,Data Property,,,Feature,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasTransformation,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasVariableID,Data Property,,,Indicator,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasVariableID,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasPropertyID,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataGroupID,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasID,Data Property,,,DataAttributeLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataGroupID,Data Property,,,DataGroupLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataPointID,Data Property,,,DataGroupLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasExpType,Data Property,,,ExpSpecs,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDataSource,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasPatent,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+createdAt,Data Property,,,Provenance,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+modifiedAt,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasModificationDetails,Data Property,,,Modification,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatTarget,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatType,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatAmount,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasUnits,Data Property,,,IgnitionType,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatTarget,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatType,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasDatAmount,Data Property,,,TimeShift,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Kind,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Mode,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,DimensionalQuantity,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Uncertainty,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Amount,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,AdditionalDataItem,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,BibliographyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Copyright,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Component,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,SpeciesLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,PropertyLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,DataAttributeLink,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,Observable,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+hasValue,Data Property,,,X,String,,,http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl,
+http://purl.org/ontology/bibo/volume,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#JournalSpecification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/ontology/bibo/pageStart,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/ontology/bibo/pageEnd,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/dc/terms/publisher,Data Property,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#PublicationSpecification,String,,,http://purl.org/dc/terms,
+http://purl.org/dc/terms/title,Data Property,,,BibliographyLink UNION http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/dc/terms,
+http://purl.org/ontology/bibo/issn,Data Property,,,http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/ontology/bibo,
+http://xmlns.com/foaf/0.1/familyName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/givenName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/name,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,

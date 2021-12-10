@@ -14,7 +14,7 @@ credentials/
 
 repo_username.txt should contain your github username, and repo_password.txt your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in `WeatherAgent/src/main/resources/credentials.properties`. User and password for Blazegraph can be left empty if not required.
+Next, you'll need to specify the urls/credentials for the Blazegraph and PostgreSQL for this agent to use in a file at `WeatherAgent/src/main/resources/credentials.properties`. The template file in the same directory, `credentials.properties.template`, can be used as a starting point. User and password for Blazegraph can be left empty if not required.
 
 Weather data are obtained from https://openweathermap.org/api. You will need an API key to use this agent and specify it in the `credentials.properties` file under `apikey`.
 
