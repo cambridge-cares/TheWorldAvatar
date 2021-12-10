@@ -46,4 +46,4 @@ def upload_file(
                                 headers= headers,
                                 files= {'file': file_obj})
         response.raise_for_status()
-    return response.headers['file']
+    return response.headers.pop('file', url)
