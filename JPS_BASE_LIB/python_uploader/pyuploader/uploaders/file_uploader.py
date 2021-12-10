@@ -1,6 +1,6 @@
 from pyuploader.uploaders.uploader import Uploader
 import requests
-from typing import Tuple, Union
+from typing import Tuple, Optional
 
 FS_URL_ENV_VAR_VALUE = 'KG_FILE_SERVER_SPECS'
 FS_AUTH_ENV_VAR_VALUE = 'KG_FILE_SERVER_SECRETS'
@@ -8,8 +8,8 @@ FS_AUTH_ENV_VAR_VALUE = 'KG_FILE_SERVER_SECRETS'
 def get_file_server_uploader(
         uploader_name: str = 'file server',
         supported_file_ext: str='all',
-        default_url: Union[str,None] = None,
-        default_auth_file: Union[str, None] = None,
+        default_url: Optional[str] = None,
+        default_auth_file: Optional[str] = None,
         default_no_auth: bool = False
         ) -> Uploader:
 
@@ -31,7 +31,7 @@ def upload_file(
     url: str,
     auth: Tuple[str,str],
     file_path: str,
-    subdirs: Union[str, None]=None,
+    subdirs: Optional[str]=None,
     *args,
     **kwargs) -> str:
 
