@@ -8,6 +8,7 @@ VENV_NAME='pyuploader_venv'
 VENV_DIR=$SPATH
 DEV_INSTALL=''
 PROJ_NAME='pyuploader'
+DONT_PROMPT='n'
 
 function usage {
     echo "==============================================================================================================="
@@ -18,6 +19,7 @@ function usage {
     echo " Usage:"
     echo "  -v [-n VENV_NAME -d VENV_DIR -i -e]"
     echo "  -i [-n VENV_NAME -d VENV_DIR -e]"
+    echo "  -s"
     echo "  -h"
     echo ""
     echo "Options"
@@ -32,6 +34,7 @@ function usage {
     echo "                    the package to."
     echo "                    If used with the -i flag - directory of the environment to install the package to."
 	echo "  -e              : Enables developer mode installation."
+    echo "  -s              : Silent installation, wont prompt for a user input."
 	echo "  -h              : Print this usage message."
     echo ""
 	echo "Example usage:"
@@ -123,6 +126,7 @@ case $key in
 	-d) VENV_DIR=$2; shift 2;;
     -i) INSTALL_PROJ='y'; shift;;
 	-e) DEV_INSTALL='-e'; shift;;
+    -s) DONT_PROMPT='-y'; shift;;
     *)
 	# otherwise print the usage
     usage
@@ -141,4 +145,7 @@ then
 fi
 
 echo
-read -n 1 -s -r -p "Press any key to continue"
+if [[ "${DONT_PROMPT}" != "-y" ]];
+then
+    read -n 1 -s -r -p "Press any key to continue"
+fi
