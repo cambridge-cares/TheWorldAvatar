@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyuploader',
-    version='1.0.2',
+    version='1.0.7',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
