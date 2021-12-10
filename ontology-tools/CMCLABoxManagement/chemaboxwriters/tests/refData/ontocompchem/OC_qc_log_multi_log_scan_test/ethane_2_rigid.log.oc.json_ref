@@ -92,7 +92,7 @@
     "Program version": "2009+D.01",
     "Run date": "Wed Jun 16 17:39:25 2021",
     "Log file name": "ethane_2_rigid.log",
-    "SpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/s00002784.owl/Species_7257944035703500",
+    "SpeciesIRI": "test_species_iri",
     "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
     "EntryUUID": "testID-111-111-111"
 }

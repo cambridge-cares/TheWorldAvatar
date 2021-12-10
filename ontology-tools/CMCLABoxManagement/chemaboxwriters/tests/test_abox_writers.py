@@ -2,7 +2,6 @@ from chemaboxwriters.ontocompchem.writeabox import write_abox as write_oc_abox
 from chemaboxwriters.ontospecies.writeabox import write_abox as write_os_abox
 from chemaboxwriters.ontopesscan.writeabox import write_abox as write_ops_abox
 from chemaboxwriters.ontomops.writeabox import write_abox as write_om_abox
-from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.commonfunc import get_file_ext, get_inStage
 from chemutils.ioutils.ioutils import readFile, fileExists
 import pytest
@@ -17,6 +16,7 @@ OCOMPCHEM_REF_DIR = os.path.join(THIS_DIR,'refData','ontocompchem')
 OSPECIES_REF_DIR = os.path.join(THIS_DIR,'refData','ontospecies')
 OPSSCAN_REF_DIR = os.path.join(THIS_DIR,'refData','ontopesscan')
 OMOPS_REF_DIR = os.path.join(THIS_DIR,'refData','ontomops')
+
 
 def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
 
@@ -83,7 +83,7 @@ def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
 ]
 )
 def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, clean_tests, regenerateAllResults=False):
+           regenerateResult, clean_tests, mocker, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -93,6 +93,9 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
         'QC_JSON_TO_OC_JSON':{'random_id':'testID-111-111-111'}}
+    mocker.patch("chemaboxwriters.ontocompchem.jsonwriter.get_species_iri",
+                 return_value='test_species_iri')
+
     pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 
     fileExts = ['.oc.json', '.oc.csv']
@@ -171,7 +174,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                  'random_id': 'OPStestID-111-111-11'
                 }
             }
-    
+
     elif 'dihedral' in inp_file_or_dir:
         OPS_handlerFuncKwargs= {
         'OC_JSON_TO_OPS_JSON':
