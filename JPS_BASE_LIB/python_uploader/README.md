@@ -34,6 +34,10 @@ To install the `pyuploader` simply run the following command:
 (<venv_name>) $ pip install pyuploader
 ```
 
+# File server and triple store API requirements #
+
+In order to use the `pyuploader` tool for uploading files into the file server and triples into the triple store, both endpoints must accept the standard post requests. In case of the file server, if one wishes the `--subdirs` option to work, the request header must contain the following key value pair: `{'subDir': subdirs}` and the extra logic on how to handle this option needs to be provided on the server side. The `pyuploader` also expects the file server to return the uploaded file url in the server response `header['file']`. If that is missing, the `pyuploader` would simply return the server url.
+
 # Command line interface usage #
 
 ## File uploader CLI
@@ -157,7 +161,7 @@ $ ts_upload my_directory --file-ext="owl" --dry-run
 Apart from using `pyuploader` via its command line interface it is also possible to use it as a python module. The recommended way is to add the following import statement in your code:
 
 ```python
-from pyuploader.uploaders.uploader_factory import get_uploader
+from pyuploader import get_uploader
 ```
 
 The `get_uploader` is a factory function for creating file or triple store uploaders. The function's signature is as follows:
@@ -166,10 +170,10 @@ The `get_uploader` is a factory function for creating file or triple store uploa
 #------------------------------------------------
 # SIGNATURE
 def get_uploader(
-    uploader_type: str,                        # pass either "fs_uploader" or "ts_uploader" string
-    default_url: Union[str,None] = None,       # optional
-    default_auth_file: Union[str,None] = None, # optional
-    default_no_auth: bool = False              # optional
+    uploader_type: str,                      # pass either "fs_uploader" or "ts_uploader" string
+    default_url: Optional[str] = None,       # optional
+    default_auth_file: Optional[str] = None, # optional
+    default_no_auth: bool = False            # optional
     ) -> Uploader:
 
     ...
@@ -202,13 +206,15 @@ uploaded_locations = uploader.upload(
     subdirs=subdirs,                   # only used in the file uploader
     dry_run=dry_run
     )
-# in case of the file uploader, the "uploaded_locations"
-# return value will be a dictionary containing
-# {file_path: file_url} key - value pairs.
-
-# in case of the triple store uploader, the "uploaded_locations"
-# return value will be a dictionary containing
-# {file_path: triple_store_upload_endpoint} key - value pairs.
+# where the "uploaded_locations" return value will contain:
+# - file uploader case
+#    *  {file_path: file_url} key - value pairs
+#       if file server supports it
+#    *  {file_path: server_url} key - value pairs
+#       if file server does not support it
+#
+# - triple store uploader case
+#    *  {file_path: triple_store_upload_endpoint} key - value pairs.
 ```
 
 # Authors #
