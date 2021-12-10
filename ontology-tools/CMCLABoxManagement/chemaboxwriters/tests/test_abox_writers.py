@@ -17,6 +17,10 @@ OSPECIES_REF_DIR = os.path.join(THIS_DIR,'refData','ontospecies')
 OPSSCAN_REF_DIR = os.path.join(THIS_DIR,'refData','ontopesscan')
 OMOPS_REF_DIR = os.path.join(THIS_DIR,'refData','ontomops')
 
+class DummyPubchemComp:
+    def __init__(self,cid,synonyms):
+        self.cid=cid
+        self.synonyms=synonyms
 
 def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
 
@@ -120,7 +124,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 ]
 )
 def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
-           regenerateResult, clean_tests, regenerateAllResults=False):
+           regenerateResult, clean_tests, mocker, regenerateAllResults=False):
     print('========================================================')
     print('TEST INPUT FILE: ', inp_file_or_dir)
     print('TEST INPUT FILE TYPE: ', inp_file_type)
@@ -130,6 +134,9 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR,inp_file_or_dir)
     handlerFuncKwargs={
         'QC_JSON_TO_OS_JSON':{'random_id':'testID-111-111-111'}}
+
+    mocker.patch("chemaboxwriters.ontospecies.jsonwriter.pcp.get_compounds",
+                 return_value=[DummyPubchemComp(cid=1111, synonyms=['1111-11-1'])])
 
     pipeline = write_os_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
 

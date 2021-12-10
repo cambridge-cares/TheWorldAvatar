@@ -23,9 +23,9 @@
     "Formal charge": 0,
     "GeometryString": "O 0.0 0.0 0.1065 H 0.0 0.0 -0.852",
     "BondString": "2 1 1",
-    "PubchemAlternativeLabel": "water",
-    "CAS": "7732-18-5",
-    "PubchemCID": 962,
+    "PubchemAlternativeLabel": "1111-11-1",
+    "CAS": "1111-11-1",
+    "PubchemCID": 1111,
     "AtomsList": [
         "O",
         "H"
