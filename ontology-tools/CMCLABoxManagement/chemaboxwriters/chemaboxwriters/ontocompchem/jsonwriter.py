@@ -19,10 +19,12 @@ def oc_jsonwriter(data, random_id="", spec_IRI=""):
         random_id = get_random_id()
 
     # at the moment we only support gaussian
-    if 'Gaussian' not in data[PROGRAM_NAME]:
-        pass
-    else:
-        jobType = 'G'+data[PROGRAM_VERSION][2:4]
+    jobType=''
+    if 'Gaussian' in data[PROGRAM_NAME]:
+        if PROGRAM_VERSION in data:
+            jobType = 'G'+data[PROGRAM_VERSION][2:4]
+        else:
+            jobType = 'Gxx'
     data[commonv.SPECIES_IRI] = spec_IRI
     data[commonv.ENTRY_IRI] = comp_pref+jobType+'_'+random_id
     data[commonv.ENTRY_UUID] = random_id
