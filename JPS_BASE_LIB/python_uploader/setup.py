@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='pyuploader',
-    version='1.0.0',
+    version='1.0.2',
     author='Daniel Nurkowski',
     author_email='danieln@cmclinnovations.com',
     license='MIT',
@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=('tests')),
-    install_requires= ['py4jps','docopt','requests'],
+    install_requires= ['py4jps>=1.0.6, <=1.0.14','docopt','requests'],
     include_package_data= True,
     entry_points={
         'console_scripts': [
