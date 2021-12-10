@@ -8,6 +8,8 @@ dist/
 coverage.xml
 resources/
 .coverage
+.eggs
+.pytest*
 *.gv
 *.png
 assets/
