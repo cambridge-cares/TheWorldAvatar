@@ -1,5 +1,6 @@
 from chemaboxwriters.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from chemaboxwriters.kgoperations.querykg import querykg
+from py4j.java_gateway import Py4JJavaError
 
 def spec_inchi_query(inchi_string):
     query = """
@@ -19,14 +20,18 @@ def spec_inchi_query(inchi_string):
 def get_species_iri(inchi):
     #Query OntoSpecies to find Species IRI that corresponds to a given InChI.
     target = None
-    results  = querykg(SPARQL_ENDPOINTS['ontospecies'], spec_inchi_query(inchi)) #query_endpoint(endpoint, spec_inchi_query(inchi))
+    results = []
+    try:
+        results  = querykg(SPARQL_ENDPOINTS['ontospecies'], spec_inchi_query(inchi)) #query_endpoint(endpoint, spec_inchi_query(inchi))
+    except Py4JJavaError:
+        print("Warning: get_species_iri query failed.")
     if results:
         if 'speciesIRI' in results[0].keys():
             target = results[0]['speciesIRI']
     return target
 
 def get_assemblyModel(modularity, planarity, gbu_number, symmetry):
-    #queries the assembly model of a particular MOP. 
+    #queries the assembly model of a particular MOP.
     queryStr = """
     PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
 	PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -35,16 +40,16 @@ def get_assemblyModel(modularity, planarity, gbu_number, symmetry):
 	PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
     SELECT ?AssemblyModel ?NumberValue ?Planarity ?Modularity ?Symmetry
     WHERE
-    {   
+    {
     ?mopIRI OntoMOPs:hasMOPFormula ?MOPFormula .
     ?mopIRI OntoMOPs:hasProvenance ?Provenance .
-    ?Provenance OntoMOPs:hasReferenceDOI ?MOPReference . 
+    ?Provenance OntoMOPs:hasReferenceDOI ?MOPReference .
     ?mopIRI OntoMOPs:hasAssemblyModel ?AssemblyModel .
     ?AssemblyModel OntoMOPs:hasSymmetryPointGroup ?Symmetry .
     ?AssemblyModel OntoMOPs:hasGenericBuildingUnitNumber ?GBUNumber .
     ?GBUNumber OntoMOPs:isNumberOf ?GBU .
     ?GBU OntoMOPs:hasPlanarity ?Planarity .
-    ?GBU OntoMOPs:hasModularity ?Modularity . 
+    ?GBU OntoMOPs:hasModularity ?Modularity .
 	?GBUNumber OntoSpecies:value ?NumberValue .
     FILTER ((?Modularity) = "#MODULARITY") .
     FILTER ((?Planarity) = "#PLANARITY") .
