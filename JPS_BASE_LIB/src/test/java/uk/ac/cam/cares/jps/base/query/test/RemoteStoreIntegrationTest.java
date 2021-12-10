@@ -28,7 +28,7 @@ public class RemoteStoreIntegrationTest {
 												 .withExposedPorts(9999);
 	
 	@Test
-	public void testUploadRDFFile() throws URISyntaxException {
+	public void testUploadFile() throws URISyntaxException {
 		// start containers
 		blazegraph.start();
 		
@@ -42,7 +42,7 @@ public class RemoteStoreIntegrationTest {
 		// upload the file testOWL.owl to the test container
 		String filepath = new URI(getClass().getClassLoader().getResource(Paths.get("KBClientTest","testOWL.owl").toString()).toString()).getPath();
 		File testOwl = new File(filepath);
-		storeClient.uploadFileToBlazegraph(testOwl);
+		storeClient.uploadFile(testOwl);
 		
 		// construct a simple query to check that triples have been uploaded
 		SelectQuery query = Queries.SELECT();

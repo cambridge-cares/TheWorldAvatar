@@ -800,13 +800,15 @@ public class RemoteStoreClient implements StoreClientInterface {
     }
 
     /**
-     * upload a file to a Blazegraph using its REST API
-     * check Blazegraph's documentation for the supported file types
-     * Accepted extensions: rdf, rdfs, ow, xml, nt, ntx, ttl, ttlx, n3, trix, trig, nq, rsj, json
+     * upload a file to the endpoint using its REST API
+     * only tested the xml format with Blazegraph and RDF4j, this may vary between stores
+     * the update endpoint for rdf4j is <BASE_HTTP_URL>/rdf4j-server/repositories/<REPOSITORY_NAME>/statements
+     * The query and update endpoints for Blazegraph are the same
+     * Accepted extensions: rdf, rdfs, owl, xml, nt, ntx, ttl, ttlx, n3, trix, trig, nq, rsj, json
      *
      * @param file
      */
-    public void uploadFileToBlazegraph(File file) {
+    public void uploadFile(File file) {
     	if (!file.exists()) {
     		throw new JPSRuntimeException("Provided file does not exist " + file.getAbsolutePath());
     	}
@@ -883,7 +885,7 @@ public class RemoteStoreClient implements StoreClientInterface {
         try {
             CloseableHttpResponse response = httpclient.execute(postRequest);
 
-            if (response.getStatusLine().getStatusCode() != 200) {
+            if (response.getStatusLine().getStatusCode() < 200 || response.getStatusLine().getStatusCode() > 300) {
                 throw new JPSRuntimeException("Upload RDF file failed. Response status code =" + response.getStatusLine().getStatusCode());
             }
         } catch (IOException ex) {
