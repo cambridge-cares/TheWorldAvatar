@@ -17,10 +17,14 @@ def api():
             raise Exception("invalid request")
         config = request.args["config"]
         # Run the agent
+    except Exception as ex:
+        print(ex)
+        return jsonify({'errormsg': 'Invalid request\n'+traceback.format_exc()}), 400
+
+    try:
         ontomatch.coordinator.Agent().start(config)
         return jsonify({"result": {"done":True}})
 
     except Exception as ex:
         print(ex)
-        return jsonify({'errormsg': 'Invalid request'}), 500
-
+        return jsonify({'errormsg': 'Agent fails\n'+traceback.format_exc()}), 500

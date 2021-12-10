@@ -13,11 +13,15 @@ def client():
 def test_enrichment_api_empty(client):
     """Test empty query."""
     rv = client.post('/api/enrichment')
-    rv = json.loads(rv.data)
-    assert rv["status"] == "500"
+    assert rv.status == "400 BAD REQUEST"
+
+
+'''
+Tests need to be run from /flaskapp instead of /faskapp/tests
+due to relative path issues
+'''
 
 def test_enrichment_api(client):
-    """Test empty query."""
     rv = client.post('/api/enrichment', query_string =dict(
         addr="../data/power_plant_DEU/kwl.ttl",
         add_knowledge="ontomatch.knowledge.geocoding"

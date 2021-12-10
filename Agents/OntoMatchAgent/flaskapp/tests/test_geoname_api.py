@@ -14,4 +14,4 @@ def test_geonames_api_empty(client):
     """Test empty query."""
     rv = client.post('/api/geonames/query')
     rv = json.loads(rv.data)
-    assert rv["status"] == "500"
+    assert rv.status == "400 BAD REQUEST"

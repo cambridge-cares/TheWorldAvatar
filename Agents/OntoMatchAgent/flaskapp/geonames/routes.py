@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify, make_response
 
 import ontomatch
+import flaskapp.parameterVerifier.verifier as verifier
 
 geonames_bp = Blueprint(
     'geonames_bp', __name__
@@ -19,8 +20,7 @@ def api():
             raise Exception
         country = request.args['country']
         name = request.args['name']
-        checkCountry(country)
-        checkName(name)
+        verifier.verifyChoice(country, ["germany","unitedkingdom"])
 
         # Run the agent
         agent = ontomatch.knowledge.geoNames.Agent(country)
@@ -33,11 +33,3 @@ def api():
     except Exception as ex:
         print(ex)
         return jsonify({'errormsg': 'Invalid request'}), 500
-
-def checkCountry(c):
-    if c.lower() is not 'germany' and c.lower is not 'unitedkingdom':
-        raise Exception
-
-def checkName(n):
-    if n is '':
-        raise Exception

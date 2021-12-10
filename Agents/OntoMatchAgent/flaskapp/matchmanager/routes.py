@@ -2,6 +2,7 @@ import traceback
 
 from flask import Blueprint, request, jsonify, make_response
 import ontomatch.matchManager
+import flaskapp.parameterVerifier.verifier as verifier
 
 matchmanager_bp = Blueprint(
     'matchmanager_bp', __name__
@@ -19,11 +20,14 @@ def api():
         src_graph_handle = request.args['src_graph_handle']
         tgt_graph_handle = request.args['tgt_graph_handle']
         choice = request.args["choice"]
-        checkAddr(config_handle)
-        checkAddr(src_graph_handle)
-        checkAddr(tgt_graph_handle)
-        agent = checkChoice(choice)
-
+        verifier.verifyRelativePathExists(src_graph_handle)
+        verifier.verifyRelativePathExists(tgt_graph_handle)
+        verifier.verifyChoice(choice, ["scoring_weight","classifier","autocalibration"])
+        agent = agentChoice(choice)
+    except Exception as ex:
+        print(ex)
+        return jsonify({'errormsg': 'Invalid request\n'+traceback.format_exc()}), 400
+    try:
         # Run the agent
         agent.start(config_handle, src_graph_handle, tgt_graph_handle)
 
@@ -31,15 +35,9 @@ def api():
 
     except Exception as ex:
         print(ex)
-        return jsonify({'errormsg': 'Invalid request'}), 500
+        return jsonify({'errormsg': 'Agent fails'}), 500
 
-def checkAddr(filePath):
-    #TODO: handle relative path
-    #if not os.path.exists(filePath):
-    #    raise Exception("invalid parameter addr")
-    pass
-
-def checkChoice(n):
+def agentChoice(n):
     n = n.lower()
     print(n)
     if n =="default":

@@ -11,7 +11,21 @@ def client():
     with app.test_client() as client:
         yield client
 
-def test_blackboard_post(client):
+def test_blackboard_get_empty(client):
+    """Test empty query."""
+    rv = client.get('/api/blackboard')
+    re = json.loads(rv.data)
+    assert rv.status == "400 BAD REQUEST"
+
+def test_blackboard_post_missing_params(client):
+    """Test empty query."""
+    addr = "test_write.json"
+
+    rv = client.post('/api/blackboard', query_string=dict(
+    addr=addr))
+    assert rv.status == "400 BAD REQUEST"
+
+def test_blackboard_post_get(client):
     """Test post."""
     data = {"test":True}
     serialized_object = json.dumps(data)
@@ -23,11 +37,7 @@ def test_blackboard_post(client):
     assert rv.status == "200 OK"
     rd = json.loads(rv.data)
     print(rd)
-
-def test_blackboard_get(client):
-    """Test post."""
-    handle = "test_write.json_1638437707.050257"
-
+    handle = rd["result"]["handle"]
     rv = client.get('/api/blackboard', query_string=dict(handle=handle))
     assert rv.status == "200 OK"
     rd = json.loads(rv.data)

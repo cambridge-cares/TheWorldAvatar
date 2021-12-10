@@ -3,7 +3,7 @@ import traceback
 from flask import Blueprint, request, jsonify, make_response
 import os
 import ontomatch.knowledge.enrichment
-
+import flaskapp.parameterVerifier.verifier as verifier
 enrichment_bp = Blueprint(
     'enrichment_bp', __name__
 )
@@ -11,7 +11,6 @@ enrichment_bp = Blueprint(
 # Define a route for API requests
 @enrichment_bp.route('/api/enrichment', methods=['POST'])
 def api():
-    # TODO: Check arguments validity(query parameters)
 
     try:
         # Check parameters
@@ -19,32 +18,22 @@ def api():
             raise Exception("invalid request")
         addr = request.args['addr']
         add_knowledge = request.args['add_knowledge']
-        checkAddr(addr)
-        add_knowledge = check_add_knowledge(add_knowledge)
 
+        verifier.verifyRelativePathExists(addr)
+        verifier.verifyChoice(add_knowledge, ["False","ontomatch.knowledge.geocoding"])
+    except Exception as ex:
+        print(ex)
+        return jsonify({'errormsg': 'Invalid request'}), 400
+
+    try:
         # Run the agent
         enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=False)
         response = {}
         response["enriched"] = enriched
         response["handle"] = handle
         return jsonify({"result": response})
-
     except Exception as ex:
         print(ex)
-        return jsonify({'errormsg': 'Invalid request'}), 500
+        return jsonify({'errormsg': 'Agent could not run.'}), 500
 
-def checkAddr(filePath):
-    #TODO: handle relative path
-    #if not os.path.exists(filePath):
-    #    raise Exception("invalid parameter addr")
-    pass
 
-def check_add_knowledge(n):
-    n = n.lower()
-    print(n)
-    if n =="false":
-        return False
-    elif n == "true" or n == "ontomatch.knowledge.geocoding":
-        return "ontomatch.knowledge.geocoding"
-    else:
-        raise Exception("invalid parameter add_knowledge.")
