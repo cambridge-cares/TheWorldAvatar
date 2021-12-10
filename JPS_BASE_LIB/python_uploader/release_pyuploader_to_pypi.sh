@@ -12,6 +12,7 @@ TEST_PYPI="https://test.pypi.org/legacy/"
 DEP_FILE='dev_requirements.txt'
 STEP_NR=1
 NEXT_VERSION=''
+PYPI_WAIT_TIME_SEC=300
 
 usage() {
     echo "==============================================================================================================="
@@ -39,9 +40,9 @@ main() {
     install_and_test_package
     build_package_for_release
     release_package_to_pypi test-pypi
-    test_package_release test-pypi
+    test_package_release test-pypi $PYPI_WAIT_TIME_SEC
     release_package_to_pypi main-pypi
-    test_package_release main-pypi
+    test_package_release main-pypi $PYPI_WAIT_TIME_SEC
     read -n 1 -s -r -p "Press any key to continue"
 }
 
@@ -67,7 +68,7 @@ install_and_test_package() {
     clean_package_repository
     sleep .5
 
-    $SPATH/install_script_pip.sh -v -i -e -n $VENV_NAME -d $SPATH
+    $SPATH/install_script_pip.sh -v -i -e -n $VENV_NAME -d $SPATH -s
 
     if [ -d "$SPATH/$VENV_NAME/bin/pip3" ]; then
         PYTHON_EXEC=$SPATH/$VENV_NAME/bin/python
@@ -167,33 +168,42 @@ test_package_release() {
         PYTHON_EXEC=$SPATH/../$TEST_VENV_NAME/Scripts/python
     fi
 
-    echo "Waiting 2 minutes for the $1 to update its package index"
-    sleep 24
-    echo -ne '####                      (20%)\r'
-    sleep 24
-    echo -ne '########                  (40%)\r'
-    sleep 24
-    echo -ne '############              (60%)\r'
-    sleep 24
-    echo -ne '################          (80%)\r'
-    sleep 24
-    echo -ne '####################      (100%)\r'
-    echo -ne '\n'
+    echo "Waiting $2 second(s) for the $1 to update its package index"
+    wait_n_seconds $2
 
     $PYTHON_EXEC -m pip install --upgrade pip
     if [ $1 = "test-pypi" ]; then
-        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple $PROJECT_NAME
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple "$PROJECT_NAME==$NEXT_VERSION"
     else
-        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade $PROJECT_NAME
+        $PYTHON_EXEC -m pip install --no-cache-dir --upgrade "$PROJECT_NAME==$NEXT_VERSION"
     fi
     $PYTHON_EXEC -m pip install -r $SPATH/dev_requirements.txt
 
     run_package_tests $PYTHON_EXEC
 
     echo "Removing test venv."
+    echo "Waiting 20 second(s) before the test venv removal"
+    wait_n_seconds 20
     rm -rf $SPATH/../$TEST_VENV_NAME
 
     STEP_NR=$((STEP_NR+1))
+}
+
+wait_n_seconds() {
+    steps=20
+    sleeptime_sec=$1
+    sleeptime_sec_step=$((sleeptime_sec/$steps))
+    echo -ne "(0%)\r"
+    for step in `seq $steps`
+        do
+            sleep $sleeptime_sec_step
+            progress_prec=$((100/$steps*$step))
+            progress="($progress_prec%)   "
+            for a in `seq 1`;do progress_bar=$progress_bar$(echo -ne \#); done
+            progress=$progress$progress_bar"\r"
+            echo -ne $progress
+        done
+    echo -ne '\n'
 }
 
 # Scan command-line arguments
