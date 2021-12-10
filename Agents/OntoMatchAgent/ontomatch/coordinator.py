@@ -119,7 +119,7 @@ class Agent():
     def __call_matching_agent_http(self, choice, params):
         try:
             params['choice'] = choice
-            data = httpcaller.caller().callAgent("matcher", params)
+            data = httpcaller.caller().callAgent("matchmanager", params)
         except Exception as e:
             raise Exception
 
