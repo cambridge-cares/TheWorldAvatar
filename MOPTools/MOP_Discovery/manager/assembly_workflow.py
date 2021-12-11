@@ -10,6 +10,7 @@ from assembler.assembler import searchRadius
 import os
 
 def workflow():
+    """Runs the 3 main function of the program: KG overview, Set Operations and Assembler"""
     output_kgoverview = kgoverview()
     lib_manager(output_kgoverview) 
     search_analytics = searchRadius(output_kgoverview[0], output_kgoverview[2])

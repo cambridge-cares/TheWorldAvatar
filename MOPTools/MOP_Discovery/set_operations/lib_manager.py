@@ -10,7 +10,7 @@ from set_operations.lib2_creation import lib2_creation
 from set_operations.lib2_creation import add_unchanged_files
 
 def lib_manager(output_kgoverview):
-    """The Lib Manager prepares cbu libraries associated with gbus of particular assembly model."""
+    """Prepares files with CBUs sorted by GBUs belonging to Assembly Models."""
     lib1_Creation(output_kgoverview[0]) 
     cbuoverlap(output_kgoverview[1])
     lib2_creation(output_kgoverview[1])

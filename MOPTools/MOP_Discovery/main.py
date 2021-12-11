@@ -7,10 +7,13 @@ Created on Dec 1, 2021
 from manager.assembly_workflow import workflow
 import datetime
 import os
+import shutil
 
 def start():
+    FOLDER_NAME = 'mops_output'
     mops_output()
     workflow()
+    shutil.rmtree(FOLDER_NAME+'\\temp')
 
 def mops_output():
     FOLDER_NAME = 'mops_output'
@@ -19,13 +22,12 @@ def mops_output():
                    " or delete it if you want to regenerate the output.\nOtherwise I am not doing anything. Exiting now.")
         return
     os.mkdir(FOLDER_NAME)
-    os.mkdir(FOLDER_NAME+'\\2_mops_lib1')
-    os.mkdir(FOLDER_NAME+'\\2_mops_lib1_type')
-    os.mkdir(FOLDER_NAME+'\\1_mops_am')
-    os.mkdir(FOLDER_NAME+'\\3_mops_lib2_type')
-    os.mkdir(FOLDER_NAME+'\\arrange')
-    os.mkdir(FOLDER_NAME+'\\4_mops_r1')
-    os.mkdir(FOLDER_NAME+'\\4_mops_r2')
+    os.mkdir(FOLDER_NAME+'\\mops_am')
+    os.mkdir(FOLDER_NAME+'\\r1_cbus')
+    os.mkdir(FOLDER_NAME+'\\r2_cbus')
+    os.mkdir(FOLDER_NAME+'\\temp')
+    os.mkdir(FOLDER_NAME+'\\mops_r1')
+    os.mkdir(FOLDER_NAME+'\\mops_r2')
 
 if __name__ == '__main__':
     print ("Started at ", datetime.datetime.now())

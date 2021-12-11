@@ -9,8 +9,7 @@ import json
 from manager.file_paths import FILE_PATHS
 
 def kgoverview_csv(uniques):
-    """This function produces a csv file with an overview of the MOP
-     assembly Models present in the KG and their frequency of occurance."""
+    """CSV file for overview on the MOPs and their occurance in the AMs."""
     csv_file_path = FILE_PATHS['kg_assembly_csv']
     kg_model = {}
     with open(csv_file_path, 'w', newline='') as csvfile:
@@ -27,32 +26,30 @@ def kgoverview_csv(uniques):
             writer.writerow(my_dict)
 
 def r1_json(list_R1):
-    """Produces a json file with library of MOP assebmly models
-    their respective building units and symmetry."""
+    """Writes JSON file for List R1."""
     list_R1_jsonpath = FILE_PATHS['list_R1']
-    outpreR1 = json.dumps(list_R1)
+    outpreR1 = json.dumps(list_R1, indent=4)
     jsonoutput = open(list_R1_jsonpath, 'w') 
     jsonoutput.write(outpreR1)
 
 def preR2_json(list_preR2):
-    """Produces a json file with library of generic building units
-    and their respective occurance in assembly models."""
+    """Writes JSON file for List preR2"""
     list_preR2_jsonpath = FILE_PATHS['list_preR2']
-    outpreR2 = json.dumps(list_preR2)
+    outpreR2 = json.dumps(list_preR2, indent=4)
     jsonoutput = open(list_preR2_jsonpath, 'w') 
     jsonoutput.write(outpreR2)
     
 def assemblyModel_json(assemblyModel, string):
     """Produces a starting and final json file with library MOPs and their respective properties."""
     assemblyModel_jsonpath = FILE_PATHS['mops_am']
-    outAssemblyModel = json.dumps(assemblyModel)
+    outAssemblyModel = json.dumps(assemblyModel, indent=4)
     jsonoutput = open(assemblyModel_jsonpath+string+'.json', 'w') 
     jsonoutput.write(outAssemblyModel)
 
-def assemblyModel_json_ext(assemblyModel, string, frequency):
+def assemblyModel_json_temp(assemblyModel, string, frequency):
     """For each assemly model produces a temporary file."""
-    assemblyModel_jsonpath = FILE_PATHS['arrange']
-    outAssemblyModel = json.dumps(assemblyModel)
+    assemblyModel_jsonpath = FILE_PATHS['temp']
+    outAssemblyModel = json.dumps(assemblyModel, indent=4)
     jsonoutput = open(assemblyModel_jsonpath+string+"__"+str(frequency)+'.json', 'w') 
     jsonoutput.write(outAssemblyModel)
 
@@ -63,7 +60,7 @@ def assemblyModel_json_update(string, frequency):
     path_main = FILE_PATHS['mops_am']+string+'.json'
     i = 0
     while i < frequency:
-        path_update = FILE_PATHS['arrange']+string+"__"+str(i)+'.json'
+        path_update = FILE_PATHS['temp']+string+"__"+str(i)+'.json'
         with open(path_update, 'r+') as file:    
             data = json.load(file)
             mopIRI = data['mopIRI']
