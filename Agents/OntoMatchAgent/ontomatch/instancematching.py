@@ -232,7 +232,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
     def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
         params = ontomatch.utils.util.convert_json_to_dict(config_json)
-        symmetric = params['matching']['model_specific']['symmetric']
+        params_model_specific = params['matching']['model_specific']
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_post_processing = params['post_processing']
@@ -240,22 +240,29 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
         tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
 
-        self.start_internal(srconto, tgtonto, symmetric, params_blocking, params_post_processing, params_mapping)
+        self.start_internal(srconto, tgtonto, params_model_specific, params_blocking, params_post_processing, params_mapping)
 
-    def start_internal(self, srconto, tgtonto, symmetric, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
-        logging.info('starting InstanceMatcherWithAutoCalibration, symmetric=%s', symmetric)
+    def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
+
+        logging.info('starting InstanceMatcherWithAutoCalibration, params=%s', params_model_specific)
+        symmetric = params_model_specific['symmetric']
+        delta = params_model_specific.get('delta')
+        if delta is None:
+            delta = 0.025
+
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
         df_scores = self.score_manager.get_scores()
         df_max_scores = self.score_manager.get_max_scores_1()
-        self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping)
+        self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
         #TODO-AE asymmetry
+
         if symmetric:
             # df_max_scores_2 has multi index of form (idx_2, idx_1)
             df_max_scores_2 = self.score_manager.get_max_scores_2()
             # change the order of idx_1 and idx_2 (score functions are symmetric. Thus, the score value are the same)
             #df-_scores_2 = self.score_manager.get_scores().reorder_levels(['idx_2', 'idx_1'])
             df_scores_2 = self.score_manager.get_scores()
-            _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, dataset_id=2)
+            _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
             logging.debug('first row of df_total_best_score_2 before reordering index=%s, row=%s', df_total_best_scores_2.index[0], df_total_best_scores_2.iloc[0])
             # 1. method calculate_auto_calibrated_total_scores store idx_2 in index with name 'idx_1. Thus, we have to change the name
             #df_total_best_scores_2 = df_total_best_scores_2.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
@@ -312,6 +319,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         for pos, (idx_2, row) in enumerate(df_scores.loc[idx_1].iterrows()):
             score = 0
+            orig_score = 0
             number_columns = len(property_mapping)
             prop_score = {}
             for propmap in property_mapping:
@@ -345,6 +353,14 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                         #TODO-AE URGENT 211022
                         column_score = count_m / count_m_plus_n
 
+                        #TODO-AE URGENT 211211
+
+                    orig_score += column_score
+                    if column_score > 1:
+                        #raise ValueError('column score exceeds 1', score, idx_1, idx_2, c_max)
+                        logging.debug('column score exceeds 1')
+                        column_score = 1.
+
                     score += column_score
 
 
@@ -360,9 +376,16 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             # TODO-AE 211026 replace by get_total_score function
             if number_columns <= skip_column_number:
                 score = 0.
-                print('score = 0 since number columns=', number_columns, idx_1, idx_2)
+                logging.debug('score = 0 since number columns=%s, idx_1=%s, idx_2=%s', number_columns, idx_1, idx_2)
             else:
                 score = score / number_columns
+
+                #TODO-AE URGENT 211211
+                if score > 1:
+                    logging.debug('score exceeds 1')
+                orig_score = orig_score / number_columns
+                if orig_score > 1:
+                    logging.debug('orig score exceeds 1')
 
             total_score_row = {
                 'idx_1': idx_1,
@@ -386,7 +409,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         return total_score_rows
 
-    def calculate_auto_calibrated_total_scores(self, df_scores_orig, df_max_scores, property_mapping, dataset_id=1):
+    def calculate_auto_calibrated_total_scores(self, df_scores_orig, df_max_scores, property_mapping, delta, dataset_id=1):
 
         logging.info('calculating auto calibrated total scores, dataset_id=%s', dataset_id)
 
@@ -402,14 +425,18 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         for propmap  in property_mapping:
             c_max = propmap['key']
             series = df_max_scores[c_max]
-            scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+            # TODO-A URGENT 211211
+            #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
+            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(series, delta)
             sliding_counts[c_max] = scount
 
             # TODO-AE 211110 change from int to str for column names
             c = int(c_max.split('_')[0])
             #c = c_max.split('_')[0]
             series = df_scores[c]
-            scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta=0.05)
+            # TODO-A URGENT 211211
+            #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
+            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(series, delta)
             sliding_counts[c] = scount
 
         rows = []
@@ -444,6 +471,22 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             return len(df_tmp)
 
         sorted_series = series.sort_values(ascending=True).copy()
+        return sliding_count_internal
+
+    @classmethod
+    def sliding_count_fast(cls, series, delta):
+        def sliding_count_internal(x):
+            pos = round(x / (2*delta))
+            return counts[pos]
+
+        counts = []
+        x_list = np.arange(0, 1.00001, 2*delta)
+        for x in x_list:
+            mask = (series >= x - delta) & (series <= x + delta)
+            count = len(series[mask])
+            counts.append(count)
+        logging.debug('MY SLIDING COUNT x=%s, counts=%s', x_list, counts)
+
         return sliding_count_internal
 
 class InstanceMatcherWithScoringWeights(InstanceMatcherBase):

@@ -21,6 +21,7 @@ BASE_REST_FODOR = Namespace('http://www.theworldavatar.com/kb/restaurants/fodor/
 BASE_REST_ZAGAT = Namespace('http://www.theworldavatar.com/kb/restaurants/zagat/')
 BASE_BIBL_DBLP = Namespace('http://www.theworldavatar.com/kb/bibliography/dblp/')
 BASE_BIBL_ACM = Namespace('http://www.theworldavatar.com/kb/bibliography/acm/')
+BASE_BIBL_SCHOLAR = Namespace('http://www.theworldavatar.com/kb/bibliography/scholar/')
 BASE_PROD_AMAZON = Namespace('http://www.theworldavatar.com/kb/products/amazon/')
 BASE_PROD_GOOGLE = Namespace('http://www.google.com/base/feeds/snippets/')
 DBO = Namespace('http://dbpedia.org/ontology/')
@@ -77,7 +78,7 @@ def normalize(s: str):
         symbols = [',', '-', '–', '\n', ' ', u'\xa0', "'"]
         for sym in symbols:
             s = s.replace(sym, '_')
-        symbols = ['�', '&', '?', '+', '.', '"', '#', '(', ')', '\\', '/', '!']
+        symbols = ['�', '&', '?', '+', '.', '"', '#', '(', ')', '\\', '/', '!', '%', ':']
         for sym in symbols:
             s = s.replace(sym, '')
         return s.strip()
@@ -1031,7 +1032,7 @@ class ConverterRestaurant():
         df2, _ = converter.convert_data(src_file_fodor, BASE_REST_FODOR, 'F', 'C:/my/tmp/ontomatch/tmp_kwl_files/fodors.ttl', format)
         converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_kwl_files/matches_restaurant.csv', df1, df2)
 
-class ConverterBibliographicRecord():
+class ConverterDBLP2ACM():
 
     def load_to_dframe(self,filename):
         dframe = pd.read_csv(filename) #, encoding='utf8')
@@ -1090,10 +1091,90 @@ class ConverterBibliographicRecord():
         src_file_acm = path + '/ACM.csv'
         file_matches = path + '/DBLP-ACM_perfectMapping.csv'
 
-        converter = ConverterBibliographicRecord()
+        converter = ConverterDBLP2ACM()
         converter.convert_data(src_file_dblp, BASE_BIBL_DBLP, 'C:/my/tmp/ontomatch/tmp_dblp_acm/dblp.ttl', format)
         converter.convert_data(src_file_acm, BASE_BIBL_ACM, 'C:/my/tmp/ontomatch/tmp_dblp_acm/acm.ttl', format)
         converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_dblp_acm/matches_bibliography.csv')
+
+def isnan(value):
+    return (isinstance(value, float) and np.isnan(value)) or (value == 'N/A') or (value is None)
+
+class ConverterDBLP1Scholar():
+
+    def load_to_dframe(self,filename):
+        dframe = pd.read_csv(filename) #, encoding='utf8')
+        dframe = dframe.rename(columns={'id': 'idx'})
+        dframe.set_index(['idx'], inplace=True)
+        columns = [ str(col) for col in dframe.columns]
+        logging.info('loaded bibliographic records, number=%s for file=%s, columns=%s', len(dframe), filename, columns)
+        return dframe
+
+    def normalize_internal(self, s:str) -> str:
+        return normalize(s.replace('-', '').replace('_', ''))
+
+    def convert_data(self, src_file, namespace, tgt_file, format):
+
+        dframe = self.load_to_dframe(src_file)
+
+        global BASE
+        BASE = namespace
+
+        graph = rdflib.Graph()
+        bind_prefixes(graph)
+
+        for idx, row in dframe.iterrows():
+            # replace '-' by '' not by '_' to be consistent with IRI's for KWL and DUKES
+            # e.g. DBLP ID=conf/sigmod/Galindo-Legaria94
+            norm_idx = self.normalize_internal(str(idx))
+            s = BASE[norm_idx]
+            graph.add((s, RDF.type, SDO['ScholarlyArticle']))
+            graph.add((s, SDO['name'], Literal(row['title'], lang='en')))
+
+            authors = row['authors']
+            if not isnan(authors):
+                graph.add((s, SDO['author'], Literal(authors, lang='en')))
+
+            venue = row['venue']
+            year = row['year']
+            if not (isnan(venue) and isnan(year)):
+                x = rdflib.BNode()
+                graph.add((s, SDO['isPartOf'], x))
+                graph.add((x, RDF.type, SDO['PublicationIssue']))
+                if not isnan(venue):
+                    graph.add((x, SDO['name'], Literal(venue, lang='en')))
+                if not isnan(year):
+                    year = int(year)
+                    graph.add((x, SDO['datePublished'], Literal(year, datatype=XSD.integer)))
+
+        graph.serialize(tgt_file, format=format)
+
+        return dframe, graph
+
+    def convert_matches_to_multi_indices(self, src_file, tgt_file):
+        df_matches = pd.read_csv(src_file)
+        df_matches = df_matches.rename(columns={'idDBLP': 'idx_1', 'idScholar': 'idx_2'})
+        fct = lambda s : self.normalize_internal(str(s))
+        df_matches['idx_1'] = df_matches['idx_1'].apply(fct)
+        df_matches['idx_2'] = df_matches['idx_2'].apply(fct)
+        df_matches['link'] = 1
+        df_matches.set_index(['idx_1', 'idx_2'], inplace=True)
+        logging.info('number matching pairs=%s', len(df_matches))
+        df_matches.to_csv(tgt_file, index=True)
+
+    @staticmethod
+    def convert():
+
+        format = 'turtle'
+        path = './data/bibl_DBLP_Scholar/original'
+        src_file_dblp = path + '/DBLP1.csv'
+        src_file_acm = path + '/Scholar.csv'
+        file_matches = path + '/DBLP-Scholar_perfectMapping.csv'
+
+        converter = ConverterDBLP1Scholar()
+        tgt_path = './data/bibl_DBLP_Scholar'
+        converter.convert_data(src_file_dblp, BASE_BIBL_DBLP, tgt_path + '/dblp1.ttl', format)
+        converter.convert_data(src_file_acm, BASE_BIBL_SCHOLAR, tgt_path + '/scholar.ttl', format)
+        converter.convert_matches_to_multi_indices(file_matches, tgt_path + '/matches_dblp1_scholar.csv')
 
 class ConverterProduct():
 
@@ -1220,5 +1301,6 @@ if __name__ == '__main__':
     #create_location_file(src_file, tgt_file, frmt)
 
     #ConverterRestaurant.convert()
-    #ConverterBibliographicRecord.convert()
+    #ConverterDBLP2ACM.convert()
+    ConverterDBLP1Scholar.convert()
     #ConverterProduct.convert()

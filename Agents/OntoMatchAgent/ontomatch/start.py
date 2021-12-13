@@ -10,8 +10,8 @@ import ontomatch.utils.blackboard
 import ontomatch.utils.util
 
 def start_pickle_dump():
-    file = './data/power_plant_DEU/kwl.ttl'
-    tgt_file = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/kwl.pkl'
+    file = './data/bibl_DBLP_Scholar/scholar.ttl'
+    tgt_file = ontomatch.utils.blackboard.LOCAL_BLACKBOARD_DIR + '/scholar.pkl'
     onto = ontomatch.utils.util.load_ontology(file, blackboard=False)
     ontomatch.utils.util.pickle_dump(tgt_file, onto)
 
@@ -48,6 +48,6 @@ def call_agent_coordinator(config_handle, http=False):
 
 if __name__ == '__main__':
 
-    #start_pickle_dump()
+    start_pickle_dump()
 
-    start_coordinate()
+    #start_coordinate()

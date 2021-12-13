@@ -94,9 +94,9 @@ class TrainTestGenerator():
         # sample from nonmatches
         number_n = int(nonmatch_ratio * number_m)
         # only subtract the matching pairs in the training set
-        #diff = df_candidate_pairs.index.difference(df_train_m.index)
+        diff = df_candidate_pairs.index.difference(df_m_train.index)
         # substract all matching pairs in the ground truth
-        diff = df_candidate_pairs.index.difference(df_matches.index)
+        #diff = df_candidate_pairs.index.difference(df_matches.index)
         df_diff = df_candidate_pairs.loc[diff]
         df_diff['y'] = 0 # 0 means nonmatch
         df_n_train, _ = sklearn.model_selection.train_test_split(df_diff, train_size=number_n, shuffle=True)

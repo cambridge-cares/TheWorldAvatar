@@ -2,11 +2,13 @@ import collections
 import logging
 import math
 import random
+import time
 
 import nltk
 from nltk.metrics.distance import jaro_similarity, edit_distance, jaro_winkler_similarity
 import numpy as np
 import pandas as pd
+import sentence_transformers
 from tqdm import tqdm
 
 import ontomatch.blocking
@@ -59,13 +61,35 @@ def dist_cosine_with_tfidf(v1, v2):
     if df_index_tokens is None:
         raise ValueError('df_index_tokens was not created yet')
     #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
-    n_max_idf = 30
+    n_max_idf = 100
     return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
 
 def dist_cosine_binary(v1, v2):
     if not check_str(v1, v2):
         return None
-    return compare_strings_with_tfidf(v1, v2, None, None, log=False)
+    #TODO-AE 211211 URGENT
+    #return compare_strings_with_tfidf(v1, v2, None, None, log=False)
+    return compare_strings_binary(v1, v2)
+
+def dist_cosine_embedding(v1, v2):
+    if not check_str(v1, v2):
+        return None
+    starttime = time.time()
+    embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True)
+    embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True)
+    pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embeddings1, embeddings2)
+    # pytorch returns sometimes values such as 1.0000002
+    # use min to avoid negative cosine distance
+    cosine_sim = min(1, pytorch_tensor[0].numpy()[0])
+    # negative cosine sim is mapped to 0
+    cosine_distance = 1 - max(0, cosine_sim)
+    #if random.randint(0,100) == 0:
+    #    logging.warn('MY cosine_sim=%s, cosine_distance=%s, time=%s', cosine_sim, cosine_distance, time.time() - starttime)
+
+    return cosine_distance
+
+class SentenceTransformerWrapper():
+    model = sentence_transformers.SentenceTransformer('all-MiniLM-L6-v2')
 
 def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, decrease = 'linear'):
     #TODO-AE
@@ -210,7 +234,7 @@ class ScoreManager():
 
     def calculate_similarities_between_datasets(self, sim=True):
 
-        logging.info('calculating similarities or distances, sim=%s', sim)
+        logging.info('calculating similarities, number of pairs=%s, sim=%s', len(self.pair_iterator), sim)
         count = 0
         rows = []
         for pos1, pos2 in tqdm(self.pair_iterator):
@@ -332,7 +356,6 @@ class ScoreManager():
         df_result.set_index([index_column_name, other_index_column_name], inplace=True)
 
         logging.info('calculated maximum scores, number of entities=%s, number of pairs=%s', len(df_result), count)
-        logging.debug('MY first row=%s', df_result.iloc[0])
         logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 
@@ -512,6 +535,36 @@ def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
     if log:
         print(v1, v2, dot, norm1, norm2, cosine_distance)
 
+    return cosine_distance
+
+def compare_strings_binary(s1, s2):
+
+    if not s1 and not s2:
+        return 0
+    if not s1 or not s2:
+        return 1
+
+    tokens1 = ontomatch.blocking.tokenize(s1)
+    tokens2 = ontomatch.blocking.tokenize(s2)
+
+    # TODO-AE move this to index token generation (which solves also problems such as pant-y-..., bigrams), also very inefficient here
+    # this is only a hack: it is not symmetric (e.g. with respect to 'count_1' instead of 'count_2' -> None ...!
+    # consider edit distance == 1 between tokens
+    tokens1 = set(tokens1)
+    tokens2 = set(tokens2)
+    count_t1_t2_intersection = 0
+    for t1 in tokens1.copy():
+        for t2 in tokens2.copy():
+            edit_dist = nltk.edit_distance(t1, t2)
+            if (edit_dist == 0) or (len(t1) > 3 and len(t2) > 3 and edit_dist == 1):
+                count_t1_t2_intersection += 1
+                tokens1.remove(t1)
+                tokens2.remove(t2)
+                break
+
+    norm1 = math.pow(len(tokens1) + count_t1_t2_intersection, 0.5)
+    norm2 = math.pow(len(tokens2) + count_t1_t2_intersection, 0.5)
+    cosine_distance = 1 - round( count_t1_t2_intersection / (norm1 * norm2), 4)
     return cosine_distance
 
 class ScoringWeightIterator(collections.Iterable, collections.Sized):
