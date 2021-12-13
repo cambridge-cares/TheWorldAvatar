@@ -131,7 +131,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
     def test_configure_score_fct_cosine_with_tfidf(self):
         params_sim_fcts = [{
                 "name": "dist_cosine_with_tfidf",
-                "cut_off_mode": "fixed"
+                "cut_off_mode": "fixed",
+                "maxidf": 30
             }
         ]
         sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
@@ -340,7 +341,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         '''
 
         expected = {
-            'name': ('name', 0.75249, 4),
+            'name': ('name', 0.76349, 4),
             'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.73332, 5)
         }
 
@@ -369,7 +370,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         logging.debug('property_mapping=%s', property_mapping)
 
         expected = {
-            'name': ('name', 0.75249, 4),
+            'name': ('name', 0.76349, 4),
             # score function 0 and 1 got the same mean result, thus the first score function wins
             'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.81211, 0)
         }
@@ -412,16 +413,14 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts)
 
         expected = {
-            'name' : ('name', 0.78602, 4),
+            'name' : ('name', 0.79721, 4),
             'hasYearOfBuilt/hasValue/numericalValue':  ('hasYearOfBuilt/hasValue/numericalValue', 0.99758, 3),
             'designCapacity/hasValue/numericalValue': ('designCapacity/hasValue/numericalValue', 0.70326, 3),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.54674, 1),
-            # for OwnedBy/hasName score function 1 is slightly behind 4
-            #'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.547, 1),
+            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.64090, 4),
             'realizes/consumesPrimaryFuel': ('realizes/consumesPrimaryFuel', 0.85253, 1),
             #both fuel and type have been identified for property mapping
             'type': ('type', 0.87609, 0),
-            'http://www.w3.org/2000/01/rdf-schema#label': ('http://www.w3.org/2000/01/rdf-schema#label', 0.78345, 4)
+            'http://www.w3.org/2000/01/rdf-schema#label': ('http://www.w3.org/2000/01/rdf-schema#label', 0.79595, 4)
             #'geo:wgs84_pos#long': ('hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', 0.9708340665506993, 3),
             #'geo:wgs84_pos#lat': ('hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', 0.9960711009327202, 3),
         }

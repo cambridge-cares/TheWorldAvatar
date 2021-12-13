@@ -52,7 +52,15 @@ def dist_equal(v1, v2):
         return
     return (0 if v1 == v2 else 1)
 
-def dist_cosine_with_tfidf(v1, v2):
+def create_dist_cosine_with_tfidf(n_max_idf):
+
+    def dist_cosine_with_tfidf_internal(v1, v2):
+        return dist_cosine_with_tfidf(v1, v2, n_max_idf)
+
+    return dist_cosine_with_tfidf_internal
+
+def dist_cosine_with_tfidf(v1, v2, n_max_idf=100):
+    #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
     if not check_str(v1, v2):
         return None
     # TODO-AE URGENT 211021 replaced by unpruned (original) index to get same tfidf weights as in jupyter notebook
@@ -60,8 +68,6 @@ def dist_cosine_with_tfidf(v1, v2):
     df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens_unpruned
     if df_index_tokens is None:
         raise ValueError('df_index_tokens was not created yet')
-    #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
-    n_max_idf = 100
     return compare_strings_with_tfidf(v1, v2, n_max_idf, df_index_tokens, log=False)
 
 def dist_cosine_binary(v1, v2):
@@ -116,10 +122,15 @@ def create_similarity_functions_from_params(params_sim_fcts):
 
     for s_fct in params_sim_fcts:
         name = s_fct['name']
+        maxidf = s_fct.get('maxidf')
+        if (name == 'dist_cosine_with_tfidf') and (maxidf is not None):
+            dist_fct = create_dist_cosine_with_tfidf(maxidf)
+        else:
+            dist_fct = globals()[name]
+
         cut_off_mode = s_fct.get('cut_off_mode')
         if cut_off_mode:
-            # name refers to a distance function
-            dist_fct = globals()[name]
+
             cut_off_value = s_fct.get('cut_off_value', 1)
             decrease = s_fct.get('decrease', 'linear')
             sim_fct = similarity_from_dist_fct(dist_fct, cut_off_mode, cut_off_value, decrease)
