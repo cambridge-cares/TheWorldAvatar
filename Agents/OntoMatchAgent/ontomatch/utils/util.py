@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 import ontomatch.utils.blackboard
+from ontomatch.httpCaller import httpcaller as httpcaller
 from ontomatch.utils.ontologyWrapper import Ontology
 
 def init_file_logging(log_config_file, log_file):
@@ -155,7 +156,9 @@ def parse_graph(addr) -> rdflib.Graph:
 def call_agent_blackboard_for_writing(addr:str, serialized_object:str, http:bool=False) -> str:
     logging.info('calling blackboard for writing, addr=%s', addr)
     if http:
-        raise NotImplementedError()
+        params = dict(addr = addr, serialized_object = serialized_object)
+        handle = httpcaller.caller().callAgent("blackboard", params)
+
     else:
         handle = ontomatch.utils.blackboard.Agent().write(addr, serialized_object)
     logging.info('called blackboard for writing, handle=%s', handle)
@@ -164,7 +167,8 @@ def call_agent_blackboard_for_writing(addr:str, serialized_object:str, http:bool
 def call_agent_blackboard_for_reading(handle:str, http:bool=False) -> str:
     logging.info('calling blackboard for reading, handle=%s, http=%s', handle, http)
     if http:
-        raise NotImplementedError()
+        params = dict(handle = handle)
+        object = httpcaller.caller().callAgent("blackboard", params, "GET")
     else:
         object = ontomatch.utils.blackboard.Agent().read(handle)
     logging.info('called blackboard for reading')
