@@ -51,7 +51,7 @@ class ControlHandler {
 			</div>
 			<div id="layerContainer">TREE-GOES-HERE</div>
 			<div id="selectionsContainer"></div>
-			<div id="developerContainer"></div>
+			<div id="developerContainer" style="display: none;"></div>
 		</div>
 	`;
 
@@ -123,41 +123,34 @@ class ControlHandler {
 	 */
 	showDeveloperControls() {
 		let developerInfo = document.getElementById("developerContainer");
-		developerInfo.style.display = "block";
+		developerInfo.style.display = "none !important";
 
 		let self = this;
-		this._map.on("move", function() {
-			self.#updateDeveloperControls();
+		this._map.on("mousemove", function(event) {
+			self.#updateDeveloperControls(event);
 		});
-		this._map.on("zoom", function() {
-			self.#updateDeveloperControls();
-		});
-		this._map.on("rotate", function() {
-			self.#updateDeveloperControls();
-		});
-		this._map.on("pitch", function() {
-			self.#updateDeveloperControls();
-		});
-
-		this.#updateDeveloperControls();
 	}
 
 	/**
 	 * Update developer info panel.
 	 */
-	#updateDeveloperControls() {
+	#updateDeveloperControls(event) {
 		let developerInfo = document.getElementById("developerContainer");
+		developerInfo.style.display = "block";
 
-		let lng = this._map.getCenter().lng.toFixed(5)
-		let lat = this._map.getCenter().lat.toFixed(5)
-
+		let lng = event.lngLat.lng.toFixed(5);
+		let lat = event.lngLat.lat.toFixed(5);
 		developerInfo.innerHTML = `
-			<b>Developer Info:</b><br/>
-			Longitude: ` + lng + `<br/>
-			Latitude : ` + lat + `<br/>
-			Zoom: ` + this._map.getZoom().toFixed(2) + `<br/>
-			Pitch: ` + this._map.getPitch().toFixed(2) + `<br/>
-			Bearing: ` + this._map.getBearing().toFixed(2) + `
+			<table width="100%">
+				<tr>
+					<td width="35%">Longitude:</td>
+					<td width="65%">` + lng + `</td>
+				</tr>
+				<tr>
+					<td width="35%">Latitude:</td>
+					<td width="65%">` + lat + `</td>
+				</tr>
+			</table>
 		`;
 	}
 
@@ -434,6 +427,8 @@ class ControlHandler {
 	 * @param {boolean} visible desired visibility.
 	 */
 	#toggleLayer(layerID, visible) {
+		if(this._map.getLayer(layerID) == null) return;
+		
 		try {
 			this._map.setLayoutProperty(
 				layerID,

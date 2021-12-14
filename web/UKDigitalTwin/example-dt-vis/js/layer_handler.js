@@ -71,7 +71,7 @@ class LayerHandler {
 
             // Order the layers so that points are on top.
             this.#orderLayers(["fill", "polygon"]);
-            this.#orderLayers(["line"]);
+            this.#orderLayers(["line"], "_arrows");
             this.#orderLayers(["circle", "point", "symbol"]);
 
         } catch(error) {
@@ -196,7 +196,7 @@ class LayerHandler {
             type: 'symbol',
             layout: {
                 'icon-image': ["get", "icon-image"],
-                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 18, 1.0],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.4, 18, 0.8],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true
             }
@@ -244,7 +244,7 @@ class LayerHandler {
             filter: ['has', 'point_count'],
             layout: {
                 "icon-image": ["get", "icon-image"],
-                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.5, 18, 1.0],
+                'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.4, 18, 0.8],
                 'icon-allow-overlap': true,
                 'icon-ignore-placement': true,
                 'text-field': '{point_count_abbreviated}',
@@ -384,7 +384,7 @@ class LayerHandler {
         this._layerProperties[layerName] = options;
 
         // Transparent interaction layer
-        this._map.addLayer({
+        let clickableOptions = {
 			id: layerName + "_clickable",
 			source: sourceName,
             metadata: {
@@ -399,7 +399,11 @@ class LayerHandler {
                 'line-opacity': 0.0,
                 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 10, 15, 15]
 			}
-		});
+		};
+        if(dataSet["minzoom"]) clickableOptions["minzoom"] = dataSet["minzoom"];
+        if(dataSet["maxzoom"]) clickableOptions["maxzoom"] = dataSet["maxzoom"];
+
+        this._map.addLayer(clickableOptions);
 
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         console.log("INFO: Added special '" + layerName + "' interaction layer to MapBox.");
@@ -433,7 +437,7 @@ class LayerHandler {
             type: 'symbol',
             layout: {
                 'symbol-placement': 'line',
-                'symbol-spacing': 50,
+                'symbol-spacing': ['interpolate', ['linear'], ['zoom'], 8, 50, 18, 100],
                 'icon-rotate': 90,
                 'icon-image': 'arrow-sdf',
                 'icon-size': ['interpolate', ['linear'], ['zoom'], 8, 0.175, 18, 0.35],
@@ -487,7 +491,7 @@ class LayerHandler {
      * Bump all point locations to the top of the stack, for better interactions
      * they should really be above any line or fill layers.
      */
-    #orderLayers(types) {
+    #orderLayers(types, suffix = null) {
         var layers = this._map.getStyle().layers
         layers.forEach(layer => {
 
@@ -495,7 +499,10 @@ class LayerHandler {
                 let provider = layer["metadata"]["provider"];
 
                 if(provider === "cmcl"){
-                    if(types.includes(layer["type"])) {
+                    if(types.includes(layer["type"]) && !layer["id"].endsWith("_arrows")) {
+                        this._map.moveLayer(layer["id"]);
+                    }
+                    if(suffix != null && layer["id"].endsWith(suffix)) {
                         this._map.moveLayer(layer["id"]);
                     }
                 }

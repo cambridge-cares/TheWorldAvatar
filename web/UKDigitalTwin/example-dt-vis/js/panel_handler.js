@@ -303,6 +303,7 @@ class PanelHandler {
 	 */
 	toggleExpansion() {
 		var sidePanel = document.getElementById("sidePanel");
+		var sidePanelInner = document.getElementById("sidePanelInner");
 		var rightButton = document.getElementById("expandButton");
 
 		if(sidePanel.classList.contains("small")) {
@@ -314,6 +315,8 @@ class PanelHandler {
 
 				document.getElementById("legendContainer").style.visibility = "visible";
 				rightButton.style.visibility = "visible";
+
+				sidePanelInner.style.visibility = "visible";
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -322,6 +325,8 @@ class PanelHandler {
 
 				document.getElementById("legendContainer").style.visibility = "hidden";
 				rightButton.style.visibility = "hidden";
+
+				sidePanelInner.style.visibility = "hidden";
 			}
 
 		} 

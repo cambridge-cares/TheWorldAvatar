@@ -170,8 +170,17 @@ class DigitalTwinManager {
 				// Register mouse interactions if enabled
 				let clickable = groupData[i]["clickable"];
 				if(clickable == null || clickable == true) {
-					// Register interactions slightly differently for line layers
+
+					if(groupData[i]["cluster"] == true) {
+						// If clustering was enabled, register logic for the cluster layer.
+						this._interactionHandler.registerInteractions([
+							groupData[i]["name"] + "_cluster", 
+							groupData[i]["locationType"]
+						]);
+					}
+
 					if(groupData[i]["locationType"] === "line") {
+						// Register interactions slightly differently for line layers
 						this._interactionHandler.registerInteractions([
 							groupData[i]["name"] + "_clickable", 
 							groupData[i]["locationType"]

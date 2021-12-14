@@ -56,7 +56,6 @@ class InteractionHandler {
      * @param {string[]} layer [layer name, layer type]
      */
     registerInteractions(layer) {
-
         let layerName = layer[0];
         let layerType = layer[1];
         let sourceName = this._map.getLayer(layerName).source;
@@ -66,6 +65,9 @@ class InteractionHandler {
         // Mouse click
         this._map.on("click", layerName, (event) => {
             if(!DT.clickEvents) return;
+            if(layerName.endsWith("_arrows")) {
+                return;
+            }
 
              // Fudge to ensure that only one click per 500ms
             let thisClick = Date.now();
@@ -76,9 +78,40 @@ class InteractionHandler {
             }
             this._lastClick = thisClick;
 
-            // Trigger on top most feature
-            let feature = event.features[event.features.length - 1];
-            this.mouseClick(layerName, feature);
+            // Get all visible features under the mouse click
+            let features = this._map.queryRenderedFeatures(event.point);
+            let feature = features[0];
+
+            // Filter to determine how many non-default, circle/symbol features are present
+            let self = this;
+            let siteFeatures = features.filter(feature => {
+                let featureLayer = feature["layer"]["id"];
+                if(featureLayer.includes("_clickable")) return false;
+                if(featureLayer.includes("_arrows")) return false;
+
+                let layer = self._map.getLayer(featureLayer);
+                if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
+                return layer["metadata"]["provider"] === "cmcl"
+            });
+
+            if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
+                // If a cluster feature, let the user pick the leaf feature
+                this.#handleClusterClick(siteFeatures[0], function(newFeature) {
+                    self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                });
+            } else {
+                // If more than one, let the use pick
+                if(siteFeatures.length > 1) {
+                    feature = this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
+                        // Trigger on chosen feature
+                        if(newFeature != null) {    
+                            self.mouseClick(layerName, newFeature);
+                        }
+                    });
+                } else {
+                    self.mouseClick(layerName, feature);
+                }
+            }
         });
 
         // Interactions per layer type
@@ -89,6 +122,10 @@ class InteractionHandler {
             case "symbol":
                 // Mouse enter
                 this._map.on("mouseenter", layerName, (event) => {
+                    if(layerName.endsWith("_arrows")) {
+                        return;
+                    }
+
                     let feature = this._map.queryRenderedFeatures(event.point)[0];
                     if(feature == null || feature.geometry == null) return;
 
@@ -141,11 +178,19 @@ class InteractionHandler {
                     // Mouse enter
                     this._map.on("mouseenter", layerName, (event) => {
                         // Change cursor
-                        if(DT.clickEvents) this._map.getCanvas().style.cursor = 'pointer';
+                        if(!DT.clickEvents) return;
+                        if(layerName.endsWith("_arrows")) {
+                            return;
+                        }
+                        this._map.getCanvas().style.cursor = 'pointer';
                     });
 
                     // When the user moves their mouse over the fill area
                     this._map.on('mousemove', layerName, (e) => {
+                        if(layerName.endsWith("_arrows")) {
+                            return;
+                        }
+
                         var thisFeature = this._map.queryRenderedFeatures(e.point)[0];
 
                         if(lastFeature == null || thisFeature.id != lastFeature.id) {
@@ -204,6 +249,65 @@ class InteractionHandler {
     }
 
     /**
+     * Given a cluster feature, this method extracts its leaf features and passes
+     * their details onto the handleMultipleFeatures() method.
+     *  
+     * @param {JSONObject} feature 
+     * @param {Function} callback 
+     */
+    #handleClusterClick(feature, callback) {
+        let sourceName = feature["layer"]["source"];
+        let source = this._map.getSource(sourceName);
+        source.getClusterLeaves(feature.id, 999, 0, (error, features) => {
+            if(error) {
+                console.log("ERROR: Could not determine leaf features within cluster.");
+                console.log(error);
+            } else if(features != null) {
+                this.#handleMultipleFeatures(features, callback);
+            }
+        });
+    }
+
+    /**
+     * Given an array of possible GeoJSON features, create controls to allow the user
+     * to selet an individual feature, then return it.
+     * 
+     * @param {JSONObject[]} features array of possible features. 
+     * 
+     * @returns selected GeoJSON feature
+     */
+    #handleMultipleFeatures(features, callback) {
+        let html = `
+            <div style="padding: 15px">
+                <p>Multiple features are located at these coordinates, please choose which
+                feature you'd like to select using the drop-down boxes below.</p>
+                <br/><br/>
+                <label for="select-feature">Feature:</label>
+                <select name="features" id="select-feature" style>
+                <option value="" disabled selected>Select a feature...</option>
+        `;
+
+        for(var i = 0; i < features.length; i++) {
+            html += `
+                <option value="` + i + `">` + features[i]["properties"]["displayName"] + `</option>
+            `;
+        };
+        html += `</select></div>`;
+
+        this._panelHandler.setTitle("<h3>Multiple Features</h3>");
+        this._panelHandler.setContent(html);
+        this._panelHandler.toggleLegend(false);
+        document.getElementById("footerContainer").style.display = "block";
+
+        let selectElement = document.getElementById("select-feature");
+        selectElement.addEventListener("click", function() {
+            if(callback != null) {
+                callback(features[selectElement.value]);
+            }
+        });
+    }
+
+    /**
      * 
      * @param {*} layerName 
      * @param {*} feature 
@@ -244,10 +348,10 @@ class InteractionHandler {
         }
        
         // Handle the metadata
-        this.#handleMetadata(feature);
+        this.#handleMetadata(feature, layerName);
 
         // Handle the timeseries data
-        this.#handleTimeseries(feature);
+        this.#handleTimeseries(feature, layerName);
 
         // Ensure the previously opened tab is open
         document.getElementById(this._previousTab).click();
@@ -277,7 +381,7 @@ class InteractionHandler {
      * 
      * @param {JSONObject} feature selected GeoJSON feature.
      */
-    #handleMetadata(feature) {
+    #handleMetadata(feature, layerName) {
         // Build containers for metadata trees
         this.#buildMetadataContainers();
 
@@ -290,7 +394,7 @@ class InteractionHandler {
         }
 
         // Get the metadata
-        var metaPromises = this.#findMeta(feature);
+        var metaPromises = this.#findMeta(feature, layerName);
 
         // Build tree once all metadata is added
         Promise.all(metaPromises).then((values) => {
@@ -323,8 +427,8 @@ class InteractionHandler {
      * 
      * @param {JSONObject} feature selected GeoJSON feature.
      */
-    #handleTimeseries(feature) {
-        var timePromises = this.#findTimeSeries(feature);
+    #handleTimeseries(feature, layerName) {
+        var timePromises = this.#findTimeSeries(feature, layerName);
 
         var self = this;
         Promise.all(timePromises).then((values) => {
@@ -386,7 +490,9 @@ class InteractionHandler {
      * 
      * @param {JSONObject} feature selected map feature 
      */
-    #findMeta(feature) {
+    #findMeta(feature, layerName) {
+        console.log(feature);
+
         var metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
 
@@ -394,7 +500,7 @@ class InteractionHandler {
         
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
-            let layerName = feature.layer["id"].replace("_clickable", "");
+            layerName = layerName.replace("_clickable", "");
 
             if(dataSet["name"] === layerName) {
                 let metaFiles = dataSet["metaFiles"];
@@ -433,7 +539,7 @@ class InteractionHandler {
      * @param {*} feature 
      * @param {*} callback 
      */
-      #findTimeSeries(feature) {
+    #findTimeSeries(feature, layerName) {
         // For each currently selected leaf group
         let metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
@@ -442,7 +548,7 @@ class InteractionHandler {
 
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
-            if(dataSet["name"] === feature.layer["id"]) {
+            if(dataSet["name"] === layerName) {
                 let timeFiles = dataSet["timeseriesFiles"];
 
                 if(timeFiles != null) {
