@@ -368,7 +368,7 @@ def AddCostAttributes(graph, counter, fuelType, genTech, modelFactorArrays, numO
     value_EGen_VarOandMCost_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[2] + UNDERSCORE + EGen_context_locator
     EGen_FuelCost_node = EGen_namespace + ukmf.headerModelFactor[3] + UNDERSCORE + EGen_context_locator
     value_EGen_FuelCost_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[3] + UNDERSCORE + EGen_context_locator
-    EGen_CarbonFactor_node = EGen_namespace + ukmf.headerModelFactor[4].strip('\n').strip('&')  + UNDERSCORE + modelFactorArrays[fuelTypeIndex][0] + UNDERSCORE + EGen_context_locator
+    EGen_CarbonFactor_node = EGen_namespace + ukmf.headerModelFactor[4].strip('\n').strip('&') + UNDERSCORE + modelFactorArrays[fuelTypeIndex][0] + UNDERSCORE + EGen_context_locator
     value_EGen_CarbonFactor_node = EGen_namespace + uk_topo.valueKey  + ukmf.headerModelFactor[4].strip('\n').strip('&') + UNDERSCORE + modelFactorArrays[fuelTypeIndex][0] + UNDERSCORE + EGen_context_locator
     
     # add FixedOperatingCostandMaintenanceCost

@@ -81,12 +81,13 @@ public class ClauseBuilder implements Prefixes{
 	 * @varNameIdentifier : an identifier used to distinct the object which will be used in the rdf:type triple. 
 	 * @classPrefix_unlabeledVariable : a hashmap which maps the namespace of the variables class to the variables. A same namespace can map with multiple variables.
 	 * @unlabeledVariable_querySentence : a LinkedHashMap maps between the unlabeled variables with its query sentence pattern collection used to construct the query body (e.g. whereClause).
+	 * 										the querySentence is a list and all elements are presented in order which forms a full path from the one entity to its attribute value
 	 *  
 	 * All the arguments could be passed from attribute values of an instance of a java class, e.g. PowerFlow which will be queried/updated.
 	 */
 	
-	public void selectClauseAndWhereClauseBuilderWithoutLabels(String varNameIdentifier, HashMap<String, List<String>> classPrefix_unlabeledVariable, 
-			LinkedHashMap<String, List<String>> unlabeledVariable_querySentence){
+	public void selectClauseAndWhereClauseBuilderWithoutLabels(String entityNameIdentifier, HashMap<String, List<String>> classPrefix_unlabeledAttributes, 
+			LinkedHashMap<String, List<String>> unlabeledAttributes_querySentence, HashMap<String, List<String>> topNode_unlabeledAttributes){
 		  // initialise selectClause and whereClause with the query entity
 		  //case 1: set the selectClause and whereClause without labels
 		if(entityName.indexOf("?") != 0) {
@@ -95,8 +96,8 @@ public class ClauseBuilder implements Prefixes{
 		List<String> entityTypeTriple = Arrays.asList(this.entityName, "a", this.entityType);
 		this.whereClause.add(entityTypeTriple);
 		
-		for(String var : unlabeledVariable_querySentence.keySet()) {//set the selectClause
-			List<String> querySentence = unlabeledVariable_querySentence.get(var);
+		for(String var : unlabeledAttributes_querySentence.keySet()) {//set the selectClause
+			List<String> querySentence = unlabeledAttributes_querySentence.get(var);
 			String selectName = querySentence.get(querySentence.size() - 1) + var;
 			this.selectClause.add(selectName);
 			for(int i = -1; i < querySentence.size() - 2; i+=2) {// set up whereClause
@@ -109,14 +110,35 @@ public class ClauseBuilder implements Prefixes{
 				}				
 			}							
 		}
-		for(String classPrefix : classPrefix_unlabeledVariable.keySet()) {
-			List<String> varInSameClassPrefix = classPrefix_unlabeledVariable.get(classPrefix);
+		for(String classPrefix : classPrefix_unlabeledAttributes.keySet()) {// update the WhereClause with the attributes' type triples
+			List<String> varInSameClassPrefix = classPrefix_unlabeledAttributes.get(classPrefix);
 			for(String var : varInSameClassPrefix) {
-				List<String> varTypeTriple = Arrays.asList(varNameIdentifier+var, "a", classPrefix + ":" + var);
+				List<String> varTypeTriple = Arrays.asList(entityNameIdentifier+var, "a", classPrefix + ":" + var);
 				this.whereClause.add(varTypeTriple);
 			}			
 		}		
 		
+		// update the Where clause with the top node and its relationship with the entity node
+		if (topNode_unlabeledAttributes.size() > 0){
+			for (String topNode: topNode_unlabeledAttributes.keySet()){
+				List<String> topNodequerySentence = topNode_unlabeledAttributes.get(topNode);
+				if(topNode.indexOf("?") != 0) {
+					topNode = "?" + topNode;}
+				for(int i = 0; i < topNodequerySentence.size(); i+=2) {// set up whereClause
+					if(i == 0) {
+						List<String> spo = Arrays.asList(topNode, topNodequerySentence.get(i), topNodequerySentence.get(i+1));
+						this.whereClause.add(spo);
+					} if (i == topNodequerySentence.size()) {
+						List<String> spo = Arrays.asList(topNode, topNodequerySentence.get(i), this.entityName);
+						this.whereClause.add(spo);
+					} 
+					else {
+						List<String> spo = Arrays.asList(topNode, topNodequerySentence.get(i), topNodequerySentence.get(i+1));
+						this.whereClause.add(spo);	
+					}				
+				}						
+			}	
+		}		
 	} 
 	
 	/**
@@ -241,17 +263,19 @@ public class ClauseBuilder implements Prefixes{
 	 public static void main(String[] args) {
 		  
 		  PowerFlowModelVariableForQuery pfmv = new PowerFlowModelVariableForQuery(false, 2, "10", "14");// initialise a object of PowerFlowModelVariableForQuery
-		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.entityType); // initialise a object of ClauseBuilder
+		  ClauseBuilder pb = new ClauseBuilder(true, false, pfmv.genEntityName, pfmv.PowerFlowModelEntityMap.get(pfmv.genEntityName)); // initialise a object of ClauseBuilder
 		  List<String> vl = pfmv.PowerFlowModelVariablesMap.get(pfmv.genCostFuncKey); // gets a list of variable names of selected entity, for this example, the vl is the variables name of the GenCostFuncVariables of power grid model
 		  HashMap<String, List<String>> classPre_var = new HashMap<String, List<String>>();
 		  classPre_var.put(pfmv.variableTypePrefix, vl);
-		  LinkedHashMap<String, List<String>> unlabeledVariable_querySentence = new LinkedHashMap<String, List<String>>();
+		  LinkedHashMap<String, List<String>> unlabeledAttributes_querySentence = new LinkedHashMap<String, List<String>>();
 		  for(int i = 0 ; i < vl.size(); i++) {
-			  unlabeledVariable_querySentence.put(vl.get(i), pfmv.queryModelVariableSentence);			  
-		  }		
+			  unlabeledAttributes_querySentence.put(vl.get(i), pfmv.queryModelVariableSentence);			  
+		  }	
+		  HashMap<String, List<String>> topNode_unlabeledAttributes = new HashMap<String, List<String>>();
+		  topNode_unlabeledAttributes.put(pfmv.PowerFlowModelTopNodeMap.get(pfmv.genEntityName), pfmv.queryModelTopNodeSentence);
 		  pb.prefixClauseBuilder(pfmv.PrefixAbbrList);
-		  pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledVariable_querySentence);
-		  pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
+		  pb.selectClauseAndWhereClauseBuilderWithoutLabels(pfmv.varNameIdentifier, classPre_var, unlabeledAttributes_querySentence, topNode_unlabeledAttributes);
+		  // pb.selectClauseAndWhereClauseBuilderWithLabels(pfmv.varNameIdentifier, pfmv.labelMap, pfmv.labelVarCalssNameSpaceMap, pfmv.labeledVariable_querySentence);
 		  ArrayList<List<String>> wc  = pb.whereClause;
 		  Printer.printArrayList(wc);
 		  ArrayList<List<String>> pl  = pb.prefixList;
