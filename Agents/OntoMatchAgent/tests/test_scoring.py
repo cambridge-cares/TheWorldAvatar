@@ -300,7 +300,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         # run
 
         manager.calculate_similarities_between_datasets()
-        df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
+        df_max_scores_1, _ = manager.calculate_maximum_scores()
 
         # assert
 
@@ -319,7 +319,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_owner(self):
 
-        params = self.read_conf_kwl()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
@@ -332,13 +332,6 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         property_mapping = ontomatch.scoring.find_property_mapping(manager, sim_fcts, props1, props2)
 
         logging.debug('property_mapping=%s', property_mapping)
-
-        '''
-        expected = {
-            'name': ('name', 0.79765, 4),
-            'isOwnedBy/hasName': ('isOwnedBy/hasName', 0.55746, 4)
-        }
-        '''
 
         expected = {
             'name': ('name', 0.76349, 4),
@@ -355,7 +348,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_property_mapping_props_name_fuel(self):
 
-        params = self.read_conf_kwl()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = params['blocking']
         params_sim_fcts = params['mapping']['similarity_functions']
@@ -462,7 +455,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertEqual(len(it), 4)
 
     def test_create_prop_prop_sim_triples_from_params(self):
-        params = self.read_conf_kwl()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
         params_mapping = params['mapping']
         triples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
         self.assertEqual(len(triples), 5)

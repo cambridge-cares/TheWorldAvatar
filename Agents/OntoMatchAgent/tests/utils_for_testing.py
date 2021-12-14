@@ -11,6 +11,7 @@ PATH_MATCHES_PP_DEU = './data/power_plant_DEU/matches_power_plant_DEU.csv'
 PATH_CONF_PP_DEU_AUTO = './tests/conf/conf_power_plant_DEU_auto.json'
 PATH_CONF_PP_DEU_AUTO_GEO = './tests/conf/conf_power_plant_DEU_auto_geo.json'
 PATH_CONF_PP_DEU_XGB = './tests/conf/conf_power_plant_DEU_xgb.json'
+PATH_CONF_PP_DEU_WEIGHT = './tests/conf/conf_power_plant_DEU_weight.json'
 
 class TestCaseOntoMatch(unittest.TestCase):
 
@@ -33,8 +34,7 @@ class TestCaseOntoMatch(unittest.TestCase):
             tgt_onto = pickle.load(file)
         return src_onto, tgt_onto
 
-    def read_conf_kwl(self):
-        config_file = './tests/conf/conf_power_plant_DEU_weight.json'
-        with open(config_file) as json_config:
+    def read_params(self, file):
+        with open(file) as json_config:
             params = json.load(json_config, object_pairs_hook=collections.OrderedDict)
         return params

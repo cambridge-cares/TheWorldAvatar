@@ -19,19 +19,13 @@ class InstanceMatcherBase():
     def __init__(self):
         self.score_manager = None
 
-    #TODO-AE remove attribute prop_prop_sim_tuples (was just for testing). replace it completely by params_mapping
-    def start_base(self, srconto, tgtonto, params_blocking, params_mapping=None, prop_prop_sim_tuples=None):
+    def start_base(self, srconto, tgtonto, params_blocking, params_mapping=None):
 
         self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking)
 
-        # TODO-AE: We start with automatic property mapping
+        # TODO-AE: start with automatic property mapping
         # --> configurable, also: fixed property mapping (e.g. geo coordinates)
-        # TODO-AE: symmetrical mapping (with max value for entities of dataset 2)
-
-        if prop_prop_sim_tuples:
-            mode = 'test'
-        else:
-            mode = params_mapping['mode']
+        mode = params_mapping['mode']
 
         logging.info('starting InstanceMatcherBase with mode=%s', mode)
 
@@ -41,13 +35,9 @@ class InstanceMatcherBase():
             sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
             property_mapping = ontomatch.scoring.find_property_mapping(self.score_manager, sim_fcts)
 
-        elif mode in ['fixed', 'test']:
-
-            if mode == 'fixed':
-                prop_prop_sim_tuples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
-                logging.info('created prop_prop_sim_tuples from params_mapping')
-
-            logging.info('prop_prop_sim_tuples=%s', prop_prop_sim_tuples)
+        elif mode == 'fixed':
+            prop_prop_sim_tuples = ontomatch.scoring.create_prop_prop_sim_triples_from_params(params_mapping)
+            logging.info('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
 
             property_mapping = []
             for pos, t in enumerate(prop_prop_sim_tuples):
@@ -77,9 +67,6 @@ class InstanceMatcherBase():
         self.score_manager.df_scores = df_scores
 
 class InstanceMatcherClassifier(InstanceMatcherBase):
-
-    def __init__(self):
-        super().__init__()
 
     def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
@@ -194,7 +181,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         self.start_internal(srconto, tgtonto, params_model_specific, params_blocking, params_post_processing, params_mapping)
 
-    def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None, prop_prop_sim_tuples=None):
+    def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None):
 
         logging.info('starting InstanceMatcherWithAutoCalibration, params=%s', params_model_specific)
         symmetric = params_model_specific['symmetric']
@@ -202,11 +189,10 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         if delta is None:
             delta = 0.025
 
-        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping, prop_prop_sim_tuples)
+        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
         df_scores = self.score_manager.get_scores()
         df_max_scores = self.score_manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
-        #TODO-AE asymmetry
 
         if symmetric:
             # df_max_scores_2 has multi index of form (idx_2, idx_1)
@@ -238,17 +224,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         index_1 = df_combined.index
         count = 0
         rows = []
-        '''
-        for (idx_2, idx_1), row in tqdm(df_total_2.iterrows()):
-            score_2 = row['score']
-            idx_inv = (idx_1, idx_2)
-            if idx_inv in index_1:
-                count += 1
-                score_1 = df_combined.loc[idx_inv]['score']
-                df_combined.at[(idx_1, idx_2), 'score'] = max(score_1, score_2)
-            else:
-                rows.append({'idx_1': idx_1, 'idx_2': idx_2, 'score': score_2})
-        '''
+
         for idx, row in tqdm(df_total_2.iterrows()):
             score_2 = row['score']
             if idx in index_1:
@@ -461,7 +437,7 @@ class InstanceMatcherWithScoringWeights(InstanceMatcherBase):
 
         return self.start_internal(srconto, tgtonto, params_blocking, scoring_weights, params_post_processing, params_mapping)
 
-    def start_internal(self, srconto, tgtonto, params_blocking, scoring_weights, params_post_processing=None, params_mapping=None, params_classification=None):
+    def start_internal(self, srconto, tgtonto, params_blocking, scoring_weights, params_post_processing=None, params_mapping=None):
 
         logging.info('starting InstanceMatcherWithScoringWeightsAgent')
 

@@ -7,87 +7,11 @@ import tests.utils_for_testing
 
 class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
-    def get_params_blocking(self):
-        return {
-            "name": "TokenBasedPairIterator",
-            "model_specific": {
-                 "min_token_length": 3,
-                 "max_token_occurrences_src": 20,
-                 "max_token_occurrences_tgt": 20,
-                 "blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality", "address/streetAddress", "address/postalCode"],
-                 "reset_index": False,
-            }
-        }
-
     def get_params_model_specific(self):
         return {
             'symmetric': True,
             'delta': 0.05
         }
-
-    #TODO-AE replace method by config file
-    def get_prop_prop_sim_tuples_without_geo_coordinates(self):
-        params_sim_fcts = [{
-                    "name": "dist_nltk_edit",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 3
-                },{
-                    "name": "dist_absolute",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 10
-                },{
-                    "name": "dist_relative",
-                    "cut_off_mode": "fixed"
-                },{
-                    "name": "dist_equal",
-                    "cut_off_mode": "fixed"
-                },{
-                    "name": "dist_cosine_with_tfidf",
-                    "cut_off_mode": "fixed"
-            }
-        ]
-        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
-        return [
-            ('name', 'name', sim_fcts[4]),
-            ('isOwnedBy/hasName', 'isOwnedBy/hasName', sim_fcts[0]),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', sim_fcts[1]),
-            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', sim_fcts[2]),
-            #switched from type to fuel
-            #('type', 'type', sim_fcts[3]),
-            ('realizes/consumesPrimaryFuel', 'realizes/consumesPrimaryFuel', sim_fcts[3]),
-        ]
-
-    def get_prop_prop_sim_tuples_with_geo_coordinates(self):
-        params_sim_fcts = [{
-                    "name": "dist_nltk_edit",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 3
-                },{
-                    "name": "dist_absolute",
-                    "cut_off_mode": "fixed",
-                    "cut_off_value": 10
-                },{
-                    "name": "dist_relative",
-                    "cut_off_mode": "fixed"
-                },{
-                    "name": "dist_equal",
-                    "cut_off_mode": "fixed"
-                },{
-                    "name": "dist_cosine_with_tfidf",
-                    "cut_off_mode": "fixed"
-            }
-        ]
-        sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
-        return [
-            ('name', 'name', sim_fcts[4]),
-            ('isOwnedBy/hasName', 'isOwnedBy/hasName', sim_fcts[0]),
-            ('hasYearOfBuilt/hasValue/numericalValue', 'hasYearOfBuilt/hasValue/numericalValue', sim_fcts[1]),
-            ('designCapacity/hasValue/numericalValue', 'designCapacity/hasValue/numericalValue', sim_fcts[2]),
-            ('realizes/consumesPrimaryFuel', 'realizes/consumesPrimaryFuel', sim_fcts[3]),
-            #TODO-AE long = x ???
-            ('geo:wgs84_pos#long', 'hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue', sim_fcts[2]),
-            ('geo:wgs84_pos#lat', 'hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue', sim_fcts[2])
-        ]
 
     def read_kwl_gppd_DEU_matching_file(self):
         matchfile = tests.utils_for_testing.PATH_MATCHES_PP_DEU
@@ -98,14 +22,16 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
     def test_auto_calibration_without_geo_coordinates(self):
 
         params_model_specific = self.get_params_model_specific()
-        params_blocking = self.get_params_blocking()
-        prop_prop_sim_tuples = self.get_prop_prop_sim_tuples_without_geo_coordinates()
+
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO)
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
 
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        _, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, params_mapping=params_mapping)
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
@@ -114,37 +40,21 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
-        self.assertEqual(len(df_total_best_scores), 1357)
+        self.assertEqual(len(df_total_best_scores), 1343)
 
-        # max f1-score=0.8874388254486133 for threshold t=0.29999999999999993
-        # area under curve=0.9052648606935376
-        '''
+        # 2021-12-14 22:14:14,832 INFO     max f1-score=0.8846364133406234 for threshold t=0.29999999999999993
+        # 2021-12-14 22:14:14,833 INFO     area under curve=0.9102745697892666
         expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.7, 1.0, 0.017241379310344827, 16, 0, 912, 0.03389830508474576],
-            [0.6, 1.0, 0.30064655172413796, 279, 0, 649, 0.46230323115161565],
-            [0.5, 0.9870967741935484, 0.49461206896551724, 459, 6, 469, 0.6590093323761665],
-            [0.3999999999999999, 0.9717514124293786, 0.7413793103448276, 688, 20, 240, 0.8410757946210269],
-            [0.29999999999999993, 0.8957189901207464, 0.8793103448275862, 816, 95, 112, 0.8874388254486133],
-            [0.19999999999999996, 0.7930720145852325, 0.9375, 870, 227, 58, 0.8592592592592592],
-            [0.09999999999999998, 0.6798756798756799, 0.9428879310344828, 875, 412, 53, 0.7900677200902935],
-            [0.0, 0.6741140215716487, 0.9428879310344828, 875, 423, 53, 0.7861635220125786]]
-        '''
-
-        # max f1-score=0.8854961832061069 for threshold t=0.29999999999999993
-        # area under curve=0.9097390253868335
-        expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.7, 1.0, 0.014008620689655173, 13, 0, 915, 0.027630180658873536],
-            [0.6, 0.9965635738831615, 0.3125, 290, 1, 638, 0.47579983593109104],
-            [0.5, 0.9848484848484849, 0.49030172413793105, 455, 7, 473, 0.6546762589928058],
-            [0.3999999999999999, 0.975397973950796, 0.7262931034482759, 674, 17, 254, 0.8326127239036443],
-            [0.29999999999999993, 0.8962472406181016, 0.875, 812, 94, 116, 0.8854961832061069],
-            [0.19999999999999996, 0.7871956717763751, 0.9407327586206896, 873, 236, 55, 0.8571428571428571],
-            [0.09999999999999998, 0.6725057121096725, 0.9515086206896551, 883, 430, 45, 0.7880410531012941],
-            [0.0, 0.6514369933677229, 0.9525862068965517, 884, 473, 44, 0.773741794310722]]
+            [0.7, 1.0, 0.00646551724137931, 6, 0, 922, 0.012847965738758032],
+            [0.6, 0.9965156794425087, 0.3081896551724138, 286, 1, 642, 0.4707818930041152],
+            [0.5, 0.9873684210526316, 0.5053879310344828, 469, 6, 459, 0.6685673556664291],
+            [0.3999999999999999, 0.974025974025974, 0.7273706896551724, 675, 18, 253, 0.8328192473781616],
+            [0.29999999999999993, 0.897891231964484, 0.8717672413793104, 809, 92, 119, 0.8846364133406234],
+            [0.19999999999999996, 0.7956403269754768, 0.9439655172413793, 876, 225, 52, 0.8634795465746674],
+            [0.09999999999999998, 0.6781874039938556, 0.9515086206896551, 883, 419, 45, 0.7919282511210761],
+            [0.0, 0.6574832464631423, 0.9515086206896551, 883, 460, 45, 0.7776309995596654]]
 
         for i, expected in enumerate(expected_result):
             actual = result[i]
@@ -154,14 +64,15 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
     def test_auto_calibration_with_geo_coordinates(self):
 
         params_model_specific = self.get_params_model_specific()
-        params_blocking = self.get_params_blocking()
-        prop_prop_sim_tuples = self.get_prop_prop_sim_tuples_with_geo_coordinates()
+
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO_GEO)
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
 
         src_onto, tgt_onto = self.load_kwl_with_geo_coordinates_gppd_ontologies()
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
-
-        df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
+        _, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, params_mapping=params_mapping)
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())
@@ -170,37 +81,21 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         logging.info('length of total best scores=%s', len(df_total_best_scores))
         result = ontomatch.evaluate.evaluate(df_total_best_scores, index_set_matches, number_of_thresholds=11)
 
-        self.assertEqual(len(df_total_best_scores), 1349)
+        self.assertEqual(len(df_total_best_scores), 1335)
 
-        # max f1-score=0.9031903190319032 for threshold t=0.29999999999999993
-        # area under curve=0.9093646330565498
-        '''
+        # 2021-12-14 22:07:42,036 INFO     max f1-score=0.9166666666666667 for threshold t=0.29999999999999993
+        # 2021-12-14 22:07:42,036 INFO     area under curve=0.917398534023953
         expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
             [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.7, 1.0, 0.00646551724137931, 6, 0, 922, 0.012847965738758032],
-            [0.6, 1.0, 0.07758620689655173, 72, 0, 856, 0.144],
-            [0.5, 0.9940298507462687, 0.3588362068965517, 333, 2, 595, 0.5273159144893111],
-            [0.3999999999999999, 0.9816232771822359, 0.6907327586206896, 641, 12, 287, 0.8108791903858317],
-            [0.29999999999999993, 0.9224719101123595, 0.884698275862069, 821, 69, 107, 0.9031903190319032],
-            [0.19999999999999996, 0.7747349823321554, 0.9450431034482759, 877, 255, 51, 0.8514563106796116],
-            [0.09999999999999998, 0.678516228748068, 0.9461206896551724, 878, 416, 50, 0.7902790279027904],
-            [0.0, 0.6764252696456087, 0.9461206896551724, 878, 420, 50, 0.788858939802336]]
-        '''
-
-        # max f1-score=0.9008810572687224 for threshold t=0.29999999999999993
-        # area under curve=0.9141845025939161
-        expected_result = [[1.0, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.9, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.8, 1.0, 0.0, 0, 0, 928, 0.0],
-            [0.7, 1.0, 0.00646551724137931, 6, 0, 922, 0.012847965738758032],
-            [0.6, 1.0, 0.07435344827586207, 69, 0, 859, 0.13841524573721165],
-            [0.5, 0.9913294797687862, 0.36961206896551724, 343, 3, 585, 0.5384615384615384],
-            [0.3999999999999999, 0.9859154929577465, 0.6788793103448276, 630, 9, 298, 0.8040842373962988],
-            [0.29999999999999993, 0.9211711711711712, 0.8814655172413793, 818, 70, 110, 0.9008810572687224],
-            [0.19999999999999996, 0.7697022767075307, 0.947198275862069, 879, 263, 49, 0.8492753623188405],
-            [0.09999999999999998, 0.664167916041979, 0.9547413793103449, 886, 448, 42, 0.7833775419982316],
-            [0.0, 0.6567828020756116, 0.9547413793103449, 886, 463, 42, 0.7782169521299956]]
+            [0.7, 1.0, 0.003232758620689655, 3, 0, 925, 0.006444683136412459],
+            [0.6, 1.0, 0.07650862068965517, 71, 0, 857, 0.14214214214214213],
+            [0.5, 0.9919786096256684, 0.39978448275862066, 371, 3, 557, 0.5698924731182795],
+            [0.3999999999999999, 0.9820089955022488, 0.7058189655172413, 655, 12, 273, 0.8213166144200627],
+            [0.29999999999999993, 0.9206521739130434, 0.9127155172413793, 847, 73, 81, 0.9166666666666667],
+            [0.19999999999999996, 0.7630208333333334, 0.947198275862069, 879, 273, 49, 0.8451923076923077],
+            [0.09999999999999998, 0.6699544764795144, 0.9515086206896551, 883, 435, 45, 0.7862867319679431],
+            [0.0, 0.6614232209737828, 0.9515086206896551, 883, 452, 45, 0.7803800265134777]]
 
         for i, expected in enumerate(expected_result):
             actual = result[i]
@@ -229,8 +124,8 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
     def test_matching_with_scoring_weights_without_geo_coordinates(self):
 
-        params = self.read_conf_kwl()
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_WEIGHT)
         params_blocking = params['blocking']
         params_mapping = params['mapping']
         params_post_processing = params['post_processing']
@@ -249,22 +144,6 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matches = self.read_kwl_gppd_DEU_matching_file()
         result = ontomatch.evaluate.evaluate(scores, matches, number_of_thresholds=11)
-
-        # max f1-score=0.8181268882175227 for threshold t=0.9
-        # area under curve=0.8232895636412483
-        '''
-        expected_result = [[1.0, 0.9941002949852508, 0.36314655172413796, 337, 2, 591, 0.531965272296764],
-            [0.9, 0.9312242090784044, 0.7295258620689655, 677, 50, 251, 0.8181268882175227],
-            [0.8, 0.7903402854006586, 0.7758620689655172, 720, 191, 208, 0.7830342577487764],
-            [0.7, 0.7626943005181347, 0.7931034482758621, 736, 229, 192, 0.7776016904384575],
-            [0.6, 0.7350928641251222, 0.8103448275862069, 752, 271, 176, 0.7708867247565351],
-            [0.5, 0.6988950276243094, 0.8178879310344828, 759, 327, 169, 0.7537239324726912],
-            [0.3999999999999999, 0.6507258753202391, 0.8211206896551724, 762, 409, 166, 0.7260600285850404],
-            [0.29999999999999993, 0.5889145496535797, 0.8243534482758621, 765, 534, 163, 0.6870229007633588],
-            [0.19999999999999996, 0.5072463768115942, 0.8674568965517241, 805, 782, 123, 0.6401590457256461],
-            [0.09999999999999998, 0.26840215439856374, 0.9665948275862069, 897, 2445, 31, 0.4201405152224824],
-            [0.0, 0.16828358208955224, 0.9719827586206896, 902, 4458, 26, 0.2868956743002545]]
-        '''
 
         # max f1-score=0.8097671777399206 for threshold t=0.8
         # area under curve=0.8316915503444298

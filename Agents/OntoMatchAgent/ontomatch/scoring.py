@@ -540,7 +540,6 @@ def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
     norm1 = calculate_norm(v1)
     norm2 = calculate_norm(v2)
 
-    #TODO-AE 211019 URGENT
     cosine_distance = 1 - round(dot / (norm1 * norm2), 4)
 
     if log:

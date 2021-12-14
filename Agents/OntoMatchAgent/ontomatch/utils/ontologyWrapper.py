@@ -172,21 +172,16 @@ class Ontology():
         li = self.getAllLiteralInstances(g)#search first for all triples with literal value
         ##############################################################################
 
-        #TODO-AE 211021 HACK missing literal values (such as Bremen) if same value is object for different properties
-        #vset = set()
-        # vset_dict = {prop : set of values}
         vset_dict = {}
         count = 0
         for s,p,v in tqdm(li):
 
-            #TODO-AE 211021 HACK missing literal values
             vset = vset_dict.get(p)
             if vset is None:
                 vset = set()
                 vset_dict[p] = vset
                 logging.debug('added value set for prop=%s', p)
 
-            #TODO-AE: BNA1866 - ask Shaocong why < 60 was required
             #if isinstance(v, rdflib.term.Literal) and len(str(v.value))<60:#filter in only Literal and string that is not too long
             if isinstance(v, rdflib.term.Literal):
                 if skip_labels:

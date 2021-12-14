@@ -125,7 +125,6 @@ def get_area_under_curve(result):
         current_precision = r[1]
         current_recall = r[2]
         assert last_recall <= current_recall
-        #TODO-AE URGENT use (last precision and current_precision) / 2
         area_under_curve += (current_recall - last_recall) * current_precision
         last_recall = current_recall
 
