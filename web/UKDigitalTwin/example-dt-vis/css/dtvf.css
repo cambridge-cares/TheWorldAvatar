@@ -652,4 +652,5 @@ label[for=select-feature] {
   width: 15%;
   float: left;
   margin-left: 25px;
+  line-height: 30px;
 }
