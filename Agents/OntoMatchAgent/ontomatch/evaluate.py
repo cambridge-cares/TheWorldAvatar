@@ -43,20 +43,18 @@ def evaluate_y_pred_proba(y_test, y_pred_proba, number_of_thresholds=41):
         result.append(entry)
     return result
 
-def read_alignment_file_as_dataframe(filename):
-    reader = ontomatch.readAlignment.AReader(filename)
-    reader.readAlignment(-1.)
+def evaluate_with_pred_proba(model, x, y, number_of_thresholds=41):
 
-    rows = []
-    for iri1, iri2, score in reader.a.map:
-        idx1 = getID(iri1)
-        idx2 = getID(iri2)
-        row = {'idx_1': idx1, 'idx_2': idx2, 'score': score}
-        rows.append(row)
+    score = model.score(x, y)
+    logging.info('score on entire test set=%s, len=%s', score, len(x))
 
-    dframe = pd.DataFrame(rows)
-    dframe.set_index(['idx_1', 'idx_2'], inplace=True)
-    return dframe
+    #y_pred = model.predict(x)
+    #ontomatch.evaluate.evaluate_y_pred(y, y)
+
+    y_pred_proba = model.predict_proba(x)
+    result = evaluate_y_pred_proba(y, y_pred_proba, number_of_thresholds)
+    log_result(result)
+    return result
 
 def getID(iri):
     if iri.startswith('http://dbpedia.org/resource/'):
@@ -154,16 +152,3 @@ def evaluate(df_scores, matches, number_of_thresholds=41):
 
     log_result(result)
     return result
-
-if __name__ == '__main__':
-
-    ontomatch.utils.util.init_logging()
-
-    alignmentfile = './2109xx.owl'
-    df_alignment = read_alignment_file_as_dataframe(alignmentfile)
-    matchfile = 'C:/my/tmp/ontomatch/scores_kwl_20210720_8.csv'
-    #matchfile = 'C:/my/tmp/ontomatch/20210914_scores_dukes_gppd_v3.csv'
-    #matchfile = 'C:/my/tmp/ontomatch/scores_dbp_DEU_v2.csv'
-    index_set_matches = read_match_file_as_index_set(matchfile, linktypes = [1, 3, 4, 5])
-    logging.info('length of alignment file=%s, ground truth matches=%s', len(df_alignment), len(index_set_matches))
-    evaluate(df_alignment, index_set_matches)

@@ -2,11 +2,35 @@ import logging
 
 import pandas as pd
 
-import ontomatch.classification
+import ontomatch.evaluate
 import ontomatch.hpo
 import tests.utils_for_testing
 
 class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
+
+    def train_test_split_OLD(self, match_file, nonmatch_file, column_ml_phase, prop_columns=None):
+        logging.info('splitting, match=%s, nonmatch=%s, ml_phase=%s, columns=%s',
+            match_file, nonmatch_file, column_ml_phase, prop_columns)
+
+        keep_columns = prop_columns.copy()
+        keep_columns.extend(['y', column_ml_phase])
+
+        df_matches = ontomatch.utils.util.read_csv(match_file)
+        df_matches = df_matches[keep_columns].copy()
+
+        df_nonmatches = ontomatch.utils.util.read_csv(nonmatch_file)
+        df_nonmatches = df_nonmatches[keep_columns].copy()
+
+        dframe = pd.concat([df_matches, df_nonmatches])
+        mask = (dframe[column_ml_phase] == 'train')
+        x_train = dframe[mask][prop_columns].copy()
+        y_train = dframe[mask]['y'].copy()
+        mask = (dframe[column_ml_phase] == 'test')
+        x_test = dframe[mask][prop_columns].copy()
+        y_test = dframe[mask]['y'].copy()
+
+        logging.info('x_train=%s, y_train=%s, x_test=%s, y_test=%s', len(x_train), len(y_train), len(x_test), len(y_test))
+        return x_train, x_test, y_train, y_test
 
     def test_start_XGB_scores(self):
         params_classification = {
@@ -33,17 +57,16 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
 		    }
         }
 
-        match_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_M_ground_truth_tfidf.csv'
-        nonmatch_file = 'C:/my/tmp/ontomatch/20211118_tmp/power_plant_DEU_N_random_blocking_tfidf_ratio_1.csv'
+        match_file = './tests/data/power_plant_DEU_M_ground_truth_tfidf.csv'
+        nonmatch_file = './tests/data/power_plant_DEU_N_random_blocking_tfidf_ratio_1.csv'
         train_size = 0.2
         column_ml_phase = 'ml_phase_' + str(train_size)
         prop_columns=['0', '1', '2', '3', '4']
-        x_train, x_test, y_train, y_test = ontomatch.classification.TrainTestGenerator.train_test_split_OLD(
-                match_file, nonmatch_file, column_ml_phase, prop_columns)
+        x_train, x_test, y_train, y_test = self.train_test_split_OLD(match_file, nonmatch_file, column_ml_phase, prop_columns)
 
         cross_validation = params_training['cross_validation']
         model = ontomatch.hpo.start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
-        result = ontomatch.hpo.evaluate_with_pred_proba(model, x_test, y_test, 11)
+        result = ontomatch.evaluate.evaluate_with_pred_proba(model, x_test, y_test, 11)
 
         # max f1-score=0.864373783257625 for threshold t=0.7
         # area under curve=0.8794392545480988

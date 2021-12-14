@@ -10,11 +10,15 @@ import random
 import sys
 import yaml
 
-import owlready2
-import rdflib
-
 import numpy as np
+import owlready2
 import pandas as pd
+import rdflib
+import sklearn
+import sklearn.ensemble
+import sklearn.metrics.pairwise
+import sklearn.model_selection
+import sklearn.svm
 
 import ontomatch.utils.blackboard
 from ontomatch.httpCaller import httpcaller as httpcaller
@@ -44,7 +48,7 @@ def init_file_logging(log_config_file, log_file):
     # use logging configuration with dictionary
     logging.config.dictConfig(log_cfg)
 
-    logging.info(concat('initialized logging with config file=', log_config_file, ', log file=', log_file))
+    logging.info('initialized logging with config file=%s, log file=%s', log_config_file, log_file)
 
 def init_logging(log_conf_dir='./conf', log_dir='../logs'):
     # file and console logging with Python's standard logging library
@@ -102,21 +106,6 @@ def init(config_dev=None):
 
     return config, args.config
 
-def concat(*args):
-    if len(args) == 1:
-        return args[0]
-    else:
-        message = ''
-        for m in args:
-            message += str(m) + ' '
-        return message
-
-def log(*args):
-    logging.info(concat(*args))
-
-def logm(*args):
-    logging.getLogger().info(args)
-
 def get_prop_columns(dframe):
     columns = []
     for c in dframe.columns:
@@ -128,7 +117,7 @@ def get_prop_columns(dframe):
         columns.append(c)
     return columns
 
-def read_csv(file):
+def read_csv(file:str) -> pd.DataFrame:
     dframe = pd.read_csv(file)
     dframe['idx_1'] = dframe['idx_1'].astype(str)
     dframe['idx_2'] = dframe['idx_2'].astype(str)
@@ -168,11 +157,11 @@ def call_agent_blackboard_for_reading(handle:str, http:bool=False) -> str:
     logging.info('calling blackboard for reading, handle=%s, http=%s', handle, http)
     if http:
         params = dict(handle = handle)
-        object = httpcaller.caller().callAgent("blackboard", params, "GET")
+        obj = httpcaller.caller().callAgent("blackboard", params, "GET")
     else:
-        object = ontomatch.utils.blackboard.Agent().read(handle)
+        obj = ontomatch.utils.blackboard.Agent().read(handle)
     logging.info('called blackboard for reading')
-    return object
+    return obj
 
 def load_ontology(graph_handle, blackboard=True):
     logging.info('loading ontology for %s', graph_handle)
@@ -208,3 +197,29 @@ def pickle_dump(addr, onto):
     logging.info('dumping ontology to file=%s', pklname)
     with open(pklname,'wb') as file:
         pickle.dump(onto, file, -1)
+
+def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonmatch_ratio, prop_columns=None):
+    logging.info('splitting, match=%s, candidate_pairs=%s, match_train_size=%s, nonmatch_ratio=%s',
+        len(df_matches), len(df_candidate_pairs), match_train_size, nonmatch_ratio)
+
+    # sample from matches
+    number_m = int(match_train_size * len(df_matches))
+    df_matches['y'] = 1 # 1 means match
+    df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
+
+    # sample from nonmatches
+    number_n = int(nonmatch_ratio * number_m)
+    # only subtract the matching pairs in the training set
+    diff = df_candidate_pairs.index.difference(df_m_train.index)
+    # substract all matching pairs in the ground truth
+    #diff = df_candidate_pairs.index.difference(df_matches.index)
+    df_diff = df_candidate_pairs.loc[diff]
+    df_diff['y'] = 0 # 0 means nonmatch
+    df_n_train, _ = sklearn.model_selection.train_test_split(df_diff, train_size=number_n, shuffle=True)
+
+    df_train = pd.concat([df_m_train, df_n_train])
+    x_train = df_train[prop_columns].copy()
+    y_train = df_train['y'].copy()
+
+    logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
+    return x_train, y_train

@@ -90,9 +90,7 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
         ]
 
     def read_kwl_gppd_DEU_matching_file(self):
-        #TODO-AE move this file
-        matchfile = 'C:/my/tmp/ontomatch/scores_kwl_20210720_8.csv'
-        # TODO-AE URGENT link type 2
+        matchfile = tests.utils_for_testing.PATH_MATCHES_PP_DEU
         index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
         logging.info('ground truth matches=%s', len(index_set_matches))
         return index_set_matches
@@ -163,11 +161,7 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
 
         matcher = ontomatch.instancematching.InstanceMatcherWithAutoCalibration()
 
-        symmetric = False
         df_total_scores, df_total_best_scores = matcher.start_internal(src_onto, tgt_onto, params_model_specific, params_blocking, prop_prop_sim_tuples=prop_prop_sim_tuples)
-
-        #df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_scores_geo_2.csv')
-        #df_total_scores.to_csv('C:/my/repos/ontomatch_20210924/tmp/total_best_scores_geo_2.csv')
 
         logging.debug('describe dataset 1:\n%s', matcher.score_manager.get_data1().describe().to_string())
         logging.debug('describe dataset 2:\n%s', matcher.score_manager.get_data2().describe().to_string())

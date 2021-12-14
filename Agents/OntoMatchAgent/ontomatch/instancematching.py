@@ -8,7 +8,6 @@ import numpy as np
 import pandas as pd
 from tqdm import tqdm
 
-import ontomatch.classification
 import ontomatch.hpo
 import ontomatch.matchManager
 import ontomatch.scoring
@@ -147,7 +146,7 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
                     len_diff = len(index_set_matches) - len(intersection)
                     logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
                     df_matches = df_scores.loc[intersection]
-                    x_train, y_train = ontomatch.classification.TrainTestGenerator.generate_training_set(
+                    x_train, y_train = ontomatch.utils.util.generate_training_set(
                         df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
                     column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
                     # reuse df_scores for storing train-test-split
@@ -171,53 +170,6 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
                 os.makedirs(dir_name, exist_ok=True)
                 df_tmp = df_scores.drop(columns='score')
                 df_tmp.to_csv(dir_name + '/train_test.csv')
-
-'''
-class InstanceMatcherXGB(InstanceMatcherBase):
-
-    def __init__(self):
-        super().__init__()
-
-    def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
-        config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
-        params = ontomatch.utils.util.convert_json_to_dict(config_json)
-
-        srconto = ontomatch.utils.util.load_ontology(src_graph_handle)
-        tgtonto = ontomatch.utils.util.load_ontology(tgt_graph_handle)
-
-        self.start_internal(srconto, tgtonto, params)
-
-    def start_internal(self, srconto, tgtonto, params):
-        logging.info('starting InstanceMatcherXGB')
-
-        params_blocking = params['blocking']
-        params_mapping = params['mapping']
-        params_post_processing = params['post_processing']
-        property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
-        df_scores = self.score_manager.get_scores()
-
-        params_model_specific = params['matching']['model_specific']
-        train_size = params_model_specific['match_train_size']
-        ratio = params_model_specific['nonmatch_ratio']
-        evaluation_file = params['post_processing']['evaluation_file']
-        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
-        # TODO-AE 211123: just a few matches might not be contained in df_scores
-        # thus we skip them here, since there are just a few, training XGB would not improve much if they are considere
-        # but then we have to calculate their similarity vectores
-        intersection = index_set_matches.intersection(df_scores.index)
-        df_matches = df_scores.loc[intersection]
-        prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-        x_train, y_train = ontomatch.classification.TrainTestGenerator.generate_training_set(
-            df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
-
-        params_classification = params['classification']
-        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, x_train, y_train, df_scores, prop_columns)
-
-        if params_post_processing:
-            #TODO-AE 211123 configure whether training set is considered or not
-            #postprocess(params_post_processing, self)
-            postprocess(params_post_processing, self, minus_train_set=x_train)
-'''
 
 class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
@@ -346,7 +298,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                     '''
                     count_m = sliding_counts[c_max](value)
                     count_m_plus_n = sliding_counts[c](value)
-                    if count_m_plus_n == 0:
+                    if count_m == 0:
+                        column_score = 0
+                    elif count_m_plus_n == 0:
                         column_score = 1
                     else:
 
@@ -427,7 +381,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             series = df_max_scores[c_max]
             # TODO-A URGENT 211211
             #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
-            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(series, delta)
+            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(c_max, series, delta)
             sliding_counts[c_max] = scount
 
             # TODO-AE 211110 change from int to str for column names
@@ -436,7 +390,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             series = df_scores[c]
             # TODO-A URGENT 211211
             #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
-            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(series, delta)
+            scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(c, series, delta)
             sliding_counts[c] = scount
 
         rows = []
@@ -474,7 +428,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         return sliding_count_internal
 
     @classmethod
-    def sliding_count_fast(cls, series, delta):
+    def sliding_count_fast(cls, column, series, delta):
         def sliding_count_internal(x):
             pos = round(x / (2*delta))
             return counts[pos]
@@ -485,7 +439,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             mask = (series >= x - delta) & (series <= x + delta)
             count = len(series[mask])
             counts.append(count)
-        logging.debug('MY SLIDING COUNT x=%s, counts=%s', x_list, counts)
+        logging.debug('counts for column=%s, x=%s, counts=%s', column, x_list, counts)
 
         return sliding_count_internal
 
