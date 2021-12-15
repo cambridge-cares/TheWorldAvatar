@@ -12,6 +12,7 @@ import sentence_transformers
 from tqdm import tqdm
 
 import ontomatch.blocking
+import ontomatch.utils.util
 
 def check_str(v1, v2):
     return (v1 and v2 and isinstance(v1, str) and isinstance(v2, str))
@@ -248,13 +249,15 @@ class ScoreManager():
         logging.info('calculating similarities, number of pairs=%s, sim=%s', len(self.pair_iterator), sim)
         count = 0
         rows = []
-        for pos1, pos2 in tqdm(self.pair_iterator):
+        #for pos1, pos2 in tqdm(self.pair_iterator):
+        for idx1, idx2 in tqdm(self.pair_iterator):
             count += 1
             #print(pos1, pos2)
-            idx1 = self.data1.index[pos1]
-            idx2 = self.data2.index[pos2]
+            #idx1 = self.data1.index[pos1]
+            #idx2 = self.data2.index[pos2]
             row1 = self.data1.loc[idx1]
             row2 = self.data2.loc[idx2]
+            '''
             try:
                 assert row1['pos'] == pos1
             except ValueError as err:
@@ -269,12 +272,15 @@ class ScoreManager():
                 logging.debug('\nidx1=%s, idx2=%s', idx1, idx2)
                 logging.debug('\n%s', row2.to_string())
                 raise err
-            row = [idx1, idx2, pos1, pos2]
+            '''
+            #row = [idx1, idx2, pos1, pos2]
+            row = [idx1, idx2]
             scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples, sim)
             row.extend(scores)
             rows.append(row)
 
-        columns = ['idx_1', 'idx_2', 'pos_1', 'pos_2']
+        #columns = ['idx_1', 'idx_2', 'pos_1', 'pos_2']
+        columns = ['idx_1', 'idx_2']
         for i, s in enumerate(self.prop_prop_fct_tuples):
             #prop1, prop2, _ = s
             #j = prop1.rfind('/')
@@ -371,13 +377,10 @@ class ScoreManager():
         return df_result
 
 def create_score_manager(srconto, tgtonto, params_blocking):
-    #dframe1 = ontomatch.blocking.create_dataframe_from_ontology(srconto)
-    #dframe2 = ontomatch.blocking.create_dataframe_from_ontology(tgtonto)
-    it = ontomatch.blocking.create_iterator(srconto, tgtonto, params_blocking)
+    it = ontomatch.blocking.create_iterator(srconto, tgtonto, params_blocking, use_position=False)
     dframe1 = ontomatch.blocking.TokenBasedPairIterator.df_src
     dframe2 = ontomatch.blocking.TokenBasedPairIterator.df_tgt
     manager = ScoreManager(dframe1, dframe2, it)
-
     return manager
 
 def find_property_mapping(manager: ScoreManager, similarity_functions:list, props1=None, props2=None) -> list :
@@ -615,3 +618,22 @@ class ScoringWeightIterator(collections.Iterable, collections.Sized):
 
     def __len__(self):
         return len(self.weight_arrays)
+
+class SimilarityManager():
+
+    def __init__(self):
+        pass
+
+    def load(self, data1: pd.DataFrame, data2: pd.DataFrame, candidate_pairs, src_file):
+        dframe = ontomatch.utils.util.read_csv(src_file)
+
+        index_intersection = candidate_pairs.intersection(dframe.index)
+        df_sim = dframe.loc[index_intersection]
+        logging.info('loaded similarity vectors, all=%s, selected=%s', len(dframe), len(df_sim))
+
+        index_diff = candidate_pairs.difference(dframe.index)
+        logging.info('creating similarity vectors=%s', len(index_diff))
+        for i in tqdm(index_diff):
+            pass
+
+

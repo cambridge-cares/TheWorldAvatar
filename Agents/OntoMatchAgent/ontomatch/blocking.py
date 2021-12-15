@@ -6,7 +6,7 @@ of two ontologies.
 import collections
 import itertools
 import logging
-import typing
+from typing import List, Union
 
 import pandas as pd
 import rdflib
@@ -21,18 +21,14 @@ class FullPairIterator(collections.Iterable, collections.Sized):
     in the source ontology and the target ontology
     """
 
-    def __init__(self, src_onto:Ontology, tgt_onto:Ontology, reset_index:bool =False):
+    def __init__(self, dframe_src:pd.DataFrame, dframe_tgt:pd.DataFrame):
         """
         Init the iterator on the Cartesian product of the ordered positions of individuals
         in the source ontology and the target ontology
-
-        Args:
-            src_onto (Ontology): source ontology
-            tgt_onto (Ontology): target ontology
         """
 
-        len_src = len(src_onto.individualList)
-        len_tgt = len(tgt_onto.individualList)
+        len_src = len(dframe_src)
+        len_tgt = len(dframe_tgt)
         self.length = len_src * len_tgt
         self.iterator = itertools.product(range(len_src), range(len_tgt))
 
@@ -58,9 +54,9 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
     df_index_tokens = None
     candidate_matching_pairs = None
 
-    def __init__(self, src_onto:Ontology, tgt_onto:Ontology,
+    def __init__(self, dframe_src:pd.DataFrame, dframe_tgt:pd.DataFrame,
                 min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20,
-                blocking_properties: typing.List[str] =None, reset_index:bool =False):
+                blocking_properties: List[str] =None, reset_index:bool =False, use_position:bool =True):
 
         """
         Init a token-based iterator.
@@ -71,7 +67,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             min_token_length (int, optional): minimum length of a token to be considered for candidate matching pairs. Defaults to 3.
             max_token_occurrences_src (int, optional): discard the token if the number of source individuals containing the token is larger than this value. Defaults to 20.
             max_token_occurrences_tgt (int, optional): discard the token if the number of target individuals containing the token is larger than this value. Defaults to 20.
-            blocking_properties (typing.List[str], optional): the names of the properties which string values are tokenized. If None all properties with string values are used. Defaults to None.
+            blocking_properties (List[str], optional): the names of the properties which string values are tokenized. If None all properties with string values are used. Defaults to None.
             reset_index (bool, optional): create the index only once if False else create it from scratch. Defaults to False.
         """
 
@@ -81,7 +77,8 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             logging.info('creating index')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
-            df_index, df_src, df_tgt = self._create_index(src_onto, tgt_onto, blocking_properties)
+
+            df_index, df_src, df_tgt = self._create_index(dframe_src, dframe_tgt, blocking_properties)
             TokenBasedPairIterator.df_src = df_src
             TokenBasedPairIterator.df_tgt = df_tgt
             TokenBasedPairIterator.df_index_tokens_unpruned = df_index
@@ -89,7 +86,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             mask = (df_index['len'] >= min_token_length) & (df_index['count_1'] <= max_token_occurrences_src) & (df_index['count_2'] <= max_token_occurrences_tgt)
             TokenBasedPairIterator.df_index_tokens = df_index[mask]
             logging.info('finished creating index')
-            TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(TokenBasedPairIterator.df_index_tokens)
+            TokenBasedPairIterator.candidate_matching_pairs = self._get_candidate_matching_pairs(TokenBasedPairIterator.df_index_tokens, use_position)
             logging.info('number of tokens in inverted index=%s', len(TokenBasedPairIterator.df_index_tokens))
             logging.info('number of candidate matching pairs=%s', len(TokenBasedPairIterator.candidate_matching_pairs))
 
@@ -137,21 +134,18 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         return index, df_index
 
-    def _create_index(self, src_onto, tgt_onto, blocking_properties):
+    def _create_index(self, dframe_src, dframe_tgt, blocking_properties):
 
         index = {}
 
         # create token index for source ontology
-        dframe_src = create_dataframe_from_ontology(src_onto)
         logging.info('columns dataset 1 = %s', [ str(c) for c in dframe_src.columns ])
         if blocking_properties is None:
             blocking_properties = dframe_src.columns
         for prop in blocking_properties:
             index, df_index = self._create_index_internal(dframe_src, prop, dataset_id=1, tokenize_fct=tokenize, index=index)
 
-
         # add tokens for target ontology
-        dframe_tgt = create_dataframe_from_ontology(tgt_onto)
         logging.info('columns dataset 1 = %s', [ str(c) for c in dframe_tgt.columns ])
         if blocking_properties is None:
             blocking_properties = dframe_tgt.columns
@@ -162,7 +156,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         return df_index, dframe_src, dframe_tgt
 
-    def _get_candidate_matching_pairs(self, df_index):
+    def _get_candidate_matching_pairs(self, df_index, use_position):
         # reorder the data in the inverted index dataframe such that
         # 'pairs' has the form { (pos_1, idx_1) : { token: [ (pos_2, idx_2) ] } }
         # pos_1 and pos_2 are the ordered position of the individuals in the source
@@ -185,11 +179,15 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
         pairs_positions = set()
         for entry, token_links in tqdm(pairs.items()):
             for token, links in token_links.items():
-                pos_1 = entry[0]
-                product = [ (pos_1, l[0]) for l in links ]
+                if use_position:
+                    pos_1 = entry[0]
+                    product = [ (pos_1, l[0]) for l in links ]
+                else: # use index
+                    idx_1 = entry[1]
+                    product = [ (idx_1, l[1]) for l in links ]
                 pairs_positions.update(product)
 
-        return list(pairs_positions)
+        return pd.MultiIndex.from_tuples(pairs_positions)
 
 def preprocess_string(s:str) -> str:
     if not isinstance(s, str):
@@ -198,20 +196,31 @@ def preprocess_string(s:str) -> str:
         s = s.replace(c, ' ')
     return s.lower().strip()
 
-def tokenize(s:str) -> typing.List[str]:
+def tokenize(s:str) -> List[str]:
     if isinstance(s, str) and s != '':
         s = preprocess_string(s)
         return s.split(' ')
     return []
 
-def create_iterator(src_onto:Ontology, tgt_onto:Ontology, params:dict):
+def create_iterator(src_onto:Union[pd.DataFrame, Ontology], tgt_onto:Union[pd.DataFrame,Ontology], params:dict, use_position:bool =True):
     params_copy = params.copy()
     name = params_copy.pop('name')
     params_model_specific = params.get('model_specific')
     if not params_model_specific:
         params_model_specific = {}
-    params_model_specific.update({'reset_index': True})
-    it_instance = globals()[name](src_onto, tgt_onto, **params_model_specific)
+    if name == 'TokenBasedPairIterator':
+        params_model_specific.update({'reset_index': True, 'use_position': use_position})
+
+    if isinstance(src_onto, Ontology):
+        dframe_src = create_dataframe_from_ontology(src_onto)
+    else:
+        dframe_src = src_onto
+    if isinstance(tgt_onto, Ontology):
+        dframe_tgt = create_dataframe_from_ontology(tgt_onto)
+    else:
+        dframe_tgt = tgt_onto
+
+    it_instance = globals()[name](dframe_src, dframe_tgt, **params_model_specific)
     return it_instance
 
 def uri_to_string(s):

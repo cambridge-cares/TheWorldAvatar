@@ -1,4 +1,5 @@
 import logging
+import time
 
 import ontomatch.blocking
 import ontomatch.scoring
@@ -461,3 +462,27 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertEqual(len(triples), 5)
         self.assertEqual(triples[0][0], 'name')
         self.assertEqual(triples[2][1], 'hasYearOfBuilt/hasValue/numericalValue')
+
+    def test_similarity_manager_load(self):
+
+        src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
+        params = {
+            'name': 'TokenBasedPairIterator',
+            'model_specific': {
+                'min_token_length': 3,
+                'max_token_occurrences_src': 20,
+                'max_token_occurrences_tgt': 20,
+                'blocking_properties': ['name', 'isOwnedBy/hasName', 'location'],
+                'reset_index': True,
+            }
+        }
+        # iterate over tuples (idx_1, idx_2) instead of tuples (pos_1, pos_2)
+        use_position=False
+        it = ontomatch.blocking.create_iterator(src_onto, tgt_onto, params, use_position=use_position)
+        index_set_pairs = it.candidate_matching_pairs
+
+        start_time = time.time()
+        src_file = 'C:/my/repos/ontomatch_20210924/experiments/211202_blocking/power_plant_DEU/scores_auto_10000/scores.csv'
+        manager = ontomatch.scoring.SimilarityManager()
+        manager.load(src_onto, tgt_onto, index_set_pairs, src_file)
+        logging.debug('elapsed time=%s', time.time() - start_time)

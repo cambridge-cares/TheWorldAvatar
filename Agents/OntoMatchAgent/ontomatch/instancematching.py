@@ -218,10 +218,25 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
     def combine_total_best_scores(self, df_total_1, df_total_2):
         df_combined = df_total_1[['score']].copy()
-        #df_combined['score'] = df_combined['score']
         logging.info('combining total best scores, total_1=%s, total_2=%s', len(df_total_1), len(df_total_2))
 
         index_1 = df_combined.index
+
+        #TODO-AE 211215 remove, related to flipping test test_auto_calibration_with_geo_coordinates
+        # just for debugging:
+        index_diff = df_total_2.index.difference(df_total_1.index)
+        index_diff_test = df_total_2.index.difference(index_1)
+        count_virtual_1 = 0
+        count_virtual_2 = 0
+        for idx1, idx2 in index_1:
+            if idx2 == 'virtual':
+                count_virtual_1 += 1
+        for idx1, idx2 in df_total_2.index:
+            if idx1 == 'virtual':
+                count_virtual_2 += 1
+        logging.debug('combined init=%s, index init=%s, diff=%s, diff_test=%s, v1=%s, v2=%s',
+                len(df_combined), len(index_1), len(index_diff), len(index_diff_test), count_virtual_1, count_virtual_2)
+
         count = 0
         rows = []
 
@@ -322,8 +337,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                 'idx_2': idx_2,
                 'score': score,
                 'best': False,
-                'pos_1': row['pos_1'],
-                'pos_2': row['pos_2'],
             }
 
             total_score_row.update(prop_score)
@@ -382,7 +395,8 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         df_total_scores = pd.DataFrame(rows)
 
         if dataset_id == 2:
-            df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1', 'pos_1': 'pos_2', 'pos_2': 'pos_1'})
+            #df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1', 'pos_1': 'pos_2', 'pos_2': 'pos_1'})
+            df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
             logging.info('reordered index and position names of df_total scores since dataset_id=%s', dataset_id)
 
         df_total_scores.set_index(['idx_1', 'idx_2'], inplace=True)

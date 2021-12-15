@@ -56,7 +56,7 @@ class Agent():
             logging.fatal(full_traceback)
             raise
 
-    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> (str, str):
+    def call_agent_knowledge_enrichment(self, addr:str, add_knowledge:bool, http:bool=False) -> tuple[str, str]:
         logging.info('calling ontomatch.knowledge.enrichment.Agent, addr=%s, add_knowledge=%s, http=%s',
                 addr, add_knowledge, http)
         if http:
