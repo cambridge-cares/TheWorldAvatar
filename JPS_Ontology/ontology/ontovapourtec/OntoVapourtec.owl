@@ -9,10 +9,10 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">11 November 2021</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">14 December 2021</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoVapourtec is an ontology developed for expressing a Vapourtec experiment module.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">7fae951880c9e7b15e1de62eee083165a08a47e7</gitCommitHash>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">38b01de377ed3480c1187835f2dcf8f254da0e9a</gitCommitHash>
     </owl:Ontology>
     
 
@@ -49,10 +49,11 @@
     
 
 
-    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifiedBy -->
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#isSpecifiedBy -->
 
 
-    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifiedBy">
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#isSpecifiedBy">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R2 pump and its settings at which the pump is desired to be.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and its settings at which the reactor is desired to be.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -63,7 +64,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifies">
-        <owl:inverseOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifiedBy"/>
+        <owl:inverseOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#isSpecifiedBy"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between pump settings and the Vapourtec R2 pump which the settings specify.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between reactor settings and the Vapourtec R4 reactor which the settings specify.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -915,6 +917,13 @@
         <rdfs:subClassOf rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
         <rdfs:subClassOf>
             <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifies"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR2Pump"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#hasFlowRateSetting"/>
                 <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onClass rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#FlowRateSetting"/>
@@ -1110,6 +1119,13 @@
                 <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR2PumpFunction"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#isSpecifiedBy"/>
+                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
+                <owl:onClass rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#PumpSettings"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The RS-400 comes with four R2-C (acid resistant pump) pumps as standard. [https://www.vapourtec.com/products/r-series-flow-chemistry-system/reactions-and-reagents-automated-rs-400-features/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl</rdfs:isDefinedBy>
     </owl:Class>
@@ -1201,7 +1217,7 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#specifiedBy"/>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontolab/OntoLab.owl#isSpecifiedBy"/>
                 <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onClass rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#ReactorSettings"/>
             </owl:Restriction>
