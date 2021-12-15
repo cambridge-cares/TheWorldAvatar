@@ -91,7 +91,7 @@ class InteractionHandler {
 
                 let layer = self._map.getLayer(featureLayer);
                 if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
-                return layer["metadata"]["provider"] === "cmcl"
+                return layer["metadata"]["provider"] === "cmcl";
             });
 
             if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
@@ -105,7 +105,7 @@ class InteractionHandler {
                     feature = this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
                         // Trigger on chosen feature
                         if(newFeature != null) {    
-                            self.mouseClick(layerName, newFeature);
+                            self.mouseClick(newFeature["layer"]["id"], newFeature);
                         }
                     });
                 } else {
@@ -138,17 +138,24 @@ class InteractionHandler {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
 
-                    // Get appropriate description for layer
-                    if(!feature.properties["displayName"] && !feature.properties["name"]) {
-                        return;
-                    }
-                    var name = feature.properties["displayName"];
-                    if(name == null) name = feature.properties["name"];
+                    let html = "";
+                    if(layerName.endsWith("_cluster")) {
+                        html = "<h3>Multiple features</h3>";
 
-                    // Build HTML for popup
-                    var html = "<h3>" + name + "</h3>";
-                    if(feature.properties["description"]) {
-                        html += feature.properties["description"] + "</br></br>"
+                        let count = feature["properties"]["point_count_abbreviated"];
+                        html += `There are a number of features (`+ count + `) at this location. `;
+                        html += "Click to show a list features and select an individual."
+                    } else {
+                        // Get appropriate description for feature
+                        var name = feature.properties["displayName"];
+                        if(name == null) name = feature.properties["name"];
+                        if(name == null) return;
+
+                        // Build HTML for popup
+                        html = "<h3>" + name + "</h3>";
+                        if(feature.properties["description"]) {
+                            html += feature.properties["description"] + "</br></br>"
+                        }
                     }
 
                     if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
@@ -157,9 +164,9 @@ class InteractionHandler {
 
                     } else if(coordinates.length >= 2) {
                         // Not a point, determine center then show popup
-                        let centroid = turf.centroid(feature);
-                        let popupLoc = centroid["geometry"]["coordinates"];
-                        this._popup.setLngLat(popupLoc).setHTML(html).addTo(this._map);
+                        // let centroid = turf.centroid(feature);
+                        // let popupLoc = centroid["geometry"]["coordinates"];
+                        this._popup.setLngLat(event.lngLat).setHTML(html).addTo(this._map);
                     }
                 });
 
@@ -258,11 +265,18 @@ class InteractionHandler {
     #handleClusterClick(feature, callback) {
         let sourceName = feature["layer"]["source"];
         let source = this._map.getSource(sourceName);
+
         source.getClusterLeaves(feature.id, 999, 0, (error, features) => {
             if(error) {
                 console.log("ERROR: Could not determine leaf features within cluster.");
                 console.log(error);
+
             } else if(features != null) {
+                features.forEach(leaf => {
+                    leaf["layer"] = [];
+                    leaf["source"] = sourceName;
+                    leaf["layer"]["id"] = feature["layer"]["id"].replace("_cluster", "");
+                });
                 this.#handleMultipleFeatures(features, callback);
             }
         });
@@ -288,8 +302,14 @@ class InteractionHandler {
         `;
 
         for(var i = 0; i < features.length; i++) {
+            let displayName = features[i]["properties"]["displayName"];
+            if(displayName == null) {
+                displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
+                displayName += features[i]["layer"]["id"].replace("_cluster", "") + "' layer."
+            }
+
             html += `
-                <option value="` + i + `">` + features[i]["properties"]["displayName"] + `</option>
+                <option value="` + i + `">` + displayName + `</option>
             `;
         };
         html += `</select></div>`;
@@ -314,6 +334,13 @@ class InteractionHandler {
      */
     mouseClick(layerName, feature) {
         if(feature == null) return;
+
+        if(layerName.endsWith("_cluster")) {
+            // If a cluster feature, let the user pick the leaf feature
+            this.#handleClusterClick(feature, function(newFeature) {
+                self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+            });
+        } 
         
         // Clear existing side panel content
         this._panelHandler.setContent("");
@@ -491,8 +518,6 @@ class InteractionHandler {
      * @param {JSONObject} feature selected map feature 
      */
     #findMeta(feature, layerName) {
-        console.log(feature);
-
         var metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
 

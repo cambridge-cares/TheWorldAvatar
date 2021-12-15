@@ -7,7 +7,8 @@
             "properties": {
                 "displayName": "Location beta-0",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -23,7 +24,8 @@
             "properties": {
                 "displayName": "Location beta-1",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -39,7 +41,8 @@
             "properties": {
                 "displayName": "Location beta-2",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -55,7 +58,8 @@
             "properties": {
                 "displayName": "Location beta-3",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -71,7 +75,8 @@
             "properties": {
                 "displayName": "Location beta-4",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -87,7 +92,8 @@
             "properties": {
                 "displayName": "Location beta-5",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -103,7 +109,8 @@
             "properties": {
                 "displayName": "Location beta-6",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -119,7 +126,8 @@
             "properties": {
                 "displayName": "Location beta-7",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -135,7 +143,8 @@
             "properties": {
                 "displayName": "Location beta-8",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -151,7 +160,8 @@
             "properties": {
                 "displayName": "Location beta-9",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -167,7 +177,8 @@
             "properties": {
                 "displayName": "Location beta-10",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -183,7 +194,8 @@
             "properties": {
                 "displayName": "Location beta-11",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -199,7 +211,8 @@
             "properties": {
                 "displayName": "Location beta-12",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -215,7 +228,8 @@
             "properties": {
                 "displayName": "Location beta-13",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -231,7 +245,8 @@
             "properties": {
                 "displayName": "Location beta-14",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -247,7 +262,8 @@
             "properties": {
                 "displayName": "Location beta-15",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -263,7 +279,8 @@
             "properties": {
                 "displayName": "Location beta-16",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -279,7 +296,8 @@
             "properties": {
                 "displayName": "Location beta-17",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -295,7 +313,8 @@
             "properties": {
                 "displayName": "Location beta-18",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -311,7 +330,8 @@
             "properties": {
                 "displayName": "Location beta-19",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -327,7 +347,8 @@
             "properties": {
                 "displayName": "Location beta-20",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -343,7 +364,8 @@
             "properties": {
                 "displayName": "Location beta-21",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -359,7 +381,8 @@
             "properties": {
                 "displayName": "Location beta-22",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -375,7 +398,8 @@
             "properties": {
                 "displayName": "Location beta-23",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -391,7 +415,8 @@
             "properties": {
                 "displayName": "Location beta-24",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -407,7 +432,8 @@
             "properties": {
                 "displayName": "Location beta-25",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -423,7 +449,8 @@
             "properties": {
                 "displayName": "Location beta-26",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -439,7 +466,8 @@
             "properties": {
                 "displayName": "Location beta-27",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -455,7 +483,8 @@
             "properties": {
                 "displayName": "Location beta-28",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -471,7 +500,8 @@
             "properties": {
                 "displayName": "Location beta-29",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -487,7 +517,8 @@
             "properties": {
                 "displayName": "Location beta-30",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -503,7 +534,8 @@
             "properties": {
                 "displayName": "Location beta-31",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -519,7 +551,8 @@
             "properties": {
                 "displayName": "Location beta-32",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -535,7 +568,8 @@
             "properties": {
                 "displayName": "Location beta-33",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -551,7 +585,8 @@
             "properties": {
                 "displayName": "Location beta-34",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -567,7 +602,8 @@
             "properties": {
                 "displayName": "Location beta-35",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -583,7 +619,8 @@
             "properties": {
                 "displayName": "Location beta-36",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -599,7 +636,8 @@
             "properties": {
                 "displayName": "Location beta-37",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -615,7 +653,8 @@
             "properties": {
                 "displayName": "Location beta-38",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -631,7 +670,8 @@
             "properties": {
                 "displayName": "Location beta-39",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -647,7 +687,8 @@
             "properties": {
                 "displayName": "Location beta-40",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -663,7 +704,8 @@
             "properties": {
                 "displayName": "Location beta-41",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -679,7 +721,8 @@
             "properties": {
                 "displayName": "Location beta-42",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -695,7 +738,8 @@
             "properties": {
                 "displayName": "Location beta-43",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -711,7 +755,8 @@
             "properties": {
                 "displayName": "Location beta-44",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -727,7 +772,8 @@
             "properties": {
                 "displayName": "Location beta-45",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -743,7 +789,8 @@
             "properties": {
                 "displayName": "Location beta-46",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -759,7 +806,8 @@
             "properties": {
                 "displayName": "Location beta-47",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -775,7 +823,8 @@
             "properties": {
                 "displayName": "Location beta-48",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -791,7 +840,8 @@
             "properties": {
                 "displayName": "Location beta-49",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -807,7 +857,8 @@
             "properties": {
                 "displayName": "Location beta-50",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -823,7 +874,8 @@
             "properties": {
                 "displayName": "Location beta-51",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -839,7 +891,8 @@
             "properties": {
                 "displayName": "Location beta-52",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -855,7 +908,8 @@
             "properties": {
                 "displayName": "Location beta-53",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -871,7 +925,8 @@
             "properties": {
                 "displayName": "Location beta-54",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -887,7 +942,8 @@
             "properties": {
                 "displayName": "Location beta-55",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -903,7 +959,8 @@
             "properties": {
                 "displayName": "Location beta-56",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -919,7 +976,8 @@
             "properties": {
                 "displayName": "Location beta-57",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -935,7 +993,8 @@
             "properties": {
                 "displayName": "Location beta-58",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -951,7 +1010,8 @@
             "properties": {
                 "displayName": "Location beta-59",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -967,7 +1027,8 @@
             "properties": {
                 "displayName": "Location beta-60",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -983,7 +1044,8 @@
             "properties": {
                 "displayName": "Location beta-61",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -999,7 +1061,8 @@
             "properties": {
                 "displayName": "Location beta-62",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1015,7 +1078,8 @@
             "properties": {
                 "displayName": "Location beta-63",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1031,7 +1095,8 @@
             "properties": {
                 "displayName": "Location beta-64",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1047,7 +1112,8 @@
             "properties": {
                 "displayName": "Location beta-65",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1063,7 +1129,8 @@
             "properties": {
                 "displayName": "Location beta-66",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1079,7 +1146,8 @@
             "properties": {
                 "displayName": "Location beta-67",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1095,7 +1163,8 @@
             "properties": {
                 "displayName": "Location beta-68",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1111,7 +1180,8 @@
             "properties": {
                 "displayName": "Location beta-69",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1127,7 +1197,8 @@
             "properties": {
                 "displayName": "Location beta-70",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1143,7 +1214,8 @@
             "properties": {
                 "displayName": "Location beta-71",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1159,7 +1231,8 @@
             "properties": {
                 "displayName": "Location beta-72",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1175,7 +1248,8 @@
             "properties": {
                 "displayName": "Location beta-73",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1191,7 +1265,8 @@
             "properties": {
                 "displayName": "Location beta-74",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1207,7 +1282,8 @@
             "properties": {
                 "displayName": "Location beta-75",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1223,7 +1299,8 @@
             "properties": {
                 "displayName": "Location beta-76",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1239,7 +1316,8 @@
             "properties": {
                 "displayName": "Location beta-77",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1255,7 +1333,8 @@
             "properties": {
                 "displayName": "Location beta-78",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1271,7 +1350,8 @@
             "properties": {
                 "displayName": "Location beta-79",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1287,7 +1367,8 @@
             "properties": {
                 "displayName": "Location beta-80",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1303,7 +1384,8 @@
             "properties": {
                 "displayName": "Location beta-81",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1319,7 +1401,8 @@
             "properties": {
                 "displayName": "Location beta-82",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1335,7 +1418,8 @@
             "properties": {
                 "displayName": "Location beta-83",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1351,7 +1435,8 @@
             "properties": {
                 "displayName": "Location beta-84",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1367,7 +1452,8 @@
             "properties": {
                 "displayName": "Location beta-85",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1383,7 +1469,8 @@
             "properties": {
                 "displayName": "Location beta-86",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1399,7 +1486,8 @@
             "properties": {
                 "displayName": "Location beta-87",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1415,7 +1503,8 @@
             "properties": {
                 "displayName": "Location beta-88?",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1431,7 +1520,8 @@
             "properties": {
                 "displayName": "Location beta-89",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1447,7 +1537,8 @@
             "properties": {
                 "displayName": "Location beta-90a",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1463,7 +1554,8 @@
             "properties": {
                 "displayName": "Location beta-90b",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 1
             },
             "geometry": {
                 "type": "Point",
@@ -1479,7 +1571,25 @@
             "properties": {
                 "displayName": "Location beta-90c",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 1
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [
+                    0.13889505973254154,
+                    52.5816141904481
+                ]
+            }
+        },
+        {
+            "type": "Feature",
+            "id": 101,
+            "properties": {
+                "displayName": "Location beta-90d",
+                "icon-size": 1.0,
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1495,7 +1605,8 @@
             "properties": {
                 "displayName": "Location beta-91",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1511,7 +1622,8 @@
             "properties": {
                 "displayName": "Location beta-92",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1527,7 +1639,8 @@
             "properties": {
                 "displayName": "Location beta-93",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1543,7 +1656,8 @@
             "properties": {
                 "displayName": "Location beta-94",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1559,7 +1673,8 @@
             "properties": {
                 "displayName": "Location beta-95",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1575,7 +1690,8 @@
             "properties": {
                 "displayName": "Location beta-96",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1591,7 +1707,8 @@
             "properties": {
                 "displayName": "Location beta-97",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1607,7 +1724,8 @@
             "properties": {
                 "displayName": "Location beta-98",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",
@@ -1623,7 +1741,8 @@
             "properties": {
                 "displayName": "Location beta-99",
                 "icon-size": 1.0,
-                "icon-image": "beta"
+                "icon-image": "beta",
+                "hasState": 0
             },
             "geometry": {
                 "type": "Point",

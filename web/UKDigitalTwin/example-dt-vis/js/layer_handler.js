@@ -249,7 +249,7 @@ class LayerHandler {
                 'icon-ignore-placement': true,
                 'text-field': '{point_count_abbreviated}',
                 'text-font': ['Arial Unicode MS Bold'],
-                'text-size': 12,
+                'text-size': ['interpolate', ['linear'], ['zoom'], 8, 10, 18, 20],
                 'text-anchor': 'center',
                 'text-allow-overlap': true,
                 'text-ignore-placement': true
@@ -373,7 +373,7 @@ class LayerHandler {
 			paint: {
                 'line-color': ["case", ["has", "line-color"], ["get", "line-color"], backupColor],
                 'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3],
-                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.5]
+                'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.35]
 			}
         };
         if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];

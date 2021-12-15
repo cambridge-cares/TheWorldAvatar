@@ -48,6 +48,7 @@ class DigitalTwinManager {
 		DT.terrain = "light";
 		DT.currentGroup = [];
 		DT.clickEvents = true;
+		DT.placenames = true;
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
@@ -134,7 +135,7 @@ class DigitalTwinManager {
 	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
 	 * @param {Boolean} updateSelects force dropdowns to match the group selection
 	 */
-	plotGroup(group, updateSelects = true) {
+	plotGroup(group, updateSelects = true, callback = null) {
 		DT.currentFeature = null;
 		this.goToDefaultPanel();
 
@@ -206,6 +207,8 @@ class DigitalTwinManager {
 			if(updateSelects) {
 				this.#forceSelects(group, 0);
 			}
+
+			if(callback != null) callback();
 		});
 	}
 
@@ -631,6 +634,33 @@ class DigitalTwinManager {
 			});
 			this.#updateTiltShift();
 		}
+	}
+
+	/**
+	 * 
+	 * @param {*} enabled 
+	 */
+	setPlacenames(enabled) {
+		if(enabled == null && DT.placenames != null) {
+			enabled = DT.placenames;
+		} else if(enabled == null) {
+			return;
+		}
+
+		let ids = ["road-number-shield", "road-label", "road-intersection", "waterway-label", "natural-line-label",
+		"natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", "settlement-subdivision-label",
+		"settlement-minor-label", "settlement-major-label", "settlement-label", "state-label", "country-label"]
+
+		ids.forEach(id => {
+			if(this._map.getLayer(id) != null) {
+				this._map.setLayoutProperty(
+					id,
+					"visibility",
+					(enabled ? "visible" : "none")
+				);
+			}
+		});
+		DT.placenames = enabled;
 	}
 
 	/**

@@ -49,9 +49,20 @@ class ControlHandler {
 				<input type="radio" name="terrain" id="satellite-streets" onclick="manager.changeTerrain('satellite-streets')">
 				<label for="satellite-streets">Satellite (Labelled)</label>
 			</div>
-			<div id="layerContainer">TREE-GOES-HERE</div>
+			<div id="layerContainer">
+				<div id="controlTitle">
+					<p>Layers:</p>
+					<div class="tooltip">
+						<label class="switch"><input type="checkbox" onclick="manager.setPlacenames(this.checked)" checked><span class="slider round"><p>PNs</p></label>
+						<span class="tooltiptext">Show/Hide place names</span>
+					</div>
+				</div>
+				<div id="layerTreeContainer">
+					TREE-GOES-HERE
+				</div>
+			</div>
 			<div id="selectionsContainer"></div>
-			<div id="developerContainer" style="display: none;"></div>
+			<div id="developerContainer"></div>
 		</div>
 	`;
 
@@ -197,7 +208,6 @@ class ControlHandler {
 		if(currentMeta["label"]) {
 			let label = currentMeta["label"];
 			let groups = currentMeta["groups"];
-			if(groups.length <= 1) return htmlString;
 
 			htmlString += `
 				<div id="selectContainer">
@@ -253,7 +263,7 @@ class ControlHandler {
 	 */
 	rebuildTree() {
 		this.#renderTree();
-		document.getElementById("layerContainer").innerHTML = this._treeHTML;
+		document.getElementById("layerTreeContainer").innerHTML = this._treeHTML;
 
 		// Update tree selection states
 		for(var i = 0; i < this._treeSpecification.length; i++) {
@@ -270,7 +280,6 @@ class ControlHandler {
 				inputBox.checked = false;
 			}
 		}
-
 	}
 
 	/**
@@ -471,8 +480,7 @@ class ControlHandler {
 	 * Builds the HTML required to show the Layer Tree.
 	 */
 	#renderTree() {
-		this._treeHTML = `<p>Layers:</p>`;
-		this._treeHTML += `<ul id="layerTree">`;
+		this._treeHTML = `<ul id="layerTree">`;
 		
 		for(var i = 0; i < this._treeSpecification.length; i++) {
 			this.#renderIterate(this._treeSpecification[i]);
@@ -508,28 +516,42 @@ class ControlHandler {
 
 
 		} else if(treeEntry["layerName"]){
-			var layerName = treeEntry["layerName"];
-
 			if(!this.#anyLayersVisible(treeEntry["layerIDs"])) {
 				// No layers for this entry have been added to the map
 				return;
 			}
 
+			// HTML start
+			var layerName = treeEntry["layerName"];
 			this._treeHTML += `<li>`
 			this._treeHTML += "<input class='layerInput' type='" + controlType + "' onclick='manager.onLayerChange(this);' id='" + layerName + "' name='" + currentGroup + "'";
 
-			if(treeEntry["defaultState"] === "visible") {
-				treeEntry["currentState"] = "visible";
-				this._treeHTML += ` checked>`;
-			} else {
-				treeEntry["currentState"] = "hidden";
+			// Determin if the layer should be hidden or not
+			let shouldHide = true;
+
+			if(treeEntry["currentState"]) {
+				if(treeEntry["currentState"] === "visible") {
+					shouldHide = false;
+				}
+			} else if(treeEntry["defaultState"]) {
+				if(treeEntry["defaultState"] === "visible") {
+					shouldHide = false;
+				}
+			} 
+
+			// Show/hide the layer and update the checkbxo accordingly
+			if(shouldHide) {
 				this._treeHTML += `>`;
-				
-				// Now actually hide the layer
+				treeEntry["currentState"] = "hidden";
 				treeEntry["layerIDs"].forEach(layerID => {
 					this.#toggleLayer(layerID, false);
 				});
+			} else {
+				this._treeHTML += ` checked>`;
+				treeEntry["currentState"] = "visible";
 			}
+
+			// HTML end
 			this._treeHTML += "<label for='" + layerName + "'>" + layerName + "</label>";
 			this._treeHTML += `</li>`		
 		}

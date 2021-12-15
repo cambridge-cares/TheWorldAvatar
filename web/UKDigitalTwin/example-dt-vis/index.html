@@ -143,14 +143,12 @@
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
 
-					// --- TEST ---
-					// Only enable this during testing, remove the line for production visualisations
-					manager.showDeveloperControls();
-					// --- TEST ---
-
 					// Set up a callback that hides all connections whenever the user
 					// returns to the default side panel.
 					manager.setDefaultPanelCallback();
+					
+					// Show mouse position
+					manager.showDeveloperControls();
 
 					loadedOnce = true;
 				}
@@ -175,9 +173,7 @@
 							// Re-add the sky and (optionally) 3D terrain
 							manager.addSkyAndTerrain();
 							manager.set3DTerrain();
-
-							// --- TEST ---
-							//hideAllConnections(map);
+							manager.setPlacenames();
 						});
 					}
 				});
