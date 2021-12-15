@@ -64,7 +64,7 @@ def create_dist_cosine_with_tfidf(n_max_idf):
     return dist_cosine_with_tfidf_internal
 
 def dist_cosine_with_tfidf(v1, v2, n_max_idf=100):
-    #TODO-AE make n_max_idf configurable, 30 as in Jupyter Notebook
+    #TODO-AE URGENT 211215 make n_max_idf configurable, before 30 as in Jupyter Notebook
     if not check_str(v1, v2):
         return None
     # TODO-AE URGENT 211021 replaced by unpruned (original) index to get same tfidf weights as in jupyter notebook
@@ -85,8 +85,8 @@ def dist_cosine_embedding(v1, v2):
     if not check_str(v1, v2):
         return None
     starttime = time.time()
-    embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True)
-    embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True)
+    embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True, show_progress_bar=False)
+    embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True, show_progress_bar=False)
     pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embeddings1, embeddings2)
     # pytorch returns sometimes values such as 1.0000002
     # use min to avoid negative cosine distance
