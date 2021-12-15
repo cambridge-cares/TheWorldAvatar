@@ -181,7 +181,7 @@ def find_recent_time(Key, Year, Month, Day, Period):
     return Year, Month, Day, Period
 
 
-###Primary Function###
+###Primary Function### Year = 2021, Month = 12, Day = 14, Period = 43 = 9:00PM = 21:00PM
 def live_power(ExcelName, Key, Year, Month, Day, Period, Search):
     #The first input is the name of the excel spreadsheet to use.
     #The Key is the API key for BMRS. 
