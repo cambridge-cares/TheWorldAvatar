@@ -903,31 +903,31 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves a list of previous derivations that directly linked with the given derivation in the chain.
+	 * This method retrieves a list of upstream derivations that directly linked with the given derivation in the chain.
 	 * @param derivation
 	 * @return
 	 */
-	List<String> getPreviousDerivations(String derivation) {
-		String derivedQueryKey = "previousDerivation";
+	List<String> getUpstreamDerivations(String derivation) {
+		String derivedQueryKey = "upstreamDerivation";
 		
 		SelectQuery query = Queries.SELECT();
 		
-		Variable previousDerivation = SparqlBuilder.var(derivedQueryKey);
+		Variable upstreamDerivation = SparqlBuilder.var(derivedQueryKey);
 		
 		// direct inputs to derive this
-		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), previousDerivation);
+		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), upstreamDerivation);
 		
-		query.prefix(p_derived).where(derivedPattern).select(previousDerivation);
+		query.prefix(p_derived).where(derivedPattern).select(upstreamDerivation);
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		List<String> listOfPreviousDerivation = new ArrayList<>();
+		List<String> listOfUpstreamDerivation = new ArrayList<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivedIRI = queryResult.getJSONObject(i).getString(derivedQueryKey);
-			listOfPreviousDerivation.add(derivedIRI);
+			listOfUpstreamDerivation.add(derivedIRI);
 		}
 		
-		return listOfPreviousDerivation;
+		return listOfUpstreamDerivation;
 	}
 	
 	/**
@@ -1022,38 +1022,38 @@ public class DerivationSparql{
 	 * This method returns entities belonging to this derived instance
 	 * ?x <derived:belongsTo> <derivation>.
 	 * ?x <rdf:type> ?rdfType.
-	 * ?upstreamDerivation <derived:isDerivedFrom> ?x.
+	 * ?downstreamDerivation <derived:isDerivedFrom> ?x.
 	 * TODO SPARQL query string duplication with method getDerivations()
 	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedIRI
 	 * @return
 	 */
-	List<Entity> getDerivedEntitiesAndUpstreamDerivation(String derivation) {
+	List<Entity> getDerivedEntitiesAndDownstreamDerivation(String derivation) {
 		SelectQuery query = Queries.SELECT();
 		String entityQueryKey = "entity";
 		String rdfTypeQueryKey = "class";
-		String upstreamDevQueryKey = "upstreamDerivation";
-		String upsDevRdfTypeQueryKey = "upsDevClass";
+		String downstreamDevQueryKey = "downstreamDerivation";
+		String downsDevRdfTypeQueryKey = "downsDevClass";
 		
 		Variable entity = SparqlBuilder.var(entityQueryKey);
 		Variable rdfType = SparqlBuilder.var(rdfTypeQueryKey);
-		Variable upstreamDerivation = SparqlBuilder.var(upstreamDevQueryKey);
-		Variable upsDevRdfType= SparqlBuilder.var(upsDevRdfTypeQueryKey);
+		Variable downstreamDerivation = SparqlBuilder.var(downstreamDevQueryKey);
+		Variable downsDevRdfType= SparqlBuilder.var(downsDevRdfTypeQueryKey);
 		
 		// ignore certain rdf:type
 		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
 		for (int j = 0; j < classesToIgnore.size(); j++) {
 			entityFilters[j] = Expressions.notEquals(rdfType, classesToIgnore.get(j));
 		}
-		Expression<?>[] upsDevFilters = new Expression<?>[classesToIgnore.size()];
+		Expression<?>[] downsDevFilters = new Expression<?>[classesToIgnore.size()];
 		for (int j = 0; j < classesToIgnore.size(); j++) {
-			upsDevFilters[j] = Expressions.notEquals(upsDevRdfType, classesToIgnore.get(j));
+			downsDevFilters[j] = Expressions.notEquals(downsDevRdfType, classesToIgnore.get(j));
 		}
 		
 		GraphPattern queryPattern = entity.has(belongsTo, iri(derivation)).andIsA(rdfType).filter(Expressions.and(entityFilters));
-		GraphPattern upstreamDevPattern = upstreamDerivation.has(isDerivedFrom, entity).andIsA(upsDevRdfType).filter(Expressions.and(upsDevFilters));
-		query.prefix(p_derived).select(entity,rdfType,upstreamDerivation,upsDevRdfType).where(queryPattern,upstreamDevPattern);
+		GraphPattern downstreamDevPattern = downstreamDerivation.has(isDerivedFrom, entity).andIsA(downsDevRdfType).filter(Expressions.and(downsDevFilters));
+		query.prefix(p_derived).select(entity,rdfType,downstreamDerivation,downsDevRdfType).where(queryPattern,downstreamDevPattern);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -1061,7 +1061,7 @@ public class DerivationSparql{
 		for (int i = 0; i < queryResult.length(); i++) {
 			Entity e = new Entity(queryResult.getJSONObject(i).getString(entityQueryKey));
 			e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
-			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(upstreamDevQueryKey), queryResult.getJSONObject(i).getString(upsDevRdfTypeQueryKey)));
+			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey), queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
 			entities.add(e);
 		}
 		
