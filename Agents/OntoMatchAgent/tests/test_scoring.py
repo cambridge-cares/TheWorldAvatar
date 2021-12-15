@@ -1,4 +1,6 @@
 import logging
+import os
+import shutil
 import time
 
 import ontomatch.blocking
@@ -463,26 +465,24 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         self.assertEqual(triples[0][0], 'name')
         self.assertEqual(triples[2][1], 'hasYearOfBuilt/hasValue/numericalValue')
 
-    def test_similarity_manager_load(self):
+    def test_calculate_similarities_between_datasets_load_store(self):
 
+        if not os.path.exists('../tmp/tests'):
+            os.makedirs('../tmp/tests')
+        sim_file = '../tmp/tests/scores_auto_10.csv'
+        shutil.copy('./tests/data/scores_auto_10.csv', sim_file)
+
+        params = self.read_params(tests.utils_for_testing.PATH_CONF_PP_DEU_AUTO, symmetric=True)
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
-        params = {
-            'name': 'TokenBasedPairIterator',
-            'model_specific': {
-                'min_token_length': 3,
-                'max_token_occurrences_src': 20,
-                'max_token_occurrences_tgt': 20,
-                'blocking_properties': ['name', 'isOwnedBy/hasName', 'location'],
-                'reset_index': True,
-            }
-        }
-        # iterate over tuples (idx_1, idx_2) instead of tuples (pos_1, pos_2)
-        use_position=False
-        it = ontomatch.blocking.create_iterator(src_onto, tgt_onto, params, use_position=use_position)
-        index_set_pairs = it.candidate_matching_pairs
+        params_blocking = params['blocking']
+        params_mapping = params['mapping']
+        params_mapping['similarity_file'] = sim_file
+        manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking, params_mapping)
+        manager.add_prop_prop_fct_tuples_by_params(params_mapping)
 
         start_time = time.time()
-        src_file = 'C:/my/repos/ontomatch_20210924/experiments/211202_blocking/power_plant_DEU/scores_auto_10000/scores.csv'
-        manager = ontomatch.scoring.SimilarityManager()
-        manager.load(src_onto, tgt_onto, index_set_pairs, src_file)
+        df_combined = manager.calculate_similarities_between_datasets()
+        self.assertEquals(len(df_combined), len(manager.pair_iterator))
+        df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
+
         logging.debug('elapsed time=%s', time.time() - start_time)

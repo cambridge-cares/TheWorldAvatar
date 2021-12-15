@@ -56,7 +56,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
     def __init__(self, dframe_src:pd.DataFrame, dframe_tgt:pd.DataFrame,
                 min_token_length:int =3, max_token_occurrences_src:int =20, max_token_occurrences_tgt:int =20,
-                blocking_properties: List[str] =None, reset_index:bool =False, use_position:bool =True):
+                blocking_properties: List[str] =None, reset_index:bool =False, use_position:bool =False):
 
         """
         Init a token-based iterator.
@@ -187,7 +187,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
                     product = [ (idx_1, l[1]) for l in links ]
                 pairs_positions.update(product)
 
-        return pd.MultiIndex.from_tuples(pairs_positions)
+        return pd.MultiIndex.from_tuples(pairs_positions, names=['idx_1', 'idx_2'])
 
 def preprocess_string(s:str) -> str:
     if not isinstance(s, str):
@@ -202,7 +202,7 @@ def tokenize(s:str) -> List[str]:
         return s.split(' ')
     return []
 
-def create_iterator(src_onto:Union[pd.DataFrame, Ontology], tgt_onto:Union[pd.DataFrame,Ontology], params:dict, use_position:bool =True):
+def create_iterator(src_onto:Union[pd.DataFrame, Ontology], tgt_onto:Union[pd.DataFrame,Ontology], params:dict, use_position:bool =False):
     params_copy = params.copy()
     name = params_copy.pop('name')
     params_model_specific = params.get('model_specific')

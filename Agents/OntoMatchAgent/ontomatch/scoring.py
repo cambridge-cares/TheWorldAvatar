@@ -1,6 +1,9 @@
 import collections
 import logging
 import math
+import os
+import os.path
+import pathlib
 import random
 import time
 
@@ -167,10 +170,11 @@ def create_distance_functions_from_params(params_sim_fcts):
 
 class ScoreManager():
 
-    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame, pair_iterator):
+    def __init__(self, data1: pd.DataFrame, data2: pd.DataFrame, pair_iterator, similarity_file):
         self.data1 = data1
         self.data2 = data2
         self.pair_iterator = pair_iterator
+        self.similarity_file = similarity_file
         self.prop_prop_fct_tuples = []
         self.df_scores = None
         self.df_max_scores_1 = None
@@ -227,30 +231,24 @@ class ScoreManager():
                     self.prop_prop_fct_tuples.append((p1, p2, fct))
 
     @staticmethod
-    def calculate_between_entities(entity1, entity2, prop_prop_fct_tuples, sim=True):
+    def calculate_between_entities(entity1, entity2, prop_prop_fct_tuples):
 
         result = []
         for prop1, prop2, fct in prop_prop_fct_tuples:
             v1 = entity1[prop1]
             v2 = entity2[prop2]
             value = fct(v1, v2)
-            if sim:
-                # calculates similarities between 0 and 1
-                assert value is None or (value >= 0 and value <= 1)
-            else:
-                # calculate distances >= 0
-                assert value is None or (value >= 0)
+            assert value is None or (value >= 0 and value <= 1)
             result.append(value)
 
         return result
 
-    def calculate_similarities_between_datasets(self, sim=True):
-
-        logging.info('calculating similarities, number of pairs=%s, sim=%s', len(self.pair_iterator), sim)
+    def calculate_similarities_between_datasets_for_pairs(self, candidate_pairs):
+        logging.info('calculating similarity vectors, number of pairs=%s', len(candidate_pairs))
         count = 0
         rows = []
-        #for pos1, pos2 in tqdm(self.pair_iterator):
-        for idx1, idx2 in tqdm(self.pair_iterator):
+        #for pos1, pos2 in tqdm(candidate_pairs):
+        for idx1, idx2 in tqdm(candidate_pairs):
             count += 1
             #print(pos1, pos2)
             #idx1 = self.data1.index[pos1]
@@ -275,7 +273,7 @@ class ScoreManager():
             '''
             #row = [idx1, idx2, pos1, pos2]
             row = [idx1, idx2]
-            scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples, sim)
+            scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples)
             row.extend(scores)
             rows.append(row)
 
@@ -289,14 +287,54 @@ class ScoreManager():
             #str_prop2 = (prop2 if j==-1 else prop2[j+1:])
             #dist_column = '_'.join([str(i), 'dist', str_prop1, str_prop2])
 
-            # TODO-AE 211110 change from int to str for column names
-            sim_column = i
-            #sim_column = str(i)
+            # TODO-AE 211215 change from int to str for column names
+            #sim_column = i
+            sim_column = str(i)
             columns.append(sim_column)
 
-        self.df_scores = pd.DataFrame(data=rows, columns=columns)
-        self.df_scores.set_index(['idx_1', 'idx_2'], inplace=True)
-        logging.info('calculated scores, number of pairs=%s, score columns=%s', len(self.df_scores), columns)
+        result = pd.DataFrame(data=rows, columns=columns)
+        result.set_index(['idx_1', 'idx_2'], inplace=True)
+        logging.info('calculated similarity vectors=%s, score columns=%s', len(result), columns)
+        return result
+
+    def save_similarity_vectors(self, df_scores, file):
+        path = os.path.dirname(file)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        new_file = file[:-4] + '_NEW_' + '_' + str(time.time()) + '.csv'
+        logging.info('saving all similarity vectors to %s', new_file)
+        df_scores.to_csv(new_file)
+
+    def calculate_similarities_between_datasets(self):
+
+        logging.info('similarity vector file=%s', self.similarity_file)
+        candidate_pairs = self.pair_iterator.candidate_matching_pairs
+        if self.similarity_file is None :
+            # calculate similarities from scratch for all candidate pairs
+            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs)
+        elif not pathlib.Path(self.similarity_file).exists():
+            # calculate similarities from scratch for all candidate pairs and store the result
+            self.df_scores = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs)
+            self.save_similarity_vectors(self.df_scores, self.similarity_file)
+        else:
+            df_loaded = ontomatch.utils.util.read_csv(self.similarity_file)
+            if 'pos_1' in [ str(c) for c in df_loaded.columns]:
+                df_loaded.drop(columns=['pos_1', 'pos_2'], inplace=True)
+                logging.info('dropped columns pos_1 and pos_2 from loaded similarity vectors')
+            index_intersection = candidate_pairs.intersection(df_loaded.index)
+            df_intersection = df_loaded.loc[index_intersection]
+            logging.info('loaded similarity vectors, all=%s, intersection=%s', len(df_loaded), len(df_intersection))
+            index_diff = candidate_pairs.difference(df_loaded.index)
+            if len(index_diff) > 0:
+                df_diff = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs=index_diff)
+                self.df_scores = pd.concat([df_intersection, df_diff])
+                df_all = pd.concat([df_loaded, df_diff])
+                logging.info('number of similarity vectors, new=%s, df_scores=%s, all=%s', len(df_diff), len(self.df_scores), len(df_all))
+                self.save_similarity_vectors(df_all, self.similarity_file)
+            else:
+                self.df_scores = df_intersection.copy()
+                logging.info('no new similarity vectors, df_scores=%s, all=%s', len(self.df_scores), len(df_loaded))
+
         return self.df_scores
 
     def calculate_maximum_scores(self, switch_to_min_of_distance=False):
@@ -376,11 +414,15 @@ class ScoreManager():
         logging.info('maximum scores statistics: %s\n%s', str_column_prop, df_result.describe())
         return df_result
 
-def create_score_manager(srconto, tgtonto, params_blocking):
+def create_score_manager(srconto, tgtonto, params_blocking, params_mapping=None):
     it = ontomatch.blocking.create_iterator(srconto, tgtonto, params_blocking, use_position=False)
     dframe1 = ontomatch.blocking.TokenBasedPairIterator.df_src
     dframe2 = ontomatch.blocking.TokenBasedPairIterator.df_tgt
-    manager = ScoreManager(dframe1, dframe2, it)
+    if params_mapping:
+        similarity_file = params_mapping.get('similarity_file')
+    else:
+        similarity_file = None
+    manager = ScoreManager(dframe1, dframe2, it, similarity_file)
     return manager
 
 def find_property_mapping(manager: ScoreManager, similarity_functions:list, props1=None, props2=None) -> list :
@@ -618,22 +660,3 @@ class ScoringWeightIterator(collections.Iterable, collections.Sized):
 
     def __len__(self):
         return len(self.weight_arrays)
-
-class SimilarityManager():
-
-    def __init__(self):
-        pass
-
-    def load(self, data1: pd.DataFrame, data2: pd.DataFrame, candidate_pairs, src_file):
-        dframe = ontomatch.utils.util.read_csv(src_file)
-
-        index_intersection = candidate_pairs.intersection(dframe.index)
-        df_sim = dframe.loc[index_intersection]
-        logging.info('loaded similarity vectors, all=%s, selected=%s', len(dframe), len(df_sim))
-
-        index_diff = candidate_pairs.difference(dframe.index)
-        logging.info('creating similarity vectors=%s', len(index_diff))
-        for i in tqdm(index_diff):
-            pass
-
-

@@ -108,7 +108,7 @@ class matchManager(object):
             resultMatrix = numpy.zeros(msize)
             for idx, matcherName in enumerate(self.matchSteps):
                 mtime = time.time()
-                pair_iterator =  ontomatch.blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking)
+                pair_iterator =  ontomatch.blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking, use_position=True)
                 logging.info('number of candidate matching pairs=%s', len(pair_iterator))
 
                 if self.paras is not None and self.paras[idx] is not None:
@@ -130,7 +130,7 @@ class matchManager(object):
 
             #translate matrix to  alignment
             resultArr = []
-            pair_iterator =  ontomatch.blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking)
+            pair_iterator =  ontomatch.blocking.create_iterator(self.srcOnto, self.tgtOnto, params_blocking, use_position=True)
             for idxS, idxT in pair_iterator:
                 result = resultMatrix[idxS,idxT]
                 if result >= self.thre:
@@ -263,7 +263,7 @@ class matchManager(object):
         with multi-index (idx_1, idx_2)
         '''
         rows = []
-        pair_iterator =  ontomatch.blocking.create_iterator(src_onto, tgt_onto, params_blocking)
+        pair_iterator =  ontomatch.blocking.create_iterator(src_onto, tgt_onto, params_blocking, use_position=True)
         for pos1, pos2 in pair_iterator:
             score = sim_matrix[pos1, pos2]
             if score >= threshold:

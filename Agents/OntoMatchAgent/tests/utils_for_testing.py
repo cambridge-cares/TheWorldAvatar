@@ -34,7 +34,11 @@ class TestCaseOntoMatch(unittest.TestCase):
             tgt_onto = pickle.load(file)
         return src_onto, tgt_onto
 
-    def read_params(self, file):
+    def read_params(self, file, symmetric=False):
         with open(file) as json_config:
             params = json.load(json_config, object_pairs_hook=collections.OrderedDict)
+        # don't dump score files when running tests
+        params['post_processing']['dump'] = None
+        if symmetric:
+            params['matching']['model_specific']['symmetric'] = True
         return params

@@ -19,9 +19,9 @@ class InstanceMatcherBase():
     def __init__(self):
         self.score_manager = None
 
-    def start_base(self, srconto, tgtonto, params_blocking, params_mapping=None):
+    def start_base(self, srconto, tgtonto, params_blocking, params_mapping):
 
-        self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking)
+        self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking, params_mapping)
 
         # TODO-AE: start with automatic property mapping
         # --> configurable, also: fixed property mapping (e.g. geo coordinates)
@@ -268,9 +268,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             for propmap in property_mapping:
 
                 c_max = propmap['key']
-                # TODO-AE 211110 change from int to str for column names
-                c = int(c_max.split('_')[0])
-                #c = c_max.split('_')[0]
+                # TODO-AE 211215 change from int to str for column names
+                #c = int(c_max.split('_')[0])
+                c = c_max.split('_')[0]
                 value = row[c]
 
                 #TODO-AE changed at 210926
@@ -302,8 +302,10 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
                     orig_score += column_score
                     if column_score > 1:
+                        # this can happen due to small deviations, in particular if using embedding cosine distance
                         #raise ValueError('column score exceeds 1', score, idx_1, idx_2, c_max)
-                        logging.debug('column score exceeds 1')
+                        #TODO-AE URGENT 211215
+                        logging.debug('column score exceeds 1, %s', column_score)
                         column_score = 1.
 
                     score += column_score
@@ -373,9 +375,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(c_max, series, delta)
             sliding_counts[c_max] = scount
 
-            # TODO-AE 211110 change from int to str for column names
-            c = int(c_max.split('_')[0])
-            #c = c_max.split('_')[0]
+            # TODO-AE 211215 change from int to str for column names
+            #c = int(c_max.split('_')[0])
+            c = c_max.split('_')[0]
             series = df_scores[c]
             # TODO-A URGENT 211211
             #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
