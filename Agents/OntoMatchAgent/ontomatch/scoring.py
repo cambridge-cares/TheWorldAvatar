@@ -152,9 +152,12 @@ def create_prop_prop_sim_triples_from_params(params_mapping):
 
     triples = []
     params_triples = params_mapping['triples']
-    for p in params_triples:
+    for i, p in enumerate(params_triples):
         sim_fct_number = p['sim']
-        triple = (p['prop1'], p['prop2'], sim_fcts[sim_fct_number])
+        pos = p.get('pos')
+        if pos is None:
+            pos = i
+        triple = (p['prop1'], p['prop2'], sim_fcts[sim_fct_number], pos)
         triples.append(triple)
 
     return triples
@@ -200,41 +203,22 @@ class ScoreManager():
 
     def add_prop_prop_fct_tuples_by_params(self, params_mapping):
         prop_prop_sim_tuples = create_prop_prop_sim_triples_from_params(params_mapping)
-        for prop1, prop2, sim_fct in prop_prop_sim_tuples:
-            self.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
+        for prop1, prop2, sim_fct, pos in prop_prop_sim_tuples:
+            self.add_prop_prop_fct_tuples(prop1, prop2, sim_fct, pos)
 
-    def add_prop_prop_fct_tuples(self, property1: str, property2: str, fcts):
+    def add_prop_prop_fct_tuples(self, property1: str, property2: str, fct, pos=None):
         if property1 and (not property1 in self.data1.columns):
             raise RuntimeError('property1 not found in dataframe columns', property1)
         if property2 and (not property2 in self.data2.columns):
             raise RuntimeError('property2 not found in dataframe columns', property2)
-
-        if property1:
-            props1 = [property1]
-        else:
-            props1 = [ str(c) for c in self.data1.columns]
-
-        if property2:
-            props2 = [property2]
-        else:
-            props2 = [ str(c) for c in self.data2.columns]
-
-        try:
-            iter(fcts)
-        except TypeError:
-            fcts = [fcts]
-
-        for p1 in props1:
-            for p2 in props2:
-                for fct in fcts:
-                    # TODO-AE check whether scoring_fcts can be applied to datatype of p1 / p2
-                    self.prop_prop_fct_tuples.append((p1, p2, fct))
+        # TODO-AE check whether scoring_fcts can be applied to datatype of p1 / p2
+        self.prop_prop_fct_tuples.append((property1, property2, fct, pos))
 
     @staticmethod
     def calculate_between_entities(entity1, entity2, prop_prop_fct_tuples):
 
         result = []
-        for prop1, prop2, fct in prop_prop_fct_tuples:
+        for prop1, prop2, fct, _ in prop_prop_fct_tuples:
             v1 = entity1[prop1]
             v2 = entity2[prop2]
             value = fct(v1, v2)
@@ -279,7 +263,8 @@ class ScoreManager():
 
         #columns = ['idx_1', 'idx_2', 'pos_1', 'pos_2']
         columns = ['idx_1', 'idx_2']
-        for i, s in enumerate(self.prop_prop_fct_tuples):
+        #for i, s in enumerate(self.prop_prop_fct_tuples):
+        for _, _, _, i in self.prop_prop_fct_tuples:
             #prop1, prop2, _ = s
             #j = prop1.rfind('/')
             #str_prop1 = (prop1 if j==-1 else prop1[j+1:])
@@ -362,9 +347,12 @@ class ScoreManager():
         #TODO-AE store the position of column in score_fct ...
         columns = []
         str_column_prop = ''
-        for c in range(len(self.prop_prop_fct_tuples)):
-            columns.append(c)
-            str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
+        #for c in range(len(self.prop_prop_fct_tuples)):
+        #   columns.append(c)
+        #   str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
+        for prop1, prop2, _, pos in self.prop_prop_fct_tuples:
+            columns.append(str(pos))
+            str_column_prop += '\n' + str(pos) + ':' + prop1 + ' vs. ' + prop2
 
         result_rows = []
         count = 0
@@ -442,6 +430,7 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
         for prop2 in props2:
             for sim_fct in similarity_functions:
                 # TODO-AE remove sim_fct that do not fit to property datatype
+                # TODO-AE 211215 add attribute pos to the next call
                 manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
 
     logging.info('added prop prop sim tuples, number=%s', len(manager.get_prop_prop_fct_tuples()))
@@ -459,10 +448,10 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
         pos_sim_fcts.update({s:i})
 
     rows = []
-    for i, prop_prop_sim in enumerate(manager.get_prop_prop_fct_tuples()):
-        prop1, prop2, s = prop_prop_sim
+    for prop_prop_sim in manager.get_prop_prop_fct_tuples():
+        prop1, prop2, s, pos = prop_prop_sim
         pos_sfct = pos_sim_fcts[s]
-        key = str(i) + '_max'
+        key = str(pos) + '_max'
         mean = means.get(key)
         if mean is None:
             key = None

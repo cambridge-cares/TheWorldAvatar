@@ -40,9 +40,9 @@ class InstanceMatcherBase():
             logging.info('created prop_prop_sim_tuples from params_mapping =%s', prop_prop_sim_tuples)
 
             property_mapping = []
-            for pos, t in enumerate(prop_prop_sim_tuples):
-                prop1, prop2, sim_fct = t
-                self.score_manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
+            for t in prop_prop_sim_tuples:
+                prop1, prop2, sim_fct, pos = t
+                self.score_manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct, pos)
                 row = {
                     'key': str(pos) + '_max',
                     'prop1': prop1,
