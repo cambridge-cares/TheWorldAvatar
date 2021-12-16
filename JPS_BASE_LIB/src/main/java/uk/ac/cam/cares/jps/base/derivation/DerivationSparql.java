@@ -48,6 +48,13 @@ public class DerivationSparql{
 	private String derivationInstanceBaseURL; // an example of this can be "https://www.example.com/triplestore/repository/"
 	
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+	
+	// status concepts
+	private static String PENDINGUPDATE = "PendingUpdate";
+	private static String REQUESTED = "Requested";
+	private static String INPROGRESS = "InProgress";
+	private static String FINISHED = "Finished";
+	
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
@@ -61,10 +68,10 @@ public class DerivationSparql{
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
     private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
     private static Iri Status = p_derived.iri("Status");
-    private static Iri PendingUpdate = p_derived.iri("PendingUpdate");
-    private static Iri Requested = p_derived.iri("Requested");
-    private static Iri InProgress = p_derived.iri("InProgress");
-    private static Iri Finished = p_derived.iri("Finished");
+    private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
+    private static Iri Requested = p_derived.iri(REQUESTED);
+    private static Iri InProgress = p_derived.iri(INPROGRESS);
+    private static Iri Finished = p_derived.iri(FINISHED);
     private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
@@ -89,6 +96,17 @@ public class DerivationSparql{
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
 	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING),iri(OWL.NAMEDINDIVIDUAL));
+	
+	// 
+	private static final Map<String, StatusType> statusToType;
+	static {
+		Map<String, StatusType> statusMap = new HashMap<>();
+		statusMap.put(derivednamespace.concat(PENDINGUPDATE), StatusType.PENDINGUPDATE);
+		statusMap.put(derivednamespace.concat(REQUESTED), StatusType.REQUESTED);
+		statusMap.put(derivednamespace.concat(INPROGRESS), StatusType.INPROGRESS);
+		statusMap.put(derivednamespace.concat(FINISHED), StatusType.FINISHED);
+		statusToType = statusMap;
+	}
 	
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
@@ -471,101 +489,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method checks if the status of the derivation is marked as "PendingUpdate".
-	 * @param derivation
-	 * @return
-	 */
-	boolean isPendingUpdate(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(PendingUpdate);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method checks if the status of the derivation is marked as "Requested".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isRequested(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Requested);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * This method checks if the status of the derivation is marked as "InProgress".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isInProgress(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(InProgress);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method checks if the status of the derivation is marked as "Finished".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isFinished(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Finished);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
 	 * This method marks the status of the derivation as "PendingUpdate".
 	 * @param derivation
 	 */
@@ -655,6 +578,35 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * This method retrieves the rdf:type of the status of the given derivation instance.
+	 * @param derivation
+	 * @return
+	 */
+	StatusType getStatusType(String derivation) {
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+
+		SelectQuery query = Queries.SELECT();
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(statusType).filter(Expressions.and(entityFilters));
+		
+		query.prefix(p_derived).where(queryPattern,queryPattern2).select(status,statusType);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		return statusToType.get(queryResult.getJSONObject(0).getString(statusTypeQueryKey));
+	}
+	
+	/**
 	 * This method checks if the derivation has any status assigned to it.
 	 * @param storeClient
 	 * @param derivation
@@ -682,7 +634,7 @@ public class DerivationSparql{
 	 * @return
 	 */
 	List<String> getNewDerivedIRI(String derivation) {
-		if (isFinished(derivation)) {
+		if (getStatusType(derivation) == StatusType.FINISHED) {
 			String derivedQueryKey = "newDerivedIRI";
 			
 			SelectQuery query = Queries.SELECT();
@@ -903,31 +855,31 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves a list of previous derivations that directly linked with the given derivation in the chain.
+	 * This method retrieves a list of upstream derivations that directly linked with the given derivation in the chain.
 	 * @param derivation
 	 * @return
 	 */
-	List<String> getPreviousDerivations(String derivation) {
-		String derivedQueryKey = "previousDerivation";
+	List<String> getUpstreamDerivations(String derivation) {
+		String derivedQueryKey = "upstreamDerivation";
 		
 		SelectQuery query = Queries.SELECT();
 		
-		Variable previousDerivation = SparqlBuilder.var(derivedQueryKey);
+		Variable upstreamDerivation = SparqlBuilder.var(derivedQueryKey);
 		
 		// direct inputs to derive this
-		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), previousDerivation);
+		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), upstreamDerivation);
 		
-		query.prefix(p_derived).where(derivedPattern).select(previousDerivation);
+		query.prefix(p_derived).where(derivedPattern).select(upstreamDerivation);
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		List<String> listOfPreviousDerivation = new ArrayList<>();
+		List<String> listOfUpstreamDerivation = new ArrayList<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
 			String derivedIRI = queryResult.getJSONObject(i).getString(derivedQueryKey);
-			listOfPreviousDerivation.add(derivedIRI);
+			listOfUpstreamDerivation.add(derivedIRI);
 		}
 		
-		return listOfPreviousDerivation;
+		return listOfUpstreamDerivation;
 	}
 	
 	/**
@@ -1022,38 +974,38 @@ public class DerivationSparql{
 	 * This method returns entities belonging to this derived instance
 	 * ?x <derived:belongsTo> <derivation>.
 	 * ?x <rdf:type> ?rdfType.
-	 * ?upstreamDerivation <derived:isDerivedFrom> ?x.
+	 * ?downstreamDerivation <derived:isDerivedFrom> ?x.
 	 * TODO SPARQL query string duplication with method getDerivations()
 	 * TODO To be break down into smaller chunks
 	 * @param kbClient
 	 * @param derivedIRI
 	 * @return
 	 */
-	List<Entity> getDerivedEntitiesAndUpstreamDerivation(String derivation) {
+	List<Entity> getDerivedEntitiesAndDownstreamDerivation(String derivation) {
 		SelectQuery query = Queries.SELECT();
 		String entityQueryKey = "entity";
 		String rdfTypeQueryKey = "class";
-		String upstreamDevQueryKey = "upstreamDerivation";
-		String upsDevRdfTypeQueryKey = "upsDevClass";
+		String downstreamDevQueryKey = "downstreamDerivation";
+		String downsDevRdfTypeQueryKey = "downsDevClass";
 		
 		Variable entity = SparqlBuilder.var(entityQueryKey);
 		Variable rdfType = SparqlBuilder.var(rdfTypeQueryKey);
-		Variable upstreamDerivation = SparqlBuilder.var(upstreamDevQueryKey);
-		Variable upsDevRdfType= SparqlBuilder.var(upsDevRdfTypeQueryKey);
+		Variable downstreamDerivation = SparqlBuilder.var(downstreamDevQueryKey);
+		Variable downsDevRdfType= SparqlBuilder.var(downsDevRdfTypeQueryKey);
 		
 		// ignore certain rdf:type
 		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
 		for (int j = 0; j < classesToIgnore.size(); j++) {
 			entityFilters[j] = Expressions.notEquals(rdfType, classesToIgnore.get(j));
 		}
-		Expression<?>[] upsDevFilters = new Expression<?>[classesToIgnore.size()];
+		Expression<?>[] downsDevFilters = new Expression<?>[classesToIgnore.size()];
 		for (int j = 0; j < classesToIgnore.size(); j++) {
-			upsDevFilters[j] = Expressions.notEquals(upsDevRdfType, classesToIgnore.get(j));
+			downsDevFilters[j] = Expressions.notEquals(downsDevRdfType, classesToIgnore.get(j));
 		}
 		
 		GraphPattern queryPattern = entity.has(belongsTo, iri(derivation)).andIsA(rdfType).filter(Expressions.and(entityFilters));
-		GraphPattern upstreamDevPattern = upstreamDerivation.has(isDerivedFrom, entity).andIsA(upsDevRdfType).filter(Expressions.and(upsDevFilters));
-		query.prefix(p_derived).select(entity,rdfType,upstreamDerivation,upsDevRdfType).where(queryPattern,upstreamDevPattern);
+		GraphPattern downstreamDevPattern = downstreamDerivation.has(isDerivedFrom, entity).andIsA(downsDevRdfType).filter(Expressions.and(downsDevFilters));
+		query.prefix(p_derived).select(entity,rdfType,downstreamDerivation,downsDevRdfType).where(queryPattern,downstreamDevPattern);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
@@ -1061,7 +1013,7 @@ public class DerivationSparql{
 		for (int i = 0; i < queryResult.length(); i++) {
 			Entity e = new Entity(queryResult.getJSONObject(i).getString(entityQueryKey));
 			e.setRdfType(queryResult.getJSONObject(i).getString(rdfTypeQueryKey));
-			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(upstreamDevQueryKey), queryResult.getJSONObject(i).getString(upsDevRdfTypeQueryKey)));
+			e.setAsInput(new Derivation(queryResult.getJSONObject(i).getString(downstreamDevQueryKey), queryResult.getJSONObject(i).getString(downsDevRdfTypeQueryKey)));
 			entities.add(e);
 		}
 		

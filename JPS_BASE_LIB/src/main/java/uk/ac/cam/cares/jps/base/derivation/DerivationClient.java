@@ -369,12 +369,12 @@ public class DerivationClient {
 		// assume this derivation can be updated now
 		boolean toRequest = true;
 		
-		// get a list of previous derivations
-		List<String> previousDerivations = this.sparqlClient.getPreviousDerivations(derivation);
+		// get a list of upstream derivations
+		List<String> upstreamDerivations = this.sparqlClient.getUpstreamDerivations(derivation);
 		
-		if (previousDerivations.size() > 0) {
+		if (upstreamDerivations.size() > 0) {
 			// for each of the derivation, check if they are up-to-date, and no status associated
-			for (String dev : previousDerivations) {
+			for (String dev : upstreamDerivations) {
 				List<String> inputs = this.sparqlClient.getInputs(dev);
 				if (isOutOfDate(dev, inputs) || hasStatus(dev)) {
 					toRequest = false;
@@ -406,9 +406,9 @@ public class DerivationClient {
 		List<String> newEntitiesString = this.sparqlClient.getNewDerivedIRI(derivation);
 		
 		// get those old entities that are inputs as other derivations
-		// query for ?x <belongsTo> <derivation>; ?previousDerivation <isDerivedFrom> ?x.		
-		// also ?x <rdf:type> ?xType; ?previousDerivation <rdf:type> ?preDevType.
-		List<Entity> oldEntitiesAsInput = this.sparqlClient.getDerivedEntitiesAndUpstreamDerivation(derivation);
+		// query for ?x <belongsTo> <derivation>; ?downstreamDerivation <isDerivedFrom> ?x.		
+		// also ?x <rdf:type> ?xType; ?downstreamDerivation <rdf:type> ?preDevType.
+		List<Entity> oldEntitiesAsInput = this.sparqlClient.getDerivedEntitiesAndDownstreamDerivation(derivation);
 		
 		// delete old instances
 		// IT SHOULD BE NOTED THAT DELETION OF OLD ENTITIES SHOULD ONLY BE DONE AFTER YOU STORED THE OLD ENTITIES INTO LOCAL VARIABLE "oldEntitiesAsInput"
@@ -477,37 +477,10 @@ public class DerivationClient {
 	 * @param derivation
 	 * @return
 	 */
-	public boolean isPendingUpdate(String derivation) {
-		return this.sparqlClient.isPendingUpdate(derivation);
+	public StatusType getStatusType(String derivation) {
+		return this.sparqlClient.getStatusType(derivation);
 	}
-
-	/**
-	 * Checks if the derivation status is "Requested".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isRequested(String derivation) {
-		return this.sparqlClient.isRequested(derivation);
-	}
-
-	/**
-	 * Checks if the derivation status is "InProgress".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isInProgress(String derivation) {
-		return this.sparqlClient.isInProgress(derivation);
-	}
-
-	/**
-	 * Checks if the derivation status is "Finished".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isFinished(String derivation) {
-		return this.sparqlClient.isFinished(derivation);
-	}
-
+	
 	/**
 	 * Marks the derivation status as "PendingUpdate".
 	 * @param derivation
