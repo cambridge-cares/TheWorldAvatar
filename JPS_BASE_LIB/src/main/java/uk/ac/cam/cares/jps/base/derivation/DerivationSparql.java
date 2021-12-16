@@ -603,7 +603,11 @@ public class DerivationSparql{
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		return statusToType.get(queryResult.getJSONObject(0).getString(statusTypeQueryKey));
+		if (queryResult.isEmpty()) {
+			return StatusType.NOSTATUS;
+		} else {
+			return statusToType.get(queryResult.getJSONObject(0).getString(statusTypeQueryKey));
+		}
 	}
 	
 	/**

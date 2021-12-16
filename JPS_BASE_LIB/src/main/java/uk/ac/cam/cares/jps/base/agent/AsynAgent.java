@@ -85,7 +85,8 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     				// at the moment the design is the agent just pass when it's detected as "InProgress"
     				break;
     			case FINISHED:
-    				devClient.cleanUpFinishedDerivationUpdate(derivation);    				
+    				devClient.cleanUpFinishedDerivationUpdate(derivation);
+    				break;
     			}
     		} else {
     			// TODO ideally this should call the update or other functions in synchronous derivation function
