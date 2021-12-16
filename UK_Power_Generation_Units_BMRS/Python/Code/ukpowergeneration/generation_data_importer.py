@@ -173,7 +173,7 @@ def get_power_data_from_api():
     #data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
     #These should both be EIC of (station or generator), time, power.  
     powerplant_df, generator_df = bmrs.convert_csv_to_tripple_dfs(csvName)
-    
+
     '''
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -270,7 +270,7 @@ def update_triple_store():
     #####Note that there are two now#####
     #power_data = get_power_data_from_api()
     powerplant_power_data, generator_power_data = get_power_data_from_api()
-
+    
     # Retrieve all generators with available power data (generator names are capitalised)
     #generators_with_data = power_data['generator'].unique()
 

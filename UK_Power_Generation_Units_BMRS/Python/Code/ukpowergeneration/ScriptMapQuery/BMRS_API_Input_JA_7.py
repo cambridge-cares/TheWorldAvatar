@@ -21,7 +21,7 @@ from datetime import datetime, timedelta
 ####Other###
 #Note: the functions used here are not used by the primary functions or any of the functions called therein. This is a seperate process which serves as an add-on to the base code here.
 #This puts it in the correct format for the utils kg triples.
-def convert_csv_to_tripple_dfs(csvName):
+def convert_csv_to_triple_dfs(csvName):
     #This converts the format of the output. Returns two dfs.
     
     #Read csv
