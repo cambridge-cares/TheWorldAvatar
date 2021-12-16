@@ -3,6 +3,8 @@ version: "3.8"
 services:
   derivationasynexample:
     container_name: derivationasynexample
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     image: derivationasynexample:1.0.0
     build:
       context: ./
