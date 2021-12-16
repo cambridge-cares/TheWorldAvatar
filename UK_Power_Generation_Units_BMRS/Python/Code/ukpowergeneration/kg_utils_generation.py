@@ -11,6 +11,8 @@ from configobj import ConfigObj
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from jpsSingletons import jpsBaseLibView
+# get the BMRS API Dataframe generating and CSV writing script. 
+from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
 
 
 # Define location of properties file (with Triple Store and RDB settings)

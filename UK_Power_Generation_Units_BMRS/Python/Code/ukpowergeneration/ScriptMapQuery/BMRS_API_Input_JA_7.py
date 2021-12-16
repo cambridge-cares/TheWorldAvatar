@@ -13,11 +13,61 @@ import sys
 from datetime import datetime, timedelta
 
 
-#Also note that the "post_elexon_basic" function is not used, but might be useful for just querying without processing at all if you are learning / testing. 
+
+#Also note that the "post_elexon_basic" function is not used, but might be useful for just querying without processing at all if you are learning / testing.
 
 
 
-####Functions###
+####Other###
+#Note: the functions used here are not used by the primary functions or any of the functions called therein. This is a seperate process which serves as an add-on to the base code here.
+#This puts it in the correct format for the utils kg triples.
+def convert_csv_to_tripple_dfs(csvName):
+    #This converts the format of the output. Returns two dfs.
+    
+    #Read csv
+    data = pd.read_csv(csvName) #Dataframe including DUKES stations.
+    p_data = pd.read_csv('powerplanttriple.csv') #Fixed powerplant name
+    g_data = pd.read_csv('generatortriple.csv') #Fixed generator name
+
+    p_count = 0
+    g_count = 0
+
+    for i in range(0, len(p_data['*'])):
+        p_data.iloc[i, p_data.columns.get_loc('powerplanteic')] = ""
+        p_data.iloc[i, p_data.columns.get_loc('time')] = ""
+        p_data.iloc[i, p_data.columns.get_loc('power')] = ""
+    for i in range(0, len(g_data['*'])):
+        g_data.iloc[i, g_data.columns.get_loc('generatoreic')] = ""
+        g_data.iloc[i, g_data.columns.get_loc('time')] = ""
+        g_data.iloc[i, g_data.columns.get_loc('power')] = ""
+
+    #For each powerplant/generator
+    for i in range(0, len(data['Registered Resource EIC code'])):
+        #Now convert the data over
+        #####Will use period for now, but might want to switch for TimeStamp string#####
+        #For each of the 48 periods
+        for Period in range(1,49):
+            #If powerplant
+            if data['Type (powerplant(station) or generator(unit))'][i] == "powerplant":
+                p_data.iloc[p_count, p_data.columns.get_loc('powerplanteic')] = data['Registered Resource EIC code'][i]
+                p_data.iloc[p_count, p_data.columns.get_loc('time')] = str(Period)
+                p_data.iloc[p_count, p_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
+                p_count += 1
+            #If generator
+            if data['Type (powerplant(station) or generator(unit))'][i] == "generator":
+                g_data.iloc[g_count, g_data.columns.get_loc('generatoreic')] = data['Registered Resource EIC code'][i]
+                g_data.iloc[g_count, g_data.columns.get_loc('time')] = str(Period)
+                g_data.iloc[g_count, g_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
+                g_count += 1
+    
+    p_data.to_csv('powerplanttriple.csv', index = False)
+    g_data.to_csv('generatortriple.csv', index = False)
+    
+    return p_data, g_data
+    
+
+
+###Functions###
 def post_elexon_basic(url):
     #Query BMRS. This function is not used, but is good if you are learning. Simply run this with the commented out lines to see the output. 
     http_obj = httplib2.Http()
@@ -287,4 +337,4 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
 ###Main Function###
 if __name__ == "__main__":
     live_power('Input-Template.csv', '', '2021', '11', '14', '24', 2)
-
+    #convert_csv_to_tripple_dfs('Input-Template.csv')

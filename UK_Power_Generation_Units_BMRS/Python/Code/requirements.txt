@@ -7,3 +7,9 @@ wget
 numpy
 psycopg2
 requests
+httplib2
+pprint
+re
+datetime
+collections
+logging

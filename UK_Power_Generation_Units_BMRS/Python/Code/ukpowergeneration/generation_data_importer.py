@@ -151,15 +151,30 @@ def get_power_data_from_api():
     # Get current UK timezone to properly convert reported local times into UTC
     # (i.e. account for daylight saving time)
     tz = pytz.timezone('Europe/London')
+    #####DO THIS LATER#####
 
-    print("Downloading latest power data CSV...")
-    url = "https://mip-prd-web.azurewebsites.net/InstantaneousViewFileDownload/DownloadFile"
-    filename = wget.download(url)
+    print("Querying API")
+    #url = "https://mip-prd-web.azurewebsites.net/InstantaneousViewFileDownload/DownloadFile"
+    #filename = wget.download(url)
+    #Run the Query Script. If the inputs are valid it will update the CSV. 
+    csvName = 'Input-Template.csv'
+    Key = ''
+    Year = 2021 #This should be a week ago. 
+    Month = 11 #This should be a week ago. 
+    Day = 14 #This should be a week ago. 
+    Period = 24 #Note this doesn't matter if Search is 2, as it goes from 1 - 48 regardless. 
+    Search = 2 #This script have multiple run options, for a day we want '2'. 
+    bmrs.live_power(csvName, Key, Year, Month, Day, Period, Search)
 
     # 2D array of data (triples [generatorName, time, power])
-    data = []
+    #data = []
 
     print("Reading power data CSV...")
+    #data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
+    #These should both be EIC of (station or generator), time, power.  
+    powerplant_df, generator_df = bmrs.convert_csv_to_tripple_dfs(csvName)
+    
+    '''
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
 
@@ -190,18 +205,21 @@ def get_power_data_from_api():
 
                 powerValue = row[2]
                 data.append([generatorName, dateTimeStr, powerValue])
+    '''
 
-    print("Finished reading power data CSV, removing file...\n")
-    os.remove(filename)
+    #print("Finished reading power data CSV, removing file...\n")
+    print("Finished reading power data CSV")
+    #os.remove(filename)
 
+    '''
     # Create DataFrame
     df = pd.DataFrame(data, columns=['generator', 'time (utc)', 'powerrate (m3/s)'])
     # Convert power from MCM/Day to M^3/S
     df['powerrate (m3/s)'] = (df['powerrate (m3/s)'].astype(float) * 1000000) / (24 * 60 * 60)
     # Capitalise generator names (for consistent comparisons by name)
     df['generator'] = df['generator'].str.upper()
-
-    return df
+    '''
+    return powerplant_df, generator_df
 
 
 def add_time_series_data(generatorIRI, power_data, generator_name=''):
@@ -249,10 +267,12 @@ def update_triple_store():
     print("Updates: ", kg.UPDATE_ENDPOINT)
 
     # Get the power data from National Grid csv as DataFrame
-    power_data = get_power_data_from_api()   
+    #####Note that there are two now#####
+    #power_data = get_power_data_from_api()
+    powerplant_power_data, generator_power_data = get_power_data_from_api()
 
     # Retrieve all generators with available power data (generator names are capitalised)
-    generators_with_data = power_data['generator'].unique()
+    #generators_with_data = power_data['generator'].unique()
 
     # Retrieve all instantiated generators in KG
     generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
