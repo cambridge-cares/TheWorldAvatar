@@ -477,37 +477,10 @@ public class DerivationClient {
 	 * @param derivation
 	 * @return
 	 */
-	public boolean isPendingUpdate(String derivation) {
-		return this.sparqlClient.isPendingUpdate(derivation);
+	public StatusType getStatusType(String derivation) {
+		return this.sparqlClient.getStatusType(derivation);
 	}
-
-	/**
-	 * Checks if the derivation status is "Requested".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isRequested(String derivation) {
-		return this.sparqlClient.isRequested(derivation);
-	}
-
-	/**
-	 * Checks if the derivation status is "InProgress".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isInProgress(String derivation) {
-		return this.sparqlClient.isInProgress(derivation);
-	}
-
-	/**
-	 * Checks if the derivation status is "Finished".
-	 * @param derivation
-	 * @return
-	 */
-	public boolean isFinished(String derivation) {
-		return this.sparqlClient.isFinished(derivation);
-	}
-
+	
 	/**
 	 * Marks the derivation status as "PendingUpdate".
 	 * @param derivation

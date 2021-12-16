@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
+import uk.ac.cam.cares.jps.base.derivation.StatusType;
 import uk.ac.cam.cares.jps.base.interfaces.AsynAgentInterface;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
@@ -69,17 +70,22 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
     	for (String derivation : listOfDerivation) {
     		// check if the derivation is an instance of asynchronous derivation
     		if (devClient.isDerivedAsynchronous(derivation)) {
-    			if (devClient.isPendingUpdate(derivation)) {
+    			StatusType statusType = devClient.getStatusType(derivation);
+    			switch (statusType) {
+    			case PENDINGUPDATE:
     				devClient.checkAtPendingUpdate(derivation);
-    			} else if (devClient.isRequested(derivation)) {
+    				break;
+    			case REQUESTED:
     				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
     				devClient.markAsInProgress(derivation);
     				List<String> newDerivedIRI = setupJob(agentInputs);
     				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
-    			} else if (devClient.isInProgress(derivation)) {
+    				break;
+    			case INPROGRESS:
     				// at the moment the design is the agent just pass when it's detected as "InProgress"
-    			} else if (devClient.isFinished(derivation)) {
-    				devClient.cleanUpFinishedDerivationUpdate(derivation);
+    				break;
+    			case FINISHED:
+    				devClient.cleanUpFinishedDerivationUpdate(derivation);    				
     			}
     		} else {
     			// TODO ideally this should call the update or other functions in synchronous derivation function

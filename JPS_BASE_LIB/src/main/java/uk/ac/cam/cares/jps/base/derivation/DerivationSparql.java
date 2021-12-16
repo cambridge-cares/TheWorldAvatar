@@ -48,6 +48,13 @@ public class DerivationSparql{
 	private String derivationInstanceBaseURL; // an example of this can be "https://www.example.com/triplestore/repository/"
 	
 	public static String derivednamespace = "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#";
+	
+	// status concepts
+	private static String PENDINGUPDATE = "PendingUpdate";
+	private static String REQUESTED = "Requested";
+	private static String INPROGRESS = "InProgress";
+	private static String FINISHED = "Finished";
+	
 	// prefix/namespace
 	private static Prefix p_agent = SparqlBuilder.prefix("agent",iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#"));
 	private static Prefix p_derived = SparqlBuilder.prefix("derived",iri(derivednamespace));
@@ -61,10 +68,10 @@ public class DerivationSparql{
     private static Iri DerivationWithTimeSeries = p_derived.iri("DerivationWithTimeSeries");
     private static Iri DerivationAsyn = p_derived.iri("DerivationAsyn");
     private static Iri Status = p_derived.iri("Status");
-    private static Iri PendingUpdate = p_derived.iri("PendingUpdate");
-    private static Iri Requested = p_derived.iri("Requested");
-    private static Iri InProgress = p_derived.iri("InProgress");
-    private static Iri Finished = p_derived.iri("Finished");
+    private static Iri PendingUpdate = p_derived.iri(PENDINGUPDATE);
+    private static Iri Requested = p_derived.iri(REQUESTED);
+    private static Iri InProgress = p_derived.iri(INPROGRESS);
+    private static Iri Finished = p_derived.iri(FINISHED);
     private static Iri InstantClass = p_time.iri("Instant");
 	
 	// object properties
@@ -89,6 +96,17 @@ public class DerivationSparql{
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
 	private static List<Iri> classesToIgnore = Arrays.asList(iri(OWL.THING),iri(OWL.NAMEDINDIVIDUAL));
+	
+	// 
+	private static final Map<String, StatusType> statusToType;
+	static {
+		Map<String, StatusType> statusMap = new HashMap<>();
+		statusMap.put(derivednamespace.concat(PENDINGUPDATE), StatusType.PENDINGUPDATE);
+		statusMap.put(derivednamespace.concat(REQUESTED), StatusType.REQUESTED);
+		statusMap.put(derivednamespace.concat(INPROGRESS), StatusType.INPROGRESS);
+		statusMap.put(derivednamespace.concat(FINISHED), StatusType.FINISHED);
+		statusToType = statusMap;
+	}
 	
 	private static final Logger LOGGER = LogManager.getLogger(DerivationSparql.class);
 	
@@ -471,101 +489,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method checks if the status of the derivation is marked as "PendingUpdate".
-	 * @param derivation
-	 * @return
-	 */
-	boolean isPendingUpdate(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(PendingUpdate);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method checks if the status of the derivation is marked as "Requested".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isRequested(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Requested);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	/**
-	 * This method checks if the status of the derivation is marked as "InProgress".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isInProgress(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(InProgress);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
-	 * This method checks if the status of the derivation is marked as "Finished".
-	 * @param storeClient
-	 * @param derivation
-	 * @return
-	 */
-	boolean isFinished(String derivation) {
-		String statusQueryKey = "status";
-		Variable status = SparqlBuilder.var(statusQueryKey);
-		SelectQuery query = Queries.SELECT();
-		
-		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
-		GraphPattern queryPattern2 = status.isA(Finished);
-		query.prefix(p_derived).where(queryPattern, queryPattern2);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.isEmpty()) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	/**
 	 * This method marks the status of the derivation as "PendingUpdate".
 	 * @param derivation
 	 */
@@ -655,6 +578,35 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * This method retrieves the rdf:type of the status of the given derivation instance.
+	 * @param derivation
+	 * @return
+	 */
+	StatusType getStatusType(String derivation) {
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+
+		SelectQuery query = Queries.SELECT();
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = iri(derivation).has(hasStatus, status);
+		GraphPattern queryPattern2 = status.isA(statusType).filter(Expressions.and(entityFilters));
+		
+		query.prefix(p_derived).where(queryPattern,queryPattern2).select(status,statusType);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		return statusToType.get(queryResult.getJSONObject(0).getString(statusTypeQueryKey));
+	}
+	
+	/**
 	 * This method checks if the derivation has any status assigned to it.
 	 * @param storeClient
 	 * @param derivation
@@ -682,7 +634,7 @@ public class DerivationSparql{
 	 * @return
 	 */
 	List<String> getNewDerivedIRI(String derivation) {
-		if (isFinished(derivation)) {
+		if (getStatusType(derivation) == StatusType.FINISHED) {
 			String derivedQueryKey = "newDerivedIRI";
 			
 			SelectQuery query = Queries.SELECT();
