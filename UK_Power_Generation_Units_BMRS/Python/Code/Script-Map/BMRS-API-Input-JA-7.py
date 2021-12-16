@@ -181,9 +181,9 @@ def find_recent_time(Key, Year, Month, Day, Period):
     return Year, Month, Day, Period
 
 
-###Primary Function### Year = 2021, Month = 12, Day = 14, Period = 43 = 9:00PM = 21:00PM
-def live_power(ExcelName, Key, Year, Month, Day, Period, Search):
-    #The first input is the name of the excel spreadsheet to use.
+###Primary Function###
+def live_power(csvName, Key, Year, Month, Day, Period, Search):
+    #The first input is the name of the csv spreadsheet to use.
     #The Key is the API key for BMRS. 
     #The other are for the time (
         #Year, eg. 2020 (four characters),
@@ -196,17 +196,33 @@ def live_power(ExcelName, Key, Year, Month, Day, Period, Search):
     Month = str0_2(Month)
     Day = str0_2(Day)
     Period = str0_2(Period) #Optional step, but do it for consistency. 
+
+    #Loop variable (only really relevant for Search == 2, can ignore for 0 and 1, and just presume it runs once (which it does)).
+    if Search == 0 or Search == 1:
+        loop = 1 + 1 #+1 for the loop to not immediately terminate, as it starts at 1.
+    elif Search == 2:
+        loop = 48 + 1 #+1 for the loop to not immediately terminate, as it starts at 1. 
     
     #The same time is used for the whole query.
     if Search == 1:
         Year, Month, Day, Period = find_recent_time(Key, Year, Month, Day, Period)
-    liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
-    if empty_query_response(liveGeneratorData):
-        #See if anything was recieved in this query.
-        return 0
     
-    #Read DUKES Stations from Excel
-    data = pd.read_excel(ExcelName) #Dataframe including DUKES stations.
+    if Search == 1 or Search == 0:
+        liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
+        if empty_query_response(liveGeneratorData):
+            #See if anything was recieved in this query.
+            return 0
+    elif Search == 2: 
+        for i in range(1,loop):
+            Period = i
+            print("Check: " + str(Period))
+            liveGeneratorData = run_query(Key, Year, Month, Day, Period) #Dict of generation units and their outputs.
+            if empty_query_response(liveGeneratorData):
+                #See if anything was recieved in this query.
+                return 0
+    
+    #Read DUKES Stations from csv
+    data = pd.read_csv(csvName) #Dataframe including DUKES stations.
 
     #Clear the outputs.
     for i in range(0,len(data['Output'])):
@@ -215,32 +231,60 @@ def live_power(ExcelName, Key, Year, Month, Day, Period, Search):
         data.iloc[i, data.columns.get_loc('Month')] = Month
         data.iloc[i, data.columns.get_loc('Day')] = Day
         data.iloc[i, data.columns.get_loc('Period')] = Period
+    if Search == 2:
+        for i in range(0,len(data['Output1'])):
+            data.iloc[i, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "None"
+            data.iloc[i, data.columns.get_loc('Connected (if generator(unit))')] = "None"
+            for p in range(1,loop):
+                data.iloc[i, data.columns.get_loc(('Output'+str(p)))] = 0
     
-    #Now go through the dataframe to get the IDs for each DUKES station. 
-    for i in range(0,len(data['outputDUKESToBMRSID'])):
-        #See if an ID is contained.
-        if (data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
-            #Now loop through the generators
-            for gen in liveGeneratorData: 
-                #Now see if there is a match. This is based on the generator ID containing the station ID, and the generator ID, when specifics are removed, being the same as the station ID.
-                if (data['outputDUKESToBMRSID'][i] in gen):
-                    if (gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i]):
-                        data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
-                    elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")): 
-                        #The station name could contain a number, which we can check with a looser method here. Here we see if, after removing the station name from the gen name, if the only remaining characters are numbers or in . -_". 
-                        #print("TAKE2: " + data['outputDUKESToBMRSID'][i] + ", " + gen)
-                        data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
-                    else:
-                        #Code should not get here. Print differences for debugging. 
-                        print(data['outputDUKESToBMRSID'][i] + ", " + gen)
+    #Now go through the dataframe to get the IDs for each DUKES station.
+    for p in range(1,loop):
+        if Search == 2:
+            Period = p
+            print("Input: " + str(p))
+            liveGeneratorData = run_query(Key, Year, Month, Day, Period)
+        for i in range(0,len(data['outputDUKESToBMRSID'])):
+            #See if an ID is contained.
+            if (data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
+                #Now loop through the generators
+                for gen in liveGeneratorData: 
+                    #Now see if there is a match. This is based on the generator ID containing the station ID, and the generator ID, when specifics are removed, being the same as the station ID.
+                    if (data['outputDUKESToBMRSID'][i] in gen):
+                        if (gen.strip("0987654321.-_ ") == data['outputDUKESToBMRSID'][i]):
+                            if Search == 0 or Search == 1:
+                                data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
+                            elif Search == 2:
+                                #data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
+                                for k in range(0,len(data['Registered Resource EIC code'])):
+                                    #Set this to the generator. 
+                                    if (str(data['Registered Resource Name'][k]) == gen) or ((str(data['NGC BM Unit ID'][k]) != "") and (str(data['NGC BM Unit ID'][k]) == gen)):
+                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = liveGeneratorData[gen]
+                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
+                                        data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
+                                    #Add this to the station.
+                                    if (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
+                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][k]) + liveGeneratorData[gen]
+                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant"
+                                
+                        elif ext_chars(gen.replace(data['outputDUKESToBMRSID'][i], "")): 
+                            #The station name could contain a number, which we can check with a looser method here. Here we see if, after removing the station name from the gen name, if the only remaining characters are numbers or in . -_". 
+                            #print("TAKE2: " + data['outputDUKESToBMRSID'][i] + ", " + gen)
+                            if Search == 0 or Search == 1:
+                                data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
+                            elif Search == 2:
+                                data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
+                        else:
+                            #Code should not get here. Print differences for debugging. 
+                            print(data['outputDUKESToBMRSID'][i] + ", " + gen)
 
-    #Re-export to excel, with times and outputs. 
-    data.to_excel(ExcelName, index = False)
+    #Re-export to csv, with times and outputs. 
+    data.to_csv(csvName, index = False)
     return 1
 
 
 
 ###Main Function###
 if __name__ == "__main__":
-    live_power('Input.xlsx', '', '2021', '11', '14', '46', 0)
+    live_power('Input-Template.csv', '', '2021', '11', '14', '24', 2)
 
