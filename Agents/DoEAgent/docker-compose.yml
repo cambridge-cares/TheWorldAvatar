@@ -4,6 +4,8 @@ services:
   example:
     image: summit_agent:1.0.0
     container_name: summit_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     build:
       context: .
       dockerfile: ./Dockerfile
