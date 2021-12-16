@@ -21,12 +21,13 @@ import traceback
 import wget
 import csv
 import pandas as pd
-import kg_utils_generation as kg
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
 from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils_generation module
 import kg_utils_generation as kg
+# get the BMRS API Dataframe generating and CSV writing script. 
+from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
 
 
 def instantiate_generator(query_endpoint, update_endpoint, generator_name):
@@ -247,17 +248,17 @@ def update_triple_store():
     print("Queries: ", kg.QUERY_ENDPOINT)
     print("Updates: ", kg.UPDATE_ENDPOINT)
 
-    # Get the gas power data from National Grid csv as DataFrame
+    # Get the power data from National Grid csv as DataFrame
     power_data = get_power_data_from_api()   
 
-    # Retrieve all generators with available gas power data (generator names are capitalised)
+    # Retrieve all generators with available power data (generator names are capitalised)
     generators_with_data = power_data['generator'].unique()
 
-    # Retrieve all instantiated gas generators in KG
+    # Retrieve all instantiated generators in KG
     generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
     generators_instantiated = {k.upper(): v for k, v in generators.items()}
 
-    # Potentially create new Gasgenerator instances for generators with available gas power data,
+    # Potentially create new generator instances for generators with available power data,
     # which are not yet instantiated in KG (only create instance to enable data assimilation)
     new_generators = False
     for gt in generators_with_data:
@@ -265,12 +266,12 @@ def update_triple_store():
             instantiate_generator(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt.title())
             new_generators = True
 
-    # Retrieve update of instantiated gas generators in KG (in case any new generators were added)
+    # Retrieve update of instantiated generators in KG (in case any new generators were added)
     if new_generators:
         generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
         generators_instantiated = {k.upper(): v for k, v in generators.items()}
 
-    # Assimilate gas power data for instantiated gas generators
+    # Assimilate power data for instantiated gas generators
     for gt in generators_instantiated:
         # Potentially instantiate time series association (if not already instantiated)
         if kg.get_measurementIRI(kg.QUERY_ENDPOINT, generators_instantiated[gt]) is None:
@@ -279,7 +280,7 @@ def update_triple_store():
         else:
             print("Instantiated time series detected!")
 
-        # Retrieve gas power time series data for respective generator from overall DataFrame
+        # Retrieve power time series data for respective generator from overall DataFrame
         new_data = power_data[power_data['generator'] == gt][['time (utc)', 'powerrate (m3/s)']]
 
         # Add time series data using Java TimeSeriesClient

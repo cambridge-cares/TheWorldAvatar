@@ -1,0 +1,5 @@
+{
+    "JpsBaseLib": {
+        "mainJarFile": "jps-base-lib.jar"
+    }
+}
