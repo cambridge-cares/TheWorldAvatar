@@ -25,6 +25,7 @@ import org.testcontainers.utility.DockerImageName;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.derivation.StatusType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
@@ -43,7 +44,7 @@ public class IntegrationTest extends TestCase {
     static DerivationClient devClient;
     static DerivationSparql devSparql;
     static Method getTimestamp;
-    static Method isPendingUpdate;
+    static Method getStatusType;
     static SparqlClient sparqlClient;
 
     // agents
@@ -104,8 +105,8 @@ public class IntegrationTest extends TestCase {
         sparqlClient = new SparqlClient(storeClient);
         getTimestamp = devSparql.getClass().getDeclaredMethod("getTimestamp", String.class);
         getTimestamp.setAccessible(true);
-        isPendingUpdate = devSparql.getClass().getDeclaredMethod("isPendingUpdate", String.class);
-        isPendingUpdate.setAccessible(true);
+        getStatusType = devSparql.getClass().getDeclaredMethod("getStatusType", String.class);
+        getStatusType.setAccessible(true);
 
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();
@@ -214,10 +215,12 @@ public class IntegrationTest extends TestCase {
         String rng_derivation = response.getString("RandomNumberGeneration Derivation");
 
         // test if all derivations were marked as PendingUpdate
-        Assert.assertTrue((boolean) isPendingUpdate.invoke(devSparql, difference_derivation));
-        Assert.assertTrue((boolean) isPendingUpdate.invoke(devSparql, maxvalue_derivation));
-        Assert.assertTrue((boolean) isPendingUpdate.invoke(devSparql, minvalue_derivation));
-        Assert.assertTrue((boolean) isPendingUpdate.invoke(devSparql, rng_derivation));
+//        Assert.assertEquals(StatusType.PENDINGUPDATE, sparqlClient.getDifferenceIRI());
+        
+        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, difference_derivation));
+        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, maxvalue_derivation));
+        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, minvalue_derivation));
+        Assert.assertEquals(StatusType.PENDINGUPDATE, (StatusType) getStatusType.invoke(devSparql, rng_derivation));
     }
 
     @Test
