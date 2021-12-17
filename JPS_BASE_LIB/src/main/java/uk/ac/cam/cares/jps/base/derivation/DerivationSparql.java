@@ -930,6 +930,7 @@ public class DerivationSparql{
 				Expressions.equals(statusType, InProgress),
 				Expressions.equals(statusType, Finished));
 		
+		GraphPattern upstreamDerivationPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), upstreamDerivation);
 		GraphPattern upDevTimePattern = upstreamDerivation.has(PropertyPaths.path(hasTime,inTimePosition,numericPosition), upstreamDerivationTimestamp);
 		GraphPattern upDevStatusTypePattern = GraphPatterns.optional(GraphPatterns.and(upstreamDerivation.has(hasStatus, status), status.isA(statusType).filter(Expressions.and(entityFilters))));
 		GraphPattern upDevPureInputTimePattern = upstreamDerivation.has(PropertyPaths.path(isDerivedFrom,hasTime,inTimePosition,numericPosition), pureInputTimestamp).optional();
@@ -940,15 +941,23 @@ public class DerivationSparql{
 		// PREFIX time: <http://www.w3.org/2006/time#>
 		// SELECT DISTINCT ?upstreamDerivation
 		// WHERE {
+		//   <derivation> derived:isDerivedFrom/derived:belongsTo ?upstreamDerivation.
 		//   ?upstreamDerivation time:hasTime/time:inTimePosition/time:numericPosition ?upstreamDerivationTimestamp.
-		//   optional{?upstreamDerivation derived:hasStatus/rdf:type ?statusType}
-		//   optional{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
-		//   optional{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
-		//   filter(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished))
+		//   OPTIONAL{?upstreamDerivation derived:hasStatus ?status .
+		//              {?status a ?statusType .
+		//               FILTER((?statusType != <http://www.w3.org/2002/07/owl#Thing> && ?statusType != <http://www.w3.org/2002/07/owl#NamedIndividual>))
+		//              }
+		//           }
+		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
+		//   OPTIONAL{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
+		//   FILTER((?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType = derived:PendingUpdate || ?statusType = derived:Requested || ?statusType = derived:InProgress || ?statusType = derived:Finished))
 		// }
 		
+		// it should be noted that the final FILTER has a simplified version but was not implemented as IN operator was not found in SparqlBuilder (to the best of the author's knowledge):
+		// FILTER(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished))
+		
 		query.prefix(p_derived,p_time).select(upstreamDerivation)
-		.where(GraphPatterns.and(upDevTimePattern,upDevStatusTypePattern,upDevPureInputTimePattern,inputsBelongsToDevTimePattern).filter(upstreamDerivationFilter));
+		.where(GraphPatterns.and(upstreamDerivationPattern,upDevTimePattern,upDevStatusTypePattern,upDevPureInputTimePattern,inputsBelongsToDevTimePattern).filter(upstreamDerivationFilter));
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
