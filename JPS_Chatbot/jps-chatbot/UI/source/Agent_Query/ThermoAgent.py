@@ -1,5 +1,6 @@
 import json
 import os
+from pprint import pprint
 from urllib.error import HTTPError
 from rapidfuzz import process, fuzz
 
@@ -18,14 +19,22 @@ else:
     from .AgentUtil.util.Lookup import find_nearest_match
     from .location import JPS_DICT_DIR
 
+dictionary = {}
+mappings = open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\Agent_Query\cc.txt').readlines()[1:]
+for m in mappings:
+    old, new = m.split(',')
+    dictionary[old.strip()] = new.strip()
+
 
 def find_ontocompchem_IRI(ontospecies_iri):
+
     query = ONTOCOMPCHEM_IRI_FROM_ONTOSPECIES_QUERY % ontospecies_iri
     results = query_blazegraph(query, 'ontocompchem')
     ontocompchem_iri_list = []
     for binding in results["results"]["bindings"]:
         oc_iri = binding['ocIRI']['value']
         ontocompchem_iri_list.append(oc_iri)
+
     return ontocompchem_iri_list
 
 
@@ -118,7 +127,7 @@ class ThermoAgent:
     def findOntoSpecies(self, species):
         _key, _score = find_nearest_match(species, self.keys)
         _IRI = self.find_IRI(_key)
-        return _IRI
+        return _IRI, _key, _score
 
     def callThermoAgent(self, species=None, attribute=None, temperature=None, pressure=None):
         if attribute is None:
@@ -126,7 +135,7 @@ class ThermoAgent:
         url = 'http://kg.cmclinnovations.com:81/stdc-agent/api/thermoagent/calculate'
         temperature, pressure = unitConversion(temperature, pressure)
         MarieMessage('temperature :{}, pressure: {}'.format(temperature, pressure))
-        ontospecies_iri_list = self.findOntoSpecies(species)
+        ontospecies_iri_list, key, score = self.findOntoSpecies(species)
         if ontospecies_iri_list is None:
             MarieError('No ontospecies iri found for this species {}'.format(species))
             return None
@@ -135,7 +144,15 @@ class ThermoAgent:
             MarieError('No ontospecies iri found for this species {}'.format(species))
         else:
             MarieMessage('ontospecies list {}'.format(ontospecies_iri_list))
+        print('all_ontospecies_iri', ontospecies_iri_list)
+
         for ontospecies_iri in ontospecies_iri_list:
+            print('ontospecies_iri', ontospecies_iri)
+            if ontospecies_iri in dictionary:
+                ontospecies_iri = dictionary[ontospecies_iri]
+            else:
+                print('not in the dictionary', ontospecies_iri)
+
             ontocompchem_iri_list = find_ontocompchem_IRI(ontospecies_iri)
             if len(ontocompchem_iri_list) == 0:
                 MarieError('No ontocompchem iri found for this species {}'.format(species))
@@ -147,13 +164,15 @@ class ThermoAgent:
                         'ontospecies_IRI': ontospecies_iri,
                         'temperature': temperature,
                         'pressure': pressure}
+                print('========= calling thermoagent with data ==========')
+                pprint(data)
                 MarieMessage(json.dumps(data, indent=4))
                 raw_response = make_simple_http_request(url, data, None)
                 if raw_response is None:
                     pass
                 else:
-                    return filter_response(json.loads(raw_response), attribute, temperature=temperature,
-                                           pressure=pressure)
+                    return {'IRI': {'key': key, 'score': score}, 'data': data, 'result': filter_response(json.loads(raw_response), attribute, temperature=temperature,
+                                           pressure=pressure)}
         return None
 
 
@@ -169,7 +188,7 @@ if __name__ == '__main__':
     # _species = 'co2'
     # _species = 'benzene'
     # t = 'roomtemperature'
-    t = None
+    # t = None
     # p = '100000 Pa'
     # attribute = 'entropy'
     # attribute = None
@@ -181,6 +200,13 @@ if __name__ == '__main__':
     t = '100 k'
     p = None
     attribute = 'Internal Energy'
+
+    # {'species': 'c3h5n3o', 'temperature': 'temperature 294.62 degree celsius', 'attribute': 'enthalpy'}
+
+    _species = 'methane'
+    t = 'temperature 294.62 degree celsius'
+    p = None
+    attribute = 'enthalpy'
 
     response = ta.callThermoAgent(species=_species, temperature=t, pressure=p, attribute=attribute)
     print('response', response)

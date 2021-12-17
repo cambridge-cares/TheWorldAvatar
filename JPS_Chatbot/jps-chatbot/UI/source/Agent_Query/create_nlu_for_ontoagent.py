@@ -84,6 +84,9 @@ def create_labelled_questions(inputs_for_creating_questions):
                 question = template
                 if input_placeholder in template:
                     input_value = '[%s](%s)' % (input_instance, input_ner_label)
+                    if input_instance.startswith('[') or input_instance.endswith(']'):
+                        input_value = '[[%s]](%s)' % (input_instance, input_ner_label)
+
                     question = question.replace(input_placeholder, input_value, 1)
                     if len(qualifier_ner_labels) == 0:
                         if '<qualifier>' not in question:
@@ -94,10 +97,11 @@ def create_labelled_questions(inputs_for_creating_questions):
                     # 1. fill in the inputs value (species instances)
                     if qualifier_placeholder in question:
                         qualifier_content = generate_numerical_for_qualifiers(qualifier_name)
-                        qualifier_value_1 = '[%s %s](%s)' % (qualifier_ner_label, qualifier_content, qualifier_ner_label)
+                        qualifier_value_1 = '%s [%s](%s)' % (qualifier_ner_label, qualifier_content, qualifier_ner_label)
                         qualifier_value_2 = '[%s](%s)' % (qualifier_content, qualifier_ner_label)
                         qualifier_value = random.choice([qualifier_value_1, qualifier_value_2])
                         question = question.replace(qualifier_placeholder, qualifier_value, 1)
+
                         if '<qualifier>' not in question:
                             questions.append(' - ' + question + '\n')
 
@@ -164,15 +168,17 @@ def create_questions_from_agent(agent_name):
 
 
 def generate_numerical_for_qualifiers(qualifier):
-    qualifier_unit_dict = {'temperature': ['kelvin', 'celsius', 'fahrenheit', 'K', 'C', 'F'],
+    qualifier_unit_dict = {'temperature': ['kelvin', 'celsius',
+                                           'fahrenheit', 'K', 'C', 'F', 'degree', 'degrees','degree celsius', 'degree fahrenheit', 'c', 'f', 'k'],
                            'pressure': ['bar', 'Pa', 'Pascal', 'atm', 'psi']}
     # upper limit, lower limit, steps
     number = random.randint(-500, 5000)
     unit = random.choice(qualifier_unit_dict[qualifier])
     q1 = '%s %s' % (number, unit)
     q2 = '%s%s' % (number, unit)
-    q3 = '%s' % random.choice([number, unit])
-    q = random.choice([q1, q2, q3])
+    q3 = '%s' % random.choice([number])
+    q4 = '%s' % random.choice(['room temperature', 'room pressure'])
+    q = random.choice([q1, q2, q3, q4])
     return q
 
 

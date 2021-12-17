@@ -45,10 +45,10 @@ def MarieError(err):
 def MarieMessage(message):
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='a', level=logging.DEBUG)
+    #logging.basicConfig(filename=os.path.join(ROOT_DIR, 'Marie.log'), filemode='a', level=logging.INFO)
     logger = logging.getLogger('Message')
-    logger.setLevel(logging.DEBUG)
-    logger.info(message)
+    logger.setLevel(logging.INFO)
+    logger.debug(message)
 
 
 def MarieIOLog(func):
@@ -62,7 +62,7 @@ def MarieIOLog(func):
         if rst is None:
             logger.warning('{} is called with input {} but returned None'.format(func.__name__, args[1:]))
         else:
-            logger.info('{} is called with input {} and output {}'.format(func.__name__, args[1:], rst))
+            logger.warning('{} is called with input {} and output {}'.format(func.__name__, args[1:], rst))
         return rst
 
     return wrapper

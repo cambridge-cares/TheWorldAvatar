@@ -1,6 +1,6 @@
 
 def removeStopWords(_question):
-    stopwords = ['of', 'the', 'an', 'a', 'is', 'what', 'are', 'describe', 'find', 'find me', 'show', 'show me']
+    stopwords = ['an', 'a', 'is', 'what', 'are', 'describe', 'find', 'find me', 'show', 'show me', 'the', 'all', 'me']
     _question = _question.strip()
     _question = _question.lower()
     _question = _question.replace("'s", ' singlequotesign')

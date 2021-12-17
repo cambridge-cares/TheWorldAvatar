@@ -1,3 +1,5 @@
+import json
+
 if __name__ == '__main__':
     from AgentUtil.AgentQueryParser import AgentQueryParser
     from AgentUtil.AgentCaller import AgentCaller
@@ -25,29 +27,28 @@ class AgentQueryInterface:
         self.agent_caller = AgentCaller()
 
     # @MarieIOLog
-    def agent_query(self, question):
+    def agent_query(self, question, mode='NLP_DEBUG'):
         rst = self.parse_question(question)
-        print(rst['entities'])
-        for e in rst['entities']:
-            print(e['value'])
-            print(e['entity'])
-            print('==========')
-        MarieMessage('AGENT PARSE RESULT {}'.format(rst))
-        _inputs, _outputs, _url = self.agent_query_parser.parse(rst)
-        if _inputs is None or _outputs is None:
-            return None
-        MarieMessage(_inputs)
-        MarieMessage(_outputs)
-        MarieMessage('====================================================')
+        if mode == 'NLP_DEBUG':
+            with open('NLP results', 'a') as f:
+                f.write('===========================')
+                f.write('\n')
+                f.write(question + '\n')
+                f.write(json.dumps(rst, indent=4) + '\n')
+                f.close()
 
-        # try:
-        #     response = self.agent_caller.call(_inputs, _outputs, _url)
-        #     return response
-        # except:
-        #     return None
-        t_a = ThermoAgent()
-        response = self.agent_caller.call(_inputs, _outputs, _url, t_a)
-        return response
+            return rst
+        elif mode == 'PRODUCTION':
+            MarieMessage('AGENT PARSE RESULT {}'.format(rst))
+            _inputs, _outputs, _url = self.agent_query_parser.parse(rst)
+            if _inputs is None or _outputs is None:
+                return None
+            MarieMessage(_inputs)
+            MarieMessage(_outputs)
+            MarieMessage('====================================================')
+            t_a = ThermoAgent()
+            response = self.agent_caller.call(_inputs, _outputs, _url, t_a)
+            return response
 
     # make NLP analysis on the question
     def parse_question(self, question):
@@ -99,9 +100,9 @@ if __name__ == '__main__':
             print(f'==================={q}=====================')
             print(r)
 
-    with open('processed_question_list_stdc') as f:
-        questions = f.readlines()
-        for q in questions:
-            r = aqi.agent_query(q)
-            print(f'==================={q}=====================')
-            print(r)
+    # with open('processed_question_list_stdc') as f:
+    #     questions = f.readlines()
+    #     for q in questions:
+    #         r = aqi.agent_query(q)
+    #         print(f'==================={q}=====================')
+    #         print(r)

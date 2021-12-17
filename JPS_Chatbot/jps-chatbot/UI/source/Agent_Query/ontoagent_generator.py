@@ -135,7 +135,7 @@ class OntoAgentGenerator:
 
 if __name__ == '__main__':
     agent = {
-        "question_templates": ['[%s](attribute) OPF with donor [%s](species)', '[%s](attribute) of [%s](species)'],
+        "question_templates": ['[%s](attribute) [%s](species)', '[%s](attribute) of [%s](species)'],
         "http_url": "http://somewhereincmcl.com/pce",
         "outputs": [
             {

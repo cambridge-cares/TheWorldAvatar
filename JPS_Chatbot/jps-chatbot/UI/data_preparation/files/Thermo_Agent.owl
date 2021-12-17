@@ -29,6 +29,8 @@
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; under &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; under &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>

@@ -163,6 +163,8 @@ class SearchEngine:
                         try:
                             obj_temp = {key: remove_duplicated(uris)}
                         except:
+                            print(uris)
+
                             print('Remove duplicate failed')
                             return None
                         results.append(obj_temp)

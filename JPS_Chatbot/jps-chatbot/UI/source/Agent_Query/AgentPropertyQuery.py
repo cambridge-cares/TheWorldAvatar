@@ -19,7 +19,10 @@ class AgentPropertyQuery:
                               'http://fake_concept_for_heat_capacity_at_constant_volume': [
                                   'heat capacity at constant volume'],
                               'http://fake_concept_for_power_conversion_efficiency': ['pce',
-                                                                                      'power conversion efficiency']}
+                                                                                      'power conversion efficiency',
+                                                                                      'pce of OPF with donor',
+                                                                                      'pce with donor',
+                                                                                      'power conversion efficiency of OPF with donor']}
 
     def test_query(self, query, agent_name):
         '''
