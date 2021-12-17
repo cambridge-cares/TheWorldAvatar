@@ -500,15 +500,6 @@ public class DerivationClient {
 	public void markAsFinished(String derivation) {
 		this.sparqlClient.markAsFinished(derivation);
 	}
-
-	/**
-	 * Checks if a derivation has status.
-	 * @param derivation
-	 * @return
-	 */
-	public boolean hasStatus(String derivation) {
-		return this.sparqlClient.hasStatus(derivation);
-	}
 	
 	/**
 	 * Gets the new derived IRI at derivation update (job) completion.
