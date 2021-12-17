@@ -24,7 +24,9 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -630,8 +632,12 @@ public class TimeSeriesClientTest {
 		dataToAdd.add(data1); dataToAdd.add(data2); dataToAdd.add(data3);
     	TimeSeries<Instant> ts_instant = new TimeSeries<Instant>(instantList, dataIRIs, dataToAdd);
     	
-    	List<List<String>> units = new ArrayList<>();
-    	units.add(Arrays.asList("unit1", "unit2", "unit3"));
+    	List<Map<String,String>> units = new ArrayList<>();
+    	Map<String,String> unit = new HashMap<>();
+    	unit.put("http://data1", "unit1");
+    	unit.put("http://data2", "unit2");
+    	unit.put("http://data3", "unit3");
+    	units.add(unit);
     	
     	JSONArray ts_jarray = testClient.convertToJSON(Arrays.asList(ts_instant), Arrays.asList(1,2), units, null);
     	
