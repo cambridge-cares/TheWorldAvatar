@@ -557,12 +557,11 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method marks the status of the derivation as "Finished".
-	 * @param storeClient
+	 * This method updates the status and job completion.
 	 * @param derivation
-	 * @return
+	 * @param newDerivedIRI
 	 */
-	String markAsFinished(String derivation) {
+	void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
 		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
@@ -576,8 +575,11 @@ public class DerivationSparql{
 		modify.prefix(p_derived).insert(insert_tp);
 		modify.prefix(p_derived).insert(insert_tp_rdf_type);
 		
+		for (String newIRI : newDerivedIRI) {
+			modify.insert(iri(statusIRI).has(hasNewDerivedIRI, iri(newIRI)));
+		}
+		
 		storeClient.executeUpdate(modify.getQueryString());
-		return statusIRI;
 	}
 	
 	/**
@@ -1445,16 +1447,6 @@ public class DerivationSparql{
 		
 		for (String newEntity : newEntities) {
 			modify.insert(iri(newEntity).has(belongsTo, iri(instance)));
-		}
-		
-		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
-	}
-	
-	void addNewDerivedIRIToFinishedStatus(String finishedStatus, List<String> newDerivedIRI) {
-		ModifyQuery modify = Queries.MODIFY();
-		
-		for (String newIRI : newDerivedIRI) {
-			modify.insert(iri(finishedStatus).has(hasNewDerivedIRI, iri(newIRI)));
 		}
 		
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());

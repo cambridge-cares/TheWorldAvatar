@@ -356,10 +356,8 @@ public class DerivationClient {
 	 * @param newDerivedIRI
 	 */
 	public void updateStatusAtJobCompletion(String derivation, List<String> newDerivedIRI) {
-		// mark as Finished
-		String statusIRI = this.sparqlClient.markAsFinished(derivation);
-		// add newDerivedIRI to Finished status
-		this.sparqlClient.addNewDerivedIRIToFinishedStatus(statusIRI, newDerivedIRI);
+		// mark as Finished and add newDerivedIRI to Finished status
+		this.sparqlClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
 	}
 	
 	/**
@@ -491,14 +489,6 @@ public class DerivationClient {
 	 */
 	public void markAsInProgress(String derivation) {
 		this.sparqlClient.markAsInProgress(derivation);
-	}
-
-	/**
-	 * Marks the derivation status as "Finished".
-	 * @param derivation
-	 */
-	public void markAsFinished(String derivation) {
-		this.sparqlClient.markAsFinished(derivation);
 	}
 	
 	/**
