@@ -434,9 +434,6 @@ public class DerivationSparql{
 
 		// create a unique IRI for this new derived quantity
 		String derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(derivedQuantity)) {
-			derivedQuantity = derivationInstanceBaseURL + "derivedAsyn_" + UUID.randomUUID().toString();
-		}
 
 		Iri derived_iri = iri(derivedQuantity);
 
@@ -500,9 +497,7 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(PendingUpdate);
 		
@@ -522,9 +517,7 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Requested);
 		
@@ -544,9 +537,7 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(InProgress);
 		
@@ -566,9 +557,7 @@ public class DerivationSparql{
 		ModifyQuery modify = Queries.MODIFY();
 		
 		String statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		while (checkInstanceExists(statusIRI)) {
-			statusIRI = getNameSpace(derivation) + "status_" + UUID.randomUUID().toString();
-		}
+		
 		TriplePattern insert_tp = iri(derivation).has(hasStatus, iri(statusIRI));
 		TriplePattern insert_tp_rdf_type = iri(statusIRI).isA(Finished);
 		
@@ -673,6 +662,7 @@ public class DerivationSparql{
 	 * @param instance
 	 * @return
 	 */
+	@Deprecated
 	private boolean checkInstanceExists(String instance) {
     	SelectQuery query = Queries.SELECT();
     	
