@@ -17,6 +17,7 @@ services:
   blazegraph:
     container_name: "blazegraph"
     environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
     # Add a secret to set the password for BASIC authentication
