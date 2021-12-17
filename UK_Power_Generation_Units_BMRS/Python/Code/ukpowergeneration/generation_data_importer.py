@@ -32,17 +32,17 @@ from ScriptMapQuery import BMRS_API_Input_JA_7 as bmrs
 
 def instantiate_generator(query_endpoint, update_endpoint, generator_name):
     """
-        Instantiates new gas generator in knowledge graph to enable gas power data assimilation.
-        (solely creates new Gasgenerator instance with respective name, but no further relationships)
+        Instantiates new generator in knowledge graph to enable power data assimilation.
+        (solely creates new generator instance with respective name, but no further relationships)
 
         Arguments:
             query_endpoint - SPARQL Query endpoint for knowledge graph.
             update_endpoint - SPARQL Update endpoint for knowledge graph.
-            generator_name - name of gas generator to be instantiated.
+            generator_name - name of generator to be instantiated.
     """
-    print("Instantiate new gas generator: " + generator_name)
+    print("Instantiate new generator: " + generator_name)
 
-    # Create unique IRI for new gas generator based on generator name
+    # Create unique IRI for new generator based on generator name
     generatorIRI = kg.PREFIXES['ontoenergyststem_kb'] + generator_name.replace(' ', '')
     n = 1
     # Add number suffix in case pure name based IRI already exists
@@ -58,9 +58,44 @@ def instantiate_generator(query_endpoint, update_endpoint, generator_name):
             kg.create_sparql_prefix('rdf') + \
             kg.create_sparql_prefix('rdfs') + \
             kg.create_sparql_prefix('xsd') + \
-            '''INSERT DATA { <%s> rdf:type ontoenergyststem:Gasgenerator . \
+            '''INSERT DATA { <%s> rdf:type ontoenergyststem:PowerGenerator . \
                              <%s> rdfs:label "%s"^^xsd:string . }''' % \
             (generatorIRI, generatorIRI, generator_name)
+    KGClient.executeUpdate(query)
+
+
+def instantiate_powerplant(query_endpoint, update_endpoint, powerplant_name):
+    """
+        Instantiates new powerplant in knowledge graph to enable power data assimilation.
+        (solely creates new powerplant instance with respective name, but no further relationships)
+
+        Arguments:
+            query_endpoint - SPARQL Query endpoint for knowledge graph.
+            update_endpoint - SPARQL Update endpoint for knowledge graph.
+            powerplant_name - name of powerplant to be instantiated.
+    """
+    print("Instantiate new powerplant: " + powerplant_name)
+
+    # Create unique IRI for new powerplant based on powerplant name
+    powerplantIRI = kg.PREFIXES['ontoenergyststem_kb'] + powerplant_name.replace(' ', '')
+    n = 1
+    # Add number suffix in case pure name based IRI already exists
+    while powerplantIRI in kg.get_instantiated_powerplants(query_endpoint).values():
+        powerplantIRI = kg.PREFIXES['ontoenergyststem_kb'] + powerplant_name.replace(' ', '') + str(n)
+        n += 1
+
+    # Initialise remote KG client with query AND update endpoints specified
+    KGClient = jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
+    
+    # Perform SPARQL update for non-time series related triples (i.e. without TimeSeriesClient)
+    query = kg.create_sparql_prefix('ontoenergyststem') + \
+            kg.create_sparql_prefix('rdf') + \
+            kg.create_sparql_prefix('rdfs') + \
+            kg.create_sparql_prefix('xsd') + \
+            kg.create_sparql_prefix('ontoeip') + \
+            '''INSERT DATA { <%s> rdf:type ontoeip:PowerPlant . \
+                             <%s> rdfs:label "%s"^^xsd:string . }''' % \
+            (powerplantIRI, powerplantIRI, powerplant_name)
     KGClient.executeUpdate(query)
 
 
@@ -144,7 +179,7 @@ def get_power_data_from_api():
         Gathers instantaneous power rate data for each generator from national grid website.
 
         Returns:
-            DataFrame with gas power rate data and columns 'generator', 'time (utc)', 'powerrate (m3/s)'.
+            DataFrame with gas power rate data and columns 'generator', 'time', 'power'.
             (all generator names are capitalised for naming consistency reasons)
     """
 
@@ -157,14 +192,16 @@ def get_power_data_from_api():
     #url = "https://mip-prd-web.azurewebsites.net/InstantaneousViewFileDownload/DownloadFile"
     #filename = wget.download(url)
     #Run the Query Script. If the inputs are valid it will update the CSV. 
-    csvName = 'Input-Template.csv'
-    Key = ''
-    Year = 2021 #This should be a week ago. 
-    Month = 11 #This should be a week ago. 
-    Day = 14 #This should be a week ago. 
-    Period = 24 #Note this doesn't matter if Search is 2, as it goes from 1 - 48 regardless. 
-    Search = 2 #This script have multiple run options, for a day we want '2'. 
-    bmrs.live_power(csvName, Key, Year, Month, Day, Period, Search)
+    #csvName = 'Input-Template.csv'
+    #Key = ''
+    #Year = 2021 #This should be a week ago. 
+    #Month = 11 #This should be a week ago. 
+    #Day = 14 #This should be a week ago. 
+    #Period = 24 #Note this doesn't matter if Search is 2, as it goes from 1 - 48 regardless. 
+    #Search = 2 #This script have multiple run options, for a day we want '2'. 
+
+    Key = '' #####NEED THIS#####
+    powerplant_df, generator_df = bmrs.Auto_Call(Key)
 
     # 2D array of data (triples [generatorName, time, power])
     #data = []
@@ -172,8 +209,8 @@ def get_power_data_from_api():
     print("Reading power data CSV...")
     #data = pd.read_csv(csvName) #Dataframe including DUKES stations. 
     #These should both be EIC of (station or generator), time, power.  
-    powerplant_df, generator_df = bmrs.convert_csv_to_tripple_dfs(csvName)
-
+    #powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs(csvName)
+    
     '''
     with open(filename, newline='') as csvfile:
         reader = csv.reader(csvfile)
@@ -213,31 +250,30 @@ def get_power_data_from_api():
 
     '''
     # Create DataFrame
-    df = pd.DataFrame(data, columns=['generator', 'time (utc)', 'powerrate (m3/s)'])
+    df = pd.DataFrame(data, columns=['generator', 'time', 'power'])
     # Convert power from MCM/Day to M^3/S
-    df['powerrate (m3/s)'] = (df['powerrate (m3/s)'].astype(float) * 1000000) / (24 * 60 * 60)
+    df['power'] = (df['power'].astype(float) * 1000000) / (24 * 60 * 60)
     # Capitalise generator names (for consistent comparisons by name)
     df['generator'] = df['generator'].str.upper()
     '''
     return powerplant_df, generator_df
 
 
-def add_time_series_data(generatorIRI, power_data, generator_name=''):
+def add_time_series_data(assetIRI, power_data, asset_name=''):
     """
-        Adds given gas power data (DataFrame) to time series of respective generator.
+        Adds given gas power data (DataFrame) to time series of respective powerplant/generator (asset).
 
         Arguments:
-            generatorIRI - IRI of gas generator to which power data shall be added.
-            power_data - gas power data to add to time series (as DataFrame with columns
-                        ['time (utc)', 'powerrate (m3/s)'].
-            generator_name - gas generator name (optional).
+            assetIRI - IRI of asset to which power data shall be added.
+            power_data - power data to add to time series (as DataFrame with columns ['time', 'power']).
+            asset_name - asset name (optional).
     """
-    print("Adding time series data for: " + generator_name)
+    print("Adding time series data for: " + asset_name)
 
     # Extract data to create Java TimeSeries object
-    measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, generatorIRI)
-    times = list(power_data['time (utc)'].values)
-    powers = list(power_data['powerrate (m3/s)'].values)
+    measurementIRI = kg.get_measurementIRI(kg.QUERY_ENDPOINT, assetIRI)
+    times = list(power_data['time'].values)
+    powers = list(power_data['power'].values)
 
     # Create Java TimeSeries object
     timeseries = jpsBaseLibView.TimeSeries(times, [measurementIRI], [powers])
@@ -251,7 +287,7 @@ def add_time_series_data(generatorIRI, power_data, generator_name=''):
     # Add time series data to existing time series association in KG using TimeSeriesClass
     TSClient = jpsBaseLibView.TimeSeriesClient(instant_class, kg.PROPERTIES_FILE)
     TSClient.addTimeSeriesData(timeseries)
-    print("Time series data successfully added.\n")
+    print("Time series data added successfully for: " + asset_name + ").\n")
 
 
 def update_triple_store():
@@ -270,9 +306,46 @@ def update_triple_store():
     #####Note that there are two now#####
     #power_data = get_power_data_from_api()
     powerplant_power_data, generator_power_data = get_power_data_from_api()
-    
+
+    #Now do the same for powerplants as will be done for generators. 
+    # Retrieve all powerplants with available power data (powerplant names are capitalised)
+    powerplants_with_data = powerplant_power_data['powerplanteic'].unique()
+
+    # Retrieve all instantiated powerplants in KG
+    powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
+    powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
+
+    # Potentially create new powerplant instances for powerplants with available power data,
+    # which are not yet instantiated in KG (only create instance to enable data assimilation)
+    new_powerplants = False
+    for gt in powerplants_with_data:
+        if gt not in powerplants_instantiated.keys():
+            instantiate_powerplant(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, gt.title())
+            new_powerplants = True
+
+    # Retrieve update of instantiated powerplants in KG (in case any new powerplants were added)
+    if new_powerplants:
+        powerplants = kg.get_instantiated_powerplants(kg.QUERY_ENDPOINT)
+        powerplants_instantiated = {k.upper(): v for k, v in powerplants.items()}
+
+    # Assimilate power data for instantiated gas powerplants
+    for gt in powerplants_instantiated:
+        # Potentially instantiate time series association (if not already instantiated)
+        if kg.get_measurementIRI(kg.QUERY_ENDPOINT, powerplants_instantiated[gt]) is None:
+            print("No instantiated timeseries detected for: ", gt)
+            instantiate_timeseries(kg.QUERY_ENDPOINT, kg.UPDATE_ENDPOINT, powerplants_instantiated[gt], gt)
+        else:
+            print("Instantiated time series detected!")
+
+        # Retrieve power time series data for respective powerplant from overall DataFrame
+        new_data = powerplant_power_data[powerplant_power_data['powerplanteic'] == gt][['time', 'power']]
+
+        # Add time series data using Java TimeSeriesClient
+        add_time_series_data(powerplants_instantiated[gt], new_data, gt)
+
+    #Now do the same for generators. 
     # Retrieve all generators with available power data (generator names are capitalised)
-    #generators_with_data = power_data['generator'].unique()
+    generators_with_data = generator_power_data['generatoreic'].unique()
 
     # Retrieve all instantiated generators in KG
     generators = kg.get_instantiated_generators(kg.QUERY_ENDPOINT)
@@ -301,7 +374,7 @@ def update_triple_store():
             print("Instantiated time series detected!")
 
         # Retrieve power time series data for respective generator from overall DataFrame
-        new_data = power_data[power_data['generator'] == gt][['time (utc)', 'powerrate (m3/s)']]
+        new_data = generator_power_data[generator_power_data['generatoreic'] == gt][['time', 'power']]
 
         # Add time series data using Java TimeSeriesClient
         add_time_series_data(generators_instantiated[gt], new_data, gt)

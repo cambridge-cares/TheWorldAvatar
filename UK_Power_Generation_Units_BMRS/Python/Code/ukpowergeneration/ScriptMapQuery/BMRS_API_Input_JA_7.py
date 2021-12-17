@@ -20,9 +20,86 @@ from datetime import datetime, timedelta
 
 ####Other###
 #Note: the functions used here are not used by the primary functions or any of the functions called therein. This is a seperate process which serves as an add-on to the base code here.
-#This puts it in the correct format for the utils kg triples.
+def period_to_time(Period):
+    #Returns hh:mm for each Period
+    halfHour = {
+        1: "00:00",
+        2: "00:30",
+        3: "01:00",
+        4: "01:30",
+        5: "02:00",
+        6: "02:30",
+        7: "03:00",
+        8: "03:30",
+        9: "04:00",
+        10: "04:30",
+        11: "05:00",
+        12: "05:30",
+        13: "06:00",
+        14: "06:30",
+        15: "07:00",
+        16: "07:30",
+        17: "08:00",
+        18: "08:30",
+        19: "09:00",
+        20: "09:30",
+        21: "10:00",
+        22: "10:30",
+        23: "11:00",
+        24: "11:30",
+        25: "12:00",
+        26: "12:30",
+        27: "13:00",
+        28: "13:30",
+        29: "14:00",
+        30: "14:30",
+        31: "15:00",
+        32: "15:30",
+        33: "16:00",
+        34: "16:30",
+        35: "17:00",
+        36: "17:30",
+        37: "18:00",
+        38: "18:30",
+        39: "19:00",
+        40: "19:30",
+        41: "20:00",
+        42: "20:30",
+        43: "21:00",
+        44: "21:30",
+        45: "22:00",
+        46: "22:30",
+        47: "23:00",
+        48: "23:30"
+    }
+    return halfHour[int(Period)]
+
+
+def week_ago():
+    #Get a week ago (returns str for year, month, day: 
+    weekAgo = datetime.utcnow() - timedelta(days=7)
+    #print(weekAgoFormat)
+    return str(weekAgo.year), str(weekAgo.month), str(weekAgo.day)
+
+
+def day_over_a_week_ago():
+    #Get a week ago + 1 day (8 days) for a slightly longer time ago (returns str for year, month, day: 
+    weekAgo = datetime.utcnow() - timedelta(days=8)
+    #print(weekAgoFormat)
+    return str(weekAgo.year), str(weekAgo.month), str(weekAgo.day)
+
+
+def format_time(Year, Month, Day, Period):
+    #Formats the time
+    #EG. "2021-11-26T09:30:00Z"
+    return str(Year) + '-' + str(Month) + '-' + str(Day) + "T" + period_to_time(Period) + ":00Z"
+
+
 def convert_csv_to_triple_dfs(csvName):
+    #This puts it in the correct format for the utils kg triples.
+    
     #This converts the format of the output. Returns two dfs.
+    #This is only for Search == 2 scenarios. 
     
     #Read csv
     data = pd.read_csv(csvName) #Dataframe including DUKES stations.
@@ -31,7 +108,13 @@ def convert_csv_to_triple_dfs(csvName):
 
     p_count = 0
     g_count = 0
-
+    
+    #Get Time
+    Year = data['Year'][1]
+    Month = data['Month'][1]
+    Day = data['Day'][1]
+    #Period = data['Period'][1] #All 48 are used. 
+    
     for i in range(0, len(p_data['*'])):
         p_data.iloc[i, p_data.columns.get_loc('powerplanteic')] = ""
         p_data.iloc[i, p_data.columns.get_loc('time')] = ""
@@ -50,13 +133,13 @@ def convert_csv_to_triple_dfs(csvName):
             #If powerplant
             if data['Type (powerplant(station) or generator(unit))'][i] == "powerplant":
                 p_data.iloc[p_count, p_data.columns.get_loc('powerplanteic')] = data['Registered Resource EIC code'][i]
-                p_data.iloc[p_count, p_data.columns.get_loc('time')] = str(Period)
+                p_data.iloc[p_count, p_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
                 p_data.iloc[p_count, p_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 p_count += 1
             #If generator
             if data['Type (powerplant(station) or generator(unit))'][i] == "generator":
                 g_data.iloc[g_count, g_data.columns.get_loc('generatoreic')] = data['Registered Resource EIC code'][i]
-                g_data.iloc[g_count, g_data.columns.get_loc('time')] = str(Period)
+                g_data.iloc[g_count, g_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
                 g_data.iloc[g_count, g_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 g_count += 1
     
@@ -64,10 +147,34 @@ def convert_csv_to_triple_dfs(csvName):
     g_data.to_csv('generatortriple.csv', index = False)
     
     return p_data, g_data
-    
+
 
 
 ###Functions###
+def outputless_assignment(csvName):
+    #This function may or may not be used in 
+    #Notes stations and generators for what is mapped.
+    data = pd.read_csv(csvName)    
+
+    for i in range(0,len(data['outputDUKESToBMRSID'])):
+        #See if an ID is contained.
+        if (str(data['ConfidenceResult'][i]) == "1" and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
+            #So if this is a mapped DUKES Powerplant (station) proceed. 
+            for k in range(0,len(data['Registered Resource EIC code'])):
+                #Add this to the station.
+                if (str(data['outputDUKESToBMRSEIC'][i]) == str(data['Registered Resource EIC code'][k])):
+                    data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant"
+                #Set this to the generator.
+                elif (str(data['Registered Resource Name'][k]).strip("0987654321.-_ ") == str(data['outputDUKESToBMRSID'][i])):
+                    data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
+                    data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
+                elif ext_chars(str(data['Registered Resource Name'][k]).replace(str(data['outputDUKESToBMRSID'][i]), "")): 
+                    data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
+                    data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
+    
+    data.to_csv(csvName, index = False)
+    
+
 def post_elexon_basic(url):
     #Query BMRS. This function is not used, but is good if you are learning. Simply run this with the commented out lines to see the output. 
     http_obj = httplib2.Http()
@@ -242,6 +349,14 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
         #Period, eg. 01 (could be 1 or two characters, as using a zero if it is <10 is optional).  The period is the half hour into the day, from 1-48.
         #Search (0 or 1), if set to 0, the only time queried will be the one given. If it is 1, it will continue to try until it obtains the most recent time (incrimenting by periods).
 
+    if Search == 2:
+        #This will automatically be 8 days ago. 
+        #Year, Month, Day = week_ago() #Week Ago
+        Year, Month, Day = day_over_a_week_ago() #8 Days Ago (to be safe)
+        Year = str(Year)
+        Month = str(Month)
+        Day = str(Day)
+    
     #As only a length of 2 is accepted for the day or month, (period can be either), i.e. "01" used instead of "1" ("20" would stay as "20"), we can make sure they are converted if they aren't already in this form.
     Month = str0_2(Month)
     Day = str0_2(Day)
@@ -296,7 +411,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
             liveGeneratorData = run_query(Key, Year, Month, Day, Period)
         for i in range(0,len(data['outputDUKESToBMRSID'])):
             #See if an ID is contained.
-            if (data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
+            if (str(data['ConfidenceResult'][i]) == "1" and data['outputDUKESToBMRSID'][i] != "na") and (data['outputDUKESToBMRSID'][i] != "none") and (data['outputDUKESToBMRSID'][i] != "None") and (data['outputDUKESToBMRSID'][i] != "") and (data['outputDUKESToBMRSID'][i] != "NA") and (data['outputDUKESToBMRSID'][i] != "nan"):
                 #Now loop through the generators
                 for gen in liveGeneratorData: 
                     #Now see if there is a match. This is based on the generator ID containing the station ID, and the generator ID, when specifics are removed, being the same as the station ID.
@@ -313,7 +428,7 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
                                         data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
                                         data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
                                     #Add this to the station.
-                                    if (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
+                                    elif (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
                                         data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][k]) + liveGeneratorData[gen]
                                         data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant"
                                 
@@ -323,18 +438,41 @@ def live_power(csvName, Key, Year, Month, Day, Period, Search):
                             if Search == 0 or Search == 1:
                                 data.iloc[i, data.columns.get_loc('Output')] = float(data['Output'][i]) + liveGeneratorData[gen]
                             elif Search == 2:
-                                data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
+                                #data.iloc[i, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][i]) + liveGeneratorData[gen]
+                                for k in range(0,len(data['Registered Resource EIC code'])):
+                                    #Set this to the generator. 
+                                    if (str(data['Registered Resource Name'][k]) == gen) or ((str(data['NGC BM Unit ID'][k]) != "") and (str(data['NGC BM Unit ID'][k]) == gen)):
+                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = liveGeneratorData[gen]
+                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "generator"
+                                        data.iloc[k, data.columns.get_loc('Connected (if generator(unit))')] = data['outputDUKESToBMRSEIC'][i]
+                                    #Add this to the station.
+                                    elif (data['outputDUKESToBMRSEIC'][i] == data['Registered Resource EIC code'][k]):
+                                        data.iloc[k, data.columns.get_loc(('Output' + str(Period)))] = float(data[('Output' + str(Period))][k]) + liveGeneratorData[gen]
+                                        data.iloc[k, data.columns.get_loc('Type (powerplant(station) or generator(unit))')] = "powerplant"
                         else:
                             #Code should not get here. Print differences for debugging. 
                             print(data['outputDUKESToBMRSID'][i] + ", " + gen)
 
+    outputless_assignment(csvName) #For the mapped generators / stations without outputs. 
+    
     #Re-export to csv, with times and outputs. 
     data.to_csv(csvName, index = False)
     return 1
 
 
+def Auto_Call(Key):
+    #Automatically calls the primary function with Search setting == 2.
+    #This means that rather than choosing a specific time, it picks 8 days ago and sweeps for all 48 periods (half hours) of the day. 
+    #Thus, the Year, Month, Day, and Period inputs don't matter. With Search == 2.
+    #CSV names are also set here and for the triple conversions. 
+    live_power('Input-Template.csv', Key, '2020', '20', '02', '02', 2)
+    dfa, dfb = convert_csv_to_triple_dfs('Input-Template.csv')
+    return dfa, dfb
+
 
 ###Main Function###
 if __name__ == "__main__":
-    live_power('Input-Template.csv', '', '2021', '11', '14', '24', 2)
-    #convert_csv_to_tripple_dfs('Input-Template.csv')
+    Key = ''
+    #live_power('Input-Template.csv', Key, '2021', '11', '14', '24', 2)
+    Auto_Call(Key)
+

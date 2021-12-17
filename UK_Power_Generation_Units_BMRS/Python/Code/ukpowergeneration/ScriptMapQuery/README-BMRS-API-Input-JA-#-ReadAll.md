@@ -1,7 +1,18 @@
 # README for BMRS-API-Input-JA-#.py ("#" = version)
 ## Description
 This document is a README for:
- > BMRS-API-Input-JA-#-ReadAll.py
+> BMRS-API-Input-JA-#-ReadAll.py
+
+Three csv files are required. These are not version controlled, but can be found at: 
+> \Dropbox (Cambridge CARES)\CoMo shared\ja685\BMRS\Script-BMRS-API
+Their names are: 
+> Input-Template.csv
+> generator.tripple.csv
+> powerplanttripple.csv
+
+These should be copied to:
+> \ukpowergeneration\ScriptMapQuery
+> This way, this API script is on the same level as these. 
 
 This script matches per generation (station) information from the BMRS database, to the list of stations from the DUKES database. This is done via information from the EIC database. All three database contents are required as inputs in an csv spreadsheet. This spreadsheet will be edited by the script, adding (or updating) the contents of some of the columns in order to note the chosen mapped BMRS station for each DUKES station (where possible). An example of thie contents of such a spreadsheet (after running the script) is copied to a version controlled text file named: 
 > csvNotePadExample.txt

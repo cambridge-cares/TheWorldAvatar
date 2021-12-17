@@ -35,6 +35,7 @@ PREFIXES = {
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
     'ts':    'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#',
     'xsd':   'http://www.w3.org/2001/XMLSchema#',
+    'ontoeip':   'http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#',
 }
 
 
@@ -256,7 +257,7 @@ def get_instantiated_generators(endpoint):
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type comp:Gasgenerator; \
+            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
