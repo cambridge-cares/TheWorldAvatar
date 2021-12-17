@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.agent;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -65,34 +66,32 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
      * @param agentIRI
      */
     public void monitorDerivation(String agentIRI) {
-    	List<String> listOfDerivation = devClient.getDerivations(agentIRI);
+    	// TODO this SPARQL query does NOT consider synchronous derivations that isDerivedUsing given agentIRI
+    	// TODO think about the situation where one agent monitors both synchronous and asynchronous derivations
+    	Map<String, StatusType> derivationsAndStatusType = devClient.getDerivationsAndStatusType(agentIRI);
     	
-    	for (String derivation : listOfDerivation) {
-    		// check if the derivation is an instance of asynchronous derivation
-    		if (devClient.isDerivedAsynchronous(derivation)) {
-    			StatusType statusType = devClient.getStatusType(derivation);
-    			switch (statusType) {
-    			case PENDINGUPDATE:
-    				devClient.checkAtPendingUpdate(derivation);
-    				break;
-    			case REQUESTED:
-    				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
-    				devClient.markAsInProgress(derivation);
-    				List<String> newDerivedIRI = setupJob(agentInputs);
-    				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
-    				break;
-    			case INPROGRESS:
-    				// at the moment the design is the agent just pass when it's detected as "InProgress"
-    				break;
-    			case FINISHED:
-    				devClient.cleanUpFinishedDerivationUpdate(derivation);
-    				break;
-    			}
-    		} else {
-    			// TODO ideally this should call the update or other functions in synchronous derivation function
-    			LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
-    		}
-    	}
+    	// iterate over each derivation that the agent is monitoring and make decisions based on its status
+    	derivationsAndStatusType.forEach((derivation, statusType) -> {
+    		switch (statusType) {
+			case PENDINGUPDATE:
+				devClient.checkAtPendingUpdate(derivation);
+				break;
+			case REQUESTED:
+				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
+				devClient.markAsInProgress(derivation);
+				List<String> newDerivedIRI = setupJob(agentInputs);
+				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
+				break;
+			case INPROGRESS:
+				// at the moment the design is the agent just pass when it's detected as "InProgress"
+				break;
+			case FINISHED:
+				devClient.cleanUpFinishedDerivationUpdate(derivation);
+				break;
+			case NOSTATUS:
+				break;
+			}
+    	});
     }
 
     /**

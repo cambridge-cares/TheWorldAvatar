@@ -21,6 +21,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
+import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatternNotTriples;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
@@ -856,6 +857,47 @@ public class DerivationSparql{
 		}
 		
 		return derivations;
+	}
+	
+	/**
+	 * This method retrieves a mapped list of derivations that <isDerivedUsing> a given <agentIRI> and their statusType.
+	 * @param agentIRI
+	 * @return
+	 */
+	Map<String, StatusType> getDerivationsAndStatusType(String agentIRI) {
+		String queryKey = "derivation";
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		
+		Variable derivation = SparqlBuilder.var(queryKey);
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+		
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
+		
+		GraphPattern queryPattern = derivation.has(isDerivedUsing, iri(agentIRI)).andIsA(DerivationAsyn);
+		GraphPatternNotTriples optionalPattern = GraphPatterns.optional(GraphPatterns.and(derivation.has(hasStatus, status), status.isA(statusType).filter(Expressions.and(entityFilters))));
+		
+		SelectQuery query = Queries.SELECT();
+		
+		query.prefix(p_derived, p_agent).select(derivation,statusType).where(queryPattern,optionalPattern);
+		storeClient.setQuery(query.getQueryString());
+		JSONArray queryResult = storeClient.executeQuery();
+		
+		Map<String, StatusType> derivationsAndStatusType = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			if (queryResult.getJSONObject(i).has(statusTypeQueryKey)) {
+				derivationsAndStatusType.put(queryResult.getJSONObject(i).getString(queryKey), statusToType.get(queryResult.getJSONObject(i).getString(statusTypeQueryKey)));
+			} else {
+				derivationsAndStatusType.put(queryResult.getJSONObject(i).getString(queryKey), StatusType.NOSTATUS);				
+			}
+		}
+		
+		return derivationsAndStatusType;
 	}
 	
 	/**

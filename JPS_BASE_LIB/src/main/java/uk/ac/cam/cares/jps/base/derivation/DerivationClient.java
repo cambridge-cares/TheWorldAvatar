@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.derivation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -547,6 +548,15 @@ public class DerivationClient {
 	 */
 	public List<String> getDerivations(String agentIRI) {
 		return this.sparqlClient.getDerivations(agentIRI);
+	}
+	
+	/**
+	 * Gets a list of paired derivations and their status type (if applicable) that are derived using a given agent IRI.
+	 * @param agentIRI
+	 * @return
+	 */
+	public Map<String, StatusType> getDerivationsAndStatusType(String agentIRI) {
+		return this.sparqlClient.getDerivationsAndStatusType(agentIRI);
 	}
 	
 	/**
