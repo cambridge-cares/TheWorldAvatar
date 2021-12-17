@@ -26,8 +26,10 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.SubSelect;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfPredicate;
 import org.eclipse.rdf4j.model.vocabulary.OWL;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -901,27 +903,67 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method retrieves a list of upstream derivations that directly linked with the given derivation in the chain.
+	 * This method retrieves a list of upstream derivations that directly linked with the given derivation in the chain and need an update.
 	 * @param derivation
 	 * @return
 	 */
-	List<String> getUpstreamDerivations(String derivation) {
-		String derivedQueryKey = "upstreamDerivation";
+	List<String> getUpstreamDerivationsNeedUpdate(String derivation) {
+		String upsDevQueryKey = "upstreamDerivation";
+		String upsDevTimeQueryKey = "upstreamDerivationTimestamp";
+		String statusQueryKey = "status";
+		String statusTypeQueryKey = "statusType";
+		String pureInputTimeQueryKey = "pureInputTimestamp";
+		String inputsBelongingToDevTimeQueryKey = "inputsBelongingToDerivationTimestamp";
 		
-		SelectQuery query = Queries.SELECT();
+		SelectQuery query = Queries.SELECT().distinct();
 		
-		Variable upstreamDerivation = SparqlBuilder.var(derivedQueryKey);
+		Variable upstreamDerivation = SparqlBuilder.var(upsDevQueryKey);
+		Variable upstreamDerivationTimestamp = SparqlBuilder.var(upsDevTimeQueryKey);
+		Variable status = SparqlBuilder.var(statusQueryKey);
+		Variable statusType = SparqlBuilder.var(statusTypeQueryKey);
+		Variable pureInputTimestamp = SparqlBuilder.var(pureInputTimeQueryKey);
+		Variable inputsBelongingToDerivationTimestamp = SparqlBuilder.var(inputsBelongingToDevTimeQueryKey);
 		
-		// direct inputs to derive this
-		GraphPattern derivedPattern = iri(derivation).has(PropertyPaths.path(isDerivedFrom,belongsTo), upstreamDerivation);
+		// ignore certain rdf:type
+		Expression<?>[] entityFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityFilters[j] = Expressions.notEquals(statusType, classesToIgnore.get(j));
+		}
 		
-		query.prefix(p_derived).where(derivedPattern).select(upstreamDerivation);
+		// check if the upstreamDerivation (outdated timestamp compared to pure input || outdated timestamp compared to its own upstream derivations || has status)
+		Expression<?> upstreamDerivationFilter = Expressions.or(Expressions.lt(upstreamDerivationTimestamp, pureInputTimestamp), // ?upstreamDerivationTimestamp < ?pureInputTimestamp
+				Expressions.lt(upstreamDerivationTimestamp, inputsBelongingToDerivationTimestamp), // ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp
+				Expressions.equals(statusType, PendingUpdate), // ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished)
+				Expressions.equals(statusType, Requested),
+				Expressions.equals(statusType, InProgress),
+				Expressions.equals(statusType, Finished));
+		
+		GraphPattern upDevTimePattern = upstreamDerivation.has(PropertyPaths.path(hasTime,inTimePosition,numericPosition), upstreamDerivationTimestamp);
+		GraphPattern upDevStatusTypePattern = GraphPatterns.optional(GraphPatterns.and(upstreamDerivation.has(hasStatus, status), status.isA(statusType).filter(Expressions.and(entityFilters))));
+		GraphPattern upDevPureInputTimePattern = upstreamDerivation.has(PropertyPaths.path(isDerivedFrom,hasTime,inTimePosition,numericPosition), pureInputTimestamp).optional();
+		GraphPattern inputsBelongsToDevTimePattern = upstreamDerivation.has(PropertyPaths.path(isDerivedFrom,belongsTo,hasTime,inTimePosition,numericPosition), inputsBelongingToDerivationTimestamp).optional();
+		
+		// Complete query string:
+		// PREFIX derived: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+		// PREFIX time: <http://www.w3.org/2006/time#>
+		// SELECT DISTINCT ?upstreamDerivation
+		// WHERE {
+		//   ?upstreamDerivation time:hasTime/time:inTimePosition/time:numericPosition ?upstreamDerivationTimestamp.
+		//   optional{?upstreamDerivation derived:hasStatus/rdf:type ?statusType}
+		//   optional{?upstreamDerivation derived:isDerivedFrom/time:hasTime/time:inTimePosition/time:numericPosition ?pureInputTimestamp}
+		//   optional{?upstreamDerivation derived:isDerivedFrom/derived:belongsTo/time:hasTime/time:inTimePosition/time:numericPosition ?inputsBelongingToDerivationTimestamp}
+		//   filter(?upstreamDerivationTimestamp < ?pureInputTimestamp || ?upstreamDerivationTimestamp < ?inputsBelongingToDerivationTimestamp || ?statusType IN (derived:PendingUpdate, derived:Requested, derived:InProgress, derived:Finished))
+		// }
+		
+		query.prefix(p_derived,p_time).select(upstreamDerivation)
+		.where(GraphPatterns.and(upDevTimePattern,upDevStatusTypePattern,upDevPureInputTimePattern,inputsBelongsToDevTimePattern).filter(upstreamDerivationFilter));
+		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
 		List<String> listOfUpstreamDerivation = new ArrayList<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
-			String derivedIRI = queryResult.getJSONObject(i).getString(derivedQueryKey);
+			String derivedIRI = queryResult.getJSONObject(i).getString(upsDevQueryKey);
 			listOfUpstreamDerivation.add(derivedIRI);
 		}
 		

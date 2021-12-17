@@ -367,30 +367,17 @@ public class DerivationClient {
 	 * @param derivation
 	 */
 	public void checkAtPendingUpdate(String derivation) {
-		// assume this derivation can be updated now
-		boolean toRequest = true;
+		// get a list of upstream derivations that need an update
+		// (IMMEDIATE upstream derivations in the chain - <derivation> <isDerivedFrom>/<belongsTo> <upstreamDerivation>)
+		// if all IMMEDIATE upstream derivations are up-to-date,
+		// or if the derivation is the first one in the chain, this function returns empty list
+		List<String> upstreamDerivationsNeedUpdate = this.sparqlClient.getUpstreamDerivationsNeedUpdate(derivation);
 		
-		// get a list of upstream derivations
-		List<String> upstreamDerivations = this.sparqlClient.getUpstreamDerivations(derivation);
-		
-		if (upstreamDerivations.size() > 0) {
-			// for each of the derivation, check if they are up-to-date, and no status associated
-			for (String dev : upstreamDerivations) {
-				List<String> inputs = this.sparqlClient.getInputs(dev);
-				if (isOutOfDate(dev, inputs) || hasStatus(dev)) {
-					toRequest = false;
-					break;
-				}
-			}
-		} else { // means this is the first derivation in the chain
-			if (!isOutOfDate(derivation, this.sparqlClient.getInputs(derivation))) {
-				throw new JPSRuntimeException("Derivation <" + derivation + "> is marked as PendingUpdate INCORRECTLY given it is the first derivation in the chain and is up-to-date.");
-			}
-		}
-		
-		// only when flag toRequest is not changed during checking, mark as Requested
-		if (toRequest) {
-			this.sparqlClient.markAsRequested(derivation);			
+		// if the list is empty, mark this derivation as Requested
+		// TODO when the list is not empty, it is possible to add more operations as now we know exactly which IMMEDIATE upstream derivation(s) need an update
+		// TODO additional support to be added when detecting any upstream derivation needs an update is synchronous derivation
+		if (upstreamDerivationsNeedUpdate.isEmpty()) {
+			this.sparqlClient.markAsRequested(derivation);
 		}
 	}
 	
