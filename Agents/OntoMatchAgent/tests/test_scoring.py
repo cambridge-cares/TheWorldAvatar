@@ -14,8 +14,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
     def convert_to_similarity_fcts(self, prop_prop_dist_tuples):
         prop_prop_sim_tuples = []
-        for prop1, prop2, dist_fct in prop_prop_dist_tuples:
-            prop_prop_sim_tuples.append((prop1, prop2, ontomatch.scoring.similarity_from_dist_fct(dist_fct)))
+        for pos, (prop1, prop2, dist_fct) in enumerate(prop_prop_dist_tuples):
+            prop_prop_sim_tuples.append((prop1, prop2, ontomatch.scoring.similarity_from_dist_fct(dist_fct), pos))
         return prop_prop_sim_tuples
 
     def get_params_blocking(self):
@@ -36,21 +36,18 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
 
-        sim_fcts = [
-            ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_nltk_edit),
-            ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_equal)
-        ]
+        sim_fct =  ontomatch.scoring.similarity_from_dist_fct(ontomatch.scoring.dist_nltk_edit)
 
         # test case 1
-        self.assertRaises(RuntimeError, manager.add_prop_prop_fct_tuples, 'name', 'some unknown property name', sim_fcts)
+        self.assertRaises(RuntimeError, manager.add_prop_prop_fct_tuples, 'name', 'some unknown property name', sim_fct)
         len_tuples = len(manager.get_prop_prop_fct_tuples())
         self.assertEqual(len_tuples, 0)
 
         # test case 2
-        manager.add_prop_prop_fct_tuples('name', 'name', sim_fcts)
-        manager.add_prop_prop_fct_tuples('name', 'isOwnedBy/hasName', sim_fcts)
+        manager.add_prop_prop_fct_tuples('name', 'name', sim_fct)
+        manager.add_prop_prop_fct_tuples('name', 'isOwnedBy/hasName', sim_fct)
         len_tuples = len(manager.get_prop_prop_fct_tuples())
-        self.assertEqual(len_tuples, 4)
+        self.assertEqual(len_tuples, 2)
 
     def test_configure_score_fct_nltk_edit(self):
         params_sim_fcts = [{
@@ -268,8 +265,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         src_onto, tgt_onto = self.load_kwl_gppd_ontologies()
         params_blocking = self.get_params_blocking()
         manager = ontomatch.scoring.create_score_manager(src_onto, tgt_onto, params_blocking)
-        for prop1, prop2, sim_fct in prop_prop_sim_tuples:
-            manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
+        for prop1, prop2, sim_fct, pos in prop_prop_sim_tuples:
+            manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct, pos)
 
         df_scores = manager.calculate_similarities_between_datasets()
         self.assertEqual(len(df_scores), 4726)
@@ -303,7 +300,8 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
         # run
 
         manager.calculate_similarities_between_datasets()
-        df_max_scores_1, _ = manager.calculate_maximum_scores()
+        manager.calculate_maximum_scores()
+        df_max_scores_1 = manager.get_max_scores_1()
 
         # assert
 
@@ -482,7 +480,7 @@ class TestScoring(tests.utils_for_testing.TestCaseOntoMatch):
 
         start_time = time.time()
         df_combined = manager.calculate_similarities_between_datasets()
-        self.assertEquals(len(df_combined), len(manager.pair_iterator))
-        df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
+        self.assertEqual(len(df_combined), len(manager.pair_iterator))
+        manager.calculate_maximum_scores()
 
         logging.debug('elapsed time=%s', time.time() - start_time)

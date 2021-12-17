@@ -209,17 +209,28 @@ def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonm
 
     # sample from nonmatches
     number_n = int(nonmatch_ratio * number_m)
-    # only subtract the matching pairs in the training set
+    # case a) only subtract the matching pairs in the training set
     diff = df_candidate_pairs.index.difference(df_m_train.index)
-    # substract all matching pairs in the ground truth
+    # case b) substract all matching pairs in the ground truth
     #diff = df_candidate_pairs.index.difference(df_matches.index)
     df_diff = df_candidate_pairs.loc[diff]
     df_diff['y'] = 0 # 0 means nonmatch
     df_n_train, _ = sklearn.model_selection.train_test_split(df_diff, train_size=number_n, shuffle=True)
 
+    len_false_nonmatches = len(df_n_train.index.intersection(df_matches.index))
+
     df_train = pd.concat([df_m_train, df_n_train])
     x_train = df_train[prop_columns].copy()
     y_train = df_train['y'].copy()
 
-    logging.info('x_train=%s, y_train=%s', len(x_train), len(y_train))
-    return x_train, y_train
+    index_test = df_candidate_pairs.index.difference(df_train.index)
+    df_test = df_candidate_pairs.loc[index_test]
+    df_test['y'] = 0
+    index_test_match = index_test.intersection(df_matches.index)
+    df_test.loc[index_test_match, 'y'] = 1
+    x_test = df_test[prop_columns].copy()
+    y_test = df_test['y'].copy()
+
+    logging.info('splitting result: x_train=%s, y_train=%s, fn=%s, x_test=%s, y_test=%s',
+        len(x_train), len(y_train), len_false_nonmatches, len(x_test), len(y_test))
+    return x_train, y_train, x_test, y_test

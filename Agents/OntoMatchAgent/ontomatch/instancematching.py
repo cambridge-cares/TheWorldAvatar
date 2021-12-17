@@ -23,14 +23,14 @@ class InstanceMatcherBase():
 
         self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking, params_mapping)
 
-        # TODO-AE: start with automatic property mapping
+        #TODO-AE: start with automatic property mapping
         # --> configurable, also: fixed property mapping (e.g. geo coordinates)
         mode = params_mapping['mode']
 
         logging.info('starting InstanceMatcherBase with mode=%s', mode)
 
         if mode == 'auto':
-            # TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator
+            #TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator
             params_sim_fcts = params_mapping['similarity_functions']
             sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
             property_mapping = ontomatch.scoring.find_property_mapping(self.score_manager, sim_fcts)
@@ -53,7 +53,6 @@ class InstanceMatcherBase():
             logging.info('added prop_prop_sim_tuples to score manager, number=%s', len(self.score_manager.get_prop_prop_fct_tuples()))
 
             self.score_manager.calculate_similarities_between_datasets()
-            self.score_manager.calculate_maximum_scores()
 
         else:
             raise RuntimeError('unknown mode', mode)
@@ -89,20 +88,6 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         if not isinstance(nm_ratio, list):
             nm_ratio = [nm_ratio]
 
-        train_file = params_training['train_file']
-        if train_file:
-            df_train_test_split = ontomatch.utils.util.read_csv(train_file)
-            # check whether all required train_test_split columns exist in train_file
-            not_found = []
-            for train_size in m_train_size:
-                for ratio in nm_ratio:
-                    column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
-                    if not column_name in df_train_test_split.columns:
-                        logging.warning('ml_phase column=%s was not found in file=%s', column_name, train_file)
-                        not_found.append(column_name)
-            if len(not_found) > 0:
-                raise ValueError('Some ml_phase columns were not found in the configured file', train_file, not_found)
-
         # perform blocking and create similarity vectors
         params_blocking = params['blocking']
         params_mapping = params['mapping']
@@ -122,41 +107,36 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
         for train_size in m_train_size:
             for ratio in nm_ratio:
-                if train_file:
-                    pass
-                else:
-                    # TODO-AE 211123: just a few matches might not be contained in df_scores
-                    # thus we skip them here, since there are just a few, training XGB would not improve much if they are considered
-                    # but then we have to calculate their similarity vectors
-                    logging.info('selecting training samples for train_size=%s, ratio=%s', train_size, ratio)
-                    intersection = index_set_matches.intersection(df_scores.index)
-                    len_diff = len(index_set_matches) - len(intersection)
-                    logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
-                    df_matches = df_scores.loc[intersection]
-                    x_train, y_train = ontomatch.utils.util.generate_training_set(
-                        df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
-                    column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
-                    # reuse df_scores for storing train-test-split
-                    df_scores[column_name] = 'test'
-                    df_scores.at[x_train.index, column_name] = 'train'
-                    # TODO-AE 211127 add train / test split and
+                #TODO-AE 211123: just a few matches might not be contained in df_scores
+                # thus we skip them here, since there are just a few, training XGB would not improve much if they are considered
+                # but then we have to calculate their similarity vectors
+                logging.info('selecting training samples for train_size=%s, ratio=%s', train_size, ratio)
+                intersection = index_set_matches.intersection(df_scores.index)
+                len_diff = len(index_set_matches) - len(intersection)
+                logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
+                df_matches = df_scores.loc[intersection]
+                x_train, y_train, x_test, y_test = ontomatch.utils.util.generate_training_set(
+                    df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
+                column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
+                # reuse df_scores for storing train-test-split
+                df_scores[column_name] = 'test'
+                df_scores.at[x_train.index, column_name] = 'train'
+                #TODO-AE 211127 add train / test split and
 
                 logging.info('classifying for train_size=%s, ratio=%s', train_size, ratio)
-                self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution, x_train, y_train, df_scores, prop_columns)
+                self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
+                        x_train, y_train, x_test, y_test, df_scores, prop_columns)
 
                 if params_post_processing:
-                    #TODO-AE 211123 configure whether training set is considered or not
-                    #postprocess(params_post_processing, self)
                     postprocess(params_post_processing, self, minus_train_set=x_train)
 
-        if not train_file:
-            dump = params_post_processing['dump']
-            if dump:
-                dir_name = dump + '_train_test_' + str(time.time())
-                logging.info('dumping train test split to %s', dir_name)
-                os.makedirs(dir_name, exist_ok=True)
-                df_tmp = df_scores.drop(columns='score')
-                df_tmp.to_csv(dir_name + '/train_test.csv')
+        dump = params_post_processing.get('dump')
+        if dump:
+            dir_name = dump + '_train_test_' + str(time.time())
+            logging.info('dumping train test split to %s', dir_name)
+            os.makedirs(dir_name, exist_ok=True)
+            df_tmp = df_scores.drop(columns='score')
+            df_tmp.to_csv(dir_name + '/train_test.csv')
 
 class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
@@ -164,9 +144,17 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         super().__init__()
         self.df_total_scores = None
         self.df_total_best_scores = None
+        self.df_total_best_scores_1 = None
+        self.df_total_best_scores_2 = None
 
     def get_scores(self):
         return self.df_total_best_scores
+
+    def get_total_best_scores_1(self):
+        return self.df_total_best_scores_1
+
+    def get_total_best_scores_2(self):
+        return self.df_total_best_scores_2
 
     def start(self, config_handle, src_graph_handle, tgt_graph_handle, http:bool=False):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, http)
@@ -190,9 +178,13 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             delta = 0.025
 
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
+
+        self.score_manager.calculate_maximum_scores(symmetric=symmetric)
+
         df_scores = self.score_manager.get_scores()
         df_max_scores = self.score_manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
+        self.df_total_best_scores_1 = self.df_total_best_scores
 
         if symmetric:
             # df_max_scores_2 has multi index of form (idx_2, idx_1)
@@ -201,6 +193,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             #df-_scores_2 = self.score_manager.get_scores().reorder_levels(['idx_2', 'idx_1'])
             df_scores_2 = self.score_manager.get_scores()
             _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
+            self.df_total_best_scores_2 = df_total_best_scores_2
             logging.debug('first row of df_total_best_score_2 before reordering index=%s, row=%s', df_total_best_scores_2.index[0], df_total_best_scores_2.iloc[0])
             # 1. method calculate_auto_calibrated_total_scores store idx_2 in index with name 'idx_1. Thus, we have to change the name
             #df_total_best_scores_2 = df_total_best_scores_2.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
@@ -508,7 +501,7 @@ def get_total_score_for_row(prop_scores, scoring_weights=None, missing_score=Non
 def postprocess(params_post_processing, matcher, minus_train_set=None):
 
     logging.info('post processing')
-    dump = params_post_processing['dump']
+    dump = params_post_processing.get('dump')
     if dump:
         dir_name = dump + '_' + str(time.time())
         logging.info('dumping results to %s', dir_name)
@@ -524,10 +517,10 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
             if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights):
                 sm.df_scores.to_csv(dir_name + '/total_scores.csv')
             elif isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
-                if sm.df_max_scores_1 is not None:
-                    sm.df_max_scores_1.to_csv(dir_name + '/max_scores_1.csv')
-                if sm.df_max_scores_2 is not None:
-                    sm.df_max_scores_2.to_csv(dir_name + '/max_scores_2.csv')
+                if sm.get_max_scores_1() is not None:
+                    sm.get_max_scores_1().to_csv(dir_name + '/max_scores_1.csv')
+                if sm.get_max_scores_2() is not None:
+                    sm.get_max_scores_2().to_csv(dir_name + '/max_scores_2.csv')
                 matcher.df_total_scores.to_csv(dir_name + '/total_scores_1.csv')
                 matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
                 sm.df_scores.to_csv(dir_name + '/scores.csv')
@@ -536,20 +529,38 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
 
     matchfile = params_post_processing['evaluation_file']
     index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
-    df_scores = matcher.get_scores()
-    #logging.info('ground truth matches=%s, df_scores=%s', len(index_set_matches), len(df_scores))
 
+    if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+        df_scores = matcher.get_total_best_scores_1()
+        if df_scores is not None:
+            logging.info('asym 1 --> 2, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
+            ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+        df_scores = matcher.get_total_best_scores_2()
+        if df_scores is not None:
+            logging.info('asym 2 --> 1, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
+            ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+
+    df_scores = matcher.get_scores()
     logging.info('training set IS NOT EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
     result = ontomatch.evaluate.evaluate(df_scores, index_set_matches)
 
     if minus_train_set is not None:
+
+        # evaluate on train set only
+        # TODO-AE 211216 add the matches outside candidate set to have a fair comparison concerning overfitting
+        df_scores_train = df_scores.loc[minus_train_set.index].copy()
+        index_set_matches_train = minus_train_set.index.intersection(index_set_matches)
+        logging.info('evaluation on TRAINING SET ONLY, train set=%s, train set matches=%s', len(minus_train_set), len(index_set_matches_train))
+        result = ontomatch.evaluate.evaluate(df_scores_train, index_set_matches_train)
+
+        # evaluate on test set
         diff = df_scores.index.difference(minus_train_set.index)
         df_scores = df_scores.loc[diff].copy()
         len_matches = len(index_set_matches)
-        index_set_matches = index_set_matches.difference(minus_train_set.index)
-        len_diff = len_matches - len(index_set_matches)
-        logging.info('training set IS EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', len_diff, len(index_set_matches), len(df_scores))
-        result = ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+        index_set_matches_diff = index_set_matches.difference(minus_train_set.index)
+        len_diff = len_matches - len(index_set_matches_diff)
+        logging.info('training set IS EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', len_diff, len(index_set_matches_diff), len(df_scores))
+        result = ontomatch.evaluate.evaluate(df_scores, index_set_matches_diff)
 
     logging.info('post processing finished')
     return result

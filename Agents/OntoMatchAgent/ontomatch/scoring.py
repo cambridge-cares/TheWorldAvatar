@@ -192,6 +192,23 @@ class ScoreManager():
     def get_prop_prop_fct_tuples(self):
         return self.prop_prop_fct_tuples
 
+    def get_column_names(self):
+        columns = []
+        #for i, s in enumerate(self.prop_prop_fct_tuples):
+        for _, _, _, i in self.prop_prop_fct_tuples:
+            #prop1, prop2, _ = s
+            #j = prop1.rfind('/')
+            #str_prop1 = (prop1 if j==-1 else prop1[j+1:])
+            #j = prop2.rfind('/')
+            #str_prop2 = (prop2 if j==-1 else prop2[j+1:])
+            #dist_column = '_'.join([str(i), 'dist', str_prop1, str_prop2])
+
+            # TODO-AE 211215 change from int to str for column names
+            #sim_column = i
+            sim_column = str(i)
+            columns.append(sim_column)
+        return columns
+
     def get_scores(self):
         return self.df_scores
 
@@ -212,6 +229,8 @@ class ScoreManager():
         if property2 and (not property2 in self.data2.columns):
             raise RuntimeError('property2 not found in dataframe columns', property2)
         # TODO-AE check whether scoring_fcts can be applied to datatype of p1 / p2
+        if pos is None:
+            pos = len(self.prop_prop_fct_tuples)
         self.prop_prop_fct_tuples.append((property1, property2, fct, pos))
 
     @staticmethod
@@ -263,19 +282,7 @@ class ScoreManager():
 
         #columns = ['idx_1', 'idx_2', 'pos_1', 'pos_2']
         columns = ['idx_1', 'idx_2']
-        #for i, s in enumerate(self.prop_prop_fct_tuples):
-        for _, _, _, i in self.prop_prop_fct_tuples:
-            #prop1, prop2, _ = s
-            #j = prop1.rfind('/')
-            #str_prop1 = (prop1 if j==-1 else prop1[j+1:])
-            #j = prop2.rfind('/')
-            #str_prop2 = (prop2 if j==-1 else prop2[j+1:])
-            #dist_column = '_'.join([str(i), 'dist', str_prop1, str_prop2])
-
-            # TODO-AE 211215 change from int to str for column names
-            #sim_column = i
-            sim_column = str(i)
-            columns.append(sim_column)
+        columns.extend(self.get_column_names())
 
         result = pd.DataFrame(data=rows, columns=columns)
         result.set_index(['idx_1', 'idx_2'], inplace=True)
@@ -312,20 +319,24 @@ class ScoreManager():
             index_diff = candidate_pairs.difference(df_loaded.index)
             if len(index_diff) > 0:
                 df_diff = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs=index_diff)
-                self.df_scores = pd.concat([df_intersection, df_diff])
+                df_scores_tmp = pd.concat([df_intersection, df_diff])
                 df_all = pd.concat([df_loaded, df_diff])
-                logging.info('number of similarity vectors, new=%s, df_scores=%s, all=%s', len(df_diff), len(self.df_scores), len(df_all))
+                logging.info('number of similarity vectors, new=%s, df_scores=%s, all=%s', len(df_diff), len(df_scores_tmp), len(df_all))
                 self.save_similarity_vectors(df_all, self.similarity_file)
             else:
-                self.df_scores = df_intersection.copy()
-                logging.info('no new similarity vectors, df_scores=%s, all=%s', len(self.df_scores), len(df_loaded))
+                df_scores_tmp = df_intersection.copy()
+                logging.info('no new similarity vectors, df_scores=%s, all=%s', len(df_scores_tmp), len(df_loaded))
+                columns = self.get_column_names()
+                df_scores_tmp = df_scores_tmp[columns]
+
+            self.df_scores = df_scores_tmp
 
         return self.df_scores
 
-    def calculate_maximum_scores(self, switch_to_min_of_distance=False):
+    def calculate_maximum_scores(self, symmetric=False, switch_to_min_of_distance=False):
         self.df_max_scores_1 = self.__calculate_maximum_scores(1, switch_to_min_of_distance)
-        self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
-        return self.df_max_scores_1, self.df_max_scores_2
+        if symmetric:
+            self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
 
     def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
@@ -437,7 +448,9 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
 
     manager.calculate_similarities_between_datasets()
 
-    df_max_scores_1, df_max_scores_2 = manager.calculate_maximum_scores()
+    manager.calculate_maximum_scores()
+    # TODO-AE 211216 symmetric automatic mapping
+    df_max_scores_1 = manager.get_max_scores_1()
 
     logging.info('\nmax scores for dataset 1:\n------------------\n%s', df_max_scores_1)
 

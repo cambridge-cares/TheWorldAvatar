@@ -49,7 +49,7 @@ class TestRestaurant(tests.utils_for_testing.TestCaseOntoMatch):
         entity2 = {'type': ['Restaurant'], 'pos': 17, 'name': 'Osteria_al', 'address/telephone': '212/944-3643', 'address/addressLocality': 'New York', 'https://schema.org/servesCuisine': 'Italian', 'address/streetAddress': '142 W. 44th St.'}
 
         prop_prop_sim_tuples = [
-            ('address/streetAddress', 'address/streetAddress', sim_fcts[0]),
+            ('address/streetAddress', 'address/streetAddress', sim_fcts[0], 0),
         ]
 
         result = ontomatch.scoring.ScoreManager.calculate_between_entities(entity1, entity2,  prop_prop_sim_tuples)

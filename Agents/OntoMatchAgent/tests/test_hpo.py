@@ -65,7 +65,7 @@ class TestHPO(tests.utils_for_testing.TestCaseOntoMatch):
         x_train, x_test, y_train, y_test = self.train_test_split_OLD(match_file, nonmatch_file, column_ml_phase, prop_columns)
 
         cross_validation = params_training['cross_validation']
-        model = ontomatch.hpo.start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
+        model = ontomatch.hpo.start_hpo(params_classification, cross_validation, params_impution, x_train, y_train, x_test=None, y_test=None)
         result = ontomatch.evaluate.evaluate_with_pred_proba(model, x_test, y_test, 11)
 
         # max f1-score=0.864373783257625 for threshold t=0.7

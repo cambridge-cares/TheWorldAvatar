@@ -3,6 +3,7 @@ import logging
 import sklearn
 import sklearn.ensemble
 import sklearn.impute
+import sklearn.metrics
 import sklearn.metrics.pairwise
 import sklearn.model_selection
 import sklearn.neural_network
@@ -10,6 +11,8 @@ import sklearn.pipeline
 import xgboost
 
 def create_classifier_XGB():
+    #return xgboost.XGBClassifier(eval_metric=sklearn.metrics.f1_score)
+    #return xgboost.XGBClassifier(eval_metric='aucpr')
     return xgboost.XGBClassifier()
 
 def create_classifier_MLP(params_hpo, params_impution):
@@ -57,15 +60,15 @@ def get_params_for_hpo(params_model_specific):
             params_hpo[key] = [value]
     return params_hpo
 
-def start_hpo(params_classification, cross_validation, params_impution, x, y):
+def start_hpo(params_classification, cross_validation, params_impution, x_train, y_train, x_test, y_test):
 
     name = params_classification['name']
     logging.info('name=%s, cross_validation=%s', name, cross_validation)
     params_hpo = get_params_for_hpo(params_classification['model_specific'])
-    count_nonmatch = y.value_counts().loc[0]
-    count_match = y.value_counts().loc[1]
+    count_nonmatch = y_train.value_counts().loc[0]
+    count_match = y_train.value_counts().loc[1]
     scale_pos_weight = count_nonmatch / count_match
-    logging.info('classification with nonmatches=%s, matches=%s, scale_pos_weight=%s', count_nonmatch, count_match, scale_pos_weight)
+    logging.info('training classifier with nonmatches=%s, matches=%s, scale_pos_weight=%s', count_nonmatch, count_match, scale_pos_weight)
 
     if name == 'XGB':
         #params_hpo['scale_pos_weight'] = [scale_pos_weight]
@@ -82,20 +85,30 @@ def start_hpo(params_classification, cross_validation, params_impution, x, y):
     logging.info('params_hpo=%s', params_hpo)
 
     #hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3)
-    #TODO-AE 211119: scoring function for XGB
-    hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3, scoring = 'f1')
+    #TODO-AE 211216: scoring function for XGB
+    scoring = 'f1'
+    #scoring = 'recall'
+    #scoring = 'accuracy'
+    #scoring = 'balanced_accuracy'
+    hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3, scoring=scoring)
     logging.info('training model with name=%s', name)
-    hpo_model.fit(x, y)
+    hpo_model.fit(x_train, y_train)
     logging.info('trained model=%s', hpo_model)
+    # for each grid point and for each of the k(=5) folds, compute the score, i.e. evaluate the trained classifier wrt to the metric choosen for param scoring above
+    # for each grid point, the score is the average score over the scores of all k folds
+    # the best score is the highest average
     logging.info('best_score=%s, best_params=%s', hpo_model.best_score_, hpo_model.best_params_)
 
-    score = hpo_model.score(x, y)
-    logging.info('score on entire training set=%s, len=%s', score, len(x))
+    score = hpo_model.score(x_train, y_train)
+    logging.info('score on entire training set=%s, len=%s', score, len(x_train))
+    if x_test is not None:
+        score = hpo_model.score(x_test, y_test)
+        logging.info('score on entire test set=%s, len=%s', score, len(x_test))
 
     return hpo_model
 
-def start(params_classification, cross_validation, params_impution, x_train, y_train, df_scores, prop_columns):
-    model = start_hpo(params_classification, cross_validation, params_impution, x_train, y_train)
+def start(params_classification, cross_validation, params_impution, x_train, y_train, x_test, y_test, df_scores, prop_columns):
+    model = start_hpo(params_classification, cross_validation, params_impution, x_train, y_train, x_test, y_test)
     logging.info('predicting probability of match or nonmatch')
     y_pred_proba = model.predict_proba(df_scores[prop_columns])
     y_pred_proba_match = [ ymatch for (_, ymatch) in y_pred_proba]
