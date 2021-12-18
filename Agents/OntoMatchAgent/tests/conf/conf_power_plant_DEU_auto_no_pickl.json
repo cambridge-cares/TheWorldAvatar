@@ -59,7 +59,7 @@
 	}
 },
 "post_processing":{
-	"dump": "./scores",
+	"dump": null,
 	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
 }
 }
