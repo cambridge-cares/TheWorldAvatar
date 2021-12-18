@@ -1,10 +1,12 @@
 import collections
 import json
+import logging
 import pickle
 import unittest
 
 import numpy as np
 
+import ontomatch.evaluate
 import ontomatch.utils.util
 
 PATH_MATCHES_PP_DEU = './data/power_plant_DEU/matches_power_plant_DEU.csv'
@@ -42,3 +44,9 @@ class TestCaseOntoMatch(unittest.TestCase):
         if symmetric:
             params['matching']['model_specific']['symmetric'] = True
         return params
+
+    def read_kwl_gppd_DEU_matching_file(self):
+        matchfile = PATH_MATCHES_PP_DEU
+        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+        logging.info('ground truth matches=%s', len(index_set_matches))
+        return index_set_matches

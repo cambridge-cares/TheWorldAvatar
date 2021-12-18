@@ -12,7 +12,6 @@ from tqdm import tqdm
 
 import ontomatch.utils.util
 
-# TODO-AE 211106 rename BASE to BASE_DUKES
 BASE = Namespace('http://www.theworldavatar.com/kb/powsys/dukes/')
 BASE_GPPD = Namespace('http://www.theworldavatar.com/kb/powsys/gppd/')
 BASE_KWL = Namespace('http://www.theworldavatar.com/kb/powsys/kwl/')
@@ -105,7 +104,6 @@ def get_owner(g, dictionary, name):
         return dictionary[name]
 
     s = BASE[name.replace(' ', '_')]
-    #TODO-AE skipping owners
     if _is_valid_uri(s):
         g.add((s, RDF.type, CPSYSV1['Organization']))
         g.add((s, CPSYSV1['hasName'], Literal(name)))
@@ -202,7 +200,6 @@ def create_plant_from_dictionary(g, d, version, country_short, use_schema=False)
     if o:
         x = rdflib.BNode()
         g.add((s, CPTECSYS['realizes'], x))
-        #TODO-AE URGENT 211022 use URL instead of string
         g.add((x, POW['consumesPrimaryFuel'], Literal(o)))
 
     return name

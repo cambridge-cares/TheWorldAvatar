@@ -3,9 +3,6 @@ import logging
 import numpy as np
 import pandas as pd
 
-import ontomatch.readAlignment
-import ontomatch.utils.util
-
 def evaluate_y_pred(y_test, y_pred):
     tp, tn, fp, fn = 0, 0, 0, 0
     for i, y in enumerate(y_test):
@@ -131,11 +128,11 @@ def get_area_under_curve(result):
     return area_under_curve
 
 def log_result(result):
-    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN, f1score):\n%s', result)
     max_t, max_f1score = get_max_f1score(result)
-    area_under_curve = get_area_under_curve(result)
     logging.info('max f1-score=%s for threshold t=%s', max_f1score, max_t)
+    area_under_curve = get_area_under_curve(result)
     logging.info('area under curve=%s', area_under_curve)
+    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN, f1score):\n%s', result)
 
 def evaluate(df_scores, matches, number_of_thresholds=41):
 

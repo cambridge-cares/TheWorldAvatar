@@ -198,14 +198,17 @@ def pickle_dump(addr, onto):
     with open(pklname,'wb') as file:
         pickle.dump(onto, file, -1)
 
-def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonmatch_ratio, prop_columns=None):
+def generate_train_test_sets_due_to_ratio(df_matches, df_candidate_pairs, match_train_size, nonmatch_ratio, prop_columns=None):
     logging.info('splitting, match=%s, candidate_pairs=%s, match_train_size=%s, nonmatch_ratio=%s',
         len(df_matches), len(df_candidate_pairs), match_train_size, nonmatch_ratio)
 
     # sample from matches
     number_m = int(match_train_size * len(df_matches))
     df_matches['y'] = 1 # 1 means match
-    df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
+    if match_train_size == len(df_matches):
+        df_m_train = df_matches
+    else:
+        df_m_train, _ = sklearn.model_selection.train_test_split(df_matches, train_size=number_m, shuffle=True)
 
     # sample from nonmatches
     number_n = int(nonmatch_ratio * number_m)
@@ -234,3 +237,38 @@ def generate_training_set(df_matches, df_candidate_pairs, match_train_size, nonm
     logging.info('splitting result: x_train=%s, y_train=%s, fn=%s, x_test=%s, y_test=%s',
         len(x_train), len(y_train), len_false_nonmatches, len(x_test), len(y_test))
     return x_train, y_train, x_test, y_test
+
+def train_test_split(df_candidate_pairs, index_matches, train_size, columns_x, column_y='y', column_ml_phase=None):
+    index_candidate_pairs = df_candidate_pairs.index
+    index_matches_intersection = index_matches.intersection(index_candidate_pairs)
+    len_matches_fn = len(index_matches.difference(index_candidate_pairs))
+    logging.info('train_size=%s, candidate pairs (CP)=%s, matches in CP=%s, FN (outside CP)=%s, ',
+        train_size, len(index_candidate_pairs), len(index_matches_intersection), len_matches_fn)
+
+    df_candidate_pairs[column_y] = 0
+    df_candidate_pairs.at[index_matches_intersection, column_y] = 1
+    df_y = df_candidate_pairs[column_y]
+    if column_ml_phase:
+        df_candidate_pairs[column_ml_phase] = 'test'
+    if train_size == 0:
+        x_train = None
+        x_test = df_candidate_pairs[columns_x].copy()
+        y_train = None
+        y_test =df_y
+    else:
+        df_cp = df_candidate_pairs[columns_x].copy()
+        x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(df_cp, df_y, train_size=train_size, shuffle=True, stratify=df_y)
+        if column_ml_phase:
+            df_candidate_pairs.at[x_train.index, column_ml_phase] = 'train'
+
+    return df_candidate_pairs, x_train, x_test, y_train, y_test
+
+def split_df(df_train_test_split, df_scores, columns_x, column_y='y', column_ml_phase='ml_phase'):
+    mask = (df_train_test_split[column_ml_phase] == 'train')
+    df_train = df_train_test_split[mask].copy()
+    df_test = df_train_test_split[~mask].copy()
+    y_train = df_train[column_y]
+    y_test = df_test[column_y]
+    x_train = df_scores.loc[df_train.index][columns_x].copy()
+    x_test = df_scores.loc[df_test.index][columns_x].copy()
+    return x_train, x_test, y_train, y_test

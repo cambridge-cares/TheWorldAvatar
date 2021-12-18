@@ -11,8 +11,6 @@ import sklearn.pipeline
 import xgboost
 
 def create_classifier_XGB():
-    #return xgboost.XGBClassifier(eval_metric=sklearn.metrics.f1_score)
-    #return xgboost.XGBClassifier(eval_metric='aucpr')
     return xgboost.XGBClassifier()
 
 def create_classifier_MLP(params_hpo, params_impution):
@@ -68,7 +66,7 @@ def start_hpo(params_classification, cross_validation, params_impution, x_train,
     count_nonmatch = y_train.value_counts().loc[0]
     count_match = y_train.value_counts().loc[1]
     scale_pos_weight = count_nonmatch / count_match
-    logging.info('training classifier with nonmatches=%s, matches=%s, scale_pos_weight=%s', count_nonmatch, count_match, scale_pos_weight)
+    logging.info('training classifier with nonmatches=%s, matches=%s, N-M-ratio=%s', count_nonmatch, count_match, scale_pos_weight)
 
     if name == 'XGB':
         #params_hpo['scale_pos_weight'] = [scale_pos_weight]
@@ -84,12 +82,7 @@ def start_hpo(params_classification, cross_validation, params_impution, x_train,
 
     logging.info('params_hpo=%s', params_hpo)
 
-    #hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3)
-    #TODO-AE 211216: scoring function for XGB
     scoring = 'f1'
-    #scoring = 'recall'
-    #scoring = 'accuracy'
-    #scoring = 'balanced_accuracy'
     hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3, scoring=scoring)
     logging.info('training model with name=%s', name)
     hpo_model.fit(x_train, y_train)

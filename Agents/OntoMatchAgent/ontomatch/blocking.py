@@ -77,7 +77,6 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
             logging.info('creating index')
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
-
             df_index, df_src, df_tgt = self._create_index(dframe_src, dframe_tgt, blocking_properties)
             TokenBasedPairIterator.df_src = df_src
             TokenBasedPairIterator.df_tgt = df_tgt
@@ -249,13 +248,12 @@ def create_dataframe_from_ontology(onto):
         for general_type in ['NamedIndividual', 'Thing']:
             if rdf_types is None:
                 logging.warning('an individual is skipped since no rdf types found, individual=%s', props)
-                #TODO-AE: this is a hack, e.g. '.../Germany' is an indiviual of its own and is value of 'hasAddress'
+                #this is a hack, e.g. '.../Germany' is both an indiviual of its own and occurs as value of 'hasAddress'
                 continue
             for rdf_type in rdf_types.copy():
                 if rdf_type.endswith(general_type):
                     rdf_types.remove(rdf_type)
         row['type'] = rdf_types
-
 
         # TODO-AE 211026 add rdfs:label or replace name by rdfs:label; this is too specialized (will not work for DBPedia)
         # also idx will not work
@@ -282,7 +280,6 @@ def create_dataframe_from_ontology(onto):
         for p, o in p_o_tuples:
             if isinstance(o, rdflib.Literal):
 
-                # TODO-AE this is a hack. talk to shaocong to create correct property paths
                 if isinstance(p, list):
                     # list contains the properties of a property path
                     # they are merged to get a name for the dataframe column
@@ -295,7 +292,6 @@ def create_dataframe_from_ontology(onto):
 
             else:
                 raise RuntimeError('not supported yet, s=', onto.individualNames[pos], ', p=', p, ', o=', o )
-
 
         rows.append(row)
 

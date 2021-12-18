@@ -64,10 +64,8 @@ def create_dist_cosine_with_tfidf(n_max_idf):
     return dist_cosine_with_tfidf_internal
 
 def dist_cosine_with_tfidf(v1, v2, n_max_idf=100):
-    #TODO-AE URGENT 211215 make n_max_idf configurable, before 30 as in Jupyter Notebook
     if not check_str(v1, v2):
         return None
-    # TODO-AE URGENT 211021 replaced by unpruned (original) index to get same tfidf weights as in jupyter notebook
     #df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens
     df_index_tokens = ontomatch.blocking.TokenBasedPairIterator.df_index_tokens_unpruned
     if df_index_tokens is None:
@@ -77,14 +75,11 @@ def dist_cosine_with_tfidf(v1, v2, n_max_idf=100):
 def dist_cosine_binary(v1, v2):
     if not check_str(v1, v2):
         return None
-    #TODO-AE 211211 URGENT
-    #return compare_strings_with_tfidf(v1, v2, None, None, log=False)
     return compare_strings_binary(v1, v2)
 
 def dist_cosine_embedding(v1, v2):
     if not check_str(v1, v2):
         return None
-    starttime = time.time()
     embeddings1 = SentenceTransformerWrapper.model.encode(v1, convert_to_tensor=True, show_progress_bar=False)
     embeddings2 = SentenceTransformerWrapper.model.encode(v2, convert_to_tensor=True, show_progress_bar=False)
     pytorch_tensor = sentence_transformers.util.pytorch_cos_sim(embeddings1, embeddings2)
@@ -93,18 +88,14 @@ def dist_cosine_embedding(v1, v2):
     cosine_sim = min(1, pytorch_tensor[0].numpy()[0])
     # negative cosine sim is mapped to 0
     cosine_distance = 1 - max(0, cosine_sim)
-    #if random.randint(0,100) == 0:
-    #    logging.warn('MY cosine_sim=%s, cosine_distance=%s, time=%s', cosine_sim, cosine_distance, time.time() - starttime)
-
     return cosine_distance
 
 class SentenceTransformerWrapper():
     model = sentence_transformers.SentenceTransformer('all-MiniLM-L6-v2')
 
 def similarity_from_dist_fct(dist_fct, cut_off_mode='fixed', cut_off_value=1, decrease = 'linear'):
-    #TODO-AE
     # parameters to describe a monotone decreasing conversion fct c:[0, oo) --> [0,1] with c(0) = 1
-    # cut_off_mode could also be 'max' or 'quantile' (withc cut_off_value = percentage)
+    # cut_off_mode could also be 'max' or 'quantile' (with cut_off_value = percentage)
     # monotonicity could also by 1 - 1/x for (discrete values 1, 2, 3) or 1/exponential or ...
     # (fixed, 1, linear) --> score(v1, v2) = 1 - dist_fct(v1, v2)
     def similarity_from_dist_fct_internal(v1, v2):
@@ -194,17 +185,7 @@ class ScoreManager():
 
     def get_column_names(self):
         columns = []
-        #for i, s in enumerate(self.prop_prop_fct_tuples):
         for _, _, _, i in self.prop_prop_fct_tuples:
-            #prop1, prop2, _ = s
-            #j = prop1.rfind('/')
-            #str_prop1 = (prop1 if j==-1 else prop1[j+1:])
-            #j = prop2.rfind('/')
-            #str_prop2 = (prop2 if j==-1 else prop2[j+1:])
-            #dist_column = '_'.join([str(i), 'dist', str_prop1, str_prop2])
-
-            # TODO-AE 211215 change from int to str for column names
-            #sim_column = i
             sim_column = str(i)
             columns.append(sim_column)
         return columns
@@ -228,7 +209,6 @@ class ScoreManager():
             raise RuntimeError('property1 not found in dataframe columns', property1)
         if property2 and (not property2 in self.data2.columns):
             raise RuntimeError('property2 not found in dataframe columns', property2)
-        # TODO-AE check whether scoring_fcts can be applied to datatype of p1 / p2
         if pos is None:
             pos = len(self.prop_prop_fct_tuples)
         self.prop_prop_fct_tuples.append((property1, property2, fct, pos))
@@ -250,37 +230,15 @@ class ScoreManager():
         logging.info('calculating similarity vectors, number of pairs=%s', len(candidate_pairs))
         count = 0
         rows = []
-        #for pos1, pos2 in tqdm(candidate_pairs):
         for idx1, idx2 in tqdm(candidate_pairs):
             count += 1
-            #print(pos1, pos2)
-            #idx1 = self.data1.index[pos1]
-            #idx2 = self.data2.index[pos2]
             row1 = self.data1.loc[idx1]
             row2 = self.data2.loc[idx2]
-            '''
-            try:
-                assert row1['pos'] == pos1
-            except ValueError as err:
-                logging.debug('%s', err)
-                logging.debug('\nidx1=%s, idx2=%s', idx1, idx2)
-                logging.debug('\n%s', row1.to_string())
-                raise err
-            try:
-                assert row2['pos'] == pos2
-            except ValueError as err:
-                logging.debug('%s', err)
-                logging.debug('\nidx1=%s, idx2=%s', idx1, idx2)
-                logging.debug('\n%s', row2.to_string())
-                raise err
-            '''
-            #row = [idx1, idx2, pos1, pos2]
             row = [idx1, idx2]
             scores = ScoreManager.calculate_between_entities(row1.to_dict(), row2.to_dict(), self.prop_prop_fct_tuples)
             row.extend(scores)
             rows.append(row)
 
-        #columns = ['idx_1', 'idx_2', 'pos_1', 'pos_2']
         columns = ['idx_1', 'idx_2']
         columns.extend(self.get_column_names())
 
@@ -355,12 +313,8 @@ class ScoreManager():
 
         logging.info('number of entities=%s', len(idx_values))
 
-        #TODO-AE store the position of column in score_fct ...
         columns = []
         str_column_prop = ''
-        #for c in range(len(self.prop_prop_fct_tuples)):
-        #   columns.append(c)
-        #   str_column_prop += '\n' + str(c) + ':' + self.prop_prop_fct_tuples[c][0] + ' vs. ' + self.prop_prop_fct_tuples[c][1]
         for prop1, prop2, _, pos in self.prop_prop_fct_tuples:
             columns.append(str(pos))
             str_column_prop += '\n' + str(pos) + ':' + prop1 + ' vs. ' + prop2
@@ -440,8 +394,6 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
     for prop1 in props1:
         for prop2 in props2:
             for sim_fct in similarity_functions:
-                # TODO-AE remove sim_fct that do not fit to property datatype
-                # TODO-AE 211215 add attribute pos to the next call
                 manager.add_prop_prop_fct_tuples(prop1, prop2, sim_fct)
 
     logging.info('added prop prop sim tuples, number=%s', len(manager.get_prop_prop_fct_tuples()))
@@ -449,7 +401,6 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
     manager.calculate_similarities_between_datasets()
 
     manager.calculate_maximum_scores()
-    # TODO-AE 211216 symmetric automatic mapping
     df_max_scores_1 = manager.get_max_scores_1()
 
     logging.info('\nmax scores for dataset 1:\n------------------\n%s', df_max_scores_1)
@@ -480,7 +431,6 @@ def find_property_mapping(manager: ScoreManager, similarity_functions:list, prop
     df_means = pd.DataFrame(rows)
     logging.debug('mean values:\n%s', df_means[:1000].to_string())
 
-    # TODO-AE stable marriage, symmetrical, skip below some threshold....
     min_threshold = 0.5
     property_mapping = []
     for prop1 in df_means['prop1'].unique():
@@ -521,10 +471,6 @@ def calculate_norm(a):
     return math.pow(norm, 0.5)
 
 def get_frequencies(tokens, df_index_tokens):
-    #TODO-AE get_frequences:
-    # a) df_index_token is global / class variable
-    # b) not very efficient because vectors are calculated more than once
-    # c) different modi: count_2 only and count_1 and count_2....
     frequencies = {}
     for t in tokens:
         freq_sum = 0
@@ -542,8 +488,6 @@ def get_frequencies(tokens, df_index_tokens):
     return frequencies
 
 def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
-
-    # n_max_idf = cutoff, idf becomes zero if token frequency is above
 
     if not s1 and not s2:
         return 0
@@ -604,9 +548,6 @@ def compare_strings_binary(s1, s2):
     tokens1 = ontomatch.blocking.tokenize(s1)
     tokens2 = ontomatch.blocking.tokenize(s2)
 
-    # TODO-AE move this to index token generation (which solves also problems such as pant-y-..., bigrams), also very inefficient here
-    # this is only a hack: it is not symmetric (e.g. with respect to 'count_1' instead of 'count_2' -> None ...!
-    # consider edit distance == 1 between tokens
     tokens1 = set(tokens1)
     tokens2 = set(tokens2)
     count_t1_t2_intersection = 0

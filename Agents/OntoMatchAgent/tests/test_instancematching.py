@@ -13,12 +13,6 @@ class TestInstanceMatching(tests.utils_for_testing.TestCaseOntoMatch):
             'delta': 0.05
         }
 
-    def read_kwl_gppd_DEU_matching_file(self):
-        matchfile = tests.utils_for_testing.PATH_MATCHES_PP_DEU
-        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
-        logging.info('ground truth matches=%s', len(index_set_matches))
-        return index_set_matches
-
     def test_auto_calibration_without_geo_coordinates(self):
 
         params_model_specific = self.get_params_model_specific()

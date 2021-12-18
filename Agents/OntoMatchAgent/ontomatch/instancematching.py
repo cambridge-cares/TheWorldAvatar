@@ -1,5 +1,4 @@
 import logging
-from operator import index
 import os
 import os.path
 import time
@@ -22,15 +21,12 @@ class InstanceMatcherBase():
     def start_base(self, srconto, tgtonto, params_blocking, params_mapping):
 
         self.score_manager = ontomatch.scoring.create_score_manager(srconto, tgtonto, params_blocking, params_mapping)
-
-        #TODO-AE: start with automatic property mapping
-        # --> configurable, also: fixed property mapping (e.g. geo coordinates)
         mode = params_mapping['mode']
 
         logging.info('starting InstanceMatcherBase with mode=%s', mode)
 
         if mode == 'auto':
-            #TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator
+            #TODO-AE 211028 auto maybe moved, e.g. as extra step in coordinator, configurable
             params_sim_fcts = params_mapping['similarity_functions']
             sim_fcts = ontomatch.scoring.create_similarity_functions_from_params(params_sim_fcts)
             property_mapping = ontomatch.scoring.find_property_mapping(self.score_manager, sim_fcts)
@@ -84,7 +80,7 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         m_train_size = params_training['match_train_size']
         if not isinstance(m_train_size, list):
             m_train_size = [m_train_size]
-        nm_ratio = params_training['nonmatch_ratio']
+        nm_ratio = params_training.get('nonmatch_ratio')
         if not isinstance(nm_ratio, list):
             nm_ratio = [nm_ratio]
 
@@ -102,33 +98,54 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
 
         cross_validation = params_training['cross_validation']
-        logging.info('classifying similarity vectors for combinations of train_size=%s, ratio=%s', m_train_size, nm_ratio)
-
         prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-        for train_size in m_train_size:
-            for ratio in nm_ratio:
-                #TODO-AE 211123: just a few matches might not be contained in df_scores
-                # thus we skip them here, since there are just a few, training XGB would not improve much if they are considered
-                # but then we have to calculate their similarity vectors
-                logging.info('selecting training samples for train_size=%s, ratio=%s', train_size, ratio)
-                intersection = index_set_matches.intersection(df_scores.index)
-                len_diff = len(index_set_matches) - len(intersection)
-                logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
-                df_matches = df_scores.loc[intersection]
-                x_train, y_train, x_test, y_test = ontomatch.utils.util.generate_training_set(
-                    df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
-                column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
-                # reuse df_scores for storing train-test-split
-                df_scores[column_name] = 'test'
-                df_scores.at[x_train.index, column_name] = 'train'
-                #TODO-AE 211127 add train / test split and
+        #TODO-AE 211218 changed train test split without ratio
+        if False:
+            logging.info('training classifier for similarity vectors for combinations of train_size=%s, ratio=%s', m_train_size, nm_ratio)
 
-                logging.info('classifying for train_size=%s, ratio=%s', train_size, ratio)
-                self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
-                        x_train, y_train, x_test, y_test, df_scores, prop_columns)
+            for train_size in m_train_size:
+                for ratio in nm_ratio:
+                    #TODO-AE 211123: just a few matches might not be contained in df_scores
+                    # thus we skip them here, since there are just a few, training XGB would not improve much if they are considered
+                    # but then we have to calculate their similarity vectors
+                    logging.info('selecting training samples for train_size=%s, ratio=%s', train_size, ratio)
+                    intersection = index_set_matches.intersection(df_scores.index)
+                    len_diff = len(index_set_matches) - len(intersection)
+                    logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
+                    df_matches = df_scores.loc[intersection]
+                    x_train, y_train, x_test, y_test = ontomatch.utils.util.generate_train_test_sets_due_to_ratio(
+                        df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
 
-                if params_post_processing:
-                    postprocess(params_post_processing, self, minus_train_set=x_train)
+                    column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
+                    # reuse df_scores for storing train-test-split
+                    df_scores[column_name] = 'test'
+                    df_scores.at[x_train.index, column_name] = 'train'
+                    #TODO-AE 211127 add train / test split and
+
+                    logging.info('training classifier for train_size=%s, ratio=%s', train_size, ratio)
+                    self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
+                            x_train, y_train, x_test, y_test, df_scores, prop_columns)
+
+                    if params_post_processing:
+                        postprocess(params_post_processing, self, minus_train_set=x_train)
+        else:
+            m_train_size = params_training['match_train_size']
+            train_file = params_training.get('train_file')
+            logging.info('training classifier for train_size=%s, train_file=%s', m_train_size, train_file)
+            prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
+            if train_file:
+                df_split = ontomatch.utils.util.read_csv(train_file)
+                split_column = 'ml_phase_' + str(m_train_size)
+                x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, columns_x=prop_columns, column_ml_phase=split_column)
+            else:
+                _, x_train, x_test, y_train, y_test = ontomatch.utils.util.train_test_split(
+                        df_scores, index_set_matches, train_size=m_train_size, columns_x=prop_columns)
+
+            self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
+                    x_train, y_train, x_test, y_test, df_scores, prop_columns)
+
+            if params_post_processing:
+                postprocess(params_post_processing, self, minus_train_set=x_train)
 
         dump = params_post_processing.get('dump')
         if dump:
@@ -148,7 +165,10 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         self.df_total_best_scores_2 = None
 
     def get_scores(self):
-        return self.df_total_best_scores
+        #TODO-AE URGENT 211218
+        #return self.df_total_best_scores
+        logging.debug('MY called get_scores')
+        return self.df_total_scores
 
     def get_total_best_scores_1(self):
         return self.df_total_best_scores_1
@@ -203,6 +223,15 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
             # combine best score pairs from df_total_best_scores and df_total_best_scores_2
             self.df_total_best_scores = self.combine_total_best_scores(self.df_total_best_scores, df_total_best_scores_2)
+            self.df_total_scores.at[self.df_total_best_scores.index, 'best'] = True
+            assert len(self.df_total_scores[self.df_total_scores['best']]) == len(self.df_total_best_scores)
+            logging.debug('number of total best scores=%s', len(self.df_total_best_scores))
+            self.df_total_scores.at[self.df_total_best_scores.index, 'score'] = self.df_total_best_scores
+
+        mask = ~(self.df_total_scores['best'])
+        # TODO-AE 211218 set score to 0 or -1
+        self.df_total_scores.at[mask, 'score'] = 0
+        logging.debug('number of best=%s, nonbest=%s', len(self.df_total_scores[self.df_total_scores['score'] >=0]), len(self.df_total_scores[self.df_total_scores['score'] < 0]))
 
         if params_post_processing:
             postprocess(params_post_processing, self)
@@ -215,20 +244,19 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         index_1 = df_combined.index
 
-        #TODO-AE 211215 remove, related to flipping test test_auto_calibration_with_geo_coordinates
-        # just for debugging:
-        index_diff = df_total_2.index.difference(df_total_1.index)
-        index_diff_test = df_total_2.index.difference(index_1)
-        count_virtual_1 = 0
-        count_virtual_2 = 0
-        for idx1, idx2 in index_1:
-            if idx2 == 'virtual':
-                count_virtual_1 += 1
-        for idx1, idx2 in df_total_2.index:
-            if idx1 == 'virtual':
-                count_virtual_2 += 1
-        logging.debug('combined init=%s, index init=%s, diff=%s, diff_test=%s, v1=%s, v2=%s',
-                len(df_combined), len(index_1), len(index_diff), len(index_diff_test), count_virtual_1, count_virtual_2)
+        # just for debugging: related to flipping test test_auto_calibration_with_geo_coordinates
+        #index_diff = df_total_2.index.difference(df_total_1.index)
+        #index_diff_test = df_total_2.index.difference(index_1)
+        #count_virtual_1 = 0
+        #count_virtual_2 = 0
+        #for idx1, idx2 in index_1:
+        #    if idx2 == 'virtual':
+        #        count_virtual_1 += 1
+        #for idx1, idx2 in df_total_2.index:
+        #    if idx1 == 'virtual':
+        #        count_virtual_2 += 1
+        #logging.debug('combined init=%s, index init=%s, diff=%s, diff_test=%s, v1=%s, v2=%s',
+        #        len(df_combined), len(index_1), len(index_diff), len(index_diff_test), count_virtual_1, count_virtual_2)
 
         count = 0
         rows = []
@@ -242,9 +270,11 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             else:
                 rows.append({'idx_1': idx[0], 'idx_2': idx[1], 'score': score_2})
 
-        df_diff = pd.DataFrame(rows)
-        df_diff.set_index(['idx_1', 'idx_2'], inplace=True)
-        df_combined = pd.concat([df_combined, df_diff])
+        if len(rows) > 0:
+            df_diff = pd.DataFrame(rows)
+            df_diff.set_index(['idx_1', 'idx_2'], inplace=True)
+            df_combined = pd.concat([df_combined, df_diff])
+
         logging.debug('combined total best scores, count=%s, rows=%s, df_combined=%s', count, len(rows), len(df_combined))
         return df_combined
 
@@ -259,27 +289,10 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             number_columns = len(property_mapping)
             prop_score = {}
             for propmap in property_mapping:
-
                 c_max = propmap['key']
-                # TODO-AE 211215 change from int to str for column names
-                #c = int(c_max.split('_')[0])
                 c = c_max.split('_')[0]
                 value = row[c]
-
-                #TODO-AE changed at 210926
-                #if (not value is None) and (type(value) is float and not np.isnan(value)):
                 if not (value is None or type(value) is str or np.isnan(value)):
-                    # TODO-AE check: <= in line 1 and 3 leads to worse results than <
-                    # TODO-AE experimental idea: problem with just a few 'discrete values' (e.g. 0 and 1 for match and mismatch fuel, or 0, 1, 2 edit distance)
-                    # is: matches are penalized when using <= (around 0) but when using < instead nonmatches benefit (around 1)
-                    # idea: use <= around 0 and < around 1 and "interpolate" in between
-                    # this idea should not have much effect if there are many 'discrete values' and there is no lumping on values around 0
-                    '''
-                    mask = (df_scores[c] >= value)
-                    count_m_plus_n = len(df_scores[mask])
-                    mask = (df_max_scores[c_max] >= value)
-                    count_m = len(df_max_scores[mask])
-                    '''
                     count_m = sliding_counts[c_max](value)
                     count_m_plus_n = sliding_counts[c](value)
                     if count_m == 0:
@@ -287,45 +300,23 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                     elif count_m_plus_n == 0:
                         column_score = 1
                     else:
-
-                        #TODO-AE URGENT 211022
                         column_score = count_m / count_m_plus_n
-
-                        #TODO-AE URGENT 211211
-
-                    orig_score += column_score
-                    if column_score > 1:
-                        # this can happen due to small deviations, in particular if using embedding cosine distance
-                        #raise ValueError('column score exceeds 1', score, idx_1, idx_2, c_max)
-                        #TODO-AE URGENT 211215
-                        logging.debug('column score exceeds 1, %s', column_score)
-                        column_score = 1.
+                        if column_score > 1:
+                            # this can happen due to small deviations, in particular if using embedding cosine distance
+                            logging.debug('column score exceeds 1, %s', column_score)
+                            column_score = 1.
 
                     score += column_score
-
-
-                    #TODO-AE 211015 calibrated score for each prop
                     prop_score.update({c: column_score})
 
-
                 else:
-                    #TODO-AE how to score missing data?
                     number_columns = number_columns - 1
 
-
-            # TODO-AE 211026 replace by get_total_score function
             if number_columns <= skip_column_number:
                 score = 0.
                 logging.debug('score = 0 since number columns=%s, idx_1=%s, idx_2=%s', number_columns, idx_1, idx_2)
             else:
                 score = score / number_columns
-
-                #TODO-AE URGENT 211211
-                if score > 1:
-                    logging.debug('score exceeds 1')
-                orig_score = orig_score / number_columns
-                if orig_score > 1:
-                    logging.debug('orig score exceeds 1')
 
             total_score_row = {
                 'idx_1': idx_1,
@@ -338,7 +329,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
             total_score_rows.append(total_score_row)
 
-            # TODO-AE what about equality?
             if score > best_score or best_pos is None:
                 best_score = score
                 best_pos = pos
@@ -363,17 +353,11 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         for propmap  in property_mapping:
             c_max = propmap['key']
             series = df_max_scores[c_max]
-            # TODO-A URGENT 211211
-            #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
             scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(c_max, series, delta)
             sliding_counts[c_max] = scount
 
-            # TODO-AE 211215 change from int to str for column names
-            #c = int(c_max.split('_')[0])
             c = c_max.split('_')[0]
             series = df_scores[c]
-            # TODO-A URGENT 211211
-            #scount = InstanceMatcherWithAutoCalibration.sliding_count(series, delta)
             scount = InstanceMatcherWithAutoCalibration.sliding_count_fast(c, series, delta)
             sliding_counts[c] = scount
 
@@ -390,7 +374,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         df_total_scores = pd.DataFrame(rows)
 
         if dataset_id == 2:
-            #df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1', 'pos_1': 'pos_2', 'pos_2': 'pos_1'})
             df_total_scores = df_total_scores.rename(columns={'idx_1': 'idx_2', 'idx_2': 'idx_1'})
             logging.info('reordered index and position names of df_total scores since dataset_id=%s', dataset_id)
 
@@ -528,9 +511,16 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
                 raise RuntimeError('unsupported type of matcher', type(matcher))
 
     matchfile = params_post_processing['evaluation_file']
-    index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+    index_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+    df_scores = matcher.get_scores()
+    index_matches_FN = index_matches.difference(df_scores.index)
+    logging.info('starting evaluation for matches=%s, df_scores=%s, matches FN=%s', len(index_matches), len(df_scores), len(index_matches_FN))
 
     if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+
+        # TODO-AE 211218 move evaluation to evaluate.py
+        # TODO-AE 211218 TEMP
+        '''
         df_scores = matcher.get_total_best_scores_1()
         if df_scores is not None:
             logging.info('asym 1 --> 2, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
@@ -539,28 +529,52 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
         if df_scores is not None:
             logging.info('asym 2 --> 1, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
             ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+        '''
 
-    df_scores = matcher.get_scores()
-    logging.info('training set IS NOT EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
-    result = ontomatch.evaluate.evaluate(df_scores, index_set_matches)
+        test_file = params_post_processing.get('test_file')
+        logging.info('test_file=%s', test_file)
+        if test_file:
+            df_split = ontomatch.utils.util.read_csv(test_file)
+            for c in df_split.columns:
+                c = str(c)
+                if c.startswith('ml_phase'):
+                    x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, column_ml_phase=c)
+                    if (x_train is not None) and (len(x_train) > 0):
+                        df_scores_tmp = df_scores.loc[x_train.index]
+                        # TODO-AE 211218 without FN outside candidate set?
+                        index_matches_tmp = index_matches.intersection(df_scores_tmp.index)
+                        logging.info('evaluation for split_column=%s on TRAINING SET=%s, %s, matches=%s',
+                            c, len(x_train), len(df_scores_tmp), len(index_matches_tmp))
+                        result = ontomatch.evaluate.evaluate(df_scores_tmp, index_matches_tmp)
+
+                    df_scores_tmp = df_scores.loc[x_test.index]
+                    # TODO-AE 211218 including FN outside candidate set?
+                    index_matches_tmp = index_matches.intersection(df_scores_tmp.index).union(index_matches_FN)
+                    logging.info('evaluation for split_column=%s on TEST SET=%s, %s, matches=%s',
+                        c, len(x_test), len(df_scores_tmp), len(index_matches_tmp))
+                    result = ontomatch.evaluate.evaluate(df_scores_tmp, index_matches_tmp)
+
+
+    logging.info('training set IS NOT EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_matches), len(df_scores))
+    result = ontomatch.evaluate.evaluate(df_scores, index_matches)
 
     if minus_train_set is not None:
 
         # evaluate on train set only
         # TODO-AE 211216 add the matches outside candidate set to have a fair comparison concerning overfitting
         df_scores_train = df_scores.loc[minus_train_set.index].copy()
-        index_set_matches_train = minus_train_set.index.intersection(index_set_matches)
+        index_set_matches_train = minus_train_set.index.intersection(index_matches)
         logging.info('evaluation on TRAINING SET ONLY, train set=%s, train set matches=%s', len(minus_train_set), len(index_set_matches_train))
         result = ontomatch.evaluate.evaluate(df_scores_train, index_set_matches_train)
 
         # evaluate on test set
         diff = df_scores.index.difference(minus_train_set.index)
-        df_scores = df_scores.loc[diff].copy()
-        len_matches = len(index_set_matches)
-        index_set_matches_diff = index_set_matches.difference(minus_train_set.index)
+        df_scores_tmp = df_scores.loc[diff].copy()
+        len_matches = len(index_matches)
+        index_set_matches_diff = index_matches.difference(minus_train_set.index)
         len_diff = len_matches - len(index_set_matches_diff)
-        logging.info('training set IS EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', len_diff, len(index_set_matches_diff), len(df_scores))
-        result = ontomatch.evaluate.evaluate(df_scores, index_set_matches_diff)
+        logging.info('training set IS EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', len_diff, len(index_set_matches_diff), len(df_scores_tmp))
+        result = ontomatch.evaluate.evaluate(df_scores_tmp, index_set_matches_diff)
 
     logging.info('post processing finished')
     return result
