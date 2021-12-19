@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Visualisation of interoperable King's Lynn (Open data)</title>
+	<title>Visualisation of interoperable King's Lynn</title>
 	<meta charset="utf-8">
 
 	<!-- External CSS -->
@@ -62,7 +62,7 @@
 		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
 		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
 		// domains via your MapBox account settings.
-		let mapboxAPI = "pk.eyJ1IjoiY21jbGlubm92YXRpb25zIiwiYSI6ImNrbGdqa3RoNDFnanIyem1nZXR3YzVhcmwifQ.hVk983r6YYlmFE8kSMbzhA";
+		let mapboxAPI = "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw";
 
 	</script>
 
@@ -90,11 +90,14 @@
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
-			let title = `<h1>King's Lynn Visualisation (Open data)</h1>`;
+			let title = `<h1>King's Lynn Visualisation<br>(Open data)</h1>`;
 			let content = `
-					This section of default text should be used to give a brief introduction on the purpose of the
-					visualisation, and to detail how the user can interact with it. For the purpose of this example,
-					some junk content to pad it out has been added.
+					This visualisation shows buildings in LOD 1 in the vicinity of King's Lynn, UK. <br><br>
+					The available meta data per building includes its base elevation, its relative height
+					(with regards to the base elevation), as well as all Unique Property Reference Numbers (UPRNs),
+					which fall within each building's footprint.<br><br>
+					All information is Open Data published by the UK Ordnance Survey as part of their OS OpenMap
+					Local, OS Terrain 50, and OS Open UPRN data products.
 				`;
 			let legend = `	
 					<b>Legend:</b>

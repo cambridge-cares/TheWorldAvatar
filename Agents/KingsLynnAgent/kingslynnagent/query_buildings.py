@@ -1,15 +1,21 @@
-import json
-import os.path
+###############################################
+# Author: Markus Hofmeister (mh807@cam.ac.uk) #
+# Date: 14 Dec 2021                           #
+###############################################
 
-import numpy as np
-import pandas as pd
+import json
+import os
 import pyproj
 import re
+
+import datetime as dt
+import numpy as np
+import pandas as pd
 
 from geojson_rewind import rewind
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-# get settings and functions from kg_utils module
+# get settings and functions from utilities module
 from utilities import utils
 from utilities import geojson_creator
 from utilities.SparqlErrors import *
@@ -18,7 +24,7 @@ from utilities.SparqlErrors import *
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 10
+n = None
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -142,7 +148,7 @@ def get_uprns(building_iri, query_endpoint):
     query = utils.create_sparql_prefix('ocgml') + \
             ''' SELECT ?uprns
                 WHERE { ?attribute ocgml:cityObjectId %s ;
-	              ocgml:attrName "OS_UPRNs" ;
+	              ocgml:attrName "UPRNs" ;
       		      ocgml:strVal ?uprns . }
             ''' % city_object
 
@@ -359,6 +365,9 @@ def split_polygon_data(polygon_data, polygon_datatype):
 
 if __name__ == '__main__':
 
+    # Get start time
+    start = dt.datetime.now()
+
     # Set Mapbox API key
     utils.set_mapbox_apikey()
 
@@ -469,13 +478,15 @@ if __name__ == '__main__':
 
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
-                         'description': str(b),
+                         #'description': str(b),
                          'fill-extrusion-color': '#666666',
                          'fill-extrusion-opacity': 0.66,
                          # Building ground elevation
-                         'fill-extrusion-base': 0, #round(base_elevation, 3)
+                         #'fill-extrusion-base': 0,
+                         'fill-extrusion-base': round(base_elevation, 3),
                          # Building (absolute) height, i.e. NOT relative height above base
-                         'fill-extrusion-height': round(top_elevation-base_elevation, 3) #round(top_elevation, 3)
+                         #'fill-extrusion-height': round(top_elevation-base_elevation, 3),
+                         'fill-extrusion-height': round(top_elevation, 3)
                          }
 
         # Specify metadata properties to consider
@@ -511,3 +522,10 @@ if __name__ == '__main__':
     file_name = os.path.join(utils.OUTPUT_DIR, 'built_environment', 'buildings_2d-meta.json')
     with open(file_name, 'w') as f:
         json.dump(metadata, indent=4, fp=f)
+
+    # Get query duration
+    dur = dt.datetime.now() - start
+    s = dur.seconds
+    m = s // 60
+    s = s % 60
+    print('Building query duration: {} min {} sec'.format(m, s))
