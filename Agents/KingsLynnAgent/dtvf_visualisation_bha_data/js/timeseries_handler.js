@@ -41,9 +41,9 @@ class TimeseriesHandler {
                 
                 // Get timestamps
                 var tableTimes = entry["time"];
-                for(var t = 0; t < tableTimes.length; t++) {
-                    tableTimes[t] = tableTimes[t].replace("T", " ").replace("Z", "");
-                }
+                //for(var t = 0; t < tableTimes.length; t++) {
+                //    tableTimes[t] = tableTimes[t].replace("T", " ").replace("Z", "");
+                //}
 
                 // Get correct value array
                 var tableValues = entry["values"][j];
@@ -55,8 +55,8 @@ class TimeseriesHandler {
                     "unit": tableUnit,
                     "times": tableTimes,
                     "values": tableValues,
-                    "timeClass": entry["timeClass"],
-                    "valuesClass": entry["valuesClass"][j]
+                    "timeClass": (entry["timeClass"]) ? entry["timeClass"] : "Instant",
+                    "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
                 });
             }            
         }

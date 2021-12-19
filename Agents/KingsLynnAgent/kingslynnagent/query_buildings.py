@@ -148,7 +148,7 @@ def get_uprns(building_iri, query_endpoint):
     query = utils.create_sparql_prefix('ocgml') + \
             ''' SELECT ?uprns
                 WHERE { ?attribute ocgml:cityObjectId %s ;
-	              ocgml:attrName "UPRNs" ;
+	              ocgml:attrName "OS_UPRNs" ;
       		      ocgml:strVal ?uprns . }
             ''' % city_object
 

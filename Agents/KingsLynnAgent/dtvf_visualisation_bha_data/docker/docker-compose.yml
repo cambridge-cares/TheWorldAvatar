@@ -3,17 +3,17 @@ version: "3.8"
 # All Services
 services:
 
-  # Example DT Visualisation
-  dtvf_example_visualisation:
+  # DT Visualisation
+  kings-lynn-bha-data:
     image: docker.cmclinnovations.com/example-dtvf:1.0.0-SNAPSHOT
-    container_name: dtvf_example_visualisation
-    build: 
+    container_name: kings-lynn-bha-data
+    build:
       context: "../"
       dockerfile: "./docker/Dockerfile"
       target: "dev"
       labels:
         authors: "support@cmclinnovations"
-        description: "Example implementation of the Digital Twin Visualisation Framework."
+        description: "Digital Twin Visualisation Framework implementation King's Lynn."
     ports:
       - "65080:80"
  

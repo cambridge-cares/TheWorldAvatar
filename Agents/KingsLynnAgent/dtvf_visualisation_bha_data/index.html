@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Visualisation of interoperable King's Lynn</title>
+	<meta charset="utf-8">
+
+	<!-- External CSS -->
+	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+
+	<!-- External JS -->
+	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
+	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@1.0.0"></script>
+	<script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/suncalc/1.8.0/suncalc.min.js"></script>
+
+	<!--
+		The following visualisiation framework files are currently stored locally (as
+		this is	easier during development and initial testing. Once it's ready for
+		release, these files will be hosted remotely).  
+	-->
+	
+	<!-- Framework CSS -->
+	<link href='./css/dtvf.css' rel='stylesheet' />
+	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
+
+	<!-- Framework JS -->
+	<script src='./js/manager.js'></script>
+	<script src='./js/data_registry.js'></script>
+	<script src='./js/source_handler.js'></script>
+	<script src='./js/layer_handler.js'></script>
+	<script src='./js/control_handler.js'></script>
+	<script src='./js/panel_handler.js'></script>
+	<script src='./js/interaction_handler.js'></script>
+	<script src='./js/timeseries_handler.js'></script>
+	<script src='./js/icon_handler.js'></script>
+	<script src='./js/jsonview.bundle.js'></script>
+
+	<!-- Implementation specific -->
+	<script src='./local_icons.js'></script>
+</head>
+</head>
+
+<body>
+	<!-- Element the MapBox map will be added to -->
+	<div id='map'></div>
+	<div id="tiltShift"></div>
+	
+	<!-- Element the map controls will be added to (normally on the left) -->
+	<div id="controlsContainer"></div>
+
+	<!-- Non-module JS block, variables in here are global -->
+	<script>
+		// This ensures that the "manager" variable can be accessed from 
+		// HTMLElements for interaction events.
+		let manager = null;
+
+		// Enter your MapBox API here.
+		// This will be visible by inspecting the webpage anyway (either by looking at the source code,
+		// or inspecting the network packets). If it needs protection, limit it's usage to certain source
+		// domains via your MapBox account settings.
+		let mapboxAPI = "pk.eyJ1IjoibWg4MDciLCJhIjoiY2t2czdmcHRrMHlwMTJycXAxeDU2Zm5oNyJ9.A4v205lJXE5EE7cAa9v4Fw";
+
+	</script>
+
+	<!-- Module JS block, variables are local (i.e. cannot access from HTML elements) -->
+	<script type="module">
+		// Initialise a DigitalTwinManager (and store as a global variable)
+		manager = new DigitalTwinManager();
+
+		// We could have wholesale data packages, so register multiple possible root directories
+		let rootDirectories = {
+			"King's Lynn data": "./data",
+		};
+		manager.registerDirectories(rootDirectories);
+
+		// Load all the metadata
+		manager.readMetadata("King's Lynn data", function() {
+			// Run start-up function only AFTER metadata is loaded
+			startUp();
+		});
+
+		// Will run once metadata is loaded asynchronously
+		function startUp() {
+			// Create the MapBox map
+			var map = manager.createMap("map");
+			var iconHandler = new IconHandler(map);
+
+			// Provide some default content for the side panel
+			let title = `<h1>King's Lynn Visualisation<br>(Digimap BHA data)</h1>`;
+			let content = `
+					This visualisation shows buildings in LOD 1 in the vicinity of King's Lynn, UK. <br><br>
+					The available meta data per building includes its base elevation, its relative height
+					(with regards to the base elevation), as well as all Unique Property Reference Numbers (UPRNs),
+					which fall within each building's footprint.<br><br>
+					All information is licensed from the Ordnance Survey via Digimap and includes the OS MasterMap 
+					Building Height Attribute, OS Terrain 5, and OS Open UPRN data products.
+				`;
+			let legend = `	
+					<b>Legend:</b>
+				`;
+			let footer = `<b>Data sources and copyright</b>:<br>
+			&copy; Crown copyright and database rights 2021 Ordnance Survey (100025252)<br>
+			`;
+
+			// Show content and store as default (so it can be returned to later)
+			manager.setPanelContent(title, content,	legend,	footer);
+
+			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
+			// This means that we have to listen for this event (below) and re-add everything.
+			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
+			// styles, but there is an open feature request for MapBox to implement this.
+			var loadedOnce = false;
+
+			map.on('style.load', function() {
+				console.log("INFO: A new style has been loaded.");
+				var imagePromises = [];
+
+				if(!loadedOnce) {
+					// Load and cache icon images used by this visualisation
+					let winURL = window.location;
+					let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+					EXAMPLE_ICONS.forEach(relativeURL => {
+						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
+						imagePromises.push(iconHandler.loadIcon(imageURL));
+					});
+
+					// This callback will be fired when a final group is selected in the dropdowns
+					let selectCallback = function(selectedGroups) {
+						manager.plotGroup(selectedGroups, false);
+					};
+
+					// Build and show the layer tree based on the metadata
+					manager.showControls(null, selectCallback);
+
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
+					
+					// Show mouse position
+					manager.showDeveloperControls();
+
+					loadedOnce = true;
+				}
+				
+				// Add all cached icons to the new style. Using promises here
+				// ensures we only do this AFTER all images are loaded.
+				Promise.all(imagePromises).then(() => {
+					iconHandler.addAllIcons();
+
+					// Promise for loading data as sources and layers
+					var dataPromise;
+
+					// Re-plot the previously selected group
+					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
+					} else {
+						dataPromise = manager.plotFirstGroup();
+					}
+
+					if(dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+							manager.setPlacenames();
+						});
+					}
+				});
+				
+			});
+		}
+	</script>
+
+</body>
+
+</html>
