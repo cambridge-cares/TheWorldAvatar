@@ -349,10 +349,13 @@ if __name__ == '__main__':
 
             # 3) Retrieve time series data
             timeseries, utilities, units = get_all_time_series(c)
+            # Create lists for TimeSeries objects and IDs
             ts_data[i]['ts'].append(timeseries)
             ts_data[i]['id'].append(feature_id)
-            ts_data[i]['units'].append(units)
-            ts_data[i]['headers'].append(utilities)
+            # Create dictionaries for units and headers (Python equivalent for Java HashMaps)
+            dataIRIs = timeseries.getDataIRIs()
+            ts_data[i]['units'].append(dict(zip(dataIRIs, units)))
+            ts_data[i]['headers'].append(dict(zip(dataIRIs, utilities)))
 
     # Create lists for all files to write incl. respective folder and filenames
     geojson = [geojson_colleges_points, geojson_colleges_polygons, geojson_colleges_buildings,
