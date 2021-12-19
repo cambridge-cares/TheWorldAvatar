@@ -33,7 +33,6 @@ class PanelHandler {
 	// Store previous legendContainer visibility
 	_previousLegendVisibility;
 
-	//
 	_defaultHTML;
 
 	/**
@@ -59,6 +58,40 @@ class PanelHandler {
 			newDiv.innerHTML = this._sidePanelHTML;
 			document.body.appendChild(newDiv);
 		} 
+	}
+
+	/**
+	 * Generate and show links for any linked files listed
+	 * in the global meta for the current data set.
+	 */
+	showLinkedFiles(globalMeta, rootDataDir) {
+		let linkedFiles = globalMeta["linkedFiles"];
+		if(linkedFiles == null || linkedFiles.length == 0) return;
+
+		let contentContainer = document.getElementById("linkedFilesContainer");
+		let newHTML = "";
+
+		let winURL = window.location;
+		let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+
+		for(var i = 0; i < linkedFiles.length; i++) {
+			let text = linkedFiles[i]["text"];
+			let url = linkedFiles[i]["url"];
+			
+			if(!url.startsWith("http")) {
+				// Not an absolute URL, preprend base URL of visualisation
+				if(url.startsWith("./")) url = url.replace("./", "");
+				url = (rootDataDir.endsWith("/")) ? (rootDataDir + linkedFiles[i]["url"]) : (rootDataDir + "/" + linkedFiles[i]["url"]);
+				url = (baseURL.endsWith("/")) ? (baseURL + url) : (baseURL + "/" + url);
+			}
+
+			// Add link to HTML
+			newHTML += "<a href='" + url + "' target='_blank'>"
+			newHTML += text;
+			newHTML += "</a><br/>"
+		}
+
+		contentContainer.innerHTML = newHTML;
 	}
 
 	/**
@@ -114,19 +147,9 @@ class PanelHandler {
 	 * 
 	 * @param {Stirng} title desired title HTML
 	 */
-	setTitle(title) {
-		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("titleContainer").innerHTML = "<h3>" + title + "</h3>";
-	}
-
-	/**
-	 * Sets the title of the side panel.
-	 * 
-	 * @param {Stirng} title desired title HTML
-	 */
 	 setTitle(title) {
 		document.getElementById("sidePanel").style.visibility = "visible";
-		document.getElementById("titleContainer").innerHTML = "<h2>" + title + "</h2>";
+		document.getElementById("titleContainer").innerHTML = title;
 	}
 
 	/** 
@@ -222,8 +245,9 @@ class PanelHandler {
 	 * 
 	 */
 	returnToDefault() {
-		document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
-
+		if(this._defaultHTML != null) {
+			document.getElementById("sidePanelInner").innerHTML = this._defaultHTML;
+		}
 		// Clear currently selected feature
 		DT.currentFeature = null;
 	}
@@ -279,6 +303,7 @@ class PanelHandler {
 	 */
 	toggleExpansion() {
 		var sidePanel = document.getElementById("sidePanel");
+		var sidePanelInner = document.getElementById("sidePanelInner");
 		var rightButton = document.getElementById("expandButton");
 
 		if(sidePanel.classList.contains("small")) {
@@ -290,6 +315,8 @@ class PanelHandler {
 
 				document.getElementById("legendContainer").style.visibility = "visible";
 				rightButton.style.visibility = "visible";
+
+				sidePanelInner.style.visibility = "visible";
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -298,6 +325,8 @@ class PanelHandler {
 
 				document.getElementById("legendContainer").style.visibility = "hidden";
 				rightButton.style.visibility = "hidden";
+
+				sidePanelInner.style.visibility = "hidden";
 			}
 
 		} 

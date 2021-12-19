@@ -41,9 +41,9 @@ class TimeseriesHandler {
                 
                 // Get timestamps
                 var tableTimes = entry["time"];
-                for(var t = 0; t < tableTimes.length; t++) {
-                    tableTimes[t] = tableTimes[t].replace("T", " ").replace("Z", "");
-                }
+                //for(var t = 0; t < tableTimes.length; t++) {
+                //    tableTimes[t] = tableTimes[t].replace("T", " ").replace("Z", "");
+                //}
 
                 // Get correct value array
                 var tableValues = entry["values"][j];
@@ -54,7 +54,9 @@ class TimeseriesHandler {
                     "id": entry["id"],
                     "unit": tableUnit,
                     "times": tableTimes,
-                    "values": tableValues
+                    "values": tableValues,
+                    "timeClass": (entry["timeClass"]) ? entry["timeClass"] : "Instant",
+                    "valuesClass": (entry["valuesClass"]) ? entry["valuesClass"][j] : "Number"
                 });
             }            
         }
@@ -186,6 +188,10 @@ class TimeseriesHandler {
         }
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
+
+        var xAxisType = ("Instant" === data["timeClass"]) ? "time" : "linear";
+        var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
+
         this._currentChart = new Chart(ctx, 
             {
                 type: "line",
@@ -199,7 +205,7 @@ class TimeseriesHandler {
                     },
                     scales: {
                         x: {
-                            type: 'time',
+                            type: xAxisType,
                             distribution: 'linear',
                             ticks: {
                                 font: {
@@ -217,6 +223,8 @@ class TimeseriesHandler {
                             }
                         },
                         y: {
+                            type: yAxisType,
+                            labels: [true, false],
                             ticks: {
                                 font: {
                                     weight: 400,
