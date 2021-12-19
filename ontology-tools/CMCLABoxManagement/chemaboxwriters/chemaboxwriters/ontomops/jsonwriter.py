@@ -5,8 +5,10 @@ from chemaboxwriters.common import PREFIXES
 
 omops_entry_prefix = PREFIXES["omops_entry_prefix"]
 
-def om_jsonwriter(data, random_id=""):
-    data = json.loads(data)
+def om_jsonwriter(file_path, random_id=""):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
 
     if not random_id:
         random_id = get_random_id()

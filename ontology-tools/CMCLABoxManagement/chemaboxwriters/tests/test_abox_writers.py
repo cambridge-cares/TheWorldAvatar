@@ -2,7 +2,7 @@ from chemaboxwriters.ontocompchem.writeabox import write_abox as write_oc_abox
 from chemaboxwriters.ontospecies.writeabox import write_abox as write_os_abox
 from chemaboxwriters.ontopesscan.writeabox import write_abox as write_ops_abox
 from chemaboxwriters.ontomops.writeabox import write_abox as write_om_abox
-from chemaboxwriters.common.commonfunc import get_file_ext, get_inStage
+from chemaboxwriters.common.commonfunc import get_file_extensions, get_inStage
 from chemutils.ioutils.ioutils import readFile, fileExists
 import pytest
 import shutil
@@ -60,7 +60,7 @@ def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
 def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
 
     inStage = get_inStage(inp_file_type)
-    testInputFileExt = get_file_ext(inStage,fileExtPrefix)
+    testInputFileExt = get_file_extensions(inStage,fileExtPrefix)
     fileExts = [fileExt+'_ref' for fileExt in fileExts]
     fileExts.extend(testInputFileExt)
 
@@ -95,12 +95,17 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
-    handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'random_id':'testID-111-111-111'}}
+    funcKwargs={
+        'QC_JSON_TO_OC_JSON': {
+            'QC_JSON_TO_OC_JSON_STAGE':{
+                'random_id':'testID-111-111-111'
+            }
+        }
+    }
     mocker.patch("chemaboxwriters.ontocompchem.jsonwriter.get_species_iri",
                  return_value='test_species_iri')
 
-    pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
+    pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, stageFuncKwargs=funcKwargs)
 
     fileExts = ['.oc.json', '.oc.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -173,39 +178,36 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR,inp_file_or_dir)
 
     if 'angle' in inp_file_or_dir:
-        OPS_handlerFuncKwargs= {
+        handlerFuncKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
-                 'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1',
-                 'oc_atoms_pos': '2,3,9',
-                 'random_id': 'OPStestID-111-111-11'
+                'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1',
+                'oc_atoms_pos': '2,3,9',
+                'random_id': 'OPStestID-111-111-11'
                 }
             }
-
     elif 'dihedral' in inp_file_or_dir:
-        OPS_handlerFuncKwargs= {
+        handlerFuncKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
-                 'os_atoms_iris': 'Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2',
-                 'oc_atoms_pos': '4,1,2,8',
-                 'random_id': 'OPStestID-111-111-11'
+                'os_atoms_iris': 'Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2',
+                'oc_atoms_pos': '4,1,2,8',
+                'random_id': 'OPStestID-111-111-11'
                 }
             }
     else:
-        OPS_handlerFuncKwargs= {
-            'OC_JSON_TO_OPS_JSON':
-                    {'os_iris': 'Species_11-111-111',
-                    'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
-                    'oc_atoms_pos': '1,2',
-                    'random_id': 'OPStestID-111-111-11'
-                    }
+        handlerFuncKwargs= {
+        'OC_JSON_TO_OPS_JSON':
+                {'os_iris': 'Species_11-111-111',
+                'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
+                'oc_atoms_pos': '1,2',
+                'random_id': 'OPStestID-111-111-11'
                 }
+            }
 
-    OC_handlerFuncKwargs={
-        'QC_JSON_TO_OC_JSON':{'random_id':'OCtestID-111-111-111'}}
+    handlerFuncKwargs['OC_PIPELINE'] = {'QC_JSON_TO_OC_JSON': {'random_id':'OCtestID-111-111-111'}}
     pipeline = write_ops_abox(inp_file_or_dir, inp_file_type,
-               OPS_handlerFuncKwargs=OPS_handlerFuncKwargs,
-               OC_handlerFuncKwargs=OC_handlerFuncKwargs)
+               handlerFuncKwargs=handlerFuncKwargs)
 
     fileExts=['.ops.json', '.ops.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,

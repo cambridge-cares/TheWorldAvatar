@@ -1,18 +1,15 @@
-from chemaboxwriters.common import Pipeline
-from chemaboxwriters.common import aboxStages
-from chemaboxwriters.ontocompchem.handlers import QC_JSON_TO_OC_JSON, \
-                                                  OC_JSON_TO_CSV, \
-                                                  OC_CSV_TO_OC_OWL
-from chemaboxwriters.common import QC_LOG_TO_QC_JSON
+from chemaboxwriters.common.base import Pipeline
+import chemaboxwriters.ontocompchem.handlers as handlers
+from chemaboxwriters.common.handlers import get_qc_log_to_qc_json_handler
 
-def assemble_oc_pipeline():
-    OC_pipeline = Pipeline(supportedStages=[
-                            aboxStages.QC_LOG,
-                            aboxStages.QC_JSON,
-                            aboxStages.OC_JSON,
-                            aboxStages.CSV ]) \
-                .add_handler(handler=QC_LOG_TO_QC_JSON, handlerName='QC_LOG_TO_QC_JSON') \
-                .add_handler(handler=QC_JSON_TO_OC_JSON, handlerName='QC_JSON_TO_OC_JSON') \
-                .add_handler(handler=OC_JSON_TO_CSV, handlerName='OC_JSON_TO_CSV') \
-                .add_handler(handler=OC_CSV_TO_OC_OWL, handlerName='OC_CSV_TO_OC_OWL')
-    return OC_pipeline
+def assemble_oc_pipeline(
+    qc_log_ext:str
+    )->Pipeline:
+
+    pipeline = Pipeline() \
+                .add_handler(handler = get_qc_log_to_qc_json_handler(
+                    stage_inpFileExt= qc_log_ext)) \
+                .add_handler(handler = handlers.get_qc_json_to_oc_json_handler()) \
+                .add_handler(handler = handlers.get_oc_json_to_oc_csv_handler()) \
+                .add_handler(handler = handlers.get_oc_csv_to_oc_owl_handler())
+    return pipeline

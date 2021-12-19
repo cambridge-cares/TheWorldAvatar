@@ -9,8 +9,10 @@ from compchemparser.parsers.ccgaussian_parser import PROGRAM_NAME, \
                                                      PROGRAM_VERSION
 comp_pref = PREFIXES["comp_pref"]
 
-def oc_jsonwriter(data, random_id="", spec_IRI=""):
-    data = json.loads(data)
+def oc_jsonwriter(file_path, random_id="", spec_IRI=""):
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
     xyz = get_xyz_from_parsed_json(data)
     inchi = obconverter.obConvert(xyz, 'xyz','inchi')
     if not spec_IRI:

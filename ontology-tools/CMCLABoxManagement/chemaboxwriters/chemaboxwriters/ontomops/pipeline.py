@@ -1,15 +1,10 @@
-from chemaboxwriters.common import Pipeline
-from chemaboxwriters.common import aboxStages
-from chemaboxwriters.ontomops.handlers import OMINP_JSON_TO_OM_JSON, \
-                                              OM_JSON_TO_CSV, \
-                                              OM_CSV_TO_OM_OWL
+from chemaboxwriters.common.base import Pipeline
+from chemaboxwriters.common.stageenums import aboxStages
+import chemaboxwriters.ontomops.handlers as handlers
 
 def assemble_omops_pipeline():
-    OS_pipeline = Pipeline(supportedStages=[
-                            aboxStages.OMINP_JSON,
-                            aboxStages.OM_JSON,
-                            aboxStages.CSV ]) \
-                .add_handler(handler=OMINP_JSON_TO_OM_JSON, handlerName='OMINP_JSON_TO_OM_JSON') \
-                .add_handler(handler=OM_JSON_TO_CSV, handlerName='OM_JSON_TO_CSV') \
-                .add_handler(handler=OM_CSV_TO_OM_OWL, handlerName='OM_CSV_TO_OM_OWL')
-    return OS_pipeline
+    pipeline = Pipeline() \
+                .add_handler(handler = handlers.get_ominp_json_to_om_json_handler()) \
+                .add_handler(handler = handlers.get_om_json_to_csv_handler()) \
+                .add_handler(handler = handlers.get_om_csv_to_om_owl_handler())
+    return pipeline

@@ -18,8 +18,11 @@ onto_spec = PREFIXES["onto_spec"]
 onto_comp = PREFIXES["onto_comp"]
 onto_pes = PREFIXES["onto_pes"]
 
-def ops_csvwriter(data):
-    data = json.loads(data)
+def ops_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
     spec_IRI=data[commonv.SPECIES_IRI]
     calc_id = data[commonv.ENTRY_UUID]
     entryIRI = data[commonv.ENTRY_IRI]

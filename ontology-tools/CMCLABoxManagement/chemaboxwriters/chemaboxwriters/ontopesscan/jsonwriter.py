@@ -12,7 +12,7 @@ SCAN_COORDINATE_VALUE='ScanCoordinateValue'
 SCAN_POINTS_JOBS='ScanPointsJobs'
 SCAN_ATOM_IDS= 'ScanAtomIDs'
 
-def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
+def ops_jsonwriter(file_paths, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
     data_out ={}
     data_out[commonv.SPECIES_IRI] = os_iris.split(',')
     data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(',')
@@ -37,8 +37,10 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
     scanCoordinateValue = []
     ontoCompChemJobs = []
 
-    for data_item in data:
-        data_item = json.loads(data_item)
+    for file_path in file_paths:
+
+        with open(file_path, 'r') as file_handle:
+            data_item = json.load(file_handle)
 
         ontoCompChemJobs.append(data_item[commonv.ENTRY_IRI])
         xyz = np.array(data_item[GEOM])
@@ -49,16 +51,16 @@ def ops_jsonwriter(data, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
         elif ndegrees==3:
             scanAtomsPos =  xyz[oc_atoms_pos]
             scanCoordinateValue.append(getPlaneAngle(scanAtomsPos[0],scanAtomsPos[1],scanAtomsPos[2]))
-        
+
         elif ndegrees==4:
             scanAtomsPos =  xyz[oc_atoms_pos]
             scanCoordinateValue.append(getDihedralAngle(scanAtomsPos[0],scanAtomsPos[1],scanAtomsPos[2],scanAtomsPos[3]))
-    
+
     scanCoordinateValue, ontoCompChemJobs = zip(*sorted(zip(scanCoordinateValue, ontoCompChemJobs)))
     scanCoordinateValue = list(scanCoordinateValue)
     ontoCompChemJobs = list(ontoCompChemJobs)
 
     data_out[SCAN_COORDINATE_VALUE]=scanCoordinateValue
     data_out[SCAN_POINTS_JOBS]=ontoCompChemJobs
-   
+
     return [json.dumps(data_out)]

@@ -1,6 +1,6 @@
 from chemaboxwriters.common.base import NotSupportedStage
 from chemutils.ioutils.ioutils import fileExists
-from chemaboxwriters.ontomops import assemble_omops_pipeline
+from chemaboxwriters.ontomops.pipeline import assemble_omops_pipeline
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
 import textwrap
 import os
@@ -14,21 +14,12 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
         files = get_stage_files(fileOrDir, inStage, fileExtPrefix='om', qcLogExt='')
 
         if handlerFuncKwargs:
-            for handlerName, funcKwargs in handlerFuncKwargs.items():
-                pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
+            pipeline.set_stage_func_kwargs(handlerFuncKwargs)
 
-        outDirNotSet = outDir is None
-        outBaseNameNotSet = outBaseName is None
-        for file_ in files:
-            if outDirNotSet: outDir=os.path.dirname(file_)
-            if outBaseNameNotSet:
-                if fileExists(file_): outBaseName=os.path.basename(file_)
-                else: outBaseName='file'
-            outPath = os.path.join(outDir,outBaseName)
-            pipeline.execute([file_], inStage, outPath)
+        pipeline.run(files, inStage, outDir)
 
     except NotSupportedStage:
-        supportedStagesNames = [stage.name.lower() for stage in pipeline.supportedStages]
+        supportedStagesNames = [stage.name.lower() for stage in pipeline.inStages]
         print(textwrap.dedent(f"""
             Error: The requested --inp-file-type='{inpFileType}'
                    is not supported by the current pipeline.

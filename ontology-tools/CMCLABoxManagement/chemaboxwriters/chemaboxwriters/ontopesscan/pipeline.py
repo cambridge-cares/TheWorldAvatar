@@ -1,15 +1,10 @@
-from chemaboxwriters.common import Pipeline
-from chemaboxwriters.common import aboxStages
-from chemaboxwriters.ontopesscan.handlers import OC_JSON_TO_OPS_JSON, \
-                                                 OPS_JSON_TO_CSV, \
-                                                 OPS_CSV_TO_OPS_OWL
+from chemaboxwriters.common.base import Pipeline
+import chemaboxwriters.ontopesscan.handlers as handlers
 
 def assemble_ops_pipeline():
-    OPS_pipeline = Pipeline(supportedStages=[
-                        aboxStages.OC_JSON,
-                        aboxStages.OPS_JSON,
-                        aboxStages.CSV ]) \
-                .add_handler(handler=OC_JSON_TO_OPS_JSON, handlerName='OC_JSON_TO_OPS_JSON') \
-                .add_handler(handler=OPS_JSON_TO_CSV, handlerName = 'OPS_JSON_TO_CSV') \
-                .add_handler(handler=OPS_CSV_TO_OPS_OWL, handlerName='OPS_CSV_TO_OPS_OWL')
-    return OPS_pipeline
+    pipeline = Pipeline() \
+                .add_handler(handler = handlers.get_qc_log_to_oc_json_handler()) \
+                .add_handler(handler = handlers.get_oc_json_to_ops_json_handler()) \
+                .add_handler(handler = handlers.get_ops_json_to_csv_handler()) \
+                .add_handler(handler = handlers.get_ops_csv_to_ops_owl_handler())
+    return pipeline

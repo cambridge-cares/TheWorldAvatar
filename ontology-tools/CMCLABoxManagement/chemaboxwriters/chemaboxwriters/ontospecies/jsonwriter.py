@@ -39,11 +39,13 @@ ENTH_PROV='StandardEnthalpyofFormationProvenance'
 
 spec_pref = PREFIXES["spec_pref"]
 
-def os_jsonwriter(data, random_id="",
+def os_jsonwriter(file_path, random_id="",
             spec_pref = PREFIXES["spec_pref"],
             hf=None, hf_unit=None, hf_phase=None,
             hfTref=None, hfTref_unit=None, hf_prov=None):
-    data = json.loads(data)
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
 
     data_out = {}
     xyz = get_xyz_from_parsed_json(data)

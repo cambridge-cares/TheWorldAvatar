@@ -17,11 +17,14 @@ onto_mops = PREFIXES["onto_mops"]
 mops_pref = PREFIXES["mops_pref"]
 rdf_pref = PREFIXES["rdf_pref"]
 uom_pref = PREFIXES["uom_pref"]
-unres_pref = PREFIXES["unres_pref"]                                              
+unres_pref = PREFIXES["unres_pref"]
 
 
-def om_csvwriter(data):
-    data = json.loads(data)
+def om_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
     gen_id = data[commonv.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
@@ -30,20 +33,20 @@ def om_csvwriter(data):
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     mops_id = data[commonv.ENTRY_IRI]
-    
-    
+
+
     search1 = get_assembly_iri(data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],
                                data["Mops_Chemical_Building_Units"][0]["GenericUnitPlanarity"],
                                data["Mops_Chemical_Building_Units"][0]["GenericUnitNumber"],
-                               data["Mops_Symmetry_Point_Group"]) 
-    
+                               data["Mops_Symmetry_Point_Group"])
+
     search2 = get_assembly_iri(data["Mops_Chemical_Building_Units"][1]["GenericUnitModularity"],
                             data["Mops_Chemical_Building_Units"][1]["GenericUnitPlanarity"],
                             data["Mops_Chemical_Building_Units"][1]["GenericUnitNumber"],
-                            data["Mops_Symmetry_Point_Group"]) 
-    
+                            data["Mops_Symmetry_Point_Group"])
+
     assemblymodel = None
-    
+
     if search1 and search2:
         assemblymodel = list(set(search1).intersection(search2))[0]
 
@@ -128,8 +131,8 @@ def om_csvwriter(data):
     uom_pref + 'hasUnit','',''])
 
     #Write the Assembly Model initialization and shape/symmetry related instances.
-    
-    if assemblymodel is None:    
+
+    if assemblymodel is None:
         spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', onto_mops + '#AssemblyModel',
         '','','']) #Initialize the Assembly Model object for the MOPs.
         spamwriter.writerow([mops_pref + mops_id, 'Instance', mops_pref + 'AssemblyModel_' + gen_id,
@@ -156,7 +159,7 @@ def om_csvwriter(data):
         onto_mops + '#hasPolyhedralShape','','']) #Connect the Assembly model to polyhedral shape.
         spamwriter.writerow([onto_mops + '#hasSymbol','Data Property',mops_pref + data["Mops_Polyhedral_Shape"] + '_' + gen_id,''
         ,data["Mops_Polyhedral_Shape_Symbol"],'String'])
-    
+
     #Write the information about the Chemical and Generic Building units.
     for i in range(len(data["Mops_Chemical_Building_Units"])): #We will loop through all the building units in the JSON.
         spamwriter.writerow([mops_pref + 'ChemicalBuildingUnit_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#ChemicalBuildingUnit',
@@ -209,7 +212,7 @@ def om_csvwriter(data):
         spamwriter.writerow([rdf_pref + '#label','Data Property',mops_pref + 'Substituent_Spacer_'  + gen_id + '_' + str(i),
         '',data["Mops_Chemical_Building_Units"][i]["SpacerSubstituentLabel"],'String']) #Attach label to Spacer Substituent.
 
-        if assemblymodel is None:    
+        if assemblymodel is None:
             spamwriter.writerow([mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i), 'Instance', onto_mops + '#GenericBuildingUnit',
             '','','']) #Instantiate the corresponding Generic Building Unit.
             spamwriter.writerow([mops_pref + 'AssemblyModel_' + gen_id, 'Instance', mops_pref + 'GenericBuildingUnit_' + gen_id + '_' + str(i),

@@ -25,8 +25,11 @@ gain_pref = PREFIXES["gain_pref"]
 table_pref = PREFIXES["table_pref"]
 unit_pref = PREFIXES["unit_pref"]
 
-def oc_csvwriter(data):
-    data = json.loads(data)
+def oc_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
     spec_IRI=data[commonv.SPECIES_IRI]
     calc_id = data[commonv.ENTRY_UUID]
     entryIRI = data[commonv.ENTRY_IRI]

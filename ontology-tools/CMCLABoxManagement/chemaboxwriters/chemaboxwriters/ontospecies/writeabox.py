@@ -15,8 +15,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
 
         print(handlerFuncKwargs)
         if handlerFuncKwargs:
-            for handlerName, funcKwargs in handlerFuncKwargs.items():
-                pipeline.handlers[handlerName].set_handler_func_kwargs(funcKwargs)
+            pipeline.set_handler_func_kwargs(handlerFuncKwargs)
 
         outDirNotSet = outDir is None
         outBaseNameNotSet = outBaseName is None
@@ -26,10 +25,10 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
                 if fileExists(file_): outBaseName=os.path.basename(file_)
                 else: outBaseName='file'
             outPath = os.path.join(outDir,outBaseName)
-            pipeline.execute([file_], inStage, outPath)
+            pipeline.run([file_], inStage, outPath)
 
     except NotSupportedStage:
-        supportedStagesNames = [stage.name.lower() for stage in pipeline.supportedStages]
+        supportedStagesNames = [stage.name.lower() for stage in pipeline.inStages]
         print(textwrap.dedent(f"""
             Error: The requested --inp-file-type='{inpFileType}'
                    is not supported by the current pipeline.

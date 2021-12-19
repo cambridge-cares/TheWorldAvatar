@@ -1,92 +1,245 @@
-from compchemparser.helpers.utils import readFile, fileExists, getRefName
-class NotSupportedStage(Exception):
-    """Raise for not supported abox processing stages. """
+from chemaboxwriters.common.commonfunc import getRefName
+from chemaboxwriters.app_exceptions.app_exceptions import NotSupportedStage
+from chemaboxwriters.common.commonfunc import get_file_extensions
+from enum import Enum
+import os
+from typing import Callable, Dict, List, Tuple, Optional, Any
+
+class Stage:
+    def __init__(
+        self,
+        name: str,
+        inStage: Enum,
+        outStage: Enum,
+        stageFunc: Callable,
+        fileWriter: Callable,
+        fileExt: str,
+        inpFileExt: Optional[List[str]] = None,
+        stageFuncKwargs: Dict[str,Any] = {},
+        fileWriterKwargs: Dict[str,Any] = {},
+        unrollListInput: bool=True):
+
+        self.name = name
+        self.inStage= inStage
+        self.outStage= outStage
+        self.stageFunc= stageFunc
+        self.fileWriter= fileWriter
+        self.fileExt= fileExt
+        self.stageFuncKwargs= stageFuncKwargs
+        self.fileWriterKwargs= fileWriterKwargs
+        self.writtenFiles=[]
+        self.unrollListInput=unrollListInput
+        self.inpFileExt= inpFileExt
+
+    def run(
+            self,
+            stage_input: List[str],
+            outDir: str,
+            *args, **kwargs)-> Tuple[List[str], Enum]:
+        output= self.handle_input(stage_input, outDir)
+        return output, self.outStage
+
+    def handle_input(
+        self,
+        stage_input: List[str],
+        outDir: str)->List[str]:
+
+        stage_output = []
+        out_paths: List[str] = []
+        if self.unrollListInput:
+            for inp in stage_input:
+                output = self.stageFunc(inp, **self.stageFuncKwargs)
+                stage_output.extend(output)
+        else:
+            stage_output = self.stageFunc(stage_input, **self.stageFuncKwargs)
+
+        out_paths = self.get_outpaths(stage_input, outDir)
+
+        output = self.write_output(stage_output, out_paths)
+        return output
+
+    def get_outpaths(
+        self,
+        stage_input: List[str],
+        outDir: Optional[str]
+    )->List[str]:
+
+        outpaths = []
+
+        if self.inpFileExt is None:
+            inpfileExt = get_file_extensions(inStage=self.inStage)
+        else:
+            inpfileExt = self.inpFileExt
+
+        for inp in stage_input:
+            outFileDir = outDir
+            if outFileDir is None: outFileDir = os.path.dirname(inp)
+
+            file_ext = ''
+            for ext in inpfileExt:
+                if ext in inp[-len(ext):]:
+                    file_ext = ext
+                    break
+
+            outFileBaseName = ''.join(inp.split(file_ext)[:-1])
+            outpaths.append(os.path.join(outFileDir,outFileBaseName))
+
+        return outpaths
+
+    def write_output(
+            self,
+            stage_output: List[str],
+            output_paths: List[str])->List[str]:
+
+        writtenFiles = []
+        jobNum = len(stage_output)
+        for jobId, output in enumerate(stage_output):
+            out_path = output_paths[jobId] \
+                       if jobId < len(output_paths) \
+                       else output_paths[0]
+            refOutPath = getRefName(out_path, jobId, jobNum, self.fileExt)
+            self.fileWriter(refOutPath, output, **self.fileWriterKwargs)
+            writtenFiles.append(refOutPath)
+        return writtenFiles
+
+    def set_file_ext(
+        self,
+        fileExt: str)->Any:
+
+        self.fileExt = fileExt
+        return self
 
 class StageHandler:
     """
     Generic wrapper to create concrete handlers for abox writing stages.
     """
-    def __init__(self, handlerFunc, inStage, outStage,
-                 disableFileToStrConv=False, handlerFuncKwargs={},
-                 fileExt='', fileWriter=None,  fileWriterKwargs={},
-                 unrollListInput=True):
-        self.handlerFunc= handlerFunc
-        self.inStage= inStage
-        self.outStage= outStage
-        self.disableFileToStrConv= disableFileToStrConv
-        self.fileWriter= fileWriter
-        self.fileWriterKwargs= fileWriterKwargs
-        self.handlerFuncKwargs= handlerFuncKwargs
-        self.fileExt=fileExt
-        self.unrollListInput=unrollListInput
+    def __init__(
+        self,
+        name: str,
+        outStage: Optional[Enum] = None):
 
-    def run(self, input, inStage, outPath):
-        output, outStage= input, inStage
-        writtenFiles = []
-        if inStage == self.inStage:
-            output, outStage= self.handle_input(input)
-            if self.fileWriter is not None:
-                writtenFiles = self.write_output(output, outPath)
-        return output, outStage, writtenFiles
+        self.name: str = name
+        self.stages: Dict[str, Stage] = {}
+        self.outStageAutoSet: bool =True
+        self.inStages: List[Enum]= []
+        self.outStage: Optional[Enum] = outStage
+        self.writtenFiles: List[str] = []
+        self.outStageOutput: Optional[List[str]] = None
 
-    def set_handler_func_kwargs(self,handlerFuncKwargs):
-        self.handlerFuncKwargs = handlerFuncKwargs
+    def add_stage(
+        self,
+        stage: Stage,
+        stageName: Optional[str] = None
+        )->Any:
+
+        if stageName is None:
+            stageName = stage.name
+
+        self.stages[stageName]=stage
+        self.inStages.extend([x for x in [stage.inStage]
+                             if x not in self.inStages])
+        if self.outStageAutoSet:
+            self.outStage= stage.outStage
         return self
 
-    def set_file_writer_kwargs(self,fileWriterKwargs):
-        self.fileWriterKwargs = fileWriterKwargs
+    def run(
+        self,
+        inputs: List[str],
+        inputType: Enum,
+        outDir: str,
+        )-> Tuple[List[str], Enum]:
+
+        outStageOutput: List[str] = inputs
+        outStage: Enum = self.outStage if self.outStage is not None else inputType
+
+        if inputType == outStage:
+            outStageOutput = inputs
+
+        for stage in self.stages.values():
+            if inputType == stage.inStage:
+                inputs, inputType = stage.run(inputs, outDir)
+                self.writtenFiles.extend(stage.writtenFiles)
+                stage.writtenFiles = []
+
+                if inputType == outStage:
+                    outStageOutput = inputs
+
+        self.outStageOutput = outStageOutput
+        self.outStage = outStage
+        return self.outStageOutput, self.outStage
+
+    def set_stage_func_kwargs(
+        self,
+        funcKwargs: Dict[str, Any]
+        )->Any:
+
+        for stage_name, stageKwargs in funcKwargs.items():
+            stage = self.stages[stage_name]
+            stage.stageFuncKwargs = stageKwargs
         return self
 
-    def set_file_writer(self, fileWriter):
-        self.fileWriter = fileWriter
+    def set_file_ext(
+        self,
+        stage_name: str,
+        fileExt: str)->Any:
+
+        if stage_name in self.stages:
+            self.stages[stage_name].set_file_ext(fileExt)
         return self
-
-    def set_file_ext(self, fileExt):
-        self.fileExt = fileExt
-        return self
-
-    def handle_input(self,inputList):
-        outputs = []
-        outStage= self.outStage
-        if not self.disableFileToStrConv:
-            inputList = [readFile(inp) if fileExists(inp) else inp for inp in inputList]
-
-        if self.unrollListInput:
-            for inp in inputList:
-                output = self.handlerFunc(inp,**self.handlerFuncKwargs)
-                outputs.extend(output)
-        else:
-            outputs = self.handlerFunc(inputList,**self.handlerFuncKwargs)
-        return outputs, outStage
-
-    def write_output(self, outputs, outPath):
-        writtenFiles = []
-        jobNum = len(outputs)
-        for jobId, output in enumerate(outputs):
-            refOutPath = getRefName(outPath, jobId, jobNum, self.fileExt)
-            self.fileWriter(refOutPath, output, **self.fileWriterKwargs)
-            writtenFiles.append(refOutPath)
-        return writtenFiles
 
 class Pipeline:
     """
     The Pipeline interface declares a method for building the chain of handlers.
     It also declares a method for executing a request.
     """
-    def __init__(self, supportedStages):
-        self.handlers= {}
-        self.supportedStages=supportedStages
-        self.writtenFiles = []
+    def __init__(
+        self,
+        fileExtPrefix: str = ''
+        ):
 
-    def add_handler(self, handler, handlerName):
+        self.handlers: Dict[str, StageHandler] = {}
+        self.writtenFiles: List[str] = []
+        self.inStages: List[Enum] = []
+        self.fileExtPrefix = fileExtPrefix
+
+    def add_handler(
+        self,
+        handler: StageHandler,
+        handlerName: Optional[str] = None
+        )-> Any:
+
+        if handlerName is None:
+            handlerName = handler.name
+
         self.handlers[handlerName]=handler
+        self.inStages.extend([x for x in handler.inStages
+                             if x not in self.inStages])
         return self
 
-    def execute(self, inputs, inputType, outPath=None):
+    def set_stage_func_kwargs(
+        self,
+        funcKwargs: Dict[str, Any]
+        )->Any:
+
+        for handler_name, funcKwargs in funcKwargs.items():
+            handler = self.handlers[handler_name]
+            handler.set_stage_func_kwargs(funcKwargs)
+        return self
+
+    def run(
+        self,
+        inputs: List[str],
+        inputType: Enum,
+        outDir: str,
+        )->List[str]:
+
+        if inputType not in self.inStages:
+            requestedStage=inputType.name.lower()
+            raise NotSupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
+
         for handler in self.handlers.values():
-            if inputType not in self.supportedStages:
-                requestedStage=inputType.name.lower()
-                raise NotSupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
-            inputs, inputType, writtenFiles = handler.run(inputs, inputType, outPath)
-            if writtenFiles: self.writtenFiles.extend(writtenFiles)
-        return inputs, inputType
+            if inputType in handler.inStages:
+                inputs, inputType = handler.run(inputs, inputType, outDir)
+                self.writtenFiles.extend(handler.writtenFiles)
+                handler.writtenFiles = []
+        return self.writtenFiles

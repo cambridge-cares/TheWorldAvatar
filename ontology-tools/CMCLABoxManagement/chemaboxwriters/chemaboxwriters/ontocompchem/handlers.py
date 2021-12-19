@@ -1,23 +1,54 @@
-from chemaboxwriters.common import StageHandler
-from compchemparser.helpers.utils import jsonStringToFile
-from chemaboxwriters.common.stageenums import aboxStages
-from chemaboxwriters.ontocompchem.csvwriter import oc_csvwriter
-from chemaboxwriters.ontocompchem.jsonwriter import oc_jsonwriter
-import chemutils.ioutils.ioutils as ioutils
-from chemaboxwriters.common.handlers import CSV_TO_OWL
-import copy
+from chemaboxwriters.common.base import StageHandler
+import chemaboxwriters.ontocompchem.stages as stages
+from typing import Optional
 
-QC_JSON_TO_OC_JSON = StageHandler(handlerFunc=oc_jsonwriter,
-                             inStage=aboxStages.QC_JSON,
-                             outStage=aboxStages.OC_JSON,
-                             fileWriter=jsonStringToFile,
-                             fileExt='.oc.json')
+def get_qc_json_to_oc_json_handler(
+    name: Optional[str] = None,
+    stage_name: Optional[str] = None,
+    stage_fileExt: Optional[str] = None,
+    )->StageHandler:
 
-OC_JSON_TO_CSV = StageHandler(handlerFunc=oc_csvwriter,
-                            inStage=aboxStages.OC_JSON,
-                            outStage=aboxStages.CSV,
-                            fileWriter= ioutils.writeFile,
-                            fileWriterKwargs={'newline':''},
-                            fileExt='.oc.csv')
+    if name is None: name = 'QC_JSON_TO_OC_JSON'
 
-OC_CSV_TO_OC_OWL = copy.deepcopy(CSV_TO_OWL.set_file_ext('.oc.owl'))
+    QC_JSON_TO_OC_JSON = StageHandler(name=name) \
+                        .add_stage(
+                            stage = stages.get_qc_json_to_oc_json_stage(
+                                name = stage_name,
+                                fileExt= stage_fileExt
+                            )
+                        )
+    return QC_JSON_TO_OC_JSON
+
+def get_oc_json_to_oc_csv_handler(
+    name: Optional[str] = None,
+    stage_name: Optional[str] = None,
+    stage_fileExt: Optional[str] = None,
+    )->StageHandler:
+
+    if name is None: name = 'OC_JSON_TO_CSV'
+
+    OC_JSON_TO_CSV = StageHandler(name=name) \
+                        .add_stage(
+                            stage = stages.get_oc_json_to_oc_csv_stage(
+                                name = stage_name,
+                                fileExt= stage_fileExt
+                            )
+                        )
+    return OC_JSON_TO_CSV
+
+def get_oc_csv_to_oc_owl_handler(
+    name: Optional[str] = None,
+    stage_name: Optional[str] = None,
+    stage_fileExt: Optional[str] = None,
+    )->StageHandler:
+
+    if name is None: name = 'OC_CSV_TO_OC_OWL'
+
+    OC_CSV_TO_OC_OWL = StageHandler(name=name) \
+                        .add_stage(
+                            stage = stages.get_oc_csv_to_owl_stage(
+                                name = stage_name,
+                                fileExt= stage_fileExt
+                            )
+                        )
+    return OC_CSV_TO_OC_OWL

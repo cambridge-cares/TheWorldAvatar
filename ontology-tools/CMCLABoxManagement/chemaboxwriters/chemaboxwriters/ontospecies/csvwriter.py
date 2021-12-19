@@ -43,8 +43,11 @@ unit_pref = PREFIXES["unit_pref"]
 spec_pref = PREFIXES["spec_pref"]
 
 
-def os_csvwriter(data, spec_pref = PREFIXES["spec_pref"]):
-    data = json.loads(data)
+def os_csvwriter(file_path, spec_pref = PREFIXES["spec_pref"]):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
     gen_id = data[commonv.ENTRY_UUID]
 
     csvfile = StringIO(newline='')

@@ -1,20 +1,46 @@
 from chemaboxwriters.common.base import StageHandler
-from compchemparser.helpers.utils import jsonStringToFile
-from chemaboxwriters.common.stageenums import aboxStages
-from compchemparser.app import parseLog
-from chemaboxwriters.common.commonfunc import csv2rdf_wrapper
-import chemutils.ioutils.ioutils as ioutils
+import chemaboxwriters.common.stages as stages
+from enum import Enum
+from typing import Optional
 
+def get_qc_log_to_qc_json_handler(
+    name: Optional[str] = None,
+    stage_name: Optional[str] = None,
+    stage_fileExt: Optional[str] = None,
+    stage_inpFileExt: Optional[str] = None,
+    )->StageHandler:
 
-QC_LOG_TO_QC_JSON = StageHandler(handlerFunc=parseLog,
-                       inStage=aboxStages.QC_LOG,
-                       outStage=aboxStages.QC_JSON,
-                       disableFileToStrConv=True,
-                       fileWriter=jsonStringToFile,
-                       fileExt='.qc.json')
+    if name is None: name = 'QC_LOG_TO_QC_JSON'
 
-CSV_TO_OWL = StageHandler(handlerFunc=csv2rdf_wrapper,
-                    inStage=aboxStages.CSV,
-                    outStage=aboxStages.OWL,
-                    fileWriter= ioutils.writeFile,
-                    fileWriterKwargs={'newline':''})
+    QC_LOG_TO_QC_JSON = StageHandler(name=name) \
+                        .add_stage(
+                            stage=stages.get_qc_log_to_qc_json_stage(
+                                name = stage_name,
+                                fileExt= stage_fileExt,
+                                inpFileExt=stage_inpFileExt
+                            )
+                        )
+
+    return QC_LOG_TO_QC_JSON
+
+def get_csv_to_owl_handler(
+    inStage: Enum,
+    outStage: Enum,
+    name: Optional[str] = None,
+    stage_name: Optional[str] = None,
+    stage_fileExt: Optional[str] = None,
+    )->StageHandler:
+
+    if name is None: name = 'CSV_TO_OWL'
+
+    CSV_TO_OWL = StageHandler(name=name) \
+                .add_stage(
+                    stage=stages.get_csv_to_owl_stage(
+                        inStage=inStage,
+                        outStage=outStage,
+                        name= stage_name,
+                        fileExt= stage_fileExt
+                    )
+                )
+    return CSV_TO_OWL
+
