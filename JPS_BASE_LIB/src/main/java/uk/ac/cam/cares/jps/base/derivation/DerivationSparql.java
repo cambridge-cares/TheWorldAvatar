@@ -923,28 +923,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * returns the derived quantity instance, <instance> <derived:belongsTo> ?x
-	 * @param kbClient
-	 * @param instance
-	 * @return
-	 */
-	String getDerivedIRI(String instance) {
-		SelectQuery query = Queries.SELECT();
-		String queryKey = "derived";
-		Variable derived = SparqlBuilder.var(queryKey);
-		GraphPattern queryPattern = iri(instance).has(belongsTo, derived);
-		query.prefix(p_derived).select(derived).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.length() != 1) {
-			throw new JPSRuntimeException(instance + " linked with " + String.valueOf(queryResult.length()) + " derived instances");
-		}
-		
-		return queryResult.getJSONObject(0).getString(queryKey);
-	}
-	
-	/**
 	 * returns entities belonging to this derived instance, ?x <derived:belongsTo> <derivedIRI>
 	 * @param kbClient
 	 * @param derivedIRI
@@ -1512,42 +1490,51 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
-	void updateTimestamps(Map<String,Long> derivationTimestamp_map) {
-		List<String> derivations = new ArrayList<>(derivationTimestamp_map.keySet());
+	/**
+	 * Updates timestamps of the given instances in two stages
+	 * Query 1: get the corresponding time IRI
+	 * query 2: delete/insert appropriate triples
+	 * @param derivationTimestamp_map
+	 */
+	void updateTimestamps(Map<String,Long> instanceTimestamp_map) {
+		List<String> instances = new ArrayList<>(instanceTimestamp_map.keySet());
 		
-		// query 1: get corresponding time IRI for each derivation
+		// query 1: get corresponding time IRI for each instance if it exists
 		SelectQuery query = Queries.SELECT();
-		Variable derivation = query.var();
-		ValuesPattern derValuesPattern = new ValuesPattern(derivation, derivations.stream().map(d -> iri(d)).collect(Collectors.toList()));
+		Variable inst = query.var();
+		ValuesPattern instValuesPattern = new ValuesPattern(inst, instances.stream().map(i -> iri(i)).collect(Collectors.toList()));
 				
 		Variable time_unix = query.var();
 		
-		GraphPattern gp1 = derivation.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
+		GraphPattern gp1 = inst.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
 		
-		query.select(derivation,time_unix).where(gp1,derValuesPattern).prefix(p_time);
+		query.select(inst,time_unix).where(gp1,instValuesPattern).prefix(p_time);
 		
 		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
 		
-		Map<String, String> derivation_timeiri_map = new HashMap<>();
+		Map<String, String> instance_timeiri_map = new HashMap<>();
 		
 		for (int i = 0; i < queryResult.length(); i++) {
-			derivation_timeiri_map.put(
-					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)),
+			instance_timeiri_map.put(
+					queryResult.getJSONObject(i).getString(inst.getQueryString().substring(1)),
 					queryResult.getJSONObject(i).getString(time_unix.getQueryString().substring(1)));
 		}
+		
+		// some instances provided by the user may not exist, update list here
+		instances = new ArrayList<>(instance_timeiri_map.keySet());
 		
 		// query 2: update query, delete and insert appropriate triples
 		ModifyQuery modify = Queries.MODIFY();
 		
 		Variable timestamp = query.var();
 		
-		TriplePattern[] insert_tp = new TriplePattern[derivations.size()];
+		TriplePattern[] insert_tp = new TriplePattern[instances.size()];
 		List<Iri> timeIRIList = new ArrayList<>();
 		
-		for (int i = 0; i < derivations.size(); i++) {
-			String der = derivations.get(i);
-			Iri timeIRI = iri(derivation_timeiri_map.get(der));
-			insert_tp[i] = timeIRI.has(numericPosition, derivationTimestamp_map.get(der));
+		for (int i = 0; i < instances.size(); i++) {
+			String instance  = instances.get(i);
+			Iri timeIRI = iri(instance_timeiri_map.get(instance));
+			insert_tp[i] = timeIRI.has(numericPosition, instanceTimestamp_map.get(instance));
 			timeIRIList.add(timeIRI);
 		}
 		
@@ -1557,6 +1544,29 @@ public class DerivationSparql{
 		modify.delete(delete_tp).where(timeValuesPattern,delete_tp).insert(insert_tp).prefix(p_time);
 		
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	Map<String,String> getDerivationsOf(List<String> entities) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		Variable derivation = query.var();
+		
+		GraphPattern queryPattern = entity.has(belongsTo, derivation);
+		ValuesPattern valuesPattern = new ValuesPattern(entity, 
+				entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		
+		query.select(entity, derivation).where(queryPattern, valuesPattern).prefix(p_derived);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String,String> entityDerivationMap = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			entityDerivationMap.put(
+					queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)), 
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)));
+		}
+		
+		return entityDerivationMap;
 	}
 	
 	/**
