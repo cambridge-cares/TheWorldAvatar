@@ -204,7 +204,7 @@ def get_all_time_series(consumer):
     timeseries = TSClient.getTimeSeries(dataIRIs)
 
     # Return time series and associated lists of variables and units
-    return timeseries, utilities, units
+    return timeseries, dataIRIs, utilities, units
 
 
 # ===============================================================================
@@ -348,12 +348,11 @@ if __name__ == '__main__':
             metadata[i].append(json_add_metadata(feature_id, lon, lat, elec, water, gas))
 
             # 3) Retrieve time series data
-            timeseries, utilities, units = get_all_time_series(c)
+            timeseries, dataIRIs, utilities, units = get_all_time_series(c)
             # Create lists for TimeSeries objects and IDs
             ts_data[i]['ts'].append(timeseries)
             ts_data[i]['id'].append(feature_id)
             # Create dictionaries for units and headers (Python equivalent for Java HashMaps)
-            dataIRIs = timeseries.getDataIRIs()
             ts_data[i]['units'].append(dict(zip(dataIRIs, units)))
             ts_data[i]['headers'].append(dict(zip(dataIRIs, utilities)))
 
