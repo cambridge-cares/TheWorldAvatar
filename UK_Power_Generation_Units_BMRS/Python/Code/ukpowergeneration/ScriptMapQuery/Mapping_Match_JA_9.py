@@ -12,7 +12,7 @@ import logging
 #Setup the logging with a logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-fileHandler = logging.FileHandler('ExcelMatchOutputLog.log', mode='w') #remove the "mode='w'" to have it only append with each run to the log file, rather than deleting previous contents. 
+fileHandler = logging.FileHandler('csvMatchOutputLog.log', mode='w') #remove the "mode='w'" to have it only append with each run to the log file, rather than deleting previous contents. 
 #formatter = logging.Formatter()
 #fileHandler.setFormatter(formatter)
 logger.addHandler(fileHandler)
@@ -27,7 +27,7 @@ def MultipleBMRSEIC (data):
             if i != j:
                 if data['Registered Resource EIC code'][i] == data['Registered Resource EIC code'][j]:
                     #print("Data Error: Multiple instances of EIC in BMRS Data: " + str(data['Registered Resource EIC code'][i]))
-                    #logger.info('Data Error: Multiple instances of EIC in BMRS Data: {}'.format(str(data['Registered Resource EIC code'][i]))) #Alternate way to give this input. 
+                    #logger.info('Data Error: Multiple instances of EIC in BMRS Data: {}'.format(str(data['Registered Resource EIC code'][i]))) #Alternate way to give this Input-Template. 
                     logger.warning("Data Error: Multiple instances of EIC in BMRS Data: " + str(data['Registered Resource EIC code'][i]))
                     #Note, the multiple instance error above occurs when the same EIC code occurs multiple times in the BMRS data. These are handled individually, but will obtain the same result. 
 
@@ -85,7 +85,7 @@ def ExemptFind(data, ExemptWords, strictness):
 
 
 def BMRSEICDUKESStationNameCheck(data, j, k, ExemptWords):
-    #data is the excel data.
+    #data is the csv data.
     #j is the index in the EIC station data that we will try to find a name match for in DUKES.
     #k is the index of the EIC in the BMRS data (used to extract BMRS capacity). 
     regex = re.compile(r"\b\d+\b")
@@ -375,12 +375,12 @@ def ErrorMatch(e):
 
 
 ###Primary Function###
-def BMRSEICDUKESMap(ExcelName, x):
-    #The function this functionality is run through. Reads the excel, processes the matches (with scores), then outputs back to excel.
+def BMRSEICDUKESMap(csvName, x):
+    #The function this functionality is run through. Reads the csv, processes the matches (with scores), then outputs back to csv.
     logger.info('\nBMRSEICDUKESMap Function Started: \'Data Error\'s below if found (not fatal): ')
     
-    #Read Excel
-    data = pd.read_excel(ExcelName) #place "r" before the path string to address special character, such as '\'. Don't forget to put the file name at the end of the path + '.xlsx'
+    #Read csv
+    data = pd.read_csv(csvName) #place "r" before the path string to address special character, such as '\'. Don't forget to put the file name at the end of the path + '.csv'
 
     #Initialise ExemptWords for the name comparison. Some of these are hardcoded (note that just because a word doesn't repeat, doesn't make it significant, imagine if some instances are missing in datasets for example. Thus hard coded ones, and found ones. 
     ExemptWords = ["VPI", "CHP", "West", "South", "East", "North", "Hill", "Ferry", "&", "Power", "Heat", "Great", "Farm", "Windfarm", "Lane", "Street", "A", "B", "C", "D", "E", "F", "G", "H", "I", "II", "III", "IV", "V", "VI", "VII", ""] #One place is just called 'FERRY FARM'. It's solar, so doesn't matter here, but if there's other similar issues, just have to go on the more exact match methods. 
@@ -421,7 +421,7 @@ def BMRSEICDUKESMap(ExcelName, x):
             if (data['Registered Resource EIC code'][i] == data['Energy Identification Code - Stations'][j]): 
                 #Match
                 a += 1
-                #Now that we know the EIC row in the excel, we want to look for a name match with DUKES.
+                #Now that we know the EIC row in the csv, we want to look for a name match with DUKES.
                 #This is not exact, so will try multiple versions of the name as manually investigated, so hopefully they work in multiple instances.
                 match, tempError  = BMRSEICDUKESStationNameCheck(data, j, i, ExemptWords)
                 match = str(match)
@@ -472,11 +472,11 @@ def BMRSEICDUKESMap(ExcelName, x):
         data.iloc[m, data.columns.get_loc('CapacityDiff')] = error[m][0]
         data.iloc[m, data.columns.get_loc('MatchType')] = error[m][1]
     
-    #Data now has the output values, so need to export this back to the excel document.
-    data.to_excel(ExcelName, index = False)
+    #Data now has the output values, so need to export this back to the csv document.
+    data.to_csv(csvName, index = False)
 
     #3: Check Integrity of Final Matches of DUKES Stations. 
-    data = pd.read_excel(ExcelName) #Reopen to have everything (mainly dates) in the python format (as it changes, just be python reading it). 
+    data = pd.read_csv(csvName) #Reopen to have everything (mainly dates) in the python format (as it changes, just be python reading it). 
     data['Effective From (Date)'] = pd.to_datetime(data['Effective From (Date)'])
 
     #Compare using these by type:
@@ -577,8 +577,8 @@ def BMRSEICDUKESMap(ExcelName, x):
         logger.info('Match Result For, DUKES Station Name: {}, EIC: {}, Name Match: {}, Capacity Difference (if known, and at the error threshold if unknown) (%): {}, Start Year: {}, Generation Type: {}, Match: {}. '.format(str(data['Station Name'][i]), str(data['outputDUKESToBMRSEIC'][i]), ErrorNameText(data['MatchType'][i]), ErrorCapacityDifferenceText(data['CapacityDiff'][i]), ErrorDateText(data['MatchYear'][i]), ErrorGenTypeText(x, data['MatchGenType'][i]), ErrorMatch(data['ConfidenceResult'][i])))
         
     
-    #Re-export to excel, with the confidence values. 
-    data.to_excel(ExcelName, index = False)
+    #Re-export to csv, with the confidence values. 
+    data.to_csv(csvName, index = False)
     logger.info('BMRSEICDUKESMap Function Completed')
 
 
@@ -586,11 +586,11 @@ def BMRSEICDUKESMap(ExcelName, x):
 ###Main Function###
 if __name__ == "__main__":
     #You may add two args to this input: 
-    #The first is the name of the excel sheet to open (type: string).'Input.xlsx' is default. 
+    #The first is the name of the csv sheet to open (type: string).'Input-Template.csv' is default. 
     #The second is the error threshold (type: int). Reccomended 5-50 range, where 5 is more sensitive and 50 is less sensitive. If in doubt use 10 (default). Be sure to give the file extension.
     #If you give two valid integers, or two non-integers (presumably file names then), the latter arg shall be used for its respective category. 
     args = sys.argv[1:]
-    inputName = 'Input.xlsx' #Default, will be changed if a valid input is given.
+    inputName = 'Input-Template.csv' #Default, will be changed if a valid input is given.
     errorThreshold = 10
     if len(args) > 0:
         if args[0].isdigit() == True:

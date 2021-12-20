@@ -253,7 +253,7 @@ def get_instantiated_generators(endpoint):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('comp') + \
+    query = create_sparql_prefix('ontoenergysystem') + \
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \

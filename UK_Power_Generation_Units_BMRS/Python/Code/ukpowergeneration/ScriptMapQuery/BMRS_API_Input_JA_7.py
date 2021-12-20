@@ -103,8 +103,8 @@ def convert_csv_to_triple_dfs(csvName):
     
     #Read csv
     data = pd.read_csv(csvName) #Dataframe including DUKES stations.
-    p_data = pd.read_csv('powerplanttriple.csv') #Fixed powerplant name
-    g_data = pd.read_csv('generatortriple.csv') #Fixed generator name
+    powerplant_data = pd.read_csv('powerplanttriple.csv') #Fixed powerplant name
+    generator_data = pd.read_csv('generatortriple.csv') #Fixed generator name
 
     p_count = 0
     g_count = 0
@@ -115,14 +115,14 @@ def convert_csv_to_triple_dfs(csvName):
     Day = data['Day'][1]
     #Period = data['Period'][1] #All 48 are used. 
     
-    for i in range(0, len(p_data['*'])):
-        p_data.iloc[i, p_data.columns.get_loc('powerplanteic')] = ""
-        p_data.iloc[i, p_data.columns.get_loc('time')] = ""
-        p_data.iloc[i, p_data.columns.get_loc('power')] = ""
-    for i in range(0, len(g_data['*'])):
-        g_data.iloc[i, g_data.columns.get_loc('generatoreic')] = ""
-        g_data.iloc[i, g_data.columns.get_loc('time')] = ""
-        g_data.iloc[i, g_data.columns.get_loc('power')] = ""
+    for i in range(0, len(powerplant_data['*'])):
+        powerplant_data.iloc[i, powerplant_data.columns.get_loc('powerplanteic')] = ""
+        powerplant_data.iloc[i, powerplant_data.columns.get_loc('time')] = ""
+        powerplant_data.iloc[i, powerplant_data.columns.get_loc('power')] = ""
+    for i in range(0, len(generator_data['*'])):
+        generator_data.iloc[i, generator_data.columns.get_loc('generatoreic')] = ""
+        generator_data.iloc[i, generator_data.columns.get_loc('time')] = ""
+        generator_data.iloc[i, generator_data.columns.get_loc('power')] = ""
 
     #For each powerplant/generator
     for i in range(0, len(data['Registered Resource EIC code'])):
@@ -132,21 +132,21 @@ def convert_csv_to_triple_dfs(csvName):
         for Period in range(1,49):
             #If powerplant
             if data['Type (powerplant(station) or generator(unit))'][i] == "powerplant":
-                p_data.iloc[p_count, p_data.columns.get_loc('powerplanteic')] = data['Registered Resource EIC code'][i]
-                p_data.iloc[p_count, p_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
-                p_data.iloc[p_count, p_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
+                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('powerplanteic')] = data['Registered Resource EIC code'][i]
+                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
+                powerplant_data.iloc[p_count, powerplant_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 p_count += 1
             #If generator
             if data['Type (powerplant(station) or generator(unit))'][i] == "generator":
-                g_data.iloc[g_count, g_data.columns.get_loc('generatoreic')] = data['Registered Resource EIC code'][i]
-                g_data.iloc[g_count, g_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
-                g_data.iloc[g_count, g_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
+                generator_data.iloc[g_count, generator_data.columns.get_loc('generatoreic')] = data['Registered Resource EIC code'][i]
+                generator_data.iloc[g_count, generator_data.columns.get_loc('time')] = format_time(Year, Month, Day, Period) #str(Period)
+                generator_data.iloc[g_count, generator_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 g_count += 1
     
-    p_data.to_csv('powerplanttriple.csv', index = False)
-    g_data.to_csv('generatortriple.csv', index = False)
+    powerplant_data.to_csv('powerplanttriple.csv', index = False)
+    generator_data.to_csv('generatortriple.csv', index = False)
     
-    return p_data, g_data
+    return powerplant_data, generator_data
 
 
 

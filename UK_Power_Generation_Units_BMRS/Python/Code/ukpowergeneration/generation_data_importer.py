@@ -18,7 +18,7 @@ import datetime
 import uuid
 import sys
 import traceback
-import wget
+#import wget
 import csv
 import pandas as pd
 
@@ -185,7 +185,7 @@ def get_power_data_from_api():
 
     # Get current UK timezone to properly convert reported local times into UTC
     # (i.e. account for daylight saving time)
-    tz = pytz.timezone('Europe/London')
+    #tz = pytz.timezone('Europe/London')
     #####DO THIS LATER#####
 
     print("Querying API")
@@ -200,8 +200,11 @@ def get_power_data_from_api():
     #Period = 24 #Note this doesn't matter if Search is 2, as it goes from 1 - 48 regardless. 
     #Search = 2 #This script have multiple run options, for a day we want '2'. 
 
-    Key = '' #####NEED THIS#####
-    powerplant_df, generator_df = bmrs.Auto_Call(Key)
+    #####BACK LATER#####
+    #Key = '' #####NEED THIS#####
+    #powerplant_df, generator_df = bmrs.Auto_Call(Key)
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('Input-Template.csv')
+    #####BACK LATER#####
 
     # 2D array of data (triples [generatorName, time, power])
     #data = []
@@ -256,6 +259,9 @@ def get_power_data_from_api():
     # Capitalise generator names (for consistent comparisons by name)
     df['generator'] = df['generator'].str.upper()
     '''
+    print("PowerPlant DataFrame:")
+    print(powerplant_df)
+    
     return powerplant_df, generator_df
 
 
