@@ -19,12 +19,6 @@ else:
     from .AgentUtil.util.Lookup import find_nearest_match
     from .location import JPS_DICT_DIR
 
-dictionary = {}
-mappings = open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\Agent_Query\cc.txt').readlines()[1:]
-for m in mappings:
-    old, new = m.split(',')
-    dictionary[old.strip()] = new.strip()
-
 
 def find_ontocompchem_IRI(ontospecies_iri):
 
@@ -147,12 +141,6 @@ class ThermoAgent:
         print('all_ontospecies_iri', ontospecies_iri_list)
 
         for ontospecies_iri in ontospecies_iri_list:
-            print('ontospecies_iri', ontospecies_iri)
-            if ontospecies_iri in dictionary:
-                ontospecies_iri = dictionary[ontospecies_iri]
-            else:
-                print('not in the dictionary', ontospecies_iri)
-
             ontocompchem_iri_list = find_ontocompchem_IRI(ontospecies_iri)
             if len(ontocompchem_iri_list) == 0:
                 MarieError('No ontocompchem iri found for this species {}'.format(species))
