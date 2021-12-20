@@ -193,27 +193,6 @@ public class DerivationClient {
     	}
     	this.sparqlClient.updateTimestamps(timestamp_map);
     }
-    
-    /**
-	 * makes sure the given instance is up-to-date by comparing its timestamp to all of its inputs
-	 * the input, derivedIRI, should have an rdf:type DerivedQuantity or DerivedQuantityWithTimeSeries
-	 * @param kbClient
-	 * @param derivedIRI
-	 */
-    @Deprecated
-	public void updateDerivation(String derivedIRI) {
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
-		// cached data of all derivations
-		List<Derivation> derivations = this.sparqlClient.getDerivations(); 
-		Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
-		try {
-			updateDerivation(derivation, graph);
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
-		}
-	}
 	
 	/**
 	 * This method checks and makes sure the derived instance is up-to-date by comparing the timestamp
