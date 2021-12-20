@@ -106,3 +106,5 @@ JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
 JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_URI_DICT
 JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
 JPS_Chatbot/jps-chatbot/UI/source/JPS_Query/models/nlu/component_6_EmbeddingIntentClassifier.entity_tag_specs.json
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ONTOSPECIES_IDENDITIFERS_QUERY_RESULT
+JPS_Chatbot/jps-chatbot/UI/source/OntoSpeciesLog
