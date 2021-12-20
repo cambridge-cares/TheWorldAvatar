@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -114,11 +115,12 @@ public class DerivedQuantitySparqlTest {
 	}
 	
 	@Test
-	public void testGetDerivedIRI() {
+	public void testGetDerivationsOf() {
 		String derivedIRI = devClient.createDerivation(entities, derivedAgentIRI, derivedAgentURL, inputs);
 		
+		Map<String,String> derivationsOf = devClient.getDerivationsOf(entities);
 		for (String entity : entities) {
-			Assert.assertEquals(derivedIRI, devClient.getDerivedIRI(entity));
+			Assert.assertEquals(derivedIRI, derivationsOf.get(entity));
 		}
 	}
 	
