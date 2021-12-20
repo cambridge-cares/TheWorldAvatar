@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -228,7 +231,6 @@ public class DerivationClient {
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
-	@Deprecated
 	public void updateDerivations(List<String> derivedIRIs) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -238,6 +240,7 @@ public class DerivationClient {
 				Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
 				updateDerivation(derivation, graph);
 			}
+			updateTimestamps(derivations);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -265,6 +268,7 @@ public class DerivationClient {
 			for (Derivation derivation : topNodes) {
 				updateDerivation(derivation, graph);
 			}
+			updateTimestamps(derivations);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -683,11 +687,23 @@ public class DerivationClient {
 					}
 				}
 				// if there are no errors, assume update is successful
-				long newTimestamp = this.sparqlClient.updateTimeStamp(derivation.getIri());
+				long newTimestamp = Instant.now().getEpochSecond();
 				derivation.setTimestamp(newTimestamp);
-				LOGGER.info("Updated timestamp of <" + derivation.getIri() + ">");
+				derivation.setUpdateStatus(true);
 			}
 		}
+	}
+	
+	private void updateTimestamps(List<Derivation> derivations) {
+		Map<String, Long> derivationTime_map = new HashMap<>();
+		for (Derivation derivation : derivations) {
+			if (derivation.getUpdateStatus()) {
+				derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+			}
+		}
+		
+		this.sparqlClient.updateTimestamps(derivationTime_map);
+		LOGGER.info("Updated timestamps of derivations");
 	}
 	
 	private void validateDerivation(Derivation derivation, DirectedAcyclicGraph<String,DefaultEdge> graph) {

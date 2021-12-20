@@ -1512,6 +1512,53 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 	
+	void updateTimestamps(Map<String,Long> derivationTimestamp_map) {
+		List<String> derivations = new ArrayList<>(derivationTimestamp_map.keySet());
+		
+		// query 1: get corresponding time IRI for each derivation
+		SelectQuery query = Queries.SELECT();
+		Variable derivation = query.var();
+		ValuesPattern derValuesPattern = new ValuesPattern(derivation, derivations.stream().map(d -> iri(d)).collect(Collectors.toList()));
+				
+		Variable time_unix = query.var();
+		
+		GraphPattern gp1 = derivation.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
+		
+		query.select(derivation,time_unix).where(gp1,derValuesPattern).prefix(p_time);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String, String> derivation_timeiri_map = new HashMap<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			derivation_timeiri_map.put(
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(time_unix.getQueryString().substring(1)));
+		}
+		
+		// query 2: update query, delete and insert appropriate triples
+		ModifyQuery modify = Queries.MODIFY();
+		
+		Variable timestamp = query.var();
+		
+		TriplePattern[] insert_tp = new TriplePattern[derivations.size()];
+		List<Iri> timeIRIList = new ArrayList<>();
+		
+		for (int i = 0; i < derivations.size(); i++) {
+			String der = derivations.get(i);
+			Iri timeIRI = iri(derivation_timeiri_map.get(der));
+			insert_tp[i] = timeIRI.has(numericPosition, derivationTimestamp_map.get(der));
+			timeIRIList.add(timeIRI);
+		}
+		
+		TriplePattern delete_tp = time_unix.has(numericPosition, timestamp);
+		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix, timeIRIList);
+		
+		modify.delete(delete_tp).where(timeValuesPattern,delete_tp).insert(insert_tp).prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
 	/**
 	 * This method chunks the given iri and returns its namespace. 
 	 * @param iri
