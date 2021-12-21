@@ -8,7 +8,7 @@ import os
 import uuid 
 import glob
  
-pipelines = pd.read_csv(r'pipeline_split.csv').to_numpy()[:,:]
+pipelines = pd.read_csv(r'https://www.dropbox.com/s/fbi77hz3316dadv/pipeline_split.csv?dl=1').to_numpy()[:,:]
 
 abox_header = np.array([['Source','Type','Target','Relation','Value']]) 
 abox_full = np.array([['Source','Type','Target','Relation','Value']])
