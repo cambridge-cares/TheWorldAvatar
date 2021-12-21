@@ -21,12 +21,11 @@ import traceback
 import wget
 import csv
 import pandas as pd
-import kg_utils as kg
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
-from gasgridagent.jpsSingletons import jpsBaseLibView
+from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils module
-import gasgridagent.kg_utils as kg
+import kg_utils as kg
 
 
 def instantiate_terminal(query_endpoint, update_endpoint, terminal_name):
@@ -191,7 +190,7 @@ def get_flow_data_from_csv():
                 data.append([terminalName, dateTimeStr, flowValue])
 
     print("Finished reading flow data CSV, removing file...\n")
-    os.remove(filename)
+    # os.remove(filename)
 
     # Create DataFrame
     df = pd.DataFrame(data, columns=['terminal', 'time (utc)', 'flowrate (m3/s)'])

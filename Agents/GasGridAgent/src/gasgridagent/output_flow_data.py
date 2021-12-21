@@ -13,9 +13,9 @@ import shutil
 from datetime import datetime as dt
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
-from gasgridagent.jpsSingletons import jpsBaseLibView
+from jpsSingletons import jpsBaseLibView
 # get settings and functions from kg_utils module
-import gasgridagent.kg_utils as kg
+import kg_utils as kg
 
 
 def get_gasflow_history(duration, callbackSuccess, callbackFailure):

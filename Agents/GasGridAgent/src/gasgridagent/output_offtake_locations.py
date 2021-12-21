@@ -27,10 +27,10 @@ from tqdm import tqdm
 from datetime import datetime as dt
 
 # Get the jpsBaseLibGateWay instance from the jpsSingletons module
-from gasgridagent.jpsSingletons import jpsBaseLibView
+from jpsSingletons import jpsBaseLibView
 
 # Get settings and functions from kg_utils module
-import gasgridagent.kg_utils as kg
+import kg_utils as kg
 
 # SPARQL Query string
 QUERY = """

@@ -10,7 +10,7 @@ from pathlib import Path
 from configobj import ConfigObj
 
 # get the JVM module view (via jpsBaseLibGateWay instance) from the jpsSingletons module
-from gasgridagent.jpsSingletons import jpsBaseLibView
+from jpsSingletons import jpsBaseLibView
 
 
 # Define location of properties file (with Triple Store and RDB settings)
@@ -45,10 +45,43 @@ def read_properties_file(filepath):
     """
 
     # Define global scope for global variables
-    global OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY, DB_URL, DB_USER, DB_PASSWORD
+    global INPUT_DIR, OUTPUT_DIR, QUERY_ENDPOINT, UPDATE_ENDPOINT, MAPBOX_APIKEY, DB_URL, DB_USER, DB_PASSWORD
+    global INPUT_TERMINAL_FILE, INPUT_OFFTAKE_FILE, INPUT_PIPE_FILE
 	
     # Read properties file
     props = ConfigObj(filepath)
+
+    # Read input directory for JSON and CSV files containing source data about terminals, offtakes and pipes
+    try:
+        INPUT_DIR = props['input.directory']
+    except KeyError:
+        raise KeyError('Key "input.directory" is missing in properties file: ' + filepath)
+    if INPUT_DIR == '':
+        raise KeyError('No "input.directory" value has been provided in properties file: ' + filepath)
+
+    # Read input terminal CSV file to create name, location and type of terminals in the knowledge graph (KG)
+    try:
+        INPUT_TERMINAL_FILE = props['input.terminal.file']
+    except KeyError:
+        raise KeyError('Key "input.terminal.file" is missing in properties file: ' + filepath)
+    if INPUT_TERMINAL_FILE == '':
+        raise KeyError('No "input.terminal.file" value has been provided in properties file: ' + filepath)
+
+    # Read input offtake CSV file to create name, location and type of offtakes in the knowledge graph (KG)
+    try:
+        INPUT_OFFTAKE_FILE = props['input.offtake.file']
+    except KeyError:
+        raise KeyError('Key "input.offtake.file" is missing in properties file: ' + filepath)
+    if INPUT_OFFTAKE_FILE == '':
+        raise KeyError('No "input.offtake.file" value has been provided in properties file: ' + filepath)
+
+    # Read input pipe JSON file to create geometry of pipes in the knowledge graph (KG)
+    try:
+        INPUT_PIPE_FILE = props['input.pipe.file']
+    except KeyError:
+        raise KeyError('Key "input.pipe.file" is missing in properties file: ' + filepath)
+    if INPUT_PIPE_FILE == '':
+        raise KeyError('No "input.pipe.file" value has been provided in properties file: ' + filepath)
 
     # Read output directory for JSON file containing retrieved time series data from KG
     try:
@@ -268,7 +301,6 @@ def get_instantiated_terminals(endpoint):
         res[r[var2]] = r[var1]
 
     return res
-
 
 def get_instantiated_gas_amounts(endpoint):
     """
