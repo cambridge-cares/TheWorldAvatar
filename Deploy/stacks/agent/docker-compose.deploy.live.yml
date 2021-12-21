@@ -22,11 +22,6 @@ services:
   gas-grid-agent:
     ports:
       - 40081:80
-      
-  # Flood Agent
-  flood-agent:
-    ports:
-      - 40082:80
 
   # JPS Chatbot
   jps-chatbot:

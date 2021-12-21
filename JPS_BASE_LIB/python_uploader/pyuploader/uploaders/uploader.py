@@ -1,7 +1,7 @@
 import pyuploader.common.utils as utils
 import pyuploader.common.logconfig as logconfig
 import pyuploader.errorhandling.appexceptions as appexcept
-from typing import Callable, Dict, Tuple, Union
+from typing import Callable, Dict, Tuple, Optional
 import pathlib
 import logging
 import textwrap
@@ -18,8 +18,8 @@ class Uploader:
         upload_file_func: Callable,
         uploader_name: str = 'uploader',
         supported_file_ext: str = 'all',
-        default_url: Union[str, None] = None,
-        default_auth_file: Union[str, None] = None,
+        default_url: Optional[str] = None,
+        default_auth_file: Optional[str] = None,
         default_no_auth: bool = False):
 
         self.upload_file_func = upload_file_func
@@ -47,8 +47,8 @@ class Uploader:
         return self.env_vars[BASE_AUTH_ENV_VAR_KEY]
 
     def set_logging(self,
-        log_file_dir: Union[str, None] = None,
-        log_file_name: Union[str, None]= None,
+        log_file_dir: Optional[str] = None,
+        log_file_name: Optional[str]= None,
         no_file_logging: bool = False):
 
         if log_file_name is None:
@@ -62,11 +62,11 @@ class Uploader:
     def upload(self,
         file_ext: str,
         file_or_dir: str,
-        url: Union[str, None] = None,
-        auth_file: Union[str, None] = None,
-        no_auth: Union[bool,None] = None,
+        url: Optional[str] = None,
+        auth_file: Optional[str] = None,
+        no_auth: Optional[bool] = None,
         dry_run: bool = False,
-        subdirs: Union[str, None]=None,
+        subdirs: Optional[str]=None,
         *args, **kwargs) -> Dict[str,str]:
 
         if dry_run:
@@ -127,7 +127,7 @@ class Uploader:
         url: str,
         auth: Tuple[str,str],
         file_path: str,
-        subdirs: Union[str,None]=None,
+        subdirs: Optional[str]=None,
         *args, **kwargs) -> str:
         location = self.upload_file_func(url, auth, file_path, subdirs, *args, **kwargs)
         return location
@@ -143,7 +143,7 @@ class Uploader:
         return url
 
     def _get_auth(self,
-            auth_file: Union[str,None]) -> Tuple[str,str]:
+            auth_file: Optional[str]) -> Tuple[str,str]:
 
         if auth_file is None:
             logger.info(f"Reading the {self.uploader_name} secrets file path from environment variables.")

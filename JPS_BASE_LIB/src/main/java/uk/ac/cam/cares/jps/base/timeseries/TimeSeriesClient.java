@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.timeseries;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.json.JSONArray;
@@ -519,7 +520,7 @@ public class TimeSeriesClient<T> {
 	 * @return
 	 */
 	public JSONArray convertToJSON(List<TimeSeries<T>> ts_list, List<Integer> id,
-			List<List<String>> units, List<List<String>> table_header) {
+			List<Map<String,String>> units_map, List<Map<String, String>> table_header_map) {
 		JSONArray ts_array = new JSONArray();
 		
 		for (int i = 0; i < ts_list.size(); i++) {
@@ -542,13 +543,21 @@ public class TimeSeriesClient<T> {
 			}
 			
 			// for table headers
-			if (table_header != null) {
-				ts_jo.put("data", table_header.get(i));
+			if (table_header_map != null) {
+				List<String> table_header = new ArrayList<>();
+				for (String dataIRI : dataIRIs) {
+					table_header.add(table_header_map.get(i).get(dataIRI));
+				}
+				ts_jo.put("data", table_header);
 			} else {
-				ts_jo.put("data", ts.getDataIRIs());
+				ts_jo.put("data", dataIRIs);
 			}
 	    	
-	    	ts_jo.put("units", units.get(i));
+			List<String> units = new ArrayList<>();
+			for (String dataIRI : dataIRIs) {
+				units.add(units_map.get(i).get(dataIRI));
+			}
+	    	ts_jo.put("units", units);
 	    	
 	    	// time column
 	    	ts_jo.put("time", ts.getTimes());
