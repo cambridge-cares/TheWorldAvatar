@@ -99,53 +99,24 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
 
         cross_validation = params_training['cross_validation']
         prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-        #TODO-AE 211218 changed train test split without ratio
-        if False:
-            logging.info('training classifier for similarity vectors for combinations of train_size=%s, ratio=%s', m_train_size, nm_ratio)
 
-            for train_size in m_train_size:
-                for ratio in nm_ratio:
-                    #TODO-AE 211123: just a few matches might not be contained in df_scores
-                    # thus we skip them here, since there are just a few, training XGB would not improve much if they are considered
-                    # but then we have to calculate their similarity vectors
-                    logging.info('selecting training samples for train_size=%s, ratio=%s', train_size, ratio)
-                    intersection = index_set_matches.intersection(df_scores.index)
-                    len_diff = len(index_set_matches) - len(intersection)
-                    logging.info('evaluation file=%s, intersection with scores=%s, diff=%s', len(index_set_matches), len(intersection), len_diff)
-                    df_matches = df_scores.loc[intersection]
-                    x_train, y_train, x_test, y_test = ontomatch.utils.util.generate_train_test_sets_due_to_ratio(
-                        df_matches, df_scores, train_size, ratio, prop_columns=prop_columns)
-
-                    column_name = 'ml_phase_' + str(train_size) + '_' + str(ratio)
-                    # reuse df_scores for storing train-test-split
-                    df_scores[column_name] = 'test'
-                    df_scores.at[x_train.index, column_name] = 'train'
-                    #TODO-AE 211127 add train / test split and
-
-                    logging.info('training classifier for train_size=%s, ratio=%s', train_size, ratio)
-                    self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
-                            x_train, y_train, x_test, y_test, df_scores, prop_columns)
-
-                    if params_post_processing:
-                        postprocess(params_post_processing, self, minus_train_set=x_train)
+        m_train_size = params_training['match_train_size']
+        train_file = params_training.get('train_file')
+        logging.info('training classifier for train_size=%s, train_file=%s', m_train_size, train_file)
+        prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
+        if train_file:
+            df_split = ontomatch.utils.util.read_csv(train_file)
+            split_column = 'ml_phase_' + str(m_train_size)
+            x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, columns_x=prop_columns, column_ml_phase=split_column)
         else:
-            m_train_size = params_training['match_train_size']
-            train_file = params_training.get('train_file')
-            logging.info('training classifier for train_size=%s, train_file=%s', m_train_size, train_file)
-            prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-            if train_file:
-                df_split = ontomatch.utils.util.read_csv(train_file)
-                split_column = 'ml_phase_' + str(m_train_size)
-                x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, columns_x=prop_columns, column_ml_phase=split_column)
-            else:
-                _, x_train, x_test, y_train, y_test = ontomatch.utils.util.train_test_split(
-                        df_scores, index_set_matches, train_size=m_train_size, columns_x=prop_columns)
+            _, x_train, x_test, y_train, y_test = ontomatch.utils.util.train_test_split(
+                    df_scores, index_set_matches, train_size=m_train_size, columns_x=prop_columns)
 
-            self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
-                    x_train, y_train, x_test, y_test, df_scores, prop_columns)
+        self.score_manager.df_scores = ontomatch.hpo.start(params_classification, cross_validation, params_impution,
+                x_train, y_train, x_test, y_test, df_scores, prop_columns)
 
-            if params_post_processing:
-                postprocess(params_post_processing, self, minus_train_set=x_train)
+        if params_post_processing:
+            postprocess(params_post_processing, self, minus_train_set=x_train)
 
         dump = params_post_processing.get('dump')
         if dump:
@@ -165,9 +136,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         self.df_total_best_scores_2 = None
 
     def get_scores(self):
-        #TODO-AE URGENT 211218
-        #return self.df_total_best_scores
-        logging.debug('MY called get_scores')
         return self.df_total_scores
 
     def get_total_best_scores_1(self):
@@ -229,7 +197,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             self.df_total_scores.at[self.df_total_best_scores.index, 'score'] = self.df_total_best_scores
 
         mask = ~(self.df_total_scores['best'])
-        # TODO-AE 211218 set score to 0 or -1
         self.df_total_scores.at[mask, 'score'] = 0
         logging.debug('number of best=%s, nonbest=%s', len(self.df_total_scores[self.df_total_scores['score'] >=0]), len(self.df_total_scores[self.df_total_scores['score'] < 0]))
 
@@ -364,9 +331,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         rows = []
         for idx, _ in tqdm(df_max_scores.iterrows()):
             idx_1 = idx[0]
-            #TODO-AE URGENT
-            #  skip_column_number = 1
-            #TODO-AE 211102 URGENT restaurant, for phone prop only, set skip_column_number = 0
             skip_column_number = 0
             total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = skip_column_number)
             rows.extend(total_score_rows)
@@ -455,7 +419,7 @@ def add_total_scores(df_scores, props, scoring_weights=None, missing_score=None,
     for i, row in df_scores.iterrows():
         total_score = get_total_score_for_row(row[props], scoring_weights, missing_score, aggregation_mode, average_min_prop_count)
         if total_score is None or np.isnan(total_score):
-            logging.info('MY OOPS 2')
+            logging.error('total_score is missing, index=%s, row=%s', i, row)
         df_scores.at[i, 'score'] = total_score
 
 def get_total_score_for_row(prop_scores, scoring_weights=None, missing_score=None, aggregation_mode='sum', average_min_prop_count=2):
@@ -516,29 +480,18 @@ def postprocess(params_post_processing, matcher, minus_train_set=None):
     index_matches_FN = index_matches.difference(df_scores.index)
     logging.info('starting evaluation for matches=%s, df_scores=%s, matches FN=%s', len(index_matches), len(df_scores), len(index_matches_FN))
 
+    # TODO-AE 211218 move the following evaluation code to evaluate.py
     if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
-
-        # TODO-AE 211218 move evaluation to evaluate.py
-        # TODO-AE 211218 TEMP
-        '''
-        df_scores = matcher.get_total_best_scores_1()
-        if df_scores is not None:
-            logging.info('asym 1 --> 2, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
-            ontomatch.evaluate.evaluate(df_scores, index_set_matches)
-        df_scores = matcher.get_total_best_scores_2()
-        if df_scores is not None:
-            logging.info('asym 2 --> 1, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_set_matches), len(df_scores))
-            ontomatch.evaluate.evaluate(df_scores, index_set_matches)
-        '''
 
         test_file = params_post_processing.get('test_file')
         logging.info('test_file=%s', test_file)
         if test_file:
             df_split = ontomatch.utils.util.read_csv(test_file)
+            prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
             for c in df_split.columns:
                 c = str(c)
                 if c.startswith('ml_phase'):
-                    x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, column_ml_phase=c)
+                    x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
                     if (x_train is not None) and (len(x_train) > 0):
                         df_scores_tmp = df_scores.loc[x_train.index]
                         # TODO-AE 211218 without FN outside candidate set?

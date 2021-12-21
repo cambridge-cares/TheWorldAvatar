@@ -251,15 +251,17 @@ def train_test_split(df_candidate_pairs, index_matches, train_size, columns_x, c
     if column_ml_phase:
         df_candidate_pairs[column_ml_phase] = 'test'
     if train_size == 0:
-        x_train = None
+        x_train = []
         x_test = df_candidate_pairs[columns_x].copy()
-        y_train = None
+        y_train = []
         y_test =df_y
     else:
         df_cp = df_candidate_pairs[columns_x].copy()
         x_train, x_test, y_train, y_test = sklearn.model_selection.train_test_split(df_cp, df_y, train_size=train_size, shuffle=True, stratify=df_y)
         if column_ml_phase:
             df_candidate_pairs.at[x_train.index, column_ml_phase] = 'train'
+
+    logging.info('split into x_train=%s, x_test=%s, y_train=%s, y_test=%s', len(x_train), len(x_test), len(y_train), len(y_test))
 
     return df_candidate_pairs, x_train, x_test, y_train, y_test
 

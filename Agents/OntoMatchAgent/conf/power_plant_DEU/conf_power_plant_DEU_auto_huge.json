@@ -1,0 +1,63 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/power_plant_DEU/kwl.pkl",
+	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 200,
+		"max_token_occurrences_tgt": 200,
+		"blocking_properties": ["name", "isOwnedBy/hasName", "address/addressLocality"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 3},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 100},
+		{"name": "dist_cosine_binary", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "hasYearOfBuilt/hasValue/numericalValue", "prop2": "hasYearOfBuilt/hasValue/numericalValue", "sim": 0, "pos": 0},
+		{"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 1, "pos": 1},
+		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 2, "pos": 2},
+		{"prop1": "name", "prop2": "name", "sim": 3, "pos": 3},
+		{"prop1": "name", "prop2": "name", "sim": 4, "pos": 4},
+		{"prop1": "name", "prop2": "name", "sim": 5, "pos": 5},
+		{"prop1": "name", "prop2": "name", "sim": 6, "pos": 6},
+		{"prop1": "name", "prop2": "name", "sim": 7, "pos": 7},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 3, "pos": 8},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4, "pos": 9},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 5, "pos": 10},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 6, "pos": 11},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 7, "pos": 12}
+	],
+	"similarity_file": "./sim_vectors_kg/sim_vectors_kg.csv"
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"symmetric": true,
+		"delta": 0.025
+	}
+},
+"post_processing":{
+	"dump": "./scores",
+	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
+}
+}

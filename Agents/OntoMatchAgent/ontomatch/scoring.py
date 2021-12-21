@@ -279,11 +279,11 @@ class ScoreManager():
                 df_diff = self.calculate_similarities_between_datasets_for_pairs(candidate_pairs=index_diff)
                 df_scores_tmp = pd.concat([df_intersection, df_diff])
                 df_all = pd.concat([df_loaded, df_diff])
-                logging.info('number of similarity vectors, new=%s, df_scores=%s, all=%s', len(df_diff), len(df_scores_tmp), len(df_all))
+                logging.info('number of similarity vectors, all=%s, new=%s, df_scores=%s', len(df_all), len(df_diff), len(df_scores_tmp))
                 self.save_similarity_vectors(df_all, self.similarity_file)
             else:
                 df_scores_tmp = df_intersection.copy()
-                logging.info('no new similarity vectors, df_scores=%s, all=%s', len(df_scores_tmp), len(df_loaded))
+                logging.info('no new similarity vectors, all=%s, df_scores=%s', len(df_loaded), len(df_scores_tmp))
                 columns = self.get_column_names()
                 df_scores_tmp = df_scores_tmp[columns]
 
@@ -496,10 +496,6 @@ def compare_strings_with_tfidf(s1, s2, n_max_idf, df_index_tokens, log=True):
 
     tokens1 = ontomatch.blocking.tokenize(s1)
     tokens2 = ontomatch.blocking.tokenize(s2)
-
-    # TODO-AE move this to index token generation (which solves also problems such as pant-y-..., bigrams), also very inefficient here
-    # this is only a hack: it is not symmetric (e.g. with respect to 'count_1' instead of 'count_2' -> None ...!
-    # consider edit distance == 1 between tokens
 
     for t1 in tokens1.copy():
         for t2 in tokens2:

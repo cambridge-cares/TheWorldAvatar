@@ -1,5 +1,7 @@
 import logging
+import time
 
+import pandas as pd
 import sklearn
 import sklearn.ensemble
 import sklearn.impute
@@ -83,19 +85,27 @@ def start_hpo(params_classification, cross_validation, params_impution, x_train,
     logging.info('params_hpo=%s', params_hpo)
 
     scoring = 'f1'
-    hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3, scoring=scoring)
+    # you can set return_train_score to False and remove dumping cv_results_ below
+    # if you are not going to analyse HPO params
+    return_train_score=True
+    hpo_model = sklearn.model_selection.GridSearchCV(model, param_grid=params_hpo, cv = cross_validation, verbose=3, scoring=scoring, return_train_score=return_train_score)
     logging.info('training model with name=%s', name)
     hpo_model.fit(x_train, y_train)
     logging.info('trained model=%s', hpo_model)
     # for each grid point and for each of the k(=5) folds, compute the score, i.e. evaluate the trained classifier wrt to the metric choosen for param scoring above
     # for each grid point, the score is the average score over the scores of all k folds
     # the best score is the highest average
-    logging.info('best_score=%s, best_params=%s', hpo_model.best_score_, hpo_model.best_params_)
+    logging.info('best_score (split test average over k folds)=%s, best_params=%s', hpo_model.best_score_, hpo_model.best_params_)
+
+    df_cv_results = pd.DataFrame(hpo_model.cv_results_)
+    df_cv_results.to_csv('./cv_result_' + str(time.time()) + '.csv')
 
     score = hpo_model.score(x_train, y_train)
-    logging.info('score on entire training set=%s, len=%s', score, len(x_train))
+    logging.info('(score on entire training set=%s, len=%s)', score, len(x_train))
     if x_test is not None:
         score = hpo_model.score(x_test, y_test)
+        # if test score is close to best_score then no overfitting
+        # don't compare it with the score on the entire training set
         logging.info('score on entire test set=%s, len=%s', score, len(x_test))
 
     return hpo_model

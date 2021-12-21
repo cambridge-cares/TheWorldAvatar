@@ -74,7 +74,7 @@ class TokenBasedPairIterator(collections.Iterable, collections.Sized):
 
         # create the index only once
         if (TokenBasedPairIterator.candidate_matching_pairs is None) or reset_index:
-            logging.info('creating index')
+            logging.info('creating index, mtf_src=%s, mtf_tgt=%s', max_token_occurrences_src, max_token_occurrences_tgt)
             # create the index as pandas DataFrame with additional information about length of tokens
             # and number of entities related to a given token
             df_index, df_src, df_tgt = self._create_index(dframe_src, dframe_tgt, blocking_properties)
@@ -201,10 +201,10 @@ def tokenize(s:str) -> List[str]:
         return s.split(' ')
     return []
 
-def create_iterator(src_onto:Union[pd.DataFrame, Ontology], tgt_onto:Union[pd.DataFrame,Ontology], params:dict, use_position:bool =False):
-    params_copy = params.copy()
+def create_iterator(src_onto:Union[pd.DataFrame, Ontology], tgt_onto:Union[pd.DataFrame,Ontology], params_blocking:dict, use_position:bool =False):
+    params_copy = params_blocking.copy()
     name = params_copy.pop('name')
-    params_model_specific = params.get('model_specific')
+    params_model_specific = params_blocking.get('model_specific')
     if not params_model_specific:
         params_model_specific = {}
     if name == 'TokenBasedPairIterator':
