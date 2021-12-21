@@ -193,6 +193,10 @@ public class DerivationClient {
     	}
     	this.sparqlClient.updateTimestamps(timestamp_map);
     }
+    
+    public void updateTimestamp(String entity) {
+    	updateTimestamps(Arrays.asList(entity));
+    }
 	
 	/**
 	 * This method checks and makes sure the derived instance is up-to-date by comparing the timestamp
