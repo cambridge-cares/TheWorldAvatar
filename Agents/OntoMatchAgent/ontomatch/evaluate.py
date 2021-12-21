@@ -108,11 +108,15 @@ def calculate_precision_recall(predicted_matches, matches):
 def get_max_f1score(result):
     max_f1score = 0.
     max_t = 0
+    precision = 0.
+    recall = 0.
     for r in result:
         if r[6] >= max_f1score:
             max_f1score = r[6]
             max_t = r[0]
-    return max_t, max_f1score
+            precision = r[1]
+            recall = r[2]
+    return max_t, max_f1score, precision, recall
 
 def get_area_under_curve(result):
     area_under_curve = 0.
@@ -127,14 +131,13 @@ def get_area_under_curve(result):
 
     return area_under_curve
 
-def log_result(result):
-    max_t, max_f1score = get_max_f1score(result)
-    logging.info('max f1-score=%s for threshold t=%s', max_f1score, max_t)
+def log_result(result, hint='evaluation result'):
+    max_t, max_f1score, precision, recall = get_max_f1score(result)
     area_under_curve = get_area_under_curve(result)
-    logging.info('area under curve=%s', area_under_curve)
-    logging.info('evaluation result (threshold, precision, recall, TP, FP, FN, f1score):\n%s', result)
+    logging.info('%s: max f1=%s for t=%s, p=%s, r=%s, area under curve=%s', hint, max_f1score, max_t, precision, recall, area_under_curve)
+    logging.info('threshold, precision, recall, TP, FP, FN, f1score:\n%s', result)
 
-def evaluate(df_scores, matches, number_of_thresholds=41):
+def evaluate(df_scores, index_matches, number_of_thresholds=41, hint='evaluation result'):
 
     result = []
     thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
@@ -142,9 +145,34 @@ def evaluate(df_scores, matches, number_of_thresholds=41):
         mask = (df_scores['score'] >= t)
         predicted_matches =  df_scores[mask].index
         true_matches, false_matches, false_nonmatches, precision, recall, f1score = calculate_precision_recall(
-            predicted_matches, matches)
+            predicted_matches, index_matches)
         entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches), f1score]
         result.append(entry)
 
-    log_result(result)
+    log_result(result, hint)
     return result
+
+def evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint:str):
+
+    index_matches_fn = index_matches.difference(df_scores.index)
+    len_train_set = len(index_train_set) if index_train_set is not None else 0
+    len_test_set = len(index_test_set) if index_test_set is not None else 0
+    logging.info('evaluation result for scores=%s, train_set=%s, test_set=%s, all matches=%s, FN=%s',
+        len(df_scores), len_train_set, len_test_set, len(index_matches), len(index_matches_fn))
+    if len_train_set > 0:
+        df_scores_tmp = df_scores.loc[index_train_set]
+        hint_long = 'evaluation result on training set minus FN, ' + hint
+        index_matches_minus_fn = index_matches.intersection(index_train_set)
+        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long)
+        hint_long = 'evaluation result on training set incl. FN, ' + hint
+        index_matches_incl_fn = index_matches_minus_fn.union(index_matches_fn)
+        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long)
+
+    if len_test_set > 0:
+        df_scores_tmp = df_scores.loc[index_test_set]
+        hint_long = 'evaluation result on test set minus FN, ' + hint
+        index_matches_minus_fn = index_matches.intersection(index_test_set)
+        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long)
+        hint_long = 'evaluation result on test set incl. FN, ' + hint
+        index_matches_incl_fn = index_matches_minus_fn.union(index_matches_fn)
+        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long)
