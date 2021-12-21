@@ -1298,6 +1298,18 @@ public class DerivationSparql{
 		Variable inputTimestamp = query.var();
 		Variable derivationType = query.var();
 		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] entityTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityTypeFilters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
+		}
+		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] inputTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			inputTypeFilters[j] = Expressions.notEquals(inputType, classesToIgnore.get(j));
+		}
+		
 		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
 				.andHas(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), agentURL)
 				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
@@ -1305,8 +1317,8 @@ public class DerivationSparql{
 		GraphPattern entityPattern = entity.has(belongsTo, derivation);
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
-		GraphPattern inputTypePattern = input.isA(inputType).optional();
-		GraphPattern entityTypePattern = entity.isA(entityType).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
+		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
 		
 		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType,inputType,entityType)
 		.where(derivationPattern,entityPattern,inputTimestampPattern,inputTypePattern,entityTypePattern)
