@@ -5,10 +5,22 @@
 import configparser
 
 config = configparser.RawConfigParser()
-config.read('./conf/KG.properties')
+config.read('./conf/uploader.properties')
 
-def getSPARQLUpdateEndpoint():
-    return config.get('SPARQLEndpoint', 'sparql.update.endpoint')
+def getTripleStoreURL():
+    return config.get('TripleStore', 'triple.store.url')
+
+def getTripleStoreNamespace():
+    return config.get('TripleStore', 'triple.store.namespace')
+
+def getGridComponentABoxFilePath():
+    return config.get('OntologyFilePath', 'grid.component.file.path')
+
+def getPipelineABoxFilePath():
+    return config.get('OntologyFilePath', 'pipeline.file.path')
 
 if __name__ == '__main__':
-    print(getSPARQLUpdateEndpoint())
+    print(getTripleStoreURL())
+    print(getTripleStoreNamespace())
+    print(getGridComponentABoxFilePath())
+    print(getPipelineABoxFilePath())
