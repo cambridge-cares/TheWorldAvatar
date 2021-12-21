@@ -531,6 +531,15 @@ public class DerivationClient {
 	}
 	
 	/**
+	 * This method retrieves a list of derivation instance IRI given a list of derived quantities.
+	 * @param entities
+	 * @return
+	 */
+	public Map<String,String> getDerivationsOf(List<String> entities) {
+		return this.sparqlClient.getDerivationsOf(entities);
+	}
+	
+	/**
 	 * All private functions below
 	 */
 	
