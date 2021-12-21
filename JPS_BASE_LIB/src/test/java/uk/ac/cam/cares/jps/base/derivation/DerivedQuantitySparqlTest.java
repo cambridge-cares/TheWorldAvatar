@@ -305,4 +305,32 @@ public class DerivedQuantitySparqlTest {
 			}
 		}
 	}
+	
+	@Test
+	public void testGetDerivations() {
+		List<List<String>> entitiesList = Arrays.asList(entities, entities2);
+		List<List<String>> inputsList = Arrays.asList(inputs, inputs2);
+				
+		List<String> derivationIRIs = devClient.bulkCreateDerivations(entitiesList, agentIRIList, agentURLList, inputsList);
+		devClient.addTimeInstance(derivationIRIs);
+		
+		List<Derivation> derivations = devClient.getDerivations();
+		
+		for (int i = 0; i < derivationIRIs.size(); i++) {
+			String derivationIRI = derivationIRIs.get(i);
+			Derivation derivation = derivations.stream().filter(d -> d.getIri().contentEquals(derivationIRI)).findFirst().get();
+			
+			List<Entity> inputs = derivation.getInputs();
+			for (Entity input : inputs) {
+				Assert.assertTrue(inputsList.get(i).contains(input.getIri()));
+			}
+			
+			List<Entity> entities = derivation.getEntities();
+			for (Entity entity : entities) {
+				Assert.assertTrue(entitiesList.get(i).contains(entity.getIri()));
+			}
+			
+			Assert.assertEquals(agentURLList.get(i), derivation.getAgentURL());
+		}
+	}
 }
