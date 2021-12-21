@@ -197,7 +197,7 @@ public class DerivationClient {
     
     public void updateTimestamp(String entity) {
     	updateTimestamps(Arrays.asList(entity));
-		}
+    }
 	
 	/**
 	 * This method checks and makes sure the derived instance is up-to-date by comparing the timestamp
@@ -462,7 +462,7 @@ public class DerivationClient {
 	}
 	
 	/**
-	 * Checks if the derivation status is "PendingUpdate".
+	 * This method retrieves the status rdf:type in the format of an enum of a given derivation instance IRI.
 	 * @param derivation
 	 * @return
 	 */
@@ -528,6 +528,15 @@ public class DerivationClient {
 	 */
 	public Map<String, StatusType> getDerivationsAndStatusType(String agentIRI) {
 		return this.sparqlClient.getDerivationsAndStatusType(agentIRI);
+	}
+	
+	/**
+	 * This method retrieves a list of derivation instance IRI given a list of derived quantities.
+	 * @param entities
+	 * @return
+	 */
+	public Map<String,String> getDerivationsOf(List<String> entities) {
+		return this.sparqlClient.getDerivationsOf(entities);
 	}
 	
 	/**
