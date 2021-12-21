@@ -1,12 +1,13 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
 OntoDerivation,TBox,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
-OntoDerivation,TBox,1.3,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoDerivation,TBox,1.4,http://www.w3.org/2002/07/owl#versionInfo,,,,,
 OntoDerivation,TBox,OntoDerivation is an ontology used to connect entities in the world avatar.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
 OntoDerivation,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
 Derivation,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 DerivationWithTimeSeries,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 DerivationAsyn,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 Status,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+PendingUpdate,Class,Status,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 Requested,Class,Status,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 InProgress,Class,Status,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
 Finished,Class,Status,IS-A,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
