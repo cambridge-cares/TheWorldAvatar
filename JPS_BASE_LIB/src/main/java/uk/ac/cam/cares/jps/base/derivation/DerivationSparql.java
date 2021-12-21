@@ -1285,6 +1285,10 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
+	/**
+	 * this is used to obtain all the derivations in the kg
+	 * @return
+	 */
 	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 		
