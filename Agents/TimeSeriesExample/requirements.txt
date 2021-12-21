@@ -1,4 +1,4 @@
-configobj
-psycopg2
-py4jps
-requests
+configobj~=5.0
+psycopg2~=2.9
+py4jps==1.0.14
+requests~=2.26

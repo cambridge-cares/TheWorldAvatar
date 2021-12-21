@@ -1014,28 +1014,6 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * returns the derived quantity instance, <instance> <derived:belongsTo> ?x
-	 * @param kbClient
-	 * @param instance
-	 * @return
-	 */
-	String getDerivedIRI(String instance) {
-		SelectQuery query = Queries.SELECT();
-		String queryKey = "derived";
-		Variable derived = SparqlBuilder.var(queryKey);
-		GraphPattern queryPattern = iri(instance).has(belongsTo, derived);
-		query.prefix(p_derived).select(derived).where(queryPattern);
-		
-		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
-		
-		if (queryResult.length() != 1) {
-			throw new JPSRuntimeException(instance + " linked with " + String.valueOf(queryResult.length()) + " derived instances");
-		}
-		
-		return queryResult.getJSONObject(0).getString(queryKey);
-	}
-	
-	/**
 	 * returns entities belonging to this derived instance, ?x <derived:belongsTo> <derivedIRI>
 	 * @param kbClient
 	 * @param derivedIRI
@@ -1451,6 +1429,10 @@ public class DerivationSparql{
 		storeClient.executeUpdate(modify.prefix(p_derived).getQueryString());
 	}
 	
+	/**
+	 * this is used to obtain all the derivations in the kg
+	 * @return
+	 */
 	List<Derivation> getDerivations() {
 		SelectQuery query = Queries.SELECT();
 		
@@ -1464,6 +1446,18 @@ public class DerivationSparql{
 		Variable inputTimestamp = query.var();
 		Variable derivationType = query.var();
 		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] entityTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			entityTypeFilters[j] = Expressions.notEquals(entityType, classesToIgnore.get(j));
+		}
+		
+		// ignore certain rdf:type (e.g. OWL.namedInvididual)
+		Expression<?>[] inputTypeFilters = new Expression<?>[classesToIgnore.size()];
+		for (int j = 0; j < classesToIgnore.size(); j++) {
+			inputTypeFilters[j] = Expressions.notEquals(inputType, classesToIgnore.get(j));
+		}
+		
 		GraphPattern derivationPattern = derivation.has(isDerivedFrom, input)
 				.andHas(PropertyPaths.path(isDerivedUsing,hasOperation,hasHttpUrl), agentURL)
 				.andHas(PropertyPaths.path(hasTime, inTimePosition, numericPosition), derivationTimestamp)
@@ -1471,8 +1465,8 @@ public class DerivationSparql{
 		GraphPattern entityPattern = entity.has(belongsTo, derivation);
 		GraphPattern inputTimestampPattern = input.has(
 				PropertyPaths.path(hasTime, inTimePosition, numericPosition), inputTimestamp).optional();
-		GraphPattern inputTypePattern = input.isA(inputType).optional();
-		GraphPattern entityTypePattern = entity.isA(entityType).optional();
+		GraphPattern inputTypePattern = input.isA(inputType).optional().filter(Expressions.and(inputTypeFilters));
+		GraphPattern entityTypePattern = entity.isA(entityType).optional().filter(Expressions.and(entityTypeFilters));
 		
 		query.select(derivation,input,entity,agentURL,derivationTimestamp,inputTimestamp,derivationType,inputType,entityType)
 		.where(derivationPattern,entityPattern,inputTimestampPattern,inputTypePattern,entityTypePattern)
@@ -1654,6 +1648,85 @@ public class DerivationSparql{
 		modify.delete(tp1,tp2,tp3).where(tp1,tp2,tp3).prefix(p_time);
 		
 		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	/**
+	 * Updates timestamps of the given instances in two stages
+	 * Query 1: get the corresponding time IRI
+	 * query 2: delete/insert appropriate triples
+	 * @param derivationTimestamp_map
+	 */
+	void updateTimestamps(Map<String,Long> instanceTimestamp_map) {
+		List<String> instances = new ArrayList<>(instanceTimestamp_map.keySet());
+		
+		// query 1: get corresponding time IRI for each instance if it exists
+		SelectQuery query = Queries.SELECT();
+		Variable inst = query.var();
+		ValuesPattern instValuesPattern = new ValuesPattern(inst, instances.stream().map(i -> iri(i)).collect(Collectors.toList()));
+				
+		Variable time_unix = query.var();
+		
+		GraphPattern gp1 = inst.has(PropertyPaths.path(hasTime, inTimePosition), time_unix);
+		
+		query.select(inst,time_unix).where(gp1,instValuesPattern).prefix(p_time);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String, String> instance_timeiri_map = new HashMap<>();
+		
+		for (int i = 0; i < queryResult.length(); i++) {
+			instance_timeiri_map.put(
+					queryResult.getJSONObject(i).getString(inst.getQueryString().substring(1)),
+					queryResult.getJSONObject(i).getString(time_unix.getQueryString().substring(1)));
+		}
+		
+		// some instances provided by the user may not exist, update list here
+		instances = new ArrayList<>(instance_timeiri_map.keySet());
+		
+		// query 2: update query, delete and insert appropriate triples
+		ModifyQuery modify = Queries.MODIFY();
+		
+		Variable timestamp = query.var();
+		
+		TriplePattern[] insert_tp = new TriplePattern[instances.size()];
+		List<Iri> timeIRIList = new ArrayList<>();
+		
+		for (int i = 0; i < instances.size(); i++) {
+			String instance  = instances.get(i);
+			Iri timeIRI = iri(instance_timeiri_map.get(instance));
+			insert_tp[i] = timeIRI.has(numericPosition, instanceTimestamp_map.get(instance));
+			timeIRIList.add(timeIRI);
+		}
+		
+		TriplePattern delete_tp = time_unix.has(numericPosition, timestamp);
+		ValuesPattern timeValuesPattern = new ValuesPattern(time_unix, timeIRIList);
+		
+		modify.delete(delete_tp).where(timeValuesPattern,delete_tp).insert(insert_tp).prefix(p_time);
+		
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+	
+	Map<String,String> getDerivationsOf(List<String> entities) {
+		SelectQuery query = Queries.SELECT();
+		Variable entity = query.var();
+		Variable derivation = query.var();
+		
+		GraphPattern queryPattern = entity.has(belongsTo, derivation);
+		ValuesPattern valuesPattern = new ValuesPattern(entity, 
+				entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		
+		query.select(entity, derivation).where(queryPattern, valuesPattern).prefix(p_derived);
+		
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		Map<String,String> entityDerivationMap = new HashMap<>();
+		for (int i = 0; i < queryResult.length(); i++) {
+			entityDerivationMap.put(
+					queryResult.getJSONObject(i).getString(entity.getQueryString().substring(1)), 
+					queryResult.getJSONObject(i).getString(derivation.getQueryString().substring(1)));
+		}
+		
+		return entityDerivationMap;
 	}
 	
 	/**

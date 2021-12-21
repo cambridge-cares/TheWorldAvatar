@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.base.derivation;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -171,40 +173,31 @@ public class DerivationClient {
     }
     
     /**
-     * you may want to use this to update an input's timestamp, the DerivationClient does not deal with inputs directly
+     * manually update the timestamps of pure inputs or derivations
+     * entity can be a derivation or a pure input
+     * @param entities
      */
-    public void updateTimestamp(String entity) {
-		if (this.sparqlClient.hasBelongsTo(entity)) {
-			String derivation = getDerivationOf(entity);
-			LOGGER.info("<" + entity + "> has a derivation instance attached, timestamp of the derivation will get updated");
-			this.sparqlClient.updateTimeStamp(derivation);
-			LOGGER.info("Updated timestamp of <" + derivation + ">");
+    public void updateTimestamps(List<String> entities) {
+    	// if the given entity is part of a derivation, update the derivation instead
+    	Map<String,String> entityDerivationMap = this.sparqlClient.getDerivationsOf(entities);
+    	Map<String,Long> timestamp_map = new HashMap<>();
+    	long currentTime = Instant.now().getEpochSecond();
+    	for (String entity : entities) {
+    		if (entityDerivationMap.containsKey(entity)) {
+    			// belongs to a derivation, update timestamp of derivation
+    			timestamp_map.put(entityDerivationMap.get(entity), currentTime);
 		} else {
-			this.sparqlClient.updateTimeStamp(entity);
-			LOGGER.info("Updated timestamp of <" + entity + ">");
+    			// assume this is a pure input, if this does not exist  
+    			// nothing should happen
+    			timestamp_map.put(entity, currentTime);
 		}
     }
+    	this.sparqlClient.updateTimestamps(timestamp_map);
+    }
     
-    /**
-	 * makes sure the given instance is up-to-date by comparing its timestamp to all of its inputs
-	 * the input, derivedIRI, should have an rdf:type DerivedQuantity or DerivedQuantityWithTimeSeries
-	 * @param kbClient
-	 * @param derivedIRI
-	 */
-    @Deprecated
-	public void updateDerivation(String derivedIRI) {
-		// the graph object makes sure that there is no circular dependency
-		DirectedAcyclicGraph<String,DefaultEdge> graph = new DirectedAcyclicGraph<String,DefaultEdge>(DefaultEdge.class);
-		// cached data of all derivations
-		List<Derivation> derivations = this.sparqlClient.getDerivations(); 
-		Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
-		try {
-			updateDerivation(derivation, graph);
-		} catch (Exception e) {
-			LOGGER.fatal(e.getMessage());
-			throw new JPSRuntimeException(e);
+    public void updateTimestamp(String entity) {
+    	updateTimestamps(Arrays.asList(entity));
 		}
-	}
 	
 	/**
 	 * This method checks and makes sure the derived instance is up-to-date by comparing the timestamp
@@ -232,7 +225,6 @@ public class DerivationClient {
 	 * @param kbClient
 	 * @param derivedIRI
 	 */
-	@Deprecated
 	public void updateDerivations(List<String> derivedIRIs) {
 		// the graph object makes sure that there is no circular dependency
 		DirectedAcyclicGraph<String, DefaultEdge> graph = new DirectedAcyclicGraph<>(DefaultEdge.class);
@@ -242,6 +234,15 @@ public class DerivationClient {
 				Derivation derivation = derivations.stream().filter(d -> d.getIri().equals(derivedIRI)).findFirst().get();
 				updateDerivation(derivation, graph);
 			}
+			
+			// update timestamps in KG
+			Map<String, Long> derivationTime_map = new HashMap<>();
+			for (Derivation derivation : derivations) {
+				if (derivation.getUpdateStatus()) {
+					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+				}
+			}
+			this.sparqlClient.updateTimestamps(derivationTime_map);
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -269,6 +270,16 @@ public class DerivationClient {
 			for (Derivation derivation : topNodes) {
 				updateDerivation(derivation, graph);
 			}
+			
+			// update timestamps in kg
+			Map<String, Long> derivationTime_map = new HashMap<>();
+			for (Derivation derivation : derivations) {
+				if (derivation.getUpdateStatus()) {
+					derivationTime_map.put(derivation.getIri(), derivation.getTimestamp());
+				}
+			}
+			this.sparqlClient.updateTimestamps(derivationTime_map);
+			
 		} catch (Exception e) {
 			LOGGER.fatal(e.getMessage());
 			throw new JPSRuntimeException(e);
@@ -448,14 +459,6 @@ public class DerivationClient {
 	 */
 	public boolean isDerivedAsynchronous(String derivation) {
 		return this.sparqlClient.isDerivedAsynchronous(derivation);
-	}
-	/**
-	 * returns the derivation instance linked to this entity
-	 * @param entity
-	 * @return
-	 */
-	public String getDerivationOf(String entity) {
-		return this.sparqlClient.getDerivedIRI(entity);
 	}
 	
 	/**
@@ -690,9 +693,9 @@ public class DerivationClient {
 					}
 				}
 				// if there are no errors, assume update is successful
-				long newTimestamp = this.sparqlClient.updateTimeStamp(derivation.getIri());
+				long newTimestamp = Instant.now().getEpochSecond();
 				derivation.setTimestamp(newTimestamp);
-				LOGGER.info("Updated timestamp of <" + derivation.getIri() + ">");
+				derivation.setUpdateStatus(true);
 			}
 		}
 	}

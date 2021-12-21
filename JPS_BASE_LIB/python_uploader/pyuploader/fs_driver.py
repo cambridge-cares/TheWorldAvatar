@@ -14,13 +14,10 @@ Usage:
                              [--dry-run]
 
 Options:
---file-ext=<ext>        List of extensions used to select files
-                        that will be uploaded to the file server.
-                        Example: --file-ext='log,txt'                       [default: log]
 --url=<url>             File server upload url. If not specified, the code
                         will try to read it from a file whose location
                         should be specified in user 'KG_FILE_SERVER_SPECS'
-                        environment variables.
+                        environment variable.
 --auth-file=<file>      File path to the file server secrets file containing
                         the user authorization string of the following form:
                         "username:password". If not specified, the code will
@@ -30,16 +27,19 @@ Options:
                         variables, only store the secrets file path.
 --no-auth               Disables reading credentials from the environment
                         variables and sending it to the file server.
+--file-ext=<ext>        List of extensions used to select files
+                        that will be uploaded to the file server.
+                        Example: --file-ext='log,txt'                       [default: log]
 --subdirs=<dir>         Optional subdirectories to be created on
                         the file server to upload your files into.
                         Example: --subdirs='dir1/dir2/'                     [default: ]
 --log-file-name=<name>  Name of the generated log file.                     [default: fs_uploader.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
-                        to the <fileOrDir> directory.
+                        to the <file_or_dir> directory.
 --no-file-logging       No logging to a file flag.
---dry-run               Run the triple store uploader tool in a dry
-                        run without uploading any triples.
+--dry-run               Run the file uploader tool in a dry
+                        run without uploading any files.
 """
 def start() -> None:
     try:

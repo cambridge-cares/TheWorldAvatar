@@ -144,14 +144,14 @@ public class DerivedQuantityClientTest{
 	}
 	
 	@Test
-	public void testUpdateTimestamp() {
+	public void testUpdateTimestamps() {
 		String namespace = "http://www.w3.org/2006/time#";
 		String devInstance = devClient.createDerivationWithTimeSeries(Arrays.asList(entity1), derivedAgentIRI, derivedAgentURL, inputs);
 		OntModel testKG = mockClient.getKnowledgeBase();
 		long oldtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
 		.getProperty(ResourceFactory.createProperty(namespace+"inTimePosition")).getResource()
 		.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();
-		devClient.updateTimestamp(devInstance);
+		devClient.updateTimestamps(Arrays.asList(entity1));
 		long newtime = testKG.getIndividual(devInstance).getProperty(ResourceFactory.createProperty(namespace+"hasTime")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace+"inTimePosition")).getResource()
 				.getProperty(ResourceFactory.createProperty(namespace+"numericPosition")).getLong();
