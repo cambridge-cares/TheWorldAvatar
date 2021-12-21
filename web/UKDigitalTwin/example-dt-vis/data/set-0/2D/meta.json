@@ -1,0 +1,25 @@
+{
+    "dataSets": [
+        {
+            "name": "roofs",
+            "dataType": "geojson",
+            "dataLocation": "roofs.geojson",
+            "locationType": "fill",
+            "metaFiles": ["roofs-meta.json"]
+        },
+        {
+            "name": "walls",
+            "dataType": "geojson",
+            "dataLocation": "walls.geojson",
+            "locationType": "fill",
+            "metaFiles": ["walls-meta.json"]
+        },
+        {
+            "name": "grounds",
+            "dataType": "geojson",
+            "dataLocation": "grounds.geojson",
+            "locationType": "fill",
+            "metaFiles": ["grounds-meta.json"]
+        }
+    ]
+}

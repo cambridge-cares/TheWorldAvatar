@@ -66,6 +66,17 @@ h1, h2, h3, h4, h5, h6 {
 	text-decoration: underline;
 }
 
+/* Viewer Controls */
+#viewerContainer {
+	background-color: rgba(0, 0, 0, 0.4);
+	border-radius: 8px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+#viewerContainer:hover {
+	background-color: rgba(0, 0, 0, 0.6);
+}
+
 /* Camera Controls */
 #cameraContainer {
 	background-color: rgba(0, 0, 0, 0.4);

@@ -1,0 +1,21 @@
+{
+    "global": {
+        "defaultCenter": [0.119115, 52.205363],
+        "defaultZoom": 13,
+        "defaultBearing": -30,
+        "defaultPitch": 40
+    },
+    "local": {
+        "label": "Extrusion type",
+        "groups": [
+            {
+                "name": "2D",
+                "directory": "2D"
+            },
+            {
+                "name": "3D",
+                "directory": "3D"
+            }
+        ]
+    }
+}

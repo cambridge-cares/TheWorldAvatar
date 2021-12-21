@@ -72,6 +72,7 @@
 
 		// We could have wholesale data packages, so register multiple possible root directories
 		let rootDirectories = {
+			"Churchill": "./data/set-0",
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
 			"Clustered": "./data/set-3"
@@ -80,7 +81,7 @@
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Mixed", function() {
+		manager.readMetadata("Churchill", function() {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -88,7 +89,9 @@
 		// Will run once metadata is loaded asynchronously
 		function startUp() {
 			// Create the MapBox map
-			var map = manager.createMap("map");
+			mapboxgl.accessToken = mapboxAPI;
+			let map = new mapboxgl.Map({container: "map"});
+			manager.initialiseMap(map);
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
@@ -127,7 +130,7 @@
 				if(!loadedOnce) {
 					// Load and cache icon images used by this visualisation
 					let winURL = window.location;
-					let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
+					let baseURL = winURL.protocol + "//" + winURL.host;
 					EXAMPLE_ICONS.forEach(relativeURL => {
 						let imageURL = (baseURL.endsWith("/")) ? (baseURL + relativeURL) : (baseURL + "/" + relativeURL);
 						imagePromises.push(iconHandler.loadIcon(imageURL));

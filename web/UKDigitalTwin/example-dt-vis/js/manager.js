@@ -202,11 +202,12 @@ class DigitalTwinManager {
 	/**
 	 * Create a new MapBox map instance.
 	 * 
-	 * @param {String} containerName id of div to add map to.
-	 * 
-	 * @returns {MapBox map}
+	 * @param {MapBox map} map map to intiialise
 	 */
-	createMap(containerName) {
+	initialiseMap(map) {
+
+		this._map = map;
+
 		if(this._registry == null) {
 			console.log("ERROR: Cannot create map until metadata has been initialised!");
 			return;
@@ -229,19 +230,14 @@ class DigitalTwinManager {
 				break;
 		}
 
-		// Specify default options
-		let defaultOptions = {
-			container: containerName,
-			style: terrainURL,
+		map.setStyle(terrainURL);
+
+		map.jumpTo({
 			center: this._registry.globalMeta["defaultCenter"],
 			zoom: this._registry.globalMeta["defaultZoom"],
 			pitch: this._registry.globalMeta["defaultPitch"],
 			bearing: this._registry.globalMeta["defaultBearing"]
-		};
-
-		// Create the map instance
-		mapboxgl.accessToken = mapboxAPI;
-		this._map = new mapboxgl.Map(defaultOptions);
+		});
 		
 		// Now that we have a map, do some initialisation of handlers
 		this._sourceHandler = new SourceHandler(this._map);
@@ -257,7 +253,7 @@ class DigitalTwinManager {
 		);
 		
 		console.log("INFO: Map object has been initialised.");
-		return this._map;
+		
 	}
 
 	/**
