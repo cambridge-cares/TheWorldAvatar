@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
+import java.util.Arrays;
+
 import javax.servlet.annotation.WebServlet;
 
 import org.apache.logging.log4j.LogManager;
@@ -37,7 +39,7 @@ public class UpdateDerivations extends JPSAgent {
 
 	JSONObject updateDerivations(SparqlClient sparqlClient, DerivationClient devClient) {
 		String difference = sparqlClient.getDifferenceIRI();
-		String difference_derivation = devClient.getDerivationOf(difference);
+		String difference_derivation = devClient.getDerivationsOf(Arrays.asList(difference)).get(difference);
 		
 		devClient.updateDerivationAsyn(difference_derivation);
 		
