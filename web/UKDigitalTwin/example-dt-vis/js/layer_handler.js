@@ -39,7 +39,7 @@ class LayerHandler {
      */
     addLayer(dataSet) {
         try {
-            switch(dataSet["locationType"]) {
+            switch (dataSet["locationType"]) {
                 default:
                 case "circle":
                 case "point":
@@ -74,7 +74,7 @@ class LayerHandler {
             this.#orderLayers(["line"], "_arrows");
             this.#orderLayers(["circle", "point", "symbol"]);
 
-        } catch(error) {
+        } catch (error) {
             console.log("ERROR: Could not create layer '" + dataSet["name"] + "', it will be skipped...");
         }
     }
@@ -85,9 +85,9 @@ class LayerHandler {
     removeLayers() {
         var layers = this._map.getStyle().layers;
 
-        for(var i = (layers.length - 1); i >= 0; i--) {
+        for (var i = (layers.length - 1); i >= 0; i--) {
             let layer = layers[i];
-            if(layer["metadata"] && layer["metadata"]["provider"] && layer["metadata"]["provider"] === "cmcl") {
+            if (layer["metadata"] && layer["metadata"]["provider"] && layer["metadata"]["provider"] === "cmcl") {
                 this._map.removeLayer(layer["id"]);
             }
         }
@@ -103,7 +103,7 @@ class LayerHandler {
             'id': 'sky',
             'type': 'sky',
             'paint': {
-                'sky-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0, 5, 0.3, 8, 1 ],
+                'sky-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0, 5, 0.3, 8, 1],
                 'sky-type': 'atmosphere',
                 'sky-atmosphere-sun-intensity': 5
             }
@@ -124,7 +124,7 @@ class LayerHandler {
             this._map.getCenter().lat,
             this._map.getCenter().lng
         );
-        if(date != null) date = sunPositions[date];
+        if (date != null) date = sunPositions[date];
 
         var center = this._map.getCenter();
         var sunPos = SunCalc.getPosition(
@@ -150,25 +150,23 @@ class LayerHandler {
         let backupStrokeColor = this.#getOutlineColor(backupFillColor);
 
         let options = {
-			id: layerName,
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
-            },
+            id: layerName,
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
             type: 'circle',
-			layout: {
-				'visibility': 'visible'
-			},
-			paint: {
-    			'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 10],
-				'circle-color':  ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
-				'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
-				'circle-stroke-color':  ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
+            layout: {
+                'visibility': 'visible'
+            },
+            paint: {
+                'circle-radius': ['interpolate', ['linear'], ['zoom'], 10, 3, 15, 10],
+                'circle-color': ["case", ["has", "circle-color"], ["get", "circle-color"], backupFillColor],
+                'circle-stroke-width': ["case", ["has", "circle-stroke-width"], ["get", "circle-stroke-width"], 1],
+                'circle-stroke-color': ["case", ["has", "circle-stroke-color"], ["get", "circle-stroke-color"], backupStrokeColor],
                 'circle-stroke-opacity': ["case", ["has", "circle-stroke-opacity"], ["get", "circle-stroke-opacity"], 1.0]
-			}
-		};
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+            }
+        };
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // Add the layer then cache its properties
         this._map.addLayer(options);
@@ -190,9 +188,7 @@ class LayerHandler {
         let options = {
             id: layerName,
             source: sourceName,
-            metadata: {
-                provider: "cmcl"
-            },
+            metadata: this.#getMetadata(dataSet),
             type: 'symbol',
             layout: {
                 'icon-image': ["get", "icon-image"],
@@ -201,15 +197,15 @@ class LayerHandler {
                 'icon-ignore-placement': true
             }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // If clustering is on, then we want separate layers for clustered and non-clustered points.
         // The above can become the unclustered points, and we'll deal with the clusterd points in a
         // layer added within the #addClusterLayers() method.
         // Note that it is possible to handle clustering within a single layer, but this seems to
         // cause strange behaviour in MapBox.
-        if(eval(dataSet["cluster"])) {
+        if (eval(dataSet["cluster"])) {
             options["filter"] = ['!', ['has', 'point_count']];
             this.#addClusterLayers(dataSet);
         }
@@ -237,9 +233,7 @@ class LayerHandler {
         let options = {
             id: layerName + "_cluster",
             source: sourceName,
-            metadata: {
-                provider: "cmcl"
-            },
+            metadata: this.#getMetadata(dataSet),
             type: 'symbol',
             filter: ['has', 'point_count'],
             layout: {
@@ -255,11 +249,11 @@ class LayerHandler {
                 'text-ignore-placement': true
             },
             paint: {
-                'text-color':  ["case", ["has", "text-color"], ["get", "text-color"], "#000000"]
+                'text-color': ["case", ["has", "text-color"], ["get", "text-color"], "#000000"]
             }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         this._map.addLayer(options);
         console.log("INFO: Added special '" + layerName + "' cluster layer to MapBox.");
@@ -277,32 +271,30 @@ class LayerHandler {
         let backupFillColor = this.#getRandomColor();
 
         let options = {
-			id: layerName,
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
+            id: layerName,
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
+            type: 'fill',
+            layout: {
+                'visibility': 'visible'
             },
-			type: 'fill',
-			layout: {
-				'visibility': 'visible'
-			},
-			paint: {
+            paint: {
                 'fill-color': ["case", ["has", "fill-color"], ["get", "fill-color"], backupFillColor],
                 'fill-opacity': [
-                    "case", 
+                    "case",
                     ['boolean', ['feature-state', 'hover'], false],
-                    0.50, 
+                    0.50,
                     0.33
                 ]
-			}
-		};
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+            }
+        };
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // Add the layer then cache its properties
         this._map.addLayer(options);
         this._layerProperties[layerName] = options;
-        
+
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
@@ -318,28 +310,26 @@ class LayerHandler {
 
         let options = {
             id: layerName,
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
+            type: 'fill-extrusion',
+            layout: {
+                'visibility': 'visible'
             },
-			type: 'fill-extrusion',
-			layout: {
-				'visibility': 'visible'
-			},
-			paint: {
+            paint: {
                 'fill-extrusion-base': ["case", ["has", "fill-extrusion-base"], ["get", "fill-extrusion-base"], 0],
                 'fill-extrusion-height': ["case", ["has", "fill-extrusion-height"], ["get", "fill-extrusion-height"], 25],
                 'fill-extrusion-opacity': 0.75,
                 'fill-extrusion-color': [
-                    "case", 
+                    "case",
                     ['boolean', ['feature-state', 'hover'], false],
                     "hsl(200, 75%, 90%)",
                     ["case", ["has", "fill-extrusion-color"], ["get", "fill-extrusion-color"], "hsl(190, 25%, 25%)"]
                 ]
-			}
+            }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // Add the layer then cache its properties
         this._map.addLayer(options);
@@ -362,46 +352,42 @@ class LayerHandler {
         // Visible layer
         let options = {
             id: layerName,
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
+            type: 'line',
+            layout: {
+                'visibility': 'visible'
             },
-			type: 'line',
-			layout: {
-				'visibility': 'visible'
-			},
-			paint: {
+            paint: {
                 'line-color': ["case", ["has", "line-color"], ["get", "line-color"], backupColor],
                 'line-width': ["case", ["has", "line-width"], ["get", "line-width"], 3],
                 'line-opacity': ["case", ["has", "line-opacity"], ["get", "line-opacity"], 0.35]
-			}
+            }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
-        
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+
         // Add the layer then cache its properties
         this._map.addLayer(options);
         this._layerProperties[layerName] = options;
 
         // Transparent interaction layer
         let clickableOptions = {
-			id: layerName + "_clickable",
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
+            id: layerName + "_clickable",
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
+            type: 'line',
+            layout: {
+                'visibility': "visible"
             },
-			type: 'line',
-			layout: {
-				'visibility': "visible"
-			},
-			paint: {
+            paint: {
                 'line-color': "#000000",
                 'line-opacity': 0.0,
                 'line-width': ['interpolate', ['linear'], ['zoom'], 10, 10, 15, 15]
-			}
-		};
-        if(dataSet["minzoom"]) clickableOptions["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) clickableOptions["maxzoom"] = dataSet["maxzoom"];
+            }
+        };
+        if (dataSet["minzoom"]) clickableOptions["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) clickableOptions["maxzoom"] = dataSet["maxzoom"];
 
         this._map.addLayer(clickableOptions);
 
@@ -409,7 +395,7 @@ class LayerHandler {
         console.log("INFO: Added special '" + layerName + "' interaction layer to MapBox.");
 
         // If specified, add arrows to these lines
-        if(dataSet["arrows"] === true) {
+        if (dataSet["arrows"] === true) {
             this.#addArrowLayer(dataSet);
         }
         return layerName;
@@ -424,16 +410,14 @@ class LayerHandler {
      * @param {JSONObject} dataSet 
      */
     #addArrowLayer(dataSet) {
-       let layerName = dataSet["name"] + "_arrows";
-       let sourceName = dataSet["name"];
+        let layerName = dataSet["name"] + "_arrows";
+        let sourceName = dataSet["name"];
 
         // Layer options
         let options = {
             id: layerName,
             source: sourceName,
-            metadata: {
-                provider: "cmcl"
-            },
+            metadata: this.#getMetadata(dataSet),
             type: 'symbol',
             layout: {
                 'symbol-placement': 'line',
@@ -447,13 +431,13 @@ class LayerHandler {
                 'icon-color': ["get", "line-color"]
             }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         this._map.addLayer(options);
         console.log("INFO: Added special '" + layerName + "' layer to MapBox.");
         return layerName;
-   }
+    }
 
     /**
      * Adds a layer to create rasters for location data.
@@ -467,17 +451,15 @@ class LayerHandler {
         // Visible layer
         let options = {
             id: layerName,
-			source: sourceName,
-            metadata: {
-                provider: "cmcl"
-            },
-			type: 'raster',
-			layout: {
-				'visibility': 'visible'
-			}
+            source: sourceName,
+            metadata: this.#getMetadata(dataSet),
+            type: 'raster',
+            layout: {
+                'visibility': 'visible'
+            }
         };
-        if(dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
-        if(dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
+        if (dataSet["minzoom"]) options["minzoom"] = dataSet["minzoom"];
+        if (dataSet["maxzoom"]) options["maxzoom"] = dataSet["maxzoom"];
 
         // Add the layer then cache its properties
         this._map.addLayer(options);
@@ -486,7 +468,7 @@ class LayerHandler {
         console.log("INFO: Added '" + layerName + "' layer to MapBox.");
         return layerName;
     }
-    
+
     /**
      * Bump all point locations to the top of the stack, for better interactions
      * they should really be above any line or fill layers.
@@ -495,14 +477,14 @@ class LayerHandler {
         var layers = this._map.getStyle().layers
         layers.forEach(layer => {
 
-            if(layer["metadata"] && layer["metadata"]["provider"]) {
+            if (layer["metadata"] && layer["metadata"]["provider"]) {
                 let provider = layer["metadata"]["provider"];
 
-                if(provider === "cmcl"){
-                    if(types.includes(layer["type"]) && !layer["id"].endsWith("_arrows")) {
+                if (provider === "cmcl") {
+                    if (types.includes(layer["type"]) && !layer["id"].endsWith("_arrows")) {
                         this._map.moveLayer(layer["id"]);
                     }
-                    if(suffix != null && layer["id"].endsWith(suffix)) {
+                    if (suffix != null && layer["id"].endsWith(suffix)) {
                         this._map.moveLayer(layer["id"]);
                     }
                 }
@@ -529,6 +511,19 @@ class LayerHandler {
      */
     #getOutlineColor(fillColor) {
         return fillColor.replace("50%)", "35%)");
+    }
+
+    /**
+     * Given a data set, return the metadata to be stored in the MapBox layer metadata property.
+     * 
+     * @returns a metadata object
+     */
+    #getMetadata(dataSet) {
+        return {
+            provider: "cmcl",
+            clickable: dataSet.clickable != false,
+            cluster: dataSet.cluster == true
+        }
     }
 
 }

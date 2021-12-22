@@ -22,10 +22,10 @@
 		this is	easier during development and initial testing. Once it's ready for
 		release, these files will be hosted remotely).  
 	-->
-	
+
 	<!-- Framework CSS -->
 	<link href='./css/dtvf.css' rel='stylesheet' />
-	<link href="./css/jsonview.bundle.css" rel="stylesheet"> 
+	<link href="./css/jsonview.bundle.css" rel="stylesheet">
 
 	<!-- Framework JS -->
 	<script src='./js/manager.js'></script>
@@ -48,7 +48,7 @@
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
 	<div id="tiltShift"></div>
-	
+
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
 
@@ -81,7 +81,7 @@
 		manager.registerDirectories(rootDirectories);
 
 		// Load all the metadata
-		manager.readMetadata("Churchill", function() {
+		manager.readMetadata("Clustered", function () {
 			// Run start-up function only AFTER metadata is loaded
 			startUp();
 		});
@@ -90,7 +90,7 @@
 		function startUp() {
 			// Create the MapBox map
 			mapboxgl.accessToken = mapboxAPI;
-			let map = new mapboxgl.Map({container: "map"});
+			let map = new mapboxgl.Map({ container: "map" });
 			manager.initialiseMap(map);
 			var iconHandler = new IconHandler(map);
 
@@ -117,7 +117,7 @@
 			let footer = `Here is an example footer.`;
 
 			// Show content and store as default (so it can be returned to later)
-			manager.setPanelContent(title, content,	legend,	footer);
+			manager.setPanelContent(title, content, legend, footer);
 
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
@@ -125,11 +125,11 @@
 			// styles, but there is an open feature request for MapBox to implement this.
 			var loadedOnce = false;
 
-			map.on('style.load', function() {
+			map.on('style.load', function () {
 				console.log("INFO: A new style has been loaded.");
 				var imagePromises = [];
 
-				if(!loadedOnce) {
+				if (!loadedOnce) {
 					// Load and cache icon images used by this visualisation
 					let winURL = window.location;
 					let baseURL = winURL.protocol + "//" + winURL.host;
@@ -139,7 +139,7 @@
 					});
 
 					// This callback will be fired when a final group is selected in the dropdowns
-					let selectCallback = function(selectedGroups) {
+					let selectCallback = function (selectedGroups) {
 						manager.plotGroup(selectedGroups, false);
 					};
 
@@ -149,13 +149,13 @@
 					// Set up a callback that hides all connections whenever the user
 					// returns to the default side panel.
 					manager.setDefaultPanelCallback();
-					
+
 					// Show mouse position
 					manager.showDeveloperControls();
 
 					loadedOnce = true;
 				}
-				
+
 				// Add all cached icons to the new style. Using promises here
 				// ensures we only do this AFTER all images are loaded.
 				Promise.all(imagePromises).then(() => {
@@ -165,13 +165,13 @@
 					var dataPromise;
 
 					// Re-plot the previously selected group
-					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
+					if (DT.currentGroup != null && DT.currentGroup.length > 0) {
 						dataPromise = manager.plotGroup(DT.currentGroup, false);
 					} else {
 						dataPromise = manager.plotFirstGroup();
 					}
 
-					if(dataPromise != null) {
+					if (dataPromise != null) {
 						dataPromise.then(() => {
 							// Re-add the sky and (optionally) 3D terrain
 							manager.addSkyAndTerrain();
@@ -180,7 +180,7 @@
 						});
 					}
 				});
-				
+
 			});
 		}
 	</script>

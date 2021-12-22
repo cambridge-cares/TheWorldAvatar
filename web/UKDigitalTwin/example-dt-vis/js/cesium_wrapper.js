@@ -49,7 +49,7 @@ class CesiumWrapper {
     setLayoutProperty(layerID, property, value) {
         let layer = this._layers.get(layerID);
         layer.layout[property] = value;
-        if(property == "visibility") {
+        if (property == "visibility") {
             this._viewer.dataSources.getByName(layer.source)[0].show = value == "visible";
         }
     }
@@ -57,7 +57,7 @@ class CesiumWrapper {
     on(event, callback) {
         if (event === "style.load") {
             func();
-        } else if (event==="mousemove" || event ==="mouseleave" || event=="mouseenter" || event=="click"){
+        } else if (event === "mousemove" || event === "mouseleave" || event == "mouseenter" || event == "click") {
             this._viewer.canvas.addEventListener(event, callback);
         } else {
             console.warn("Event \"" + event + "\" not supported for Cesium viewer.");
@@ -79,7 +79,7 @@ class CesiumWrapper {
             ),
             new Cesium.HeadingPitchRange(
                 Cesium.Math.toRadians(options.bearing),
-                Cesium.Math.toRadians(options.pitch-90),
+                Cesium.Math.toRadians(options.pitch - 90),
                 75000 / options.zoom
             )
         );
@@ -99,9 +99,9 @@ class CesiumWrapper {
                 dataSource.name = name;
                 this._allSources.set(options.data, dataSource);
                 this._viewer.dataSources.add(this._allSources.get(options.data));
-                for (var entity of dataSource.entities.values) {
+                for (let entity of dataSource.entities.values) {
                     // Normally we should be able to just do entities[i].properties.PropertyName, but the normal property keys are not valid JavaScript names.
-                    if(entity.polygon != null) {
+                    if (entity.polygon != null) {
                         // Determine color
                         let props = entity.properties;
                         let color = props["fill-extrusion-color"] ?? props["fill-color"] ?? "#666666";

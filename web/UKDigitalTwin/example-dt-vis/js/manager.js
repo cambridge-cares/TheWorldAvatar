@@ -63,6 +63,10 @@ class DigitalTwinManager {
 		return this._layerHandler;
 	}
 
+	getSourceHandler() {
+		return this._sourceHandler;
+	}
+
 	getRegistry() {
 		return this._registry;
 	}
