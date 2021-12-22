@@ -90,13 +90,10 @@ class InteractionHandler {
 
             // Remove old feature's hover state
             if (this._hoveredFeature != null && (!feature || feature != this._hoveredFeature)) {
-                // This can be false if we've just switched groups.
-                if (manager.getSourceHandler()._currentSources.includes(this._hoveredFeature.layer.source)) {
-                    this._map.setFeatureState(
-                        { source: this._hoveredFeature.layer.source, id: this._hoveredFeature.id },
-                        { hover: false }
-                    );
-                }
+                this._map.setFeatureState(
+                    { source: this._hoveredFeature.layer.source, id: this._hoveredFeature.id },
+                    { hover: false }
+                );
                 this._hoveredFeature = null;
             }
 
@@ -119,12 +116,6 @@ class InteractionHandler {
 
                     if (feature.layer.id.endsWith("_arrows")) return;
 
-                    // Get correct co-ords
-                    let coordinates = feature.geometry.coordinates.slice();
-                    while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
-                        coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
-                    }
-
                     if (feature.layer.id.endsWith("_cluster")) {
                         html = "<h3>Multiple features</h3>";
                         let count = feature["properties"]["point_count_abbreviated"];
@@ -138,12 +129,19 @@ class InteractionHandler {
                         }
                     }
 
-                    if (coordinates.length == 2 && this.#isNumber(coordinates[0])) {
-                        // Add coordinate details if a point
-                        this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
-                    } else if (coordinates.length >= 2) {
-                        let center = turf.centroid(feature)["geometry"]["coordinates"];
-                        this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                    if (feature.geometry) {
+                        // Get correct co-ords
+                        let coordinates = feature.geometry.coordinates.slice();
+                        while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
+                            coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
+                        }
+                        if (coordinates.length == 2 && this.#isNumber(coordinates[0])) {
+                            // Add coordinate details if a point
+                            this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
+                        } else if (coordinates.length >= 2) {
+                            let center = turf.centroid(feature)["geometry"]["coordinates"];
+                            this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                        }
                     }
 
                     break;
@@ -166,9 +164,10 @@ class InteractionHandler {
                         html += feature.properties["description"] + "</br></br>"
                     }
 
-                    // Get coords for the center of the polygon
-                    let center = turf.centroid(feature)["geometry"]["coordinates"];
-                    this._popup.setLngLat(center).setHTML(html).addTo(this._map);
+                    if (feature.geometry) {
+                        let centroid = turf.centroid(feature)["geometry"]["coordinates"];
+                        this._popup.setLngLat(centroid).setHTML(html).addTo(this._map);
+                    }
 
             }
 
@@ -277,7 +276,7 @@ class InteractionHandler {
         if (title == null) title = "ID " + feature.id;
         title = "<h3>" + title + "</h3>";
 
-        if (feature["geometry"]["type"] === "Point") {
+        if (feature.geometry?.type === "Point") {
             var coordinates = feature.geometry.coordinates;
             var html = `
                 <table width="100%">

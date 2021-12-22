@@ -1,10 +1,14 @@
+
+
 class CesiumWrapper {
 
     _viewer;
 
+    // Key: layer name (e.g. "roofs")
+    // Value: metadata objects loaded from leaf directory meta.js files in the data.
     _layers;
 
-    _allSources;
+    _eventHandler
 
     constructor(containerName) {
 
@@ -18,13 +22,15 @@ class CesiumWrapper {
 
         this._layers = new Map();
 
-        // Note that the data source cache is keyed by data path, not by name,
-        // since data source names can collide between groups.
-        this._allSources = new Map();
+        this._eventHandler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
 
     }
 
     setStyle(style) {
+        // TODO: implement?
+    }
+
+    setTerrain(style) {
         // TODO: implement?
     }
 
@@ -46,6 +52,10 @@ class CesiumWrapper {
         return this._layers.get(layerID);
     }
 
+    moveLayer(layerID) {
+
+    }
+
     setLayoutProperty(layerID, property, value) {
         let layer = this._layers.get(layerID);
         layer.layout[property] = value;
@@ -56,9 +66,24 @@ class CesiumWrapper {
 
     on(event, callback) {
         if (event === "style.load") {
-            func();
-        } else if (event === "mousemove" || event === "mouseleave" || event == "mouseenter" || event == "click") {
-            this._viewer.canvas.addEventListener(event, callback);
+            callback();
+        } else if (event === "mousemove" || event === "click") {
+            this._viewer.canvas.addEventListener(event, (e) => {
+                let screenPoint = new Cesium.Cartesian2(e.clientX, e.clientY);
+                let cartesian = this._viewer.camera.pickEllipsoid(screenPoint, this._viewer.scene.globe.ellipsoid);
+                let cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+                callback({
+                    point: screenPoint,
+                    lngLat: {
+                        lng: Cesium.Math.toDegrees(cartographic.longitude),
+                        lat: Cesium.Math.toDegrees(cartographic.latitude)
+                    }
+                });
+            });
+        } else if (event === "click") {
+            this._eventHandler.setInputAction((click) => {
+                callback({ point: movement.endPosition });
+            }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
         } else {
             console.warn("Event \"" + event + "\" not supported for Cesium viewer.");
         }
@@ -92,28 +117,31 @@ class CesiumWrapper {
             console.error("Non-GeoJSON sources not supported for Cesium viewer: " + options.location);
             return;
         }
-        if (this._allSources.has(options.data)) {
-            this._viewer.dataSources.add(this._allSources.get(options.data));
-        } else {
-            Cesium.GeoJsonDataSource.load(options.data).then((dataSource) => {
-                dataSource.name = name;
-                this._allSources.set(options.data, dataSource);
-                this._viewer.dataSources.add(this._allSources.get(options.data));
-                for (let entity of dataSource.entities.values) {
-                    // Normally we should be able to just do entities[i].properties.PropertyName, but the normal property keys are not valid JavaScript names.
-                    if (entity.polygon != null) {
-                        // Determine color
-                        let props = entity.properties;
-                        let color = props["fill-extrusion-color"] ?? props["fill-color"] ?? "#666666";
-                        let outlineColor = props["circle-stroke-color"] ?? props["fill-outline-color"] ?? "#000000";
-                        entity.polygon.material = Cesium.Color.fromCssColorString(color.valueOf());
-                        entity.polygon.outlineColor = Color.fromCssColorString(outlineColor.valueOf());
-                    }
+        Cesium.GeoJsonDataSource.load(options.data).then((dataSource) => {
+            dataSource.name = name;
+            this._viewer.dataSources.add(dataSource);
+            for (let entity of dataSource.entities.values) {
+                if(entity.polygon) {
+                    let props = entity.properties;
+                    let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
+                    let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
+                    let fillColorProperty = new Cesium.CallbackProperty((time, result) => {
+                        if(entity.state?.hover) {
+                            return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
+                        } else {
+                            return result = fillColor;
+                        }
+                    }, false);
+                    let outlineColorHex = props["fill-outline-color"] ?? props["circle-stroke-color"] ?? "#000000";
+                    let outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
+                    entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
+                    entity.polygon.outlineColor = outlineColor;
                 }
-            }).otherwise(function (error) {
-                console.log(error);
-            });
-        }
+                entity.dataSource = dataSource;
+            }
+        }).otherwise(function (error) {
+            console.log(error);
+        });
     }
 
     getSource(name) {
@@ -126,9 +154,10 @@ class CesiumWrapper {
     }
 
     getCenter() {
+        let cartographic = Cesium.Cartographic.fromCartesian(this._viewer.camera.position);
         return {
-            lng: Cesium.Math.toDegrees(Cesium.Cartographic.fromCartesian(this._viewer.camera.position).longitude),
-            lat: Cesium.Math.toDegrees(Cesium.Cartographic.fromCartesian(this._viewer.camera.position).latitude)
+            lng: Cesium.Math.toDegrees(cartographic.longitude),
+            lat: Cesium.Math.toDegrees(cartographic.latitude)
         };
     }
 
@@ -159,17 +188,31 @@ class CesiumWrapper {
     }
 
     getCanvas() {
-        return viewer.canvas;
+        return this._viewer.canvas;
     }
 
     /**
-     * 
-     * @param {(x,y)} point point to query
+     * Queries rendered features in line of a screen point.
+     * @param {Cartesian2} point point to query
      * @returns {Feature[]} features in line of mouse pointer, from back to front
      */
     queryRenderedFeatures(point) {
-
+        let feature = this._viewer.scene.pick(point);
+        if (feature) {
+            return [{
+                id: feature.id._id,
+                layer: this.getLayer(feature.id.dataSource.name),
+                properties: feature.id.properties
+            }];
+        } else {
+            return [];
+        }
     }
 
+    setFeatureState(featureSpecification, state) {
+        let dataSource = this.getSource(featureSpecification.source)[0];
+        let entity = dataSource?.entities.getById(featureSpecification.id);
+        if(entity != null) entity.state = state;
+    }
 
 }

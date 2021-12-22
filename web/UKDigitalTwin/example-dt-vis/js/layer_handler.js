@@ -75,6 +75,7 @@ class LayerHandler {
             this.#orderLayers(["circle", "point", "symbol"]);
 
         } catch (error) {
+            console.log(error);
             console.log("ERROR: Could not create layer '" + dataSet["name"] + "', it will be skipped...");
         }
     }

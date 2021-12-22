@@ -163,16 +163,26 @@
 				Promise.all(imagePromises).then(() => {
 					iconHandler.addAllIcons();
 
-					// Re-add the sky layer
-					manager.setSkyDetails();
+					// Promise for loading data as sources and layers
+					var dataPromise;
 
 					// Re-plot the previously selected group
-					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-						manager.plotGroup(DT.currentGroup, false);
+					if (DT.currentGroup != null && DT.currentGroup.length > 0) {
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
 					} else {
-						manager.plotFirstGroup();
+						dataPromise = manager.plotFirstGroup();
+					}
+
+					if (dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+							manager.setPlacenames();
+						});
 					}
 				});
+				
 			});
 		}
 	</script>
