@@ -4,16 +4,11 @@
  */
 class LayerHandler {
 
-    /**
-      * MapBox map
-      */
+    // MapBox map
     _map;
 
-    /**
-     * Cache of the original properties used to create each layer.
-     */
+    // Cache of the original properties used to create each layer.
     _layerProperties = {}
-
 
     /**
       * Initialise a new LayerHandler.

@@ -33,7 +33,7 @@ class DigitalTwinManager {
 	// Current root directory name.
 	_currentRootDirName;
 
-	//
+	// Callback to execute after metadata is read.
 	_metaCallback;
 
 	/**
@@ -55,14 +55,29 @@ class DigitalTwinManager {
 		});
 	}
 
+	/**
+	 * Returns the current map element.
+	 * 
+	 * @returns Map element
+	 */
 	getMap() {
 		return this._map;
 	}
 
+	/**
+	 * Returns the current LayerHandler instance.
+	 * 
+	 * @returns LayerHandler instance.
+	 */
 	getLayerHandler() {
 		return this._layerHandler;
 	}
 
+	/**
+	 * Returns the current Registry instance.
+	 * 
+	 * @returns Registry instance.
+	 */
 	getRegistry() {
 		return this._registry;
 	}
@@ -124,7 +139,8 @@ class DigitalTwinManager {
 	 * as the default state of the map.
 	 */
 	plotFirstGroup(updateSelects = true) {
-		return this.plotGroup(this._registry.getFirstGroup(), updateSelects);
+		let firstGroup = this._registry.getFirstGroup();
+		return this.plotGroup(firstGroup, updateSelects);
 	}
 
 	/**
@@ -134,6 +150,7 @@ class DigitalTwinManager {
 	 * 
 	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
 	 * @param {Boolean} updateSelects force dropdowns to match the group selection
+	 * @param {Function} callback optional callback to run once group is plotted
 	 */
 	plotGroup(group, updateSelects = true, callback = null) {
 		DT.currentFeature = null;
@@ -213,36 +230,6 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Recursively force the selection dropdowns to match the input
-	 * group. Useful to ensure they represent the correct data after
-	 * calling plotGroup manually.
-	 * 
-	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
-	 * @param {Integer} depth depth in recursive stack
-	 */
-	#forceSelects(group, depth) {
-		let selectionsContainer = document.getElementById("selectionsContainer");
-		let selects = selectionsContainer.querySelectorAll("select");
-
-		for(var i = depth; i < selects.length; i++) {
-			if(selects[i].id === "root-dir-select") continue;
-
-			let selectOptions = selects.item(i).options;
-			for(var j = 0; j < selectOptions.length; j++) {
-
-				if(selectOptions[j].value.endsWith(group[depth])) {
-
-					selects[i].value = selectOptions[j].value;
-					if(depth != (group.length - 1)) {
-						selects[i].onchange();
-						this.#forceSelects(group, depth + 1);
-					}
-				}
-			}
-		}
-	}
-
-	/**
 	 * Adds a special sky effects layer and (if enabled) 3D terrain.
 	 */
 	addSkyAndTerrain() {
@@ -253,13 +240,6 @@ class DigitalTwinManager {
 			);
 			console.log("INFO: Added special Sky layer.");
 		}
-
-		// if(this._registry != null && this._sourceHandler != null) {
-		// 	if(eval(this._registry.globalMeta["add3DTerrain"])) {
-		// 		this._sourceHandler.add3DTerrain();
-		// 		console.log("INFO: Added special 3D terrain layer.");
-		// 	}
-		// }
 	}
 
 	/**
@@ -326,10 +306,11 @@ class DigitalTwinManager {
 			let rootDir = this._rootDirectories[this._currentRootDirName];
 			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
 		}
-
-	
 	}
 
+	/**
+	 * Stores the current state of the side panel as it's default state.
+	 */
 	storePanelDefault() {
 		this._panelHandler.storeDefault();
 	}
@@ -337,9 +318,8 @@ class DigitalTwinManager {
 	/**
 	 * Build the controls for the Camera, Terrain, and Layer Tree.
 	 * 
-	 * @param {string} treeFile Location of JSON defining layer tree structure.
 	 * @param {function} treeCallback Optional callback to fire when tree selections change.
-	 * @param {function} treeCallback Optional callback to fire when dropdown selections change.
+	 * @param {function} selectCallback Optional callback to fire when dropdown selections change.
 	 */
 	 showControls(treeCallback = null, selectCallback = null) {
 		// Initialise map controls
@@ -360,7 +340,7 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Shows debugging info, should only be used for developers during testing.
+	 * Shows debugging info like mouse position.
 	 */
 	showDeveloperControls() {
 		if(this._controlHandler != null) this._controlHandler.showDeveloperControls();
@@ -425,10 +405,15 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	/**
+	 * Adds a callback to fire once the user returns to the default side panel.
+	 * 
+	 * @param {Function} callback 
+	 */
 	setDefaultPanelCallback(callback) {
 		this._defaultPanelCallback = callback;
-
 	}
+
 	/**
 	 * Returns to the default state of the side panel
 	 */
@@ -497,7 +482,7 @@ class DigitalTwinManager {
 	 * Given a link to a JSON file, this method opens
 	 * and renders the file in a new tab.
 	 */
-	 openJSONLink(url) {
+	openJSONLink(url) {
 		let directories = null;
 		let fileName = url;
 		if(url.includes("/")) {
@@ -543,6 +528,7 @@ class DigitalTwinManager {
 	 */
 	onGroupSelectChange(selectID, selectValue) {
 		if(selectID == "root-dir-select") {
+			// Change of root directory
 			let that = this;
 
 			this.readMetadata(selectValue, function() {
@@ -637,8 +623,9 @@ class DigitalTwinManager {
 	}
 
 	/**
+	 * Shows/hides place name labels supplied by MapBox.
 	 * 
-	 * @param {*} enabled 
+	 * @param {Boolean} enabled 
 	 */
 	setPlacenames(enabled) {
 		if(enabled == null && DT.placenames != null) {
@@ -686,6 +673,37 @@ class DigitalTwinManager {
 		
 			tiltShiftComponent.style.webkitMaskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
 			tiltShiftComponent.style.maskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
+		}
+	}
+	
+	/**
+	 * Recursively force the selection dropdowns to match the input
+	 * group. Useful to ensure they represent the correct data after
+	 * calling plotGroup manually.
+	 * 
+	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
+	 * @param {Integer} depth depth in recursive stack
+	 */
+	 #forceSelects(group, depth) {
+		let groupName = group.join("/");
+		let selectionsContainer = document.getElementById("selectionsContainer");
+		let selects = selectionsContainer.querySelectorAll("select");
+
+		for(var i = depth; i < selects.length; i++) {
+			if(selects[i].id === "root-dir-select") continue;
+			let selectOptions = selects.item(i).options;
+
+			for(var j = 0; j < selectOptions.length; j++) {
+
+				let match = selectOptions[j].value === groupName || groupName.startsWith(selectOptions[j].value + "/");
+				if(match) {
+					selects[i].value = selectOptions[j].value;
+					if(depth != (group.length - 1)) {
+						selects[i].onchange();
+						this.#forceSelects(group, depth + 1);
+					}
+				}
+			}
 		}
 	}
 

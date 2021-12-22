@@ -3,19 +3,13 @@
  */
 class SourceHandler {
 
-    /**
-     * MapBox map.
-     */
+    // MapBox map.
     _map;
 
-    /**
-     * List of source IDs currently on map.
-     */
+    // List of source IDs currently on map.
     _currentSources = [];
 
-    /**
-     * DataRegistry object.
-     */
+    // DataRegistry object.
     _registry;
 
     /**
@@ -134,7 +128,8 @@ class SourceHandler {
             let options = {
                 "type": "geojson",
                 "data": json,
-                "generateId": false
+                "generateId": false,
+                "attribution": "CMCL Innovations"
             };
 
             // Add clustering settings if present in dataSet definition
@@ -163,7 +158,8 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "raster",
-            "tiles": [location]
+            "tiles": [location],
+            "attribution": "CMCL Innovations"
         };
 
         // Add additional raster settings if present in dataSet definition
@@ -192,7 +188,8 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "vector",
-            "data": location
+            "data": location,
+            "attribution": "CMCL Innovations"
         };
 
         // Add additional vector settings if present in dataSet definition

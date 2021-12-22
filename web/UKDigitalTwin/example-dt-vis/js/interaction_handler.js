@@ -1,28 +1,47 @@
 /**
  * Registers and handles interactions with the MapBox map (e.g. mouse overs, 
  * location clicks, keyboard events).
+ * 
+ * TODO: This class could do with some more refactoring, perhaps splitting
+ * into multiple classes.
  */
 class InteractionHandler {
 
+    // Mapbox map
     _map;
 
-    _registry;
-
-    _panelHandler;
-
+    // MapBox popup
     _popup;
 
-    _previousTab = "meta-tree-button";
+    // Data registry
+    _registry;
 
+    // Side panel handler
+    _panelHandler;
+
+    // Time series handle
     _timeseriesHandler;
 
+    // Layer Handler
     _layerHander;
 
+    // Name of previously opened tab
+    _previousTab = "meta-tree-button";
+
+    // ID of hovered feature
     _hoveredStateId = null;
 
+    // Time of last click
     _lastClick;
 
+    // Callback after feature selection
     _selectionCallbacks = {};
+    
+    // Cached meta data
+    _cachedMetadata = {};
+
+    // Cached timeseries
+    _cachedTimeseries = {};
 
     /**
      * Initialise a new interaction handler.
@@ -88,10 +107,13 @@ class InteractionHandler {
                 let featureLayer = feature["layer"]["id"];
                 if(featureLayer.includes("_clickable")) return false;
                 if(featureLayer.includes("_arrows")) return false;
+                if(featureLayer.includes("-highlight")) return false;
 
                 let layer = self._map.getLayer(featureLayer);
                 if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
-                return layer["metadata"]["provider"] === "cmcl";
+
+                if(layer["metadata"] && layer["metadata"]["provider"] === "cmcl") return true;
+                return false;
             });
 
             if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
@@ -143,8 +165,8 @@ class InteractionHandler {
                         html = "<h3>Multiple features</h3>";
 
                         let count = feature["properties"]["point_count_abbreviated"];
-                        html += `There are a number of features (`+ count + `) at this location. `;
-                        html += "Click to show a list features and select an individual."
+                        html += `There are `+ count + ` features at this location. `;
+                        html += "Click to show a list of these features."
                     } else {
                         // Get appropriate description for feature
                         var name = feature.properties["displayName"];
@@ -301,8 +323,13 @@ class InteractionHandler {
                 <option value="" disabled selected>Select a feature...</option>
         `;
 
+        let added = [];
+
         for(var i = 0; i < features.length; i++) {
             let displayName = features[i]["properties"]["displayName"];
+            // if(added.includes(displayName)) continue;
+            // added.push(displayName);
+
             if(displayName == null) {
                 displayName = "Cluster of " + features[i]["properties"]["point_count_abbreviated"] + " features from '";
                 displayName += features[i]["layer"]["id"].replace("_cluster", "") + "' layer."
@@ -328,13 +355,15 @@ class InteractionHandler {
     }
 
     /**
+     * Fired when a feature is selected.
      * 
-     * @param {*} layerName 
-     * @param {*} feature 
+     * @param {String} layerName name of layer containing feature
+     * @param {JSONObject} feature selected feature
      */
     mouseClick(layerName, feature) {
         if(feature == null) return;
 
+        let self = this;
         if(layerName.endsWith("_cluster")) {
             // If a cluster feature, let the user pick the leaf feature
             this.#handleClusterClick(feature, function(newFeature) {
@@ -412,6 +441,13 @@ class InteractionHandler {
         // Build containers for metadata trees
         this.#buildMetadataContainers();
 
+        // Loading text
+        document.getElementById("meta-tree").innerHTML = `
+            <div id="no-meta-container">
+                <p>Loading metadata, please wait...</p>
+            </div>
+        `;
+
         var beforeContainer = document.getElementById("content-before");
         if(feature.properties["description"]) {
             beforeContainer.style.display = "block";
@@ -427,11 +463,13 @@ class InteractionHandler {
         Promise.all(metaPromises).then((values) => {
             // Combine all meta entries into single tree
             var combinedMeta = [];
-            values.forEach(jsonEntry => {
-                Object.keys(jsonEntry).forEach(function(key) {
-                    if(key !== "id") combinedMeta[key] = jsonEntry[key];
+            if(values != null) {
+                values.forEach(jsonEntry => {
+                    Object.keys(jsonEntry).forEach(function(key) {
+                        if(key !== "id") combinedMeta[key] = jsonEntry[key];
+                    });
                 });
-            });
+            }
 
             // Show the metadata
             if(Object.keys(combinedMeta).length == 0) {
@@ -445,6 +483,7 @@ class InteractionHandler {
                 document.getElementById("meta-tree").innerHTML = "";
                 var metaTree = JsonView.renderJSON(combinedMeta, document.getElementById("meta-tree"));
                 JsonView.expandChildren(metaTree);
+                JsonView.selectiveCollapse(metaTree); // selectively collapse nodes with the collapse field set to true
             }
         });
     }
@@ -476,6 +515,10 @@ class InteractionHandler {
         });
     }
 
+    /**
+     * Builds the HTML container used to house the metadata tree and 
+     * timeseries controls.
+     */
     #buildMetadataContainers() {
         var html = `
             <div id="content-before"></div>
@@ -489,6 +532,12 @@ class InteractionHandler {
         this._panelHandler.setContent(html);
     }
 
+    /**
+     * Programatically select the metadata or timeseries tabs.
+     * 
+     * @param {String} tabButtonName 
+     * @param {String} tabName 
+     */
     openTreeTab(tabButtonName, tabName) {
         // Declare all variables
         var i, tabcontent, tablinks;
@@ -508,7 +557,6 @@ class InteractionHandler {
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         document.getElementById(tabButtonName).className += " active";
-
         this._previousTab = tabButtonName;
     }
 
@@ -516,37 +564,51 @@ class InteractionHandler {
      * Finds the metadata for the input map feature.
      * 
      * @param {JSONObject} feature selected map feature 
+     * @param {String} layerName name of layer containing feature
      */
     #findMeta(feature, layerName) {
         var metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
 
+        let self = this;
         var allPromises = [];
-        
+
+        // Once read, return the nodes with the matching feature id
+        let postRead = function(json) {
+            for(var i = 0; i < json.length; i++) {
+                if(json[i]["id"] == feature.id) {
+                    return json[i];
+                }
+            }
+        }
+
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
             layerName = layerName.replace("_clickable", "");
 
             if(dataSet["name"] === layerName) {
                 let metaFiles = dataSet["metaFiles"];
-
-                    if(metaFiles != null) {
+                if(metaFiles != null) {
 
                     // Load each listed meta file
                     for(var j = 0; j < metaFiles.length; j++) {
                         let metaDir  = metaGroup["thisDirectory"];
                         let metaFile = metaDir + "/" + metaFiles[j];
-                        console.log("INFO: Reading metadata JSON at " + metaFile);
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(metaFile).then(json => {
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    return json[i];
-                                }
-                            }
-                        });
+                        var promise;
+                        if(self._cachedMetadata[metaFile]) {
+                            // Use cached version
+                            let json = self._cachedMetadata[metaFile];
+                            promise = new Promise((resolve, reject) => {
+                                resolve(postRead(json));
+                            });
+                        } else {
+                            // Load file asynchronously
+                            promise = $.getJSON(metaFile).then(json => {
+                                self._cachedMetadata[metaFile] = json;
+                                return postRead(json);
+                            });
+                        }
 
                         // Pool promises
                         allPromises.push(promise);
@@ -559,17 +621,29 @@ class InteractionHandler {
     }
     
     /**
+     * Finds the timeseries data for the input map feature.
      * 
-     * @param {*} layerName 
-     * @param {*} feature 
-     * @param {*} callback 
+     * @param {JSONObject} feature selected map feature 
+     * @param {String} layerName name of layer containing feature
      */
     #findTimeSeries(feature, layerName) {
         // For each currently selected leaf group
         let metaGroup = this._registry.getGroup(DT.currentGroup);
         if(metaGroup == null) return;
     
+        let self = this;
         var allPromises = [];
+
+        // Once read, return the nodes with the matching feature id
+        let postRead = function(json) {
+            var timeSeriesNodes = [];
+            for(var i = 0; i < json.length; i++) {
+                if(json[i]["id"] == feature.id) {
+                    timeSeriesNodes.push(json[i]);
+                }
+            }
+            return timeSeriesNodes;
+        }
 
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
@@ -582,21 +656,22 @@ class InteractionHandler {
                     for(var j = 0; j < timeFiles.length; j++) {
                         let metaDir = metaGroup["thisDirectory"];
                         let timeFile = metaDir + "/" + timeFiles[j];
-                        console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
 
-                        // Load file asynchronously
-                        var promise = $.getJSON(timeFile).then(json => {
-                            var timeSeriesNodes = [];
+                        var promise;
+                        if(self._cachedTimeseries[timeFile]) {
+                            // Use cached version
+                            let json = self._cachedTimeseries[timeFile];
+                            promise = new Promise((resolve, reject) => {
+                                resolve(postRead(json));
+                            });
+                        } else {
+                            // Load file asynchronously
+                            promise = $.getJSON(timeFile).then(json => {
+                                self._cachedTimeseries[timeFile] = json;
+                                return postRead(json);
+                            });
+                        }
 
-                            // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
-                                    timeSeriesNodes.push(json[i]);
-                                }
-                            }
-                            return timeSeriesNodes;
-                        });
-                    
                         // Pool promises
                         allPromises.push(promise);
                     }
@@ -607,6 +682,7 @@ class InteractionHandler {
     }
 
     /**
+     * Returns true if the input variable is a number.
      * 
      * @param {*} n 
      * @returns 
@@ -614,7 +690,6 @@ class InteractionHandler {
     #isNumber(n) { 
         return !isNaN(parseFloat(n)) && !isNaN(n - 0);
     }
-
 
 }
 // End of class.

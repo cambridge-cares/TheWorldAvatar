@@ -1,4 +1,9 @@
-/* Common elements */
+/**
+*
+* CSS settings for generic framework components.
+*
+*/
+
 html,
 body {
   width: 100%;
