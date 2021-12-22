@@ -103,8 +103,8 @@ def convert_csv_to_triple_dfs(csvName):
     
     #Read csv
     data = pd.read_csv(csvName) #Dataframe including DUKES stations.
-    powerplant_data = pd.read_csv('powerplanttriple.csv') #Fixed powerplant name
-    generator_data = pd.read_csv('generatortriple.csv') #Fixed generator name
+    powerplant_data = pd.read_csv('https://www.dropbox.com/s/441deu1nirq9wbf/powerplanttriple.csv?dl=1') #Fixed powerplant name
+    generator_data = pd.read_csv('https://www.dropbox.com/s/ovhqn9udlpfvy8p/generatortriple.csv?dl=1') #Fixed generator name
 
     p_count = 0
     g_count = 0
@@ -143,8 +143,8 @@ def convert_csv_to_triple_dfs(csvName):
                 generator_data.iloc[g_count, generator_data.columns.get_loc('power')] = data[('Output' + str(Period))][i]
                 g_count += 1
     
-    powerplant_data.to_csv('powerplanttriple.csv', index = False)
-    generator_data.to_csv('generatortriple.csv', index = False)
+    powerplant_data.to_csv('https://www.dropbox.com/s/441deu1nirq9wbf/powerplanttriple.csv?dl=1', index = False)
+    generator_data.to_csv('https://www.dropbox.com/s/ovhqn9udlpfvy8p/generatortriple.csv?dl=1', index = False)
     
     return powerplant_data, generator_data
 
@@ -465,14 +465,14 @@ def Auto_Call(Key):
     #This means that rather than choosing a specific time, it picks 8 days ago and sweeps for all 48 periods (half hours) of the day. 
     #Thus, the Year, Month, Day, and Period inputs don't matter. With Search == 2.
     #CSV names are also set here and for the triple conversions. 
-    live_power('Input-Template.csv', Key, '2020', '20', '02', '02', 2)
-    dfa, dfb = convert_csv_to_triple_dfs('Input-Template.csv')
+    live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2020', '20', '02', '02', 2)
+    dfa, dfb = convert_csv_to_triple_dfs('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1')
     return dfa, dfb
 
 
 ###Main Function###
 if __name__ == "__main__":
     Key = ''
-    #live_power('Input-Template.csv', Key, '2021', '11', '14', '24', 2)
+    #live_power('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1', Key, '2021', '11', '14', '24', 2)
     Auto_Call(Key)
 

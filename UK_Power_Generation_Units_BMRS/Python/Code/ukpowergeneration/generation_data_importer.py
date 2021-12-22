@@ -203,7 +203,7 @@ def get_power_data_from_api():
     #####BACK LATER#####
     #Key = '' #####NEED THIS#####
     #powerplant_df, generator_df = bmrs.Auto_Call(Key)
-    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('Input-Template.csv')
+    powerplant_df, generator_df = bmrs.convert_csv_to_triple_dfs('https://www.dropbox.com/s/43vdtji8rf1zspr/Input-Template.csv?dl=1')
     #####BACK LATER#####
 
     # 2D array of data (triples [generatorName, time, power])
