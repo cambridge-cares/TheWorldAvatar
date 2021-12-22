@@ -131,19 +131,6 @@ class DigitalTwinManager {
 		// Add layer(s) for each dataset
 		for(var i = 0; i < groupData.length; i++) {
 			this._layerHandler.addLayer(groupData[i]);
-			
-			// Register interactions slightly differently for line layers
-			if(groupData[i]["locationType"] === "line") {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"] + "_clickable", 
-					groupData[i]["locationType"]
-				]);
-			} else {
-				this._interactionHandler.registerInteractions([
-					groupData[i]["name"],
-					groupData[i]["locationType"]
-				]);
-			}
 		}
 
 		// Rebuild the layer selection tree

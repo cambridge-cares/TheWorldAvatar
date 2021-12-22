@@ -16,7 +16,7 @@ class InteractionHandler {
 
     _timeseriesHandler;
 
-    _hoveredStateId = null;
+    _hoveredFeature = null;
 
     _lastClick;
 
@@ -33,6 +33,8 @@ class InteractionHandler {
         this._timeseriesHandler = timeseriesHandler;
 
         this._popup = DT.popup;
+
+        this.registerInteractions();
     }
 
 
@@ -41,155 +43,147 @@ class InteractionHandler {
      * 
      * @param {string[]} layer [layer name, layer type]
      */
-    registerInteractions(layer) {
-
-        let layerName = layer[0];
-        let layerType = layer[1];
-        let sourceName = this._map.getLayer(layerName).source;
-
-        var lastFeature = null;
+    registerInteractions() {
 
         // Mouse click
-        this._map.on("click", layerName, (event) => {
-             // Fudge to ensure that only one click per 500ms
-            let thisClick = Date.now();
-            if(this._lastClick != null) {
-                if(Math.abs(thisClick - this._lastClick) < 500) {
-                    return;
+        this._map.on("click", (event) => {
+
+            let features = this._map.queryRenderedFeatures(event.point);
+            let feature = features.find(hit => manager._sourceHandler._currentSources.includes(hit.layer.source));
+            if (feature) this.mouseClick(feature);
+
+            // Filter to determine how many non-default, circle/symbol features are present
+            let self = this;
+            let siteFeatures = features.filter(feature => {
+                let featureLayer = feature["layer"]["id"];
+                if(featureLayer.includes("_clickable")) return false;
+                if(featureLayer.includes("_arrows")) return false;
+
+                let layer = self._map.getLayer(featureLayer);
+                if(layer["type"] !== "circle" && layer["type"] !== "symbol") return false;
+                return layer["metadata"]["provider"] === "cmcl";
+            });
+
+            if(siteFeatures.length == 1 && layerName.endsWith("_cluster")) {
+                // If a cluster feature, let the user pick the leaf feature
+                this.#handleClusterClick(siteFeatures[0], function(newFeature) {
+                    self.mouseClick(layerName.replace("_cluster", ""), newFeature);
+                });
+            } else {
+                // If more than one, let the use pick
+                if(siteFeatures.length > 1) {
+                    feature = this.#handleMultipleFeatures(siteFeatures, function(newFeature) {
+                        // Trigger on chosen feature
+                        if(newFeature != null) {    
+                            self.mouseClick(newFeature["layer"]["id"], newFeature);
+                        }
+                    });
+                } else {
+                    self.mouseClick(layerName, feature);
                 }
             }
-            this._lastClick = thisClick;
-
-            // Trigger on top most feature
-            let feature = event.features[event.features.length - 1];
-            this.mouseClick(feature);
         });
 
-        // Interactions per layer type
-        switch(layerType) {
+        this._map.on("mousemove", (event) => {
 
-            case "line":
-            case "point":
-            case "symbol":
-                // Mouse enter
-                this._map.on("mouseenter", layerName, (event) => {
-                    let feature = this._map.queryRenderedFeatures(event.point)[0];
+            let feature = this._map.queryRenderedFeatures(event.point)
+                .find(hit => manager._sourceHandler._currentSources.includes(hit.layer.source));
 
-                    // Change cursor
-                    this._map.getCanvas().style.cursor = 'pointer';
+            // Remove old feature's hover state
+            if (this._hoveredFeature != null && (!feature || feature.id != this._hoveredFeature.id)) {
+                // This can be false if we've just switched groups.
+                if (manager._sourceHandler._currentSources.includes(this._hoveredFeature.layer.source)) {
+                    this._map.setFeatureState(
+                        { source: this._hoveredFeature.layer.source, id: this._hoveredFeature.id },
+                        { hover: false }
+                    );
+                }
+                this._hoveredFeature = null;
+            }
+
+            if (!feature) {
+                this._map.getCanvas().style.cursor = 'default';
+                this._popup.remove();
+                return;
+            }
+
+            let html = "";
+            let name = feature.properties["displayName"] ?? feature.properties["name"];
+            this._map.getCanvas().style.cursor = "pointer";
+
+            switch (feature.layer.type) {
+
+                case "line":
+                case "point":
+                case "symbol":
+                case "circle":
+
+                    if (feature.layer.id.endsWith("_arrows")) return;
 
                     // Get correct co-ords
-                    var coordinates = feature.geometry.coordinates.slice();
+                    let coordinates = feature.geometry.coordinates.slice();
                     while (Math.abs(event.lngLat.lng - coordinates[0]) > 180) {
                         coordinates[0] += event.lngLat.lng > coordinates[0] ? 360 : -360;
                     }
 
-                    // Get appropriate description for layer
-                    if(!feature.properties["displayName"] && !feature.properties["name"]) {
-                        return;
-                    }
-                    var name = feature.properties["displayName"];
-                    if(name == null) name = feature.properties["name"];
+                    if (feature.layer.id.endsWith("_cluster")) {
+                        html = "<h3>Multiple features</h3>";
 
-                    // Build HTML for popup
-                    var html = "<b>" + name + "</b></br>";
-                    if(feature.properties["description"]) {
-                        html += feature.properties["description"] + "</br></br>"
+                        let count = feature["properties"]["point_count_abbreviated"];
+                        html += `There are a number of features (` + count + `) at this location. `;
+                        html += "Click to show a list features and select an individual."
+                    } else {
+                        if (name == null) return;
+                        // Build HTML for popup
+                        html = "<h3>" + name + "</h3>";
+                        if (feature.properties["description"]) {
+                            html += feature.properties["description"] + "</br></br>"
+                        }
                     }
 
-                    if(coordinates.length == 2 && this.#isNumber(coordinates[0])) {
+                    if (coordinates.length == 2 && this.#isNumber(coordinates[0])) {
                         // Add coordinate details if a point
-                        html += "<em>" + coordinates[1].toFixed(5) + ", " + coordinates[0].toFixed(5) + "</em>"
                         this._popup.setLngLat(coordinates).setHTML(html).addTo(this._map);
-
-                    } else if(coordinates.length >= 2) {
-                        // Not a point, determine center then show popup
-                        let centroid = turf.centroid(feature);
-                        let popupLoc = centroid["geometry"]["coordinates"];
-                        this._popup.setLngLat(popupLoc).setHTML(html).addTo(this._map);
+                    } else if (coordinates.length >= 2) {
+                        let center = turf.centroid(feature)["geometry"]["coordinates"];
+                        this._popup.setLngLat(center).setHTML(html).addTo(this._map);
                     }
-                });
 
-                // Mouse exit
-                this._map.on("mouseleave", layerName, (event) => {
-                    this._map.getCanvas().style.cursor = '';
-                    this._popup.remove();
-                });
-                break;
+                    break;
 
                 case "fill":
                 case "extrusion":
+                case "fill-extrusion":
                 case "polygon":
-                    var lastFeature = null;
 
-                    // Mouse enter
-                    this._map.on("mouseenter", layerName, (event) => {
-                        // Change cursor
-                        this._map.getCanvas().style.cursor = 'pointer';
-                    });
+                    // Set hover state for this feature
+                    this._hoveredFeature = feature;
+                    this._map.setFeatureState(
+                        { source: feature.layer.source, id: feature.id },
+                        { hover: true }
+                    );
 
-                    // When the user moves their mouse over the fill area
-                    this._map.on('mousemove', layerName, (e) => {
-                        var thisFeature = this._map.queryRenderedFeatures(e.point)[0];
+                    if (name == null) return;
 
-                        if(lastFeature == null || thisFeature.id != lastFeature.id) {
-                            lastFeature = thisFeature;
+                    // Build HTML for popup
+                    html = "<b>" + name + "</b></br>";
+                    if (feature.properties["description"]) {
+                        html += feature.properties["description"] + "</br></br>"
+                    }
 
-                            // Remove old feature's hover state
-                            if (this._hoveredStateId !== null) {
-                                this._map.setFeatureState(
-                                    { source: sourceName, id: this._hoveredStateId },
-                                    { hover: false }
-                                );
-                            }
-                            
-                            // Set hover state for this feature
-                            this._hoveredStateId = e.features[0].id;
-                            this._map.setFeatureState(
-                                { source: sourceName, id: this._hoveredStateId },
-                                { hover: true }
-                            );
+                    // Get coords for the center of the polygon
+                    let center = turf.centroid(feature)["geometry"]["coordinates"];
+                    this._popup.setLngLat(center).setHTML(html).addTo(this._map);
 
-                            // Get appropriate description for layer
-                            if(!thisFeature.properties["displayName"] && !thisFeature.properties["name"]) return;
-                            var name = thisFeature.properties["displayName"];
-                            if(name == null) name = thisFeature.properties["name"];
+            }
 
-                            // Build HTML for popup
-                            var html = "<b>" + name + "</b></br>";
-                            if(thisFeature.properties["description"]) {
-                                html += thisFeature.properties["description"] + "</br></br>"
-                            }
+        });
 
-                            // Get coords for the center of the polygon
-                            var center = turf.centroid(thisFeature)["geometry"]["coordinates"];
-                            this._popup.setLngLat(center).setHTML(html).addTo(this._map);
-                        }
-                    });
-
-                    // Mouse exit
-                    this._map.on("mouseleave", layerName, (event) => {
-                        this._map.getCanvas().style.cursor = '';
-                        this._popup.remove();
-                        lastFeature = null;
-
-                        if (this._hoveredStateId !== null) {
-                            this._map.setFeatureState(
-                                { source: sourceName, id: this._hoveredStateId },
-                                { hover: false }
-                            );
-                        }
-                        this._hoveredStateId = null;
-                    });
-                break;
-        } 
-
-        console.log("INFO: Interactions for layer '" + layerName + "' have been registered.");
+        console.log("INFO: Interactions have been registered.");
     }
 
     /**
      * 
-     * @param {*} layerName 
      * @param {*} feature 
      */
     mouseClick(feature) {
@@ -198,13 +192,13 @@ class InteractionHandler {
 
         // Hide the legend
         this._panelHandler.toggleLegend(false);
-        
+
         // Show the title
         var title = feature.properties["displayName"];
-        if(title == null) title = feature.properties["name"];
-        if(title == null) title = "ID " + feature.id;
+        if (title == null) title = feature.properties["name"];
+        if (title == null) title = "ID " + feature.id;
 
-        if(feature["geometry"]["type"] === "Point") {
+        if (feature["geometry"]["type"] === "Point") {
             var coordinates = feature.geometry.coordinates;
 
             var titleHTML = title + `
@@ -217,7 +211,7 @@ class InteractionHandler {
         } else {
             this._panelHandler.setTitle(title);
         }
-       
+
         // Handle the metadata
         this.#handleMetadata(feature);
 
@@ -229,7 +223,7 @@ class InteractionHandler {
 
         // Expand the side panel if it's collapsed
         var sidePanel = document.getElementById("sidePanel");
-        if(sidePanel.classList.contains("collapsed")) {
+        if (sidePanel.classList.contains("collapsed")) {
             this._panelHandler.toggleExpansion();
         }
 
@@ -247,7 +241,7 @@ class InteractionHandler {
         this.#buildMetadataContainers();
 
         var beforeContainer = document.getElementById("content-before");
-        if(feature.properties["description"]) {
+        if (feature.properties["description"]) {
             beforeContainer.style.display = "block";
             beforeContainer.innerHTML = `<p>` + feature.properties["description"] + `</p>`;
         } else {
@@ -262,13 +256,13 @@ class InteractionHandler {
             // Combine all meta entries into single tree
             var combinedMeta = [];
             values.forEach(jsonEntry => {
-                Object.keys(jsonEntry).forEach(function(key) {
-                    if(key !== "id") combinedMeta[key] = jsonEntry[key];
+                Object.keys(jsonEntry).forEach(function (key) {
+                    if (key !== "id") combinedMeta[key] = jsonEntry[key];
                 });
             });
 
             // Show the metadata
-            if(Object.keys(combinedMeta).length == 0) {
+            if (Object.keys(combinedMeta).length == 0) {
                 // No metadata
                 document.getElementById("meta-tree").innerHTML = `
                     <div id="no-meta-container">
@@ -294,7 +288,7 @@ class InteractionHandler {
         var self = this;
         Promise.all(timePromises).then((values) => {
 
-            if(values == null || values.length == 0 || values[0] == null) {
+            if (values == null || values.length == 0 || values[0] == null) {
                 // No time series data
                 document.getElementById("time-series-container").innerHTML = `
                     <div id="no-meta-container">
@@ -326,19 +320,19 @@ class InteractionHandler {
     openTreeTab(tabButtonName, tabName) {
         // Declare all variables
         var i, tabcontent, tablinks;
-      
+
         // Get all elements with class="tabcontent" and hide them
         tabcontent = document.getElementsByClassName("tabcontent");
         for (i = 0; i < tabcontent.length; i++) {
             tabcontent[i].style.display = "none";
         }
-      
+
         // Get all elements with class="tablinks" and remove the class "active"
         tablinks = document.getElementsByClassName("tablinks");
         for (i = 0; i < tablinks.length; i++) {
             tablinks[i].className = tablinks[i].className.replace(" active", "");
         }
-      
+
         // Show the current tab, and add an "active" class to the button that opened the tab
         document.getElementById(tabName).style.display = "block";
         document.getElementById(tabButtonName).className += " active";
@@ -353,22 +347,22 @@ class InteractionHandler {
      */
     #findMeta(feature) {
         var metaGroup = this._registry.getGroup(DT.currentGroup);
-        if(metaGroup == null) return;
+        if (metaGroup == null) return;
 
         var allPromises = [];
-        
+
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
             let layerName = feature.layer["id"].replace("_clickable", "");
 
-            if(dataSet["name"] === layerName) {
+            if (dataSet["name"] === layerName) {
                 let metaFiles = dataSet["metaFiles"];
 
-                    if(metaFiles != null) {
+                if (metaFiles != null) {
 
                     // Load each listed meta file
-                    for(var j = 0; j < metaFiles.length; j++) {
-                        let metaDir  = metaGroup["thisDirectory"];
+                    for (var j = 0; j < metaFiles.length; j++) {
+                        let metaDir = metaGroup["thisDirectory"];
                         let metaFile = metaDir + "/" + metaFiles[j];
                         console.log("INFO: Reading metadata JSON at " + metaFile);
 
@@ -376,8 +370,8 @@ class InteractionHandler {
                         var promise = $.getJSON(metaFile).then(json => {
 
                             // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
+                            for (var i = 0; i < json.length; i++) {
+                                if (json[i]["id"] == feature.id) {
                                     return json[i];
                                 }
                             }
@@ -392,29 +386,29 @@ class InteractionHandler {
 
         return allPromises;
     }
-    
+
     /**
      * 
      * @param {*} layerName 
      * @param {*} feature 
      * @param {*} callback 
      */
-      #findTimeSeries(feature) {
+    #findTimeSeries(feature) {
         // For each currently selected leaf group
         let metaGroup = this._registry.getGroup(DT.currentGroup);
-        if(metaGroup == null) return;
-    
+        if (metaGroup == null) return;
+
         var allPromises = [];
 
         metaGroup["dataSets"].forEach(dataSet => {
             // Check if the layer name is the same
-            if(dataSet["name"] === feature.layer["id"]) {
+            if (dataSet["name"] === feature.layer["id"]) {
                 let timeFiles = dataSet["timeseriesFiles"];
 
-                if(timeFiles != null) {
+                if (timeFiles != null) {
 
                     // Read each time file
-                    for(var j = 0; j < timeFiles.length; j++) {
+                    for (var j = 0; j < timeFiles.length; j++) {
                         let metaDir = metaGroup["thisDirectory"];
                         let timeFile = metaDir + "/" + timeFiles[j];
                         console.log("INFO: Reading Additional timeseries JSON at " + timeFile);
@@ -423,13 +417,13 @@ class InteractionHandler {
                         var promise = $.getJSON(timeFile).then(json => {
 
                             // Once read, only return the node with the matching feature id
-                            for(var i = 0; i < json.length; i++) {
-                                if(json[i]["id"] == feature.id) {
+                            for (var i = 0; i < json.length; i++) {
+                                if (json[i]["id"] == feature.id) {
                                     return json[i];
                                 }
                             }
                         });
-                    
+
                         // Pool promises
                         allPromises.push(promise);
                     }
@@ -444,7 +438,7 @@ class InteractionHandler {
      * @param {*} n 
      * @returns 
      */
-    #isNumber(n) { 
+    #isNumber(n) {
         return !isNaN(parseFloat(n)) && !isNaN(n - 0);
     }
 

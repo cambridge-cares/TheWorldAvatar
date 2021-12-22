@@ -103,24 +103,11 @@ class CesiumWrapper {
                     // Normally we should be able to just do entities[i].properties.PropertyName, but the normal property keys are not valid JavaScript names.
                     if(entity.polygon != null) {
                         // Determine color
-                        let getColorProp = (name) => Cesium.Color.fromCssColorString(entity.properties[name].valueOf());
-                        let color;
-                        if(entity.properties.hasProperty("fill-extrusion-color"))
-                            color = getColorProp("fill-extrusion-color");
-                        else if(entity.properties.hasProperty("fill-color"))
-                            color = getColorProp("fill-color");
-                        else
-                            color = Cesium.Color.DARKGRAY;
-                        // Determine outline color
-                        let outlineColor = null;
-                        if(entity.properties.hasProperty("circle-stroke-color"))
-                            outlineColorHex = getColorProp("circle-stroke-color");
-                        else if(entity.properties.hasProperty("fill-color"))
-                            outlineColorHex = getColorProp("fill-outline-color");
-                        else
-                            outlineColor = Cesium.Color.lerp(color, Cesium.Color.BLACK, 0.5, color);
-                        entity.polygon.material = color;
-                        entity.polygon.outlineColor = outlineColor;
+                        let props = entity.properties;
+                        let color = props["fill-extrusion-color"] ?? props["fill-color"] ?? "#666666";
+                        let outlineColor = props["circle-stroke-color"] ?? props["fill-outline-color"] ?? "#000000";
+                        entity.polygon.material = Cesium.Color.fromCssColorString(color.valueOf());
+                        entity.polygon.outlineColor = Color.fromCssColorString(outlineColor.valueOf());
                     }
                 }
             }).otherwise(function (error) {
@@ -178,7 +165,7 @@ class CesiumWrapper {
     /**
      * 
      * @param {(x,y)} point point to query
-     * @returns {}
+     * @returns {Feature[]} features in line of mouse pointer, from back to front
      */
     queryRenderedFeatures(point) {
 
