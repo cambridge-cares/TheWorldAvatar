@@ -10,7 +10,12 @@
             "circle-color": "#0000FF",
             "circle-stroke-width": 1,
             "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
+            "circle-opacity": 0.75,
+            "connections": [
+              "assets-2-connections/1",
+              "assets-2-connections/4",
+              "inter-asset-connections/1"
+            ]
         },
         "geometry": {
           "type": "Point",
@@ -29,7 +34,12 @@
             "circle-color": "#0000FF",
             "circle-stroke-width": 1,
             "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
+            "circle-opacity": 0.75,
+            "connections": [
+              "assets-2-connections/1",
+              "assets-2-connections/2",
+              "inter-asset-connections/2"
+            ]
         },
         "geometry": {
           "type": "Point",
@@ -48,7 +58,12 @@
             "circle-color": "#0000FF",
             "circle-stroke-width": 1,
             "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
+            "circle-opacity": 0.75,
+            "connections": [
+              "assets-2-connections/2",
+              "assets-2-connections/3",
+              "inter-asset-connections/3"
+            ]
         },
         "geometry": {
           "type": "Point",
@@ -67,7 +82,12 @@
             "circle-color": "#0000FF",
             "circle-stroke-width": 1,
             "circle-stroke-color": "#000000",
-            "circle-opacity": 0.75
+            "circle-opacity": 0.75,
+            "connections": [
+              "assets-2-connections/3",
+              "assets-2-connections/4",
+              "inter-asset-connections/4"
+            ]
         },
         "geometry": {
           "type": "Point",

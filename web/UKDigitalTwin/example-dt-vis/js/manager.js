@@ -47,11 +47,38 @@ class DigitalTwinManager {
 		window.DT = {};
 		DT.terrain = "light";
 		DT.currentGroup = [];
+		DT.clickEvents = true;
+		DT.placenames = true;
 		DT.popup = new mapboxgl.Popup({
 			closeButton: false,
 			closeOnClick: false
 		});
 	}
+
+	getMap() {
+		return this._map;
+	}
+
+	getLayerHandler() {
+		return this._layerHandler;
+	}
+
+	getRegistry() {
+		return this._registry;
+	}
+
+	/**
+     * Add a callback what will fire after a feature within the 
+     * input MapBox layer has been selected.
+     * 
+     * @param {String} layerName MapBox layerID
+     * @param {Function} callback function to execute 
+     */
+	addSelectionCallback(layerName, callback) {
+		if(this._interactionHandler != null) {
+       		this._interactionHandler.addSelectionCallback(layerName, callback);
+		}
+    }
 
     /**
      * Register multpiple possible root directories.
@@ -97,7 +124,7 @@ class DigitalTwinManager {
 	 * as the default state of the map.
 	 */
 	plotFirstGroup(updateSelects = true) {
-		this.plotGroup(this._registry.getFirstGroup(), updateSelects);
+		return this.plotGroup(this._registry.getFirstGroup(), updateSelects);
 	}
 
 	/**
@@ -108,7 +135,10 @@ class DigitalTwinManager {
 	 * @param {String[]} group group selection (e.g. ["scenario-0", "time-0"]) 
 	 * @param {Boolean} updateSelects force dropdowns to match the group selection
 	 */
-	plotGroup(group, updateSelects = true) {
+	plotGroup(group, updateSelects = true, callback = null) {
+		DT.currentFeature = null;
+		this.goToDefaultPanel();
+
 		// Remove previously added layers
 		this._layerHandler.removeLayers();
 
@@ -122,29 +152,38 @@ class DigitalTwinManager {
 		var groupMeta = this._registry.getGroup(group);
 
 		// Get each data set and add it as a source
+		var sourcePromises = [];
+
 		var groupData = groupMeta["dataSets"];
 		var groupDir = groupMeta["thisDirectory"];
 		for(var i = 0; i < groupData.length; i++) {
-			this._sourceHandler.addSource(groupDir, groupData[i]);
+			let sourcePromise = this._sourceHandler.addSource(groupDir, groupData[i]);
+			sourcePromises.push(sourcePromise);
 		}
 
-		// Add layer(s) for each dataset
-		for(var i = 0; i < groupData.length; i++) {
-			this._layerHandler.addLayer(groupData[i]);
-		}
+		// Wait until all sources are loaded before adding layers
+		return Promise.all(sourcePromises).then(() => {
 
-		// Rebuild the layer selection tree
-		this._controlHandler.rebuildTree();
+			// Add layer(s) for each dataset
+			for(var i = 0; i < groupData.length; i++) {
+				this._layerHandler.addLayer(groupData[i]);
+			}
 
-		// If a location was already selected, update the side panel
-		if(DT.currentFeature != null) {
-			this._interactionHandler.mouseClick(DT.currentFeature);
-		}
+			// Rebuild the layer selection tree
+			this._controlHandler.rebuildTree();
 
-		// Force selections to match this group
-		if(updateSelects) {
-			this.#forceSelects(group, 0);
-		}
+			// If a location was already selected, update the side panel
+			if(DT.currentFeature != null) {
+				this._interactionHandler.mouseClick(DT.currentFeature);
+			}
+
+			// Force selections to match this group
+			if(updateSelects) {
+				this.#forceSelects(group, 0);
+			}
+
+			if(callback != null) callback();
+		});
 	}
 
 	/**
@@ -178,12 +217,23 @@ class DigitalTwinManager {
 	}
 
 	/**
-	 * Adds a special sky effects layer.
+	 * Adds a special sky effects layer and (if enabled) 3D terrain.
 	 */
-	setSkyDetails() {
+	addSkyAndTerrain() {
 		if(this._layerHandler != null) {
 			this._layerHandler.addSkyLayer();
+			this._layerHandler.setSunPosition(
+				(DT.terrain === "dark") ? "sunsetStart" : "solarNoon"
+			);
+			console.log("INFO: Added special Sky layer.");
 		}
+
+		// if(this._registry != null && this._sourceHandler != null) {
+		// 	if(eval(this._registry.globalMeta["add3DTerrain"])) {
+		// 		this._sourceHandler.add3DTerrain();
+		// 		console.log("INFO: Added special 3D terrain layer.");
+		// 	}
+		// }
 	}
 
 	/**
@@ -200,24 +250,7 @@ class DigitalTwinManager {
 			return;
 		}
 
-		// If there was a previously selected terrain
-		let terrainURL = null;
-		switch(DT.terrain) {
-			default:
-				terrainURL = "mapbox://styles/mapbox/light-v10?optimize=true";
-				break;
-			case "dark":
-				terrainURL = "mapbox://styles/mapbox/dark-v10?optimize=true";
-				break;
-			case "satellite":
-				terrainURL = "mapbox://styles/mapbox/satellite-v9?optimize=true";
-				break;
-			case "satellite-streets":
-				terrainURL = "mapbox://styles/mapbox/satellite-streets-v11?optimize=true";
-				break;
-		}
-
-		map.setStyle(terrainURL);
+		map.setStyle("mapbox://styles/mapbox/light-v10?optimize=true");
 
 		map.jumpTo({
 			center: this._registry.globalMeta["defaultCenter"],
@@ -227,7 +260,7 @@ class DigitalTwinManager {
 		});
 		
 		// Now that we have a map, do some initialisation of handlers
-		this._sourceHandler = new SourceHandler(this._map);
+		this._sourceHandler = new SourceHandler(this._map, this._registry);
 		this._layerHandler = new LayerHandler(this._map);
 		this._panelHandler = new PanelHandler(this._map);
 		this._timeseriesHandler = new TimeseriesHandler();
@@ -236,7 +269,8 @@ class DigitalTwinManager {
 			this._map, 
 			this._registry, 
 			this._panelHandler,
-			this._timeseriesHandler
+			this._timeseriesHandler,
+			this._layerHandler
 		);
 		
 		console.log("INFO: Map object has been initialised.");
@@ -257,6 +291,16 @@ class DigitalTwinManager {
 		this._panelHandler.setLegend(legend);
 		this._panelHandler.setFooter(footer);
 
+		// Show linked files (if they've been set)
+		if(null != this._registry.globalMeta["linkedFiles"])  {
+			let rootDir = this._rootDirectories[this._currentRootDirName];
+			this._panelHandler.showLinkedFiles(this._registry.globalMeta, rootDir);
+		}
+
+	
+	}
+
+	storePanelDefault() {
 		this._panelHandler.storeDefault();
 	}
 
@@ -324,10 +368,8 @@ class DigitalTwinManager {
 	 * @param {Element} control event source 
 	 */
 	changeTerrain(mode) {
+		if(mode === DT.terrain) return;
 		this._controlHandler.changeTerrain(mode);
-		this._layerHandler.setSunPosition(
-			(mode === "dark") ? "sunsetStart" : "solarNoon"
-		);
 	}
 
 	/**
@@ -353,11 +395,114 @@ class DigitalTwinManager {
 		this._panelHandler.toggleMode();
 	}
 
+	setDefaultPanelCallback(callback) {
+		this._defaultPanelCallback = callback;
+
+	}
 	/**
 	 * Returns to the default state of the side panel
 	 */
 	goToDefaultPanel() {
 		this._panelHandler.returnToDefault();
+		if(this._defaultPanelCallback != null) {
+			this._defaultPanelCallback();
+		}
+	}
+	
+	/**
+	 * Given a link to a markdown file, this method opens
+	 * and renders the file in a new tab.
+	 */
+	openMarkdownLink(url) {
+		let directories = null;
+		let fileName = url;
+		if(url.includes("/")) {
+			let index = url.lastIndexOf("/");
+			directories = url.substring(0, index);
+			fileName = url.substring(index + 1, url.length);
+		}
+
+		$.get(url, function(contents) {
+			var newContents = contents;
+
+			if(directories != null) {
+				// Assume image src in markdown files are relative to the MD file.
+				// We need to update them in-memory to be relative to this HTML file.
+				let regex = new RegExp(`src="(?!http)[^"]*`, `g`);
+				let matches = [];
+
+				let match;
+				while ((match = regex.exec(contents)) !== null) {
+					matches.push(match[0]);
+				}
+
+				matches.forEach(match => {
+					let replacement = match.replace("src=\"", "");
+					replacement = replacement.replace("./", "");
+					replacement = "src=\"" + directories + "/" + replacement;
+					newContents = newContents.replace(match, replacement);
+				});
+			}
+
+			// Open the (potentially adjusted) markdown contents in a new document
+			var newWindow = window.open("", fileName, "");
+			newWindow.document.write(`
+				<html>
+					<head>
+						<title>` + fileName + `</title>
+						<meta charset="utf-8">
+					</head>
+					<body style="background-color: rgb(240, 240, 240); border-radius: 8px;">
+						<div style="margin: 30px 90px; padding: 25px 50px; background-color: white;">
+							` +  marked.parse(newContents) + `
+						</div>
+					</body>
+				</html>
+			`);
+			newWindow.document.close();
+		});
+	}
+
+	/**
+	 * Given a link to a JSON file, this method opens
+	 * and renders the file in a new tab.
+	 */
+	 openJSONLink(url) {
+		let directories = null;
+		let fileName = url;
+		if(url.includes("/")) {
+			let index = url.lastIndexOf("/");
+			directories = url.substring(0, index);
+			fileName = url.substring(index + 1, url.length);
+		}
+
+		$.get(url, function(contents) {
+			var newContents = contents;
+
+			// Open the (potentially adjusted) JSON contents in a new document
+			var newWindow = window.open("", fileName, "");
+			newWindow.json = newContents;
+			newWindow.document.write(`
+				<html>
+					<head>
+						<title>` + fileName + `</title>
+						<meta charset="utf-8">
+						<link href="./css/framework/jsonview.bundle.css" rel="stylesheet"> 
+						<script src='./js/framework/jsonview.bundle.js'></script>
+					</head>
+					<body style="background-color: rgb(240, 240, 240); border-radius: 8px;">
+						<div id="container" style="margin: 30px 90px; padding: 25px 50px; background-color: white;">
+						</div>
+						<script>
+							var tree = JsonView.renderJSON(window.json, document.getElementById("container"));
+                			JsonView.expandChildren(tree);
+							console.log("INFO: JSON tree has been rendered.");
+						</script>
+					</body>
+				</html>
+			`);
+			newWindow.document.close();
+		});
 	}
 
 	/**
@@ -427,6 +572,91 @@ class DigitalTwinManager {
 			bearing: 0,
 			speed: 0.75
 		});
+	}
+
+	/**
+	 * Enable (or disable) 3D terrain provided by MapBox.
+	 * 
+	 * @param {Boolean} enabled 3D terrain state.
+	 */
+	set3DTerrain(enabled) {
+		if(this._sourceHandler != null) {
+			this._sourceHandler.set3DTerrain(enabled);
+		}
+	}
+
+	/**
+	 * Enable (or disable) depth of field effect.
+	 * 
+	 * @param {Boolean} enabled depth of field state. 
+	 */
+	setTiltshift(enabled) {
+		var tiltShiftComponent = document.getElementById("tiltShift");
+		tiltShiftComponent.style.display = (enabled) ? "block" : "none";
+
+		if(enabled) {
+			var self = this;
+			this._map.on("zoom", function() {
+				self.#updateTiltShift();
+			});
+			this._map.on("pitch", function() {
+				self.#updateTiltShift();
+			});
+			this.#updateTiltShift();
+		}
+	}
+
+	/**
+	 * 
+	 * @param {*} enabled 
+	 */
+	setPlacenames(enabled) {
+		if(enabled == null && DT.placenames != null) {
+			enabled = DT.placenames;
+		} else if(enabled == null) {
+			return;
+		}
+
+		let ids = ["road-number-shield", "road-label", "road-intersection", "waterway-label", "natural-line-label",
+		"natural-point-label", "water-line-label", "water-point-label", "poi-label", "airport-label", "settlement-subdivision-label",
+		"settlement-minor-label", "settlement-major-label", "settlement-label", "state-label", "country-label"]
+
+		ids.forEach(id => {
+			if(this._map.getLayer(id) != null) {
+				this._map.setLayoutProperty(
+					id,
+					"visibility",
+					(enabled ? "visible" : "none")
+				);
+			}
+		});
+		DT.placenames = enabled;
+	}
+
+	/**
+	 * Updates the tiltshift effect based on the current zoom and pitch.
+	 */
+	#updateTiltShift() {
+		var tiltShiftComponent = document.getElementById("tiltShift");
+
+		if(tiltShiftComponent.style.display === "block") {
+			var blurAmount = 5;
+
+			var pitch = this._map.getPitch();
+			var zoom = this._map.getZoom() / 20;
+			var fractionPitched = zoom * (pitch / 90);
+
+			tiltShiftComponent.style.backdropFilter = "blur(" + blurAmount + "px)";
+			tiltShiftComponent.style.webkitBackdropFilter = "blur(" + blurAmount + "px)";
+
+			var topStart = "black " + (5 * fractionPitched) + "%";
+			var topEnd = "rgba(0, 0, 0, 0) " +  (60 * fractionPitched) + "%";
+			var bottomStart = "rgba(0, 0, 0, 0) " + (100 - (15 * fractionPitched)) + "%";
+			var bottomEnd ="rgba(0, 0, 0, 0.5) 100%";
+		
+			tiltShiftComponent.style.webkitMaskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
+			tiltShiftComponent.style.maskImage = "linear-gradient(" + topStart + ", " + topEnd + ", " + bottomStart +  ", " + bottomEnd + ")";
+		}
 	}
 
 }

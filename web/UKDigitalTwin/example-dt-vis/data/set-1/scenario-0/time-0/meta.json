@@ -27,13 +27,15 @@
             "dataType": "geojson",
             "dataLocation": "lines-1.geojson",
             "metaFiles": ["lines-1-meta.json"],
-            "locationType": "line"
+            "locationType": "line",
+            "arrows": true
         },
         {
             "name": "assets-2-connections",
             "dataType": "geojson",
             "dataLocation": "lines-2.geojson",
-            "locationType": "line"
+            "locationType": "line",
+            "arrows": true
         },
         {
             "name": "inter-asset-connections",

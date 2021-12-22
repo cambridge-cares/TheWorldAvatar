@@ -1,15 +1,65 @@
 [
     {
-        "data": ["Measurement #1", "Measurement #2", "Measurement #3"],
+        "data": [ "Booleans (vs Time Instants)" ],
         "id": 1,
-        "units": ["-", "mm^2/s", "cm^2/s"],
+        "units": [ "-" ],
+        "timeClass": "Instant",
+        "valuesClass": [ "Boolean" ],
         "values": [
-            [1, 2, 3, 4, 5],
-            [10, 20, 30, 40, 50],
-            [100, 200, 300, 400, 500]
+            [ 
+                true, 
+                true, 
+                false, 
+                false, 
+                true,
+                true,
+                false,
+                false,
+                true,
+                true
+            ]
         ],
         "time": [
-            "2021-01-01T00:01:00Z", 
+            "2021-01-01T00:01:00Z",
+            "2021-01-01T00:02:00Z",
+            "2021-01-01T00:02:00Z",
+            "2021-01-01T00:03:00Z",
+            "2021-01-01T00:03:00Z",
+            "2021-01-01T00:04:00Z",
+            "2021-01-01T00:04:00Z",
+            "2021-01-01T00:05:00Z",
+            "2021-01-01T00:05:00Z",
+            "2021-01-01T00:06:00Z"
+        ]
+    },
+    {
+        "data": [ "Numbers (vs. Time Intervals)" ],
+        "id": 1,
+        "timeClass": "Number",
+        "valuesClass": [ "Number" ],
+        "units": [ "-" ],
+        "values": [
+            [ 100, 200, 300, 400, 500 ]
+        ],
+        "time": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5"
+        ]
+    },
+    {
+        "data": [ "Numbers (vs. Time Instants)" ],
+        "id": 1,
+        "timeClass": "Instant",
+        "valuesClass": ["Number"],
+        "units": [ "-" ],
+        "values": [
+            [ 10, 20, 30, 40, 50 ]
+        ],
+        "time": [
+            "2021-01-01T00:01:00Z",
             "2021-01-01T00:02:00Z",
             "2021-01-01T00:03:00Z",
             "2021-01-01T00:04:00Z",
@@ -17,12 +67,11 @@
         ]
     },
     {
-        "data": ["Measurement #1", "Measurement #2"],
+        "data": ["Measurement #1"],
         "id": 2,
-        "units": ["-", "mm^2/s"],
+        "units": ["-"],
         "values": [
-            [1, 2, 3, 4, 5],
-            [10, 20, 30, 40, 50]
+            [1, 2, 3, 4, 5]
         ],
         "time": [
             "2021-01-01T00:01:00Z", 

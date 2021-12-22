@@ -14,12 +14,41 @@ class SourceHandler {
     _currentSources = [];
 
     /**
+     * DataRegistry object.
+     */
+    _registry;
+
+    /**
      * Initialise a new SourceHandler.
      * 
      * @param {?} map MapBox map 
      */
-    constructor(map) {
+    constructor(map, registry) {
         this._map = map;
+        this._registry = registry;
+    }
+
+    /**
+     * Adds 3D terrain provided by MapBox. 
+     * WARNING: This may not be compatible with 3D building data unless the
+     * building's base height has been set correctly.
+     */
+    set3DTerrain(enabled) {
+        if(enabled) {
+            this._map.addSource('mapbox-3d-terrain', {
+                type: 'raster-dem',
+                url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
+                tileSize: 512,
+                maxzoom: 14
+            });
+            this._map.setTerrain({
+                source: 'mapbox-3d-terrain', 
+                exaggeration: 1.5
+            });
+        } else {
+            this._map.setTerrain(null);
+            if(this._map.getSource("mapbox-3d-terrain") != null) this._map.removeSource('mapbox-3d-terrain');
+        }
     }
 
     /**
@@ -30,30 +59,29 @@ class SourceHandler {
      * @param {JSONObject} dataSet data set definition
      */
     addSource(rootDir, dataSet) {
-        let name = dataSet["name"];
-        let type = dataSet["dataType"];
-        let location = dataSet["dataLocation"];
+        try {
+            let name = dataSet["name"];
+            let type = dataSet["dataType"];
+            let location = dataSet["dataLocation"];
 
-        // If the data location is NOT a URL, it will be a relative file path.
-        // If that's the case, make it absolute
-        if(!this.#isURL(location)) {
-            location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
-        }
+            // If the data location is NOT a URL, it will be a relative file path.
+            // If that's the case, make it absolute
+            if(!this.#isURL(location)) {
+                location = (rootDir.endsWith("/")) ? (rootDir + location) : (rootDir + "/" + location);
+            }
 
-        // Add source depending on type
-        switch(type) {
-            default:
-            case "geojson":
-                this.#addGeoJSONSource(dataSet, name, location);
-            break;
-
-            case "raster":
-                this.#addRasterSource(dataSet, name, location);
-            break;
-
-            case "vector":
-                this.#addVectorSource(dataSet, name, location);
-            break;
+            // Add source depending on type
+            switch(type) {
+                default:
+                case "geojson":
+                    return this.#addGeoJSONSource(dataSet, name, location);
+                case "raster":
+                    return this.#addRasterSource(dataSet, name, location);
+                case "vector":
+                    return this.#addVectorSource(dataSet, name, location);
+            }
+        } catch(error) {
+            console.log("ERROR: Could not load source '" + name + "', it will be skipped.");
         }
     }
 
@@ -96,22 +124,29 @@ class SourceHandler {
     #addGeoJSONSource(dataSet, name, location) {
         this._currentSources.push(name);
 
-        // Determine source options
-        let options = {
-            "type": "geojson",
-            "data": location,
-            "generateId": false
-        };
+        // Load the source into memory locally
+        var self = this;
+        return $.getJSON(location, function(json) {
+            // Cache the JSON object (so we can iterate through it later)
+            self._registry.cachedGeoJSON[name] = json;
 
-        // Add clustering settings if present in dataSet definition
-        if(dataSet["cluster"]) options["cluster"] = dataSet["cluster"];
-        if(dataSet["clusterMaxZoom"]) options["clusterMaxZoom"] = dataSet["clusterMaxZoom"];
-        if(dataSet["clusterRadius"]) options["clusterRadius"] = dataSet["clusterRadius"];
-        if(dataSet["clusterProperties"]) options["clusterProperties"] = dataSet["clusterProperties"];
+            // Determine source options
+            let options = {
+                "type": "geojson",
+                "data": json,
+                "generateId": false
+            };
 
-        // Add to map
-        this._map.addSource(name, options);
-        console.log("INFO: Added '" + name + "' as a GeoJSON source to MapBox.");
+            // Add clustering settings if present in dataSet definition
+            if(dataSet["cluster"]) options["cluster"] = dataSet["cluster"];
+            if(dataSet["clusterMaxZoom"]) options["clusterMaxZoom"] = dataSet["clusterMaxZoom"];
+            if(dataSet["clusterRadius"]) options["clusterRadius"] = dataSet["clusterRadius"];
+            if(dataSet["clusterProperties"]) options["clusterProperties"] = dataSet["clusterProperties"];
+
+            // Add to map
+            self._map.addSource(name, options);
+            console.log("INFO: Added '" + name + "' as a GeoJSON source to MapBox.");
+        });
     }
 
     /**
@@ -128,8 +163,7 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "raster",
-            "tiles": [location],
-            "attribution": "cmcl"
+            "tiles": [location]
         };
 
         // Add additional raster settings if present in dataSet definition
@@ -158,8 +192,7 @@ class SourceHandler {
         // Determine source options
         let options = {
             "type": "vector",
-            "data": location,
-            "attribution": "cmcl"
+            "data": location
         };
 
         // Add additional vector settings if present in dataSet definition

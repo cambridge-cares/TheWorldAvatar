@@ -21,7 +21,8 @@
             "clusterRadius": 30,
             "clusterProperties": {
                 "icon-image": ["string", "beta-empty"],
-                "text-color": ["string", "#bc0000"]
+                "text-color": ["string", "#bc0000"],
+                "floodCount": ["+", ["get", "floodCount", ["properties"]]]
             }
         },
         {
@@ -29,6 +30,7 @@
             "dataType": "geojson",
             "dataLocation": "gamma.geojson",
             "locationType": "symbol",
+            "clickable": false,
             "cluster": true,
             "clusterRadius": 30,
             "clusterProperties": {

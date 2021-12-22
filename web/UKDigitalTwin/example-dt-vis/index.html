@@ -47,6 +47,7 @@
 <body>
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
+	<div id="tiltShift"></div>
 	
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
@@ -76,7 +77,6 @@
 			"Mixed": "./data/set-1",
 			"Zoom Limited": "./data/set-2",
 			"Clustered": "./data/set-3"
-			//"Raster Tile Data": "./data/set-4"
 		};
 		manager.registerDirectories(rootDirectories);
 
@@ -95,7 +95,7 @@
 			var iconHandler = new IconHandler(map);
 
 			// Provide some default content for the side panel
-			let title = `Example Visualisation`;
+			let title = `<h1>Example Visualisation</h1>`;
 			let content = `
 					This section of default text should be used to give a brief introduction on the purpose of the
 					visualisation, and to detail how the user can interact with it. For the purpose of this example,
@@ -104,6 +104,8 @@
 					Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer mi turpis, posuere a nibh in, tincidunt
 					mollis eros. Cras imperdiet ornare enim, et luctus augue iaculis at. Ut tellus ex, auctor non sagittis quis,
 					feugiat vitae turpis. Cras efficitur, arcu sed condimentum mattis, quam est tempus lectus, eu faucibus.
+					<br/><br/>
+					<div id="linkedFilesContainer"></div>
 				`;
 			let legend = `	
 					<b>Example Legend:</b>
@@ -116,7 +118,7 @@
 
 			// Show content and store as default (so it can be returned to later)
 			manager.setPanelContent(title, content,	legend,	footer);
-			
+
 			// Every time a MapBox changes style (i.e. Terrain), it will remove all data sources, layers, and icons.
 			// This means that we have to listen for this event (below) and re-add everything.
 			// Note: There does not seem to be a nice way to preverse the sources and layers when changing
@@ -144,9 +146,13 @@
 					// Build and show the layer tree based on the metadata
 					manager.showControls(null, selectCallback);
 
-					// Only enable this during testing, remove the line for production visualisations
-					manager.showDeveloperControls();
+					// Set up a callback that hides all connections whenever the user
+					// returns to the default side panel.
+					manager.setDefaultPanelCallback();
 					
+					// Show mouse position
+					manager.showDeveloperControls();
+
 					loadedOnce = true;
 				}
 				
@@ -155,16 +161,26 @@
 				Promise.all(imagePromises).then(() => {
 					iconHandler.addAllIcons();
 
-					// Re-add the sky layer
-					manager.setSkyDetails();
+					// Promise for loading data as sources and layers
+					var dataPromise;
 
 					// Re-plot the previously selected group
 					if(DT.currentGroup != null && DT.currentGroup.length > 0) {
-						manager.plotGroup(DT.currentGroup, false);
+						dataPromise = manager.plotGroup(DT.currentGroup, false);
 					} else {
-						manager.plotFirstGroup();
+						dataPromise = manager.plotFirstGroup();
+					}
+
+					if(dataPromise != null) {
+						dataPromise.then(() => {
+							// Re-add the sky and (optionally) 3D terrain
+							manager.addSkyAndTerrain();
+							manager.set3DTerrain();
+							manager.setPlacenames();
+						});
 					}
 				});
+				
 			});
 		}
 	</script>

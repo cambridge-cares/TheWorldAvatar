@@ -6,7 +6,9 @@
         "id": 1,
         "properties": {
             "displayName": "Asset #1 to Asset #5",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/1",
+            "to": "assets-1/5"
         },
         "geometry": {
           "type": "LineString",
@@ -21,7 +23,9 @@
         "id": 2,
         "properties": {
             "displayName": "Asset #5 to Asset #4",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/5",
+            "to": "assets-1/4"
         },
         "geometry": {
           "type": "LineString",
@@ -36,7 +40,9 @@
         "id": 3,
         "properties": {
             "displayName": "Asset #4 to Asset #7",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/4",
+            "to": "assets-1/7"
         },
         "geometry": {
           "type": "LineString",
@@ -51,7 +57,9 @@
         "id": 4,
         "properties": {
             "displayName": "Asset #7 to Asset #2",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/7",
+            "to": "assets-1/2"
         },
         "geometry": {
           "type": "LineString",
@@ -66,7 +74,9 @@
         "id": 5,
         "properties": {
             "displayName": "Asset #2 to Asset #8",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/2",
+            "to": "assets-1/8"
         },
         "geometry": {
           "type": "LineString",
@@ -81,7 +91,9 @@
         "id": 6,
         "properties": {
             "displayName": "Asset #8 to Asset #3",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/8",
+            "to": "assets-1/3"
         },
         "geometry": {
           "type": "LineString",
@@ -96,7 +108,9 @@
         "id": 7,
         "properties": {
             "displayName": "Asset #3 to Asset #6",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/3",
+            "to": "assets-1/6"
         },
         "geometry": {
           "type": "LineString",
@@ -111,7 +125,9 @@
         "id": 8,
         "properties": {
             "displayName": "Asset #6 to Asset #1",
-            "line-color": "#FF0000"
+            "line-color": "#FF0000",
+            "from": "assets-1/6",
+            "to": "assets-1/1"
         },
         "geometry": {
           "type": "LineString",
