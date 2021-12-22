@@ -24,10 +24,11 @@ class UKPowerPlant:
     """Node keys"""
     RealizationAspectKey = "PowerGenerator_"
     RequirementsAspectKey = "DesignCapacity_"
+    GenerationTechnologyKey = "PlantGenerationTechnology_"
     BuiltYearKey = "YearOfBuilt_"
-    OwnerKey = "Owner_"
+    OwnerKey = "Organization_"
     CoordinateSystemKey = "CoordinateSystem_"
     LantitudeKey = "y_coordinate_" 
     LongitudeKey = "x_coordinate_" 
     
-    valueKey = "value_"
+    valueKey = "ScalarValue_"

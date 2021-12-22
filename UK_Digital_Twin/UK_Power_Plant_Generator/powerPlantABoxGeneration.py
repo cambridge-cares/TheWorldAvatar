@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 17 Nov 2021          #
+# Last Update Date: 15 Dec 2021          #
 ##########################################
 
 """This module is designed to generate and update the A-box of UK power plant graph."""
@@ -63,7 +63,8 @@ ontocape_SI_units               = owlready2.get_ontology(t_box.ontocape_SI_units
 filepath = None # user specified path
 userSpecified = False # storage mode: False: default, True: user specified
 
-"""UK enelectricity system URL"""
+"""UK electricity system URL"""
+UKDigitalTwinURL = UKDT.nodeURIGenerator(1, dt.topNode, None)
 UKElectricitySystem = UKDT.nodeURIGenerator(2, dt.electricitySystem, None)
 
 ### Functions ### 
@@ -82,8 +83,10 @@ def createDUKESDataPropertyInstance(version):
     gpslocationArrays    = readFile(dukes.GPSLocation)
     regionArrays         = readFile(dukes.Region)
     
-    uriSplit = UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
-    root_uri = uriSplit[0]
+    # uriSplit = UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION).split('.owl') 
+    # root_uri = uriSplit[0]
+    
+    root_uri = UKDT.nodeURIGenerator(2, dt.powerPlant, None)
     
     fileNum = len(plantnameArrays)
     
@@ -124,7 +127,8 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
     while(counter < fileNum): 
         plantname = ''.join(plantnameArrays[counter]).strip('\n').strip(' ')
         planttype = ''.join(planttypeArrays[counter]).strip('\n').strip(' ')
-        energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
+        # energygen = ''.join(energygenArrays[counter]).strip('\n').strip(' ')
+        energygen = "PowerGeneration"
         gentech = ''.join(gentechArrays[counter]).strip('\n').strip(' ')
         primaryfueltype = ''.join(primaryfuelArrays[counter][0]).strip('\n').strip(' ')
         primaryfuellabel = ''.join(primaryfuelArrays[counter][1]).strip('\n').strip(' ')
@@ -138,18 +142,34 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             len(designcapacityArrays) != fileNum or len(builtYearArrays) != fileNum or len(ownerArrays) != fileNum or len(gpslocationArrays) != fileNum:
             raise Exception('The list length of each data files does not match')
         else:
-            pp_base_uri  = root_uri + SLASH + plantname + OWL # the name of the named graph, will be applied as the identifier in method Graph(), without '#'
-            pp_root_node = root_uri + SLASH + plantname + OWL + HASH + plantname # the top node of the named graph, '#XXX'
-            pp_namespace = root_uri + SLASH + plantname + OWL + HASH
+            pp_root_node = root_uri + plantname # the top node of the named graph
+            # pp_namespace = root_uri + plantname + SLASH
+            
+            #attribute IRRs
+            ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + plantname
+            UKElectricitySystemIRI = UKElectricitySystem + dt.UK
+            LocalElectricitySystemIRI = UKElectricitySystem + plantname
+            RealizationAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.RealizationAspectKey + plantname
+            EnergyGenerationIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + energygen + UNDERSCORE + plantname
+            GenerationTechnologyIRI = dt.baseURL + SLASH + t_box.ontoeipName +  SLASH + ukpp.GenerationTechnologyKey + gentech
+            PrimaryFuelTypeIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + primaryfueltype + UNDERSCORE + plantname
+            RequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.RequirementsAspectKey + plantname
+            valueOfRequirementsAspectIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname
+            BuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.BuiltYearKey + plantname
+            valueOfBuiltYearIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.valueKey + ukpp.BuiltYearKey + plantname
+            OwnerIRI = dt.baseURL + SLASH + t_box.ontoeipName + SLASH + ukpp.OwnerKey + plantname
+            
             latlon = str(gpslocation[0].strip('\n').strip(' ').replace(' ', '') + '#' + gpslocation[1].strip('\n').strip(' ').replace(' ', '')).replace('\xa0', '')
            
             # Create rdf graph with identifier
-            graph = Graph(store = store, identifier = URIRef(pp_base_uri))
+            graph = Graph(store = store, identifier = URIRef(ontologyIRI))
             
             # Import T-boxes
             graph.set((graph.identifier, RDF.type, OWL_NS['Ontology']))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoecape_technical_system)))
             graph.add((graph.identifier, OWL_NS['imports'], URIRef(t_box.ontoeip_powerplant)))
+            graph.set((graph.identifier, RDFS.comment, Literal('This ontology represents the energy system of the UK')))
+            graph.set((graph.identifier, RDFS.label, Literal('UK Digital Twin - Energy System')))
             
             # Add rdf.type
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(ontoeip_powerplant.PowerPlant.iri)))
@@ -157,62 +177,50 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'Asset'))) # The power plant is specifically declared as an asset  
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
+            graph.add((URIRef(pp_root_node), RDFS.label, Literal("DUKES_Data_Version_" + str(dukes.VERSION))))
             
             # Link the power plant with the UK electricity system
-            graph.add((URIRef(UKElectricitySystem), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
-            graph.add((URIRef(UKElectricitySystem), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
-            
-            # Add connection between its father node
-            graph.add((URIRef(pp_root_node), URIRef(ontocape_upper_level_system.isExclusivelySubsystemOf.iri),\
-                        URIRef(UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION))))
-            graph.add((URIRef(UKDT.nodeURIGenerator(3, dt.powerPlant, dukes.VERSION)), RDFS.label, Literal("DUKES_Data_Version_" + str( dukes.VERSION))))
+            graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
+            graph.add((URIRef(LocalElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
+            graph.add((URIRef(UKElectricitySystemIRI), RDF.type, URIRef(t_box.ontoenergysystem + 'ElectricPowerSystem')))
+            graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.isDirectSubsystemOf.iri), URIRef(UKElectricitySystemIRI)))
             
             # Add Realization Aspect  
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.RealizationAspectKey + plantname), URIRef(ontoecape_technical_system.realizes.iri),\
-                        URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
+            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRealizationAspect.iri), URIRef(RealizationAspectIRI)))
+            graph.add((URIRef(RealizationAspectIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))
+            graph.add((URIRef(RealizationAspectIRI), URIRef(ontoecape_technical_system.realizes.iri), URIRef(EnergyGenerationIRI)))
             
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), RDF.type, URIRef(ontoeip_powerplant.PowerGenerator.iri)))                
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri),\
-                        URIRef(t_box.ontoeip_powerplant + gentech)))
+            graph.add((URIRef(EnergyGenerationIRI), RDF.type, URIRef(ontoeip_powerplant.PowerGeneration.iri)))                
+            graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.usesGenerationTechnology.iri), URIRef(GenerationTechnologyIRI)))
                 
-            graph.add((URIRef(t_box.ontoeip_powerplant + gentech), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
-            graph.add((URIRef(pp_namespace + energygen + UNDERSCORE + plantname), URIRef(ontoeip_powerplant.consumesPrimaryFuel.iri),\
-                        URIRef(t_box.ontoeip_powerplant + primaryfueltype)))
-            graph.add((URIRef(t_box.ontoeip_powerplant + primaryfueltype), RDF.type, URIRef(ontoeip_powerplant.PrimaryFuel.iri)))
-            graph.add((URIRef(t_box.ontoeip_powerplant + primaryfueltype), RDFS.label, Literal(str(primaryfuellabel))))
+            graph.add((URIRef(GenerationTechnologyIRI), RDF.type, URIRef(ontoeip_powerplant.PlantGenerationTechnology.iri)))
+            graph.add((URIRef(EnergyGenerationIRI), URIRef(ontoeip_powerplant.consumesPrimaryFuel.iri), URIRef(PrimaryFuelTypeIRI)))
+            graph.add((URIRef(PrimaryFuelTypeIRI), RDF.type, URIRef(t_box.ontoeip_powerplant + primaryfueltype)))
+            graph.add((URIRef(PrimaryFuelTypeIRI), RDFS.label, Literal(str(primaryfuellabel))))
             
             # Add Functional Aspect  
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasFunctionalAspect.iri), URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
+            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasFunctionalAspect.iri), URIRef(EnergyGenerationIRI)))
             
             # Add Requirements Aspect
-            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRequirementsAspect.iri), URIRef(pp_namespace + ukpp.RequirementsAspectKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.RequirementsAspectKey + plantname), RDF.type, URIRef(t_box.ontoeip_system_requirement + 'DesignCapacity'))) # T-box undefined
-            graph.add((URIRef(pp_namespace + ukpp.RequirementsAspectKey + plantname), URIRef(ontoecape_technical_system.isAchievedThrough.iri),\
-                        URIRef(pp_namespace + energygen + UNDERSCORE + plantname)))
+            graph.add((URIRef(pp_root_node), URIRef(ontoecape_technical_system.hasRequirementsAspect.iri), URIRef(RequirementsAspectIRI)))
+            graph.add((URIRef(RequirementsAspectIRI), RDF.type, URIRef(t_box.ontoeip_system_requirement + 'DesignCapacity'))) # T-box undefined
+            graph.add((URIRef(RequirementsAspectIRI), URIRef(ontoecape_technical_system.isAchievedThrough.iri), URIRef(EnergyGenerationIRI)))
             # # add values to attributes
-            graph.add((URIRef(pp_namespace + ukpp.RequirementsAspectKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
-                    URIRef(pp_namespace + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri),\
-                        URIRef(ontocape_derived_SI_units.MW.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.RequirementsAspectKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                        Literal(float(designcapacity))))
+            graph.add((URIRef(RequirementsAspectIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfRequirementsAspectIRI)))
+            graph.add((URIRef(valueOfRequirementsAspectIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+            graph.add((URIRef(valueOfRequirementsAspectIRI), URIRef(ontocape_upper_level_system.hasUnitOfMeasure.iri), URIRef(ontocape_derived_SI_units.MW.iri)))
+            graph.add((URIRef(valueOfRequirementsAspectIRI), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(float(designcapacity))))
             # Add other attributes
-            graph.add((URIRef(pp_root_node), URIRef(ontoeip_powerplant.hasYearOfBuilt.iri), URIRef(pp_namespace + ukpp.BuiltYearKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.BuiltYearKey + plantname), RDF.type, URIRef(ontoeip_powerplant.YearOfBuilt.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.BuiltYearKey + plantname), URIRef(ontocape_upper_level_system.hasValue.iri),\
-                         URIRef(pp_namespace + ukpp.valueKey + ukpp.BuiltYearKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.BuiltYearKey + plantname), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.valueKey + ukpp.BuiltYearKey + plantname), URIRef(ontocape_upper_level_system.numericalValue.iri),\
-                         Literal(int(builtyear))))
+            graph.add((URIRef(pp_root_node), URIRef(ontoeip_powerplant.hasYearOfBuilt.iri), URIRef(BuiltYearIRI)))
+            graph.add((URIRef(BuiltYearIRI), RDF.type, URIRef(ontoeip_powerplant.YearOfBuilt.iri)))
+            graph.add((URIRef(BuiltYearIRI), URIRef(ontocape_upper_level_system.hasValue.iri), URIRef(valueOfBuiltYearIRI)))
+            graph.add((URIRef(valueOfBuiltYearIRI), RDF.type, URIRef(ontocape_upper_level_system.ScalarValue.iri)))
+            graph.add((URIRef(valueOfBuiltYearIRI), URIRef(ontocape_upper_level_system.numericalValue.iri), Literal(int(builtyear))))
             
-            graph.add((URIRef(pp_root_node), URIRef(ontoeip_upper_level_system_v1.isOwnedBy.iri), URIRef(pp_namespace + ukpp.OwnerKey + plantname)))
-            graph.add((URIRef(pp_namespace + ukpp.OwnerKey + plantname), RDF.type, URIRef(ontoeip_upper_level_system_v1.Organization.iri)))
-            graph.add((URIRef(pp_namespace + ukpp.OwnerKey + plantname), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
+            graph.add((URIRef(pp_root_node), URIRef(ontoeip_upper_level_system_v1.isOwnedBy.iri), URIRef(OwnerIRI)))
+            graph.add((URIRef(OwnerIRI), RDF.type, URIRef(ontoeip_upper_level_system_v1.Organization.iri)))
+            graph.add((URIRef(OwnerIRI), URIRef(ontoeip_upper_level_system_v1.hasName.iri), Literal(owner)))
     
-            
             # Apply the OntoEnergySystem for representing the asset with LA code and its lat-lon
             graph.add((URIRef(pp_root_node), URIRef(t_box.ontoenergysystem + 'hasRelevantPlace'), URIRef(t_box.dbr + region)))
             graph.add((URIRef(t_box.dbr + region), RDF.type, URIRef(t_box.ontoenergysystem + 'AdministrativeDivision')))

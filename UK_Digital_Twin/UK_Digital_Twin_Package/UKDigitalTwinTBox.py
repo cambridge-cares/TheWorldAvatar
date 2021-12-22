@@ -16,6 +16,7 @@ class UKDigitalTwinTBox:
     UK = dbr + "United_Kingdom"
     
     """OntoCAPE"""
+    ontocapeName = "ontocape"
     ontocape_upper_level_system = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"    
     ontocape_derived_SI_units =  "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"
     ontoecape_space_and_time_extended = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
@@ -32,6 +33,7 @@ class UKDigitalTwinTBox:
     meta_model_topology = "http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
        
     """OntoEIP"""
+    ontoeipName = "ontoeip"
     ontoeip_system_realization = "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#"
     ontoeip_system_function = "http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl#"
     ontoeip_powerplant = "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"
@@ -41,15 +43,18 @@ class UKDigitalTwinTBox:
 
 
     """OntoPowSys"""
+    ontopowsysName = "ontopowsys"
     ontopowsys_PowSysRealization = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
     ontopowsys_PowSysFunction = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
     ontopowsys_PowerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
     ontopowsys_PowSysPerformance = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#"
     
     """OntoSDG"""
+    ontosdgNmae = "ontosdg"
     ontoSDG = "http://theworldavatar.com/ontology/ontosdg/OntoSDG.owl#"
     
     """OntoSpecies"""
+    ontospeciesName = "ontospecies"
     ontospecies = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"
     
     """Bibtex"""
@@ -59,4 +64,5 @@ class UKDigitalTwinTBox:
     owl = "http://www.w3.org/2002/07/owl#"
     
     """OntoEnergySystem"""
+    ontoenergysystemName = "ontoenergysystem"
     ontoenergysystem = "http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#"
