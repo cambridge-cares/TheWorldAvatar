@@ -1,4 +1,4 @@
-BusNumber,Region,LocalAuthority,x-axis,y-axis,Agrregated
+BusNumber,Region,LocalAuthority,x-axis,y-axis,Aggregated
 1,South_East_England,Brighton_and_Hove,-0.1373639,50.8223711,None
 2,South_West_England,Bristol,-2.5879675,51.4545085,None
 3,London,London,-0.1278966,51.5073321,None
