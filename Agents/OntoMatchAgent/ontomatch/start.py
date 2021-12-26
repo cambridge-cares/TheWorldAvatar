@@ -24,13 +24,17 @@ def create_train_test_split_files():
     #save_file = '../tmp/split_kg_mtf_200.csv'
     #config_file = './conf/power_plant_GBR/conf_power_plant_GBR_auto_huge.json'
     #save_file = '../tmp/split_dg_mtf_200.csv'
+    #config_file = './conf/restaurant/conf_restaurant_auto_huge.json'
+    #save_file = '../tmp/split_fz_mtf_20.csv'
     #config_file = './conf/bibliography/conf_bibda_auto_huge.json'
     #save_file = '../tmp/split_da_mtf_200.csv'
     #config_file = './conf/bibl_DBLP_Scholar/conf_bibds_auto_huge.json'
     #save_file = '../tmp/split_ds_mtf_200.csv'
     config_file = './conf/product/conf_product_auto_huge.json'
-    save_file = '../tmp/split_ag_mtf_100.csv'
+    save_file = '../tmp/split_ag_mtf_200.csv'
 
+    #mtf = 20
+    #train_sizes = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.8]
     mtf = 200
     train_sizes = [0.0, 0.01, 0.02, 0.05, 0.1, 0.2, 0.8]
 

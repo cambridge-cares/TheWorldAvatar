@@ -298,8 +298,6 @@ class ScoreManager():
 
     def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
-        logging.info('calculating maximum scores, dataset_id=%s, number of scores=%s', dataset_id, len(self.prop_prop_fct_tuples))
-
         if dataset_id == 1:
             idx_values = self.df_scores.index.get_level_values(0).unique()
             df_scores_tmp = self.df_scores
@@ -311,7 +309,7 @@ class ScoreManager():
             index_column_name = 'idx_2'
             other_index_column_name = 'idx_1'
 
-        logging.info('number of entities=%s', len(idx_values))
+        logging.info('calculating maximum scores, dataset_id=%s, scores=%s, entities=%s', dataset_id, len(df_scores_tmp), len(idx_values))
 
         columns = []
         str_column_prop = ''
