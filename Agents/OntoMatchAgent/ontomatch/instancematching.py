@@ -85,7 +85,6 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
         params_training = params['training']
         params_impution = params_training.get('impution')
         evaluation_file = params_post_processing['evaluation_file']
-        index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
 
         cross_validation = params_training['cross_validation']
         prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
@@ -99,6 +98,7 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
             split_column = 'ml_phase_' + str(m_train_size)
             x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, columns_x=prop_columns, column_ml_phase=split_column)
         else:
+            index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
             _, x_train, x_test, y_train, y_test = ontomatch.utils.util.train_test_split(
                     df_scores, index_set_matches, train_size=m_train_size, columns_x=prop_columns)
 
@@ -141,14 +141,12 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         self.start_internal(srconto, tgtonto, params_model_specific, params_blocking, params_post_processing, params_mapping)
 
-    def calculate_perfect_maximum_scores(self):
-        logging.debug('MY calculate_perfect_maximum_scores')
-        match_file = 'C:/my/repos/ontomatch_20210924/ontomatch-py/data/bibl_DBLP_Scholar/matches_dblp1_scholar.csv'
-        import ontomatch.evaluate
+    def calculate_perfect_maximum_scores(self, match_file):
         index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
         df_scores = self.score_manager.get_scores()
         index_intersection = df_scores.index.intersection(index_matches)
         df_tmp = df_scores.loc[index_intersection].copy()
+        logging.warn('calculating PERFECT maximum scores=%s', len(df_tmp))
         columns_dict = {}
         for c in [ str(c) for c in df_tmp.columns]:
             columns_dict.update({ c: c + '_max'})
@@ -156,16 +154,18 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         df_tmp.rename(columns=columns_dict, inplace=True)
         logging.debug('columns after=%s', [ str(c) for c in df_tmp.columns])
         self.score_manager.df_max_scores_1 = df_tmp.copy()
+        logging.warn('PERFECT maximum scores statistics 1: \n%s', self.score_manager.df_max_scores_1.describe())
 
         logging.debug('max sim 2 index before=%s', df_tmp.index[0])
         df_tmp = df_tmp.reorder_levels(order=['idx_2', 'idx_1'])
         logging.debug('max sim 2 index after=%s', df_tmp.index[0])
         self.score_manager.df_max_scores_2 = df_tmp.copy()
-
+        logging.warn('PERFECT maximum scores statistics 2: \n%s', self.score_manager.df_max_scores_2.describe())
 
     def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None):
 
         logging.info('starting InstanceMatcherWithAutoCalibration, params=%s', params_model_specific)
+        perfect = params_model_specific.get('perfect')
         symmetric = params_model_specific['symmetric']
         delta = params_model_specific.get('delta')
         if delta is None:
@@ -178,13 +178,16 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
 
         manager = self.score_manager
-        # TODO-AE 211226 URGENT calculate_perfect_maximum_scores()
-        manager.calculate_maximum_scores(symmetric=symmetric)
-        #self.calculate_perfect_maximum_scores()
-        if symmetric and (purge_alpha is not None):
-            # purging works only if both directions are considered for calculating max sim vectors
-            manager.df_max_scores_1, manager.df_max_scores_2 = self.purge_low_max_scores(
-                    manager.df_max_scores_1, manager.df_max_scores_2, manager.df_scores, purge_alpha, purge_majority)
+
+        if perfect:
+            matchfile = params_post_processing['evaluation_file']
+            self.calculate_perfect_maximum_scores(matchfile)
+        else:
+            manager.calculate_maximum_scores(symmetric=symmetric)
+            if symmetric and (purge_alpha is not None):
+                # purging works only if both directions are considered for calculating max sim vectors
+                manager.df_max_scores_1, manager.df_max_scores_2 = self.purge_low_max_scores(
+                        manager.df_max_scores_1, manager.df_max_scores_2, manager.df_scores, purge_alpha, purge_majority)
 
         df_scores = manager.get_scores()
         df_max_scores = manager.get_max_scores_1()
@@ -198,9 +201,11 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             self.df_total_best_scores_2 = df_total_best_scores_2
             # combine best score pairs from df_total_best_scores and df_total_best_scores_2
             self.df_total_best_scores = self.combine_total_best_scores(self.df_total_best_scores, df_total_best_scores_2)
-             # TODO-AE 211226 URGENT remove some multi-index
+
+            #TODO-AE 211226 URGENT remove some multi-index
             index_inter = self.df_total_best_scores.index.intersection(self.df_total_scores.index)
             self.df_total_best_scores = self.df_total_best_scores.loc[index_inter]
+
             self.df_total_scores.at[self.df_total_best_scores.index, 'best'] = True
             assert len(self.df_total_scores[self.df_total_scores['best']]) == len(self.df_total_best_scores)
             logging.debug('number of total best scores=%s', len(self.df_total_best_scores))
@@ -413,8 +418,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             sliding_counts[c] = scount
 
         rows = []
-        # purging reduces the index pairs in df_max_scores
-        # thus, don't iterate over df_max_scores but use first level values of df_scores instead
+
+        # configuring 'purging' and 'perfect' reduces the index pairs in df_max_scores
+        # thus, don't iterate over df_max_scores but use unique first level values of df_scores instead
         #for idx, _ in tqdm(df_max_scores.iterrows()):
         #    idx_1 = idx[0]
         first_level_values = df_scores.index.get_level_values(0)
@@ -559,63 +565,6 @@ def dump(params_post_processing, matcher):
                 sm.df_scores.to_csv(dir_name + '/scores.csv')
             else:
                 raise RuntimeError('unsupported type of matcher', type(matcher))
-
-def evaluate_OLD(params_post_processing, matcher, minus_train_set=None):
-
-    matchfile = params_post_processing['evaluation_file']
-    index_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
-    df_scores = matcher.get_scores()
-    index_matches_FN = index_matches.difference(df_scores.index)
-    logging.info('starting evaluation for matches=%s, df_scores=%s, matches FN=%s', len(index_matches), len(df_scores), len(index_matches_FN))
-
-    # TODO-AE 211218 move the following evaluation code to evaluate.py
-    if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
-
-        test_file = params_post_processing.get('test_file')
-        logging.info('test_file=%s', test_file)
-        if test_file:
-            df_split = ontomatch.utils.util.read_csv(test_file)
-            prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-            for c in df_split.columns:
-                c = str(c)
-                if c.startswith('ml_phase'):
-                    x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
-                    if (x_train is not None) and (len(x_train) > 0):
-                        df_scores_tmp = df_scores.loc[x_train.index]
-                        # TODO-AE 211218 without FN outside candidate set?
-                        index_matches_tmp = index_matches.intersection(df_scores_tmp.index)
-                        logging.info('evaluation for split_column=%s on TRAINING SET=%s, %s, matches=%s',
-                            c, len(x_train), len(df_scores_tmp), len(index_matches_tmp))
-                        ontomatch.evaluate.evaluate(df_scores_tmp, index_matches_tmp)
-
-                    df_scores_tmp = df_scores.loc[x_test.index]
-                    # TODO-AE 211218 including FN outside candidate set?
-                    index_matches_tmp = index_matches.intersection(df_scores_tmp.index).union(index_matches_FN)
-                    logging.info('evaluation for split_column=%s on TEST SET=%s, %s, matches=%s',
-                        c, len(x_test), len(df_scores_tmp), len(index_matches_tmp))
-                    ontomatch.evaluate.evaluate(df_scores_tmp, index_matches_tmp)
-
-
-    logging.info('training set IS NOT EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', 0, len(index_matches), len(df_scores))
-    ontomatch.evaluate.evaluate(df_scores, index_matches)
-
-    if minus_train_set is not None:
-
-        # evaluate on train set only
-        # TODO-AE 211216 add the matches outside candidate set to have a fair comparison concerning overfitting
-        df_scores_train = df_scores.loc[minus_train_set.index].copy()
-        index_set_matches_train = minus_train_set.index.intersection(index_matches)
-        logging.info('evaluation on TRAINING SET ONLY, train set=%s, train set matches=%s', len(minus_train_set), len(index_set_matches_train))
-        ontomatch.evaluate.evaluate(df_scores_train, index_set_matches_train)
-
-        # evaluate on test set
-        diff = df_scores.index.difference(minus_train_set.index)
-        df_scores_tmp = df_scores.loc[diff].copy()
-        len_matches = len(index_matches)
-        index_set_matches_diff = index_matches.difference(minus_train_set.index)
-        len_diff = len_matches - len(index_set_matches_diff)
-        logging.info('training set IS EXCLUDED for evaluation, diff=%s, remaining matches=%s, remaining candidates=%s', len_diff, len(index_set_matches_diff), len(df_scores_tmp))
-        ontomatch.evaluate.evaluate(df_scores_tmp, index_set_matches_diff)
 
 def evaluate(params_post_processing, matcher, train_set=None, hint=''):
     matchfile = params_post_processing['evaluation_file']

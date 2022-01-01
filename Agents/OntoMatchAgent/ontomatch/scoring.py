@@ -292,22 +292,9 @@ class ScoreManager():
         return self.df_scores
 
     def calculate_maximum_scores(self, symmetric=False, switch_to_min_of_distance=False):
-
-        # TODO-AE 211226 URGENT get perfect max scores with df_scores backup
-        #df_scores_backup = self.get_scores()
-        #match_file = 'C:/my/repos/ontomatch_20210924/ontomatch-py/data/bibl_DBLP_Scholar/matches_dblp1_scholar.csv'
-        #match_file = 'C:/my/repos/ontomatch_20210924/ontomatch-py/data/product/matches_product.csv'
-        #import ontomatch.evaluate
-        #index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
-        #index_intersection = df_scores_backup.index.intersection(index_matches)
-        #self.df_scores = df_scores_backup.loc[index_intersection].copy()
-
         self.df_max_scores_1 = self.__calculate_maximum_scores(1, switch_to_min_of_distance)
         if symmetric:
             self.df_max_scores_2 = self.__calculate_maximum_scores(2, switch_to_min_of_distance)
-
-        # TODO-AE 211226 URGENT get perfect max scores with df_scores backup
-        #self.df_scores = df_scores_backup
 
     def __calculate_maximum_scores(self, dataset_id, switch_to_min_of_distance=False):
 
