@@ -137,16 +137,16 @@ def log_result(result, hint='evaluation result'):
     logging.info('%s: max f1=%s for t=%s, p=%s, r=%s, area under curve=%s', hint, max_f1score, max_t, precision, recall, area_under_curve)
     logging.info('threshold, precision, recall, TP, FP, FN, f1score:\n%s', result)
 
-def evaluate(df_scores, index_matches, number_of_thresholds=41, hint='evaluation result'):
+def evaluate(df_scores, index_matches, number_of_thresholds=201, hint='evaluation result'):
 
     result = []
-    thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
+    thresholds = [ round(t,5) for t in np.linspace(1, 0, num=number_of_thresholds, endpoint=True)]
     for t in thresholds:
         mask = (df_scores['score'] >= t)
         predicted_matches =  df_scores[mask].index
         true_matches, false_matches, false_nonmatches, precision, recall, f1score = calculate_precision_recall(
             predicted_matches, index_matches)
-        entry = [t, precision, recall, len(true_matches), len(false_matches), len(false_nonmatches), f1score]
+        entry = [t, round(precision, 5), round(recall, 5), len(true_matches), len(false_matches), len(false_nonmatches), round(f1score, 5)]
         result.append(entry)
 
     log_result(result, hint)

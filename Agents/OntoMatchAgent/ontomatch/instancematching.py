@@ -141,6 +141,28 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         self.start_internal(srconto, tgtonto, params_model_specific, params_blocking, params_post_processing, params_mapping)
 
+    def calculate_perfect_maximum_scores(self):
+        logging.debug('MY calculate_perfect_maximum_scores')
+        match_file = 'C:/my/repos/ontomatch_20210924/ontomatch-py/data/bibl_DBLP_Scholar/matches_dblp1_scholar.csv'
+        import ontomatch.evaluate
+        index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
+        df_scores = self.score_manager.get_scores()
+        index_intersection = df_scores.index.intersection(index_matches)
+        df_tmp = df_scores.loc[index_intersection].copy()
+        columns_dict = {}
+        for c in [ str(c) for c in df_tmp.columns]:
+            columns_dict.update({ c: c + '_max'})
+        logging.debug('columns before=%s', [ str(c) for c in df_tmp.columns])
+        df_tmp.rename(columns=columns_dict, inplace=True)
+        logging.debug('columns after=%s', [ str(c) for c in df_tmp.columns])
+        self.score_manager.df_max_scores_1 = df_tmp.copy()
+
+        logging.debug('max sim 2 index before=%s', df_tmp.index[0])
+        df_tmp = df_tmp.reorder_levels(order=['idx_2', 'idx_1'])
+        logging.debug('max sim 2 index after=%s', df_tmp.index[0])
+        self.score_manager.df_max_scores_2 = df_tmp.copy()
+
+
     def start_internal(self, srconto, tgtonto, params_model_specific, params_blocking, params_post_processing=None, params_mapping=None):
 
         logging.info('starting InstanceMatcherWithAutoCalibration, params=%s', params_model_specific)
@@ -148,37 +170,123 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         delta = params_model_specific.get('delta')
         if delta is None:
             delta = 0.025
+        purge_alpha = params_model_specific.get('purge_alpha')
+        purge_majority = params_model_specific.get('purge_majority')
+        if purge_majority is None:
+            purge_majority = 0.
 
         property_mapping = self.start_base(srconto, tgtonto, params_blocking, params_mapping)
 
-        self.score_manager.calculate_maximum_scores(symmetric=symmetric)
+        manager = self.score_manager
+        # TODO-AE 211226 URGENT calculate_perfect_maximum_scores()
+        manager.calculate_maximum_scores(symmetric=symmetric)
+        #self.calculate_perfect_maximum_scores()
+        if symmetric and (purge_alpha is not None):
+            # purging works only if both directions are considered for calculating max sim vectors
+            manager.df_max_scores_1, manager.df_max_scores_2 = self.purge_low_max_scores(
+                    manager.df_max_scores_1, manager.df_max_scores_2, manager.df_scores, purge_alpha, purge_majority)
 
-        df_scores = self.score_manager.get_scores()
-        df_max_scores = self.score_manager.get_max_scores_1()
+        df_scores = manager.get_scores()
+        df_max_scores = manager.get_max_scores_1()
         self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
         self.df_total_best_scores_1 = self.df_total_best_scores
 
         if symmetric:
-            df_max_scores_2 = self.score_manager.get_max_scores_2()
-            df_scores_2 = self.score_manager.get_scores()
+            df_max_scores_2 = manager.get_max_scores_2()
+            df_scores_2 = manager.get_scores()
             _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
             self.df_total_best_scores_2 = df_total_best_scores_2
-
             # combine best score pairs from df_total_best_scores and df_total_best_scores_2
             self.df_total_best_scores = self.combine_total_best_scores(self.df_total_best_scores, df_total_best_scores_2)
+             # TODO-AE 211226 URGENT remove some multi-index
+            index_inter = self.df_total_best_scores.index.intersection(self.df_total_scores.index)
+            self.df_total_best_scores = self.df_total_best_scores.loc[index_inter]
             self.df_total_scores.at[self.df_total_best_scores.index, 'best'] = True
             assert len(self.df_total_scores[self.df_total_scores['best']]) == len(self.df_total_best_scores)
             logging.debug('number of total best scores=%s', len(self.df_total_best_scores))
             self.df_total_scores.at[self.df_total_best_scores.index, 'score'] = self.df_total_best_scores
 
-        mask = ~(self.df_total_scores['best'])
-        self.df_total_scores.at[mask, 'score'] = 0
+        #TODO-AE 211226 URGENT don't set non-best total scores to 0 here (only for eval)
+        #mask = ~(self.df_total_scores['best'])
+        #self.df_total_scores.at[mask, 'score'] = 0
         logging.debug('number of best=%s, nonbest=%s', len(self.df_total_scores[self.df_total_scores['score'] >=0]), len(self.df_total_scores[self.df_total_scores['score'] < 0]))
 
         if params_post_processing:
             postprocess(params_post_processing, self)
 
         return self.df_total_scores, self.df_total_best_scores
+
+    def purge_low_max_scores(self, df_max_1, df_max_2, df_scores, purge_alpha, purge_majority, dataset_id=1):
+        logging.info('purging low max scores vectors, original max scores 1=%s, original max scores 2=%s', len(df_max_1), len(df_max_2))
+        c_idx_1 = 'idx_1'
+        c_idx_2 = 'idx_2'
+        if dataset_id != 1:
+            c_idx_1 = 'idx_2'
+            c_idx_2 = 'idx_1'
+            df_scores = df_scores.reorder_levels(order=['idx_2', 'idx_1'])
+
+        columns = ontomatch.utils.util.get_prop_columns(df_max_1)
+        logging.info('purging for columns=%s', columns)
+
+        df_max_1 = df_max_1.reset_index(c_idx_2)
+        df_max_2 = df_max_2.reset_index(c_idx_1)
+
+        df_max_1['purge'] = False
+        df_max_2['purge'] = False
+        idx_1_unique = df_max_1.index.unique()
+
+        for idx_1 in tqdm(idx_1_unique):
+            row_1 = df_max_1.loc[idx_1]
+
+            for idx_2 in df_scores.loc[idx_1].index:
+                try:
+                    row_2 = df_max_2.loc[idx_2]
+                except KeyError:
+                    continue
+
+                count_comparisons = 0
+                count_purge_1 = 0
+                count_purge_2 = 0
+                for col in columns:
+                    max_score_1 = row_1.loc[col]
+                    max_score_2 = row_2.loc[col]
+                    if max_score_1 is None or max_score_2 is None:
+                        continue
+                    count_comparisons += 1
+                    if max_score_1 <= max_score_2:
+                        if max_score_1 <= purge_alpha * max_score_2:
+                            #df_max_1.at[idx_1, 'purge'] = True
+                            count_purge_1 += 1
+                    else:
+                        if max_score_2 <= purge_alpha * max_score_1:
+                            #df_max_2.at[idx_2, 'purge'] = True
+                            count_purge_2 += 1
+
+                if (count_purge_1 > count_purge_2) and (count_purge_1 >= purge_majority * count_comparisons):
+                    df_max_1.at[idx_1, 'purge'] = True
+                elif (count_purge_2 > count_purge_1) and (count_purge_2 >= purge_majority * count_comparisons):
+                    df_max_2.at[idx_2, 'purge'] = True
+
+        logging.info('marked for purging from max scores 1=%s, from max scores 2=%s', len(df_max_1[df_max_1['purge']]), len(df_max_2[df_max_2['purge']]))
+
+        df_max_1 = df_max_1[~df_max_1['purge']].copy()
+        df_max_1 = df_max_1.reset_index(c_idx_1)
+        df_max_1.set_index([c_idx_1, c_idx_2], inplace=True)
+        df_max_1.drop(columns='purge', inplace=True)
+        logging.info('maximum scores statistics after purging, max scores 1: \n%s', df_max_1.describe())
+
+        df_max_2 = df_max_2[~df_max_2['purge']].copy()
+        df_max_2 = df_max_2.reset_index(c_idx_2)
+        df_max_2.set_index([c_idx_2, c_idx_1], inplace=True)
+        df_max_2.drop(columns='purge', inplace=True)
+        logging.info('maximum scores statistics after purging, max scores 2: \n%s', df_max_2.describe())
+
+        if dataset_id != 1:
+            df_scores = df_scores.reorder_levels(order=['idx_1', 'idx_2'])
+
+        logging.info('purging finished, max scores 1=%s, max scores 2=%s', len(df_max_1), len(df_max_2))
+
+        return df_max_1, df_max_2
 
     def combine_total_best_scores(self, df_total_1, df_total_2):
         df_combined = df_total_1[['score']].copy()
@@ -209,6 +317,8 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                 count += 1
                 score_1 = df_combined.loc[idx]['score']
                 df_combined.at[idx, 'score'] = max(score_1, score_2)
+                #TODO-AE 211226 F1 instead of max
+                #df_combined.at[idx, 'score'] = 2 * score_1 * score_2 / (score_1 + score_2)
             else:
                 rows.append({'idx_1': idx[0], 'idx_2': idx[1], 'score': score_2})
 
@@ -303,8 +413,13 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             sliding_counts[c] = scount
 
         rows = []
-        for idx, _ in tqdm(df_max_scores.iterrows()):
-            idx_1 = idx[0]
+        # purging reduces the index pairs in df_max_scores
+        # thus, don't iterate over df_max_scores but use first level values of df_scores instead
+        #for idx, _ in tqdm(df_max_scores.iterrows()):
+        #    idx_1 = idx[0]
+        first_level_values = df_scores.index.get_level_values(0)
+        logging.debug('first level values=%s, unique=%s', len(first_level_values), len(first_level_values.unique()))
+        for idx_1 in tqdm(first_level_values.unique()):
             skip_column_number = 0
             total_score_rows = self.calculate_auto_calibrated_total_scores_for_index(df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = skip_column_number)
             rows.extend(total_score_rows)
@@ -319,7 +434,8 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         mask = (df_total_scores['best'] == True)
         df_total_best_scores = df_total_scores[mask]
 
-        logging.info('calculated auto calibrated total scores, dataset_id=%s', dataset_id)
+        logging.info('calculated auto calibrated total scores, dataset_id=%s, total_scores=%s, total best scores=%s',
+                dataset_id, len(df_total_scores), len(df_total_best_scores))
 
         return df_total_scores, df_total_best_scores
 
@@ -506,6 +622,10 @@ def evaluate(params_post_processing, matcher, train_set=None, hint=''):
     index_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
     df_scores = matcher.get_scores()
     if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+        #TODO-AE 211226 URGENT now for eval, set non-best total scores to 0
+        mask = ~(df_scores['best'])
+        df_scores.at[mask, 'score'] = 0
+
         test_file = params_post_processing.get('test_file')
         logging.info('test_file=%s', test_file)
         if test_file:
@@ -514,6 +634,7 @@ def evaluate(params_post_processing, matcher, train_set=None, hint=''):
             for c in df_split.columns:
                 c = str(c)
                 if c.startswith('ml_phase'):
+                #if c.startswith('ml_phase_0.1'):
                     x_train, x_test, _, _ = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
                     index_train_set = x_train.index if x_train is not None else None
                     index_test_set = x_test.index
