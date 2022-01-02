@@ -95,7 +95,7 @@ class Agent():
         if agent_name == 'ontomatch.knowledge.geocoding':
             geocoding_agent = ontomatch.knowledge.geocoding.Agent()
         elif agent_name == 'ontomatch.knowledge.geoNames':
-            #TODO-AE URGENT 211101 configure country for geoNames
+            #TODO-AE 211101 configure country for geoNames
             #geocoding_agent = knowledge.geoNames.Agent(country="Germany")
             geocoding_agent = ontomatch.knowledge.geoNames.Agent(country="UnitedKingdom")
         else:

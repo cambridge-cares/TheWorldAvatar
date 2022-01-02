@@ -131,13 +131,32 @@ def get_area_under_curve(result):
 
     return area_under_curve
 
-def log_result(result, hint='evaluation result'):
+def log_result(result, hint='evaluation result', count_matches=None, estimated_threshold=None):
     max_t, max_f1score, precision, recall = get_max_f1score(result)
     area_under_curve = get_area_under_curve(result)
     logging.info('%s: max f1=%s for t=%s, p=%s, r=%s, area under curve=%s', hint, max_f1score, max_t, precision, recall, area_under_curve)
+    res = get_f1_by_threshold(result, threshold=0.5)
+    logging.info('%s - by threshold 0.5: max f1=%s for t=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
+                hint, res[6], res[0], res[1], res[2], res[3], res[4], res[5])
+
+    if count_matches is not None:
+        res = get_f1_by_predicted_match_count(result, count_matches)
+        if res:
+            logging.info('%s - by match count: max f1=%s for t=%s, p=%s, r=%s, TP=%s, FP=%s, FN=%s',
+                hint, res[6], res[0], res[1], res[2], res[3], res[4], res[5])
+        else:
+            logging.warning('%s - by match count: not found', hint)
+    if estimated_threshold is not None:
+        res = get_f1_by_threshold(result, estimated_threshold)
+        if res:
+            logging.info('%s - by estimated threshold: max f1=%s for t=%s (estimated=%s), p=%s, r=%s, TP=%s, FP=%s, FN=%s',
+                hint, res[6], res[0], round(estimated_threshold, 5), res[1], res[2], res[3], res[4], res[5])
+        else:
+            logging.warning('%s - by estimated threshold: not found', hint)
+
     logging.info('threshold, precision, recall, TP, FP, FN, f1score:\n%s', result)
 
-def evaluate(df_scores, index_matches, number_of_thresholds=201, hint='evaluation result'):
+def evaluate(df_scores, index_matches, number_of_thresholds=201, hint='evaluation result', estimated_threshold=None):
 
     result = []
     thresholds = [ round(t,5) for t in np.linspace(1, 0, num=number_of_thresholds, endpoint=True)]
@@ -149,10 +168,10 @@ def evaluate(df_scores, index_matches, number_of_thresholds=201, hint='evaluatio
         entry = [t, round(precision, 5), round(recall, 5), len(true_matches), len(false_matches), len(false_nonmatches), round(f1score, 5)]
         result.append(entry)
 
-    log_result(result, hint)
+    log_result(result, hint, len(index_matches), estimated_threshold)
     return result
 
-def evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint:str):
+def evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint:str, estimated_threshold=None):
 
     index_matches_fn = index_matches.difference(df_scores.index)
     len_train_set = len(index_train_set) if index_train_set is not None else 0
@@ -163,16 +182,29 @@ def evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, ind
         df_scores_tmp = df_scores.loc[index_train_set]
         hint_long = 'evaluation result on training set minus FN, ' + hint
         index_matches_minus_fn = index_matches.intersection(index_train_set)
-        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long)
+        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long, estimated_threshold=estimated_threshold)
         hint_long = 'evaluation result on training set incl. FN, ' + hint
         index_matches_incl_fn = index_matches_minus_fn.union(index_matches_fn)
-        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long)
+        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long, estimated_threshold=estimated_threshold)
 
     if len_test_set > 0:
         df_scores_tmp = df_scores.loc[index_test_set]
         hint_long = 'evaluation result on test set minus FN, ' + hint
         index_matches_minus_fn = index_matches.intersection(index_test_set)
-        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long)
+        evaluate(df_scores_tmp, index_matches_minus_fn, hint=hint_long, estimated_threshold=estimated_threshold)
         hint_long = 'evaluation result on test set incl. FN, ' + hint
         index_matches_incl_fn = index_matches_minus_fn.union(index_matches_fn)
-        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long)
+        evaluate(df_scores_tmp, index_matches_incl_fn, hint=hint_long, estimated_threshold=estimated_threshold)
+
+def get_f1_by_predicted_match_count(result, count_matches):
+    for res in result:
+        # threshold, precision, recall, TP, FP, FN, f1score
+        pred_matches = res[3] + res[4]
+        if pred_matches > count_matches:
+            return res
+
+def get_f1_by_threshold(result, threshold):
+    for res in result:
+        # threshold, precision, recall, TP, FP, FN, f1score
+        if res[0] <= threshold:
+            return res
