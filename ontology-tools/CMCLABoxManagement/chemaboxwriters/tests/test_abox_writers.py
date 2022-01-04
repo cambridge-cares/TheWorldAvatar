@@ -8,6 +8,7 @@ import pytest
 import shutil
 import re
 import os
+from typing import Dict, Any
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -78,7 +79,7 @@ def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
 @pytest.mark.parametrize("inp_file_or_dir, inp_file_type,  \
                           regenerateResult",
 [
-('OC_oc_csv_test', 'csv', False),
+('OC_oc_csv_test', 'oc_csv', False),
 ('OC_oc_json_test', 'oc_json', False),
 ('OC_qc_json_test', 'qc_json', False),
 ('OC_qc_log_multi_job_test', 'qc_log', False),
@@ -97,15 +98,13 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
     funcKwargs={
         'QC_JSON_TO_OC_JSON': {
-            'QC_JSON_TO_OC_JSON_STAGE':{
                 'random_id':'testID-111-111-111'
-            }
         }
     }
     mocker.patch("chemaboxwriters.ontocompchem.jsonwriter.get_species_iri",
                  return_value='test_species_iri')
 
-    pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, stageFuncKwargs=funcKwargs)
+    pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=funcKwargs)
 
     fileExts = ['.oc.json', '.oc.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -176,6 +175,9 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR,inp_file_or_dir)
+
+
+    handlerFuncKwargs: Dict[str, Any]
 
     if 'angle' in inp_file_or_dir:
         handlerFuncKwargs= {

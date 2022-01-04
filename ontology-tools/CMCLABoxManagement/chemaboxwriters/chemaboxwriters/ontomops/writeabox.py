@@ -11,10 +11,10 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
     try:
         if pipeline is None: pipeline = assemble_omops_pipeline()
         inStage = get_inStage(inpFileType)
-        files = get_stage_files(fileOrDir, inStage, fileExtPrefix='om', qcLogExt='')
+        files = get_stage_files(fileOrDir, inStage, qcLogExt='')
 
         if handlerFuncKwargs:
-            pipeline.set_stage_func_kwargs(handlerFuncKwargs)
+            pipeline.set_func_kwargs(handlerFuncKwargs)
 
         pipeline.run(files, inStage, outDir)
 

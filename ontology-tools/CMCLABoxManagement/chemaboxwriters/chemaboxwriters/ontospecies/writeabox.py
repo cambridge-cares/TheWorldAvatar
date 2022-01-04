@@ -11,11 +11,11 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
     try:
         if pipeline is None: pipeline = assemble_os_pipeline()
         inStage = get_inStage(inpFileType)
-        files = get_stage_files(fileOrDir, inStage, fileExtPrefix='os', qcLogExt=qcLogExt)
+        files = get_stage_files(fileOrDir, inStage, qcLogExt=qcLogExt)
 
         print(handlerFuncKwargs)
         if handlerFuncKwargs:
-            pipeline.set_handler_func_kwargs(handlerFuncKwargs)
+            pipeline.set_func_kwargs(handlerFuncKwargs)
 
         outDirNotSet = outDir is None
         outBaseNameNotSet = outBaseName is None

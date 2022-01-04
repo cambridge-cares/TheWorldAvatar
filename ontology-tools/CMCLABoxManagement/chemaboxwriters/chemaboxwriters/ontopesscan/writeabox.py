@@ -13,7 +13,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
     try:
         if pipeline is None: pipeline = assemble_ops_pipeline()
         inStage = get_inStage(inpFileType)
-        files = get_stage_files(fileOrDir, inStage, fileExtPrefix='ops', qcLogExt='')
+        files = get_stage_files(fileOrDir, inStage, qcLogExt='')
 
         if handlerFuncKwargs:
             pipeline.set_handler_func_kwargs(handlerFuncKwargs)

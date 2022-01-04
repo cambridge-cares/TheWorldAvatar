@@ -1,8 +1,8 @@
-from docopt import docopt, DocoptExit
+import docopt
 from chemaboxwriters.ontocompchem import write_abox
 import json
 
-doc = """aboxwriter
+__doc__: str = """aboxwriter
 Usage:
     ocompchem <fileOrDir>   [--inp-file-type=<type>]
                             [--qc-log-ext=<ext>]
@@ -16,7 +16,7 @@ Options:
                               - quantum calculation log         [default: qc_log]
                               - quantum calculation json        [qc_json]
                               - ontocompchem meta json          [oc_json]
-                              - ontocompchem meta csv           [csv]
+                              - ontocompchem meta csv           [oc_csv]
 --qc-log-ext=<ext>           Extensions of the quantum
                              calculation log files, defaults
                              to ".log, .g09" if not specified
@@ -24,9 +24,6 @@ Options:
                              abox files to. If not provided
                              defaults to the directory of the
                              input file
---out-base-name=<name>       Base name of the produced output
-                             files. If not provided, defaults
-                             to the input file base name.
 --handlers-args=<handlargs>  Any supported stage handlers'         [default: {}]
                              arguments. The arguments are passed
                              as a json formatted string, where
@@ -39,9 +36,9 @@ Options:
 
 def start():
     try:
-        args = docopt(doc)
-    except DocoptExit:
-        raise DocoptExit('Error: ocompchem called with wrong arguments.')
+        args = docopt.docopt(__doc__)
+    except docopt.DocoptExit: #type: ignore
+        raise docopt.DocoptExit('Error: ocompchem called with wrong arguments.') #type: ignore
 
     try:
         handlerFuncKwargs = json.loads(args['--handlers-args'])
@@ -54,7 +51,6 @@ def start():
                 inpFileType=args['--inp-file-type'],
                 qcLogExt=args['--qc-log-ext'],
                 outDir=args['--out-dir'],
-                outBaseName=args['--out-base-name'],
                 handlerFuncKwargs=handlerFuncKwargs
                 )
 
