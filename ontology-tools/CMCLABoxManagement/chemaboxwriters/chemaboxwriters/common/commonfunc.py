@@ -33,7 +33,8 @@ def get_file_extensions(
 def get_stage_files(
     fileOrDir: str,
     inStage: Enum,
-    qcLogExt: str)->List[str]:
+    qcLogExt: Optional[str] = None
+    )->List[str]:
 
     fileExt = get_file_extensions(inStage, qcLogExt)
     files = get_files_by_extensions(fileOrDir, fileExt)

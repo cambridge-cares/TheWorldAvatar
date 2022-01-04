@@ -122,7 +122,7 @@ class StageHandler:
         self.fileExt = fileExt
         return self
 
-    def set_func_kwargs(
+    def set_handler_func_kwargs(
         self,
         funcKwargs: Dict[str, Any]
         )->Any:
@@ -138,9 +138,8 @@ class Pipeline:
     def __init__(
         self,
         name: Optional[str] = None,
-        unroll_input: bool=True,
+        collate_inputs_at_stages: Optional[List[Enum]] = None,
         outStage: Optional[Enum] = None,
-        outStageAutoSet: Optional[bool] = True
         ):
 
         if name is None: name = ''
@@ -149,10 +148,9 @@ class Pipeline:
         self.handlers: Dict[str, Union[StageHandler, 'Pipeline']] = {}
         self.writtenFiles: List[str] = []
         self.inStages: List[Enum] = []
-        self.unroll_input = unroll_input
-
+        self.collate_inputs_at_stages = collate_inputs_at_stages
         self.outStage = outStage
-        self.outStageAutoSet = outStageAutoSet
+        self.outStageAutoSet = outStage is None
         self.outStageOutput: Optional[List[str]] = None
 
     def add_handler(
@@ -172,14 +170,14 @@ class Pipeline:
             self.outStage = handler.outStage
         return self
 
-    def set_func_kwargs(
+    def set_handler_func_kwargs(
         self,
         funcKwargs: Dict[str, Any]
         )->Any:
 
         for handler_name, funcKwargs in funcKwargs.items():
             handler = self.handlers[handler_name]
-            handler.set_func_kwargs(funcKwargs)
+            handler.set_handler_func_kwargs(funcKwargs)
         return self
 
     def run(
@@ -193,7 +191,13 @@ class Pipeline:
             requestedStage=inputType.name.lower()
             raise NotSupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
 
-        if self.unroll_input:
+        unroll_input = True
+
+        if self.collate_inputs_at_stages is not None:
+            if inputType in self.collate_inputs_at_stages:
+                unroll_input = False
+
+        if unroll_input:
             for _input in inputs:
                 self._run([_input], inputType, outDir)
         else:
@@ -225,15 +229,21 @@ class Pipeline:
         self.outStage = outStage
         return self.outStageOutput, self.outStage
 
+    def get_written_files(
+        self,
+        )->List[str]:
+
+        return self.writtenFiles
+
 def get_pipeline(
     name: str = '',
-    unroll_input: bool=True,
-    handlers: List[StageHandler] = []
+    handlers: List[StageHandler] = [],
+    collate_inputs_at_stages: Optional[List[Enum]]=None,
     )->Pipeline:
 
     pipeline = Pipeline(
         name = name,
-        unroll_input=unroll_input)
+        collate_inputs_at_stages=collate_inputs_at_stages)
     for handler in handlers:
         pipeline.add_handler(handler)
     return pipeline

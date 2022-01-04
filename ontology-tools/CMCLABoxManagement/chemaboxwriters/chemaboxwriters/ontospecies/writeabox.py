@@ -1,4 +1,4 @@
-from chemaboxwriters.common.base import NotSupportedStage
+from chemaboxwriters.common.base import Pipeline, NotSupportedStage
 from chemutils.ioutils.ioutils import fileExists
 from chemaboxwriters.ontospecies import assemble_os_pipeline
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
@@ -7,7 +7,7 @@ import os
 
 def write_abox(fileOrDir, inpFileType, pipeline=None,
                qcLogExt=None, outDir=None, outBaseName=None,
-               handlerFuncKwargs={}):
+               handlerFuncKwargs={})->Pipeline:
     try:
         if pipeline is None: pipeline = assemble_os_pipeline()
         inStage = get_inStage(inpFileType)
@@ -15,7 +15,7 @@ def write_abox(fileOrDir, inpFileType, pipeline=None,
 
         print(handlerFuncKwargs)
         if handlerFuncKwargs:
-            pipeline.set_func_kwargs(handlerFuncKwargs)
+            pipeline.set_handler_func_kwargs(handlerFuncKwargs)
 
         outDirNotSet = outDir is None
         outBaseNameNotSet = outBaseName is None

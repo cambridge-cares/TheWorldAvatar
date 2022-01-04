@@ -1,20 +1,18 @@
-from chemaboxwriters.common.base import NotSupportedStage
-from chemutils.ioutils.ioutils import fileExists
+from chemaboxwriters.common.base import Pipeline, NotSupportedStage
 from chemaboxwriters.ontomops.pipeline import assemble_omops_pipeline
 from chemaboxwriters.common.commonfunc import get_inStage, get_stage_files
 import textwrap
-import os
 
 def write_abox(fileOrDir, inpFileType, pipeline=None,
                outDir=None, outBaseName=None,
-               handlerFuncKwargs={}):
+               handlerFuncKwargs={})->Pipeline:
     try:
         if pipeline is None: pipeline = assemble_omops_pipeline()
         inStage = get_inStage(inpFileType)
-        files = get_stage_files(fileOrDir, inStage, qcLogExt='')
+        files = get_stage_files(fileOrDir, inStage)
 
         if handlerFuncKwargs:
-            pipeline.set_func_kwargs(handlerFuncKwargs)
+            pipeline.set_handler_func_kwargs(handlerFuncKwargs)
 
         pipeline.run(files, inStage, outDir)
 

@@ -8,7 +8,7 @@ import pytest
 import shutil
 import re
 import os
-from typing import Dict, Any
+from typing import List, Dict, Any
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -58,22 +58,12 @@ def compare_results(pipeline, regenerateResult, regenerateAllResults, fileExts):
     for file in files_to_check_existance:
         assert fileExists(file) == True
 
-def cleanup_test_data(pipeline, inp_file_type, fileExtPrefix, fileExts):
+def cleanup_test_data(
+    writtenFiles: List[str]
+    )->None:
 
-    inStage = get_inStage(inp_file_type)
-    testInputFileExt = get_file_extensions(inStage,fileExtPrefix)
-    fileExts = [fileExt+'_ref' for fileExt in fileExts]
-    fileExts.extend(testInputFileExt)
-
-    for file in pipeline.writtenFiles:
-        remove_file = True
-        for fileExt in fileExts:
-            match=re.search(fileExt.replace('.','\.')+'$', file)
-            if match is not None:
-                remove_file = False
-                break
-        if remove_file:
-            os.remove(file)
+    for file in writtenFiles:
+        os.remove(file)
 
 
 @pytest.mark.parametrize("inp_file_or_dir, inp_file_type,  \
@@ -111,7 +101,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
                     fileExts=fileExts)
 
     if clean_tests:
-        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='oc',fileExts=fileExts)
+        cleanup_test_data(pipeline.get_written_files())
 
     print('========================================================')
     print()
@@ -124,7 +114,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
 ('OS_qc_log_test', 'qc_log', False),
 ('OS_qc_json_test', 'qc_json', False),
 ('OS_os_json_test', 'os_json', False),
-('OS_os_csv_test', 'csv', False),
+('OS_os_csv_test', 'os_csv', False),
 ]
 )
 def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
@@ -149,7 +139,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
                     fileExts=fileExts)
 
     if clean_tests:
-        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='os',fileExts=fileExts)
+        cleanup_test_data(pipeline.get_written_files())
 
     print('========================================================')
     print()
@@ -160,7 +150,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
                           regenerateResult",
 [
 ('OPS_oc_json_test', 'oc_json', False),
-('OPS_qc_json_test\\co2_cbsapno_g09.log.qc.json', 'qc_json', False),
+('OPS_qc_json_test\\co2_cbsapno_g09.qc.json', 'qc_json', False),
 ('OPS_qc_log_test', 'qc_log', False),
 ('OPS_qc_log_angle_test', 'qc_log', True),
 ('OPS_qc_log_dihedral_test', 'qc_log', True)
@@ -215,8 +205,8 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    if clean_tests:
-        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='ops',fileExts=fileExts)
+    #if clean_tests:
+    cleanup_test_data(pipeline.get_written_files())
 
     print('========================================================')
     print()
@@ -248,7 +238,7 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
                     fileExts=fileExts)
 
     if clean_tests:
-        cleanup_test_data(pipeline,inp_file_type,fileExtPrefix='om',fileExts=fileExts)
+        cleanup_test_data(pipeline.get_written_files())
 
     print('========================================================')
     print()
