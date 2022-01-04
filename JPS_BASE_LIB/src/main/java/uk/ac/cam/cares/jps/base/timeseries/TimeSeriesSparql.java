@@ -198,6 +198,33 @@ public class TimeSeriesSparql {
     	kbClient.executeUpdate(modify.getQueryString());
     }
     
+    void bulkInitTS(List<String> tsIRIs, List<List<String>> dataIRIs, String rdbURL, List<String> timeUnit) {
+    	ModifyQuery modify = Queries.MODIFY();
+    	
+    	// set prefix declarations
+    	modify.prefix(prefix_ontology, prefix_kb);
+    	
+    	for (int i = 0; i < tsIRIs.size(); i++) {
+    		Iri ts = iri(tsIRIs.get(i));
+    		modify.insert(ts.isA(TimeSeries));
+    		// relational database URL
+        	modify.insert(ts.has(hasRDB, literalOf(rdbURL)));
+        	
+        	// link each data to time series
+        	for (String data : dataIRIs.get(i)) {
+        		modify.insert(iri(data).has(hasTimeSeries,ts));
+        	}
+        	
+        	if (timeUnit != null) {
+        		if (timeUnit.get(i) != null) {
+        			modify.insert(ts.has(hasTimeUnit, literalOf(timeUnit.get(i))));
+        		}
+        	}
+    	}
+    	
+    	kbClient.executeUpdate(modify.getQueryString());
+	}
+    
     /**
      * Count number of time series IRIs in kb
      * @return Total number of time series instances in the knowledge base as int
@@ -300,15 +327,21 @@ public class TimeSeriesSparql {
 	 * Remove all time series from kb
 	 */
 	protected void removeAllTimeSeries() {
-		// Get all time series in kb
-		List<String> tsIRI = getAllTimeSeries();
+		SubSelect sub = GraphPatterns.select(); // only used as variable generator
+		Variable predicate1 = sub.var();
+		Variable predicate2 = sub.var();
+		Variable subject = sub.var();
+		Variable object = sub.var();
+		Variable timeseries = sub.var();
 		
-		// Remove all time series
-		if (!tsIRI.isEmpty()) {
-			for (String ts : tsIRI) {
-				removeTimeSeries(ts);
-			}
-		}
+		TriplePattern delete_tp1 = timeseries.has(predicate1, object);
+		TriplePattern delete_tp2 = subject.has(predicate2, timeseries);		
+		
+		// insert subquery into main sparql update
+		ModifyQuery modify = Queries.MODIFY();
+		modify.delete(delete_tp1, delete_tp2).where(timeseries.isA(TimeSeries),delete_tp1,delete_tp2).prefix(prefix_ontology);
+		
+		kbClient.executeUpdate(modify.getQueryString());
 	}
 	
 	/**

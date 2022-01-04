@@ -1,10 +1,11 @@
 import docopt
 import pyuploader.app as app
 
-__doc__ = """pyuploader
+__doc__: str = """pyuploader
 Usage:
     fs_upload <file_or_dir>  [--url=<url>]
-                             [--auth=<auth>]
+                             [--auth-file=<file>]
+                             [--no-auth]
                              [--file-ext=<ext>]
                              [--subdirs=<dir>]
                              [--log-file-name=<name>]
@@ -13,36 +14,45 @@ Usage:
                              [--dry-run]
 
 Options:
+--url=<url>             File server upload url. If not specified, the code
+                        will try to read it from a file whose location
+                        should be specified in user 'KG_FILE_SERVER_SPECS'
+                        environment variable.
+--auth-file=<file>      File path to the file server secrets file containing
+                        the user authorization string of the following form:
+                        "username:password". If not specified, the code will
+                        try to read the secrets file path from a user
+                        'KG_FILE_SERVER_SECRETS' environment variable.
+                        DO NOT store your secrets directly in environment
+                        variables, only store the secrets file path.
+--no-auth               Disables reading credentials from the environment
+                        variables and sending it to the file server.
 --file-ext=<ext>        List of extensions used to select files
                         that will be uploaded to the file server.
-                        Example: --file-ext='.log,.txt'             [default: .log]
---url=<url>             File server upload url. If not specified,
-                        the code will try to read it from user
-                        environment variables.
---auth=<auth>           File server authorization as a "username:password"
-                        string. If not specified, the code will try to read
-                        it from user environment variables.
+                        Example: --file-ext='log,txt'                       [default: log]
 --subdirs=<dir>         Optional subdirectories to be created on
                         the file server to upload your files into.
-                        Example: --file-server-subdirs='dir1/dir2/'   [default: ]
---log-file-name=<name>  Name of the generated log file.               [default: fs_upload.log]
+                        Example: --subdirs='dir1/dir2/'                     [default: ]
+--log-file-name=<name>  Name of the generated log file.                     [default: fs_uploader.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
-                        to the <fileOrDir> directory.
+                        to the <file_or_dir> directory.
 --no-file-logging       No logging to a file flag.
---dry-run               Run the triple store uploader tool in a dry
-                        run without uploading any triples.
+--dry-run               Run the file uploader tool in a dry
+                        run without uploading any files.
 """
-def start():
+def start() -> None:
     try:
         args = docopt.docopt(__doc__)
-    except docopt.DocoptExit:
-        raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.')
+    except docopt.DocoptExit: #type: ignore
+        raise docopt.DocoptExit('Error: fs_upload called with wrong arguments.') #type: ignore
 
-    app.fs_upload_wrapper(
+    app.app_upload(
+        uploader_type='fs_uploader',
         file_or_dir = args['<file_or_dir>'],
         url = args['--url'],
-        auth = tuple(args['--auth'].split(':')) if args['--auth'] is not None else args['--auth'],
+        auth_file = args['--auth-file'],
+        no_auth = args['--no-auth'],
         file_ext = args['--file-ext'],
         subdirs = args['--subdirs'],
         log_file_dir = args['--log-file-dir'],
