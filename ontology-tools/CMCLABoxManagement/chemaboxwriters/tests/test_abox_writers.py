@@ -205,8 +205,8 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     compare_results(pipeline,regenerateResult, regenerateAllResults,
                     fileExts=fileExts)
 
-    #if clean_tests:
-    cleanup_test_data(pipeline.get_written_files())
+    if clean_tests:
+        cleanup_test_data(pipeline.get_written_files())
 
     print('========================================================')
     print()
