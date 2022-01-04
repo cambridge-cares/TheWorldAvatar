@@ -392,6 +392,49 @@ def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
     print('queryifWithin is done')
     res = res[0]['ASK']
     return res
+
+def queryEnglandAndWalesBounderies(ONS_Endpoint_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    PREFIX ons_foi: <http://publishmydata.com/def/ontology/foi/>
+    SELECT DISTINCT ?area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
+    WHERE
+    {
+    ?area ons:status "live" .
+    ?area rdf:type ons:Statistical-Geography .
+    { ?area ons_foi:code "K04000001" .} UNION 
+    { ?area ons_foi:code "E92000001" .} UNION
+    { ?area ons_foi:code "W92000004" .} 
+    ?area ons_geosparql:hasGeometry ?geometry .
+    ?geometry ons_geosparql:asWKT ?areaBoundary .
+    } GROUP BY ?area
+    """
+    print('query EnglandAndWalesBounderies')
+    res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
+    print('queryEnglandAndWalesBounderies is done')
+    # clear the symbols in the query results
+    for r in res:
+      for key in r.keys():
+          if '\"^^' in  r[key]:
+            r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
+    for r in res:
+      if len(r["Geo_InfoList"]) == 0: 
+          raise Exception('There is one place does not have geometry information which is', r["area"], ', please check the query string and the place status in ONS.')
+      elif "***" in r['Geo_InfoList']:
+          r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
+      r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
+      if "K04000001" in str(r['area']):
+          EngAndWalesBound = r['Geo_InfoList']
+      elif "E92000001" in str(r['area']):
+          EngBound = r['Geo_InfoList']
+      elif "W92000004" in str(r['area']):
+          WalesBound = r['Geo_InfoList']
+    return EngAndWalesBound, EngBound, WalesBound           
+    
 ###########################ENDENDEND#################################################################################################
 
 if __name__ == '__main__':
@@ -406,9 +449,10 @@ if __name__ == '__main__':
     # res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
     # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
-    res = queryRegionBoundaries_testJSON('ons')
+    # res = queryRegionBoundaries_testJSON('ons')
+    # res = queryEnglandAndWalesBounderies('ons')
     # print(res)
-    # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
+    res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
     # res = queryPowerPlantsLocatedInGB(None, False, 'ukdigitaltwin')
     # res = queryGBOrNIBoundary('ons')
@@ -422,7 +466,7 @@ if __name__ == '__main__':
     
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
     # print(res, len(res), type(res))
-    print(res[0])
+    print(res)
     
    
    
