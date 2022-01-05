@@ -12,8 +12,9 @@ version: "3.8"
 services:
 
   # Status Agent
+  # No ${MODE} classifier as this image has no environment specific code
   status-agent:
-    image: docker.cmclinnovations.com/status-agent-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/StatusAgent"
       dockerfile: "./docker/Dockerfile"
@@ -25,8 +26,9 @@ services:
 
       
   # Email Agent
+  # No ${MODE} classifier as this image has no environment specific code
   email-agent:
-    image: docker.cmclinnovations.com/email-agent-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/EmailAgent"
       dockerfile: "./docker/Dockerfile"
@@ -63,8 +65,9 @@ services:
       target: "default"
 
   # JPS Chatbot
+  # No ${MODE} classifier as this image has no environment specific code
   jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     build:
       context: "../../../JPS_Chatbot"
       labels:
@@ -74,8 +77,9 @@ services:
         hash: "${HASH}"
 
   # JPS LDF Server
+  # No ${MODE} classifier as this image has no environment specific code
   jps-ldf:
-    image: docker.cmclinnovations.com/jps-ldf-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
     build:
       context: "../../../JPS_LDF"
       labels:
@@ -109,8 +113,9 @@ services:
   #      hash: "${HASH}"
 
   # STDC Thermo agent
+  # No ${MODE} classifier as this image has no environment specific code
   stdc-agent:
-    image: docker.cmclinnovations.com/stdc_agent-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/STDCThermoAgent"
       labels:
@@ -120,8 +125,9 @@ services:
         hash: "${HASH}"
 
   # Weather agent
+  # No ${MODE} classifier as this image has no environment specific code
   weather-agent:
-    image: docker.cmclinnovations.com/weather-agent-${MODE}:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/WeatherAgent"
       labels:
