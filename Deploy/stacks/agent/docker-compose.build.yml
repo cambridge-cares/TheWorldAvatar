@@ -13,7 +13,7 @@ services:
 
   # Status Agent
   status-agent:
-    image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/status-agent-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/StatusAgent"
       dockerfile: "./docker/Dockerfile"
@@ -26,7 +26,7 @@ services:
       
   # Email Agent
   email-agent:
-    image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/email-agent-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/EmailAgent"
       dockerfile: "./docker/Dockerfile"
@@ -64,7 +64,7 @@ services:
 
   # JPS Chatbot
   jps-chatbot:
-    image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/jps-chatbot-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../JPS_Chatbot"
       labels:
@@ -75,7 +75,7 @@ services:
 
   # JPS LDF Server
   jps-ldf:
-    image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/jps-ldf-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../JPS_LDF"
       labels:
@@ -110,7 +110,7 @@ services:
 
   # STDC Thermo agent
   stdc-agent:
-    image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/stdc_agent-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/STDCThermoAgent"
       labels:
@@ -121,7 +121,7 @@ services:
 
   # Weather agent
   weather-agent:
-    image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/weather-agent-${MODE}:1.0.0-SNAPSHOT
     build:
       context: "../../../Agents/WeatherAgent"
       labels:
