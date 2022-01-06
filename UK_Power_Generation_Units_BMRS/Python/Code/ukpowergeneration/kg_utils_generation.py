@@ -30,6 +30,7 @@ FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 PREFIXES = {
     'ontoenergyststem':  'http://www.theworldavatar.com/ontology/ontoenergysystem/OntoEnergySystem.owl#',
     'ontoenergyststem_kb': 'http://www.theworldavatar.com/kb/ontoenergysystem/',
+    'ontopowsys':  'http://www.theworldavatar.com/ontology/ontopowsys/electrical_system.owl#',
     'om':    'http://www.ontology-of-units-of-measure.org/resource/om-2/',
     'rdf':   'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
     'rdfs':  'http://www.w3.org/2000/01/rdf-schema#',
@@ -235,7 +236,7 @@ def create_blazegraph_namespace():
 
 def get_instantiated_generators(endpoint):
     """
-        Retrieves names and IRIs of all instantiated Gasgenerators in the knowledge graph.
+        Retrieves names and IRIs of all instantiated generators in the knowledge graph.
 
         Arguments:
             endpoint - SPARQL Query endpoint for knowledge graph.
@@ -253,11 +254,11 @@ def get_instantiated_generators(endpoint):
     KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
 
     # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
-    query = create_sparql_prefix('ontoenergysystem') + \
+    query = create_sparql_prefix('ontopowsys') + \
             create_sparql_prefix('rdf') + \
             create_sparql_prefix('rdfs') + \
             'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
-            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerGenerator; \
+            'WHERE { ?' + var1 + ' rdf:type ontopowsys:PowerGenerator; \
                                    rdfs:label ?' + var2 + '. }'
 
     response = KGClient.execute(query)
@@ -266,6 +267,46 @@ def get_instantiated_generators(endpoint):
     response = json.loads(response)
 
     # Create dictionary of query results with gas generator name as key and IRI as value
+    res = dict()
+    for r in response:
+        res[r[var2]] = r[var1]
+
+    return res
+
+
+def get_instantiated_powerplants(endpoint):
+    """
+        Retrieves names and IRIs of all instantiated powerplants in the knowledge graph.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint for knowledge graph.
+
+        Returns:
+            Dictionary of all instantiated gas generators (name as key, IRI as value)
+            (empty dictionary in case no generators are instantiated)
+    """
+
+    # Initialise SPARQL query variables for gas generator IRIs and names
+    var1, var2 = 'iri', 'name'
+
+    # Initialise remote KG client with only query endpoint specified
+    print("Getting instantiated powerplants from SPARQL endpoint:", endpoint)
+    KGClient = jpsBaseLibView.RemoteStoreClient(endpoint)
+
+    # Perform SPARQL query (see StoreRouter in jps-base-lib for further details)
+    query = create_sparql_prefix('ontoenergysystem') + \
+            create_sparql_prefix('rdf') + \
+            create_sparql_prefix('rdfs') + \
+            'SELECT distinct ?' + var1 + ' ?' + var2 + ' ' \
+            'WHERE { ?' + var1 + ' rdf:type ontoenergysystem:PowerPlant; \
+                                   rdfs:label ?' + var2 + '. }'
+
+    response = KGClient.execute(query)
+
+    # Convert JSONArray String back to list
+    response = json.loads(response)
+
+    # Create dictionary of query results with powerplant name as key and IRI as value
     res = dict()
     for r in response:
         res[r[var2]] = r[var1]
