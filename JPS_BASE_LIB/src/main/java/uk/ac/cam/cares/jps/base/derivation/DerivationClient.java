@@ -647,6 +647,8 @@ public class DerivationClient {
 				requestParams.put(BELONGSTO_KEY, derivation.getEntitiesIri()); // IRIs of belongsTo
 				
 				LOGGER.debug("Updating <" + derivation.getIri() + "> using agent at <" + agentURL + "> with http request " + requestParams);
+				// record timestamp at the point the request is sent to the agent
+				long newTimestamp = Instant.now().getEpochSecond();
 				String response = AgentCaller.executeGetWithURLAndJSON(agentURL, requestParams.toString());
 				
 				LOGGER.debug("Obtained http response from agent: " + response);
@@ -702,7 +704,6 @@ public class DerivationClient {
 					}
 				}
 				// if there are no errors, assume update is successful
-				long newTimestamp = Instant.now().getEpochSecond();
 				derivation.setTimestamp(newTimestamp);
 				derivation.setUpdateStatus(true);
 			}
