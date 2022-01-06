@@ -13,11 +13,6 @@ version: "3.8"
 # Services
 services:
 
-  # Flood Agent
-  flood-agent:
-    ports:
-      - 41082:80
-
   # Status Agent
   status-agent:
     ports:

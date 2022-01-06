@@ -12,16 +12,6 @@ version: "3.8"
 # Services
 services:
 
-  # Flood Agent (Development only, for now)
-  flood-agent:
-    image: docker.cmclinnovations.com/flood-agent-$MODE:1.0.0-SNAPSHOT
-    container_name: "flood-agent${CONTAINER_NAME_SUFFIX}"
-    environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
-    pull_policy: if_not_present
-    restart: unless-stopped
-
-
   # Status Agent (Development Only)
   status-agent:
     image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
