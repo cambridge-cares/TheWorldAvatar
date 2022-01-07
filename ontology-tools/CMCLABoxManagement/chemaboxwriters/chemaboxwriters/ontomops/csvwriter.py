@@ -9,7 +9,7 @@ import json
 import csv
 from chemaboxwriters.kgoperations.querytemplates import get_assembly_iri
 from io import StringIO
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 
 onto_spec = PREFIXES["onto_spec"]
@@ -25,14 +25,14 @@ def om_csvwriter(file_path):
     with open(file_path, 'r') as file_handle:
         data = json.load(file_handle)
 
-    gen_id = data[commonv.ENTRY_UUID]
+    gen_id = data[globals.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    mops_id = data[commonv.ENTRY_IRI]
+    mops_id = data[globals.ENTRY_IRI]
 
 
     search1 = get_assembly_iri(data["Mops_Chemical_Building_Units"][0]["GenericUnitModularity"],

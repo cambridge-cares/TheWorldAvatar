@@ -4,9 +4,8 @@ from chemaboxwriters.ontocompchem.pipeline import assemble_oc_pipeline
 from chemaboxwriters.ontospecies.pipeline import assemble_os_pipeline
 from chemaboxwriters.ontomops.pipeline import assemble_omops_pipeline
 from chemaboxwriters.ontopesscan.pipeline import assemble_ops_pipeline
-from chemaboxwriters.common.commonfunc import get_stage_files
-from chemaboxwriters.common.logconfig import config_logging
-import chemaboxwriters.common.stageenums as stge
+from chemaboxwriters.common.utilsfunc import get_stage_files, stage_name_to_enum, config_logging
+import chemaboxwriters.common.globals as globals
 import logging
 import textwrap
 from typing import Optional, Dict, Any, Union
@@ -72,7 +71,7 @@ def _write_abox(
 
     pipeline = assemble_pipeline(pipeline_type=pipeline_type)
 
-    inStage = stge.stage_name_to_enum(inpFileType)
+    inStage = stage_name_to_enum(inpFileType)
     if inStage not in pipeline.inStages:
         supportedStagesNames = [stage.name.lower() for stage in pipeline.inStages]
         logger.error(textwrap.dedent(f"""
@@ -100,15 +99,15 @@ def assemble_pipeline(
     )->Pipeline:
 
 
-    if pipeline_type.upper() == stge.ONTO_COMP_CHEM_TAG: return assemble_oc_pipeline()
-    if pipeline_type.upper() == stge.ONTO_SPECIES_TAG: return assemble_os_pipeline()
-    if pipeline_type.upper() == stge.ONTO_PESSCAN_TAG: return assemble_ops_pipeline()
-    if pipeline_type.upper() == stge.ONTO_MOPS_TAG: return assemble_omops_pipeline()
+    if pipeline_type.upper() == globals.ONTO_COMP_CHEM_TAG: return assemble_oc_pipeline()
+    if pipeline_type.upper() == globals.ONTO_SPECIES_TAG: return assemble_os_pipeline()
+    if pipeline_type.upper() == globals.ONTO_PESSCAN_TAG: return assemble_ops_pipeline()
+    if pipeline_type.upper() == globals.ONTO_MOPS_TAG: return assemble_omops_pipeline()
 
     logger.error(textwrap.dedent(f"""
         Error: The requested pipeline ='{pipeline_type}'
                 is not supported by the current pipeline.
                 Please choose one of the following options:
-                {stge.SUPPORTED_PIPELINES}"""))
+                {globals.SUPPORTED_PIPELINES}"""))
     raise app_exceptions.UnsupportedPipeline
     

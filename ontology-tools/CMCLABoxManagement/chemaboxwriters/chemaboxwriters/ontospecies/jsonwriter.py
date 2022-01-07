@@ -1,7 +1,7 @@
 from chemutils.obabelutils.obconverter import obConvert
 from chemutils.obabelutils.obutils import obGetMolBonds
 from compchemparser.helpers.utils import get_xyz_from_parsed_json
-from chemaboxwriters.common.randomidgenerator import get_random_id
+from chemaboxwriters.common.utilsfunc import get_random_id
 from chemaboxwriters.common import PREFIXES
 from compchemparser.parsers.ccgaussian_parser import ATOM_MASSES, \
                                                      FORMAL_CHARGE, \
@@ -16,7 +16,7 @@ from collections import Counter
 import json
 import re
 import time
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 
 cas_re = re.compile('\d{2,7}-\d\d-\d')
 
@@ -111,8 +111,8 @@ def os_jsonwriter(file_path, random_id="",
     if not random_id:
         random_id = get_random_id()
 
-    data_out[commonv.ENTRY_UUID] = random_id
-    data_out[commonv.ENTRY_IRI] = spec_pref +'Species_'+random_id
+    data_out[globals.ENTRY_UUID] = random_id
+    data_out[globals.ENTRY_IRI] = spec_pref +'Species_'+random_id
 
     return [json.dumps(data_out)]
 

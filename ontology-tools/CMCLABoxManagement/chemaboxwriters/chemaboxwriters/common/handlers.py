@@ -1,8 +1,8 @@
 from chemaboxwriters.common.base import get_handler, StageHandler
 from compchemparser.helpers.utils import jsonStringToFile
-from chemaboxwriters.common.stageenums import QUANTUM_CALC_TAG
+from chemaboxwriters.common.globals import QUANTUM_CALC_TAG
 from compchemparser.app import parseLog
-from chemaboxwriters.common.commonfunc import csv2rdf_wrapper
+from chemaboxwriters.common.utilsfunc import csv2rdf_wrapper
 import chemutils.ioutils.ioutils as ioutils
 from typing import Callable
 

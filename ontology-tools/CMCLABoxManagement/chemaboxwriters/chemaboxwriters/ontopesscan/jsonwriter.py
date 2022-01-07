@@ -1,8 +1,8 @@
 from chemutils.mathutils.linalg import getXYZPointsDistance, getPlaneAngle, getDihedralAngle
-from chemaboxwriters.common.randomidgenerator import get_random_id
+from chemaboxwriters.common.utilsfunc import get_random_id
 import json
 import numpy as np
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from compchemparser.parsers.ccgaussian_parser import GEOM
 
 SCAN_COORDINATE_ATOMS_IRIS='ScanCoordinateAtomsIRIs'
@@ -14,7 +14,7 @@ SCAN_ATOM_IDS= 'ScanAtomIDs'
 
 def ops_jsonwriter(file_paths, os_iris, os_atoms_iris, oc_atoms_pos, random_id=""):
     data_out ={}
-    data_out[commonv.SPECIES_IRI] = os_iris.split(',')
+    data_out[globals.SPECIES_IRI] = os_iris.split(',')
     data_out[SCAN_COORDINATE_ATOMS_IRIS] = os_atoms_iris.split(',')
     data_out[SCAN_ATOM_IDS] = " ".join(oc_atoms_pos.split(',')[:])
     oc_atoms_pos = [int(at_pos)-1 for at_pos in oc_atoms_pos.split(',')]
@@ -31,8 +31,8 @@ def ops_jsonwriter(file_paths, os_iris, os_atoms_iris, oc_atoms_pos, random_id="
             data_out[SCAN_COORDINATE_TYPE] = 'DihedralAngleCoordinate'
 
     if not random_id: random_id = get_random_id()
-    data_out[commonv.ENTRY_UUID]= random_id
-    data_out[commonv.ENTRY_IRI]='PotentialEnergySurfaceScan_'+random_id
+    data_out[globals.ENTRY_UUID]= random_id
+    data_out[globals.ENTRY_IRI]='PotentialEnergySurfaceScan_'+random_id
 
     scanCoordinateValue = []
     ontoCompChemJobs = []
@@ -42,7 +42,7 @@ def ops_jsonwriter(file_paths, os_iris, os_atoms_iris, oc_atoms_pos, random_id="
         with open(file_path, 'r') as file_handle:
             data_item = json.load(file_handle)
 
-        ontoCompChemJobs.append(data_item[commonv.ENTRY_IRI])
+        ontoCompChemJobs.append(data_item[globals.ENTRY_IRI])
         xyz = np.array(data_item[GEOM])
 
         if ndegrees==2:

@@ -1,5 +1,5 @@
 from chemaboxwriters.app import _write_abox
-from chemutils.ioutils.ioutils import readFile, fileExists
+from chemaboxwriters.common.utilsfunc import readFile, fileExists
 import pytest
 import shutil
 import re

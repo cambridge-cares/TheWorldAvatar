@@ -1,6 +1,14 @@
-from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
 from enum import Enum
 
+#json keys
+ENTRY_IRI='EntryIRI'
+SPECIES_IRI='SpeciesIRI'
+ENTRY_UUID='EntryUUID'
+
+#default cc log extensions
+CC_LOG_EXT= ".log,.g03,.g09,.g16"
+
+#stage/pipeline tags
 QUANTUM_CALC_TAG = 'QC'
 ONTO_COMP_CHEM_TAG = 'OC'
 ONTO_SPECIES_TAG = 'OS'
@@ -25,12 +33,3 @@ for tag, stages in _aboxStagesMap.items():
         _aboxStages.append(f"{tag}_{stage}")
 
 aboxStages = Enum('aboxStages', _aboxStages)
-
-def stage_name_to_enum(
-    inpFileType: str
-    )->Enum:
-    try:
-        inStage = aboxStages[inpFileType.upper()]
-    except KeyError:
-        raise UnsupportedStage
-    return inStage

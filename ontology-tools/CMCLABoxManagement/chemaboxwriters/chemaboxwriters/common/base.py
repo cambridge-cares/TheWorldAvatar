@@ -1,5 +1,4 @@
-from chemaboxwriters.common.commonfunc import getRefName
-from chemaboxwriters.common.stageenums import stage_name_to_enum
+from chemaboxwriters.common.utilsfunc import getRefName, stage_name_to_enum
 from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
 from enum import Enum
 import os
