@@ -1,23 +1,22 @@
 from chemaboxwriters.common.stageenums import aboxStages
 from chemaboxwriters.common.commonvars import CC_LOG_EXT
 from entityrdfizer.aboxgenerator.ABoxTemplateCSVFileToRDF import convert_csv_string_into_rdf
-from chemaboxwriters.app_exceptions.app_exceptions import NotSupportedStage
 import os
 import glob
-import textwrap
 from enum import Enum
 from typing import List, Optional
 
-def get_inStage(
-    inpFileType: str
-    )->Enum:
-    try:
-        inStage = aboxStages[inpFileType.upper()]
-    except KeyError as e:
-        raise NotSupportedStage
-    return inStage
+def get_stage_files(
+    fileOrDir: str,
+    inStage: Enum,
+    qcLogExt: Optional[str] = None
+    )->List[str]:
 
-def get_file_extensions(
+    fileExt = get_file_extensions_by_stage(inStage, qcLogExt)
+    files = get_files_by_extensions(fileOrDir, fileExt)
+    return files
+
+def get_file_extensions_by_stage(
     inStage: Enum,
     qcLogExt: Optional[str] = None
     )->List[str]:
@@ -29,20 +28,6 @@ def get_file_extensions(
     else:
         fileExt = ['.'+inStage.name.lower().replace('_','.')]
     return fileExt
-
-def get_stage_files(
-    fileOrDir: str,
-    inStage: Enum,
-    qcLogExt: Optional[str] = None
-    )->List[str]:
-
-    fileExt = get_file_extensions(inStage, qcLogExt)
-    files = get_files_by_extensions(fileOrDir, fileExt)
-    if not files:
-        raise FileNotFoundError(textwrap.dedent(f"""
-            Error: Provided directory or file path is either empty or does not
-                   contain the required '{inStage.name.lower()}' files."""))
-    return files
 
 def get_files_by_extensions(
     fileOrDir: str,

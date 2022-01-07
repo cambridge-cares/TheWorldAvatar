@@ -1,1 +1,0 @@
-from chemaboxwriters.ontocompchem.writeabox import write_abox

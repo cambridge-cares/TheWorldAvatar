@@ -1,0 +1,114 @@
+from chemaboxwriters.common.base import Pipeline
+import chemaboxwriters.app_exceptions.app_exceptions as app_exceptions
+from chemaboxwriters.ontocompchem.pipeline import assemble_oc_pipeline
+from chemaboxwriters.ontospecies.pipeline import assemble_os_pipeline
+from chemaboxwriters.ontomops.pipeline import assemble_omops_pipeline
+from chemaboxwriters.ontopesscan.pipeline import assemble_ops_pipeline
+from chemaboxwriters.common.commonfunc import get_stage_files
+from chemaboxwriters.common.logconfig import config_logging
+import chemaboxwriters.common.stageenums as stge
+import logging
+import textwrap
+from typing import Optional, Dict, Any, Union
+
+logger = logging.getLogger(__name__)
+
+def write_abox(
+        pipeline_type: str,
+        fileOrDir: str,
+        inpFileType: str ,
+        qcLogExt: Optional[str] = None,
+        outDir: Optional[str] = None,        
+        handlerFuncKwargs: Optional[Dict[str, Any]] = {},
+        log_file_dir: Optional[str] = None,
+        log_file_name: Optional[str] = None,
+        no_file_logging: bool = False,
+        *args,
+        **kwargs
+    )->Union[Pipeline,None]:
+    
+    pipeline = None
+    try:
+        pipeline = _write_abox(
+                        pipeline_type = pipeline_type,
+                        fileOrDir = fileOrDir,
+                        inpFileType = inpFileType ,
+                        qcLogExt = qcLogExt,
+                        outDir = outDir,
+                        handlerFuncKwargs = handlerFuncKwargs,
+                        log_file_dir = log_file_dir,
+                        log_file_name = log_file_name,
+                        no_file_logging = no_file_logging,
+                        *args,
+                        **kwargs
+                    )
+        logger.info("Abox writer finished successfully.")
+    except Exception as e:
+        logger.error("Abox writer failed. Please check the log for a more detailed error description.")
+        logger.exception(e)
+    return pipeline
+
+def _write_abox(
+        pipeline_type: str,
+        fileOrDir: str,
+        inpFileType: str ,
+        qcLogExt: Optional[str] = None,
+        outDir: Optional[str] = None,        
+        handlerFuncKwargs: Optional[Dict[str, Any]] = {},
+        log_file_dir: Optional[str] = None,
+        log_file_name: Optional[str] = None,
+        no_file_logging: bool = False,
+        *args,
+        **kwargs)->Pipeline:
+
+    if log_file_name is None:
+        log_file_name = f"{pipeline_type}_pipeline.aboxlog"
+
+    config_logging(
+        log_file_dir=log_file_dir,
+        log_file_name=log_file_name,
+        no_file_logging=no_file_logging
+        )
+
+    pipeline = assemble_pipeline(pipeline_type=pipeline_type)
+
+    inStage = stge.stage_name_to_enum(inpFileType)
+    if inStage not in pipeline.inStages:
+        supportedStagesNames = [stage.name.lower() for stage in pipeline.inStages]
+        logger.error(textwrap.dedent(f"""
+            Error: The requested --inp-file-type='{inpFileType}'
+                   is not supported by the current pipeline.
+                   Please choose one of the following options:
+                   {supportedStagesNames}"""))
+        raise app_exceptions.UnsupportedStage
+
+    files = get_stage_files(fileOrDir, inStage, qcLogExt=qcLogExt)
+
+    if not files:
+        logger.warning(f"""No {inStage.name.lower()} files to process. Directory / file path is either empty or does not exists.""")
+        return pipeline
+
+    if handlerFuncKwargs:
+        pipeline.set_handler_func_kwargs(handlerFuncKwargs)
+
+    pipeline.run(files, inStage, outDir)
+
+    return pipeline
+
+def assemble_pipeline(
+    pipeline_type: str
+    )->Pipeline:
+
+
+    if pipeline_type.upper() == stge.ONTO_COMP_CHEM_TAG: return assemble_oc_pipeline()
+    if pipeline_type.upper() == stge.ONTO_SPECIES_TAG: return assemble_os_pipeline()
+    if pipeline_type.upper() == stge.ONTO_PESSCAN_TAG: return assemble_ops_pipeline()
+    if pipeline_type.upper() == stge.ONTO_MOPS_TAG: return assemble_omops_pipeline()
+
+    logger.error(textwrap.dedent(f"""
+        Error: The requested pipeline ='{pipeline_type}'
+                is not supported by the current pipeline.
+                Please choose one of the following options:
+                {stge.SUPPORTED_PIPELINES}"""))
+    raise app_exceptions.UnsupportedPipeline
+    

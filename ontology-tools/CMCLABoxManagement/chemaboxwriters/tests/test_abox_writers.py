@@ -1,8 +1,4 @@
-from chemaboxwriters.ontocompchem.writeabox import write_abox as write_oc_abox
-from chemaboxwriters.ontospecies.writeabox import write_abox as write_os_abox
-from chemaboxwriters.ontopesscan.writeabox import write_abox as write_ops_abox
-from chemaboxwriters.ontomops.writeabox import write_abox as write_om_abox
-from chemaboxwriters.common.commonfunc import get_file_extensions, get_inStage
+from chemaboxwriters.app import _write_abox
 from chemutils.ioutils.ioutils import readFile, fileExists
 import pytest
 import shutil
@@ -12,7 +8,6 @@ from typing import List, Dict, Any
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 
-#QC_LOGS_DIR = os.path.join(THIS_DIR,'..','..','..','..','thermo','CoMoCompChemParser','tests','gaussian')
 OCOMPCHEM_REF_DIR = os.path.join(THIS_DIR,'refData','ontocompchem')
 OSPECIES_REF_DIR = os.path.join(THIS_DIR,'refData','ontospecies')
 OPSSCAN_REF_DIR = os.path.join(THIS_DIR,'refData','ontopesscan')
@@ -86,7 +81,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
-    funcKwargs={
+    handlerFuncKwargs={
         'QC_JSON_TO_OC_JSON': {
                 'random_id':'testID-111-111-111'
         }
@@ -94,7 +89,12 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     mocker.patch("chemaboxwriters.ontocompchem.jsonwriter.get_species_iri",
                  return_value='test_species_iri')
 
-    pipeline = write_oc_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=funcKwargs)
+    pipeline = _write_abox(
+        pipeline_type='oc',
+        fileOrDir=inp_file_or_dir,
+        inpFileType=inp_file_type,
+        handlerFuncKwargs=handlerFuncKwargs,
+        no_file_logging = True)
 
     fileExts = ['.oc.json', '.oc.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -132,7 +132,13 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     mocker.patch("chemaboxwriters.ontospecies.jsonwriter.pcp.get_compounds",
                  return_value=[DummyPubchemComp(cid=1111, synonyms=['1111-11-1'])])
 
-    pipeline = write_os_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
+
+    pipeline = _write_abox(
+        pipeline_type='os',
+        fileOrDir=inp_file_or_dir,
+        inpFileType=inp_file_type,
+        handlerFuncKwargs=handlerFuncKwargs,
+        no_file_logging = True)
 
     fileExts = ['.os.json', '.os.csv']
     compare_results(pipeline,regenerateResult,regenerateAllResults,
@@ -198,8 +204,13 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
             }
 
     handlerFuncKwargs['OC_PIPELINE'] = {'QC_JSON_TO_OC_JSON': {'random_id':'OCtestID-111-111-111'}}
-    pipeline = write_ops_abox(inp_file_or_dir, inp_file_type,
-               handlerFuncKwargs=handlerFuncKwargs)
+
+    pipeline = _write_abox(
+        pipeline_type='ops',
+        fileOrDir=inp_file_or_dir,
+        inpFileType=inp_file_type,
+        handlerFuncKwargs=handlerFuncKwargs,
+        no_file_logging = True)
 
     fileExts=['.ops.json', '.ops.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -231,7 +242,12 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
     handlerFuncKwargs={
         'OMINP_JSON_TO_OM_JSON':{'random_id':'testID-111-111-111'}}
 
-    pipeline = write_om_abox(inp_file_or_dir, inp_file_type, handlerFuncKwargs=handlerFuncKwargs)
+    pipeline = _write_abox(
+        pipeline_type='om',
+        fileOrDir=inp_file_or_dir,
+        inpFileType=inp_file_type,
+        handlerFuncKwargs=handlerFuncKwargs,
+        no_file_logging = True)
 
     fileExts = ['.om.json', '.om.csv']
     compare_results(pipeline,regenerateResult,regenerateAllResults,

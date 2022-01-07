@@ -1,9 +1,12 @@
 from chemaboxwriters.common.commonfunc import getRefName
-from chemaboxwriters.app_exceptions.app_exceptions import NotSupportedStage
-from chemaboxwriters.common.commonfunc import get_file_extensions
+from chemaboxwriters.common.stageenums import stage_name_to_enum
+from chemaboxwriters.app_exceptions.app_exceptions import UnsupportedStage
 from enum import Enum
 import os
 from typing import Callable, Dict, List, Tuple, Optional, Any, Union
+import logging
+
+logger = logging.getLogger(__name__)
 
 class StageHandler:
     """
@@ -38,8 +41,9 @@ class StageHandler:
             self,
             _input: List[str],
             input_type: Enum,
-            outDir: str,
+            outDir: Optional[str],
             *args, **kwargs)-> Tuple[List[str], Enum]:
+
         output= self.handle_input(_input, input_type, outDir)
         self.writtenFiles.extend(output)
         return output, self.outStage
@@ -48,7 +52,7 @@ class StageHandler:
         self,
         _input: List[str],
         input_type: Enum,
-        outDir: str)->List[str]:
+        outDir: Optional[str])->List[str]:
 
         _output = []
         out_paths: List[str] = []
@@ -59,12 +63,12 @@ class StageHandler:
         else:
             _output = self.handlerFunc(_input, **self.handlerFuncKwargs)
 
-        out_paths = self.get_outpaths(_input, outDir)
+        out_paths = self.get_out_paths(_input, outDir)
 
         output = self.write_output(_output, out_paths, len(_input))
         return output
 
-    def get_outpaths(
+    def get_out_paths(
         self,
         _input: List[str],
         outDir: Optional[str]
@@ -72,27 +76,12 @@ class StageHandler:
 
         out_paths = []
 
-        #if self.inpFileExt is None:
-        #    inpfileExt = get_file_extensions(inStage=input_type)
-
         for inp in _input:
             outFileDir = outDir
             if outFileDir is None: outFileDir = os.path.dirname(inp)
             inp_splitted = inp.split('.')
             outFileBaseName = inp_splitted[0]
-            #if '.' in inp:
-            #    inp_splitted = inp.split('.')
-            #    outFileBaseName = '.'.join(inp_splitted[0])
-            #else:
-            #    outFileBaseName = inp
 
-            #file_ext = ''
-            #for ext in inpfileExt:
-            #    if ext in inp[-len(ext):]:
-            #        file_ext = ext
-            #        break
-
-            #outFileBaseName = ''.join(inp.split(file_ext)[:-1])
             out_paths.append(os.path.join(outFileDir,outFileBaseName))
         return out_paths
 
@@ -162,6 +151,8 @@ class Pipeline:
         if handlerName is None:
             handlerName = handler.name
 
+        logger.info(f"Adding {handlerName} handler.")
+
         self.handlers[handlerName]=handler
         self.inStages.extend([x for x in handler.inStages
                              if x not in self.inStages])
@@ -184,13 +175,16 @@ class Pipeline:
         self,
         inputs: List[str],
         inputType: Enum,
-        outDir: str,
+        outDir: Optional[str],
         )->None:
+
+        logger.info(f"Running the {self.name} pipeline.")
 
         if inputType not in self.inStages:
             requestedStage=inputType.name.lower()
-            raise NotSupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
+            raise UnsupportedStage(f"Error: Stage: '{requestedStage}' is not supported.")
 
+        logger.info(f"Input stage set to: {inputType}.")
         unroll_input = True
 
         if self.collate_inputs_at_stages is not None:
@@ -207,7 +201,7 @@ class Pipeline:
         self,
         inputs: List[str],
         inputType: Enum,
-        outDir: str,
+        outDir: Optional[str],
         )->Tuple[List[str], Enum]:
 
         outStageOutput: List[str] = inputs
@@ -218,12 +212,15 @@ class Pipeline:
 
         for handler in self.handlers.values():
             if inputType in handler.inStages:
+                logger.info(f"Executing the {handler.name} handler on the follwoing inputs {inputs}.")
                 inputs, inputType = handler._run(inputs, inputType, outDir)
                 self.writtenFiles.extend(handler.writtenFiles)
                 handler.writtenFiles = []
 
                 if inputType == outStage:
                     outStageOutput = inputs
+
+                logger.info(f"Input stage set to: {inputType}.")
 
         self.outStageOutput = outStageOutput
         self.outStage = outStage
@@ -238,32 +235,48 @@ class Pipeline:
 def get_pipeline(
     name: str = '',
     handlers: List[StageHandler] = [],
-    collate_inputs_at_stages: Optional[List[Enum]]=None,
+    outStage: Optional[str] = None,
+    collate_inputs_at_stages: Optional[List[str]]=None,
     )->Pipeline:
 
+    outStageEnum = None
+    if outStage is not None: outStageEnum = stage_name_to_enum(outStage)
+
+    collate_inputs_at_stages_enums = None
+    if collate_inputs_at_stages is not None:
+        collate_inputs_at_stages_enums = [stage_name_to_enum(stage) for stage in collate_inputs_at_stages]
+
     pipeline = Pipeline(
-        name = name,
-        collate_inputs_at_stages=collate_inputs_at_stages)
+                    name = name,
+                    outStage = outStageEnum,
+                    collate_inputs_at_stages=collate_inputs_at_stages_enums
+               )
     for handler in handlers:
         pipeline.add_handler(handler)
     return pipeline
 
 def get_handler(
-        name: str,
-        inStages: List[Enum],
-        outStage: Enum,
+        inStages: List[str],
+        outStage: str,
         handlerFunc: Callable,
         fileWriter: Callable,
-        fileExt: str,
+        name: Optional[str] = None,
+        fileExt: Optional[str] = None,
         handlerFuncKwargs: Optional[Dict[str,Any]] = None,
         fileWriterKwargs: Optional[Dict[str,Any]] = None,
         unroll_input: bool=True
         )->StageHandler:
 
+    inStageEnums = [stage_name_to_enum(stage) for stage in inStages]
+    outStageEnum = stage_name_to_enum(outStage)
+
+    if name is None: name = f"{'_'.join(inStages)}_TO_{outStage}"
+    if fileExt is None: fileExt = f".{outStage.replace('_','.')}".lower()
+
     handler = StageHandler(
         name=name,
-        inStages=inStages,
-        outStage=outStage,
+        inStages=inStageEnums,
+        outStage=outStageEnum,
         handlerFunc=handlerFunc,
         fileWriter=fileWriter,
         fileWriterKwargs=fileWriterKwargs,
