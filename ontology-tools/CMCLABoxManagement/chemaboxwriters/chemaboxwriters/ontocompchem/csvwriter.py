@@ -9,7 +9,7 @@ import json
 import csv
 from io import StringIO
 import re
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 
 formula_clean_re = re.compile('(?<=[a-zA-Z])(1)(?=[a-zA-Z]+?|$)')
@@ -25,11 +25,14 @@ gain_pref = PREFIXES["gain_pref"]
 table_pref = PREFIXES["table_pref"]
 unit_pref = PREFIXES["unit_pref"]
 
-def oc_csvwriter(data):
-    data = json.loads(data)
-    spec_IRI=data[commonv.SPECIES_IRI]
-    calc_id = data[commonv.ENTRY_UUID]
-    entryIRI = data[commonv.ENTRY_IRI]
+def oc_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
+    spec_IRI=data[globals.SPECIES_IRI]
+    calc_id = data[globals.ENTRY_UUID]
+    entryIRI = data[globals.ENTRY_IRI]
 
     csvfile = StringIO(newline='')
 

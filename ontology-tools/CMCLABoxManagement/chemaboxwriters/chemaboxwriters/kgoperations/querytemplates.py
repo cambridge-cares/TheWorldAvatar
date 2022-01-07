@@ -1,6 +1,10 @@
 from chemaboxwriters.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from chemaboxwriters.kgoperations.querykg import querykg
 from py4j.java_gateway import Py4JJavaError
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def spec_inchi_query(inchi_string):
     query = """
@@ -23,8 +27,8 @@ def get_species_iri(inchi):
     results = []
     try:
         results  = querykg(SPARQL_ENDPOINTS['ontospecies'], spec_inchi_query(inchi)) #query_endpoint(endpoint, spec_inchi_query(inchi))
-    except Py4JJavaError:
-        print("Warning: get_species_iri query failed.")
+    except Py4JJavaError:        
+        logger.warning("Warning: get_species_iri query failed.")
     if results:
         if 'speciesIRI' in results[0].keys():
             target = results[0]['speciesIRI']

@@ -31,7 +31,7 @@ from chemaboxwriters.ontospecies.jsonwriter import MOLWT, \
                                                    ENTH_REFTEMP_UNIT, \
                                                    ENTH_PROV
 
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 
 
@@ -43,16 +43,19 @@ unit_pref = PREFIXES["unit_pref"]
 spec_pref = PREFIXES["spec_pref"]
 
 
-def os_csvwriter(data, spec_pref = PREFIXES["spec_pref"]):
-    data = json.loads(data)
-    gen_id = data[commonv.ENTRY_UUID]
+def os_csvwriter(file_path, spec_pref = PREFIXES["spec_pref"]):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
+    gen_id = data[globals.ENTRY_UUID]
 
     csvfile = StringIO(newline='')
 
     spamwriter = csv.writer(csvfile, delimiter=',',
                             quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-    out_id = data[commonv.ENTRY_IRI]
+    out_id = data[globals.ENTRY_IRI]
 
     label = formula_clean(data[EMP_FORMULA]) #We will take the label as the molecular formula, but without any extraneous 1s.
 

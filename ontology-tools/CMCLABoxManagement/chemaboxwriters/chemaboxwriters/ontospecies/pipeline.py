@@ -1,18 +1,35 @@
-from chemaboxwriters.common import Pipeline
-from chemaboxwriters.common import aboxStages
-from chemaboxwriters.ontospecies.handlers import QC_JSON_TO_OS_JSON, \
-                                                 OS_JSON_TO_CSV, \
-                                                 OS_CSV_TO_OS_OWL
-from chemaboxwriters.common import QC_LOG_TO_QC_JSON
+from chemaboxwriters.common.base import get_pipeline, Pipeline
+import chemaboxwriters.common.handlers as handlers
+import chemaboxwriters.common.globals as globals
+from chemaboxwriters.ontospecies.jsonwriter import os_jsonwriter
+from chemaboxwriters.ontospecies.csvwriter import os_csvwriter
+from typing import Optional
+import logging
 
-def assemble_os_pipeline():
-    OS_pipeline = Pipeline(supportedStages=[
-                            aboxStages.QC_LOG,
-                            aboxStages.QC_JSON,
-                            aboxStages.OS_JSON,
-                            aboxStages.CSV ]) \
-                .add_handler(handler=QC_LOG_TO_QC_JSON, handlerName='QC_LOG_TO_QC_JSON') \
-                .add_handler(handler=QC_JSON_TO_OS_JSON, handlerName='QC_JSON_TO_OS_JSON') \
-                .add_handler(handler=OS_JSON_TO_CSV, handlerName='OS_JSON_TO_CSV') \
-                .add_handler(handler=OS_CSV_TO_OS_OWL, handlerName='OS_CSV_TO_OS_OWL')
-    return OS_pipeline
+logger = logging.getLogger(__name__)
+
+def assemble_os_pipeline(
+        name: Optional[str] = None,
+        outStage: Optional[str] = None
+    )->Pipeline:
+
+    if name is None: name = 'ontospecies'
+    logger.info(f"Assembling {name} pipeline.")
+
+    pipeline = get_pipeline(
+                    name = name,
+                    outStage = outStage)
+
+    pipeline.add_handler(handler = handlers.get_qc_log_to_qc_json_handler()) \
+            .add_handler(handler = handlers.get_json_to_json_handler(
+                                                inStageTag = globals.QUANTUM_CALC_TAG,
+                                                outStageTag = globals.ONTO_SPECIES_TAG,
+                                                handlerFunc=os_jsonwriter)) \
+            .add_handler(handler = handlers.get_json_to_csv_handler(
+                                                inStageTag = globals.ONTO_SPECIES_TAG,
+                                                outStageTag = globals.ONTO_SPECIES_TAG,
+                                                handlerFunc=os_csvwriter)) \
+            .add_handler(handler = handlers.get_csv_to_owl_handler(
+                                                inStageTag = globals.ONTO_SPECIES_TAG,
+                                                outStageTag = globals.ONTO_SPECIES_TAG))
+    return pipeline
