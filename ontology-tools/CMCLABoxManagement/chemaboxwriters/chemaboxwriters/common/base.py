@@ -40,18 +40,16 @@ class StageHandler:
     def _run(
             self,
             _input: List[str],
-            input_type: Enum,
             outDir: Optional[str],
             *args, **kwargs)-> Tuple[List[str], Enum]:
 
-        output= self.handle_input(_input, input_type, outDir)
+        output= self.handle_input(_input, outDir)
         self.writtenFiles.extend(output)
         return output, self.outStage
 
     def handle_input(
         self,
         _input: List[str],
-        input_type: Enum,
         outDir: Optional[str])->List[str]:
 
         _output = []
@@ -213,7 +211,7 @@ class Pipeline:
         for handler in self.handlers.values():
             if inputType in handler.inStages:
                 logger.info(f"Executing the {handler.name} handler on the follwoing inputs {inputs}.")
-                inputs, inputType = handler._run(inputs, inputType, outDir)
+                inputs, inputType = handler._run(inputs, outDir=outDir, inputType=inputType)
                 self.writtenFiles.extend(handler.writtenFiles)
                 handler.writtenFiles = []
 
