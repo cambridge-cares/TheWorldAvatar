@@ -1739,6 +1739,44 @@ public class DerivationSparql{
 	}
 	
 	/**
+	 * This method retrieves the input read timestamp associated with the asynchronous derivation, also deletes the record after value retrieved.
+	 * @param derivation
+	 * @return
+	 */
+	Map<String, Long> retireveInputReadTimestamp(String derivation) {
+		Map<String, Long> derivationTime_map = new HashMap<>();
+		
+		String queryKey = "timestamp";
+		SelectQuery query = Queries.SELECT();
+		Variable time = SparqlBuilder.var(queryKey);
+		
+		GraphPattern queryPattern = iri(derivation).has(retrievedInputsAt, time);
+		
+		query.prefix(p_derived).select(time).where(queryPattern);
+		JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+		
+		if (queryResult.length() > 1) {
+			throw new JPSRuntimeException("DerivedQuantitySparql: More than 1 time instance recorded for reading derivation inputs of <" + derivation + ">");
+		}
+		
+		try {
+			long inputReadTimestamp = queryResult.getJSONObject(0).getLong(queryKey);
+			derivationTime_map.put(derivation, inputReadTimestamp);
+			
+			// delete triple {<derivation> <retrievedInputsAt> timestamp}
+			ModifyQuery modify = Queries.MODIFY();
+			TriplePattern delete_timeRecord = iri(derivation).has(retrievedInputsAt, inputReadTimestamp);
+			modify.prefix(p_derived).delete(delete_timeRecord);
+			storeClient.executeUpdate(modify.getQueryString());
+			
+			return derivationTime_map;
+		}
+		catch (JSONException e) {
+			throw new JPSRuntimeException("No timestamp recorded for reading derivation inputs of <" + derivation + ">. The derivation is probably not setup correctly.");
+		}
+	}
+	
+	/**
 	 * This method chunks the given iri and returns its namespace. 
 	 * @param iri
 	 * @return
