@@ -330,9 +330,14 @@ public class DerivationClient {
 	 * @param agentIRI
 	 * @return
 	 */
-	public JSONObject retrieveAgentInputs(String derivation, String agentIRI) {
+	public JSONObject retrieveAgentInputIRIs(String derivation, String agentIRI) {
 		JSONObject agentInputs = new JSONObject();
 		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
+		
+		// mark derivation status as InProgress
+		// record timestamp at the point the derivation status is marked as InProgress
+		this.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		
 		return agentInputs;
 	}
 	
@@ -486,14 +491,6 @@ public class DerivationClient {
 		this.sparqlClient.markAsRequested(derivation);
 	}
 
-	/**
-	 * Marks the derivation status as "InProgress".
-	 * @param derivation
-	 */
-	public void markAsInProgress(String derivation) {
-		this.sparqlClient.markAsInProgress(derivation);
-	}
-	
 	/**
 	 * Gets the new derived IRI at derivation update (job) completion.
 	 * @param derivation

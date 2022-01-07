@@ -88,13 +88,14 @@ public class DerivationSparql{
 	private static Iri isDerivedUsing = p_derived.iri("isDerivedUsing");
 	private static Iri belongsTo = p_derived.iri("belongsTo");
 	private static Iri hasStatus = p_derived.iri("hasStatus");
+	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
 	private static Iri hasTime = p_time.iri("hasTime");
 	private static Iri numericPosition = p_time.iri("numericPosition");
 	private static Iri hasTRS = p_time.iri("hasTRS");
 	private static Iri inTimePosition = p_time.iri("inTimePosition");
 	
 	// data properties
-	private static Iri hasNewDerivedIRI = p_derived.iri("hasNewDerivedIRI");
+	private static Iri retrievedInputsAt = p_derived.iri("retrievedInputsAt");
 	
 	// the derived quantity client relies on matching rdf:type to figure out which old instances to delete
 	// if your instances have more than 1 rdf:type, you must add them to this list so that the client can figure out which to use
@@ -528,11 +529,13 @@ public class DerivationSparql{
 	}
 	
 	/**
-	 * This method marks the status of the derivation as "InProgress".
+	 * This method marks the status of the derivation as "InProgress", 
+	 * also records the timestamp at the point the derivation status is marked as InProgress:
+	 * <derivation> <retrievedInputsAt> timestamp.
 	 * @param storeClient
 	 * @param derivation
 	 */
-	void markAsInProgress(String derivation) {
+	void updateStatusBeforeSetupJob(String derivation) {
 		deleteStatus(derivation);
 		ModifyQuery modify = Queries.MODIFY();
 		
@@ -543,6 +546,12 @@ public class DerivationSparql{
 		
 		modify.prefix(p_derived).insert(insert_tp);
 		modify.prefix(p_derived).insert(insert_tp_rdf_type);
+		
+		// record timestamp at the point the derivation status is marked as InProgress
+		// <derivation> <retrievedInputsAt> timestamp.
+		long retrievedInputsAtTimestamp = Instant.now().getEpochSecond();
+		TriplePattern insert_tp_retrieved_inputs_at = iri(derivation).has(retrievedInputsAt, retrievedInputsAtTimestamp);
+		modify.prefix(p_derived).insert(insert_tp_retrieved_inputs_at);
 		
 		storeClient.executeUpdate(modify.getQueryString());
 	}
