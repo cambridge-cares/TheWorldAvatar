@@ -8,7 +8,11 @@ class CesiumWrapper {
     // Value: metadata objects loaded from leaf directory meta.js files in the data.
     _layers;
 
-    _eventHandler
+    // Key: image name (e.g. "alpha")
+    // Value: image url
+    _images;
+
+    _eventHandler;
 
     constructor(containerName) {
 
@@ -22,8 +26,9 @@ class CesiumWrapper {
 
         this._layers = new Map();
 
-        this._eventHandler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
+        this._images = new Map();
 
+        this._eventHandler = new Cesium.ScreenSpaceEventHandler(this._viewer.scene.canvas);
     }
 
     setStyle(style) {
@@ -121,12 +126,12 @@ class CesiumWrapper {
             dataSource.name = name;
             this._viewer.dataSources.add(dataSource);
             for (let entity of dataSource.entities.values) {
-                if(entity.polygon) {
+                if (entity.polygon) {
                     let props = entity.properties;
                     let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
                     let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
                     let fillColorProperty = new Cesium.CallbackProperty((time, result) => {
-                        if(entity.state?.hover) {
+                        if (entity.state?.hover) {
                             return Cesium.Color.lerp(fillColor, Cesium.Color.WHITE, 0.5, result);
                         } else {
                             return result = fillColor;
@@ -136,6 +141,20 @@ class CesiumWrapper {
                     let outlineColor = Cesium.Color.fromCssColorString(outlineColorHex.valueOf());
                     entity.polygon.material = new Cesium.ColorMaterialProperty(fillColorProperty);
                     entity.polygon.outlineColor = outlineColor;
+                } else if (entity.billboard) {
+                    if (entity.properties["icon-image"]) {
+                        entity.billboard.image = new Cesium.CallbackProperty(
+                            (time, result) => result = this._images[entity.properties["icon-image"]].valueOf(),
+                            false);
+                        // By default it is a pin with the bottom center on the coordinates; this changes
+                        // the image to also vertically center on the coordinates, which I believe is the MapBox behaviour.
+                        entity.billboard.verticalOrigin = 0;
+                    } else if (entity.properties["circle-color"]) {
+                        entity.billboard.color = new Cesium.Color.fromCssColorString(entity.properties["circle-color"].valueOf());
+                    }
+                } else if (entity.polyline && entity.properties["line-color"]) {
+                    let color = new Cesium.Color.fromCssColorString(entity.properties["line-color"].valueOf());
+                    entity.polyline.material = new Cesium.ColorMaterialProperty(color);
                 }
                 entity.dataSource = dataSource;
             }
@@ -175,12 +194,18 @@ class CesiumWrapper {
     }
 
     loadImage(url, func) {
-        // TODO: implement
-        return func(null, null);
+        return func(null, url);
     }
 
+    // icon_handler.js *basically* calls
+    //   map.loadImage(imageURL, (error, image) => map.addImage(imageName, image));
+    // where imageName is the last segment of imageURL.
+    // MapBox internally matches imageName against the "icon-image" property of data
+    // to render the correct image for each feature. I don't know what MapBox is doing,
+    // but in our case we actually just let the URL pass through loadImage, and so our
+    // addImage actually takes imageName and *imageURL* as the second argument.
     addImage(imageName, image) {
-        return null;
+        this._images[imageName] = image;
     }
 
     setPaintProperty(layerID, name, value) {
@@ -212,7 +237,7 @@ class CesiumWrapper {
     setFeatureState(featureSpecification, state) {
         let dataSource = this.getSource(featureSpecification.source)[0];
         let entity = dataSource?.entities.getById(featureSpecification.id);
-        if(entity != null) entity.state = state;
+        if (entity != null) entity.state = state;
     }
 
 }
