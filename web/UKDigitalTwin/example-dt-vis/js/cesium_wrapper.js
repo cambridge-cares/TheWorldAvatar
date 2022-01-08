@@ -127,6 +127,7 @@ class CesiumWrapper {
             this._viewer.dataSources.add(dataSource);
             for (let entity of dataSource.entities.values) {
                 if (entity.polygon) {
+                    // This is to support Mapbox property names; Cesium ion also natively supports color specification by "fill" and "stroke".
                     let props = entity.properties;
                     let fillColorHex = props["fill-extrusion-color"] ?? props["fill-color"] ?? props["circle-color"] ?? "#666666";
                     let fillColor = Cesium.Color.fromCssColorString(fillColorHex.valueOf());
@@ -150,9 +151,11 @@ class CesiumWrapper {
                         // the image to also vertically center on the coordinates, which I believe is the MapBox behaviour.
                         entity.billboard.verticalOrigin = 0;
                     } else if (entity.properties["circle-color"]) {
+                        // This is to support Mapbox property names; Cesium ion also natively supports color specification "marker-color".
                         entity.billboard.color = new Cesium.Color.fromCssColorString(entity.properties["circle-color"].valueOf());
                     }
                 } else if (entity.polyline && entity.properties["line-color"]) {
+                    // This is to support Mapbox property names; Cesium ion also natively supports color specification by "stroke".
                     let color = new Cesium.Color.fromCssColorString(entity.properties["line-color"].valueOf());
                     entity.polyline.material = new Cesium.ColorMaterialProperty(color);
                 }
