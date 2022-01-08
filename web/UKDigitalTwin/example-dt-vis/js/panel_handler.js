@@ -33,6 +33,7 @@ class PanelHandler {
 	// Store previous legendContainer visibility
 	_previousLegendVisibility;
 
+	// Default state of the side panel
 	_defaultHTML;
 
 	/**
@@ -45,7 +46,7 @@ class PanelHandler {
 	}
 
 	/**
-	 * 
+	 * Create the side panel.
 	 */
 	#createSidePanel() {
 		let sidePanel = document.getElementById("sidePanel");
@@ -147,7 +148,7 @@ class PanelHandler {
 	 * 
 	 * @param {Stirng} title desired title HTML
 	 */
-	 setTitle(title) {
+	setTitle(title) {
 		document.getElementById("sidePanel").style.visibility = "visible";
 		document.getElementById("titleContainer").innerHTML = title;
 	}
@@ -180,43 +181,6 @@ class PanelHandler {
 	}
 
 	/**
-	 * Builds a legend component using the getLegendContent of each
-	 * loaded DigitalTwinModule.
-	 */
-	buildLegend() {
-		var modules = DT.modules;
-
-		var outerHTML = `
-			<div id="legend" class="w3-sidebar w3-bar-block w3-light-grey w3-card">
-				<div class="w3-bar-item legend-title"><b>Legends:</b></div>
-		`;
-
-		var innerHTML = ``;
-
-		modules.forEach(module => {
-			let moduleName = module.name;
-			let sanitisedName = moduleName.toLowerCase().replace(" ", "_");
-
-			outerHTML += `
-				<button id="` + sanitisedName + `" class="w3-bar-item w3-button tablink" onclick="manager.openLegend(event, this.id)">` + moduleName + `</button>
-			`;
-
-			innerHTML += `
-				<div id="` + sanitisedName + `" class="w3-container legend-right" style="display: none;">`
-					+ module.getLegendContent() +
-				`</div>
-			`;
-		});
-
-		outerHTML += `</div>`;
-		this.setLegend(outerHTML + innerHTML); 
-
-		// Simulate a click on the first entry
-		var firstEntry = document.getElementsByClassName("tablink w3-button")[0];
-		firstEntry.click();
-	}
-
-	/**
 	 * Set the footer content.
 	 * 
 	 * @param {String} footerHTML HTML to add. 
@@ -235,14 +199,14 @@ class PanelHandler {
 	}
 
 	/**
-	 * 
+	 * Store the current state of the side panel as it's default
 	 */
 	storeDefault() {
 		this._defaultHTML = document.getElementById("sidePanelInner").innerHTML;
 	}
 
 	/**
-	 * 
+	 * Return the contents to their default state.
 	 */
 	returnToDefault() {
 		if(this._defaultHTML != null) {
@@ -357,4 +321,6 @@ class PanelHandler {
 		if(legendContent != null) legendContent.style.display = "block";
 		event.currentTarget.className += " w3-blue";
 	}
+
 }
+// End of class.

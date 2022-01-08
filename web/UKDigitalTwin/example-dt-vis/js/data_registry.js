@@ -7,19 +7,13 @@
  */
 class DataRegistry {
 
-    /**
-     * Global metadata.
-     */
+    // Global metadata.
     _globalMeta = [];
 
-    /**
-     * Metadata for visualisation data.
-     */
+    // Metadata for visualisation data.
     _meta = [];
 
-    /**
-     * Cached GeoJSON sources, keyed by name.
-     */
+    // Cached GeoJSON sources, keyed by name.
     _cachedGeoJSON = [];
 
     /**
@@ -37,7 +31,7 @@ class DataRegistry {
     }
 
     /**
-     * 
+     * Returns the cached GeoJSON sources.
      */
     get cachedGeoJSON() {
         return this._cachedGeoJSON;
@@ -103,6 +97,19 @@ class DataRegistry {
     }
 
     /**
+     * Returns the metadata object for the input grouping (e.g. ["scenario-0", "time-0"]);
+     * 
+     * @param {String[]} group group definition
+     * 
+     * @returns {JSONObject} metadata object
+     */
+    getGroup(group) {
+        var result = [];
+        this.#findGroup(this._meta, 0, group, result);
+        return result[0];
+    }
+
+    /**
      * Recurse depth wise to find first leaf group
      * @param {*} currentEntry 
      * @param {*} group 
@@ -117,19 +124,6 @@ class DataRegistry {
                 this.#recurseFirstGroup(currentEntry["groups"][0], group);
             }
         }
-    }
-
-    /**
-     * Returns the metadata object for the input grouping (e.g. ["scenario-0", "time-0"]);
-     * 
-     * @param {String[]} group group definition
-     * 
-     * @returns {JSONObject} metadata object
-     */
-    getGroup(group) {
-        var result = [];
-        this.#findGroup(this._meta, 0, group, result);
-        return result[0];
     }
 
     /**

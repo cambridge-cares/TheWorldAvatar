@@ -69,7 +69,7 @@ class ControlHandler {
 	// MapBox map
 	_map;
 
-	//
+	// Data registry instance
 	_datRegistry;
 	
 	// JSON metadata defining tree structure
@@ -130,7 +130,7 @@ class ControlHandler {
 	}
 
 	/**
-	 * Shows debugging info, should only be used for developers during testing.
+	 * Shows debugging info, like mouse position.
 	 */
 	showDeveloperControls() {
 		let developerInfo = document.getElementById("developerContainer");
@@ -167,8 +167,10 @@ class ControlHandler {
 
 
 	/**
+	 * Builds a drop-down control to allow users to change between the
+	 * registered root data directoties.
 	 * 
-	 * @param {*} rootDirectories 
+	 * @param {{String, String}} rootDirectories map of name to directory location.
 	 */
 	#buildRootDropdown(rootDirectories, selectedName) {
 		var htmlString = `
@@ -197,10 +199,13 @@ class ControlHandler {
 	}
 
 	/**
+	 * Builds a drop-down control to allow the user to change the data group
+	 * represented by the input meta object.
 	 * 
-	 * @param {*} currentMeta 
-	 * @param {*} parentDivID 
-	 * @returns 
+	 * @param {JSONObject} currentMeta meta object containing data groups
+	 * @param {String} parentDivID id of parent div
+	 * 
+	 * @returns HTML string for drop-down
 	 */
 	buildDropdown(currentMeta, parentDivID) {
 		var htmlString = "";
@@ -213,16 +218,18 @@ class ControlHandler {
 				<div id="selectContainer">
 				<label for="` + label + `">` + label + `:</label>
 				<select id="` + label + `" onchange="manager.onGroupSelectChange(this.id, this.value)">
-				<option value="" disabled selected hidden>Select an option...</option>
 			`;
 
 			for(var i = 0; i < groups.length; i++) {
 				let groupName = groups[i]["name"];
 				let groupDir = groups[i]["directory"];
 				let value = (parentDivID == null) ? groupDir : parentDivID + "/" + groupDir;
-				htmlString += `
-					<option value="` + value + `">` + groupName + `</option>
-				`;
+
+				if(i == 0) {
+					htmlString += `<option value="` + value + `" selected>` + groupName + `</option>`;
+				} else {
+					htmlString += `<option value="` + value + `">` + groupName + `</option>`;
+				}
 			}
 
 			htmlString += `
@@ -231,14 +238,14 @@ class ControlHandler {
 				</div>
 			`;
 		}
-
 		return htmlString;
 	}
 
 	/**
+	 * Fires when a the data group selection changes.
 	 * 
-	 * @param {*} groupID 
-	 * @param {*} value 
+	 * @param {String} groupID id of group
+	 * @param {String} value full id of group
 	 */
 	onGroupSelectChange(groupID, value) {
 		let groupNames = value.split("/");
@@ -368,7 +375,7 @@ class ControlHandler {
 	 * 
 	 * @param {Element} checkbox event source 
 	 */
-	 onLayerChange(control) {
+	onLayerChange(control) {
 		let layerName = control.id;
 		let newState = control.checked;
 
@@ -471,6 +478,15 @@ class ControlHandler {
 					(visible ? "visible" : "none")
 				);
 			}
+
+				// Is there a corresponding -highlight layer?
+				if(this._map.getLayer(layerID + "-highlight") != null) {
+					this._map.setLayoutProperty(
+						layerID + "-highlight",
+						"visibility",
+						(visible ? "visible" : "none")
+					);
+				}
 		} catch(err) {
 			console.log("WARN: Could not toggle '" + layerID + "', it may have no initial 'visibility' layout property?");
 		}
@@ -655,7 +671,7 @@ class ControlHandler {
 	 * @param {String} layerName target layer name
 	 * @param {Boolean} newState desired selection state
 	 */
-	 #updateLayerSelection(parentEntry, treeEntry, layerName, newState) {
+	#updateLayerSelection(parentEntry, treeEntry, layerName, newState) {
 		if(treeEntry["layerName"] === layerName) {
 
 			if(parentEntry != null && newState && parentEntry["controlType"] === "radio") {

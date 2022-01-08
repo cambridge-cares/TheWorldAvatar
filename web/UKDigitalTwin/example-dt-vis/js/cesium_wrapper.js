@@ -171,7 +171,6 @@ class CesiumWrapper {
     }
 
     removeSource(name) {
-        console.log(name);
         return this._viewer.dataSources.remove(this._viewer.dataSources.getByName(name)[0]);
     }
 

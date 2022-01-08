@@ -3,10 +3,10 @@
  */
 class TimeseriesHandler {
 
-    // Current data set for the selected layer, set, and location
+    // Current data set for the selected layer, set, and location.
     _selectedData;
 
-    //
+    // Current chart object.
     _currentChart;
 
     /**
@@ -63,8 +63,9 @@ class TimeseriesHandler {
     }
 
     /**
+     * Build and show the first time series data set.
      * 
-     * @param {*} containerElement 
+     * @param {String} containerElement name of div to add controls to.
      */
     showData(containerElement) {
         // Create dropdowns to change between tables
@@ -87,7 +88,9 @@ class TimeseriesHandler {
     }
 
     /**
+     * Update the table contents with the input set.
      * 
+     * @param {String} setName data set name
      */
     updateTable(setName) {
         var tableContainer = document.getElementById("time-series-table-container");
@@ -95,14 +98,18 @@ class TimeseriesHandler {
     }
 
     /**
+     * Update the chart contents with the input set.
      * 
+     * @param {String} setName data set name
      */
     updateChart(setName) {
         this.buildChart(setName);
     }
 
     /**
+     * Update both the table and chart contents.
      * 
+     * @param {String} setName data set name
      */
     update(setName) {
         this.updateTable(setName);
@@ -110,8 +117,9 @@ class TimeseriesHandler {
     }
 
     /**
+     * Build the table containing raw timeseries data.
      * 
-     * @param {*} tableName 
+     * @param {String} tableName name of the table.
      */
      buildTable(tableName) {
         // Find the correct data entry
@@ -122,10 +130,7 @@ class TimeseriesHandler {
                 return;
             }
         });
-
-        if(data == null) {
-            return;
-        }
+        if(data == null) return;
 
         // Get the data for the table
         var independents = data["times"];
@@ -156,6 +161,11 @@ class TimeseriesHandler {
         return tableHTML;
     }
 
+    /**
+     * Build the chart displaying timeseries data.
+     * 
+     * @param {String} tableName name of the table.
+     */
     buildChart(tableName) {
         // Find the correct data entry
         var data = null;
@@ -165,10 +175,7 @@ class TimeseriesHandler {
                 return;
             }
         });
-
-        if(data == null) {
-            return;
-        }
+        if(data == null) return;
 
         // Get data for plotting
         var independents = data["times"];
@@ -184,14 +191,14 @@ class TimeseriesHandler {
         // Destroy the current chart
         if(this._currentChart != null) {
             this._currentChart.destroy();
-
         }
+
         // Create the new chart element
         var ctx = document.getElementById("chart-canvas").getContext("2d");
-
         var xAxisType = ("Instant" === data["timeClass"]) ? "time" : "linear";
         var yAxisType = ("Boolean" === data["valuesClass"]) ? "category" : "linear";
 
+        // Create the chart object
         this._currentChart = new Chart(ctx, 
             {
                 type: "line",
@@ -255,11 +262,10 @@ class TimeseriesHandler {
         );
     }
 
-    
-
     /**
+     * Builds the drop-down box to change the data set.
      * 
-     * @returns 
+     * @returns html component
      */
     buildComboBox() {
         var selectHTML = `
@@ -275,8 +281,6 @@ class TimeseriesHandler {
         selectHTML += `</select>`;
         return selectHTML;
     }
-
- 
 
 }
 // End of class.
