@@ -478,22 +478,6 @@ public class DerivationClient {
 	public StatusType getStatusType(String derivation) {
 		return this.sparqlClient.getStatusType(derivation);
 	}
-	
-	/**
-	 * Marks the derivation status as "PendingUpdate".
-	 * @param derivation
-	 */
-	public void markAsPendingUpdate(String derivation) {
-		this.sparqlClient.markAsPendingUpdate(derivation);
-	}
-	
-	/**
-	 * Marks the derivation status as "Requested".
-	 * @param derivation
-	 */
-	public void markAsRequested(String derivation) {
-		this.sparqlClient.markAsRequested(derivation);
-	}
 
 	/**
 	 * Gets the new derived IRI at derivation update (job) completion.
