@@ -84,20 +84,20 @@ class InstanceMatcherClassifier(InstanceMatcherBase):
 
         params_training = params['training']
         params_impution = params_training.get('impution')
-        evaluation_file = params_post_processing['evaluation_file']
-
         cross_validation = params_training['cross_validation']
-        prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
-
         m_train_size = params_training['match_train_size']
         train_file = params_training['train_file']
         logging.info('training classifier for train_size=%s, train_file=%s', m_train_size, train_file)
         prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
         if train_file:
             df_split = ontomatch.utils.util.read_csv(train_file)
-            split_column = 'ml_phase_' + str(m_train_size)
+            if isinstance(m_train_size, str):
+                split_column = m_train_size
+            else:
+                split_column = 'ml_phase_' + str(m_train_size)
             x_train, x_test, y_train, y_test = ontomatch.utils.util.split_df(df_split, df_scores, columns_x=prop_columns, column_ml_phase=split_column)
         else:
+            evaluation_file = params_post_processing['evaluation_file']
             index_set_matches = ontomatch.evaluate.read_match_file_as_index_set(evaluation_file, linktypes = [1, 2, 3, 4, 5])
             _, x_train, x_test, y_train, y_test = ontomatch.utils.util.train_test_split(
                     df_scores, index_set_matches, train_size=m_train_size, columns_x=prop_columns)
@@ -204,8 +204,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         #self.df_total_scores.at[mask, 'score'] = 0
         logging.debug('number of best=%s, nonbest=%s', len(self.df_total_scores[self.df_total_scores['score'] >=0]), len(self.df_total_scores[self.df_total_scores['score'] < 0]))
 
-        #TODO-AE 211226 delta for threshold estimation
-        estimated_threshold = self.estimate_best_threshold(self.df_total_scores, delta/2, threshold_ratio, log=True)
+        estimated_threshold = self.estimate_best_threshold(self.df_total_scores, delta, threshold_ratio, log=True)
 
         if params_post_processing:
             postprocess(params_post_processing, self, estimated_threshold=estimated_threshold)
@@ -262,7 +261,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         index_max_1_2 = df_max_1.index.union(df_max_2.index)
         index_non_virtual = index_1_non_virtual.union(index_2_non_virtual)
         index_virtual = index_max_1_2.difference(index_non_virtual)
-        rate = round(len(index_non_virtual) / len(index_virtual), 2)
+        rate = None
+        if len(index_virtual) > 0:
+            rate = round(len(index_non_virtual) / len(index_virtual), 2)
         logging.info('non-virtual 1=%s, non-virtual 2=%s, all 1+2=%s, non_virtual 1+2=%s, virtual 1+2=%s, rate=%s',
                 len(index_1_non_virtual), len(index_2_non_virtual), len(index_max_1_2), len(index_non_virtual), len(index_virtual), rate)
 
@@ -538,12 +539,17 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         mask = df_total['best']
         df_best_scores = df_total[mask]['score'].sort_values(ascending=False)
 
-        x_list = [ round(x, 5) for x in np.arange(0, 1.0001, 2*delta)]
+        x_list = [ round(x, 5) for x in np.arange(0, 1.0001, delta)]
         ratios = []
         counts_best = []
         counts_nonbest = []
 
+        # we use a sliding count here
+        # sometimes there is only a poor statistics for thresholds from x_list close to zero
+        # thus, a threshold is accepted only if three subsequent ratios are above 1.
         best_pos = -1
+        count_above_one = 0
+        delta = delta / 2
         for i, x in enumerate(x_list):
             mask = (df_best_scores >= x - delta) & (df_best_scores <= x + delta)
             count_best = len(df_best_scores[mask])
@@ -552,14 +558,20 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
             if count_best == 0:
                 ratio = 0
             elif count_nonbest == 0:
-                ratio = 1
+                ratio = count_best
             else:
                 ratio = count_best / count_nonbest
             ratios.append(ratio)
             counts_best.append(count_best)
             counts_nonbest.append(count_nonbest)
-            if ratio >= threshold_ratio and best_pos == -1:
-                best_pos = i
+            if count_above_one < 3:
+                if ratio < threshold_ratio:
+                    count_above_one = 0
+                    best_pos = -1
+                else:
+                    count_above_one += 1
+                    if best_pos == -1:
+                        best_pos = i
 
         index_threshold = min(len(x_list) - 1, best_pos)
         best_threshold = x_list[index_threshold]
@@ -685,7 +697,7 @@ def evaluate(params_post_processing, matcher, train_set=None, hint='', estimated
             prop_columns = ontomatch.utils.util.get_prop_columns(df_scores)
             for c in df_split.columns:
                 c = str(c)
-                if c.startswith('ml_phase'):
+                if c.startswith('ml_phase') and not 'ratio' in c:
                 #if c.startswith('ml_phase_0.1'):
                     x_train, x_test, _, _ = ontomatch.utils.util.split_df(df_split, df_scores, prop_columns, column_ml_phase=c)
                     index_train_set = x_train.index if x_train is not None else None

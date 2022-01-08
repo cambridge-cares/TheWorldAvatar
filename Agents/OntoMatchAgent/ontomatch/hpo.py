@@ -15,13 +15,24 @@ import xgboost
 def create_classifier_XGB():
     return xgboost.XGBClassifier()
 
-def create_classifier_MLP(params_hpo, params_impution):
+def create_classifier_MLP(params_hpo, params_impution, unit_test=False):
     if params_impution['name'] == 'sklearn.impute.KNNImputer':
         imputer = sklearn.impute.KNNImputer()
     else:
         raise ValueError('unknown imputer with name', params_impution['name'])
-    classifier = sklearn.neural_network.MLPClassifier(solver='adam') #, max_iter='400')
-    estimator = sklearn.pipeline.Pipeline([('imputer', imputer), ('mlp', classifier)])
+    classifier = sklearn.neural_network.MLPClassifier(solver='adam') #, max_iter=400)
+
+    steps = [('imputer', imputer), ('mlp', classifier)]
+
+    if unit_test:
+        estimator = sklearn.pipeline.Pipeline(steps=steps)
+    else:
+        # using memory avoid repeated imputation (with the same impution results) within the HPO
+        # and reduces the running time
+        # see section 6.1.1.3 in https://scikit-learn.org/stable/modules/compose.html#pipeline-chaining-estimators
+        memory = '../tmp'
+        estimator = sklearn.pipeline.Pipeline(steps=steps, memory=memory)
+
 
     #logging.debug('available parameter keys for MLP=%s', estimator.get_params().keys())
 
@@ -41,7 +52,7 @@ def create_classifier_MLP(params_hpo, params_impution):
         if key in ['n_neighbors', 'weights']:
             # add prefix 'imputer__' because estimator is a pipeline
             params_hpo_mlp['imputer__' + key] = value
-        elif key in ['hidden_layer_sizes', 'learning_rate', 'learning_rate_init', 'alpha', 'beta_1', 'beta_2']:
+        elif key in ['hidden_layer_sizes', 'learning_rate', 'learning_rate_init', 'alpha', 'beta_1', 'beta_2', 'max_iter']:
             # add prefix 'mlp__' because estimator is a pipeline
             params_hpo_mlp['mlp__' + key] = value
         else:
@@ -60,7 +71,7 @@ def get_params_for_hpo(params_model_specific):
             params_hpo[key] = [value]
     return params_hpo
 
-def start_hpo(params_classification, cross_validation, params_impution, x_train, y_train, x_test, y_test):
+def start_hpo(params_classification, cross_validation, params_impution, x_train, y_train, x_test, y_test, unit_test=False):
 
     name = params_classification['name']
     logging.info('name=%s, cross_validation=%s', name, cross_validation)
@@ -80,7 +91,7 @@ def start_hpo(params_classification, cross_validation, params_impution, x_train,
         # object; and 2) Encode your labels (y) as integers starting with 0, i.e. 0, 1, 2, ..., [num_class - 1].
         #params_hpo.update({'use_label_encoder': [True]})
     elif name == 'MLP':
-        model, params_hpo = create_classifier_MLP(params_hpo, params_impution)
+        model, params_hpo = create_classifier_MLP(params_hpo, params_impution, unit_test)
 
     logging.info('params_hpo=%s', params_hpo)
 
@@ -97,8 +108,9 @@ def start_hpo(params_classification, cross_validation, params_impution, x_train,
     # the best score is the highest average
     logging.info('best_score (split test average over k folds)=%s, best_params=%s', hpo_model.best_score_, hpo_model.best_params_)
 
-    df_cv_results = pd.DataFrame(hpo_model.cv_results_)
-    df_cv_results.to_csv('./cv_result_' + str(time.time()) + '.csv')
+    if not unit_test:
+        df_cv_results = pd.DataFrame(hpo_model.cv_results_)
+        df_cv_results.to_csv('./cv_result_' + str(time.time()) + '.csv')
 
     score = hpo_model.score(x_train, y_train)
     logging.info('(score on entire training set=%s, len=%s)', score, len(x_train))

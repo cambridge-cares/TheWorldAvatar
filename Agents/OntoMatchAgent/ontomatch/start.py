@@ -1,6 +1,7 @@
 import json
 import logging
 import pickle
+import random
 import sys
 
 import pandas as pd
@@ -74,6 +75,83 @@ def create_train_test_split_files():
 
     df_candidate_pairs.to_csv(save_file)
 
+def create_train_test_split_file_for_ratios():
+
+    #split_file = './conf/power_plant_DEU/split_kg_mtf_200.csv'
+    #save_file = '../tmp/split_kg_mtf_200_ratios.csv'
+    # KG with MTF=200 --> N-M-ratio = 42.61
+    #ratios = [1, 2, 5, 10, 20, 43]
+
+    #split_file = './conf/power_plant_GBR/split_dg_mtf_200.csv'
+    #save_file = '../tmp/split_dg_mtf_200.csv'
+    # DG with MTF=200 --> N-M-ratio = N-M-ratio=87.21
+    #ratios = [1, 2, 5, 10, 20, 50, 87]
+
+    #split_file = './conf/restaurant/split_fz_mtf_20.csv'
+    #save_file = '../tmp/split_fz_mtf_20_ratios.csv'
+    # DS with MTF=20 --> N-M-ratio = 22.64
+    #ratios = [1, 2, 5, 10, 20, 23]
+    # DS with MTF=200 --> N-M-ratio = 211.45
+    #ratios = [1, 2, 5, 10, 20, 23, 50, 100, 200, 211]
+
+    split_file = './conf/bibl_DBLP_Scholar/split_ds_mtf_200.csv'
+    save_file = '../tmp/split_ds_mtf_200.csv'
+    # DS with MTF=200 --> N-M-ratio = 134.7
+    ratios = [1, 2, 5, 10, 20, 50, 100, 135]
+
+    #split_file = './conf/bibliography/split_da_mtf_200.csv'
+    #save_file = '../tmp/split_da_mtf_200_ratios.csv'
+    # DA with MTF=200 --> N-M-ratio = 219.64
+    #ratios = [1, 2, 5, 10, 20, 50, 100, 200, 220]
+
+    #split_file = './conf/product/split_ag_mtf_200.csv'
+    #save_file = '../tmp/split_ag_mtf_200.csv'
+    # AG with MTF=200 --> N-M-ratio = 189.69
+    #ratios = [1, 2, 5, 10, 20, 50, 100, 190]
+
+    split_column = 'ml_phase_0.1'
+
+
+    df_split = ontomatch.utils.util.read_csv(split_file)
+
+    count_nonmatches = len(df_split[df_split['y'] == 0])
+    count_matches = len(df_split[df_split['y'] == 1])
+    ratio = count_nonmatches / count_matches
+    logging.info('read %s , nonmatches=%s, matches=%s, ratio=%s', split_file, count_nonmatches, count_matches, ratio)
+
+    # use the same matches in the training set as in the stratified split file
+    mask = (df_split[split_column] == 'train') & (df_split['y'] == 1)
+    index_train_matches = df_split[mask].index
+
+    # sample the nonmatches for training randomly from the set of all nonmatches in the candidate set
+    # there are two ways to define the set of all nonmatches
+    # 1. exclude all true matches, this was already done for the split file:
+    index_nonmatches = df_split[df_split['y'] == 0].index.to_list()
+    # 2. exclude only those true matches that are in the training set:
+    #index_nonmatches = df_split.index.difference(index_train_matches)
+    # We choose option 1 for the following reasons:
+    # a) If the candidate set is large and the ratio is relatively small, it is very likely that only a neglectible
+    # number of true matches is declared as nonmatches for training.
+    # b) Of course, in a real-world project, the set of all true matches is unknown in advance. If the condition in a)
+    # is not valid, option 2 gives the classifier an advantage (leaking information). However, we want to study
+    # the influence of the ratio on F1 measure here and for this, we exclude possible other factors, such as
+    # the influence of declaring matches as false nonmatches.
+
+    for ratio in ratios:
+        # sample without replacement
+        count_nonmatches = ratio * len(index_train_matches)
+        list_index_train_nonmatches = random.sample(index_nonmatches, count_nonmatches)
+        index_train_nonmatches = pd.MultiIndex.from_tuples(list_index_train_nonmatches)
+        index_train = index_train_matches.union(index_train_nonmatches)
+        ratio_column = split_column + '_ratio_' + str(ratio)
+        df_split[ratio_column] = 'test'
+        df_split.at[index_train, ratio_column] = 'train'
+        logging.info('added column=%s for ratio=%s: train matches=%s, train nonmatches=%s',
+            ratio_column, ratio, len(index_train_matches), len(index_train_nonmatches))
+
+    df_split.to_csv(save_file)
+
+
 def start_coordinate():
     # http = False: agent call each other by direct Python function calls instead of HTTP requests
     # http = True: HTTP requests are used for calling agents
@@ -109,6 +187,8 @@ if __name__ == '__main__':
 
     #start_pickle_dump()
 
-    create_train_test_split_files()
+    #create_train_test_split_files()
+
+    create_train_test_split_file_for_ratios()
 
     #start_coordinate()

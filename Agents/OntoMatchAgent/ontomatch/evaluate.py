@@ -28,7 +28,7 @@ def evaluate_y_pred(y_test, y_pred):
 
 def evaluate_y_pred_proba(y_test, y_pred_proba, number_of_thresholds=41):
     result = []
-    thresholds = np.linspace(1, 0, num=number_of_thresholds, endpoint=True)
+    thresholds = [ round(t,5) for t in np.linspace(1, 0, num=number_of_thresholds, endpoint=True)]
     for t in thresholds:
         # y_pred_proba is an array of tuples (probability nonmatch, probability match)
         # both probabilities sum up to 1
@@ -36,7 +36,7 @@ def evaluate_y_pred_proba(y_test, y_pred_proba, number_of_thresholds=41):
         map_fct = lambda x: 1 if x[1] > t else 0
         y_pred = [ y for y in map(map_fct, y_pred_proba) ]
         tp, fp, fn, precision, recall, f1score = evaluate_y_pred(y_test, y_pred)
-        entry = [t, precision, recall, tp, fp, fn, f1score]
+        entry = [t, round(precision, 5), round(recall, 5), tp, fp, fn, round(f1score, 5)]
         result.append(entry)
     return result
 
