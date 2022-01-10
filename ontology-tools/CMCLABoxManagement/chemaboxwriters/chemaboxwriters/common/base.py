@@ -19,7 +19,6 @@ class StageHandler:
         handlerFunc: Callable,
         fileWriter: Callable,
         fileExt: str,
-        handlerFuncKwargs: Optional[Dict[str,Any]] = None,
         fileWriterKwargs: Optional[Dict[str,Any]] = None,
         unroll_input: bool=True):
 
@@ -29,8 +28,6 @@ class StageHandler:
         self.handlerFunc= handlerFunc
         self.fileWriter= fileWriter
         self.fileExt= fileExt
-        if handlerFuncKwargs is None: handlerFuncKwargs = {}
-        self.handlerFuncKwargs= handlerFuncKwargs
         if fileWriterKwargs is None: fileWriterKwargs = {}
         self.fileWriterKwargs= fileWriterKwargs
         self.writtenFiles=[]
@@ -40,25 +37,31 @@ class StageHandler:
             self,
             _input: List[str],
             outDir: Optional[str],
+            handlerKwargs: Optional[Dict[str,Any]] = None,
             *args, **kwargs)-> Tuple[List[str], Enum]:
 
-        output= self.handle_input(_input, outDir)
+        output= self.handle_input(_input, outDir, handlerKwargs)
         self.writtenFiles.extend(output)
         return output, self.outStage
 
     def handle_input(
-        self,
-        _input: List[str],
-        outDir: Optional[str])->List[str]:
+            self,
+            _input: List[str],
+            outDir: Optional[str],
+            handlerKwargs: Optional[Dict[str,Any]] = None
+        )->List[str]:
+
+        _handlerKwargs= {}
+        if handlerKwargs is not None: _handlerKwargs = handlerKwargs
 
         _output = []
         out_paths: List[str] = []
         if self.unroll_input:
             for inp in _input:
-                output = self.handlerFunc(inp, **self.handlerFuncKwargs)
+                output = self.handlerFunc(inp, **_handlerKwargs)
                 _output.extend(output)
         else:
-            _output = self.handlerFunc(_input, **self.handlerFuncKwargs)
+            _output = self.handlerFunc(_input, **_handlerKwargs)
 
         out_paths = self.get_out_paths(_input, outDir)
 
@@ -108,14 +111,6 @@ class StageHandler:
         self.fileExt = fileExt
         return self
 
-    def set_handler_func_kwargs(
-        self,
-        funcKwargs: Dict[str, Any]
-        )->Any:
-
-        self.handlerFuncKwargs = funcKwargs
-        return self
-
 class Pipeline:
     """
     The Pipeline interface declares a method for building the chain of handlers.
@@ -158,21 +153,13 @@ class Pipeline:
             self.outStage = handler.outStage
         return self
 
-    def set_handler_func_kwargs(
-        self,
-        funcKwargs: Dict[str, Any]
-        )->Any:
-
-        for handler_name, funcKwargs in funcKwargs.items():
-            handler = self.handlers[handler_name]
-            handler.set_handler_func_kwargs(funcKwargs)
-        return self
 
     def run(
         self,
         inputs: List[str],
         inputType: Enum,
         outDir: Optional[str],
+        handlerKwargs: Optional[Dict[str,Any]] = None
         )->None:
 
         logger.info(f"Running the {self.name} pipeline.")
@@ -190,15 +177,26 @@ class Pipeline:
 
         if unroll_input:
             for _input in inputs:
-                self._run([_input], inputType, outDir)
+                self._run(
+                        inputs = [_input],
+                        inputType = inputType,
+                        outDir = outDir,
+                        handlerKwargs = handlerKwargs
+                    )
         else:
-            self._run(inputs, inputType, outDir)
+                self._run(
+                        inputs = inputs,
+                        inputType = inputType,
+                        outDir = outDir,
+                        handlerKwargs = handlerKwargs
+                    )
 
     def _run(
         self,
         inputs: List[str],
         inputType: Enum,
         outDir: Optional[str],
+        handlerKwargs: Optional[Dict[str,Any]] = None
         )->Tuple[List[str], Enum]:
 
         outStageOutput: List[str] = inputs
@@ -210,7 +208,12 @@ class Pipeline:
         for handler in self.handlers.values():
             if inputType in handler.inStages:
                 logger.info(f"Executing the {handler.name} handler on the follwoing inputs {inputs}.")
-                inputs, inputType = handler._run(inputs, outDir=outDir, inputType=inputType)
+
+                _handlerKwargs = handlerKwargs.get(handler.name, None) \
+                                 if handlerKwargs is not None \
+                                 else None
+
+                inputs, inputType = handler._run(inputs, outDir=outDir, inputType=inputType, handlerKwargs=_handlerKwargs)
                 self.writtenFiles.extend(handler.writtenFiles)
                 handler.writtenFiles = []
 
@@ -259,7 +262,6 @@ def get_handler(
         fileWriter: Callable,
         name: Optional[str] = None,
         fileExt: Optional[str] = None,
-        handlerFuncKwargs: Optional[Dict[str,Any]] = None,
         fileWriterKwargs: Optional[Dict[str,Any]] = None,
         unroll_input: bool=True
         )->StageHandler:
@@ -277,7 +279,6 @@ def get_handler(
         handlerFunc=handlerFunc,
         fileWriter=fileWriter,
         fileWriterKwargs=fileWriterKwargs,
-        handlerFuncKwargs=handlerFuncKwargs,
         fileExt=fileExt,
         unroll_input=unroll_input)
 

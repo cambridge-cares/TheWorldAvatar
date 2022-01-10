@@ -72,7 +72,7 @@ def start():
         inpFileType = args['--inp-file-type'],
         qcLogExt = args['--qc-log-ext'],
         outDir = args['--out-dir'],
-        handlerFuncKwargs = handlerFuncKwargs,
+        handlerKwargs = handlerFuncKwargs,
         log_file_dir = args['--log-file-dir'],
         log_file_name = args['--log-file-name'],
         no_file_logging = args['--no-file-logging'],

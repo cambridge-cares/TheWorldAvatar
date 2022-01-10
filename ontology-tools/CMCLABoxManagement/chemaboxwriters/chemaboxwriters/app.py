@@ -18,7 +18,7 @@ def write_abox(
         inpFileType: str ,
         qcLogExt: Optional[str] = None,
         outDir: Optional[str] = None,        
-        handlerFuncKwargs: Optional[Dict[str, Any]] = {},
+        handlerKwargs: Optional[Dict[str, Any]] = None,
         log_file_dir: Optional[str] = None,
         log_file_name: Optional[str] = None,
         no_file_logging: bool = False,
@@ -34,7 +34,7 @@ def write_abox(
                         inpFileType = inpFileType ,
                         qcLogExt = qcLogExt,
                         outDir = outDir,
-                        handlerFuncKwargs = handlerFuncKwargs,
+                        handlerKwargs = handlerKwargs,
                         log_file_dir = log_file_dir,
                         log_file_name = log_file_name,
                         no_file_logging = no_file_logging,
@@ -53,7 +53,7 @@ def _write_abox(
         inpFileType: str ,
         qcLogExt: Optional[str] = None,
         outDir: Optional[str] = None,        
-        handlerFuncKwargs: Optional[Dict[str, Any]] = {},
+        handlerKwargs: Optional[Dict[str, Any]] = None,
         log_file_dir: Optional[str] = None,
         log_file_name: Optional[str] = None,
         no_file_logging: bool = False,
@@ -87,10 +87,12 @@ def _write_abox(
         logger.warning(f"""No {inStage.name.lower()} files to process. Directory / file path is either empty or does not exists.""")
         return pipeline
 
-    if handlerFuncKwargs:
-        pipeline.set_handler_func_kwargs(handlerFuncKwargs)
-
-    pipeline.run(files, inStage, outDir)
+    pipeline.run(
+                inputs = files,
+                inputType= inStage,
+                outDir = outDir,
+                handlerKwargs = handlerKwargs
+             )
 
     return pipeline
 
@@ -105,9 +107,7 @@ def assemble_pipeline(
     if pipeline_type.upper() == globals.ONTO_MOPS_TAG: return assemble_omops_pipeline()
 
     logger.error(textwrap.dedent(f"""
-        Error: The requested pipeline ='{pipeline_type}'
-                is not supported by the current pipeline.
-                Please choose one of the following options:
-                {globals.SUPPORTED_PIPELINES}"""))
+        Error: The requested pipeline ='{pipeline_type}' is not supported.
+               Please choose one of the following options: {globals.SUPPORTED_PIPELINES}"""))
     raise app_exceptions.UnsupportedPipeline
     

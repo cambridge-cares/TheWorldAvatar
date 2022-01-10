@@ -81,7 +81,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OCOMPCHEM_REF_DIR,inp_file_or_dir)
-    handlerFuncKwargs={
+    handlerKwargs={
         'QC_JSON_TO_OC_JSON': {
                 'random_id':'testID-111-111-111'
         }
@@ -93,7 +93,7 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
         pipeline_type='oc',
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
-        handlerFuncKwargs=handlerFuncKwargs,
+        handlerKwargs=handlerKwargs,
         no_file_logging = True)
 
     fileExts = ['.oc.json', '.oc.csv']
@@ -126,7 +126,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OSPECIES_REF_DIR,inp_file_or_dir)
-    handlerFuncKwargs={
+    handlerKwargs={
         'QC_JSON_TO_OS_JSON':{'random_id':'testID-111-111-111'}}
 
     mocker.patch("chemaboxwriters.ontospecies.jsonwriter.pcp.get_compounds",
@@ -137,7 +137,7 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
         pipeline_type='os',
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
-        handlerFuncKwargs=handlerFuncKwargs,
+        handlerKwargs=handlerKwargs,
         no_file_logging = True)
 
     fileExts = ['.os.json', '.os.csv']
@@ -173,10 +173,10 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
     inp_file_or_dir = os.path.join(OPSSCAN_REF_DIR,inp_file_or_dir)
 
 
-    handlerFuncKwargs: Dict[str, Any]
+    handlerKwargs: Dict[str, Any]
 
     if 'angle' in inp_file_or_dir:
-        handlerFuncKwargs= {
+        handlerKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
                 'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_O1,Atom_11-11-111_H1',
@@ -185,7 +185,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                 }
             }
     elif 'dihedral' in inp_file_or_dir:
-        handlerFuncKwargs= {
+        handlerKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
                 'os_atoms_iris': 'Atom_11-11-111_H1,Atom_11-11-111_C1,Atom_11-11-111_C2,Atom_11-11-111_H2',
@@ -194,7 +194,7 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                 }
             }
     else:
-        handlerFuncKwargs= {
+        handlerKwargs= {
         'OC_JSON_TO_OPS_JSON':
                 {'os_iris': 'Species_11-111-111',
                 'os_atoms_iris': 'Atom_11-11-111_C1,Atom_11-11-111_C2',
@@ -203,13 +203,13 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
                 }
             }
 
-    handlerFuncKwargs['OC_PIPELINE'] = {'QC_JSON_TO_OC_JSON': {'random_id':'OCtestID-111-111-111'}}
+    handlerKwargs['OC_PIPELINE'] = {'QC_JSON_TO_OC_JSON': {'random_id':'OCtestID-111-111-111'}}
 
     pipeline = _write_abox(
         pipeline_type='ops',
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
-        handlerFuncKwargs=handlerFuncKwargs,
+        handlerKwargs=handlerKwargs,
         no_file_logging = True)
 
     fileExts=['.ops.json', '.ops.csv']
@@ -239,14 +239,14 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
     print()
 
     inp_file_or_dir = os.path.join(OMOPS_REF_DIR,inp_file_or_dir)
-    handlerFuncKwargs={
+    handlerKwargs={
         'OMINP_JSON_TO_OM_JSON':{'random_id':'testID-111-111-111'}}
 
     pipeline = _write_abox(
         pipeline_type='om',
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
-        handlerFuncKwargs=handlerFuncKwargs,
+        handlerKwargs=handlerKwargs,
         no_file_logging = True)
 
     fileExts = ['.om.json', '.om.csv']
