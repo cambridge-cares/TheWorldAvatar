@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request
 import json
 # import agentlogging
 from flask_apscheduler import APScheduler
-# from pyasyncagent.gateway.jpsSingletons import jpsBaseLibGW
+from pyasyncagent.gateway import jpsBaseLibGW
 
 # create a JVM module view and use it to import the required java classes
 # TODO should this be part of AsyncAgent class?
@@ -13,14 +13,53 @@ from flask_apscheduler import APScheduler
 def async_hello(whom):
     print('Async hello %s!' % whom)
 
+class FlaskConfig(object):
+    SCHEDULER_API_ENABLED = True
+
 class AsyncAgent(object):
-    def __init__(self, app, task_id, agent_iri, time_interval, derivationClient, **configs):
+    def __init__(
+        self,
+        app: Flask,
+        agent_iri: str,
+        time_interval: int,
+        derivation_instance_base_url: str,
+        kg_url: str,
+        kg_user: str = None,
+        kg_password: str = None,
+        # derivationClient,
+        flask_config: FlaskConfig = FlaskConfig()):
+
+        # create a JVM module view and use it to import the required java classes
+        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
+
+        # initialise flask app with its configuration
         self.app = app
-        self.configs(**configs)
+        self.app.config.from_object(flask_config)
+
+        # initialise flask scheduler and assign time interval for monitorDerivations job
         self.scheduler = APScheduler()
-        self.interval_task_id = task_id
         self.time_interval = time_interval
+
+        # assign IRI of the agent
         self.agentIRI = agent_iri
+
+        # assign KG related information
+        self.kgUrl = kg_url
+        self.kgUser = kg_user
+        self.kgPassword = kg_password
+
+        # initialise the derivationClient with SPARQL Query and Update endpoint
+        if self.kgUrl is None:
+            self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl)
+        else:
+            self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
+        self.derivationClient = self.jpsBaseLib_view.DerivationClient(self.storeClient, derivation_instance_base_url)
+
+
+        # agent iri, time interval, derivation base url, kg url, kg user, kg password
+
         # self.interval_task_id = 'interval-task-id'
         # self.time_interval = 5
         # self.agentIRI = 'http://www.theworldavatar.com/kb/agents/Service__DoE#Service' # for testing purpose, will be provided as part of config
@@ -28,14 +67,14 @@ class AsyncAgent(object):
         # Initialise the derivationClient with SPARQL Query and Update endpoint
         # self.storeClient = jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl)
         # self.derivationClient = jpsBaseLib_view.DerivationClient(self.storeClient)
-        self.derivationClient = derivationClient
+        # self.derivationClient = derivationClient
     
-    def configs(self, **configs):
-        for config, value in configs:
-            self.app.config[config.upper()] = value
+    # def configs(self, **configs):
+    #     for config, value in configs:
+    #         self.app.config[config.upper()] = value
     
-    def add_endpoint(self, endpoint=None, endpoint_name=None, handler=None, methods=['GET'], *args, **kwargs):
-        self.app.add_url_rule(endpoint, endpoint_name, handler, methods=methods, *args, **kwargs)
+    def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
+        self.app.add_url_rule(url_pattern, url_pattern_name, function, methods=methods, *args, **kwargs)
     
     def monitorDerivations(self):
         # Below codes follow the logic as defined in AsynAgent.java in JPS_BASE_LIB
@@ -93,17 +132,6 @@ class AsyncAgent(object):
 
     def run(self, **kwargs):
         self.scheduler.init_app(self.app)
-        self.scheduler.add_job(id=self.interval_task_id, func=self.monitorDerivations, 
-                               trigger='interval', seconds=self.time_interval)
+        self.scheduler.add_job(id='monitor_derivations', func=self.monitorDerivations, trigger='interval', seconds=self.time_interval)
         self.scheduler.start()
         self.app.run(**kwargs)
-
-
-
-
-# flask_app = Flask(__name__)
-
-# app = AsyncAgent(flask_app)
-
-# if __name__ == "__main__":
-#     app.run()
