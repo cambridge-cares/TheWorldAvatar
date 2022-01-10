@@ -6,6 +6,8 @@ PREFIX exp3:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
 PREFIX exp4:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
 PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
 PREFIX exp6:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_6/>
+PREFIX rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:                 <http://www.w3.org/2001/XMLSchema#>
 PREFIX :			<https://theworldavatar.com/kb/ontodoe/DoE_1/>
 
 INSERT DATA {
@@ -93,7 +95,7 @@ INSERT DATA {
 		OntoDoE:refersTo exp3:RxnExp_1;
 		OntoDoE:refersTo exp4:RxnExp_1;
 		OntoDoE:refersTo exp5:RxnExp_1;
-		OntoDoE:numOfNewExp 2;
+		OntoDoE:numOfNewExp 1;
 	.
 
 	:NewExperiment_1

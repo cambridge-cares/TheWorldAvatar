@@ -17,6 +17,8 @@ PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
 PREFIX SinglePhase: <https://theworldavatar.com/kb/ontorxn/SinglePhase/>
 PREFIX ChemRxn:     <https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
 PREFIX doe_instance:<https://theworldavatar.com/kb/ontodoe/DoE_1/>
+PREFIX rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:                 <http://www.w3.org/2001/XMLSchema#>
 PREFIX rdfs:		<http://www.w3.org/2000/01/rdf-schema#>
 
 INSERT DATA {

@@ -1,6 +1,7 @@
 PREFIX ontoagent:           <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#>
 PREFIX ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
 PREFIX rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd:                 <http://www.w3.org/2001/XMLSchema#>
 PREFIX :                    <http://www.theworldavatar.com/kb/agents/Service__DoE#>
 
 INSERT DATA {

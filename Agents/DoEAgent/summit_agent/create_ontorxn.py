@@ -1,6 +1,6 @@
-from .resources.parameter import *
-from .resources.doeagent_properties import *
-from .kgUtils import *
+from resources.parameter import *
+from resources.doeagent_properties import *
+from kgUtils import *
 
 from summit.utils.dataset import DataSet
 from rdflib import Graph, Literal, URIRef

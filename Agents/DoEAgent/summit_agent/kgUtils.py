@@ -2,9 +2,9 @@
 # to interact with the knowledge graph
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
-from .jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
-from .resources.parameter import *
-from .resources.doeagent_properties import *
+from jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
+from resources.parameter import *
+from resources.doeagent_properties import *
 from functools import reduce
 import pandas as pd
 import json
