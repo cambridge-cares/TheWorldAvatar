@@ -707,5 +707,34 @@ class DigitalTwinManager {
 		}
 	}
 
+	/**
+	 * Hide/show all controls and overlays.
+	 * 
+	 * @param {Boolean} visibility desired state 
+	 */
+	hideAllControls(visibility) {
+		var sidePanel = document.getElementById("sidePanel");
+		var controlsContainer = document.getElementById("controlsContainer");
+
+		sidePanel.style.display = (visibility) ? "block" : "none";
+		controlsContainer.style.display = (visibility) ? "block" : "none";
+		
+		if(visibility) {
+			if(sidePanel.classList.contains("collapsed")) {
+				document.getElementById("map").style.width = "calc(100% - 28px)";
+			} else {
+				document.getElementById("map").style.width = "calc(100% - 500px)";
+			}
+		} else {
+			if(sidePanel.classList.contains("large")) {
+				this._panelHandler.toggleMode();
+			}
+			document.getElementById("map").style.width = "100%";
+		}
+		this._map.resize();
+
+		console.log("Visbilities updated?");
+	}
+
 }
 // End of class.
