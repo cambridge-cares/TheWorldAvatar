@@ -1,0 +1,67 @@
+{
+"numerical_settings":{
+	"seed": 1
+},
+"dataset":{
+	"src": "./data/power_plant_GBR/dukes.ttl",
+	"tgt": "./data/power_plant_GBR/gppd_GBR.ttl"
+},
+"pre_processing":{
+	"add_knowledge": null
+},
+"blocking":{
+	"name": "TokenBasedPairIterator",
+	"model_specific": {
+		"min_token_length": 3,
+		"max_token_occurrences_src": 200,
+		"max_token_occurrences_tgt": 200,
+		"blocking_properties": ["name", "isOwnedBy/hasName"],
+		"reset_index": false
+	}
+},
+"mapping": {
+	"mode": "fixed",
+	"similarity_functions": [
+		{"name": "dist_absolute", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_relative", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_equal", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 3},
+		{"name": "dist_nltk_edit", "cut_off_mode": "fixed", "cut_off_value": 10},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 30},
+		{"name": "dist_cosine_with_tfidf", "cut_off_mode": "fixed", "cut_off_value": 1, "maxidf": 100},
+		{"name": "dist_cosine_binary", "cut_off_mode": "fixed", "cut_off_value": 1},
+		{"name": "dist_cosine_embedding", "cut_off_mode": "fixed", "cut_off_value": 1}
+	],
+	"triples": [
+		{"prop1": "designCapacity/hasValue/numericalValue", "prop2": "designCapacity/hasValue/numericalValue", "sim": 1, "pos": 0},
+		{"prop1": "realizes/consumesPrimaryFuel", "prop2": "realizes/consumesPrimaryFuel", "sim": 2, "pos": 1},
+		{"prop1": "name", "prop2": "name", "sim": 3, "pos": 2},
+		{"prop1": "name", "prop2": "name", "sim": 4, "pos": 3},
+		{"prop1": "name", "prop2": "name", "sim": 5, "pos": 4},
+		{"prop1": "name", "prop2": "name", "sim": 6, "pos": 5},
+		{"prop1": "name", "prop2": "name", "sim": 7, "pos": 6},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 3, "pos": 7},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 4, "pos": 8},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 5, "pos": 9},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 6, "pos": 10},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 7, "pos": 11},
+		{"prop1": "name", "prop2": "name", "sim": 8, "pos": 14},
+		{"prop1": "isOwnedBy/hasName", "prop2": "isOwnedBy/hasName", "sim": 8, "pos": 15}
+	]
+},
+"matching":{
+	"name": "instancematching.InstanceMatcherWithAutoCalibration",
+	"model_specific": {
+		"perfect": false,
+		"symmetric": true,
+		"delta": 0.025,
+		"purge_alpha": 0.5,
+		"purge_majority": 0.5
+	}
+},
+"post_processing":{
+	"dump": "./scores",
+	"test_file": "../power_plant_GBR/split_dg_mtf_200.csv",
+	"evaluation_file": "./data/power_plant_GBR/matches_power_plant_GBR.csv"
+}
+}

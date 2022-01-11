@@ -1,7 +1,9 @@
 import json
 import logging
+import requests
 import time
 import traceback
+
 import ontomatch.httpCaller.httpcaller as httpcaller
 import ontomatch.evaluate
 import ontomatch.instancematching
@@ -125,13 +127,31 @@ class Agent():
 
 
 def start(config_dev=None):
-    params, config_file = ontomatch.utils.util.init(config_dev)
-    # write the config params to the blackboard
-    params_str = json.dumps(params)
-    config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(config_file, params_str, http=False)
 
     starttime = time.time()
-    Agent().start(config_handle, http=False)
+    params, config_file = ontomatch.utils.util.init(config_dev)
+    http = params['pre_processing'].get('http')
+
+    if http:
+        # write the config params to the blackboard
+        params_str = json.dumps(params)
+        rv = requests.post('http://localhost:5000/api/blackboard', params={
+            'addr':config_file, 'serialized_object':params_str
+        })
+
+        rd = rv.json()
+        handle = rd["result"]["handle"]
+        rv = requests.post('http://localhost:5000/api/coordinator', params ={
+            "config":handle
+        })
+        re = rv.json()
+        logging.info('request finished, %s', re)
+    else:
+        # write the config params to the blackboard
+        params_str = json.dumps(params)
+        config_handle = ontomatch.utils.util.call_agent_blackboard_for_writing(config_file, params_str, http=False)
+        Agent().start(config_handle, http=False)
+
     timenow = time.time()-starttime
     logging.info('elapsed time in seconds=%s', timenow)
 

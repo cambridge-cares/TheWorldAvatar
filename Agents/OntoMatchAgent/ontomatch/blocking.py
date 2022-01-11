@@ -255,9 +255,13 @@ def create_dataframe_from_ontology(onto):
                     rdf_types.remove(rdf_type)
         row['type'] = rdf_types
 
+        iri = onto.individualList[pos]
+        row['iri'] = iri
+
         # TODO-AE 211026 add rdfs:label or replace name by rdfs:label; this is too specialized (will not work for DBPedia)
         # also idx will not work
         subj = onto.individualNames[pos]
+
         first = subj.find('_')
         if first > 0:
             last = subj.rfind('_')

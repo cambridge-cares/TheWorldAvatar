@@ -92,8 +92,9 @@ def init(config_dev=None):
         config['dataset']['src'] = path.replace(data_path_default, args.datadir)
         path = config['dataset']['tgt']
         config['dataset']['tgt'] = path.replace(data_path_default, args.datadir)
-        path = config['post_processing']['evaluation_file']
-        config['post_processing']['evaluation_file'] = path.replace(data_path_default, args.datadir)
+        path = config['post_processing'].get('evaluation_file')
+        if path:
+            config['post_processing']['evaluation_file'] = path.replace(data_path_default, args.datadir)
 
     logging.info('config=%s', config)
     try:

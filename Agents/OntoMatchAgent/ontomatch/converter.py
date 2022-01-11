@@ -1256,7 +1256,18 @@ class ConverterProduct():
         converter.convert_data(src_file_acm, BASE_PROD_GOOGLE, 'C:/my/tmp/ontomatch/tmp_product/googleproducts_small.ttl', format, name_column='name')
         converter.convert_matches_to_multi_indices(file_matches,'C:/my/tmp/ontomatch/tmp_product/matches_product_small.csv')
 
+def link_entity_pairs(link_file, iri_pairs):
 
+    #global BASE
+    #BASE = namespace
+
+    graph = rdflib.Graph()
+    bind_prefixes(graph)
+
+    for iri_1, iri_2 in iri_pairs:
+        graph.add((URIRef(iri_1), OWL.sameAs, URIRef(iri_2)))
+
+    graph.serialize(link_file, format='turtle')
 
 if __name__ == '__main__':
 

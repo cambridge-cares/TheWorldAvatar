@@ -5,8 +5,10 @@ import time
 
 import numpy as np
 import pandas as pd
+from sklearn.metrics.pairwise import laplacian_kernel
 from tqdm import tqdm
 
+import ontomatch.converter
 import ontomatch.hpo
 import ontomatch.matchManager
 import ontomatch.scoring
@@ -162,8 +164,9 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         manager = self.score_manager
 
         if params_post_processing:
-            match_file = params_post_processing['evaluation_file']
-            matches_minus_fn = self.read_matches_minus_fn(match_file)
+            match_file = params_post_processing.get('evaluation_file')
+            if match_file:
+                matches_minus_fn = self.read_matches_minus_fn(match_file)
 
         if perfect:
             self.calculate_perfect_maximum_scores(matches_minus_fn)
@@ -174,7 +177,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
                 manager.df_max_scores_1, manager.df_max_scores_2 = self.purge_low_max_scores(
                         manager.df_max_scores_1, manager.df_max_scores_2, manager.df_scores, purge_alpha, purge_majority)
 
-        if params_post_processing:
+        if match_file:
             self.evaluate_maximum_scores(matches_minus_fn)
 
         df_scores = manager.get_scores()
@@ -653,44 +656,39 @@ def get_total_score_for_row(prop_scores, scoring_weights=None, missing_score=Non
     else:
         raise RuntimeError('unknown aggregation mode=', aggregation_mode)
 
-def dump(params_post_processing, matcher):
+def dump(dump_dir, matcher):
+    dir_name = dump_dir + '_' + str(time.time())
+    logging.info('dumping results to %s', dir_name)
+    os.makedirs(dir_name, exist_ok=True)
 
-    dump_dir = params_post_processing.get('dump')
-    if dump_dir:
-        dir_name = dump_dir + '_' + str(time.time())
-        logging.info('dumping results to %s', dir_name)
-        os.makedirs(dir_name, exist_ok=True)
+    if isinstance(matcher, ontomatch.matchManager.matchManager) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherClassifier):
+        matcher.get_scores().to_csv(dir_name + '/total_scores.csv')
+    else:
+        sm = matcher.score_manager
+        sm.data1.to_csv(dir_name + '/data1.csv')
+        sm.data2.to_csv(dir_name + '/data2.csv')
 
-        if isinstance(matcher, ontomatch.matchManager.matchManager) or isinstance(matcher, ontomatch.instancematching.InstanceMatcherClassifier):
-            matcher.get_scores().to_csv(dir_name + '/total_scores.csv')
+        if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights):
+            sm.df_scores.to_csv(dir_name + '/total_scores.csv')
+        elif isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+            if sm.get_max_scores_1() is not None:
+                sm.get_max_scores_1().to_csv(dir_name + '/max_scores_1.csv')
+            if sm.get_max_scores_2() is not None:
+                sm.get_max_scores_2().to_csv(dir_name + '/max_scores_2.csv')
+            matcher.df_total_scores.to_csv(dir_name + '/total_scores_1.csv')
+            matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
+            sm.df_scores.to_csv(dir_name + '/scores.csv')
         else:
-            sm = matcher.score_manager
-            sm.data1.to_csv(dir_name + '/data1.csv')
-            sm.data2.to_csv(dir_name + '/data2.csv')
+            raise RuntimeError('unsupported type of matcher', type(matcher))
 
-            if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithScoringWeights):
-                sm.df_scores.to_csv(dir_name + '/total_scores.csv')
-            elif isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
-                if sm.get_max_scores_1() is not None:
-                    sm.get_max_scores_1().to_csv(dir_name + '/max_scores_1.csv')
-                if sm.get_max_scores_2() is not None:
-                    sm.get_max_scores_2().to_csv(dir_name + '/max_scores_2.csv')
-                matcher.df_total_scores.to_csv(dir_name + '/total_scores_1.csv')
-                matcher.df_total_best_scores.to_csv(dir_name + '/total_best_scores.csv')
-                sm.df_scores.to_csv(dir_name + '/scores.csv')
-            else:
-                raise RuntimeError('unsupported type of matcher', type(matcher))
-
-def evaluate(params_post_processing, matcher, train_set=None, hint='', estimated_threshold=None):
-    matchfile = params_post_processing['evaluation_file']
-    index_matches = ontomatch.evaluate.read_match_file_as_index_set(matchfile, linktypes = [1, 2, 3, 4, 5])
+def evaluate(match_file, test_file, matcher, train_set=None, hint='', estimated_threshold=None):
+    index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
     df_scores = matcher.get_scores()
     if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
         #211226 for eval, set non-best total scores to 0
         mask = ~(df_scores['best'])
         df_scores.at[mask, 'score'] = 0
 
-        test_file = params_post_processing.get('test_file')
         logging.info('test_file=%s', test_file)
         if test_file:
             df_split = ontomatch.utils.util.read_csv(test_file)
@@ -717,8 +715,35 @@ def evaluate(params_post_processing, matcher, train_set=None, hint='', estimated
             index_test_set = df_scores.index.difference(index_train_set)
         ontomatch.evaluate.evaluate_on_train_test_split(df_scores, index_train_set, index_test_set, index_matches, hint)
 
+def link(link_file, matcher, estimated_threshold):
+    logging.info('linking predicted matches')
+    df_src = matcher.score_manager.get_data1()
+    df_tgt = matcher.score_manager.get_data2()
+    df_scores = matcher.get_scores()
+    mask = (df_scores['score'] >= estimated_threshold)
+    predicted_matches =  df_scores[mask].index
+    iri_pairs = []
+    for idx_1, idx_2 in predicted_matches:
+        iri_src = df_src.loc[idx_1]['iri']
+        iri_tgt = df_tgt.loc[idx_2]['iri']
+        iri_pairs.append((iri_src, iri_tgt))
+    ontomatch.converter.link_entity_pairs(link_file, iri_pairs)
+    logging.info('linked predicted matches=%s, link_file=%s', len(iri_pairs), link_file)
+
 def postprocess(params_post_processing, matcher, train_set=None, hint='', estimated_threshold=None):
     logging.info('post processing')
-    dump(params_post_processing, matcher)
-    evaluate(params_post_processing, matcher, train_set, hint, estimated_threshold)
+    dump_dir = params_post_processing.get('dump')
+    if dump_dir:
+        dump(dump_dir, matcher)
+    match_file = params_post_processing.get('evaluation_file')
+    if match_file:
+        test_file = params_post_processing.get('test_file')
+        evaluate(match_file, test_file, matcher, train_set, hint, estimated_threshold)
+    link_file = params_post_processing.get('link_file')
+    if link_file:
+        if not isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
+            logging.warn('linking entities is only possible for instance matching with AutoCal, link_file=%s', link_file)
+        else:
+            link(link_file, matcher, estimated_threshold)
+
     logging.info('post processing finished')
