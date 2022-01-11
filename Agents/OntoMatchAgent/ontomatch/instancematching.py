@@ -163,6 +163,7 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         manager = self.score_manager
 
+        match_file = None
         if params_post_processing:
             match_file = params_post_processing.get('evaluation_file')
             if match_file:
