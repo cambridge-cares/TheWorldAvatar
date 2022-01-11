@@ -1,0 +1,291 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.ceb.como.molhub</groupId>
+  <artifactId>molhub</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <build>
+    <sourceDirectory>src</sourceDirectory>
+    <resources>
+      <resource>
+        <directory>resources</directory>
+        <excludes>
+          <exclude>**/*.java</exclude>
+        </excludes>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <warSourceDirectory>WebContent</warSourceDirectory>
+         <!--  <outputDirectory>${tomcatPath}/webapps</outputDirectory> -->
+        </configuration>
+      </plugin>
+    </plugins>
+    <finalName>molhub</finalName>
+  </build>
+  
+  <dependencies>
+  <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-core</artifactId>
+    <version>2.17.1</version>
+</dependency>
+  
+<!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-core -->
+<dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-core</artifactId>
+    <version>2.5.16</version>
+</dependency>
+ 
+<!-- https://mvnrepository.com/artifact/com.jgeppert.struts2.bootstrap/struts2-bootstrap-plugin -->
+<dependency>
+    <groupId>com.jgeppert.struts2.bootstrap</groupId>
+    <artifactId>struts2-bootstrap-plugin</artifactId>
+    <version>2.5.2</version>
+</dependency> 
+ 
+<!--https://mvnrepository.com/artifact/org.apache.struts/struts2-convention-plugin--> 
+<dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-convention-plugin</artifactId>
+    <version>2.5.16</version>
+</dependency>
+
+
+<!-- https://mvnrepository.com/artifact/org.apache.struts/struts2-rest-plugin 
+<dependency>
+    <groupId>org.apache.struts</groupId>
+    <artifactId>struts2-rest-plugin</artifactId>
+    <version>2.5.16</version>
+</dependency>
+-->
+  
+ <!--  https://mvnrepository.com/artifact/com.jgeppert.struts2.jquery/struts2-jquery-plugin--> 
+<dependency>
+    <groupId>com.jgeppert.struts2.jquery</groupId>
+    <artifactId>struts2-jquery-plugin</artifactId>
+    <version>4.0.3</version>
+</dependency>
+
+  
+  <!-- https://mvnrepository.com/artifact/commons-fileupload/commons-fileupload -->
+<dependency>
+    <groupId>commons-fileupload</groupId>
+    <artifactId>commons-fileupload</artifactId>
+    <version>1.3.3</version>
+</dependency>
+ 
+  
+  <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.6</version>
+</dependency>
+ 
+  <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging -->
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging</artifactId>
+    <version>1.2</version>
+</dependency>
+  
+  <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>4.0.1</version>
+    <scope>provided</scope>
+</dependency>  
+
+ <!-- Makes problem during Tomcat deployment -->
+<!-- https://mvnrepository.com/artifact/ognl/ognl -->
+<!-- 
+<dependency>
+<groupId>ognl</groupId>
+<artifactId>ognl</artifactId>
+<version>3.2.6</version>
+</dependency>
+-->
+
+  <!-- https://mvnrepository.com/artifact/org.apache.struts.xwork/xwork-core -->
+<dependency>
+    <groupId>org.apache.struts.xwork</groupId>
+    <artifactId>xwork-core</artifactId>
+    <version>2.3.34</version>
+</dependency>
+ 
+ <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+<dependency>
+    <groupId>org.slf4j</groupId>
+    <artifactId>slf4j-api</artifactId>
+    <version>1.7.25</version>
+</dependency>
+  
+  
+  <!-- https://mvnrepository.com/artifact/commons-logging/commons-logging-api -->
+<dependency>
+    <groupId>commons-logging</groupId>
+    <artifactId>commons-logging-api</artifactId>
+    <version>1.1</version>
+</dependency>
+
+  
+<dependency>
+            <groupId>uk.ac.cam.ceb.como</groupId>
+            <artifactId>CoMoOntology</artifactId>
+            <version>0.0.0</version>
+</dependency>
+
+<!-- 
+-  After removing Philipp's parser code, this library is removed from molhub build path.
+<dependency>
+            <groupId>uk.ac.cam.ceb.como</groupId>
+            <artifactId>CoMoIOChemistry</artifactId>
+            <version>0.0.0</version>
+</dependency>
+-->
+
+<!--
+- After removing Philipp's parser code, this library is removed from molhub build path. 
+<dependency>
+            <groupId>uk.ac.cam.ceb.como</groupId>
+            <artifactId>CoMoMath</artifactId>
+            <version>0.0.0</version>
+</dependency>
+-->
+
+<!-- 
+- After removing Philipp's parser code, this library is removed from molhub build path.
+<dependency>
+            <groupId>com.cmclinnovations</groupId>
+            <artifactId>CMCLIO</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+</dependency>
+-->
+
+<dependency>
+    <groupId>xml-apis</groupId>
+    <artifactId>xml-apis</artifactId>
+    <version>1.4.01</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-core -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-core</artifactId>
+    <version>5.3.2.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate.validator/hibernate-validator -->
+<dependency>
+    <groupId>org.hibernate.validator</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>6.0.10.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.hibernate/hibernate-entitymanager -->
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-entitymanager</artifactId>
+    <version>5.3.2.Final</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/asm/asm -->
+<dependency>
+    <groupId>asm</groupId>
+    <artifactId>asm</artifactId>
+    <version>3.3.1</version>
+</dependency>
+
+<dependency>
+    <groupId>com.googlecode.aima-java</groupId>
+    <artifactId>aima-core</artifactId>
+    <version>3.0.0</version>
+</dependency>
+
+<!-- RDF4J Dependencies -->
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-runtime</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-http</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-sparql</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-sail-nativerdf -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-sail-nativerdf</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.ow2.jonas.osgi/woodstox -->
+<dependency>
+    <groupId>org.ow2.jonas.osgi</groupId>
+    <artifactId>woodstox</artifactId>
+    <version>5.2.0-M3</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/net.sourceforge.jmol/jmol -->
+<dependency>
+    <groupId>net.sourceforge.jmol</groupId>
+    <artifactId>jmol</artifactId>
+    <version>14.29.17</version>
+</dependency>
+
+<dependency>
+  <groupId>javax.servlet.jsp</groupId>
+  <artifactId>jsp-api</artifactId>
+  <version>2.1</version>
+  <scope>provided</scope>
+</dependency><dependency>  
+    <groupId>javax</groupId>    
+    <artifactId>javaee-web-api</artifactId>    
+    <version>7.0</version> <!-- Put here the version of your Java EE app, in my case 7.0 -->
+    <scope>provided</scope>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.json/json -->
+<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20190722</version>
+</dependency>
+</dependencies>
+</project>

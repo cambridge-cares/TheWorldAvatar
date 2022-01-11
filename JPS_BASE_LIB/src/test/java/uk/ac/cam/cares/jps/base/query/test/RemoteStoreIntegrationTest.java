@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import org.apache.http.client.utils.URIBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
@@ -23,14 +22,13 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * @author Kok Foong Lee
  *
  */
-@Ignore
 public class RemoteStoreIntegrationTest {
 	@Container
 	private GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
 												 .withExposedPorts(9999);
 	
 	@Test
-	public void testUploadRDFFile() throws URISyntaxException {
+	public void testUploadFile() throws URISyntaxException {
 		// start containers
 		blazegraph.start();
 		
@@ -44,7 +42,7 @@ public class RemoteStoreIntegrationTest {
 		// upload the file testOWL.owl to the test container
 		String filepath = new URI(getClass().getClassLoader().getResource(Paths.get("KBClientTest","testOWL.owl").toString()).toString()).getPath();
 		File testOwl = new File(filepath);
-		storeClient.uploadRDFFile(testOwl);
+		storeClient.uploadFile(testOwl);
 		
 		// construct a simple query to check that triples have been uploaded
 		SelectQuery query = Queries.SELECT();

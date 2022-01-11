@@ -114,7 +114,7 @@ public class EmailSender {
     private void makeRequest(String subject, String body) throws Exception {
         JSONObject request = new JSONObject();
         request.put("subject", subject);
-        request.put("body", body);
+        request.put("message", body);
 
         try {
             // Make the HTTP request
@@ -155,7 +155,7 @@ public class EmailSender {
         try ( BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.toFile()))) {
             writer.append("Subject: ").append(subject);
             writer.append("\n");
-            writer.append("Body:\n");
+            writer.append("Message:\n");
             writer.append(body);
         }
 
