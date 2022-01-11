@@ -24,7 +24,7 @@ from utilities.SparqlErrors import *
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = 100
+n = None
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -34,6 +34,13 @@ output_dimension = 3
 # GeoJSON: https://datatracker.ietf.org/doc/html/rfc7946#section-4
 # Mapbox: https://docs.mapbox.com/help/glossary/projection/
 target_crs = utils.CRSs['crs_84']
+
+# Specify colors for building usage types (i.e. building usage themes) of interest
+usage_types = {
+    'Education': '#1de00b',         # green
+    'Emergency Service': '#0b0be0', # blue
+    'Medical Care': '#e00b0b',      # red
+}
 
 
 ###   FUNCTIONS   ###
@@ -544,21 +551,27 @@ if __name__ == '__main__':
         uprns, bldg_theme, bldg_class, bldg_name = get_uprns_and_building_use(b, utils.QUERY_ENDPOINT)
 
         # Specify building/feature properties to consider (beyond coordinates)
-        geojson_props = {'displayName': 'Building {}'.format(feature_id),
-                         #'description': str(b),
-                         'fill-extrusion-color': '#666666',
-                         'fill-extrusion-opacity': 0.66,
-                         # Building ground elevation
-                         #'fill-extrusion-base': 0,
-                         'fill-extrusion-base': round(base_elevation, 3),
-                         # Building (absolute) height, i.e. NOT relative height above base
-                         #'fill-extrusion-height': round(top_elevation-base_elevation, 3),
-                         'fill-extrusion-height': round(top_elevation, 3)
-                         }
+        geojson_props = {
+            # Adjust building's display name depending on whether usage information is available or not
+            'displayName': bldg_name if bldg_name else'Building {}'.format(feature_id),
+            #'description': str(b),
+            # Adjust display color depending on building use classification
+            'fill-extrusion-color': usage_types[bldg_theme] if bldg_theme in usage_types.keys() else '#666666',
+            'fill-extrusion-opacity': 0.66,
+            # Building ground elevation
+            #'fill-extrusion-base': 0,
+            'fill-extrusion-base': round(base_elevation, 3),
+            # Building (absolute) height, i.e. NOT relative height above base
+            #'fill-extrusion-height': round(top_elevation-base_elevation, 3),
+            'fill-extrusion-height': round(top_elevation, 3)
+        }
 
         # Specify metadata properties to consider
         metadata_props = {'id': feature_id,
-                          'Building': str(b),
+                          'Building theme': bldg_theme,
+                          'Building classification': bldg_class,
+                          'Building name': bldg_name,
+                          'Building IRI': str(b),
                           'Ground elevation (m)': str(round(base_elevation, 2)),
                           'Building height (m)': str(round(height, 2)),
                           'UPRNs': uprns
