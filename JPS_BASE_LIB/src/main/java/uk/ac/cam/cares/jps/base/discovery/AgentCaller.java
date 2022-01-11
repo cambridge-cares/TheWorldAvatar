@@ -70,7 +70,6 @@ public class AgentCaller {
         }
     }
 
-    //TODO
     public static String executeGet(String path, String... keyOrValue) {
 
         URIBuilder builder = getUriBuilderForPath(path);
@@ -97,7 +96,6 @@ public class AgentCaller {
      * @param body Request payload
      * @return Response body
      */
-    //TODO
     public static String executePost(String path, String body) {
         String response_body;
         URIBuilder builder = getUriBuilderForPath(path);
@@ -177,7 +175,6 @@ public class AgentCaller {
         return AgentCaller.executeGet(request);
     }
 
-    //TODO
     public static String executeGetWithURLAndJSON(String url, String json) {
         URI uri = createURIWithURLandJSON(url, json);
         HttpGet request = new HttpGet(uri);
@@ -201,7 +198,6 @@ public class AgentCaller {
         return executeGet(request);
     }
 
-    //TODO
     /**
      * Executes GET request <host>/path?query=<json>
      *
@@ -226,7 +222,6 @@ public class AgentCaller {
         }
     }
 
-    //TODO
     /**
      * Returns the JSONObject for the serialized JSON document of parameter with key "query". If there no such key,
      * then a JSONObject is created of the form { "key1": "value1", "key2": "value2", ... }. for the url query component
@@ -300,12 +295,16 @@ public class AgentCaller {
 		LOGGER.info("accept = " + accept);
 		return accept;
 	}
+    
+    /**
+     * @deprecated Use method in Http
+     * @param response
+     * @param json
+     * @throws IOException
+     */
+    @Deprecated
     public static void writeJsonParameter(HttpServletResponse response, JSONObject json) throws IOException {
-
-        response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
-        String message = json.toString();
-        out.print(message);
+    	Http.writeJsonParameter(response, json);
     }
 
     public static String executeGet(HttpGet request) {
