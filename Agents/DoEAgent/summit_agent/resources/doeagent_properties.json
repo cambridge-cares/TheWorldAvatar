@@ -1,0 +1,13 @@
+{
+    "KNOWLEDGE_GRAPH": {
+        "TRIPLE_STORE_UPLOAD_SERVER": "http://kg.cmclinnovations.com:81/blazegraph",
+        "TRIPLE_STORE_UPLOAD_REPOSITORY": "testontorxn"
+    },
+    "DOEAGENT_ONTOAGENT": {
+        "DOEAGENT_ONTOAGENT_SERVICE": "http://www.theworldavatar.com/kb/agents/Service__DoE#Service"
+    },
+    "DERIVATION_CLIENT": {
+        "PERIODIC_TIMESCALE": 120,
+        "DOEAGENT_INPUT_JSON_KAY": "agent_input"
+    }
+}
