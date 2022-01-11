@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>uk.ac.cam.cares.jps</groupId>
 	<artifactId>jps-scenarios</artifactId>
-	<version>6.0.0</version>
+	<version>6.1.0</version>
 	<packaging>war</packaging>
 
 	<!-- Parent POM -->
@@ -69,7 +69,7 @@
         <dependency>
             <groupId>uk.ac.cam.cares.jps</groupId>
             <artifactId>jps-base-lib</artifactId>
-            <version>1.4.0</version>
+            <version>1.5.0</version>
         </dependency>
 
         <dependency>

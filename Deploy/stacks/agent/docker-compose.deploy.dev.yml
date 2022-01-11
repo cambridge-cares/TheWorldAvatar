@@ -16,6 +16,8 @@ services:
   status-agent:
     image: docker.cmclinnovations.com/status-agent:1.0.0-SNAPSHOT
     container_name: "status-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     hostname: status-agent
     pull_policy: if_not_present
     restart: unless-stopped

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -261,20 +261,26 @@ public class WriteOutputs {
 			measuresToPlot.add(ts.getDataIRIs().get(0));
 		}
 		
-		List<List<?>> measureProps = sparqlClient.getMeasurePropertiesForVis(measuresToPlot);
+		// index 0: data name, 1: unit, 2: vis ID
+		List<Map<String,?>> measureProps = sparqlClient.getMeasurePropertiesForVis(measuresToPlot);
 		
-		List<List<String>> table_header = new ArrayList<>();
-		for (String header : (List<String>) measureProps.get(0)) {
-			table_header.add(Arrays.asList(header));
-		}
-		
-		List<List<String>> units = new ArrayList<>();
-		for (String unit : (List<String>) measureProps.get(1)) {
-			units.add(Arrays.asList(unit));
+		List<Map<String,String>> table_header = new ArrayList<>();
+		List<Map<String,String>> units = new ArrayList<>();
+		List<Integer> visId = new ArrayList<>();
+		for (String measure : measuresToPlot) {
+			Map<String,String> measure_header_map = new HashMap<>();
+			measure_header_map.put(measure, (String) measureProps.get(0).get(measure));
+			table_header.add(measure_header_map);
+			
+			Map<String,String> measure_unit_map = new HashMap<>();
+			measure_unit_map.put(measure, (String) measureProps.get(1).get(measure));
+			units.add(measure_unit_map);
+			
+			visId.add((Integer) measureProps.get(2).get(measure));
 		}
 		
 		JSONArray ts_array = tsClient.convertToJSON(ts_list, 
-				(List<Integer>) measureProps.get(2), units, table_header);
+				visId, units, table_header);
 		
 		// write to file
 		writeToFile(file, ts_array.toString(4));

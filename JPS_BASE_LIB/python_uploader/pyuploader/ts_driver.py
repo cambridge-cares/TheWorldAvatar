@@ -13,10 +13,10 @@ Usage:
                              [--dry-run]
 
 Options:
---url=<url>             Triple store upload endpoint. If not specified,
-                        the code will try to read it from a file whose
-                        location should be specified in user environment
-                        variables.
+--url=<url>             Triple store upload endpoint. If not specified, the code
+                        will try to read it from a file whose location
+                        should be specified in user 'TRIPLE_STORE_SPECS'
+                        environment variables.
 --auth-file=<file>      File path to the triple store secrets file containing
                         the user authorization string of the following form:
                         "username:password". If not specified, the code will
@@ -31,7 +31,7 @@ Options:
 --log-file-name=<name>  Name of the generated log file.                     [default: ts_uploader.log]
 --log-file-dir=<dir>    Path to the log file storing information of
                         what has been uploaded and where. Defaults
-                        to the <fileOrDir> directory.
+                        to the <file_or_dir> directory.
 --no-file-logging       No logging flag to a file.
 --dry-run               Run the triple store uploader tool in a dry
                         run without uploading any triples.
