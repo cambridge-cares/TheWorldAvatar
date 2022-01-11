@@ -4,7 +4,7 @@
 ###################################################
 
 from shapely.geometry import shape
-from shapely.geometry.polygon import Polygon
+from shapely.geometry.polygon import Polygon, LineString
 
 """The polygon which can cover the sea channel around Edinburgh"""
 EdinburghChannelPolygonGeoJson : dict = {
@@ -114,6 +114,23 @@ EdinburghChannelSouthGeoJson : dict =  {
       }
 EdinburghChannelSouthShapely : Polygon = shape(EdinburghChannelSouthGeoJson)
 
+"""The complementary border between England and Wales"""
+complementaryBorderGeoJson = { 
+    "type": "LineString",
+    "coordinates": [
+    [
+      -2.669520244831496,
+      51.74272427131478
+    ],
+    [
+      -2.6597,
+      51.6181
+    ]
+  ]
+}
+    
+complementaryBorderShapely : LineString = shape(complementaryBorderGeoJson)
 if __name__ == '__main__':
-    print(type(EdinburghChannelNorthShapely), EdinburghChannelNorthShapely)
-    print(type(EdinburghChannelSouthShapely), EdinburghChannelSouthShapely)
+    # print(type(EdinburghChannelNorthShapely), EdinburghChannelNorthShapely)
+    # print(type(EdinburghChannelSouthShapely), EdinburghChannelSouthShapely)    
+    print(type(complementaryBorderShapely), complementaryBorderShapely)
