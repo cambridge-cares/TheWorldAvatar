@@ -145,7 +145,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             pp_root_node = root_uri + plantname # the top node of the named graph
             # pp_namespace = root_uri + plantname + SLASH
             
-            #attribute IRRs
+            #attribute IRIs
             ontologyIRI = dt.baseURL + SLASH + dt.topNode + SLASH + plantname
             UKElectricitySystemIRI = UKElectricitySystem + dt.UK
             LocalElectricitySystemIRI = UKElectricitySystem + plantname

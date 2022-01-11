@@ -136,7 +136,7 @@ def queryPowerPlantAttributes(ConjunctiveGraph, localQuery, endPoint_label):
     
     ?powerPlant ontoenergysystem:hasWGS84LatitudeLongitude ?PP_lat_lon .
     }
-    # LIMIT 200
+    
     """
     global qres    
     if localQuery == False and endPoint_label != None: 
@@ -393,7 +393,7 @@ def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
     res = res[0]['ASK']
     return res
 
-def queryEnglandAndWalesBounderies(ONS_Endpoint_label):
+def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     queryStr = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -408,14 +408,15 @@ def queryEnglandAndWalesBounderies(ONS_Endpoint_label):
     ?area rdf:type ons:Statistical-Geography .
     { ?area ons_foi:code "K04000001" .} UNION 
     { ?area ons_foi:code "E92000001" .} UNION
-    { ?area ons_foi:code "W92000004" .} 
+    { ?area ons_foi:code "W92000004" .} UNION
+    { ?area ons_foi:code "S92000003" .} 
     ?area ons_geosparql:hasGeometry ?geometry .
     ?geometry ons_geosparql:asWKT ?areaBoundary .
     } GROUP BY ?area
     """
-    print('query EnglandAndWalesBounderies')
+    print('query EnglandAndWalesAndScotlandBounderies')
     res = json.loads(performQuery(ONS_Endpoint_label, queryStr))  
-    print('queryEnglandAndWalesBounderies is done')
+    print('queryEnglandAndWalesAndScotlandBounderies is done')
     # clear the symbols in the query results
     for r in res:
       for key in r.keys():
@@ -433,7 +434,9 @@ def queryEnglandAndWalesBounderies(ONS_Endpoint_label):
           EngBound = r['Geo_InfoList']
       elif "W92000004" in str(r['area']):
           WalesBound = r['Geo_InfoList']
-    return EngAndWalesBound, EngBound, WalesBound           
+      elif "S92000003" in str(r['area']):
+          ScotlandBound = r['Geo_InfoList']
+    return EngAndWalesBound, EngBound, WalesBound, ScotlandBound           
     
 ###########################ENDENDEND#################################################################################################
 
@@ -450,7 +453,7 @@ if __name__ == '__main__':
     # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # res = queryRegionBoundaries_testJSON('ons')
-    # res = queryEnglandAndWalesBounderies('ons')
+    #res = queryEnglandAndWalesAndScotlandBounderies('ons')
     # print(res)
     # res = queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     # res = queryBusGPSLocation(29, None, False, 'ukdigitaltwin')
