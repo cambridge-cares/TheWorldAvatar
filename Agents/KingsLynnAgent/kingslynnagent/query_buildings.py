@@ -24,7 +24,7 @@ from utilities.SparqlErrors import *
 ###   SPECIFY INPUTS   ###
 
 # Specify number of buildings to retrieve (set to None in order to retrieve ALL buildings)
-n = None
+n = 100
 
 # Specify required output dimension (although DTVF is "only" capable of plotting extruded 2D data,
 # 3D data is required to identify the ground polygon of buildings to be visualised)
@@ -162,6 +162,72 @@ def get_uprns(building_iri, query_endpoint):
         uprn_list = uprn_list.split(',')
 
     return uprn_list
+
+
+def get_uprns_and_building_use(building_iri, query_endpoint):
+    """
+        Retrieves all UPRNs and (optional) building use classifications attached (as generic citygml attributes) to
+        given building (i.e. building iri)
+
+        Arguments:
+            building_iri - IRI of building (within building named graph) to retrieve UPRNs for.
+            query_endpoint - SPARQl endpoint to execute query on.
+
+        Returns:
+            List of UPRNs (as strings) attached with given building
+    """
+
+    # Derive city_object IRI for given building IRI
+    if not building_iri.startswith('<'):
+        building_iri = '<' + building_iri
+    if not building_iri.endswith('>'):
+        building_iri = building_iri + '>'
+    city_object = building_iri.replace('building', 'cityobject')
+
+    # Construct query
+    query = utils.create_sparql_prefix('ocgml') + \
+            ''' SELECT ?uprns ?theme ?class ?name
+                WHERE { ?attribute ocgml:cityObjectId %s ; \
+                                   ocgml:attrName "OS_UPRNs" ; \
+                                   ocgml:strVal ?uprns . \
+                        OPTIONAL { ?attr2 ocgml:cityObjectId %s ; \
+                                          ocgml:attrName "building_theme" ; \
+                                          ocgml:strVal ?theme . \
+                                   ?attr3 ocgml:cityObjectId %s ; \
+                                          ocgml:attrName "building_classification" ; \
+                                          ocgml:strVal ?class . \
+                                   ?attr4 ocgml:cityObjectId %s ; \
+                                          ocgml:attrName "building_name" ; \
+                                          ocgml:strVal ?name . } \
+      		      }
+            ''' %(city_object, city_object, city_object, city_object)
+
+    # Execute query
+    res = execute_query(query, query_endpoint)
+
+    # Initialise default outputs for UPRNs and building usage information
+    uprn_list = []
+    bldg_theme = None
+    bldg_class = None
+    bldg_name = None
+
+    # Populate default output variables with returned values from SPARQL query where available
+    if len(res['results']['bindings']) > 0:
+        # Get available data for building of interest
+        available_data = res['results']['bindings'][0].keys()
+        # Add actual list of UPRNs
+        if 'uprns' in available_data:
+            uprn_list = res['results']['bindings'][0]['uprns']['value']
+            uprn_list = uprn_list.split(',')
+        # Add actual building usage
+        if 'theme' in available_data:
+            bldg_theme = res['results']['bindings'][0]['theme']['value']
+        if 'class' in available_data:
+            bldg_class = res['results']['bindings'][0]['class']['value']
+        if 'name' in available_data:
+            bldg_name = res['results']['bindings'][0]['name']['value']
+
+    return uprn_list, bldg_theme, bldg_class, bldg_name
 
 
 def get_building_height(building_iri, query_endpoint):
@@ -473,8 +539,9 @@ if __name__ == '__main__':
         # Retrieve building's citygml height attribute
         height = get_building_height(b, utils.QUERY_ENDPOINT)
 
-        # Retrieve UPRNs attached to current building
-        uprns = get_uprns(b, utils.QUERY_ENDPOINT)
+        # Retrieve UPRNs (and building use classification) attached to current building
+        #uprns = get_uprns(b, utils.QUERY_ENDPOINT)
+        uprns, bldg_theme, bldg_class, bldg_name = get_uprns_and_building_use(b, utils.QUERY_ENDPOINT)
 
         # Specify building/feature properties to consider (beyond coordinates)
         geojson_props = {'displayName': 'Building {}'.format(feature_id),
