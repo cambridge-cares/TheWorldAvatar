@@ -9,8 +9,8 @@
         "label": "Data set",
         "groups": [
             {
-                "name": "Built environment",
-                "directory": "built_environment"
+                "name": "OS Open Map Local",
+                "directory": "buildings"
             }
         ]
     }
