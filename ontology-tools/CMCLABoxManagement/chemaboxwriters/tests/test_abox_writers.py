@@ -94,7 +94,8 @@ def test_ocompchem_abox_writer(inp_file_or_dir, inp_file_type,
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
         handlerKwargs=handlerKwargs,
-        no_file_logging = True)
+        no_file_logging = True,
+        disable_uploads=True)
 
     fileExts = ['.oc.json', '.oc.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -138,7 +139,8 @@ def test_ospecies_abox_writer(inp_file_or_dir, inp_file_type,
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
         handlerKwargs=handlerKwargs,
-        no_file_logging = True)
+        no_file_logging = True,
+        disable_uploads=True)
 
     fileExts = ['.os.json', '.os.csv']
     compare_results(pipeline,regenerateResult,regenerateAllResults,
@@ -210,7 +212,8 @@ def test_opsscan_abox_writer(inp_file_or_dir, inp_file_type,
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
         handlerKwargs=handlerKwargs,
-        no_file_logging = True)
+        no_file_logging = True,
+        disable_uploads=True)
 
     fileExts=['.ops.json', '.ops.csv']
     compare_results(pipeline,regenerateResult, regenerateAllResults,
@@ -247,7 +250,8 @@ def test_omops_abox_writer(inp_file_or_dir, inp_file_type,
         fileOrDir=inp_file_or_dir,
         inpFileType=inp_file_type,
         handlerKwargs=handlerKwargs,
-        no_file_logging = True)
+        no_file_logging = True,
+        disable_uploads=True)
 
     fileExts = ['.om.json', '.om.csv']
     compare_results(pipeline,regenerateResult,regenerateAllResults,

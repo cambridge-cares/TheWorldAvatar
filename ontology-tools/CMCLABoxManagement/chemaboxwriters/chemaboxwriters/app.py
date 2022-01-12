@@ -22,6 +22,11 @@ def write_abox(
         log_file_dir: Optional[str] = None,
         log_file_name: Optional[str] = None,
         no_file_logging: bool = False,
+        fs_upload_subdirs: Optional[str] = None,
+        ts_upload_nmsp: Optional[str] = None,
+        dry_run: bool = True,
+        info: bool = False,
+        disable_uploads: bool = False,
         *args,
         **kwargs
     )->Union[Pipeline,None]:
@@ -38,6 +43,11 @@ def write_abox(
                         log_file_dir = log_file_dir,
                         log_file_name = log_file_name,
                         no_file_logging = no_file_logging,
+                        fs_upload_subdirs = fs_upload_subdirs,
+                        ts_upload_nmsp = ts_upload_nmsp,
+                        dry_run = dry_run,
+                        info = info,
+                        disable_uploads = disable_uploads,
                         *args,
                         **kwargs
                     )
@@ -57,12 +67,18 @@ def _write_abox(
         log_file_dir: Optional[str] = None,
         log_file_name: Optional[str] = None,
         no_file_logging: bool = False,
+        fs_upload_subdirs: Optional[str] = None,
+        ts_upload_nmsp: Optional[str] = None,
+        dry_run: bool = True,
+        info: bool = False,
+        disable_uploads: bool = False,
         *args,
         **kwargs)->Pipeline:
 
     if log_file_name is None:
         log_file_name = f"{pipeline_type}_pipeline.aboxlog"
 
+    if info: no_file_logging = True
     config_logging(
         log_file_dir=log_file_dir,
         log_file_name=log_file_name,
@@ -70,6 +86,16 @@ def _write_abox(
         )
 
     pipeline = assemble_pipeline(pipeline_type=pipeline_type)
+
+    if handlerKwargs is None: handlerKwargs = {}
+    if fs_upload_subdirs is not None:
+        pipeline.set_fs_upload_subdirs(fs_upload_subdirs, handlerKwargs = handlerKwargs)
+    if ts_upload_nmsp is not None:
+        pipeline.set_ts_upload_nmsp(ts_upload_nmsp, handlerKwargs = handlerKwargs)
+
+    if info:
+        pipeline.info(handlerKwargs = handlerKwargs)
+        return pipeline
 
     inStage = stage_name_to_enum(inpFileType)
     if inStage not in pipeline.inStages:
@@ -87,17 +113,20 @@ def _write_abox(
         logger.warning(f"""No {inStage.name.lower()} files to process. Directory / file path is either empty or does not exists.""")
         return pipeline
 
-    pipeline.run(
-                inputs = files,
-                inputType= inStage,
-                outDir = outDir,
-                handlerKwargs = handlerKwargs
-             )
+    else:
+        pipeline.run(
+                    inputs = files,
+                    inputType= inStage,
+                    outDir = outDir,
+                    handlerKwargs = handlerKwargs,
+                    dry_run = dry_run,
+                    disable_uploads=disable_uploads
+                )
 
     return pipeline
 
 def assemble_pipeline(
-    pipeline_type: str
+        pipeline_type: str
     )->Pipeline:
 
 

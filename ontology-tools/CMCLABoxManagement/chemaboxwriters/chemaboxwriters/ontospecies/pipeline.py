@@ -18,7 +18,9 @@ def assemble_os_pipeline(
 
     pipeline = get_pipeline(
                     name = name,
-                    outStage = outStage)
+                    outStage = outStage,
+                    fs_upload_subdirs='ontospecies',
+                    ts_upload_nmsp='namespace/ontospecies/sparql')
 
     pipeline.add_handler(handler = handlers.get_qc_log_to_qc_json_handler()) \
             .add_handler(handler = handlers.get_json_to_json_handler(
@@ -31,5 +33,6 @@ def assemble_os_pipeline(
                                                 handlerFunc=os_csvwriter)) \
             .add_handler(handler = handlers.get_csv_to_owl_handler(
                                                 inStageTag = globals.ONTO_SPECIES_TAG,
-                                                outStageTag = globals.ONTO_SPECIES_TAG))
+                                                outStageTag = globals.ONTO_SPECIES_TAG),
+                        upload_outputs_to_ts = True)
     return pipeline
