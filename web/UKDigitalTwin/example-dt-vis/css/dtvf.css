@@ -673,6 +673,7 @@ label[for=select-feature] {
   width: 100%;
   height: calc(100% - 160px);
   display: flex;
+  overflow-y: auto;
 }
 #animationLeft {
 
@@ -711,13 +712,20 @@ label[for=select-feature] {
   height: 30px;
   margin-bottom: 6px;
 }
+#animationRow select {
+  height: 30px;
+  width: 10%;
+  font-size: 9pt;
+  float: left;
+  margin-right: 3px;
+}
 #animationRow input {
   height: 25px;
-  width: 9%;
+  width: 7%;
   font-size: 9pt;
 }
 #animationRow input.long {
-  width: 18%;
+  width: 14%;
 }
 #deleteRow {
   width: 30px;

@@ -1,20 +1,47 @@
 
 const ROW_TEMPLATE = `
     <div id="animationRow">
-        <input type="number" id="lngInput" class="long" placeholder="Longitude">
-        <input type="number" id="latInput" class="long" placeholder="Latitude">
-        <input type="number" id="pitchInput" class="short" placeholder="Pitch">
-        <input type="number" id="bearingInput" class="short" placeholder="Bearing">
-        <input type="number" id="zoomInput" class="short" placeholder="Zoom">
-        <input type="number" id="curveInput" class="short" placeholder="Curve">
-        <input type="number" id="speedInput" class="short" placeholder="Speed">
-        <div id="deleteRow" onclick="deleteRow(this)">
-            <img src="./img/close.png"/>
-        </div>
+        <select id="animationType" onchange="typeChange(this)">
+            <option value="fly">Fly</option>
+            <option value="rotate">Rotate</option>
+        </select>
+        <div id="innerRow"></div>
     </div>
 `;
 
+const FLY_CONTROLS = `
+    <input type="number" id="lngInput" class="long" placeholder="Longitude" min="-180" max="180">
+    <input type="number" id="latInput" class="long" placeholder="Latitude" min="-90" max="90">
+    <input type="number" id="pitchInput" class="short" placeholder="Pitch" min="0" max="60">
+    <input type="number" id="bearingInput" class="short" placeholder="Bearing" min="0" max="360">
+    <input type="number" id="zoomInput" class="short" placeholder="Zoom" step="0.5" min="1" max="20">
+    <input type="number" id="delayInput" class="short" placeholder="Delay" step="100" min="0">
+    <input type="number" id="curveInput" class="short" placeholder="Curve" step="0.1" min="0.1">
+    <input type="number" id="speedInput" class="short" placeholder="Speed" step="0.1" min="0.1">
+    <div id="deleteRow" onclick="deleteRow(this)">
+        <img src="./img/close.png"/>
+    </div>
+`;
+
+const ROTATE_CONTROLS = `
+    <input type="number" id="lngInput" class="long" placeholder="Longitude" min="-180" max="180">
+    <input type="number" id="latInput" class="long" placeholder="Latitude" min="-90" max="90">
+    <input type="number" id="pitchInput" class="short" placeholder="Pitch" min="0" max="60">
+    <input type="number" id="zoomInput" class="short" placeholder="Zoom" step="0.5" min="1" max="20">
+    <input type="number" id="delayInput" class="short" placeholder="Delay" step="100" min="0">
+    <input type="number" id="durationInput" class="short" placeholder="Duration" min="100" max="999999">
+    <input type="number" id="speedInput" class="short" placeholder="Speed" step="0.1" min="0.1">
+    <div id="deleteRow" onclick="deleteRow(this)">
+        <img src="./img/close.png"/>
+    </div>
+`;
+
+var pendingAnimations = [];
 var animationMap;
+var animating;
+var rotating;
+var rotateStart;
+var rotateSpeed;
 
 /**
  * Adds a key listener to detect the event that opens the
@@ -99,6 +126,30 @@ function startingListeners() {
                         document.exitFullscreen();
                     }
                 break;
+                case "greenscreenCheck":
+                    // TODO
+                    if(input.checked) {
+                        let layers = animationMap.getStyle().layers;
+                        let firstCMCLLayer;
+                        for (const layer of layers) {
+                            if (layer["metadata"] && layer["metadata"]["provider"] && layer["metadata"]["provider"] === "cmcl") {
+                                firstCMCLLayer = layer.id;
+                                break;
+                            }
+                        }
+                        console.log("Behind layer " + firstCMCLLayer);
+
+                        animationMap.addLayer({
+                            "id": "greenscreen",
+                            "type": "background",
+                            "paint": {
+                                "background-color": "#04F404"
+                            }
+                        }, firstCMCLLayer);
+                    } else {
+                        animationMap.removeLayer("greenscreen");
+                    }
+                break;
             }
         });
     });
@@ -112,19 +163,11 @@ function addRow() {
         var newRow = rows[rows.length - 1].cloneNode(true);
         rowContainer.appendChild(newRow);
         newRow.querySelector("#deleteRow").style.display = "flex";
+        typeChange(newRow.querySelector("#animationType"));
 
     } else {
         rowContainer.innerHTML += ROW_TEMPLATE;
-        var row = document.getElementById("animationRowContainer");
-
-        row.querySelector("#lngInput").value = animationMap.getCenter().lng.toFixed(7);
-        row.querySelector("#latInput").value = animationMap.getCenter().lat.toFixed(7);
-        row.querySelector("#pitchInput").value = animationMap.getPitch();
-        row.querySelector("#bearingInput").value = animationMap.getBearing();
-        row.querySelector("#zoomInput").value = animationMap.getZoom();
-        row.querySelector("#curveInput").value = 1.42;
-        row.querySelector("#speedInput").value = 1.2;
-        row.querySelector("#deleteRow").style.display = "none";
+        typeChange(rowContainer.querySelector("#animationType"));
     }
 }
 
@@ -140,18 +183,54 @@ function cancelAnimation() {
         document.exitFullscreen();
     }
     $("#animationDialog").closest('.ui-dialog-content').dialog('close'); 
+    if(animationMap.getLayer("greenscreen") != null) animationMap.removeLayer("greenscreen");
+}
+
+function typeChange(select) {
+    var row = select.parentElement.querySelector("#innerRow");
+
+    if(select.value === "fly") {
+        row.innerHTML = FLY_CONTROLS;
+        row.querySelector("#lngInput").value = animationMap.getCenter().lng.toFixed(7);
+        row.querySelector("#latInput").value = animationMap.getCenter().lat.toFixed(7);
+        row.querySelector("#pitchInput").value = animationMap.getPitch();
+        row.querySelector("#bearingInput").value = animationMap.getBearing();
+        row.querySelector("#zoomInput").value = animationMap.getZoom();
+        row.querySelector("#delayInput").value = 1000;
+        row.querySelector("#curveInput").value = 1.42;
+        row.querySelector("#speedInput").value = 1.2;
+        row.querySelector("#deleteRow").style.display = "none";
+    } else {
+        row.innerHTML = ROTATE_CONTROLS;
+        row.querySelector("#lngInput").value = animationMap.getCenter().lng.toFixed(7);
+        row.querySelector("#latInput").value = animationMap.getCenter().lat.toFixed(7);
+        row.querySelector("#pitchInput").value = animationMap.getPitch();
+        row.querySelector("#zoomInput").value = animationMap.getZoom();
+        row.querySelector("#delayInput").value = 1000;
+        row.querySelector("#durationInput").value = 3000;
+        row.querySelector("#speedInput").value = 1.2;
+        row.querySelector("#deleteRow").style.display = "none";
+    }
 }
 
 function startAnimation() {
+    animating = true;
+
     // Hide the dialog
     $("#animationDialog").closest('.ui-dialog-content').dialog('close'); 
 
     // Get all animation steps
     var rowContainer = document.getElementById("animationRowContainer");
-    var rows = rowContainer.querySelectorAll("#animationRow");
+    var rows = rowContainer.querySelectorAll("#innerRow");
 
-    // Chain animation events
+    // Add listener for animation end
+    animationMap.on('moveend', processNextAnimation);
+
+    // Parse and store animation events
     rows.forEach(row => {
+        var delay = row.querySelector("#delayInput").value;
+        var type = row.parentElement.querySelector("#animationType").value;
+
         var options = {
             essential: true,
             center: [
@@ -159,12 +238,67 @@ function startAnimation() {
                 row.querySelector("#latInput").value
             ],
             pitch: row.querySelector("#pitchInput").value,
-            bearing: row.querySelector("#bearingInput").value,
             zoom: row.querySelector("#zoomInput").value,
-            curve: row.querySelector("#curveInput").value,
             speed: row.querySelector("#speedInput").value
         };
-        console.log(JSON.stringify(options));
-        animationMap.flyTo(options);
+
+        if(type === "fly") {
+            options["bearing"] = row.querySelector("#bearingInput").value;
+            options["curve"] = row.querySelector("#curveInput").value;
+        } else {
+            options["duration"] = row.querySelector("#durationInput").value;
+        }
+
+        var animation = {};
+        animation["options"] = options;
+        animation["delay"] = delay;
+        animation["type"] = type;
+        pendingAnimations.push(animation);
     });
+
+    // Start the animation chain
+    processNextAnimation();
+}
+
+function processNextAnimation() {
+    if(!animating || rotating) return;
+
+    if(pendingAnimations.length > 0) {
+        var delay = pendingAnimations[0]["delay"];
+        var options = pendingAnimations[0]["options"];
+        var type = pendingAnimations[0]["type"];
+        pendingAnimations.shift();
+        processAnimation(delay, options, type);
+    } else {
+        animating = false;
+        animationMap.off('moveend', processNextAnimation);
+        if(animationMap.getLayer("greenscreen") != null) animationMap.removeLayer("greenscreen");
+    }
+}
+
+function processAnimation(delay, options, type) {
+    setTimeout(function() {
+        if(type === "fly") {
+            animationMap.flyTo(options);
+        } else {
+            rotating = true;
+            rotateStart = performance.now();
+            rotateSpeed =  options["speed"];
+            rotateCamera(rotateStart);
+
+            setTimeout(function() {
+                rotating = false;
+                processNextAnimation();
+            }, options["duration"]);
+        }
+    }, delay);
+}
+
+function rotateCamera(timestamp) {
+    if(!rotating) return;
+    var speed = 100 / rotateSpeed;
+    var degrees = ((timestamp - rotateStart) / speed) % 360;
+
+    animationMap.rotateTo(degrees, { duration: 0 });
+    requestAnimationFrame(rotateCamera);
 }

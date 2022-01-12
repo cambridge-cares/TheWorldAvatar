@@ -11,6 +11,7 @@
         <h4>Starting Conditions</h4>
         <p style="font-size: 9pt; font-style: italic;">
             These controls define the starting (i.e. current) parameters of the Map.
+            <br>
         </p>
         <hr/>
         <table width="90%">
@@ -42,14 +43,18 @@
                 <td width="40%">Fullscreen:</td>
                 <td width="60%"><input type="checkbox" id="fullscreenCheck"></td>
             </tr>
+            <tr>
+                <td width="40%">Greenscreen:</td>
+                <td width="60%"><input type="checkbox" id="greenscreenCheck"></td>
+            </tr>
         </table>
     </div>
     <div id="animationRight">
         <h4>Animation Parameters</h4>
         <p style="font-size: 9pt; font-style: italic;">
-            These controls define the parameters used in the upcoming camera animation.
+            Fly: Longitude, Latitude, Pitch, Bearing, Zoom, Initial Delay (ms), Curve, Speed
             <br>
-            Longitude, Latitude, Pitch, Bearing, Zoom, Curve, Speed
+            Rotate: Longitude, Latitude, Pitch, Zoom, Initial Delay (ms), Duration (ms), Speed
         </p>
         <hr/>
         <div id="animationRowContainer"></div>
