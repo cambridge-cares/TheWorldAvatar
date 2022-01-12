@@ -1,7 +1,7 @@
 import json
 import csv
 from io import StringIO
-import chemaboxwriters.common.commonvars as commonv
+import chemaboxwriters.common.globals as globals
 from chemaboxwriters.common import PREFIXES
 from chemaboxwriters.ontopesscan.jsonwriter import SCAN_COORDINATE_ATOMS_IRIS, \
                                                    SCAN_COORDINATE_TYPE, \
@@ -18,11 +18,14 @@ onto_spec = PREFIXES["onto_spec"]
 onto_comp = PREFIXES["onto_comp"]
 onto_pes = PREFIXES["onto_pes"]
 
-def ops_csvwriter(data):
-    data = json.loads(data)
-    spec_IRI=data[commonv.SPECIES_IRI]
-    calc_id = data[commonv.ENTRY_UUID]
-    entryIRI = data[commonv.ENTRY_IRI]
+def ops_csvwriter(file_path):
+
+    with open(file_path, 'r') as file_handle:
+        data = json.load(file_handle)
+
+    spec_IRI=data[globals.SPECIES_IRI]
+    calc_id = data[globals.ENTRY_UUID]
+    entryIRI = data[globals.ENTRY_IRI]
 
     csvfile = StringIO(newline='')
 

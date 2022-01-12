@@ -12,6 +12,8 @@ coverage.xml
 resources/
 .pytest_cache
 assets
+.pytest*
+pytest_report.html
 
 ## User defined
 *.egg-info
