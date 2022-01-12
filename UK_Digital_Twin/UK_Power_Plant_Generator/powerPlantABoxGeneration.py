@@ -140,7 +140,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
         
         if  len(planttypeArrays) != fileNum or len(energygenArrays) != fileNum or len(gentechArrays) != fileNum or len(primaryfuelArrays) != fileNum or\
             len(designcapacityArrays) != fileNum or len(builtYearArrays) != fileNum or len(ownerArrays) != fileNum or len(gpslocationArrays) != fileNum:
-            raise Exception('The list length of each data files does not match')
+            raise Exception('The list length of each data files does not match.')
         else:
             pp_root_node = root_uri + plantname # the top node of the named graph
             # pp_namespace = root_uri + plantname + SLASH
@@ -177,7 +177,7 @@ def addUKPowerPlantTriples(storeType, version, OWLFileStoragePath, updateLocalOW
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontopowsys_PowSysRealization + planttype)))
             graph.add((URIRef(pp_root_node), RDF.type, URIRef(t_box.ontoenergysystem + 'Asset'))) # The power plant is specifically declared as an asset  
             graph.add((URIRef(pp_root_node), RDFS.label, Literal(str(plantname)))) 
-            graph.add((URIRef(pp_root_node), RDFS.label, Literal("DUKES_Data_Version_" + str(dukes.VERSION))))
+            graph.add((URIRef(pp_root_node), RDFS.comment, Literal("The DUKES Data Version is " + str(dukes.VERSION))))
             
             # Link the power plant with the UK electricity system
             graph.add((URIRef(LocalElectricitySystemIRI), URIRef(ontocape_upper_level_system.contains.iri), URIRef(pp_root_node)))
