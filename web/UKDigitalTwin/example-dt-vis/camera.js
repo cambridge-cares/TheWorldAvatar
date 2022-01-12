@@ -256,6 +256,17 @@ function startAnimation() {
         pendingAnimations.push(animation);
     });
 
+    // Append an overlay div to prevent all mouse events whilst animating
+    var overlay = document.createElement("div");
+    overlay.id = "overlay";
+    document.body.appendChild(overlay);
+    overlay.click(function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return false;
+    });
+
     // Start the animation chain
     processNextAnimation();
 }
@@ -273,6 +284,8 @@ function processNextAnimation() {
         animating = false;
         animationMap.off('moveend', processNextAnimation);
         if(animationMap.getLayer("greenscreen") != null) animationMap.removeLayer("greenscreen");
+
+        document.body.removeChild(document.getElementById("overlay"));
     }
 }
 
