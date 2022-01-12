@@ -65,7 +65,7 @@ Options:
                                      <handler1>:<nmsp1>,<handler2>:<nmsp2>
                                To see handlers default nmsp
                                use the --info option.
---info                         Prints the pipeline's info. Do not run it.  
+--info                         Prints the pipeline's info without running it.
 """
 
 def start():
