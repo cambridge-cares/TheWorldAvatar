@@ -11,6 +11,7 @@ public class Derivation{
 	private String agentURL; // isDerivedUsing
 	private List<Entity> entities; // entities belongsTo this derivation
 	private String rdfType;
+	private boolean updated = false;
 	
 	public Derivation(String iri, String rdfType) {
 		this.iri = iri;
@@ -126,5 +127,17 @@ public class Derivation{
     	} else {
     		return false;
     	}
+    }
+    
+    /**
+     * this is used to update all the timestamps in the kg after all the derivations are updated
+     * @param status
+     */
+    public void setUpdateStatus(boolean status) {
+    	this.updated = status;
+    }
+    
+    public boolean getUpdateStatus() {
+    	return this.updated;
     }
 }
