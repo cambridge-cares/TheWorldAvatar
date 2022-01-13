@@ -58,7 +58,7 @@ class ReactionCondition:
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(ONTORXN_REACTIONCONDITION)
+            self.instance_iri = initialiseInstanceIRI(self.clz)
 
     def __post_init_post_parse__(self):
         if self.clz == 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio':
@@ -136,12 +136,14 @@ class PerformanceIndicator:
         # <performanceIndicatorIRI> <rdf:type> <clz> .
         g.add((perf_iri, RDF.type, URIRef(self.clz)))
         
-        # Add below triples following units of measure practices:
-        # <performanceIndicatorIRI> <om:hasValue> <measureIRI> .
-        g.add((perf_iri, URIRef(OM_HASVALUE), URIRef(self.hasValue.instance_iri)))
+        # Only add OM triples if it exists
+        if self.hasValue is not None:
+            # Add below triples following units of measure practices:
+            # <performanceIndicatorIRI> <om:hasValue> <measureIRI> .
+            g.add((perf_iri, URIRef(OM_HASVALUE), URIRef(self.hasValue.instance_iri)))
 
-        # Add triples for units of measure
-        g = self.hasValue.createInstanceForKG(g)
+            # Add triples for units of measure
+            g = self.hasValue.createInstanceForKG(g)
 
         # Only add positionalID if it exists
         if self.positionalID is not None:
@@ -225,6 +227,8 @@ class ReactionExperiment:
             # Add all other triples of the PerformanceIndicator instance
             g = perf.createInstanceForKG(g)
         
+        # TODO add support for creating InputChemical and OutputChemical
+
         return g
 
 
@@ -289,4 +293,6 @@ class ReactionVariation(ReactionExperiment):
             # Add all other triples of the PerformanceIndicator instance
             g = perf.createInstanceForKG(g)
         
+        # TODO add support for creating InputChemical and OutputChemical
+
         return g
