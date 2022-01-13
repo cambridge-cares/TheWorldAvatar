@@ -95,7 +95,7 @@ INSERT DATA {
 		OntoDoE:refersTo exp3:RxnExp_1;
 		OntoDoE:refersTo exp4:RxnExp_1;
 		OntoDoE:refersTo exp5:RxnExp_1;
-		OntoDoE:numOfNewExp 1;
+		OntoDoE:numOfNewExp "5"^^xsd:integer;
 	.
 
 	:NewExperiment_1
