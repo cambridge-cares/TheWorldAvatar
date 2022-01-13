@@ -1,7 +1,6 @@
-from os import urandom
 from pydantic.dataclasses import dataclass
-#  from dataclasses import dataclass
 from typing import List
+
 from data_model.ontorxn import *
 from data_model.iris import *
 from data_model.utils import *
@@ -100,8 +99,5 @@ class DesignOfExperiment:
     utilisesHistoricalData: HistoricalData
     proposesNewExperiment: Optional[NewExperiment]
 
-    # # TODO experimenting, to be modified as a generic method
-    # def updateNewExperiment(self, newExp: NewExperiment):
-    #     # clean up existing proposesNewExperiment
-    #     if self.proposesNewExperiment is not None:
-
+    # TODO the update of new created OntoDoE:NewExperiment instance is done in kg_utils.py
+    # TODO maybe put that as part of DesignOfExperiment/NewExperiment dataclasses?

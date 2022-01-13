@@ -1,13 +1,11 @@
+from rdflib import Graph, Literal, URIRef
+from rdflib.namespace import RDF
+
 from pydantic.dataclasses import dataclass
-# from dataclasses import dataclass
 from typing import Optional, List
 
 from data_model.iris import *
 from data_model.utils import *
-
-from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import RDF
-import uuid
 
 @dataclass
 class InputChemical:
@@ -97,6 +95,7 @@ class ReactionCondition:
         
         return g
 
+# TODO a design choice to be made: are below specific dataclass useful?
 # @dataclass
 # class ResidenceTime(ReactionCondition):
 #     pass
@@ -151,29 +150,30 @@ class PerformanceIndicator:
 
         return g
 
-@dataclass
-class EnvironmentalFactor(PerformanceIndicator):
-    pass
+# TODO same design choice: are below specific dataclass useful?
+# @dataclass
+# class EnvironmentalFactor(PerformanceIndicator):
+#     pass
 
-@dataclass
-class Yield(PerformanceIndicator):
-    pass
+# @dataclass
+# class Yield(PerformanceIndicator):
+#     pass
 
-@dataclass
-class EcoScore(PerformanceIndicator):
-    pass
+# @dataclass
+# class EcoScore(PerformanceIndicator):
+#     pass
 
-@dataclass
-class Conversion(PerformanceIndicator):
-    pass
+# @dataclass
+# class Conversion(PerformanceIndicator):
+#     pass
 
-@dataclass
-class SpaceTimeYield(PerformanceIndicator):
-    pass
+# @dataclass
+# class SpaceTimeYield(PerformanceIndicator):
+#     pass
 
-@dataclass
-class RunMaterialCost(PerformanceIndicator):
-    pass
+# @dataclass
+# class RunMaterialCost(PerformanceIndicator):
+#     pass
 
 @dataclass
 class ReactionExperiment:

@@ -1,30 +1,20 @@
-from kg_operations.kgUtils import INSTANCE_IRI_TO_BE_INITIALISED, performQuery
-from data_model.ontodoe import *
-from data_model.ontorxn import *
-
 from summit.utils.dataset import DataSet as DataSet_summit
 from summit.domain import ContinuousVariable as ContinuousVariable_summit
 from summit.domain import Domain as Domain_summit
 from summit.strategies import TSEMO as TSEMO_summit
 
-import pandas as pd
 from functools import reduce
+import pandas as pd
+
+from data_model import *
 
 def proposeNewExperiment(doe: DesignOfExperiment) -> NewExperiment:
     """
-        This method is a wrapper around the TSEMO algorithm as provided by python package `summit`. It suggests the new experiment given previous results. 
+        This method is a wrapper around the TSEMO algorithm as provided by python package `summit`. It suggests the new experiment given information about DesignOfExperiment.
         
         Arguments:
             doe - instance of dataclass OntoDoE.DesignOfExperiment
-                    Stores information about design of experiment exercise retrieved from the OntoDoE:DesignOfExperiment instance in the knowledge graph \n
-                    
-                    The "previous_results" is a dataframe looks like below:
-                        ContinuousVariable_1  ContinuousVariable_2  ContinuousVariable_3  ContinuousVariable_4  SystemResponse_1  SystemResponse_2
-                    0                  5.19                  0.10                  14.7                  42.0              47.9              7.44
-                    1                  1.59                  0.07                  13.3                  35.0               8.7              7.74
-                    2                  8.44                  0.16                   7.9                  62.0              54.1              6.96
-                    3                  8.83                  0.04                  11.8                  67.0              40.0              8.10
-                    4                  5.01                  0.17                   8.1                  56.0              47.7              6.83
+                    Stores information about design of experiment exercise retrieved from the OntoDoE:DesignOfExperiment instance in the knowledge graph
     """
     # Create domain for design of experiment
     domain = Domain_summit()
@@ -55,17 +45,26 @@ def proposeNewExperiment(doe: DesignOfExperiment) -> NewExperiment:
     else:
         raise Exception('Currently only TSEMO is supported as DoE algorithm.')
 
-    # Construct table of historical data
+    # Construct table of historical data "previous_results"
+    # The "previous_results" is a dataframe looks like below:
+    #    | ContinuousVariable_1 | ContinuousVariable_2 | ContinuousVariable_3 | ContinuousVariable_4 | SystemResponse_1 | SystemResponse_2
+    # 0  |                5.19  |                0.10  |                14.7  |                42.0  |            47.9  |            7.44
+    # 1  |                1.59  |                0.07  |                13.3  |                35.0  |             8.7  |            7.74
+    # 2  |                8.44  |                0.16  |                 7.9  |                62.0  |            54.1  |            6.96
+    # 3  |                8.83  |                0.04  |                11.8  |                67.0  |            40.0  |            8.10
+    # 4  |                5.01  |                0.17  |                 8.1  |                56.0  |            47.7  |            6.83
     previous_results = constructPreviousResultsTable(doe) 
 
     # Suggest the next experiment, the output "next_exp" is a DataSet contains the suggested values for the optimisation variables in the next runs
     next_exp = strategy.suggest_experiments(doe.utilisesHistoricalData.numOfNewExp, prev_res=previous_results)
 
+    # Extract the suggestion from Summit DataSet and populate that to dataclass ontodoe.NewExperiment
     new_exp = formNewExperiment(doe, next_exp)
     return new_exp
 
 def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> NewExperiment:
     """
+        This method converts the Summit suggested experiment from DataSet format to an instance of dataclass ontodoe.NewExperiment.
     """
     # Initialise a list to host the new suggested ReactionExperiment/ReactionVariation instances
     list_rxnvar = []
@@ -78,8 +77,10 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
     # Iterate over the new suggested experiments to create each of them
     # TODO test if this works on multiple (> 1) experiment
     for i in range(len(new_exp_ds)):
-        # Create a list of ReactionCondition
+        # Prepare a list of ReactionCondition
         list_con = []
+        # Iterate over ReactionCondition in parent ReactionExperiment to populate the new suggested ReactionCondition in ReactionVariation
+        # The ReactionCondition kept unchanged will be preserved (new instance of ReactionCondition will be generated)
         for first_rxn_exp_con in first_rxn_exp.hasReactionCondition:
             var_loc = []
             for design_var in doe.hasDomain.hasDesignVariable:
@@ -97,13 +98,15 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
                 # TODO should be updated to "hasNumericalValue=new_exp_ds[var_loc[0]][i]" as "len(var_loc) > 0" is guaranteed (as we 'continue' if true)
                 pass
 
+            # Create instance for OM_Measure
             om_measure = OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 hasUnit=first_rxn_exp_con.hasValue.hasUnit,
-                # TODO for the moment, a new om:Measure instance is created for the 
-                hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i]
+                # TODO for the moment, a new om:Measure instance is always created
+                hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
             )
 
+            # Create instance for ReactionCondition
             con = ReactionCondition(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 clz=first_rxn_exp_con.clz,
@@ -113,11 +116,15 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
                 indicatesMultiplicityOf=first_rxn_exp_con.indicatesMultiplicityOf,
                 indicateUsageOf=first_rxn_exp_con.indicateUsageOf
             )
+
+            # Add created instance to list
             list_con.append(con)
 
-        # Create a list of empty PerformanceIndicator
+        # Prepare a list of empty PerformanceIndicator, by empty here means the OM_Measure is initialised as None
         list_perf = []
+        # Iterate over PerformanceIndicator in parent ReactionExperiment to populate the empty PerformanceIndicator in ReactionVariation that to be computed
         for first_rxn_exp_perf in first_rxn_exp.hasPerformanceIndicator:
+            # Create instance for PerformanceIndicator
             perf = PerformanceIndicator(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 clz=first_rxn_exp_perf.clz,
@@ -125,19 +132,25 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
                 hasValue=None,
                 positionalID=first_rxn_exp_perf.positionalID
             )
+
+            # Add created instance to list
             list_perf.append(perf)
 
+        # Populate the information to create instance of ReactionVariation
+        # TODO add support for creating instance of ReactionExperiment (given no prior experiment data/history)
         rxnvar = ReactionVariation(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             hasReactionCondition=list_con,
             hasPerformanceIndicator=list_perf,
-            hasInputChemical=first_rxn_exp.hasInputChemical,
-            hasOutputChemical=first_rxn_exp.hasOutputChemical,
+            hasInputChemical=first_rxn_exp.hasInputChemical, # TODO revisit this design when testing
+            hasOutputChemical=first_rxn_exp.hasOutputChemical, # TODO revisit this design when testing
             isVariationOf=first_rxn_exp
         )
 
+        # Add created instance to list of ReactionVariation
         list_rxnvar.append(rxnvar)
 
+    # Create instance of NewExperiment that refersTo the list of created new ReactionVariation
     new_exp = NewExperiment(
         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
         refersTo=list_rxnvar
@@ -161,6 +174,7 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
                     4  |                5.01  |                0.17  |                 8.1  |                56.0  |            47.7  |            6.83  \n
     """
 
+    # Initialise the list of dict for historical data that will be turned into pandas.DataFrame
     list_of_prev_result_df = []
 
     # get all data for DesignVariable
@@ -168,6 +182,7 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
         # prepare data for the previous results table
         data = []
         for exp in doe.utilisesHistoricalData.refersTo:
+            # locate the value of the DesignVariable in each historical experiment
             var_val = []
             for con in exp.hasReactionCondition:
                 if (con.clz == var.refersTo) and (con.positionalID == var.positionalID):
@@ -193,6 +208,7 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
         # prepare data for the previous results table
         data = []
         for exp in doe.utilisesHistoricalData.refersTo:
+            # locate the value of the SystemResponse in each historical experiment
             var_val = []
             for indi in exp.hasPerformanceIndicator:
                 if (indi.clz == var.refersTo) and (indi.positionalID == var.positionalID):
@@ -213,12 +229,9 @@ def constructPreviousResultsTable(doe: DesignOfExperiment) -> DataSet_summit:
             _to_df[k] = tuple(d[k] for d in data)
         list_of_prev_result_df.append(pd.DataFrame.from_dict(_to_df))
 
+    # Merge the list of pandas.DataFrame to one DataFrame, using the IRI of OntoRxn:ReactionExperiment as unique identifier
     previousResults_df = reduce(lambda df1, df2: pd.merge(df1, df2, on='rxnexp'), list_of_prev_result_df)
 
     previous_results = DataSet_summit.from_df(previousResults_df.drop(columns="rxnexp").astype(float))
 
     return previous_results
-
-# summit util function to convert historicaldata to previous results pandas DataFrame
-# summit util function to convert dataset of next_exp to NewExperiment instance
-# the format should be gurantted at the dataclass side
