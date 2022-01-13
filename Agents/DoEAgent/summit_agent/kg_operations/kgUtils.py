@@ -2,15 +2,45 @@
 # to interact with the knowledge graph
 #============================================================
 # get the jpsBaseLibGW instance from the jpsSingletons module
+import collections
+from data_model.ontodoe import *
 from jpsSingletons import jpsBaseLibGW, jpsBaseLib_view
-from resources.parameter import *
-from resources.doeagent_properties import *
+from data_model.iris import *
+from conf import *
 from functools import reduce
 import pandas as pd
 import json
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import uuid
+import os
+
+def updateNewExperimentInKG(endpoint, doe: DesignOfExperiment, newExp: NewExperiment):
+    # (1) first upload NewExperiment instance to KG
+    # Generate a file path that is used to store the created OntoRxn:ReactionVariation instance
+    filePath = f'{str(uuid.uuid4())}.xml'
+    # Serialise the created OntoDoE:NewExperiment instance (including OntoRxn:ReactionVariation) as a XML file
+    g = Graph()
+    g = newExp.createInstanceForKG(g)
+    g.serialize(filePath, format='xml')
+    # Upload the created OntoDoE:NewExperiment instance to knowledge graph
+    uploadOntology(TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY, filePath)
+    # Delete generated XML file
+    os.remove(filePath)
+
+    # (2) replace connection between OntoDoE:DesignOfExperiment with OntoDoE:NewExperiment
+    # Construct SPARQL Update string
+    # delete existing <DoE> <proposesNewExperiment> <newExp_old>
+    # add <DoE> <proposesNewExperiment> <newExp>
+    update = """DELETE {<%s> <%s> ?newexp .} \
+                INSERT {<%s> <%s> <%s> .} \
+                WHERE {<%s> <%s> ?newexp .}""" % (
+                    doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT,
+                    doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT, newExp.instance_iri,
+                    doe.instance_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
+
+    # Perform SPARQL Update
+    performUpdate(endpoint, update)    
 
 def createOntoDoENewExperimentIRI(endpoint, doe_instance, new_exp_iri_list):
     """
@@ -42,31 +72,24 @@ def createOntoDoENewExperimentIRI(endpoint, doe_instance, new_exp_iri_list):
     performUpdate(endpoint, update)
     return ontodoe_new_exp_iri
 
-def getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
+def getDoEInstanceIRI(endpoint, doe_instance: DesignOfExperiment) -> DesignOfExperiment:
     """
         This method retrieves the instance of OntoDoE:DesignOfExperiment given instance of OntoDoE:Strategy, OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData.
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            strategy_instance - instance of OntoDoE:Strategy
-            domain_instance - instance of OntoDoE:Domain
-            systemResponse_instances - a list of instance of OntoDoE:SystemResponse
-            historicalData_instance - instance of OntoDoE:HistoricalData
+            doe_instance - instance of dataclass OntoDoE.DesignOfExperiment
     """
-    # Delete "<" and ">" around the IRI
-    historicalData_instance = trimIRI(historicalData_instance)
+
     # Prepare query string, start with strategy and domain, then iterate over a list of system responses, finally historical data
     query = """SELECT ?doe_instance \
             WHERE { \
             ?doe_instance <%s> <%s> ; \
-                <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, strategy_instance, ONTODOE_HASDOMAIN, domain_instance)
+                <%s> <%s> ; """ % (ONTODOE_USESSTRATEGY, doe_instance.usesStrategy.instance_iri, ONTODOE_HASDOMAIN, doe_instance.hasDomain.instance_iri)
 
-    # Add safeguard in case the input systemResponse_instances is not a list
-    if not isinstance(systemResponse_instances, list):
-        systemResponse_instances = [systemResponse_instances]
-    for sysres in systemResponse_instances:
-        query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres)
-    query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, historicalData_instance)
+    for sysres in doe_instance.hasSystemResponse:
+        query = query + """<%s> <%s> ; """ % (ONTODOE_HASSYSTEMRESPONSE, sysres.instance_iri)
+    query = query + """<%s> <%s> . }""" % (ONTODOE_UTILISESHISTORICALDATA, doe_instance.utilisesHistoricalData.instance_iri)
     # Perform query
     response = performQuery(endpoint, query)
     if (len(response) == 0 ):
@@ -74,53 +97,54 @@ def getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemRespon
             OntoDoE:Strategy <%s>; \
             OntoDoE:Domain <%s>; \
             OntoDoE:SystemResponse <%s>; \
-            OntoDoE:HistoricalData <%s>.""" % (strategy_instance, domain_instance, ">, <".join(systemResponse_instances), historicalData_instance))
+            OntoDoE:HistoricalData <%s>.""" % (doe_instance.usesStrategy.instance_iri, doe_instance.hasDomain.instance_iri, ">, <".join([sysres.instance_iri for sysres in doe_instance.hasSystemResponse]), doe_instance.utilisesHistoricalData.instance_iri))
     elif (len(response) > 1):
         raise Exception("""Unable to uniquely identify the OntoDoE:DesignOfExperiment instance given input: \
             OntoDoE:Strategy <%s>; \
             OntoDoE:Domain <%s>; \
             OntoDoE:SystemResponse <%s>; \
             OntoDoE:HistoricalData <%s>. \
-            The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (strategy_instance, domain_instance, ">, <".join(systemResponse_instances), historicalData_instance, ">, <".join([list(r.values())[0] for r in response])))
-    return response[0]
+            The list of identified OntoDoE:DesignOfExperiment instances are: <%s>.""" % (doe_instance.usesStrategy.instance_iri, doe_instance.hasDomain.instance_iri, ">, <".join([sysres.instance_iri for sysres in doe_instance.hasSystemResponse]), doe_instance.utilisesHistoricalData.instance_iri, ">, <".join([list(r.values())[0] for r in response])))
+    doe_instance.__dict__.update(instance_iri=response[0]['doe_instance'])
+    return doe_instance
 
-def getDoEAgentInputs(endpoint, derivation):
-    """
-        This method retrieves the DoE Agent inputs given the IRI of OntoDerivation:Derivation instance, and map those inputs against the I/O signiture declared in the OntoAgent instance of DoE Agent.
-        The inputs are finally structured as a JSON string to be feed into the DoE Agent for suggestions.
+# def getDoEAgentInputs(endpoint, derivation):
+#     """
+#         This method retrieves the DoE Agent inputs given the IRI of OntoDerivation:Derivation instance, and map those inputs against the I/O signiture declared in the OntoAgent instance of DoE Agent.
+#         The inputs are finally structured as a JSON string to be feed into the DoE Agent for suggestions.
 
-        Arguments:
-            endpoint - SPARQL Query endpoint
-            derivation - instance of OntoDerivation:Derivation
-    """
-    # Delete "<" and ">" around the IRI
-    derivation = trimIRI(derivation)
-    # Prepare query string, the "rdf:type+" uses the "property paths" feature provided in SPARQL 1.1 to enable arbitrary length of path matching
-    query = PREFIX_RDF + \
-            """SELECT DISTINCT ?name ?type ?input \
-            WHERE { \
-            <%s> <%s> ?operation . \
-            ?operation <%s> ?mc . \
-            ?mc <%s> ?part . \
-            ?part <%s> ?type ; \
-                  <%s> ?name . \
-            <%s> <%s> ?input . \
-            ?input rdf:type+ ?type . \
-            }""" % (DOEAGENT_ONTOAGENT_SERVICE, ONTOAGENT_HASOPERATION, ONTOAGENT_HASINPUT, ONTOAGENT_HASMANDATORYPART, ONTOAGENT_HASTYPE, ONTOAGENT_HASNAME, derivation, ONTODERIVATION_ISDERIVEDFROM)
-    # Perform query
-    response = performQuery(endpoint, query)
-    # Construct the inputs as a JSON (dict in python)
-    inputs = {}
-    for r in response:
-        if r['type'] in inputs:
-            if isinstance(inputs[r['type']], list):
-                inputs[r['type']].append(r['input'])
-            else:
-                inputs[r['type']] = [inputs[r['type']]]
-                inputs[r['type']].append(r['input'])
-        else:
-            inputs[r['type']] = r['input']
-    return {DOEAGENT_INPUT_JSON_KAY: inputs}
+#         Arguments:
+#             endpoint - SPARQL Query endpoint
+#             derivation - instance of OntoDerivation:Derivation
+#     """
+#     # Delete "<" and ">" around the IRI
+#     derivation = trimIRI(derivation)
+#     # Prepare query string, the "rdf:type+" uses the "property paths" feature provided in SPARQL 1.1 to enable arbitrary length of path matching
+#     query = PREFIX_RDF + \
+#             """SELECT DISTINCT ?name ?type ?input \
+#             WHERE { \
+#             <%s> <%s> ?operation . \
+#             ?operation <%s> ?mc . \
+#             ?mc <%s> ?part . \
+#             ?part <%s> ?type ; \
+#                   <%s> ?name . \
+#             <%s> <%s> ?input . \
+#             ?input rdf:type+ ?type . \
+#             }""" % (DOEAGENT_ONTOAGENT_SERVICE, ONTOAGENT_HASOPERATION, ONTOAGENT_HASINPUT, ONTOAGENT_HASMANDATORYPART, ONTOAGENT_HASTYPE, ONTOAGENT_HASNAME, derivation, ONTODERIVATION_ISDERIVEDFROM)
+#     # Perform query
+#     response = performQuery(endpoint, query)
+#     # Construct the inputs as a JSON (dict in python)
+#     inputs = {}
+#     for r in response:
+#         if r['type'] in inputs:
+#             if isinstance(inputs[r['type']], list):
+#                 inputs[r['type']].append(r['input'])
+#             else:
+#                 inputs[r['type']] = [inputs[r['type']]]
+#                 inputs[r['type']].append(r['input'])
+#         else:
+#             inputs[r['type']] = r['input']
+#     return {DOEAGENT_INPUT_JSON_KAY: inputs}
 
 def getIndicatesInputChemical(endpoint, rxn_instance, clz, positionalID: int):
     """
@@ -344,16 +368,31 @@ def constructHistoricalDataTable(endpoint, domain_instance, systemResponse_insta
     historicalData_df = reduce(lambda df1, df2: pd.merge(df1, df2, on='rxnexp'), list_of_hist_data_df)
     return {"continuousVariables": list_of_designVariable_dict}, {"systemResponses": list_of_systemResponse_dict}, historicalData_df
 
-def getDesignVariables(endpoint, domain_instance):
+def getDoEDomain(endpoint, domain_iri: str) -> Domain:
     """
-        This methods retrieves all the design variables within the given instance of OntoDoE:Domain.
+        This method retrieves information given instance iri of OntoDoE:Domain.
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            domain_instance - IRI of instance of OntoDoE:Domain
+            domain_iri - iri of OntoDoE:Domain instance
     """
     # Delete "<" and ">" around the IRI
-    domain_instance = trimIRI(domain_instance)
+    domain_iri = trimIRI(domain_iri)
+    domain_instance = Domain(instance_iri=domain_iri, hasDesignVariable=getDesignVariables(endpoint, domain_iri))
+    return domain_instance
+
+def getDesignVariables(endpoint, domain_iri: str) -> List[DesignVariable]:
+    """
+        This methods retrieves all the design variables pointed by the iri of the given instance of dataclass OntoDoE.Domain.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint
+            domain_iri - iri of OntoDoE:Domain instance
+    """
+    # Delete "<" and ">" around the IRI
+    domain_iri = trimIRI(domain_iri)
+
+    # TODO add support for CategoricalVariable
     # Prepare query string
     query = """SELECT DISTINCT ?var ?clz ?id ?lower ?upper \
             WHERE { \
@@ -362,27 +401,44 @@ def getDesignVariables(endpoint, domain_instance):
                 OPTIONAL {?var <%s> ?id . } \
                 OPTIONAL {?var <%s> ?lower . } \
                 OPTIONAL {?var <%s> ?upper . } \
-            }""" % (domain_instance, ONTODOE_HASDESIGNVARIABLE, ONTODOE_REFERSTO, ONTODOE_POSITIONALID, ONTODOE_LOWERLIMIT, ONTODOE_UPPERLIMIT)
+            }""" % (domain_iri, ONTODOE_HASDESIGNVARIABLE, ONTODOE_REFERSTO, ONTODOE_POSITIONALID, ONTODOE_LOWERLIMIT, ONTODOE_UPPERLIMIT)
     
     # Perform query
     response = performQuery(endpoint, query)
-    return response
+    
+    # Construct list of design variables
+    list_var = []
+    for res in response:
+        list_var.append(
+            ContinuousVariable(
+                instance_iri=res['var'],
+                name=getShortName(res['var']),
+                upperLimit=res['upper'],
+                lowerLimit=res['lower'],
+                positionalID=res['id'] if 'id' in res else None,
+                refersTo=res['clz']
+            )
+        )
 
-def getSystemResponses(endpoint, systemResponse_instances):
+    return list_var
+
+def getSystemResponses(endpoint, systemResponse_iris) -> List[SystemResponse]:
     """
-        This methods retrieves all the system responses given instances of OntoDoE:SystemResponses.
+        This methods retrieves all the system responses given iris of OntoDoE:SystemResponses.
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            systemResponse_instances - a list of OntoDoE:SystemResponse instances
+            systemResponse_iris - a list of OntoDoE:SystemResponse iri
     """
+    # Delete "<" and ">" around the IRI
+    systemResponse_iris = trimIRI(systemResponse_iris)
+    
+    # Add safeguard in case the input systemResponse_iris is not a list
+    if not isinstance(systemResponse_iris, list):
+        systemResponse_iris = [systemResponse_iris]
+    
     list_sys = []
-    # Add safeguard in case the input systemResponse_instances is not a list
-    if not isinstance(systemResponse_instances, list):
-        systemResponse_instances = [systemResponse_instances]
-    for sys_ins in systemResponse_instances:
-        # Delete "<" and ">" around the IRI
-        sys_ins = trimIRI(sys_ins)
+    for sys_ins in systemResponse_iris:
         # Prepare query string
         query = """SELECT DISTINCT ?clz ?id ?maximise \
                 WHERE { \
@@ -392,9 +448,144 @@ def getSystemResponses(endpoint, systemResponse_instances):
                 }""" % (sys_ins, ONTODOE_REFERSTO, sys_ins, ONTODOE_POSITIONALID, sys_ins, ONTODOE_MAXIMISE)
         # Perform query
         response = performQuery(endpoint, query)
-        response[0]['res'] = sys_ins
-        list_sys += response
+        list_sys.append(
+            SystemResponse(
+                instance_iri=sys_ins,
+                name=getShortName(sys_ins),
+                maximise=response[0]['maximise'],
+                positionalID=response[0]['id'] if 'id' in response[0] else None,
+                refersTo=response[0]['clz']
+            )
+        )
+        
     return list_sys
+
+def getDoEHistoricalData(endpoint, historicalData_iri: str) -> HistoricalData:
+    """
+        This method retrieves information given instance iri of OntoDoE:HistoricalData.
+
+        Arguments:
+            endpoint - SPARQL Query endpoint
+            historicalData_iri - iri of OntoDoE:HistoricalData instance
+    """
+    # Delete "<" and ">" around the IRI
+    historicalData_iri = trimIRI(historicalData_iri)
+
+    query = """SELECT DISTINCT ?exp ?numOfNewExp \
+            WHERE { \
+            <%s> <%s> ?exp . \
+            OPTIONAL {<%s> <%s> ?numOfNewExp .} \
+            }""" % (historicalData_iri, ONTODOE_REFERSTO, historicalData_iri, ONTODOE_NUMOFNEWEXP)
+    
+    response = performQuery(endpoint, query)
+
+    num_ = [res['numOfNewExp'] for res in response]
+    if num_.count(num_[0]) != len(num_):
+        raise Exception("There are multiple instances of numOfNewExp associated with OntoDoE:HistoricalData instance <" + historicalData_iri + ">: " + collections.Counter(num_).keys)
+
+    rxnexp_iris = [res['exp'] for res in response]
+
+    historicalData_instance = HistoricalData(
+        instance_iri=historicalData_iri,
+        numOfNewExp=num_[0], # TODO what if no instance is in place?
+        refersTo=getReactionExperiment(endpoint, rxnexp_iris)
+        )
+    return historicalData_instance
+
+def getReactionExperiment(endpoint, rxnexp_iris: str or list) -> List[ReactionExperiment]:
+    # TODO implement logic of querying information for OntoRxn:ReactionExperiment
+    if not isinstance(rxnexp_iris, list):
+        rxnexp_iris = [rxnexp_iris]
+    
+    list_exp = []
+    for exp_iri in rxnexp_iris:
+        list_exp.append(
+            ReactionExperiment(
+                instance_iri=exp_iri,
+                hasReactionCondition=getExpReactionCondition(endpoint, exp_iri),
+                hasPerformanceIndicator=getExpPerformanceIndicator(endpoint, exp_iri)
+                # TODO add support for parsing InputChemical and OutputChemical
+            )
+        )
+    return list_exp
+
+def getExpReactionCondition(endpoint, rxnexp_iri: str) -> List[ReactionCondition]:
+    # Delete "<" and ">" around the IRI
+    rxnexp_iri = trimIRI(rxnexp_iri)
+
+    query = PREFIX_RDFS + \
+            PREFIX_RDF + \
+            PREFIX_XSD + \
+            PREFIX_OWL + \
+            """SELECT DISTINCT ?condition ?clz ?measure ?val ?unit ?o ?id ?multi ?usage \
+            WHERE { \
+            ?subo rdfs:subPropertyOf* <%s> . \
+            <%s> ?subo ?condition . \
+            ?condition <%s> ?measure . \
+            ?measure <%s> ?unit; \
+                     <%s> ?val . \
+            <%s> ?o ?condition . \
+            ?condition rdf:type ?clz . \
+            FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) . \
+            OPTIONAL {?condition <%s> ?id .} \
+            OPTIONAL {?condition <%s> ?multi .} \
+            OPTIONAL {?condition <%s> ?usage .} \
+            }""" % (ONTORXN_HASREACTIONCONDITION, rxnexp_iri, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, 
+            rxnexp_iri, ONTORXN_REACTIONCONDITION, ONTODOE_POSITIONALID, ONTORXN_INDICATESMULTIPLICITYOF, ONTORXN_INDICATESUSAGEOF)
+
+    response = performQuery(endpoint, query)
+
+    list_con = []
+    for res in response:
+        rxn_condition = ReactionCondition(
+            instance_iri=res['condition'],
+            clz=res['clz'],
+            objPropWithExp=res['o'] if isinstance(res['o'], list) else [res['o']],
+            hasValue=OM_Measure(instance_iri=res['measure'],hasUnit=res['unit'],hasNumericalValue=res['val']),
+            positionalID=res['id'] if 'id' in res else None,
+            indicatesMultiplicityOf=res['multi'] if 'multi' in res else None,
+            indicateUsageOf=res['usage'] if 'usage' in res else None
+        )
+        list_con.append(rxn_condition)
+    
+    return list_con
+
+def getExpPerformanceIndicator(endpoint, rxnexp_iri: str) -> List[PerformanceIndicator]:
+    # Delete "<" and ">" around the IRI
+    rxnexp_iri = trimIRI(rxnexp_iri)
+
+    query = PREFIX_RDFS + \
+            PREFIX_RDF + \
+            PREFIX_XSD + \
+            PREFIX_OWL + \
+            """SELECT DISTINCT ?perf ?clz ?measure ?val ?unit ?o ?id \
+            WHERE { \
+            ?subo rdfs:subPropertyOf* <%s> . \
+            <%s> ?subo ?perf . \
+            ?perf <%s> ?measure . \
+            ?measure <%s> ?unit; \
+                     <%s> ?val . \
+            <%s> ?o ?perf . \
+            ?perf rdf:type ?clz . \
+            FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <%s>) . \
+            OPTIONAL {?perf <%s> ?id .} \
+            }""" % (ONTORXN_HASPERFORMANCEINDICATOR, rxnexp_iri, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE, 
+            rxnexp_iri, ONTORXN_PERFORMANCEINDICATOR, ONTODOE_POSITIONALID)
+    
+    response = performQuery(endpoint, query)
+
+    list_perf = []
+    for res in response:
+        perf_indicator = PerformanceIndicator(
+            instance_iri=res['perf'],
+            clz=res['clz'],
+            objPropWithExp=res['o'] if isinstance(res['o'], list) else [res['o']],
+            hasValue=OM_Measure(instance_iri=res['measure'],hasUnit=res['unit'],hasNumericalValue=res['val']),
+            positionalID=res['id'] if 'id' in res else None
+        )
+        list_perf.append(perf_indicator)
+    
+    return list_perf
 
 def getHistoricalDataOfVariable(endpoint, historicalData_instance, variable_instance, instance_class, positionalID=None):
     """
@@ -441,16 +632,16 @@ def getHistoricalDataOfVariable(endpoint, historicalData_instance, variable_inst
     response = performQuery(endpoint, query)
     return response
 
-def getDoEStrategy(endpoint, strategy_instance):
+def getDoEStrategy(endpoint, strategy_iri: str) -> Strategy:
     """
-        This method retrieves information given instance of OntoDoE:Strategy.
+        This method retrieves information given instance of dataclass OntoDoE.Strategy.
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            strategy_instance - IRI of instance of OntoDoE:Strategy
+            strategy_iri - iri of OntoDoE:Strategy instance
     """
     # Delete "<" and ">" around the IRI
-    strategy_instance = trimIRI(strategy_instance)
+    strategy_iri = trimIRI(strategy_iri)
 
     # Construct query string
     query = PREFIX_RDF + \
@@ -459,35 +650,36 @@ def getDoEStrategy(endpoint, strategy_instance):
             WHERE { \
             <%s> rdf:type ?strategy . \
             FILTER(?strategy != owl:Thing && ?strategy != owl:NamedIndividual) . \
-            }""" % (strategy_instance)
+            }""" % (strategy_iri)
     
     # Perform SPARQL query
     response = performQuery(endpoint, query)
 
     # Extract from the response
     if (len(response) > 1):
-        raise Exception("Strategy Instance <%s> should only have one rdf:type." % (strategy_instance))
+        raise Exception("Strategy Instance <%s> should only have one rdf:type." % (strategy_iri))
     res = [list(r.values())[0] for r in response]
-    strategy_dict = {}
-    strategy_dict[getShortName(res[0])] = getTSEMOSettings(endpoint, strategy_instance)
-    return strategy_dict
 
-def getTSEMOSettings(endpoint, tsemo_instance):
+    if (getShortName(res[0]) == TSEMO.__name__):
+        tsemo_instance = getTSEMOSettings(endpoint, strategy_iri)
+        return tsemo_instance
+    elif (getShortName(res[0]) == LHS.__name__):
+        # TODO implement handling for LHS
+        raise Exception("LHS as a OntoDoE:Strategy is not yet supported.")
+    else:
+        # TODO implement handling for other DoE strategy
+        raise Exception("<%s> as a OntoDoE:Strategy is not yet supported." % (getShortName(res[0])))
+
+def getTSEMOSettings(endpoint, tsemo_iri: str) -> TSEMO:
     """
-        This method retrieves the settings of TSEMO algorithm as part of `Summit` package from the given instance of OntoDoE:TSEMO.
+        This method retrieves the settings of TSEMO algorithm as part of `Summit` package from the given instance of OntoDoE.TSEMO.
         (For TSEMO algorithm in package `Summit`, please visit: https://gosummit.readthedocs.io/en/latest/strategies.html#tsemo)
 
         Arguments:
             endpoint - SPARQL Query endpoint
-            tsemo_instance - IRI of instance of OntoDoE:TSEMO
+            tsemo_iri - iri of OntoDoE:TSEMO instance
     """
-    # Delete "<" and ">" around the IRI
-    tsemo_instance = trimIRI(tsemo_instance)
 
-    # Check if given tsemo_instance is an instance of OntoDoE:TSEMO
-    if not checkInstanceClass(endpoint, tsemo_instance, ONTODOE_TSEMO):
-        raise Exception("Instance <"+tsemo_instance+"> is not an instance of "+ONTODOE_TSEMO)
-    
     # Construct query string
     query = """SELECT ?nGenerations ?nRetries ?nSpectralPoints ?populationSize \
             WHERE { \
@@ -497,13 +689,14 @@ def getTSEMOSettings(endpoint, tsemo_instance):
                 <%s> <%s> ?nSpectralPoints . \
                 <%s> <%s> ?populationSize . \
             } \
-            }""" % (tsemo_instance, ONTODOE_NGENERATIONS, tsemo_instance, ONTODOE_NRETRIES, tsemo_instance, ONTODOE_NSPECTRALPOINTS, tsemo_instance, ONTODOE_POPULATIONSIZE)
+            }""" % (tsemo_iri, ONTODOE_NGENERATIONS, tsemo_iri, ONTODOE_NRETRIES, tsemo_iri, ONTODOE_NSPECTRALPOINTS, tsemo_iri, ONTODOE_POPULATIONSIZE)
 
     # Perform SPARQL query
     response = performQuery(endpoint, query)
     if (len(response) > 1):
-        raise Exception("Instance <%s> should only have one set of settings." % (tsemo_instance))
-    return response[0]
+        raise Exception("Instance <%s> should only have one set of settings." % (tsemo_iri))
+    tsemo_instance = TSEMO(tsemo_iri,**response[0])
+    return tsemo_instance
 
 def checkInstanceClass(endpoint, instance, instance_class):
     """

@@ -1,8 +1,9 @@
+from dataclasses import asdict
 from flask import Flask, jsonify, request
 from urllib.parse import unquote
 
 from create_ontorxn import uploadNewExpToKG
-from kgUtils import *
+from kg_operations.kgUtils import *
 from summit_doe import *
 import json
 import agentlogging
@@ -10,9 +11,11 @@ from flask_apscheduler import APScheduler
 import random
 import os
 from pyasyncagent import AsyncAgent
+import requests
+from typing import List
 
 class DoEAgent(AsyncAgent):
-    def setupJob(self, agentInputs) -> list:
+    def setupJob(self, agentInputs) -> List[str]:
         """
             This function sets up the job given the URL-decoded input JSON string.
 
@@ -31,12 +34,18 @@ class DoEAgent(AsyncAgent):
         """
         # Load string to JSON object (python dict)
         input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
-        # Check if the input is in correct format, and return grouped instances for further usage
-        strategy_instance, domain_instance, systemResponse_instances, historicalData_instance = checkInputParameters(input_json)
-        # Call function to suggest the new experiment and return an instance of OntoDoE:NewExperiment
-        ontodoe_new_exp_iri = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
 
-        return [ontodoe_new_exp_iri]
+        # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
+        doe_instance = collectInputsInformation(input_json)
+        print(json.dumps(asdict(doe_instance)))
+
+        # Call function to suggest the new experiment and return an instance of OntoDoE:NewExperiment
+        doe_instance_new_exp = suggest(doe_instance)
+
+        updateNewExperimentInKG(SPARQL_QUERY_ENDPOINT, doe_instance, doe_instance_new_exp)
+
+        logger.info(f"The proposed new experiment is recorded in <{doe_instance_new_exp.instance_iri}>.")
+        return [doe_instance_new_exp.instance_iri]
 
 # # Create the Flask app object
 # app = Flask(__name__)
@@ -213,65 +222,106 @@ logger = agentlogging.get_logger("dev")
 #     ontodoe_new_exp_iri = suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
 #     return ontodoe_new_exp_iri
 
-def suggest(strategy_instance, domain_instance, systemResponse_instances, historicalData_instance):
+def suggest(doe_instance: DesignOfExperiment) -> NewExperiment:
     """
         This method suggests the new experiment given information provided for design of experiment exercise.
 
         Arguments:
-            strategy_instance - IRI of instance of OntoDoE:Strategy
-            domain_instance - IRI of instance of OntoDoE:Domain
-            systemResponse_instances - IRI of instance of OntoDoE:SystemResponse
-            historicalData_instance - IRI of instance of OntoDoE:HistoricalData
+            doe_instance - instance of dataclass OntoDoE.DesignOfExperiment
     """
     endpoint = SPARQL_QUERY_ENDPOINT
 
-    # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
-    doe_instance_dict = getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
+    new_exp = proposeNewExperiment(doe_instance)
+    print(json.dumps(asdict(new_exp)))
 
-    # Get the information from OntoDoE:Strategy instance
-    strategy_dict = getDoEStrategy(endpoint, strategy_instance)
-    
-    # Get the information from the OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData instances
-    designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
-    
-    # Drop the columus of OntoRxn:ReactionExperiment/OntoRxn:ReactionVariation IRIs previously used for joining the tables,
-    # as that information is not digestible by the Summit package
-    # also convert the DataFrame values from 'str' to 'float'
-    historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
-    
-    # Get the first instance of OntoRxn:ReactionExperiment in the list of OntoRxn:ReactionExperiment pointed by OntoDoE:HistoricalData instance
-    # The returned first instance is to be the basis of the created OntoRxn:ReactionVariation instances
-    first_experiment_dict = getFirstInstanceOfExperiment(endpoint, historicalData_instance)
-    
-    # Get the number of new experiment desired to be suggested from the historical data
-    numOfNewExp_dict = getNumOfNewExpToGenerate(endpoint, historicalData_instance)
-    
-    # An example of doe_info
-    # doe_info = { \
-    #             "doe_instance": "https://theworldavatar.com/kb/ontodoe/DoE_1/DoE_1"
-    #             "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
-    #             "continuousVariables": [{"name": "ContinuousVariable_1", "lower": 1, "upper": 10}, 
-    #             {"name": "ContinuousVariable_2", "lower": 0.02, "upper": 0.2},
-    #             {"name": "ContinuousVariable_3", "lower": 5, "upper": 15},
-    #             {"name": "ContinuousVariable_4", "lower": 30, "upper": 70}], \
-    #             "systemResponses": [{"name": "SystemResponse_1", "direction": "maximise"}, 
-    #             {"name": "SystemResponse_2", "direction": "minimise"}], \
-    #             "historicalData": previous_results, \
-    #             "first_exp": "https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1", \
-    #             "numOfExp": 1}
-    doe_info = {**doe_instance_dict, **strategy_dict, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict, **numOfNewExp_dict}
+    # doe_instance_dict = getDoEInstanceIRI(endpoint, strategy_instance, domain_instance, systemResponse_instances, historicalData_instance)
 
-    # Proposes the next experiment, returns with a DataSet that contains numerical values been suggested
-    next_exp = proposeNewExperiment(doe_info)
+    # strategy_dict = getDoEStrategy(endpoint, strategy_instance)
+    
+    # # Get the information from the OntoDoE:Domain, OntoDoE:SystemResponse, and OntoDoE:HistoricalData instances
+    # designVariable_dict, systemResponse_dict, previous_results = constructHistoricalDataTable(endpoint, domain_instance, systemResponse_instances, historicalData_instance)
+    
+    # # Drop the columus of OntoRxn:ReactionExperiment/OntoRxn:ReactionVariation IRIs previously used for joining the tables,
+    # # as that information is not digestible by the Summit package
+    # # also convert the DataFrame values from 'str' to 'float'
+    # historicalData_dict = {"historicalData": previous_results.drop(columns="rxnexp").astype(float)}
+    
+    # # Get the first instance of OntoRxn:ReactionExperiment in the list of OntoRxn:ReactionExperiment pointed by OntoDoE:HistoricalData instance
+    # # The returned first instance is to be the basis of the created OntoRxn:ReactionVariation instances
+    # first_experiment_dict = getFirstInstanceOfExperiment(endpoint, historicalData_instance)
+    
+    # # Get the number of new experiment desired to be suggested from the historical data
+    # numOfNewExp_dict = getNumOfNewExpToGenerate(endpoint, historicalData_instance)
+    
+    # # An example of doe_info
+    # # doe_info = { \
+    # #             "doe_instance": "https://theworldavatar.com/kb/ontodoe/DoE_1/DoE_1"
+    # #             "TSEMO": {"nSpectralPoints": 30, "nGenerations": 20, "populationSize": 20}, \
+    # #             "continuousVariables": [{"name": "ContinuousVariable_1", "lower": 1, "upper": 10}, 
+    # #             {"name": "ContinuousVariable_2", "lower": 0.02, "upper": 0.2},
+    # #             {"name": "ContinuousVariable_3", "lower": 5, "upper": 15},
+    # #             {"name": "ContinuousVariable_4", "lower": 30, "upper": 70}], \
+    # #             "systemResponses": [{"name": "SystemResponse_1", "direction": "maximise"}, 
+    # #             {"name": "SystemResponse_2", "direction": "minimise"}], \
+    # #             "historicalData": previous_results, \
+    # #             "first_exp": "https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1", \
+    # #             "numOfExp": 1}
+    
+    # # {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/DoE_1', 
+    # # 'usesStrategy': {
+    # #     'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1', 
+    # #     'nRetries': 10, 'nSpectralPoints': 30, 'nGenerations': 20, 'populationSize': 20
+    # #     }, 
+    # # 'hasDomain': {
+    # #     'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1', 
+    # #     'hasDesignVariable': [
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/ContinuousVariable_1', 'upperLimit': 10.0, 'lowerLimit': 1.0, 'positionalID': 2, 
+    # #         'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio'}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/ContinuousVariable_2', 'upperLimit': 0.2, 'lowerLimit': 0.02, 'positionalID': 3, 
+    # #         'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio'}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/ContinuousVariable_3', 'upperLimit': 15.0, 'lowerLimit': 5.0, 'positionalID': None, 
+    # #         'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ResidenceTime'}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/ContinuousVariable_4', 'upperLimit': 70.0, 'lowerLimit': 30.0, 'positionalID': None, 
+    # #         'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#ReactionTemperature'}
+    # #         ]
+    # #     }, 
+    # # 'hasSystemResponse': [
+    # #     {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1', 'maximise': True, 'positionalID': None, 
+    # #     'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#Yield'}, 
+    # #     {'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_2', 'maximise': False, 'positionalID': None, 
+    # #     'refersTo': 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#RunMaterialCost'}
+    # #     ], 
+    # # 'utilisesHistoricalData': {
+    # #     'instance_iri': 'https://theworldavatar.com/kb/ontodoe/DoE_1/HistoricalData_1', 
+    # #     'refersTo': [
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1', 
+    # #         'hasReactionCondition': None, 'hasPerformanceIndicator': None, 'hasInputChemical': None, 'hasOutputChemical': None}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/RxnExp_1', 
+    # #         'hasReactionCondition': None, 'hasPerformanceIndicator': None, 'hasInputChemical': None, 'hasOutputChemical': None}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/RxnExp_1', 
+    # #         'hasReactionCondition': None, 'hasPerformanceIndicator': None, 'hasInputChemical': None, 'hasOutputChemical': None}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/RxnExp_1', 
+    # #         'hasReactionCondition': None, 'hasPerformanceIndicator': None, 'hasInputChemical': None, 'hasOutputChemical': None}, 
+    # #         {'instance_iri': 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/RxnExp_1', 
+    # #         'hasReactionCondition': None, 'hasPerformanceIndicator': None, 'hasInputChemical': None, 'hasOutputChemical': None}
+    # #         ], 
+    # #         'numOfNewExp': 1
+    # #     }, 
+    # # 'proposesNewExperiment': None}
+    
+    # doe_info = {**doe_instance_dict, **strategy_dict.__dict__, **designVariable_dict, **systemResponse_dict, **historicalData_dict, **first_experiment_dict, **numOfNewExp_dict}
+
+    # # Proposes the next experiment, returns with a DataSet that contains numerical values been suggested
+    # next_exp = proposeNewExperiment(doe_info) # use Summit for now, should take DesignOfExperiment, and update NewExperiment
     # Upload the new experiment to the knowledge graph, and create an instance of OntoDoE:NewExperiment as ontodoe_new_exp_iri
-    ontodoe_new_exp_iri = uploadNewExpToKG(doe_info, next_exp)
+    # ontodoe_new_exp_iri = uploadNewExpToKG(doe_info, next_exp)
 
-    logger.info(f"The proposed new experiment is recorded in <{ontodoe_new_exp_iri}>.")
-    return ontodoe_new_exp_iri
+    # logger.info(f"The proposed new experiment is recorded in <{ontodoe_new_exp_iri}>.")
+    return new_exp
 
-def checkInputParameters(input_json):
+def collectInputsInformation(input_json) -> DesignOfExperiment:
     """
-        This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance.
+        This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance and collects information.
     """
     logger.info("Checking arguments...")
     exception_string = """Error: Inputs are not provided in correct form. An example is: 
@@ -288,43 +338,59 @@ def checkInputParameters(input_json):
     if DOEAGENT_INPUT_JSON_KAY in input_json:
         if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                strategy = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY]
+                # Get the information from OntoDoE:Strategy instance
+                strategy_instance = getDoEStrategy(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
             except ValueError:
-                logger.error("Unable to parse IRI.")
+                logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
                 raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
         else:
-            raise Exception(exception_string)
+            logger.error('OntoDoE:Strategy instance might be missing.\n' + exception_string)
+            raise Exception('OntoDoE:Strategy instance might be missing.\n' + exception_string)
         if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                domain = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN]
+                domain_instance = getDoEDomain(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
             except ValueError:
-                logger.error("Unable to parse IRI.")
+                logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
                 raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
         else:
-            raise Exception(exception_string)
+            logger.error('OntoDoE:Domain instance might be missing.\n' + exception_string)
+            raise Exception('OntoDoE:Domain instance might be missing.\n' + exception_string)
 
         if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                system_response = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE]
+                system_response_instance = getSystemResponses(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
             except ValueError:
-                logger.error("Unable to parse IRI.")
+                logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
                 raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
         else:
-            raise Exception(exception_string)
+            logger.error('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
+            raise Exception('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
 
         if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
             try:
-                historical_data = input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA]
+                historical_data_instance = getDoEHistoricalData(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
             except ValueError:
-                logger.error("Unable to parse IRI.")
+                logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
                 raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
         else:
-            raise Exception(exception_string)
+            logger.error('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
+            raise Exception('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
+
+        doe_instance = DesignOfExperiment(
+            instance_iri=None, 
+            usesStrategy=strategy_instance,
+            hasDomain=domain_instance,
+            hasSystemResponse=system_response_instance,
+            utilisesHistoricalData=historical_data_instance,
+            proposesNewExperiment=None)
+
+        # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
+        doe_instance = getDoEInstanceIRI(SPARQL_QUERY_ENDPOINT, doe_instance)
+        return doe_instance
 
     else:
-        raise Exception(exception_string)
-    
-    return strategy, domain, system_response, historical_data
+        logger.error('Key "agent_input" might be missing.\n' + exception_string)
+        raise Exception('Key "agent_input" might be missing.\n' + exception_string)
 
 def exampleEntryPoint():
     """

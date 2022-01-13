@@ -1,6 +1,6 @@
-from resources.parameter import *
-from resources.doeagent_properties import *
-from kgUtils import *
+from data_model.iris import *
+from conf.doeagent_properties import *
+from kg_operations.kgUtils import *
 
 from summit.utils.dataset import DataSet
 from rdflib import Graph, Literal, URIRef
@@ -200,3 +200,15 @@ def uploadNewExpToKG(doe, next_exp: DataSet):
     ontodoe_new_exp_iri = createOntoDoENewExperimentIRI(SPARQL_UPDATE_ENDPOINT, doe['doe_instance'], new_exp_iri_list)
     
     return ontodoe_new_exp_iri
+
+# def createOntoDoENewExpInKG(doe: DesignOfExperiment):
+#     # add triples:
+#     # <DoE> <proposesNewExperiment> <newExp>
+#     # <newExp> <refersTo> <rxnVar/rxnExp>
+#     # 
+#     # delete triples:
+#     # <DoE> <proposesNewExperiment> <newExp>
+#     # 
+#     # call rxnVar/rxnExp to create triples
+#     # 
+#     # 
