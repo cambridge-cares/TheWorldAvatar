@@ -12,6 +12,10 @@ triple_store_upload_repository = doeagent_properties['KNOWLEDGE_GRAPH']['TRIPLE_
 TRIPLE_STORE_UPLOAD_SERVER = triple_store_upload_repository if not triple_store_upload_repository.endswith('/') else triple_store_upload_repository[:-1]
 TRIPLE_STORE_UPLOAD_REPOSITORY = doeagent_properties['KNOWLEDGE_GRAPH']['TRIPLE_STORE_UPLOAD_REPOSITORY'] # an example: 'testontorxn'
 
+# Knowledge graph username and password
+KG_USERNAME = doeagent_properties['KNOWLEDGE_GRAPH']['KG_USERNAME']
+KG_PASSWORD = doeagent_properties['KNOWLEDGE_GRAPH']['KG_PASSWORD']
+
 # Full SPARQL Query and Update endpoints of OntoRxn triple store, this should be in line with the triple upload server and repository name provided above
 SPARQL_QUERY_ENDPOINT = f'{TRIPLE_STORE_UPLOAD_SERVER}/namespace/{TRIPLE_STORE_UPLOAD_REPOSITORY}/sparql'
 SPARQL_UPDATE_ENDPOINT = f'{TRIPLE_STORE_UPLOAD_SERVER}/namespace/{TRIPLE_STORE_UPLOAD_REPOSITORY}/sparql'

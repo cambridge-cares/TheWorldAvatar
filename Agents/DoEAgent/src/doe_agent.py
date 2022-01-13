@@ -36,8 +36,13 @@ class DoEAgent(AsyncAgent):
         # Load string to JSON object (python dict)
         input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
 
+        # Create kg_client
+        self.kg_client = KGClient(
+            TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY,
+            SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, None, None
+        )
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
-        doe_instance = collectInputsInformation(input_json)
+        doe_instance = self.collectInputsInformation(input_json)
         logger.info("Collected inputs from the knowledge graph: ")
         logger.info(json.dumps(asdict(doe_instance)))
 
@@ -46,84 +51,84 @@ class DoEAgent(AsyncAgent):
 
         # Upload the created OntoDoE:NewExperiment (including OntoRxn:ReactionVariation) triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoDoE:NewExperiment
-        updateNewExperimentInKG(SPARQL_QUERY_ENDPOINT, doe_instance, doe_instance_new_exp)
+        self.kg_client.updateNewExperimentInKG(doe_instance, doe_instance_new_exp)
 
         logger.info(f"The proposed new experiment is recorded in <{doe_instance_new_exp.instance_iri}>.")
         return [doe_instance_new_exp.instance_iri]
 
-def collectInputsInformation(input_json) -> DesignOfExperiment:
-    """
-        This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance and collects information.
-    """
-    logger.info("Checking arguments...")
-    exception_string = """Error: Inputs are not provided in correct form. An example is: 
-                            {
-                                "agent_input": {
-                                "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy": "https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1",
-                                "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain": "https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1",
-                                "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse": 
-                                    ["https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1", "https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_2"],
-                                "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData": "https://theworldavatar.com/kb/ontodoe/DoE_1/HistoricalData_1"
-                                }
-                            }"""
-    # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-    if DOEAGENT_INPUT_JSON_KAY in input_json:
-        if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
-            try:
-                # Get the information from OntoDoE:Strategy instance
-                strategy_instance = getDoEStrategy(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
-            except ValueError:
-                logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
-                raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+    def collectInputsInformation(self, input_json) -> DesignOfExperiment:
+        """
+            This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance and collects information.
+        """
+        logger.info("Checking arguments...")
+        exception_string = """Error: Inputs are not provided in correct form. An example is: 
+                                {
+                                    "agent_input": {
+                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy": "https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1",
+                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain": "https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1",
+                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse": 
+                                        ["https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1", "https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_2"],
+                                    "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData": "https://theworldavatar.com/kb/ontodoe/DoE_1/HistoricalData_1"
+                                    }
+                                }"""
+        # If the input JSON string is missing mandatory keys, raise error with "exception_string"
+        if DOEAGENT_INPUT_JSON_KAY in input_json:
+            if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
+                try:
+                    # Get the information from OntoDoE:Strategy instance
+                    strategy_instance = self.kg_client.getDoEStrategy(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+                except ValueError:
+                    logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+                    raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+            else:
+                logger.error('OntoDoE:Strategy instance might be missing.\n' + exception_string)
+                raise Exception('OntoDoE:Strategy instance might be missing.\n' + exception_string)
+
+            if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
+                try:
+                    domain_instance = self.kg_client.getDoEDomain(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+                except ValueError:
+                    logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+                    raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+            else:
+                logger.error('OntoDoE:Domain instance might be missing.\n' + exception_string)
+                raise Exception('OntoDoE:Domain instance might be missing.\n' + exception_string)
+
+            if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
+                try:
+                    system_response_instance = self.kg_client.getSystemResponses(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+                except ValueError:
+                    logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+                    raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+            else:
+                logger.error('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
+                raise Exception('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
+
+            if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
+                try:
+                    historical_data_instance = self.kg_client.getDoEHistoricalData(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+                except ValueError:
+                    logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+                    raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+            else:
+                logger.error('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
+                raise Exception('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
+
+            doe_instance = DesignOfExperiment(
+                instance_iri=None, 
+                usesStrategy=strategy_instance,
+                hasDomain=domain_instance,
+                hasSystemResponse=system_response_instance,
+                utilisesHistoricalData=historical_data_instance,
+                proposesNewExperiment=None) # TODO maybe also initialise NewExperiment?
+
+            # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
+            doe_instance = self.kg_client.getDoEInstanceIRI(doe_instance)
+            return doe_instance
+
         else:
-            logger.error('OntoDoE:Strategy instance might be missing.\n' + exception_string)
-            raise Exception('OntoDoE:Strategy instance might be missing.\n' + exception_string)
-
-        if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
-            try:
-                domain_instance = getDoEDomain(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
-            except ValueError:
-                logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
-                raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
-        else:
-            logger.error('OntoDoE:Domain instance might be missing.\n' + exception_string)
-            raise Exception('OntoDoE:Domain instance might be missing.\n' + exception_string)
-
-        if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
-            try:
-                system_response_instance = getSystemResponses(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
-            except ValueError:
-                logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
-                raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
-        else:
-            logger.error('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
-            raise Exception('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
-
-        if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
-            try:
-                historical_data_instance = getDoEHistoricalData(SPARQL_QUERY_ENDPOINT, input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
-            except ValueError:
-                logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
-                raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
-        else:
-            logger.error('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
-            raise Exception('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
-
-        doe_instance = DesignOfExperiment(
-            instance_iri=None, 
-            usesStrategy=strategy_instance,
-            hasDomain=domain_instance,
-            hasSystemResponse=system_response_instance,
-            utilisesHistoricalData=historical_data_instance,
-            proposesNewExperiment=None) # TODO maybe also initialise NewExperiment?
-
-        # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
-        doe_instance = getDoEInstanceIRI(SPARQL_QUERY_ENDPOINT, doe_instance)
-        return doe_instance
-
-    else:
-        logger.error('Key "agent_input" might be missing.\n' + exception_string)
-        raise Exception('Key "agent_input" might be missing.\n' + exception_string)
+            logger.error('Key "agent_input" might be missing.\n' + exception_string)
+            raise Exception('Key "agent_input" might be missing.\n' + exception_string)
 
 def suggest(doe_instance: DesignOfExperiment) -> NewExperiment:
     """
@@ -167,13 +172,19 @@ def exampleEntryPoint():
     clearAll = """DELETE {?s ?p ?o} \
                WHERE {?s ?p ?o}
                """
-    performUpdate(SPARQL_UPDATE_ENDPOINT, clearAll)
 
-    filepath = os.getcwd() + '/resources/' #'/Agents/DoEAgent/summit_agent/resources/'
+    kg_client = KGClient(
+            TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY,
+            SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, KG_USERNAME, KG_PASSWORD
+        )
+    
+    kg_client.performUpdate(clearAll)
+
+    filepath = os.getcwd() + '/test/resources/' #'/Agents/DoEAgent/summit_agent/resources/'
     for f in ['doe.ttl', 'Service__DoE.ttl', 'rxn_data.ttl']:
         with open(filepath+f, 'r') as file:
             data = file.read()
-            performUpdate(SPARQL_UPDATE_ENDPOINT, data)
+            kg_client.performUpdate(data)
 
     # Hardcode the IRI to be used for the example
     # Developers should upload the files containing these triples to the endpoints following the instructions in the README.md

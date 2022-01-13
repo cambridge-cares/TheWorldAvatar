@@ -1,1 +1,1 @@
-from .kgUtils import *
+from .kg_client import *
