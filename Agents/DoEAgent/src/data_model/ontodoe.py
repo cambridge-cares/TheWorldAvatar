@@ -72,10 +72,14 @@ class HistoricalData:
 class NewExperiment:
     instance_iri: str
     refersTo: List[ReactionExperiment]
+    namespace_for_init: Optional[str] = None
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(ONTODOE_NEWEXPERIMENT)
+            if self.namespace_for_init is not None:
+                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, ONTODOE_NEWEXPERIMENT)
+            else:
+                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def createInstanceForKG(self, g: Graph) -> Graph:
         # add triple <newExp> <rdf:type> <OntoDoE:NewExperiment>

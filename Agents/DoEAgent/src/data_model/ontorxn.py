@@ -21,10 +21,14 @@ class OM_Measure:
     # instead of the actual class, str is used to host the concept IRI of om:Unit for simplicity
     hasUnit: str
     hasNumericalValue: float
+    namespace_for_init: Optional[str] = None
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(OM_MEASURE)
+            if self.namespace_for_init is not None:
+                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, OM_MEASURE)
+            else:
+                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def createInstanceForKG(self, g: Graph) -> Graph:
         # IRI-ise the IRI of OM:Measure instance to be used by rdflib package
@@ -53,10 +57,14 @@ class ReactionCondition:
     # instead of the actual class, str is used to host the instance IRI of OntoRxn:InputChemical for simplicity
     # ReactionScale indicateUsageOf InputChemical
     indicateUsageOf: Optional[str] = None
+    namespace_for_init: Optional[str] = None
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(self.clz)
+            if self.namespace_for_init is not None:
+                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, self.clz)
+            else:
+                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def __post_init_post_parse__(self):
         if self.clz == 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#StoichiometryRatio':
@@ -123,10 +131,14 @@ class PerformanceIndicator:
     objPropWithExp: List[str]
     hasValue: Optional[OM_Measure]
     positionalID: Optional[int] = None
+    namespace_for_init: Optional[str] = None
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(ONTORXN_PERFORMANCEINDICATOR)
+            if self.namespace_for_init is not None:
+                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, self.clz)
+            else:
+                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def createInstanceForKG(self, g: Graph) -> Graph:
         # IRI-ise the IRI of PerformanceIndicator instance to be used by rdflib package
@@ -235,10 +247,14 @@ class ReactionExperiment:
 @dataclass
 class ReactionVariation(ReactionExperiment):
     isVariationOf: Optional[ReactionExperiment] = None
+    namespace_for_init: Optional[str] = None
 
     def __post_init__(self):
         if self.instance_iri == INSTANCE_IRI_TO_BE_INITIALISED:
-            self.instance_iri = initialiseInstanceIRI(ONTORXN_REACTIONVARIATION)
+            if self.namespace_for_init is not None:
+                self.instance_iri = initialiseInstanceIRI(self.namespace_for_init, ONTORXN_REACTIONVARIATION)
+            else:
+                raise Exception(f"A namespace should be provided for initialising a/an {self.__class__} instance.")
 
     def createInstanceForKG(self, g: Graph) -> Graph:
         # check if information is complete

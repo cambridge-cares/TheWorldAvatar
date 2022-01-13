@@ -1,10 +1,9 @@
-from conf import *
 import uuid
 
 INSTANCE_IRI_TO_BE_INITIALISED = 'INSTANCE_IRI_TO_BE_INITIALISED'
 
-def initialiseInstanceIRI(clz: str) -> str:
-    return NAMESPACE_KB_ONTORXN + getShortName(clz) + '_' + str(uuid.uuid4())
+def initialiseInstanceIRI(namespace: str, clz: str) -> str:
+    return checkNamespace(namespace) + getShortName(clz) + '_' + str(uuid.uuid4())
 
 def getShortName(iri):
     """
@@ -43,6 +42,12 @@ def getNameSpace(iri):
         return iri[:iri.rfind('#')+1]
     else:
         return iri[:iri.rfind('/')+1]
+
+def checkNamespace(namespace):
+    if namespace.startswith('http://') or namespace.startswith('https://'):
+        return namespace if namespace.endswith('/') else namespace + '/'
+    else:
+        raise Exception("The provide namespace should start with either 'http://' or 'https://'.")
 
 def trimIRI(iri):
     """

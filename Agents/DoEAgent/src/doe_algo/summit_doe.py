@@ -101,6 +101,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
             # Create instance for OM_Measure
             om_measure = OM_Measure(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(first_rxn_exp_con.hasValue.instance_iri),
                 hasUnit=first_rxn_exp_con.hasValue.hasUnit,
                 # TODO for the moment, a new om:Measure instance is always created
                 hasNumericalValue=first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
@@ -109,6 +110,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
             # Create instance for ReactionCondition
             con = ReactionCondition(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(first_rxn_exp_con.instance_iri),
                 clz=first_rxn_exp_con.clz,
                 objPropWithExp=first_rxn_exp_con.objPropWithExp,
                 hasValue=om_measure,
@@ -127,6 +129,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
             # Create instance for PerformanceIndicator
             perf = PerformanceIndicator(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=getNameSpace(first_rxn_exp_perf.instance_iri),
                 clz=first_rxn_exp_perf.clz,
                 objPropWithExp=first_rxn_exp_perf.objPropWithExp,
                 hasValue=None,
@@ -140,6 +143,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
         # TODO add support for creating instance of ReactionExperiment (given no prior experiment data/history)
         rxnvar = ReactionVariation(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+            namespace_for_init=getNameSpace(first_rxn_exp.instance_iri),
             hasReactionCondition=list_con,
             hasPerformanceIndicator=list_perf,
             hasInputChemical=first_rxn_exp.hasInputChemical, # TODO revisit this design when testing
@@ -153,6 +157,7 @@ def formNewExperiment(doe: DesignOfExperiment, new_exp_ds: DataSet_summit) -> Ne
     # Create instance of NewExperiment that refersTo the list of created new ReactionVariation
     new_exp = NewExperiment(
         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+        namespace_for_init=getNameSpace(doe.instance_iri),
         refersTo=list_rxnvar
     )
     return new_exp
