@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.base.discovery;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -185,7 +184,18 @@ public class AgentCaller {
     public static URI createURIWithURLandJSON(String url, String json) {
         return Http.createURI(url, JSON_PARAMETER_KEY, json);
     }
-        
+     
+    /**
+     * @deprecated Use method in Http.
+     * @param url
+     * @param keyOrValue
+     * @return
+     */
+    @Deprecated
+    public static URI createURI(String url, String... keyOrValue) {
+    	return Http.createURI(url, keyOrValue);
+    }
+    
     public static String executeGetWithURLKey(String urlKey, MediaType type, String... keyOrValue) {
 
         String url = KeyValueManager.get(urlKey);
@@ -397,5 +407,46 @@ public class AgentCaller {
 	    }catch (IOException e){
 	    	throw new JPSRuntimeException("IO Exception "+ url + "; try again.");
 	    }
+    }
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param object
+     * @param resp
+     */
+    @Deprecated
+    public static void printToResponse(Object object, HttpServletResponse resp) {
+    	Http.printToResponse(object, resp);
+    }
+    
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param object
+     * @return
+     */
+    @Deprecated
+    public static String serializeForResponse(Object object) {
+    	return Http.serializeForResponse(object);
+    }
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param s
+     * @return
+     */
+    @Deprecated
+    public static String encodePercentage(String s) {
+    	return Http.encodePercentage(s);
+    }
+    
+    /**
+     * @deprecated Use method in Http.
+     * @param s
+     * @return
+     */
+    @Deprecated
+    public static String decodePercentage(String s) {
+    	return Http.decodePercentage(s);
     }
 }
