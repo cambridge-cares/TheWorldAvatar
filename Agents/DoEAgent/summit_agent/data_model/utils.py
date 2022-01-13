@@ -1,4 +1,5 @@
 from conf import *
+import uuid
 
 INSTANCE_IRI_TO_BE_INITIALISED = 'INSTANCE_IRI_TO_BE_INITIALISED'
 
