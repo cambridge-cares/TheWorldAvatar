@@ -13,9 +13,8 @@ import os
 from kg_operations.gateway import jpsBaseLibGW, jpsBaseLib_view
 
 from data_model import *
-from conf import *
 
-class KGClient:
+class SparqlClient:
     def __init__(self, triple_store_server, triple_store_repo, query_endpoint, update_endpoint, kg_user, kg_password) -> None:
         self.triple_store_server = triple_store_server
         self.triple_store_repo = triple_store_repo

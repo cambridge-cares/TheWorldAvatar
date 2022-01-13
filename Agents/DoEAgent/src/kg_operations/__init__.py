@@ -1,1 +1,1 @@
-from .kg_client import *
+from .sparql_client import *
