@@ -133,105 +133,109 @@ def get_crs_query():
     return query
 
 
-def get_uprns_and_building_use(building_iri, query_endpoint):
+def get_all_uprns_and_building_uses(query_endpoint):
     """
         Retrieves all UPRNs and (optional) building use classifications attached (as generic citygml attributes) to
-        given building (i.e. building iri)
+        a building (i.e. building iri) for all buildings in given namespace (i.e. query endpoint)
 
         Arguments:
-            building_iri - IRI of building (within building named graph) to retrieve UPRNs for.
             query_endpoint - SPARQl endpoint to execute query on.
 
         Returns:
-            List of UPRNs (as strings) attached with given building
+            DataFrame containing uprns and usage information for all buildings
     """
-
-    # Derive city_object IRI for given building IRI
-    if not building_iri.startswith('<'):
-        building_iri = '<' + building_iri
-    if not building_iri.endswith('>'):
-        building_iri = building_iri + '>'
-    city_object = building_iri.replace('building', 'cityobject')
 
     # Construct query
     query = utils.create_sparql_prefix('ocgml') + \
-            ''' SELECT ?uprns ?theme ?class ?name
-                WHERE { ?attribute ocgml:cityObjectId %s ; \
+            ''' SELECT ?buildingIRI ?uprns ?theme ?class ?name
+                WHERE { ?attribute ocgml:cityObjectId ?buildingIRI ; \
                                    ocgml:attrName "OS_UPRNs" ; \
                                    ocgml:strVal ?uprns . \
-                        OPTIONAL { ?attr2 ocgml:cityObjectId %s ; \
+                        OPTIONAL { ?attr2 ocgml:cityObjectId ?buildingIRI ; \
                                           ocgml:attrName "building_theme" ; \
                                           ocgml:strVal ?theme . \
-                                   ?attr3 ocgml:cityObjectId %s ; \
+                                   ?attr3 ocgml:cityObjectId ?buildingIRI ; \
                                           ocgml:attrName "building_classification" ; \
                                           ocgml:strVal ?class . \
-                                   ?attr4 ocgml:cityObjectId %s ; \
+                                   ?attr4 ocgml:cityObjectId ?buildingIRI ; \
                                           ocgml:attrName "building_name" ; \
                                           ocgml:strVal ?name . } \
       		      }
-            ''' %(city_object, city_object, city_object, city_object)
-
-    # Execute query
+            '''
     res = execute_query(query, query_endpoint)
 
-    # Initialise default outputs for UPRNs and building usage information
-    uprn_list = []
-    bldg_theme = None
-    bldg_class = None
-    bldg_name = None
+    # Initialise output list
+    row_list = []
 
-    # Populate default output variables with returned values from SPARQL query where available
-    if len(res['results']['bindings']) > 0:
-        # Get available data for building of interest
-        available_data = res['results']['bindings'][0].keys()
+    # Unpack queried buildings results into pandas DataFrame
+    for i in res['results']['bindings']:
+        # Get available data for current building
+        available_data = i.keys()
+
+        # Initialise default outputs for UPRNs and building usage information
+        uprn_list = []
+        bldg_theme = None
+        bldg_class = None
+        bldg_name = None
+
+        # Obtain City Object and Building IRI
+        cityObjectIRI = i['buildingIRI']['value']
+        buildingIRI = cityObjectIRI.replace('cityobject', 'building')
+
         # Add actual list of UPRNs
         if 'uprns' in available_data:
-            uprn_list = res['results']['bindings'][0]['uprns']['value']
+            uprn_list = i['uprns']['value']
             uprn_list = uprn_list.split(',')
+
         # Add actual building usage
         if 'theme' in available_data:
-            bldg_theme = res['results']['bindings'][0]['theme']['value']
+            bldg_theme = i['theme']['value']
         if 'class' in available_data:
-            bldg_class = res['results']['bindings'][0]['class']['value']
+            bldg_class = i['class']['value']
         if 'name' in available_data:
-            bldg_name = res['results']['bindings'][0]['name']['value']
+            bldg_name = i['name']['value']
 
-    return uprn_list, bldg_theme, bldg_class, bldg_name
+        # Assign individual results to overall output list
+        row = {'building': buildingIRI,
+               'cityObject': cityObjectIRI,
+               'uprns': uprn_list,
+               'theme': bldg_theme,
+               'class': bldg_class,
+               'name': bldg_name}
+        row_list.append(row)
+
+    return pd.DataFrame(row_list)
 
 
-def get_building_height(building_iri, query_endpoint):
+def get_all_building_heights(query_endpoint):
     """
-        Retrieves building height attached (as OntoCityGML attribute) to given building (i.e. building iri)
+        Retrieves building height attached (as OntoCityGML attribute) to a building (i.e. building iri)
+        for all buildings in given namespace (i.e. query endpoint)
 
         Arguments:
-            building_iri - IRI of building (within building named graph) to retrieve building height for.
             query_endpoint - SPARQl endpoint to execute query on.
 
         Returns:
-            measured building height as float
+            DataFrame of buildingIRI and measured building height as float
     """
-
-    # Potentially condition given building IRI
-    if not building_iri.startswith('<'):
-        building_iri = '<' + building_iri
-    if not building_iri.endswith('>'):
-        building_iri = building_iri + '>'
 
     # Construct query
     query = utils.create_sparql_prefix('ocgml') + \
-            ''' SELECT ?height
-                WHERE { %s ocgml:measuredHeight ?height . }
-            ''' % building_iri
-
+            ''' SELECT ?buildingIRI ?height
+                WHERE { ?buildingIRI ocgml:measuredHeight ?height . }
+            '''
     # Execute query
     height_result = execute_query(query, query_endpoint)
 
-    # Unpack SPARQL output
-    height = None
-    if len(height_result['results']['bindings']) > 0:
-        height = float(height_result['results']['bindings'][0]['height']['value'])
+    # Unpack queried buildings results into pandas DataFrame
+    row_list = []
+    for i in height_result['results']['bindings']:
+        # Create own dictionary for each surface geometry (to form own row in later DataFrame)
+        row = {'building': i['buildingIRI']['value'],
+               'height': i['height']['value']}
+        row_list.append(row)
 
-    return height
+    return pd.DataFrame(row_list)
 
 
 def execute_query(query, query_endpoint):
@@ -402,7 +406,6 @@ if __name__ == '__main__':
 
     # Get start time
     start = dt.datetime.now()
-
     # Set Mapbox API key
     utils.set_mapbox_apikey()
 
@@ -459,6 +462,10 @@ if __name__ == '__main__':
     for k in metadata.keys():
         metadata[k] = []
 
+    # Obtain lists of building data (heights; UPRNs and building use)
+    building_data = get_all_uprns_and_building_uses(utils.QUERY_ENDPOINT)
+    building_heights= get_all_building_heights(utils.QUERY_ENDPOINT)
+
     # Initialise unique feature/building IDs
     feature_id = 0
 
@@ -509,16 +516,26 @@ if __name__ == '__main__':
                     base_polygon[0].append(poly.tolist())
 
         # Retrieve building's citygml height attribute
-        height = get_building_height(b, utils.QUERY_ENDPOINT)
+        height = float(building_heights[building_heights['building'] == b].iloc[0]['height'])
 
         # Retrieve UPRNs and building usage classification attached to current building
-        uprns, bldg_theme, bldg_class, bldg_name = get_uprns_and_building_use(b, utils.QUERY_ENDPOINT)
+        # (set to None for buildings without any data attached)
+        if building_data[building_data['building'] == b].empty:
+            uprns = None
+            bldg_theme = None
+            bldg_class = None
+            bldg_name = None
+        else:
+            uprns = building_data[building_data['building'] == b].iloc[0]['uprns']
+            bldg_theme = building_data[building_data['building'] == b].iloc[0]['theme']
+            bldg_class = building_data[building_data['building'] == b].iloc[0]['class']
+            bldg_name = building_data[building_data['building'] == b].iloc[0]['name']
+
         # Lump all building usages except Education, Medical Care, and Emergency Services into 'Other buildings'
-        if bldg_theme not in building_types.keys():
+        if not bldg_theme or bldg_theme not in building_types.keys():
             bldg_theme = 'Other buildings'
 
         # Specify building/feature properties to consider (beyond coordinates)
-
         geojson_props = {
             # Adjust building's display name depending on whether usage information is available or not
             'displayName': bldg_class if bldg_class else 'Building {}'.format(feature_id),
