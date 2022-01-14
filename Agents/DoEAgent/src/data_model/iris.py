@@ -21,6 +21,7 @@ ONTOAGENT_HASNAME = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#ha
 
 ###--- Common IRI for OntoDerivation ---###
 ONTODERIVATION_ISDERIVEDFROM = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#isDerivedFrom'
+ONTODERIVATION_DERIVATIONASYN = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#DerivationAsyn'
 
 ###--- IRIs for OntoDoE ---###
 ONTODOE_DESIGNOFEXPERIMENT = 'https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#DesignOfExperiment'

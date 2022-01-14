@@ -1,6 +1,7 @@
 # The purpose of this module is to provide utility functions
 # to interact with the knowledge graph
 #============================================================
+from urllib import response
 from rdflib import Graph, URIRef, Namespace, Literal, BNode
 from rdflib.namespace import RDF
 import pandas as pd
@@ -15,7 +16,7 @@ from kg_operations.gateway import jpsBaseLibGW, jpsBaseLib_view
 from data_model import *
 
 class SparqlClient:
-    def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password) -> None:
+    def __init__(self, query_endpoint, update_endpoint, kg_user=None, kg_password=None) -> None:
         if kg_user is not None:
             self.kg_client = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
         else:
@@ -400,6 +401,23 @@ class SparqlClient:
         tsemo_instance = TSEMO(tsemo_iri,**response[0])
         return tsemo_instance
 
+    def getNewExperimentFromDoE(self, doe_iri: str) -> str:
+        doe_iri = trimIRI(doe_iri)
+
+        query = """SELECT ?newexp \
+                WHERE { <%s> <%s> ?newexp .}""" % (doe_iri, ONTODOE_PROPOSESNEWEXPERIMENT)
+
+        response = self.performQuery(query)
+
+        if (len(response) > 1):
+            raise Exception(
+                "DesignOfExperiment instance <%s> should only propose ONE instance of NewExperiment, it is currently proposing: <%s>" % (
+                    doe_iri, ">, <".join([res['newexp'] for res in response])
+                )
+            )
+        else:
+            return response[0]['newexp']
+
     def checkInstanceClass(self, instance, instance_class):
         """
             This method checks if the given instance is instantiated from the given instance class.
@@ -430,7 +448,16 @@ class SparqlClient:
             return True
         else:
             return False
-    
+
+    def getAmountOfTriples(self):
+        query = """SELECT (COUNT(*) AS ?triples) \
+                WHERE { \
+                    ?s ?p ?o . \
+                }"""
+
+        response = self.performQuery(query)
+        return int(response[0]['triples'])
+
     def performQuery(self, query):
         """
             This function performs query to knowledge graph.

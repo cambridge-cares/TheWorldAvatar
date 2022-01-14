@@ -1,0 +1,15 @@
+{
+    "KNOWLEDGE_GRAPH": {
+        "SPARQL_QUERY_ENDPOINT": null,
+        "SPARQL_UPDATE_ENDPOINT": null,
+        "KG_USERNAME": null,
+        "KG_PASSWORD": null
+    },
+    "ONTOAGENT": {
+        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/kb/agents/Service__DoE#Service"
+    },
+    "DERIVATION_CLIENT": {
+        "PERIODIC_TIMESCALE": 5,
+        "DERIVATION_INSTANCE_BASE_URL": "http://kg.cmclinnovations.com:81/testontorxn/"
+    }
+}
