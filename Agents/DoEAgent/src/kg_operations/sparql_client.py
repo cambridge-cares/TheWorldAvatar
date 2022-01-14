@@ -15,10 +15,7 @@ from kg_operations.gateway import jpsBaseLibGW, jpsBaseLib_view
 from data_model import *
 
 class SparqlClient:
-    def __init__(self, triple_store_server, triple_store_repo, query_endpoint, update_endpoint, kg_user, kg_password) -> None:
-        self.triple_store_server = triple_store_server
-        self.triple_store_repo = triple_store_repo
-        self.kr_client = jpsBaseLib_view.KnowledgeRepository()
+    def __init__(self, query_endpoint, update_endpoint, kg_user, kg_password) -> None:
         if kg_user is not None:
             self.kg_client = jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
         else:
@@ -460,4 +457,5 @@ class SparqlClient:
             Arguments:
                 filePath - the file path of ontology to be uploaded
         """
-        self.kr_client.uploadOntology(self.triple_store_server, self.triple_store_repo, filePath)
+        javaFile = jpsBaseLib_view.java.io.File(filePath)
+        self.kg_client.uploadFile(javaFile)
