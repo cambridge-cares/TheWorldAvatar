@@ -120,7 +120,7 @@ def write_atom_info(spamwriter,gen_id,out_id,data):
             spamwriter.writerow(['Atom_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count), 'Instance',
                                 'AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
                                 ,gain_pref + 'hasAtomCoordinate' + coords[i],'',''])
-            spamwriter.writerow([gain_pref + 'hasValue','Instance','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
+            spamwriter.writerow([gain_pref + 'hasValue','Data Property','AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count)
                                     ,'',data["Geometry"][k][i],'String'])
             spamwriter.writerow(['AtomCoordinate' + coords[i] + '_' + gen_id + '_' + data[ATOM_TYPES][k] + '_' + str(count),
                                     'Instance',unit_pref + 'unit#Angstrom',gain_pref + 'hasUnit','',''])

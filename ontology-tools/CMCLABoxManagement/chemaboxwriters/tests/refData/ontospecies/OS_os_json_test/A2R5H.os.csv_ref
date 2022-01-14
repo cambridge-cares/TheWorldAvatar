@@ -17,315 +17,315 @@ Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8c
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-5.788799,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-5.788799,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-0.92337,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-0.92337,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-0.108714,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,,-0.108714,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-4.314297,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-4.314297,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-1.270313,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-1.270313,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-0.061159,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,,-0.061159,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-4.149242,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-4.149242,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-2.657219,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-2.657219,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-0.022762,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,,-0.022762,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-6.465161,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-6.465161,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-2.283702,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-2.283702,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-0.092858,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,,-0.092858,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-5.457884,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-5.457884,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-3.254751,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-3.254751,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-0.042476,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,,-0.042476,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-7.784169,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-7.784169,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-2.694792,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-2.694792,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-0.11746,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,,-0.11746,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-8.059881,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-8.059881,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-4.082957,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-4.082957,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-0.09065,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,,-0.09065,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-5.695766,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-5.695766,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-4.638127,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-4.638127,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-0.014714,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,,-0.014714,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-7.056017,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-7.056017,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-5.036717,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-5.036717,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-0.040576,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,,-0.040576,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,-3.03821,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,-3.03821,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,-3.52533,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,-3.52533,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,0.027685,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,,0.027685,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_10,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,-3.266022,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,-3.266022,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,-4.910857,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,-4.910857,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,0.055827,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,,0.055827,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_11,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#C,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,-4.539821,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,-4.539821,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,-5.474266,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,-5.474266,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,0.03628,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,,0.03628,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_C_12,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-3.524802,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-3.524802,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-0.530941,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-0.530941,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-0.058457,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,,-0.058457,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,-2.025244,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,-2.025244,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,-3.139941,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,-3.139941,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,0.045082,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,,0.045082,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_2,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,-2.408177,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,-2.408177,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,-5.574114,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,-5.574114,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,0.094912,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,,0.094912,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_3,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,-4.653905,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,-4.653905,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,-6.552483,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,-6.552483,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,0.059884,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,,0.059884,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_4,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-7.31069,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-7.31069,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-6.091171,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-6.091171,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-0.021308,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,,-0.021308,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_5,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-9.09442,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-9.09442,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-4.408365,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-4.408365,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-0.109748,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,,-0.109748,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_6,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-8.603498,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-8.603498,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-1.984868,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-1.984868,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-0.156345,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,,-0.156345,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_7,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,-6.091316,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,-6.091316,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,-0.302474,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,-0.302474,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,0.745258,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,,0.745258,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_8,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://purl.org/gc/Atom,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,http://purl.org/gc/hasAtom,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-6.044678,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-6.044678,String
 AtomCoordinateX_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-0.346641,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-0.346641,String
 AtomCoordinateY_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://purl.org/gc/FloatValue,,,
 Atom_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-1.007793,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,,-1.007793,String
 AtomCoordinateZ_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb_H_9,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
 Species_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,Instance,Charge_f54b7324-b1a5-4b42-8cfe-27e272b3b0eb,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,

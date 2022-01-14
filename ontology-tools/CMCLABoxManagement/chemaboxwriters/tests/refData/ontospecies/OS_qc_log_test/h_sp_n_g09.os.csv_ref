@@ -17,15 +17,15 @@ http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance
 Atom_testID-111-111-111_H_1,Instance,http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#H,http://purl.org/gc/isElement,,
 AtomCoordinateX_testID-111-111-111_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_testID-111-111-111_H_1,Instance,AtomCoordinateX_testID-111-111-111_H_1,http://purl.org/gc/hasAtomCoordinateX,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateX_testID-111-111-111_H_1,,-1.38032,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateX_testID-111-111-111_H_1,,-1.38032,String
 AtomCoordinateX_testID-111-111-111_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateY_testID-111-111-111_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_testID-111-111-111_H_1,Instance,AtomCoordinateY_testID-111-111-111_H_1,http://purl.org/gc/hasAtomCoordinateY,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateY_testID-111-111-111_H_1,,-0.85577,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateY_testID-111-111-111_H_1,,-0.85577,String
 AtomCoordinateY_testID-111-111-111_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 AtomCoordinateZ_testID-111-111-111_H_1,Instance,http://purl.org/gc/FloatValue,,,
 Atom_testID-111-111-111_H_1,Instance,AtomCoordinateZ_testID-111-111-111_H_1,http://purl.org/gc/hasAtomCoordinateZ,,
-http://purl.org/gc/hasValue,Instance,AtomCoordinateZ_testID-111-111-111_H_1,,0.0,String
+http://purl.org/gc/hasValue,Data Property,AtomCoordinateZ_testID-111-111-111_H_1,,0.0,String
 AtomCoordinateZ_testID-111-111-111_H_1,Instance,http://data.nasa.gov/qudt/owl/unit#Angstrom,http://purl.org/gc/hasUnit,,
 Charge_testID-111-111-111,Instance,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Charge,,,
 http://www.theworldavatar.com/kb/ontospecies/Species_testID-111-111-111,Instance,Charge_testID-111-111-111,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasCharge,,
