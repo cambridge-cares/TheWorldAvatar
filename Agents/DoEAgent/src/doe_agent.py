@@ -1,6 +1,3 @@
-from flask import Flask
-from flask_apscheduler import APScheduler
-
 from dataclasses import asdict
 from typing import List
 import json
@@ -11,6 +8,9 @@ import agentlogging
 
 from kg_operations import *
 from doe_algo import *
+
+from flask import Flask
+from conf import *
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")
@@ -36,10 +36,9 @@ class DoEAgent(AsyncAgent):
         # Load string to JSON object (python dict)
         input_json = json.loads(agentInputs) if not isinstance(agentInputs, dict) else agentInputs
 
-        # Create kg_client
-        self.kg_client = KGClient(
-            TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY,
-            SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, None, None
+        # Create sparql_client
+        self.sparql_client = SparqlClient(
+            self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword
         )
         # Check if the input is in correct format, and return OntoDoE.DesignOfExperiment instance
         doe_instance = self.collectInputsInformation(input_json)
@@ -51,7 +50,7 @@ class DoEAgent(AsyncAgent):
 
         # Upload the created OntoDoE:NewExperiment (including OntoRxn:ReactionVariation) triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoDoE:NewExperiment
-        self.kg_client.updateNewExperimentInKG(doe_instance, doe_instance_new_exp)
+        self.sparql_client.updateNewExperimentInKG(doe_instance, doe_instance_new_exp)
 
         logger.info(f"The proposed new experiment is recorded in <{doe_instance_new_exp.instance_iri}>.")
         return [doe_instance_new_exp.instance_iri]
@@ -76,7 +75,7 @@ class DoEAgent(AsyncAgent):
             if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
                 try:
                     # Get the information from OntoDoE:Strategy instance
-                    strategy_instance = self.kg_client.getDoEStrategy(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+                    strategy_instance = self.sparql_client.getDoEStrategy(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
                 except ValueError:
                     logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
                     raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
@@ -86,7 +85,7 @@ class DoEAgent(AsyncAgent):
 
             if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
                 try:
-                    domain_instance = self.kg_client.getDoEDomain(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+                    domain_instance = self.sparql_client.getDoEDomain(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
                 except ValueError:
                     logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
                     raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
@@ -96,7 +95,7 @@ class DoEAgent(AsyncAgent):
 
             if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
                 try:
-                    system_response_instance = self.kg_client.getSystemResponses(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+                    system_response_instance = self.sparql_client.getSystemResponses(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
                 except ValueError:
                     logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
                     raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
@@ -106,7 +105,7 @@ class DoEAgent(AsyncAgent):
 
             if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
                 try:
-                    historical_data_instance = self.kg_client.getDoEHistoricalData(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+                    historical_data_instance = self.sparql_client.getDoEHistoricalData(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
                 except ValueError:
                     logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
                     raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
@@ -123,7 +122,7 @@ class DoEAgent(AsyncAgent):
                 proposesNewExperiment=None) # TODO maybe also initialise NewExperiment?
 
             # Get the OntoDoE:DesignOfExperiment instances given the inputs, i.e. all the inputs should belong to the same OntoDoE:DesignOfExperiment instance
-            doe_instance = self.kg_client.getDoEInstanceIRI(doe_instance)
+            doe_instance = self.sparql_client.getDoEInstanceIRI(doe_instance)
             return doe_instance
 
         else:
@@ -167,24 +166,22 @@ def exampleEntryPoint():
     # Initialise derivationClient with SPARQL Query and Update endpoints
     storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
     derivationClient = jpsBaseLib_view.DerivationClient(storeClient, 'https://www.example.com/triplestore/repository/')
-    print(os.getcwd())
 
     clearAll = """DELETE {?s ?p ?o} \
                WHERE {?s ?p ?o}
                """
 
-    kg_client = KGClient(
-            TRIPLE_STORE_UPLOAD_SERVER, TRIPLE_STORE_UPLOAD_REPOSITORY,
+    sparql_client = SparqlClient(
             SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, KG_USERNAME, KG_PASSWORD
         )
     
-    kg_client.performUpdate(clearAll)
+    sparql_client.performUpdate(clearAll)
 
     filepath = os.getcwd() + '/test/resources/' #'/Agents/DoEAgent/summit_agent/resources/'
     for f in ['doe.ttl', 'Service__DoE.ttl', 'rxn_data.ttl']:
         with open(filepath+f, 'r') as file:
             data = file.read()
-            kg_client.performUpdate(data)
+            sparql_client.performUpdate(data)
 
     # Hardcode the IRI to be used for the example
     # Developers should upload the files containing these triples to the endpoints following the instructions in the README.md
