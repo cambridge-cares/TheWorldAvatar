@@ -1,0 +1,10 @@
+version: "1.0"
+
+services:
+  jps-ontomatch:
+    image: ontomatch:1.0.0
+    build: .
+    container_name: jps_ontomatch
+    pull_policy: if_not_present
+    ports:
+      - "3001:5000"
