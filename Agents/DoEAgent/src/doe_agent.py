@@ -1,4 +1,5 @@
 from dataclasses import asdict
+from pathlib import Path
 from typing import List
 import json
 import os
@@ -55,7 +56,7 @@ class DoEAgent(AsyncAgent):
         logger.info(f"The proposed new experiment is recorded in <{doe_instance_new_exp.instance_iri}>.")
         return [doe_instance_new_exp.instance_iri]
 
-    def collectInputsInformation(self, input_json) -> DesignOfExperiment:
+    def collectInputsInformation(self, agent_inputs) -> DesignOfExperiment:
         """
             This function checks the input parameters of the HTTP request against the I/O signiture as declared in the DoE Agent OntoAgent instance and collects information.
         """
@@ -71,44 +72,47 @@ class DoEAgent(AsyncAgent):
                                     }
                                 }"""
         # If the input JSON string is missing mandatory keys, raise error with "exception_string"
-        if DOEAGENT_INPUT_JSON_KAY in input_json:
-            if ONTODOE_STRATEGY in input_json[DOEAGENT_INPUT_JSON_KAY]:
+        agent_input_key = str(jpsBaseLib_view.DerivationClient.AGENT_INPUT_KEY)
+        if agent_input_key in agent_inputs:
+            input_json = agent_inputs[agent_input_key]
+
+            if ONTODOE_STRATEGY in input_json:
                 try:
                     # Get the information from OntoDoE:Strategy instance
-                    strategy_instance = self.sparql_client.getDoEStrategy(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+                    strategy_instance = self.sparql_client.getDoEStrategy(input_json[ONTODOE_STRATEGY])
                 except ValueError:
-                    logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
-                    raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_STRATEGY])
+                    logger.error("Unable to interpret strategy ('%s') as an IRI." % input_json[ONTODOE_STRATEGY])
+                    raise Exception("Unable to interpret strategy ('%s') as an IRI." % input_json[ONTODOE_STRATEGY])
             else:
                 logger.error('OntoDoE:Strategy instance might be missing.\n' + exception_string)
                 raise Exception('OntoDoE:Strategy instance might be missing.\n' + exception_string)
 
-            if ONTODOE_DOMAIN in input_json[DOEAGENT_INPUT_JSON_KAY]:
+            if ONTODOE_DOMAIN in input_json:
                 try:
-                    domain_instance = self.sparql_client.getDoEDomain(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+                    domain_instance = self.sparql_client.getDoEDomain(input_json[ONTODOE_DOMAIN])
                 except ValueError:
-                    logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
-                    raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_DOMAIN])
+                    logger.error("Unable to interpret domain ('%s') as an IRI." % input_json[ONTODOE_DOMAIN])
+                    raise Exception("Unable to interpret domain ('%s') as an IRI." % input_json[ONTODOE_DOMAIN])
             else:
                 logger.error('OntoDoE:Domain instance might be missing.\n' + exception_string)
                 raise Exception('OntoDoE:Domain instance might be missing.\n' + exception_string)
 
-            if ONTODOE_SYSTEMRESPONSE in input_json[DOEAGENT_INPUT_JSON_KAY]:
+            if ONTODOE_SYSTEMRESPONSE in input_json:
                 try:
-                    system_response_instance = self.sparql_client.getSystemResponses(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+                    system_response_instance = self.sparql_client.getSystemResponses(input_json[ONTODOE_SYSTEMRESPONSE])
                 except ValueError:
-                    logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
-                    raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_SYSTEMRESPONSE])
+                    logger.error("Unable to interpret systemResponse ('%s') as an IRI." % input_json[ONTODOE_SYSTEMRESPONSE])
+                    raise Exception("Unable to interpret systemResponse ('%s') as an IRI." % input_json[ONTODOE_SYSTEMRESPONSE])
             else:
                 logger.error('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
                 raise Exception('OntoDoE:SystemResponse instances might be missing.\n' + exception_string)
 
-            if ONTODOE_HISTORICALDATA in input_json[DOEAGENT_INPUT_JSON_KAY]:
+            if ONTODOE_HISTORICALDATA in input_json:
                 try:
-                    historical_data_instance = self.sparql_client.getDoEHistoricalData(input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+                    historical_data_instance = self.sparql_client.getDoEHistoricalData(input_json[ONTODOE_HISTORICALDATA])
                 except ValueError:
-                    logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
-                    raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[DOEAGENT_INPUT_JSON_KAY][ONTODOE_HISTORICALDATA])
+                    logger.error("Unable to interpret historicalData ('%s') as an IRI." % input_json[ONTODOE_HISTORICALDATA])
+                    raise Exception("Unable to interpret historicalData ('%s') as an IRI." % input_json[ONTODOE_HISTORICALDATA])
             else:
                 logger.error('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
                 raise Exception('OntoDoE:HistoricalData instance might be missing.\n' + exception_string)
@@ -126,8 +130,8 @@ class DoEAgent(AsyncAgent):
             return doe_instance
 
         else:
-            logger.error('Key "agent_input" might be missing.\n' + exception_string)
-            raise Exception('Key "agent_input" might be missing.\n' + exception_string)
+            logger.error('Agent input key (%s) might be missing.\n' % (agent_input_key) + exception_string)
+            raise Exception('Agent input key (%s) might be missing.\n' % (agent_input_key) + exception_string)
 
 def suggest(doe_instance: DesignOfExperiment) -> NewExperiment:
     """
@@ -163,16 +167,18 @@ def exampleEntryPoint():
         Response:
             the created OntoDerivation:Derivation instance
     """
+    config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/conf/doeagent_properties.json')
+
     # Initialise derivationClient with SPARQL Query and Update endpoints
-    storeClient = jpsBaseLib_view.RemoteStoreClient(SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT)
-    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, 'https://www.example.com/triplestore/repository/')
+    storeClient = jpsBaseLib_view.RemoteStoreClient(config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT)
+    derivationClient = jpsBaseLib_view.DerivationClient(storeClient, config.DERIVATION_INSTANCE_BASE_URL)
 
     clearAll = """DELETE {?s ?p ?o} \
                WHERE {?s ?p ?o}
                """
 
     sparql_client = SparqlClient(
-            SPARQL_QUERY_ENDPOINT, SPARQL_UPDATE_ENDPOINT, KG_USERNAME, KG_PASSWORD
+            config.SPARQL_QUERY_ENDPOINT, config.SPARQL_UPDATE_ENDPOINT, config.KG_USERNAME, config.KG_PASSWORD
         )
     
     sparql_client.performUpdate(clearAll)
@@ -186,7 +192,7 @@ def exampleEntryPoint():
     # Hardcode the IRI to be used for the example
     # Developers should upload the files containing these triples to the endpoints following the instructions in the README.md
     derived = ['https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_1']
-    agentIRI = DOEAGENT_ONTOAGENT_SERVICE
+    agentIRI = config.ONTOAGENT_SERVICE
     inputs = ['https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1', 
     'https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1', 
     'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1', 
@@ -211,7 +217,9 @@ def exampleEntryPoint():
 
 flask_app = Flask(__name__)
 
-app = DoEAgent(flask_app, DOEAGENT_ONTOAGENT_SERVICE, PERIODIC_TIMESCALE, DERIVATION_INSTANCE_BASE_URL, SPARQL_QUERY_ENDPOINT)
+doe_agent_config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/conf/doeagent_properties.json')
+
+app = DoEAgent(flask_app, doe_agent_config.ONTOAGENT_SERVICE, doe_agent_config.PERIODIC_TIMESCALE, doe_agent_config.DERIVATION_INSTANCE_BASE_URL, doe_agent_config.SPARQL_QUERY_ENDPOINT)
 app.add_url_pattern('/', 'root', default, methods=['GET'])
 app.add_url_pattern('/example', 'example', exampleEntryPoint, methods=['GET'])
 
