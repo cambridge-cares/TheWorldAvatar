@@ -9,7 +9,9 @@ import org.apache.logging.log4j.Logger;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -284,9 +286,10 @@ public class AccessAgentCaller{
 			if(scheme == null) {
 				scheme = "http";
 			}
-			//If no authority is given then use the default host 
+			//If no authority is given then get the host 
 			if(authority == null) {
-				authority = JPSConstants.ACCESS_AGENT_HOST;
+				//TODO this should be done by an "Agent Locator"
+				authority = KeyValueManager.get(IKeys.URL_ACCESSAGENT_HOST);
 			}
 			
 			requestUrl = new URI(scheme,authority,JPSConstants.ACCESS_AGENT_PATH,null,null);
