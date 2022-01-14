@@ -1,8 +1,8 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 02 Dec 2021                   #
+# Last Update Date: 13 Jan 2022                   #
 ###################################################
-from UK_Digital_Twin_Package.DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
+from DistanceCalculator import DistanceBasedOnGPSLocation as GPS_distance
 from collections import Counter
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -14,7 +14,10 @@ from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endp
 from UK_Power_Grid_Topology_Generator.topologyABoxGeneration import checkaggregatedBus
 from UK_Digital_Twin_Package.busLocatedRangeFinder import busLocatedRegionFinder
 from UK_Digital_Twin_Package.generatorCluster import busLocationFinderForGBOrNI
+from UK_Digital_Twin_Package.polygonCoversEdinburghChannel import EdinburghChannelNorthShapely, EdinburghChannelSouthShapely, complementaryBorderShapely
 from math import sin, cos, sqrt, atan2, radians, degrees
+import shapely.geometry
+from shapely.validation import make_valid
 
 """This class is designed to provide several ways of allocating the electricity demand load to each bus based on different allocation principles"""
 class demandLoadAllocator(object):
@@ -166,7 +169,169 @@ class demandLoadAllocator(object):
       else:
           print("************All buses are assigned with demand loads************") 
       aggregatedBusFlag = False      
-      return busAndDemandPairList, aggregatedBusFlag 
+      return busAndDemandPairList, aggregatedBusFlag
+ 
+ #TODO: Add boundary checking    
+    def closestDemandLoad_withEWSBoundCheck(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, numOfBranch):
+      # res_queryBusTopologicalInformation = [Bus_node, EBus, Bus_lat_lon[]]
+      # res_queryElectricityConsumption_LocalArea = [Area_LACode, v_TotalELecConsumption, Geo_InfoList]
+      print('****The cluster principle is closestDemandLoad_withEWSBoundCheck****')
+      ons_label = endpointList.ONS['lable']
+      ons_iri = endpointList.ONS['queryendpoint_iri']
+      ukdigitaltwin_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
+      # query the local consumption
+      res_queryElectricityConsumption_LocalArea = list(query_model.queryElectricityConsumption_LocalArea(startTime_of_EnergyConsumption, ukdigitaltwin_iri, ons_iri))
+      # detect the location of the bus, in GB or in NI
+      busInGB, busInNorthernIreland, countryBoundaryDict = busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label)   
+      # query the bounderies of England&Wales, England, Wales
+      EngAndWalesBound, EngBound, WalesBound, ScotlandBound = query_topo.queryEnglandAndWalesAndScotlandBounderies(ons_label)
+      # the border between England and Wales
+      BorderOfEnglandAndWales = make_valid(EngBound).intersection(make_valid(WalesBound))
+      # the south coast and North coast of Edinburgh sea channel
+      EdinburghChannelNorthCoast = make_valid(ScotlandBound).intersection(make_valid(EdinburghChannelNorthShapely))
+      EdinburghChannelSouthCoast = make_valid(ScotlandBound).intersection(make_valid(EdinburghChannelSouthShapely))
+      
+      # find the centroid of the polygon, the value of the 
+      for ec in res_queryElectricityConsumption_LocalArea:
+          if ec['Geo_InfoList'].geom_type == 'MultiPolygon':
+             ec['Geo_InfoList'] = centroidOfMultipolygon_withAreaWeighted(ec['Geo_InfoList']) 
+          elif ec['Geo_InfoList'].geom_type == 'Polygon':
+              lon = ec['Geo_InfoList'].centroid.x
+              lat = ec['Geo_InfoList'].centroid.y
+              ec['Geo_InfoList'] = [lat, lon] 
+
+      busAndDemandPairList = []
+      busAndDemandPairList_duplicated = []
+      busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
+      mismatch = 0
+      for ec in res_queryElectricityConsumption_LocalArea:
+        busAndDemandPair = {}  
+        if len(busInGB) > 0: 
+            # initial the demandAreaWithinGBFlag for identifying if the current pp located in the GB
+            demandAreaWithinGBFlag = False
+            if query_topo.queryifWithin(ec['Area_LACode'], 'K04000001', ons_label) == True: # demand area located in England and Wales
+                ec.update({'EWS_LACode': 'K04000001'})
+                demandAreaWithinGBFlag = True               
+            elif query_topo.queryifWithin(ec['Area_LACode'], 'S04000001', ons_label) == True: # check if the demand area is located in Scotland
+                ec.update({'EWS_LACode': 'S04000001'})
+                demandAreaWithinGBFlag = True               
+            
+            if demandAreaWithinGBFlag == False:
+                print('######', ec['Area_LACode'], ' is not located in GB.')
+            elif demandAreaWithinGBFlag == True:  
+                j = 0
+                distances = [65534]*len(busInGB) # the large number is the earth's circumference
+                BusDemandAreaGPSPairList = []
+                for bus in busInGB:
+                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
+                  distances[j] = GPS_distance(GPSLocationPair)
+                  BusDemandAreaGPSPairList.append(GPSLocationPair)
+                  j += 1
+                  
+                bus_index = distances.index(min(distances))  
+                BusDemandAreaGPSPair = BusDemandAreaGPSPairList[bus_index] 
+                BusDemandAreaGPSTie = shapely.geometry.LineString([(BusDemandAreaGPSPair[1], BusDemandAreaGPSPair[0]), \
+                                                                                    (BusDemandAreaGPSPair[3], BusDemandAreaGPSPair[2])])
+                
+                # check the mismatch which is to avoid the situation like a power plant being connected to a bus located across the Bristol channel
+                if ec['EWS_LACode'] == 'K04000001':
+                   while make_valid(EngAndWalesBound).crosses(BusDemandAreaGPSTie) == True and BorderOfEnglandAndWales.crosses(BusDemandAreaGPSTie) == False \
+                       and complementaryBorderShapely.crosses(BusDemandAreaGPSTie) == False:
+                       print('%%%%%%%This demand-bus tie crosses the E&W', busInGB[bus_index]['Bus_node'], \
+                                 busInGB[bus_index]['Bus_lat_lon'], ec['Area_LACode'], ec['Geo_InfoList'], min(distances))
+                       # print('If crosses the E&W Border', BorderOfEnglandAndWales.crosses(BusDemandAreaGPSTie), BusDemandAreaGPSTie)
+                       print(BusDemandAreaGPSPair)
+                       if make_valid(EngBound).disjoint(BusDemandAreaGPSTie) == False and make_valid(WalesBound).disjoint(BusDemandAreaGPSTie) == False:
+                           print('!!!!!!This demand area is not allowed to be allocated to the bus', busInGB[bus_index]['Bus_node'], \
+                                 busInGB[bus_index]['Bus_lat_lon'], ec['Area_LACode'], ec['Geo_InfoList'], min(distances))
+                           print(BusDemandAreaGPSPair)
+                           distances[bus_index] = 65534
+                           bus_index = distances.index(min(distances))  
+                           BusDemandAreaGPSPair = BusDemandAreaGPSPairList[bus_index] 
+                           BusDemandAreaGPSTie = shapely.geometry.LineString([(BusDemandAreaGPSPair[1], BusDemandAreaGPSPair[0]), \
+                                                                                    (BusDemandAreaGPSPair[3], BusDemandAreaGPSPair[2])])
+                           print('@@@@@@@@@The new pair is', BusDemandAreaGPSPair)
+                           mismatch +=1
+                           print('^^^^^^^^The number of the mismatch is:', mismatch)
+                       else:
+                           break
+                elif ec['EWS_LACode'] == 'S04000001':    
+                   while make_valid(EdinburghChannelNorthCoast).crosses(BusDemandAreaGPSTie) == True and make_valid(EdinburghChannelSouthCoast).crosses(BusDemandAreaGPSTie) == True:
+                       print('%%%%%%%This pp-bus tie crosses the Edinburgh channel', busInGB[bus_index]['Bus_node'], \
+                                 busInGB[bus_index]['Bus_lat_lon'], ec['Area_LACode'], ec['Geo_InfoList'], min(distances))
+                       distances[bus_index] = 65534
+                      
+                       bus_index = distances.index(min(distances))  
+                       BusDemandAreaGPSPair = BusDemandAreaGPSPairList[bus_index] 
+                       BusDemandAreaGPSTie = shapely.geometry.LineString([(BusDemandAreaGPSPair[1], BusDemandAreaGPSPair[0]), \
+                                                                                    (BusDemandAreaGPSPair[3], BusDemandAreaGPSPair[2])])
+                       print('@@@@@@@@@The new pair is', BusDemandAreaGPSPair)
+                       mismatch +=1
+                       print('^^^^^^^^The number of the mismatch is:', mismatch)
+                   
+                busAndDemandPair = {**busInGB[bus_index], **ec}
+                if len(busAndDemandPairList) != 0:
+                    hitFlag = False
+                    for bd in busAndDemandPairList: 
+                        if str(busAndDemandPair['Bus_node']) == bd['Bus_node']:
+                            bd['v_TotalELecConsumption'] = round((float(bd['v_TotalELecConsumption'])+ float(busAndDemandPair['v_TotalELecConsumption'])), 4)
+                            hitFlag = True
+                            break
+                    if hitFlag == False:
+                        busAndDemandPairList.append(busAndDemandPair) 
+                else: 
+                    busAndDemandPairList.append(busAndDemandPair) 
+                    
+                ###########################################################
+                # busAndDemandPairList_duplicated is used to visualise the allocation result in testing mode
+                busAndDemandPairList_duplicated.append(busAndDemandPair)  
+                ###########################################################
+                
+                busNo = int(busAndDemandPair['Bus_node'].split("EBus-")[1])
+                if busNo in busNumberArray:
+                   busNumberArray.remove(busNo)
+                continue # if the demand area is within GB, then it is not necessary to check its distance from the buses located in NI, jump from the current loop
+      
+        if len(busInNorthernIreland) > 0:       
+            #demandArea_within_flag = query_topo.queryifWithin(ec['Area_LACode'], 'N07000001', ons_label)
+            if query_topo.queryifWithin(ec['Area_LACode'], 'N07000001', ons_label) == True: # demand area located in NI
+                j = 0
+                distances = [65534]*len(busInNorthernIreland) # the large number is the earth's circumference
+                for bus in busInNorthernIreland:
+                  GPSLocationPair = [float(ec['Geo_InfoList'][0]), float(ec['Geo_InfoList'][1]), float(bus['Bus_lat_lon'][0]), float(bus['Bus_lat_lon'][1])]    
+                  distances[j] = GPS_distance(GPSLocationPair)
+                  j += 1
+                
+                bus_index = distances.index(min(distances))    
+                busAndDemandPair = {**busInNorthernIreland[bus_index], **ec}
+                if len(busAndDemandPairList) != 0:
+                    hitFlag = False
+                    for bd in busAndDemandPairList: 
+                        if str(busAndDemandPair['Bus_node']) == bd['Bus_node']:
+                            bd['v_TotalELecConsumption'] = round((float(bd['v_TotalELecConsumption']) + float(busAndDemandPair['v_TotalELecConsumption'])), 4)
+                            hitFlag = True
+                            break
+                    if hitFlag == False:
+                        busAndDemandPairList.append(busAndDemandPair) 
+                else: 
+                    busAndDemandPairList.append(busAndDemandPair)  
+                    
+                ###########################################################
+                # busAndDemandPairList_duplicated is used to visualise the allocation result in testing mode
+                busAndDemandPairList_duplicated.append(busAndDemandPair)  
+                ###########################################################  
+                
+                busNo = int(busAndDemandPair['Bus_node'].split("EBus-")[1])
+                if busNo in busNumberArray:
+                   busNumberArray.remove(busNo)
+      
+      # check if all buses are assigned with loads  
+      if len(busNumberArray) != 0:
+          print("WARNING: There are buses not being assigned with any load, which are number:", busNumberArray)
+      else:
+          print("************All buses are assigned with demand loads************") 
+      aggregatedBusFlag = False      
+      return busAndDemandPairList, busAndDemandPairList_duplicated, aggregatedBusFlag 
 
 # This method is developed to find an approximal centroid of the Multipolygon. 
 # The centroid of each polygon made up the multipolygon is found at first and the centroid of the multipolygon is approximated by the centre of those centroids.
@@ -204,6 +369,146 @@ def centroidOfMultiplePoints(PointList):
   centroid = [lat, lon]  
   return centroid
 
+#TODO: add the area Weighted comparison 
+def centroidOfMultipolygon_withAreaWeighted(multipolygon):
+  # x ,y , z = 0, 0, 0
+  centroidPointList = []
+  arealist = []
+  polygonList = multipolygon.geoms
+  for polygon in polygonList:
+    centroidPoint = polygon.centroid
+    areaOfpolygon = polygon.area
+    lon = polygon.centroid.x
+    lat = polygon.centroid.y
+    # print('lon-lat', lon, lat)
+    centroidPoint = [lat, lon]
+    centroidPointList.append(centroidPoint)
+    arealist.append(areaOfpolygon)
+  centroid = centroidOfMultiplePoints_withAreaWeighted(centroidPointList, arealist)
+  return centroid
+
+def centroidOfMultiplePoints_withAreaWeighted(PointList, arealist):
+  x ,y , z = 0, 0, 0 
+  index = 0
+  
+  numOfPoint = len(PointList)
+  totalAreaOfMultipolygon = sum(arealist)
+  
+  for lat, lon in PointList:
+      lat = radians(float(lat))
+      lon = radians(float(lon))
+      
+      ratio = arealist[index] / totalAreaOfMultipolygon
+    
+      x += cos(lat) * cos(lon) * ratio
+      y += cos(lat) * sin(lon) * ratio
+      z += sin(lat) * ratio
+      index += 1
+      
+  x = float(x/numOfPoint)
+  y = float(y/numOfPoint)
+  z = float(z/numOfPoint)
+  
+  lon = degrees(atan2(y,x)) 
+  lat = degrees(atan2(z, sqrt(x * x + y * y)))  
+  centroid = [lat, lon]  
+  return centroid
+
+def test_MultipolygonCentroid():
+    ons_label = endpointList.ONS['lable']
+    cardiffBoundary = query_topo.queryCardiffBound(ons_label)
+    # arealist = []
+    # polygonListOfcardiffBoundary = cardiffBoundary.geoms
+    # for polygon in polygonListOfcardiffBoundary:    
+    #     areaOfpolygon = polygon.area
+    #     arealist.append(areaOfpolygon)
+    
+    # ratio = arealist[1] / arealist[0]
+    # print(ratio)
+    centroid = centroidOfMultipolygon_withAreaWeighted(cardiffBoundary)
+    return centroid
+
+####################### test end#################
+        
+#TODO: for visualisation
+def generatorClusteringColour(gen_bus):
+  #https://htmlcolorcodes.com/
+  map_bus_dict = {
+        0: "#ffffff",
+        1: "#AED6F1",
+        2: "#1F618D",
+        3: "#F9E79F",
+        4: "#99A3A4",
+        5: "#1B2631",
+        6: "#DC7633",
+        7: "#F1C40F",
+        8: "#1F618D",
+        9: "#873600",
+        10: "#c0c0c0",
+        11: "#800000",
+        12: "#808000",
+        13: "#00ff00",
+        14: "#ff00ff",
+        15: "#5f5fff",
+        16: "#5fd787",
+        17: "#875f5f",
+        18: "#af5f00",
+        19: "#d75f5f",
+        20: "#afffff",
+        21: "#d7af00",
+        22: "#3a3a3a",
+        23: "#0000af",
+        24: "#ffff00",
+        25: "#5f00ff",
+        26: "#5fd700",
+        27: "#ffd7ff",
+        28: "#080808",
+        29: "#1E8449"
+    }
+  return map_bus_dict[(gen_bus%30)]
+
+def genLocationJSONCreator(busAndDemandPairList_duplicated, class_label_29_gen_GPS): 
+    geojson_file = """
+      {
+        "type": "FeatureCollection",
+        "features": ["""
+      # iterating over features (rows in results array)
+    for r in busAndDemandPairList_duplicated:
+          # creating point feature 
+          feature = """{
+            "type": "Feature",
+            "properties": {
+              "Name": "%s",
+              "marker-color": "%s",
+              "marker-size": "small",
+              "marker-symbol": "circle",
+              "Connected_bus": "%s"
+              
+            },
+            "geometry": {
+              "type": "Point",
+              "coordinates": [
+                %s,
+                %s
+              ]
+            }                     
+          },""" %(r['Area_LACode'], generatorClusteringColour(r['Bus_node']), r['Bus_node'], r['Geo_InfoList'][1], r['Geo_InfoList'][0])         
+          # adding new line 
+          geojson_file += '\n'+feature   
+    # removing last comma as is last line
+    geojson_file = geojson_file[:-1]
+    # finishing file end 
+    end_geojson = """
+        ]
+      }
+      """
+    geojson_file += end_geojson
+    # saving as geoJSON
+    geojson_written = open(class_label_29_gen_GPS + '.geojson','w')
+    geojson_written.write(geojson_file)
+    geojson_written.close()
+    return
+
 if __name__ == '__main__':
     res_queryBusTopologicalInformation = [{'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001', 'Bus_lat': '-0.1373639', 'Region': 'https://dbpedia.org/page/South_East_England', 'Bus_lon': '50.8223711'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-002', 'Bus_lat': '-2.5879675', 'Region': 'https://dbpedia.org/page/South_West_England', 'Bus_lon': '51.4545085'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-003', 'Bus_lat': '-0.1278966', 'Region': 'https://dbpedia.org/page/London', 'Bus_lon': '51.5073321'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-004', 'Bus_lat': '1.2972594', 'Region': 'https://dbpedia.org/page/East_of_England', 'Bus_lon': '52.6308914'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-005', 'Bus_lat': '-1.1395656', 'Region': 'https://dbpedia.org/page/East_Midlands', 'Bus_lon': '52.6365868'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-006', 'Bus_lat': '-1.8905143', 'Region': 'https://dbpedia.org/page/West_Midlands_(county)', 'Bus_lon': '52.4862263'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-007', 'Bus_lat': '-2.2427672', 'Region': 'https://dbpedia.org/page/North_West_England', 'Bus_lon': '53.4807532'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-008', 'Bus_lat': '-1.5492442', 'Region': 'https://dbpedia.org/page/Yorkshire_and_the_Humber', 'Bus_lon': '53.8007312'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-008', 'Bus_lat': '-1.5492442', 'Region': 'https://dbpedia.org/page/North_East_England', 'Bus_lon': '53.8007312'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-009', 'Bus_lat': '-3.1791789', 'Region': 'https://dbpedia.org/page/Wales', 'Bus_lon': '51.4815857'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-010', 'Bus_lat': '-4.2519078', 'Region': 'https://dbpedia.org/page/Scotland', 'Bus_lon': '55.8642343'}]
     # res_29_bus = [{'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-001', 'Bus_lat': '57.4698798', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-001_Scotland.owl#EBus-001_Scotland', 'Bus_lon': '-4.4906735'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-002', 'Bus_lat': '57.4745293', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-002_Scotland.owl#EBus-002_Scotland', 'Bus_lon': '-1.7998211'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-003', 'Bus_lat': '56.7070037', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-003_Scotland.owl#EBus-003_Scotland', 'Bus_lon': '-4.0107947'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-004', 'Bus_lat': '56.0386335', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-004_Scotland.owl#EBus-004_Scotland', 'Bus_lon': '-3.8890767'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-005', 'Bus_lat': '55.8095298', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-005_Scotland.owl#EBus-005_Scotland', 'Bus_lon': '-4.4768292'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-006', 'Bus_lat': '55.7509421', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-006_Scotland.owl#EBus-006_Scotland', 'Bus_lon': '-4.0805189'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-007', 'Bus_lat': '55.966361', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-007_Scotland.owl#EBus-007_Scotland', 'Bus_lon': '-2.4082467'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-008', 'Bus_lat': '55.6684972', 'Region': 'https://dbpedia.org/page/Scotland', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-008_Scotland.owl#EBus-008_Scotland', 'Bus_lon': '-2.3299805'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-009', 'Bus_lat': '54.9419311', 'Region': 'https://dbpedia.org/page/North_West_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-009_North_West_England.owl#EBus-009_North_West_England', 'Bus_lon': '-2.9618091'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-010', 'Bus_lat': '54.9744212', 'Region': 'https://dbpedia.org/page/North_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-010_North_East_England.owl#EBus-010_North_East_England', 'Bus_lon': '-1.7329921'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-011', 'Bus_lat': '53.7443568', 'Region': 'https://dbpedia.org/page/North_West_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-011_North_West_England.owl#EBus-011_North_West_England', 'Bus_lon': '-2.7549931'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-012', 'Bus_lat': '53.2292472', 'Region': 'https://dbpedia.org/page/Wales', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-012_Wales.owl#EBus-012_Wales', 'Bus_lon': '-3.0317476'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-013', 'Bus_lat': '53.4269672', 'Region': 'https://dbpedia.org/page/North_West_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-013_North_West_England.owl#EBus-013_North_West_England', 'Bus_lon': '-2.3787821'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-014', 'Bus_lat': '53.4877894', 'Region': 'https://dbpedia.org/page/Yorkshire_and_the_Humber', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-014_Yorkshire_and_the_Humber.owl#EBus-014_Yorkshire_and_the_Humber', 'Bus_lon': '-1.6016288'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-015', 'Bus_lat': '53.9002325', 'Region': 'https://dbpedia.org/page/Yorkshire_and_the_Humber', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-015_Yorkshire_and_the_Humber.owl#EBus-015_Yorkshire_and_the_Humber', 'Bus_lon': '-0.8235841'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-016', 'Bus_lat': '53.5973069', 'Region': 'https://dbpedia.org/page/East_Midlands', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-016_East_Midlands.owl#EBus-016_East_Midlands', 'Bus_lon': '-0.755805'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-017', 'Bus_lat': '52.862919', 'Region': 'https://dbpedia.org/page/East_Midlands', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-017_East_Midlands.owl#EBus-017_East_Midlands', 'Bus_lon': '-1.257635'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-018', 'Bus_lat': '52.2512438', 'Region': 'https://dbpedia.org/page/West_Midlands_(county)', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-018_West_Midlands_(county).owl#EBus-018_West_Midlands_(county)', 'Bus_lon': '-1.9735155'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-019', 'Bus_lat': '52.7269277', 'Region': 'https://dbpedia.org/page/East_of_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-019_East_of_England.owl#EBus-019_East_of_England', 'Bus_lon': '0.1981251'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-020', 'Bus_lat': '52.0716528', 'Region': 'https://dbpedia.org/page/East_of_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-020_East_of_England.owl#EBus-020_East_of_England', 'Bus_lon': '1.0631638'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-021', 'Bus_lat': '51.9351319', 'Region': 'https://dbpedia.org/page/East_of_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-021_East_of_England.owl#EBus-021_East_of_England', 'Bus_lon': '0.1167908'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-022', 'Bus_lat': '51.9270632', 'Region': 'https://dbpedia.org/page/South_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-022_South_East_England.owl#EBus-022_South_East_England', 'Bus_lon': '-0.9099366'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-023', 'Bus_lat': '51.3749726', 'Region': 'https://dbpedia.org/page/South_West_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-023_South_West_England.owl#EBus-023_South_West_England', 'Bus_lon': '-2.1441581'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-024', 'Bus_lat': '51.3358918', 'Region': 'https://dbpedia.org/page/South_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-024_South_East_England.owl#EBus-024_South_East_England', 'Bus_lon': '-1.0775578'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-025', 'Bus_lat': '51.5077431', 'Region': 'https://dbpedia.org/page/London', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-025_London.owl#EBus-025_London', 'Bus_lon': '-0.1271547'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-026', 'Bus_lat': '51.3684603', 'Region': 'https://dbpedia.org/page/South_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-026_South_East_England.owl#EBus-026_South_East_England', 'Bus_lon': '0.7414151'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-027', 'Bus_lat': '51.1050295', 'Region': 'https://dbpedia.org/page/South_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-027_South_East_England.owl#EBus-027_South_East_England', 'Bus_lon': '0.9761146'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-028', 'Bus_lat': '50.9163709', 'Region': 'https://dbpedia.org/page/South_East_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-028_South_East_England.owl#EBus-028_South_East_England', 'Bus_lon': '-1.0383188'}, {'Bus_node': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/29_bus_model.owl#EquipmentConnection_EBus-029', 'Bus_lat': '50.7674626', 'Region': 'https://dbpedia.org/page/South_West_England', 'EBus': 'http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid/29_bus_model/Model_EBus-029_South_West_England.owl#EBus-029_South_West_England', 'Bus_lon': '-3.4061633'}]
@@ -214,8 +519,18 @@ if __name__ == '__main__':
     # print(centroid)
     ONS_json = "http://statistics.data.gov.uk/sparql.json"
     ukdigitaltwinendpoint = "http://kg.cmclinnovations.com:81/blazegraph_geo/namespace/ukdigitaltwin/sparql"
-    res_ec = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
+    # res_ec = queryElectricityConsumption_LocalArea("2017-01-31", ukdigitaltwinendpoint, ONS_json)
     cl = demandLoadAllocator()
-    res =cl.closestDemandLoad(res_29_bus, None, res_ec, [])
-    print(res, len(res))
+    
+    # res1 = cl.closestDemandLoad(res_29_bus, "2017-01-31", 29, 99 )
+    busAndDemandPairList, res2, aggregatedBusFlag  = cl.closestDemandLoad_withEWSBoundCheck(res_29_bus, "2017-01-31", 29, 99 )
+    #print(res1, len(res1))
+    
+    # print(res2[0], len(res2))
+    for r in res2: 
+        r['Bus_node'] = int(r['Bus_node'].split("EBus-")[1])
+        
+    genLocationJSONCreator(res2, '29-bus-boundCheck-EWS-demandAllocation-withAreaWeighted-14012022')    
+        
+    # print(test_MultipolygonCentroid()) 
     
