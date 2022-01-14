@@ -1,6 +1,6 @@
 ###################################################
 # Author: Wanni Xie (wx243@cam.ac.uk)             #
-# Last Update Date: 10 Jan 2022                   #
+# Last Update Date: 13 Jan 2022                   #
 ###################################################
 import sys, os
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -274,8 +274,7 @@ class generatorCluster(object):
                    print('######The power plant is not located in Northern Ireland, or the power plant is the type of offshore wind farm.')
                else:
                    bus_index = distances.index(min(distances))    
-                   powerPlantAndBusPair = {**busInNorthernIreland[bus_index], **pp} 
-                   # del powerPlantAndBusPair['Bus_LocatedCountry']
+                   powerPlantAndBusPair = {**busInNorthernIreland[bus_index], **pp}                    
                    powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                    #check if all buses are connected with generators busLocatedCountryFinder
                    busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
@@ -424,11 +423,13 @@ class generatorCluster(object):
         EdinburghChannelNorthCoast = make_valid(ScotlandBound).intersection(make_valid(EdinburghChannelNorthShapely))
         EdinburghChannelSouthCoast = make_valid(ScotlandBound).intersection(make_valid(EdinburghChannelSouthShapely))
         
+        ###################################################
         # # Plot each polygon shape directly
         # for geom in EdinburghChannelNorthCoast.geoms:
         #     plt.plot(*geom.exterior.xy)
         # for geom in EdinburghChannelSouthCoast.geoms:
         #     plt.plot(*geom.exterior.xy)
+        ##################################################
         
         powerPlantAndBusPairList = [] 
         busNumberArray = list(range(1, len(res_queryBusTopologicalInformation) + 1)) 
@@ -436,93 +437,79 @@ class generatorCluster(object):
         for pp in res_queryPowerPlantAttributes: 
              powerPlantAndBusPair = {}
              if len(busInGB) > 0:
-                 pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'], 'K04000001', ons_label)
-                 j = 0
-                 distances = [65534]*len(busInGB) # the large number is the earth's circumference
-                 BusPowerPlantGPSPairList = []
-                 if pp_within_flag == True or pp['LACode_PP'] == 'E92000001' or pp['LACode_PP'] == 'W08000001': # power plant located in England and Wales
+                 # initial the ppWithinGBFlag for identifying if the current pp located in the GB
+                 ppWithinGBFlag = False
+                 if pp['LACode_PP'] == 'E92000001' or pp['LACode_PP'] == 'W08000001' or pp['LACode_PP'] == 'W92000004' \
+                     or query_topo.queryifWithin(pp['LACode_PP'], 'K04000001', ons_label) == True: # power plant located in England and Wales
                       pp.update({'EWS_LACode': 'K04000001'})
-                      for bus in busInGB:
-                         GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                         distances[j] = GPS_distance(GPSLocationPair)
-                         BusPowerPlantGPSPairList.append(GPSLocationPair)
-                         j += 1 
+                      ppWithinGBFlag = True
                          
-                 elif query_topo.queryifWithin(pp['LACode_PP'], 'S04000001', ons_label) == True or pp['LACode_PP'] == 'S92000003': # power plant located in Scotland
+                 elif pp['LACode_PP'] == 'S04000001' or pp['LACode_PP'] == 'S92000003' or query_topo.queryifWithin(pp['LACode_PP'], 'S04000001', ons_label) == True : # power plant located in Scotland
                         pp.update({'EWS_LACode': 'S04000001'})
-                        for bus in busInGB:
-                            GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                            distances[j] = GPS_distance(GPSLocationPair)
-                            BusPowerPlantGPSPairList.append(GPSLocationPair)
-                            j += 1
-                  
-                 elif pp['LACode_PP'] == 'K03000001' or pp['LACode_PP'] == 'K02000001': # in case the power plant being attached with a LA code which represents GB or UK
-                        pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
-                        interior_pp_EW = EngAndWalesBound.intersects(pp_lonlat_point)
-                        if interior_pp_EW == True:
+                        ppWithinGBFlag = True                  
+                 else: # in case the power plant being attached with a LA code which represents GB or UK
+                        pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])                      
+                        if make_valid(EngAndWalesBound).intersects(pp_lonlat_point) == True:
                             pp.update({'EWS_LACode': 'K04000001'})
-                            for bus in busInGB:
-                                GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                                distances[j] = GPS_distance(GPSLocationPair)
-                                BusPowerPlantGPSPairList.append(GPSLocationPair)
-                                j += 1
-                        elif ScotlandBound.intersects(pp_lonlat_point) == True:
+                            ppWithinGBFlag = True    
+                        elif make_valid(ScotlandBound).intersects(pp_lonlat_point) == True:
                             pp.update({'EWS_LACode': 'S04000001'})
-                            for bus in busInGB:
-                                GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
-                                distances[j] = GPS_distance(GPSLocationPair)
-                                BusPowerPlantGPSPairList.append(GPSLocationPair)
-                                j += 1
-          
-                 if min(distances) == 65534: # The power plant is not located in the area which the buses located in, like the pp in NI
-                     pp.update({'EWS_LACode': None})
+                            ppWithinGBFlag = True
+
+                 if ppWithinGBFlag == False:
                      print('######', pp['PowerGenerator'], pp['LACode_PP'])
-                     print('######The power plant is not located in GB, or the power plant is the type of offshore wind farm.')
-                 else:
+                     print('######The power plant is not located in GB, or the power plant is an offshore wind farm.')
+                 elif ppWithinGBFlag == True:  
+                     j = 0
+                     distances = [65534]*len(busInGB) # the large number is the earth's circumference
+                     BusPowerPlantGPSPairList = []
+                     for bus in busInGB:
+                        GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
+                        distances[j] = GPS_distance(GPSLocationPair)
+                        BusPowerPlantGPSPairList.append(GPSLocationPair)
+                        j += 1
                      bus_index = distances.index(min(distances)) 
                      BusPowerPlantGPSPair = BusPowerPlantGPSPairList[bus_index] 
                      BusPowerPlantGPSTie = shapely.geometry.LineString([(BusPowerPlantGPSPair[1], BusPowerPlantGPSPair[0]), \
                                                                         (BusPowerPlantGPSPair[3], BusPowerPlantGPSPair[2])])  
-                     
                 
                      # check the mismatch which is to avoid the situation like a power plant being connected to a bus located across the Bristol channel
                      if pp['EWS_LACode'] == 'K04000001':
-                         while make_valid(EngAndWalesBound).crosses(BusPowerPlantGPSTie) == True and BorderOfEnglandAndWales.crosses(BusPowerPlantGPSTie) == False \
-                             and complementaryBorderShapely.crosses(BusPowerPlantGPSTie) == False:
-                             print('%%%%%%%This pp-bus tie crosses the E&W', busInGB[bus_index]['Bus_node'], \
-                                       busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
-                             # print('If crosses the E&W Border', BorderOfEnglandAndWales.crosses(BusPowerPlantGPSTie), BusPowerPlantGPSTie)
-                             print(BusPowerPlantGPSPair)
-                             if make_valid(EngBound).disjoint(BusPowerPlantGPSTie) == False and make_valid(WalesBound).disjoint(BusPowerPlantGPSTie) == False:
-                                 print('!!!!!!This pp is not allowed to connected the bus', busInGB[bus_index]['Bus_node'], \
-                                       busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
-                                 print(BusPowerPlantGPSPair)
-                                 distances[bus_index] = 65534
-                                 # del distances[bus_index] 
-                                 # del BusPowerPlantGPSPairList[bus_index]
-                                 bus_index = distances.index(min(distances)) 
-                                 BusPowerPlantGPSPair = BusPowerPlantGPSPairList[bus_index] 
-                                 BusPowerPlantGPSTie = shapely.geometry.LineString([(BusPowerPlantGPSPair[1], BusPowerPlantGPSPair[0]), \
-                                                                                    (BusPowerPlantGPSPair[3], BusPowerPlantGPSPair[2])])
-                                 print(BusPowerPlantGPSPair)
-                                 mismatch +=1
-                                 print('^^^^^^^^The number of the mismatch is:', mismatch)
-                             else:
-                                 break
-                     elif pp['EWS_LACode'] == 'S04000001':    
-                         while make_valid(EdinburghChannelNorthCoast).crosses(BusPowerPlantGPSTie) == True and make_valid(EdinburghChannelSouthCoast).crosses(BusPowerPlantGPSTie) == True:
-                             print('%%%%%%%This pp-bus tie crosses the Edinburgh channel', busInGB[bus_index]['Bus_node'], \
-                                       busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
-                             distances[bus_index] = 65534
-                            
-                             bus_index = distances.index(min(distances)) 
-                             BusPowerPlantGPSPair = BusPowerPlantGPSPairList[bus_index] 
-                             BusPowerPlantGPSTie = shapely.geometry.LineString([(BusPowerPlantGPSPair[1], BusPowerPlantGPSPair[0]), \
-                                                                               (BusPowerPlantGPSPair[3], BusPowerPlantGPSPair[2])])
-                             print('@@@@@@@@@The new pair is', BusPowerPlantGPSPair)
-                             mismatch +=1
-                             print('^^^^^^^^The number of the mismatch is:', mismatch)
-                    
+                        while make_valid(EngAndWalesBound).crosses(BusPowerPlantGPSTie) == True and BorderOfEnglandAndWales.crosses(BusPowerPlantGPSTie) == False \
+                            and complementaryBorderShapely.crosses(BusPowerPlantGPSTie) == False:
+                            print('%%%%%%%This pp-bus tie crosses the E&W', busInGB[bus_index]['Bus_node'], \
+                                      busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
+
+                            print(BusPowerPlantGPSPair)
+                            if make_valid(EngBound).disjoint(BusPowerPlantGPSTie) == False and make_valid(WalesBound).disjoint(BusPowerPlantGPSTie) == False:
+                                print('!!!!!!This pp is not allowed to connected the bus', busInGB[bus_index]['Bus_node'], \
+                                      busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
+                                print(BusPowerPlantGPSPair)
+                                distances[bus_index] = 65534
+                                bus_index = distances.index(min(distances)) 
+                                BusPowerPlantGPSPair = BusPowerPlantGPSPairList[bus_index] 
+                                BusPowerPlantGPSTie = shapely.geometry.LineString([(BusPowerPlantGPSPair[1], BusPowerPlantGPSPair[0]), \
+                                                                                   (BusPowerPlantGPSPair[3], BusPowerPlantGPSPair[2])])
+                                print(BusPowerPlantGPSPair)
+                                mismatch +=1
+                                print('^^^^^^^^The number of the mismatch is:', mismatch)
+                            else:
+                                break
+                     elif pp['EWS_LACode'] == 'S04000001':  
+                         # check if the bus-pp tie crosses Firth of Forth Channel
+                        while make_valid(EdinburghChannelNorthCoast).crosses(BusPowerPlantGPSTie) == True and make_valid(EdinburghChannelSouthCoast).crosses(BusPowerPlantGPSTie) == True:
+                            print('%%%%%%%This pp-bus tie crosses the Edinburgh channel', busInGB[bus_index]['Bus_node'], \
+                                      busInGB[bus_index]['Bus_lat_lon'], pp['PowerGenerator'], pp['PP_lat_lon'], min(distances))
+                            distances[bus_index] = 65534
+                           
+                            bus_index = distances.index(min(distances)) 
+                            BusPowerPlantGPSPair = BusPowerPlantGPSPairList[bus_index] 
+                            BusPowerPlantGPSTie = shapely.geometry.LineString([(BusPowerPlantGPSPair[1], BusPowerPlantGPSPair[0]), \
+                                                                              (BusPowerPlantGPSPair[3], BusPowerPlantGPSPair[2])])
+                            print('@@@@@@@@@The new pair is', BusPowerPlantGPSPair)
+                            mismatch +=1
+                            print('^^^^^^^^The number of the mismatch is:', mismatch)
+                        
                      powerPlantAndBusPair = {**busInGB[bus_index], **pp} 
                      powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                      # check if all buses are connected with generators 
@@ -530,16 +517,16 @@ class generatorCluster(object):
                      if busNo in busNumberArray:
                         busNumberArray.remove(busNo)
                      continue # if the power plant is within GB, then it is not necessary to check its distance from the buses located in NI, jump from the current loop
+             
              if len(busInNorthernIreland) > 0:
                  j = 0
                  distances = [65534]*len(busInNorthernIreland) # the large number is the earth's circumference
-                 pp_within_flag = query_topo.queryifWithin(pp['LACode_PP'], 'N07000001', ons_label)
-                 if pp_within_flag == True or pp['LACode_PP'] == 'N92000002' or pp['LACode_PP'] == 'N07000001': # power plant located in NI
+                 if pp['LACode_PP'] == 'N92000002' or pp['LACode_PP'] == 'N07000001' or query_topo.queryifWithin(pp['LACode_PP'], 'N07000001', ons_label) == True: # power plant located in NI
                     for bus in busInNorthernIreland:
                         GPSLocationPair = [pp['PP_lat_lon'][0], pp['PP_lat_lon'][1], bus['Bus_lat_lon'][0], bus['Bus_lat_lon'][1]]    
                         distances[j] = GPS_distance(GPSLocationPair)
                         j += 1
-                 elif pp['LACode_PP'] == 'K02000001': # in case the power plant being attached with a LA code which represents UK
+                 else: # in case the power plant being attached with a LA code which represents UK
                         pp_lonlat_point = shapely.geometry.Point(pp['PP_lat_lon'][1], pp['PP_lat_lon'][0])
                         interior_pp = countryBoundaryDict['N92000002'].intersects(pp_lonlat_point)
                         if interior_pp == True:
@@ -550,11 +537,10 @@ class generatorCluster(object):
                     
                  if min(distances) == 65534: # The power plant is not located in the area which the buses located in, like the pp in NI
                      print('######', pp['PowerGenerator'], pp['LACode_PP'])
-                     print('######The power plant is not located in Northern Ireland, or the power plant is the type of offshore wind farm.')
+                     print('######The power plant is not located in Northern Ireland, or the power plant is an offshore wind farm.')
                  else:
                      bus_index = distances.index(min(distances))    
                      powerPlantAndBusPair = {**busInNorthernIreland[bus_index], **pp} 
-                     # del powerPlantAndBusPair['Bus_LocatedCountry']
                      powerPlantAndBusPairList.append(powerPlantAndBusPair) 
                      #check if all buses are connected with generators busLocatedCountryFinder
                      busNo = int(powerPlantAndBusPair['Bus_node'].split("EBus-")[1])
@@ -592,6 +578,7 @@ def busLocationFinderForGBOrNI(res_queryBusTopologicalInformation, ons_label):
                   busInNorthernIreland.append(bus) 
     return busInGB, busInNorthernIreland, countryBoundaryDict
 
+#TODO: for visualisation 
 def generatorClusteringColour(gen_bus):
   #https://htmlcolorcodes.com/
   map_bus_dict = {
@@ -684,9 +671,9 @@ if __name__ == '__main__':
     
     res_queryPowerPlantAttributes = query_topo.queryPowerPlantAttributes(None, False, 'ukdigitaltwin')
     # res1 = a.closestBus_withBoundCheck(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
-    # res2 = a.closestBus_withBristolAndEdinburghBoundCheck(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
+    res2 = a.closestBus_withBristolAndEdinburghBoundCheck(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     # res = a.sameRegionWithBus(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
-    res3 = a.closestBus(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
+    # res3 = a.closestBus(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     #res = a.closestBus_reducedquery(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     # res = a.closestBus_withPreKnown(res_queryBusTopologicalInformation, res_queryPowerPlantAttributes, aggragatedBusList)
     
@@ -697,15 +684,15 @@ if __name__ == '__main__':
     # for r in res1: 
     #     r['Bus_node'] = int(r['Bus_node'].split('#EquipmentConnection_EBus-')[1])
     
-    # for r in res2: 
-    #     r['Bus_node'] = int(r['Bus_node'].split('#EquipmentConnection_EBus-')[1])
-    
-    for r in res3: 
+    for r in res2: 
         r['Bus_node'] = int(r['Bus_node'].split('#EquipmentConnection_EBus-')[1])
     
+    # for r in res3: 
+    #     r['Bus_node'] = int(r['Bus_node'].split('#EquipmentConnection_EBus-')[1])
+    
     # genLocationJSONCreator(res1, '29-bus-boundCheck-EW')
-    # genLocationJSONCreator(res2, '29-bus-boundCheck-EWS')
-    genLocationJSONCreator(res3, '29-bus-No-boundCheck')
+    genLocationJSONCreator(res2, '29-bus-boundCheck-EWS-14012022')
+    # genLocationJSONCreator(res3, '29-bus-No-boundCheck')
     
     # p = shapely.geometry.MultiPolygon([(0,0), (2,0), (2,1), (0,2), (1,1)])
     # p1 = shapely.geometry.Polygon([(1,2), (0,2), (1,1)])

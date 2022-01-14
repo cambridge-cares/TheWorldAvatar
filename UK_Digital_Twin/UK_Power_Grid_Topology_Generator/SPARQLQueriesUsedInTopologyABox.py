@@ -283,9 +283,33 @@ def queryRegionBoundaries_testJSON(ONS_Endpoint_label):
           raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
       elif "***" in r['Geo_InfoList']:
           r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
-      r['Geo_InfoList'] = geojson.dumps(mapping(loads(r['Geo_InfoList']))) # convert wkt into shapely polygons
+      r['Geo_InfoList'] = geojson.dumps(mapping(loads(r['Geo_InfoList']))) 
       r['Geo_InfoList'] = ast.literal_eval(r['Geo_InfoList'])
     return res_england_region
+
+"""Only query the boundary of the Cardiff from ONS"""
+def queryCardiffBound(ons_label):
+    queryStr = """
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
+    PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
+    PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
+    SELECT DISTINCT ?areaBoundary 
+    WHERE
+    {
+    ?area rdf:type ons:Statistical-Geography .
+    ?area <http://publishmydata.com/def/ontology/foi/code> 'W06000015' .
+    ?area ons_geosparql:hasGeometry ?geometry .
+    ?geometry ons_geosparql:asWKT ?areaBoundary .
+    } 
+    """
+    
+    res = json.loads(performQuery(ons_label, queryStr))
+    cardiffBound = res[0]
+    cardiffBound['areaBoundary'] = loads(cardiffBound['areaBoundary']) #
+    return cardiffBound['areaBoundary'] 
+    
 
 #####*****************************TEST ENDS*****************************####
 
@@ -449,7 +473,7 @@ if __name__ == '__main__':
     #res = queryConnectedBusGPS('ukdigitaltwin', None, FromBus_iri, ToBus_iri, localQuery)
     # res = queryPowerPlantLocatedInSameRegion('ukdigitaltwin', sl_pp, test_region, False) 
     # res = queryBusLocatedRegion(29, None, False, 'ukdigitaltwin')
-    res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
+    # res = queryBusTopologicalInformation(29, 99, None, False, 'ukdigitaltwin')
     # res = queryBusTopologicalInformation(10, 14, None, False, 'ukdigitaltwin')
     # res = queryRegionBoundaries('ons')
     # res = queryRegionBoundaries_testJSON('ons')
@@ -466,10 +490,10 @@ if __name__ == '__main__':
     # ToBus_iri = "http://www.theworldavatar.com/kb/UK_Digital_Twin/UK_power_grid_topology/10_bus_model.owl#EquipmentConnection_EBus-001"
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 10, 14, FromBus_iri, ToBus_iri, False)
     # res = queryConnectedBusGPS('ukdigitaltwin', None, 29, 99, FromBus_iri, ToBus_iri, False)
-    
+    res = queryCardiffBound('ons')
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
     # print(res, len(res), type(res))
-    print(res)
+    print(res, len(res))
     
    
    
