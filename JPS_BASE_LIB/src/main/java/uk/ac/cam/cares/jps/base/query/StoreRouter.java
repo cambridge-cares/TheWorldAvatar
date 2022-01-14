@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
@@ -41,7 +42,7 @@ public class StoreRouter{
 	public static final String SLASH="/";
 	public static final String HTTP_KB_PREFIX = HTTP.concat(KB).concat(SLASH);
 	public static final String EMPTY = "";
-	private static final String STOREROUTER_ENDPOINT = KeyValueMap.getInstance().get(IKeys.URL_STOREROUTER_ENDPOINT);
+	private static final String STOREROUTER_ENDPOINT = KeyValueManager.get(IKeys.URL_STOREROUTER_ENDPOINT);
 	public static final String RDFS_PREFIX = "rdfs";
 	public static final String RDFS = "http://www.w3.org/2000/01/rdf-schema#";
 	public static final String RDF_PREFIX = "rdf";
