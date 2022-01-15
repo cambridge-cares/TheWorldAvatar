@@ -2,7 +2,7 @@
 @prefix ontodoe:             <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
 @prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
-@prefix :                    <http://www.theworldavatar.com/kb/agents/Service__DoE#> .
+@prefix :                    <http://www.theworldavatar.com/resource/agents/Service__DoE#> .
 
 :Service
     rdf:type ontoagent:Service;

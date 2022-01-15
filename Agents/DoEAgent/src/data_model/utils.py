@@ -8,7 +8,7 @@ def initialiseInstanceIRI(namespace: str, clz: str) -> str:
 def getShortName(iri):
     """
         This function gets the final part after the last '#' or '/' of an IRI.
-        For example, it will return 'RxnExp_1' given 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1#RxnExp_1' or 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1'.
+        For example, it will return 'RxnExp_1' given 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1#RxnExp_1' or 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1'.
         
         Arguments:
             iri - IRI of interest
@@ -31,8 +31,8 @@ def getShortName(iri):
 def getNameSpace(iri):
     """
         This method gets the namespace of a given IRI.
-        For example, it will return 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1#' given 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1#RxnExp_1'.
-        If given 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/RxnExp_1', it will return 'https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/'.
+        For example, it will return 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1#' given 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1#RxnExp_1'.
+        If given 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1', it will return 'https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/'.
         
         Arguments:
             iri - IRI of interest

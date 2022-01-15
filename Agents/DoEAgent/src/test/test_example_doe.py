@@ -6,13 +6,13 @@ from agent import *
 from conf import *
 
 # Hardcode the IRI to be used for the example, these should be identical with the ones specified in '/test/resources/doe.txt'
-derivation_output = ['https://theworldavatar.com/kb/ontodoe/DoE_1/NewExperiment_1']
-derivation_inputs = ['https://theworldavatar.com/kb/ontodoe/DoE_1/Strategy_1',
-                    'https://theworldavatar.com/kb/ontodoe/DoE_1/Domain_1',
-                    'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_1',
-                    'https://theworldavatar.com/kb/ontodoe/DoE_1/SystemResponse_2',
-                    'https://theworldavatar.com/kb/ontodoe/DoE_1/HistoricalData_1']
-design_of_experiment_iri = 'https://theworldavatar.com/kb/ontodoe/DoE_1/DoE_1'
+derivation_output = ['https://www.example.com/triplestore/ontodoe/DoE_1/NewExperiment_1']
+derivation_inputs = ['https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1',
+                    'https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1',
+                    'https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1',
+                    'https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2',
+                    'https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1']
+design_of_experiment_iri = 'https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1'
 
 @pytest.fixture()
 def initialise_triple_store():

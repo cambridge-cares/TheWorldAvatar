@@ -6,7 +6,7 @@
         "KG_PASSWORD": null
     },
     "ONTOAGENT": {
-        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/kb/agents/Service__DoE#Service"
+        "ONTOAGENT_SERVICE": "http://www.theworldavatar.com/resource/agents/Service__DoE#Service"
     },
     "DERIVATION_CLIENT": {
         "PERIODIC_TIMESCALE": 5,

@@ -1,14 +1,14 @@
 @prefix OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
 @prefix OntoRxn:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#> .
-@prefix exp1:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/> .
-@prefix exp2:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/> .
-@prefix exp3:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/> .
-@prefix exp4:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/> .
-@prefix exp5:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/> .
-@prefix exp6:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_6/> .
+@prefix exp1:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
+@prefix exp2:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
+@prefix exp3:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
+@prefix exp4:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
+@prefix exp5:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
+@prefix exp6:		    <https://www.example.com/triplestore/ontorxn/ReactionExperiment_6/> .
 @prefix rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
-@prefix :			    <https://theworldavatar.com/kb/ontodoe/DoE_1/> .
+@prefix :			    <https://www.example.com/triplestore/ontodoe/DoE_1/> .
 
 ####################################
 ## Design of Experiment instances ##
