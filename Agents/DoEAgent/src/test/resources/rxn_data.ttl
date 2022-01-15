@@ -1,1112 +1,1110 @@
-PREFIX OntoCAPERxn: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-PREFIX OntoCAPEMat:	<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>
-PREFIX OntoCAPEPha:	<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>
-PREFIX OntoCAPEUpp:	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
-PREFIX OntoKin:	    <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#>
-PREFIX OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
-PREFIX OntoRxn:	    <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#>
-PREFIX OntoUoM:		<http://theworldavatar.com/resource/ontouom/>
-PREFIX om:			<http://www.ontology-of-units-of-measure.org/resource/om-2/>
-PREFIX skos:		<http://www.w3.org/2004/02/skos/core#>
-PREFIX exp1:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/>
-PREFIX exp2:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/>
-PREFIX exp3:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/>
-PREFIX exp4:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/>
-PREFIX exp5:		<https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/>
-PREFIX SinglePhase: <https://theworldavatar.com/kb/ontorxn/SinglePhase/>
-PREFIX ChemRxn:     <https://theworldavatar.com/kb/ontorxn/ChemRxn_1/>
-PREFIX doe_instance:<https://theworldavatar.com/kb/ontodoe/DoE_1/>
-PREFIX rdf:			<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX xsd:                 <http://www.w3.org/2001/XMLSchema#>
-PREFIX rdfs:		<http://www.w3.org/2000/01/rdf-schema#>
-
-INSERT DATA {
-	###########################################################
-    ## Part of OntoRxn ontology for /subPropertyOf relationship ##
-    ###########################################################
-	OntoRxn:ResidenceTime rdfs:subClassOf OntoRxn:ReactionCondition . 
-	OntoRxn:ReactionTemperature rdfs:subClassOf OntoRxn:ReactionCondition . 
-	OntoRxn:ReactionPressure rdfs:subClassOf OntoRxn:ReactionCondition . 
-	OntoRxn:StoichiometryRatio rdfs:subClassOf OntoRxn:ReactionCondition . 
-	OntoRxn:ReactionScale rdfs:subClassOf OntoRxn:ReactionCondition . 
-	
-	OntoRxn:EnvironmentalFactor rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	OntoRxn:Yield rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator . 
-	
-	OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
-	OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
-	OntoRxn:hasRxnPressure rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
-	OntoRxn:hasStoichiometryRatio rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
-	OntoRxn:hasRxnScale rdfs:subPropertyOf OntoRxn:hasReactionCondition . 
-	
-	OntoRxn:hasEnvironmentalFactor rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-	OntoRxn:hasYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-	OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-	OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-	OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-	OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator . 
-
-	################################
-    ## Reaction experiment data 1 ##
-    ################################
-    exp1:RxnExp_1
-		rdf:type OntoRxn:ReactionExperiment;
-		OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
-		OntoRxn:hasResTime exp1:ResidenceTime_1;
-		OntoRxn:hasRxnTemperature exp1:RxnTemperature_1;
-		OntoRxn:hasRxnPressure exp1:RxnPressure_1;
-		OntoRxn:hasStoichiometryRatio exp1:StoiRatio_1;
-		OntoRxn:hasStoichiometryRatio exp1:StoiRatio_2;
-		OntoRxn:hasStoichiometryRatio exp1:StoiRatio_3;
-		OntoRxn:hasRxnScale exp1:RxnScale_1;
-		OntoRxn:hasYield exp1:Yield_1;
-		OntoRxn:hasRunMaterialCost exp1:RunMaterialCost_1;
-		OntoRxn:hasInputChemical exp1:InputChemical_1;
-		OntoRxn:hasInputChemical exp1:InputChemical_2;
-		OntoRxn:hasInputChemical exp1:InputChemical_3;
-		OntoRxn:hasOutputChemical exp1:OutputChemical_4;
-	.
-
-	exp1:ResidenceTime_1
-		rdf:type OntoRxn:ResidenceTime;
-		om:hasPhenomenon exp1:RxnExp_1;
-		om:hasValue exp1:ResidenceTime_1_Measure_1;
-	.
-
-	exp1:ResidenceTime_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:minute-Time;
-		om:hasNumericalValue "8.1"^^xsd:double;
-	.
-
-	exp1:RxnTemperature_1
-		rdf:type OntoRxn:ReactionTemperature;
-		om:hasPhenomenon exp1:RxnExp_1;
-		om:hasValue exp1:RxnTemperature_1_Measure_1;
-	.
-
-	exp1:RxnTemperature_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:degreeCelsius;
-		om:hasNumericalValue "56"^^xsd:double;
-	.
-
-	exp1:RxnPressure_1
-		rdf:type OntoRxn:ReactionPressure;
-		om:hasPhenomenon exp1:RxnExp_1;
-		om:hasValue exp1:RxnPressure_1_Measure_1;
-	.
-
-	exp1:RxnPressure_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:bar;
-		om:hasNumericalValue "6"^^xsd:double;
-	.
-
-	exp1:Yield_1
-		rdf:type OntoRxn:Yield;
-		om:hasPhenomenon exp1:RxnExp_1;
-		om:hasValue exp1:Yield_1_Measure_1;
-	.
-
-	exp1:Yield_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:percent;
-		om:hasNumericalValue "47.7"^^xsd:double;
-	.
-
-	exp1:RunMaterialCost_1
-		rdf:type OntoRxn:RunMaterialCost;
-		om:hasPhenomenon exp1:RxnExp_1;
-		om:hasValue exp1:RunMaterialCost_1_Measure_1;
-	.
-
-	exp1:RunMaterialCost_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit OntoUoM:pound_sterling_per_litre;
-		om:hasNumericalValue "6.83"^^xsd:double;
-	.
-
-	exp1:InputChemical_1
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
-	.
-
-	exp1:InputChemical_2
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
-	.
-
-	exp1:InputChemical_3
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
-	.
-
-	exp1:OutputChemical_4
-		rdf:type OntoRxn:OutputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
-	.
-
-	exp1:StoiRatio_1
-		rdf:type OntoRxn:StoichiometryRatio;
-		om:hasPhenomenon exp1:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp1:InputChemical_1;
-		om:hasValue exp1:StoiRatio_1_Measure_1;
-	.
-
-	exp1:StoiRatio_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.0"^^xsd:double;
-	.
-
-	exp1:StoiRatio_2
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "2"^^xsd:integer;
-		om:hasPhenomenon exp1:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp1:InputChemical_2;
-		om:hasValue exp1:StoiRatio_2_Measure_1;
-	.
-
-	exp1:StoiRatio_2_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "5.01"^^xsd:double;
-	.
-
-	exp1:StoiRatio_3
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "3"^^xsd:integer;
-		om:hasPhenomenon exp1:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp1:InputChemical_3;
-		om:hasValue exp1:StoiRatio_3_Measure_1;
-	.
-
-	exp1:StoiRatio_3_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "0.17"^^xsd:double;
-	.
-
-	exp1:RxnScale_1
-		rdf:type OntoRxn:ReactionScale;
-		om:hasPhenomenon exp1:RxnExp_1;
-		OntoRxn:indicatesUsageOf exp1:InputChemical_1;
-		om:hasValue exp1:RxnScale_1_Measure_1;
-	.
-
-	exp1:RxnScale_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:millilitre;
-		om:hasNumericalValue "5"^^xsd:double;
-	.
-
-	################################
-    ## Reaction experiment data 2 ##
-    ################################
-	exp2:RxnExp_1
-		rdf:type OntoRxn:ReactionExperiment;
-		OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
-		OntoRxn:hasResTime exp2:ResidenceTime_1;
-		OntoRxn:hasRxnTemperature exp2:RxnTemperature_1;
-		OntoRxn:hasRxnPressure exp2:RxnPressure_1;
-		OntoRxn:hasStoichiometryRatio exp2:StoiRatio_1;
-		OntoRxn:hasStoichiometryRatio exp2:StoiRatio_2;
-		OntoRxn:hasStoichiometryRatio exp2:StoiRatio_3;
-		OntoRxn:hasRxnScale exp2:RxnScale_1;
-		OntoRxn:hasYield exp2:Yield_1;
-		OntoRxn:hasRunMaterialCost exp2:RunMaterialCost_1;
-		OntoRxn:hasInputChemical exp2:InputChemical_1;
-		OntoRxn:hasInputChemical exp2:InputChemical_2;
-		OntoRxn:hasInputChemical exp2:InputChemical_3;
-		OntoRxn:hasOutputChemical exp2:OutputChemical_4;
-	.
-
-	exp2:ResidenceTime_1
-		rdf:type OntoRxn:ResidenceTime;
-		om:hasPhenomenon exp2:RxnExp_1;
-		om:hasValue exp2:ResidenceTime_1_Measure_1;
-	.
-
-	exp2:ResidenceTime_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:minute-Time;
-		om:hasNumericalValue "11.8"^^xsd:double;
-	.
-
-	exp2:RxnTemperature_1
-		rdf:type OntoRxn:ReactionTemperature;
-		om:hasPhenomenon exp2:RxnExp_1;
-		om:hasValue exp2:RxnTemperature_1_Measure_1;
-	.
-
-	exp2:RxnTemperature_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:degreeCelsius;
-		om:hasNumericalValue "67"^^xsd:double;
-	.
-
-	exp2:RxnPressure_1
-		rdf:type OntoRxn:ReactionPressure;
-		om:hasPhenomenon exp2:RxnExp_1;
-		om:hasValue exp2:RxnPressure_1_Measure_1;
-	.
-
-	exp2:RxnPressure_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:bar;
-		om:hasNumericalValue "6"^^xsd:double;
-	.
-
-	exp2:Yield_1
-		rdf:type OntoRxn:Yield;
-		om:hasPhenomenon exp2:RxnExp_1;
-		om:hasValue exp2:Yield_1_Measure_1;
-	.
-
-	exp2:Yield_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:percent;
-		om:hasNumericalValue "40.0"^^xsd:double;
-	.
-
-	exp2:RunMaterialCost_1
-		rdf:type OntoRxn:RunMaterialCost;
-		om:hasPhenomenon exp2:RxnExp_1;
-		om:hasValue exp2:RunMaterialCost_1_Measure_1;
-	.
-
-	exp2:RunMaterialCost_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit OntoUoM:pound_sterling_per_litre;
-		om:hasNumericalValue "8.10"^^xsd:double;
-	.
-
-	exp2:InputChemical_1
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
-	.
-
-	exp2:InputChemical_2
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
-	.
-
-	exp2:InputChemical_3
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
-	.
-
-	exp2:OutputChemical_4
-		rdf:type OntoRxn:OutputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
-	.
-
-	exp2:StoiRatio_1
-		rdf:type OntoRxn:StoichiometryRatio;
-		om:hasPhenomenon exp2:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp2:InputChemical_1;
-		om:hasValue exp2:StoiRatio_1_Measure_1;
-	.
-
-	exp2:StoiRatio_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.0"^^xsd:double;
-	.
-
-	exp2:StoiRatio_2
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "2"^^xsd:integer;
-		om:hasPhenomenon exp2:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp2:InputChemical_2;
-		om:hasValue exp2:StoiRatio_2_Measure_1;
-	.
-
-	exp2:StoiRatio_2_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "8.83"^^xsd:double;
-	.
-
-	exp2:StoiRatio_3
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "3"^^xsd:integer;
-		om:hasPhenomenon exp2:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp2:InputChemical_3;
-		om:hasValue exp2:StoiRatio_3_Measure_1;
-	.
-
-	exp2:StoiRatio_3_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "0.04"^^xsd:double;
-	.
-
-	exp2:RxnScale_1
-		rdf:type OntoRxn:ReactionScale;
-		om:hasPhenomenon exp2:RxnExp_1;
-		OntoRxn:indicatesUsageOf exp2:InputChemical_1;
-		om:hasValue exp2:RxnScale_1_Measure_1;
-	.
-
-	exp2:RxnScale_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:millilitre;
-		om:hasNumericalValue "5"^^xsd:double;
-	.
-	
-	################################
-    ## Reaction experiment data 3 ##
-    ################################
-	exp3:RxnExp_1
-		rdf:type OntoRxn:ReactionExperiment;
-		OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
-		OntoRxn:hasResTime exp3:ResidenceTime_1;
-		OntoRxn:hasRxnTemperature exp3:RxnTemperature_1;
-		OntoRxn:hasRxnPressure exp3:RxnPressure_1;
-		OntoRxn:hasStoichiometryRatio exp3:StoiRatio_1;
-		OntoRxn:hasStoichiometryRatio exp3:StoiRatio_2;
-		OntoRxn:hasStoichiometryRatio exp3:StoiRatio_3;
-		OntoRxn:hasRxnScale exp3:RxnScale_1;
-		OntoRxn:hasYield exp3:Yield_1;
-		OntoRxn:hasRunMaterialCost exp3:RunMaterialCost_1;
-		OntoRxn:hasInputChemical exp3:InputChemical_1;
-		OntoRxn:hasInputChemical exp3:InputChemical_2;
-		OntoRxn:hasInputChemical exp3:InputChemical_3;
-		OntoRxn:hasOutputChemical exp3:OutputChemical_4;
-	.
-
-	exp3:ResidenceTime_1
-		rdf:type OntoRxn:ResidenceTime;
-		om:hasPhenomenon exp3:RxnExp_1;
-		om:hasValue exp3:ResidenceTime_1_Measure_1;
-	.
-
-	exp3:ResidenceTime_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:minute-Time;
-		om:hasNumericalValue "7.9"^^xsd:double;
-	.
-
-	exp3:RxnTemperature_1
-		rdf:type OntoRxn:ReactionTemperature;
-		om:hasPhenomenon exp3:RxnExp_1;
-		om:hasValue exp3:RxnTemperature_1_Measure_1;
-	.
-
-	exp3:RxnTemperature_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:degreeCelsius;
-		om:hasNumericalValue "62"^^xsd:double;
-	.
-
-	exp3:RxnPressure_1
-		rdf:type OntoRxn:ReactionPressure;
-		om:hasPhenomenon exp3:RxnExp_1;
-		om:hasValue exp3:RxnPressure_1_Measure_1;
-	.
-
-	exp3:RxnPressure_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:bar;
-		om:hasNumericalValue "6"^^xsd:double;
-	.
-
-	exp3:Yield_1
-		rdf:type OntoRxn:Yield;
-		om:hasPhenomenon exp3:RxnExp_1;
-		om:hasValue exp3:Yield_1_Measure_1;
-	.
-	
-	exp3:Yield_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:percent;
-		om:hasNumericalValue "54.1"^^xsd:double;
-	.
-
-	exp3:RunMaterialCost_1
-		rdf:type OntoRxn:RunMaterialCost;
-		om:hasPhenomenon exp3:RxnExp_1;
-		om:hasValue exp3:RunMaterialCost_1_Measure_1;
-	.
-
-	exp3:RunMaterialCost_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit OntoUoM:pound_sterling_per_litre;
-		om:hasNumericalValue "6.96"^^xsd:double;
-	.
-
-	exp3:InputChemical_1
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
-	.
-
-	exp3:InputChemical_2
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
-	.
-
-	exp3:InputChemical_3
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
-	.
-
-	exp3:OutputChemical_4
-		rdf:type OntoRxn:OutputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
-	.
-
-	exp3:StoiRatio_1
-		rdf:type OntoRxn:StoichiometryRatio;
-		om:hasPhenomenon exp3:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp3:InputChemical_1;
-		om:hasValue exp3:StoiRatio_1_Measure_1;
-	.
-
-	exp3:StoiRatio_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.0"^^xsd:double;
-	.
-
-	exp3:StoiRatio_2
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "2"^^xsd:integer;
-		om:hasPhenomenon exp3:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp3:InputChemical_2;
-		om:hasValue exp3:StoiRatio_2_Measure_1;
-	.
-
-	exp3:StoiRatio_2_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "8.44"^^xsd:double;
-	.
-
-	exp3:StoiRatio_3
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "3"^^xsd:integer;
-		om:hasPhenomenon exp3:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp3:InputChemical_3;
-		om:hasValue exp3:StoiRatio_3_Measure_1;
-	.
-
-	exp3:StoiRatio_3_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "0.16"^^xsd:double;
-	.
-
-	exp3:RxnScale_1
-		rdf:type OntoRxn:ReactionScale;
-		om:hasPhenomenon exp3:RxnExp_1;
-		OntoRxn:indicatesUsageOf exp3:InputChemical_1;
-		om:hasValue exp3:RxnScale_1_Measure_1;
-	.
-
-	exp3:RxnScale_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:millilitre;
-		om:hasNumericalValue "5"^^xsd:double;
-	.
-	
-	################################
-    ## Reaction experiment data 4 ##
-    ################################
-	exp4:RxnExp_1
-		rdf:type OntoRxn:ReactionExperiment;
-		OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
-		OntoRxn:hasResTime exp4:ResidenceTime_1;
-		OntoRxn:hasRxnTemperature exp4:RxnTemperature_1;
-		OntoRxn:hasRxnPressure exp4:RxnPressure_1;
-		OntoRxn:hasStoichiometryRatio exp4:StoiRatio_1;
-		OntoRxn:hasStoichiometryRatio exp4:StoiRatio_2;
-		OntoRxn:hasStoichiometryRatio exp4:StoiRatio_3;
-		OntoRxn:hasRxnScale exp4:RxnScale_1;
-		OntoRxn:hasYield exp4:Yield_1;
-		OntoRxn:hasRunMaterialCost exp4:RunMaterialCost_1;
-		OntoRxn:hasInputChemical exp4:InputChemical_1;
-		OntoRxn:hasInputChemical exp4:InputChemical_2;
-		OntoRxn:hasInputChemical exp4:InputChemical_3;
-		OntoRxn:hasOutputChemical exp4:OutputChemical_4;
-	.
-
-	exp4:ResidenceTime_1
-		rdf:type OntoRxn:ResidenceTime;
-		om:hasPhenomenon exp4:RxnExp_1;
-		om:hasValue exp4:ResidenceTime_1_Measure_1;
-	.
-
-	exp4:ResidenceTime_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:minute-Time;
-		om:hasNumericalValue "13.3"^^xsd:double;
-	.
-
-	exp4:RxnTemperature_1
-		rdf:type OntoRxn:ReactionTemperature;
-		om:hasPhenomenon exp4:RxnExp_1;
-		om:hasValue exp4:RxnTemperature_1_Measure_1;
-	.
-
-	exp4:RxnTemperature_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:degreeCelsius;
-		om:hasNumericalValue "35"^^xsd:double;
-	.
-
-	exp4:RxnPressure_1
-		rdf:type OntoRxn:ReactionPressure;
-		om:hasPhenomenon exp4:RxnExp_1;
-		om:hasValue exp4:RxnPressure_1_Measure_1;
-	.
-
-	exp4:RxnPressure_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:bar;
-		om:hasNumericalValue "6"^^xsd:double;
-	.
-
-	exp4:Yield_1
-		rdf:type OntoRxn:Yield;
-		om:hasPhenomenon exp4:RxnExp_1;
-		om:hasValue exp4:Yield_1_Measure_1;
-	.
-
-	exp4:Yield_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:percent;
-		om:hasNumericalValue "8.7"^^xsd:double;
-	.
-
-	exp4:RunMaterialCost_1
-		rdf:type OntoRxn:RunMaterialCost;
-		om:hasPhenomenon exp4:RxnExp_1;
-		om:hasValue exp4:RunMaterialCost_1_Measure_1;
-	.
-
-	exp4:RunMaterialCost_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit OntoUoM:pound_sterling_per_litre;
-		om:hasNumericalValue "7.74"^^xsd:double;
-	.
-
-	exp4:InputChemical_1
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
-	.
-
-	exp4:InputChemical_2
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
-	.
-
-	exp4:InputChemical_3
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
-	.
-
-	exp4:OutputChemical_4
-		rdf:type OntoRxn:OutputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
-	.
-
-	exp4:StoiRatio_1
-		rdf:type OntoRxn:StoichiometryRatio;
-		om:hasPhenomenon exp4:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp4:InputChemical_1;
-		om:hasValue exp4:StoiRatio_1_Measure_1;
-	.
-
-	exp4:StoiRatio_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.0"^^xsd:double;
-	.
-
-	exp4:StoiRatio_2
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "2"^^xsd:integer;
-		om:hasPhenomenon exp4:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp4:InputChemical_2;
-		om:hasValue exp4:StoiRatio_2_Measure_1;
-	.
-
-	exp4:StoiRatio_2_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.59"^^xsd:double;
-	.
-
-	exp4:StoiRatio_3
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "3"^^xsd:integer;
-		om:hasPhenomenon exp4:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp4:InputChemical_3;
-		om:hasValue exp4:StoiRatio_3_Measure_1;
-	.
-
-	exp4:StoiRatio_3_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "0.07"^^xsd:double;
-	.
-
-	exp4:RxnScale_1
-		rdf:type OntoRxn:ReactionScale;
-		om:hasPhenomenon exp4:RxnExp_1;
-		OntoRxn:indicatesUsageOf exp4:InputChemical_1;
-		om:hasValue exp4:RxnScale_1_Measure_1;
-	.
-
-	exp4:RxnScale_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:millilitre;
-		om:hasNumericalValue "5"^^xsd:double;
-	.
-
-	################################
-    ## Reaction experiment data 5 ##
-    ################################
-	exp5:RxnExp_1
-		rdf:type OntoRxn:ReactionExperiment;
-		OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
-		OntoRxn:hasResTime exp5:ResidenceTime_1;
-		OntoRxn:hasRxnTemperature exp5:RxnTemperature_1;
-		OntoRxn:hasRxnPressure exp5:RxnPressure_1;
-		OntoRxn:hasStoichiometryRatio exp5:StoiRatio_1;
-		OntoRxn:hasStoichiometryRatio exp5:StoiRatio_2;
-		OntoRxn:hasStoichiometryRatio exp5:StoiRatio_3;
-		OntoRxn:hasRxnScale exp5:RxnScale_1;
-		OntoRxn:hasYield exp5:Yield_1;
-		OntoRxn:hasRunMaterialCost exp5:RunMaterialCost_1;
-		OntoRxn:hasInputChemical exp5:InputChemical_1;
-		OntoRxn:hasInputChemical exp5:InputChemical_2;
-		OntoRxn:hasInputChemical exp5:InputChemical_3;
-		OntoRxn:hasOutputChemical exp5:OutputChemical_4;
-	.
-
-	exp5:ResidenceTime_1
-		rdf:type OntoRxn:ResidenceTime;
-		om:hasPhenomenon exp5:RxnExp_1;
-		om:hasValue exp5:ResidenceTime_1_Measure_1;
-	.
-
-	exp5:ResidenceTime_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:minute-Time;
-		om:hasNumericalValue "14.7"^^xsd:double;
-	.
-
-	exp5:RxnTemperature_1
-		rdf:type OntoRxn:ReactionTemperature;
-		om:hasPhenomenon exp5:RxnExp_1;
-		om:hasValue exp5:RxnTemperature_1_Measure_1;
-	.
-
-	exp5:RxnTemperature_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:degreeCelsius;
-		om:hasNumericalValue "42"^^xsd:double;
-	.
-
-	exp5:RxnPressure_1
-		rdf:type OntoRxn:ReactionPressure;
-		om:hasPhenomenon exp5:RxnExp_1;
-		om:hasValue exp5:RxnPressure_1_Measure_1;
-	.
-
-	exp5:RxnPressure_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:bar;
-		om:hasNumericalValue "6"^^xsd:double;
-	.
-
-	exp5:Yield_1
-		rdf:type OntoRxn:Yield;
-		om:hasPhenomenon exp5:RxnExp_1;
-		om:hasValue exp5:Yield_1_Measure_1;
-	.
-
-	exp5:Yield_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:percent;
-		om:hasNumericalValue "47.9"^^xsd:double;
-	.
-
-	exp5:RunMaterialCost_1
-		rdf:type OntoRxn:RunMaterialCost;
-		om:hasPhenomenon exp5:RxnExp_1;
-		om:hasValue exp5:RunMaterialCost_1_Measure_1;
-	.
-
-	exp5:RunMaterialCost_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit OntoUoM:pound_sterling_per_litre;
-		om:hasNumericalValue "7.44"^^xsd:double;
-	.
-
-	exp5:InputChemical_1
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
-	.
-
-	exp5:InputChemical_2
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
-	.
-
-	exp5:InputChemical_3
-		rdf:type OntoRxn:InputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
-	.
-
-	exp5:OutputChemical_4
-		rdf:type OntoRxn:OutputChemical;
-		OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
-	.
-
-	exp5:StoiRatio_1
-		rdf:type OntoRxn:StoichiometryRatio;
-		om:hasPhenomenon exp5:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp5:InputChemical_1;
-		om:hasValue exp5:StoiRatio_1_Measure_1;
-	.
-
-	exp5:StoiRatio_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "1.0"^^xsd:double;
-	.
-
-	exp5:StoiRatio_2
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "2"^^xsd:integer;
-		om:hasPhenomenon exp5:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp5:InputChemical_2;
-		om:hasValue exp5:StoiRatio_2_Measure_1;
-	.
-
-	exp5:StoiRatio_2_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "5.19"^^xsd:double;
-	.
-
-	exp5:StoiRatio_3
-		rdf:type OntoRxn:StoichiometryRatio;
-		OntoDoE:positionalID "3"^^xsd:integer;
-		om:hasPhenomenon exp5:RxnExp_1;
-		OntoRxn:indicatesMultiplicityOf exp5:InputChemical_3;
-		om:hasValue exp5:StoiRatio_3_Measure_1;
-	.
-
-	exp5:StoiRatio_3_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:one;
-		om:hasNumericalValue "0.10"^^xsd:double;
-	.
-
-	exp5:RxnScale_1
-		rdf:type OntoRxn:ReactionScale;
-		om:hasPhenomenon exp5:RxnExp_1;
-		OntoRxn:indicatesUsageOf exp5:InputChemical_1;
-		om:hasValue exp5:RxnScale_1_Measure_1;
-	.
-
-	exp5:RxnScale_1_Measure_1
-		rdf:type om:Measure;
-		om:hasUnit om:millilitre;
-		om:hasNumericalValue "5"^^xsd:double;
-	.
-
-    #################################
-    ## Chemical reaction instances ##
-    #################################
-    ChemRxn:ChemRxn_1
-		rdf:type OntoCAPERxn:ChemicalReaction;
-		OntoRxn:isRealisedAs exp1:RxnExp_1;
-		OntoRxn:isRealisedAs exp2:RxnExp_1;
-		OntoRxn:isRealisedAs exp3:RxnExp_1;
-		OntoRxn:isRealisedAs exp4:RxnExp_1;
-		OntoRxn:isRealisedAs exp5:RxnExp_1;
-		OntoKin:hasEquiation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
-		OntoCAPERxn:hasReactant ChemRxn:Species_1;
-		OntoCAPERxn:hasReactant ChemRxn:Species_2;
-		OntoCAPERxn:hasProduct ChemRxn:Species_3;
-		OntoCAPERxn:hasProduct ChemRxn:Species_4;
-		OntoCAPERxn:hasCatalyst ChemRxn:Species_5;
-		OntoRxn:hasSolvent ChemRxn:Species_6;
-		OntoRxn:hasSolvent ChemRxn:Species_7;
-	.
-
-	ChemRxn:Species_1
-		rdf:type OntoKin:Reactant;
-		OntoSpecies:pubChemCID "240"^^xsd:string;
-		skos:altLabel "benzaldehyde"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_1;
-	.
-
-	ChemRxn:Species_2
-		rdf:type OntoKin:Reactant;
-		OntoSpecies:pubChemCID "180"^^xsd:string;
-		skos:altLabel "acetone"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_2;
-	.
-
-	ChemRxn:Species_3
-		rdf:type OntoRxn:TargetProduct;
-		OntoSpecies:pubChemCID "637759"^^xsd:string;
-		skos:altLabel "benzalacetone"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_3;
-	.
-
-	ChemRxn:Species_4
-		rdf:type OntoRxn:Impurity;
-		OntoSpecies:pubChemCID "640180"^^xsd:string;
-		skos:altLabel "dibenzylideneacetone"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_4;
-	.
-
-	ChemRxn:Species_5
-		rdf:type OntoRxn:Catalyst;
-		OntoSpecies:pubChemCID "14798"^^xsd:string;
-		skos:altLabel "NaOH"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_5;
-	.
-
-	ChemRxn:Species_6
-		rdf:type OntoRxn:Solvent;
-		OntoSpecies:pubChemCID "6342"^^xsd:string;
-		skos:altLabel "acetonitrile"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_6;
-	.
-
-	ChemRxn:Species_7
-		rdf:type OntoRxn:Solvent;
-		OntoSpecies:pubChemCID "702"^^xsd:string;
-		skos:altLabel "ethanol"^^xsd:string;
-		OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_7;
-	.
-
-	##############################
-    ## Chemical phase instances ##
-    ##############################
-	SinglePhase:PhaseComponent_1
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_1;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_2
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_2;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_3
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_3;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_4
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_4;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_5
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_5;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_6
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_6_2
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_2;
-	.
-
-	SinglePhase:PhaseComponent_7
-		rdf:type OntoCAPEPha:PhaseComponent;
-		OntoCAPEPha:representsOccurranceOf ChemRxn:Species_7;
-		OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_Property_1;
-	.
-
-	SinglePhase:PhaseComponent_1_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "0.5"^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_2_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "6.73"^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_3_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_3_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue ""^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_4_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_4_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue ""^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_5_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "0.1"^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_6_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "18.1"^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_6_Property_2
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "9.6"^^xsd:double;
-	.
-
-	SinglePhase:PhaseComponent_7_Property_1
-		rdf:type OntoCAPEPha:Molarity;
-		OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1;
-	.
-
-	SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1
-		rdf:type OntoCAPEUpp:ScalarValue;
-		OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
-		OntoCAPEUpp:numericalValue "17.1"^^xsd:double;
-	.
-
-	SinglePhase:Phase_1
-		rdf:type OntoCAPEPha:SinglePhase;
-		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_1;
-		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_1;
-		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_1;
-		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_1;
-		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_1;
-		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
-		OntoCAPEPha:has_composition SinglePhase:Composition_1;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_1;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6;
-	.
-
-	SinglePhase:Composition_1
-		rdf:type OntoCAPEPha:Composition;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_1_Property_1;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_1;
-	.
-
-	SinglePhase:Phase_2
-		rdf:type OntoCAPEPha:SinglePhase;
-		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_2;
-		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_2;
-		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_2;
-		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_2;
-		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_2;
-		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
-		OntoCAPEPha:has_composition SinglePhase:Composition_2;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_2;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6_2;
-	.
-
-	SinglePhase:Composition_2
-		rdf:type OntoCAPEPha:Composition;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_2_Property_1;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_2;
-	.
-
-	SinglePhase:Phase_3
-		rdf:type OntoCAPEPha:SinglePhase;
-		OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_3;
-		OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_3;
-		OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_3;
-		OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_3;
-		OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_3;
-		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
-		OntoCAPEPha:has_composition SinglePhase:Composition_3;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_5;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_7;
-	.
-
-	SinglePhase:Composition_3
-		rdf:type OntoCAPEPha:Composition;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_5_Property_1;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_7_Property_1;
-	.
-
-	SinglePhase:Phase_4
-		rdf:type OntoCAPEPha:SinglePhase;
-		OntoCAPEMat:representsThermodynamicBehavior exp1:OutputChemical_4;
-		OntoCAPEMat:representsThermodynamicBehavior exp2:OutputChemical_4;
-		OntoCAPEMat:representsThermodynamicBehavior exp3:OutputChemical_4;
-		OntoCAPEMat:representsThermodynamicBehavior exp4:OutputChemical_4;
-		OntoCAPEMat:representsThermodynamicBehavior exp5:OutputChemical_4;
-		OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
-		OntoCAPEPha:has_composition SinglePhase:Composition_4;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3;
-		OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4;
-	.
-
-	SinglePhase:Composition_4
-		rdf:type OntoCAPEPha:Composition;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_Property_1;
-		OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_Property_1;
-	.
-}
+@prefix OntoCAPERxn:    <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> .
+@prefix OntoCAPEMat:	<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> .
+@prefix OntoCAPEPha:	<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix OntoCAPEUpp:	<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix OntoSpecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
+@prefix OntoKin:	    <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> .
+@prefix OntoDoE:		<https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#> .
+@prefix OntoRxn:	    <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontorxn/OntoRxn.owl#> .
+@prefix OntoUoM:		<http://theworldavatar.com/resource/ontouom/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix skos:           <http://www.w3.org/2004/02/skos/core#> .
+@prefix exp1:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_1/> .
+@prefix exp2:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_2/> .
+@prefix exp3:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_3/> .
+@prefix exp4:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_4/> .
+@prefix exp5:		    <https://theworldavatar.com/kb/ontorxn/ReactionExperiment_5/> .
+@prefix SinglePhase:    <https://theworldavatar.com/kb/ontorxn/SinglePhase/> .
+@prefix ChemRxn:        <https://theworldavatar.com/kb/ontorxn/ChemRxn_1/> .
+@prefix doe_instance:   <https://theworldavatar.com/kb/ontodoe/DoE_1/> .
+@prefix rdf:	    	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs:		    <http://www.w3.org/2000/01/rdf-schema#> .
+
+###########################################################
+## Part of OntoRxn ontology for /subPropertyOf relationship ##
+###########################################################
+OntoRxn:ResidenceTime rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionTemperature rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionPressure rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:StoichiometryRatio rdfs:subClassOf OntoRxn:ReactionCondition .
+OntoRxn:ReactionScale rdfs:subClassOf OntoRxn:ReactionCondition .
+
+OntoRxn:EnvironmentalFactor rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:Yield rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator .
+OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator .
+
+OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnPressure rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasStoichiometryRatio rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+OntoRxn:hasRxnScale rdfs:subPropertyOf OntoRxn:hasReactionCondition .
+
+OntoRxn:hasEnvironmentalFactor rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
+
+################################
+## Reaction experiment data 1 ##
+################################
+exp1:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp1:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp1:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp1:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp1:StoiRatio_3;
+    OntoRxn:hasRxnScale exp1:RxnScale_1;
+    OntoRxn:hasYield exp1:Yield_1;
+    OntoRxn:hasRunMaterialCost exp1:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp1:InputChemical_1;
+    OntoRxn:hasInputChemical exp1:InputChemical_2;
+    OntoRxn:hasInputChemical exp1:InputChemical_3;
+    OntoRxn:hasOutputChemical exp1:OutputChemical_4;
+.
+
+exp1:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:ResidenceTime_1_Measure_1;
+.
+
+exp1:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "8.1"^^xsd:double;
+.
+
+exp1:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RxnTemperature_1_Measure_1;
+.
+
+exp1:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "56"^^xsd:double;
+.
+
+exp1:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RxnPressure_1_Measure_1;
+.
+
+exp1:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp1:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:Yield_1_Measure_1;
+.
+
+exp1:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "47.7"^^xsd:double;
+.
+
+exp1:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp1:RxnExp_1;
+    om:hasValue exp1:RunMaterialCost_1_Measure_1;
+.
+
+exp1:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasNumericalValue "6.83"^^xsd:double;
+.
+
+exp1:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp1:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp1:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp1:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
+.
+
+exp1:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_1;
+    om:hasValue exp1:StoiRatio_1_Measure_1;
+.
+
+exp1:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp1:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "2"^^xsd:integer;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_2;
+    om:hasValue exp1:StoiRatio_2_Measure_1;
+.
+
+exp1:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "5.01"^^xsd:double;
+.
+
+exp1:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "3"^^xsd:integer;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp1:InputChemical_3;
+    om:hasValue exp1:StoiRatio_3_Measure_1;
+.
+
+exp1:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.17"^^xsd:double;
+.
+
+exp1:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasPhenomenon exp1:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp1:InputChemical_1;
+    om:hasValue exp1:RxnScale_1_Measure_1;
+.
+
+exp1:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 2 ##
+################################
+exp2:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp2:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp2:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp2:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp2:StoiRatio_3;
+    OntoRxn:hasRxnScale exp2:RxnScale_1;
+    OntoRxn:hasYield exp2:Yield_1;
+    OntoRxn:hasRunMaterialCost exp2:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp2:InputChemical_1;
+    OntoRxn:hasInputChemical exp2:InputChemical_2;
+    OntoRxn:hasInputChemical exp2:InputChemical_3;
+    OntoRxn:hasOutputChemical exp2:OutputChemical_4;
+.
+
+exp2:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:ResidenceTime_1_Measure_1;
+.
+
+exp2:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "11.8"^^xsd:double;
+.
+
+exp2:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RxnTemperature_1_Measure_1;
+.
+
+exp2:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "67"^^xsd:double;
+.
+
+exp2:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RxnPressure_1_Measure_1;
+.
+
+exp2:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp2:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:Yield_1_Measure_1;
+.
+
+exp2:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "40.0"^^xsd:double;
+.
+
+exp2:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp2:RxnExp_1;
+    om:hasValue exp2:RunMaterialCost_1_Measure_1;
+.
+
+exp2:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasNumericalValue "8.10"^^xsd:double;
+.
+
+exp2:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp2:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp2:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp2:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
+.
+
+exp2:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_1;
+    om:hasValue exp2:StoiRatio_1_Measure_1;
+.
+
+exp2:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp2:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "2"^^xsd:integer;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_2;
+    om:hasValue exp2:StoiRatio_2_Measure_1;
+.
+
+exp2:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "8.83"^^xsd:double;
+.
+
+exp2:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "3"^^xsd:integer;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp2:InputChemical_3;
+    om:hasValue exp2:StoiRatio_3_Measure_1;
+.
+
+exp2:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.04"^^xsd:double;
+.
+
+exp2:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasPhenomenon exp2:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp2:InputChemical_1;
+    om:hasValue exp2:RxnScale_1_Measure_1;
+.
+
+exp2:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 3 ##
+################################
+exp3:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp3:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp3:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp3:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp3:StoiRatio_3;
+    OntoRxn:hasRxnScale exp3:RxnScale_1;
+    OntoRxn:hasYield exp3:Yield_1;
+    OntoRxn:hasRunMaterialCost exp3:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp3:InputChemical_1;
+    OntoRxn:hasInputChemical exp3:InputChemical_2;
+    OntoRxn:hasInputChemical exp3:InputChemical_3;
+    OntoRxn:hasOutputChemical exp3:OutputChemical_4;
+.
+
+exp3:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:ResidenceTime_1_Measure_1;
+.
+
+exp3:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "7.9"^^xsd:double;
+.
+
+exp3:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RxnTemperature_1_Measure_1;
+.
+
+exp3:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "62"^^xsd:double;
+.
+
+exp3:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RxnPressure_1_Measure_1;
+.
+
+exp3:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp3:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:Yield_1_Measure_1;
+.
+
+exp3:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "54.1"^^xsd:double;
+.
+
+exp3:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp3:RxnExp_1;
+    om:hasValue exp3:RunMaterialCost_1_Measure_1;
+.
+
+exp3:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasNumericalValue "6.96"^^xsd:double;
+.
+
+exp3:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp3:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp3:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp3:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
+.
+
+exp3:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_1;
+    om:hasValue exp3:StoiRatio_1_Measure_1;
+.
+
+exp3:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp3:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "2"^^xsd:integer;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_2;
+    om:hasValue exp3:StoiRatio_2_Measure_1;
+.
+
+exp3:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "8.44"^^xsd:double;
+.
+
+exp3:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "3"^^xsd:integer;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp3:InputChemical_3;
+    om:hasValue exp3:StoiRatio_3_Measure_1;
+.
+
+exp3:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.16"^^xsd:double;
+.
+
+exp3:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasPhenomenon exp3:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp3:InputChemical_1;
+    om:hasValue exp3:RxnScale_1_Measure_1;
+.
+
+exp3:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 4 ##
+################################
+exp4:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp4:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp4:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp4:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp4:StoiRatio_3;
+    OntoRxn:hasRxnScale exp4:RxnScale_1;
+    OntoRxn:hasYield exp4:Yield_1;
+    OntoRxn:hasRunMaterialCost exp4:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp4:InputChemical_1;
+    OntoRxn:hasInputChemical exp4:InputChemical_2;
+    OntoRxn:hasInputChemical exp4:InputChemical_3;
+    OntoRxn:hasOutputChemical exp4:OutputChemical_4;
+.
+
+exp4:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:ResidenceTime_1_Measure_1;
+.
+
+exp4:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "13.3"^^xsd:double;
+.
+
+exp4:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RxnTemperature_1_Measure_1;
+.
+
+exp4:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "35"^^xsd:double;
+.
+
+exp4:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RxnPressure_1_Measure_1;
+.
+
+exp4:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp4:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:Yield_1_Measure_1;
+.
+
+exp4:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "8.7"^^xsd:double;
+.
+
+exp4:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp4:RxnExp_1;
+    om:hasValue exp4:RunMaterialCost_1_Measure_1;
+.
+
+exp4:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasNumericalValue "7.74"^^xsd:double;
+.
+
+exp4:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp4:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp4:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp4:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
+.
+
+exp4:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_1;
+    om:hasValue exp4:StoiRatio_1_Measure_1;
+.
+
+exp4:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp4:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "2"^^xsd:integer;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_2;
+    om:hasValue exp4:StoiRatio_2_Measure_1;
+.
+
+exp4:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.59"^^xsd:double;
+.
+
+exp4:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "3"^^xsd:integer;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp4:InputChemical_3;
+    om:hasValue exp4:StoiRatio_3_Measure_1;
+.
+
+exp4:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.07"^^xsd:double;
+.
+
+exp4:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasPhenomenon exp4:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp4:InputChemical_1;
+    om:hasValue exp4:RxnScale_1_Measure_1;
+.
+
+exp4:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+################################
+## Reaction experiment data 5 ##
+################################
+exp5:RxnExp_1
+    rdf:type OntoRxn:ReactionExperiment;
+    OntoRxn:isOccurenceOf ChemRxn:ChemRxn_1;
+    OntoRxn:hasResTime exp5:ResidenceTime_1;
+    OntoRxn:hasRxnTemperature exp5:RxnTemperature_1;
+    OntoRxn:hasRxnPressure exp5:RxnPressure_1;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_1;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_2;
+    OntoRxn:hasStoichiometryRatio exp5:StoiRatio_3;
+    OntoRxn:hasRxnScale exp5:RxnScale_1;
+    OntoRxn:hasYield exp5:Yield_1;
+    OntoRxn:hasRunMaterialCost exp5:RunMaterialCost_1;
+    OntoRxn:hasInputChemical exp5:InputChemical_1;
+    OntoRxn:hasInputChemical exp5:InputChemical_2;
+    OntoRxn:hasInputChemical exp5:InputChemical_3;
+    OntoRxn:hasOutputChemical exp5:OutputChemical_4;
+.
+
+exp5:ResidenceTime_1
+    rdf:type OntoRxn:ResidenceTime;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:ResidenceTime_1_Measure_1;
+.
+
+exp5:ResidenceTime_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:minute-Time;
+    om:hasNumericalValue "14.7"^^xsd:double;
+.
+
+exp5:RxnTemperature_1
+    rdf:type OntoRxn:ReactionTemperature;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RxnTemperature_1_Measure_1;
+.
+
+exp5:RxnTemperature_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:degreeCelsius;
+    om:hasNumericalValue "42"^^xsd:double;
+.
+
+exp5:RxnPressure_1
+    rdf:type OntoRxn:ReactionPressure;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RxnPressure_1_Measure_1;
+.
+
+exp5:RxnPressure_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:bar;
+    om:hasNumericalValue "6"^^xsd:double;
+.
+
+exp5:Yield_1
+    rdf:type OntoRxn:Yield;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:Yield_1_Measure_1;
+.
+
+exp5:Yield_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:percent;
+    om:hasNumericalValue "47.9"^^xsd:double;
+.
+
+exp5:RunMaterialCost_1
+    rdf:type OntoRxn:RunMaterialCost;
+    om:hasPhenomenon exp5:RxnExp_1;
+    om:hasValue exp5:RunMaterialCost_1_Measure_1;
+.
+
+exp5:RunMaterialCost_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit OntoUoM:pound_sterling_per_litre;
+    om:hasNumericalValue "7.44"^^xsd:double;
+.
+
+exp5:InputChemical_1
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_1;
+.
+
+exp5:InputChemical_2
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_2;
+.
+
+exp5:InputChemical_3
+    rdf:type OntoRxn:InputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_3;
+.
+
+exp5:OutputChemical_4
+    rdf:type OntoRxn:OutputChemical;
+    OntoCAPEMat:thermodynamicBehavior SinglePhase:Phase_4;
+.
+
+exp5:StoiRatio_1
+    rdf:type OntoRxn:StoichiometryRatio;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_1;
+    om:hasValue exp5:StoiRatio_1_Measure_1;
+.
+
+exp5:StoiRatio_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "1.0"^^xsd:double;
+.
+
+exp5:StoiRatio_2
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "2"^^xsd:integer;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_2;
+    om:hasValue exp5:StoiRatio_2_Measure_1;
+.
+
+exp5:StoiRatio_2_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "5.19"^^xsd:double;
+.
+
+exp5:StoiRatio_3
+    rdf:type OntoRxn:StoichiometryRatio;
+    OntoDoE:positionalID "3"^^xsd:integer;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesMultiplicityOf exp5:InputChemical_3;
+    om:hasValue exp5:StoiRatio_3_Measure_1;
+.
+
+exp5:StoiRatio_3_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:one;
+    om:hasNumericalValue "0.10"^^xsd:double;
+.
+
+exp5:RxnScale_1
+    rdf:type OntoRxn:ReactionScale;
+    om:hasPhenomenon exp5:RxnExp_1;
+    OntoRxn:indicatesUsageOf exp5:InputChemical_1;
+    om:hasValue exp5:RxnScale_1_Measure_1;
+.
+
+exp5:RxnScale_1_Measure_1
+    rdf:type om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "5"^^xsd:double;
+.
+
+#################################
+## Chemical reaction instances ##
+#################################
+ChemRxn:ChemRxn_1
+    rdf:type OntoCAPERxn:ChemicalReaction;
+    OntoRxn:isRealisedAs exp1:RxnExp_1;
+    OntoRxn:isRealisedAs exp2:RxnExp_1;
+    OntoRxn:isRealisedAs exp3:RxnExp_1;
+    OntoRxn:isRealisedAs exp4:RxnExp_1;
+    OntoRxn:isRealisedAs exp5:RxnExp_1;
+    OntoKin:hasEquiation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
+    OntoCAPERxn:hasReactant ChemRxn:Species_1;
+    OntoCAPERxn:hasReactant ChemRxn:Species_2;
+    OntoCAPERxn:hasProduct ChemRxn:Species_3;
+    OntoCAPERxn:hasProduct ChemRxn:Species_4;
+    OntoCAPERxn:hasCatalyst ChemRxn:Species_5;
+    OntoRxn:hasSolvent ChemRxn:Species_6;
+    OntoRxn:hasSolvent ChemRxn:Species_7;
+.
+
+ChemRxn:Species_1
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:pubChemCID "240"^^xsd:string;
+    skos:altLabel "benzaldehyde"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_1;
+.
+
+ChemRxn:Species_2
+    rdf:type OntoKin:Reactant;
+    OntoSpecies:pubChemCID "180"^^xsd:string;
+    skos:altLabel "acetone"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_2;
+.
+
+ChemRxn:Species_3
+    rdf:type OntoRxn:TargetProduct;
+    OntoSpecies:pubChemCID "637759"^^xsd:string;
+    skos:altLabel "benzalacetone"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_3;
+.
+
+ChemRxn:Species_4
+    rdf:type OntoRxn:Impurity;
+    OntoSpecies:pubChemCID "640180"^^xsd:string;
+    skos:altLabel "dibenzylideneacetone"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_4;
+.
+
+ChemRxn:Species_5
+    rdf:type OntoRxn:Catalyst;
+    OntoSpecies:pubChemCID "14798"^^xsd:string;
+    skos:altLabel "NaOH"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_5;
+.
+
+ChemRxn:Species_6
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:pubChemCID "6342"^^xsd:string;
+    skos:altLabel "acetonitrile"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_6;
+.
+
+ChemRxn:Species_7
+    rdf:type OntoRxn:Solvent;
+    OntoSpecies:pubChemCID "702"^^xsd:string;
+    skos:altLabel "ethanol"^^xsd:string;
+    OntoRxn:representsRealisationOf SinglePhase:PhaseComponent_7;
+.
+
+##############################
+## Chemical phase instances ##
+##############################
+SinglePhase:PhaseComponent_1
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_1;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_1_Property_1;
+.
+
+SinglePhase:PhaseComponent_2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_2;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_2_Property_1;
+.
+
+SinglePhase:PhaseComponent_3
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_3;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_Property_1;
+.
+
+SinglePhase:PhaseComponent_4
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_4;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_Property_1;
+.
+
+SinglePhase:PhaseComponent_5
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_5;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_5_Property_1;
+.
+
+SinglePhase:PhaseComponent_6
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_1;
+.
+
+SinglePhase:PhaseComponent_6_2
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_6;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_6_Property_2;
+.
+
+SinglePhase:PhaseComponent_7
+    rdf:type OntoCAPEPha:PhaseComponent;
+    OntoCAPEPha:representsOccurranceOf ChemRxn:Species_7;
+    OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_7_Property_1;
+.
+
+SinglePhase:PhaseComponent_1_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_1_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.5"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_2_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_2_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "6.73"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_3_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_3_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_3_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue ""^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_4_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_4_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_4_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue ""^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_5_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_5_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "0.1"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_6_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_6_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "18.1"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_6_Property_2
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_6_Property_2_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "9.6"^^xsd:double;
+.
+
+SinglePhase:PhaseComponent_7_Property_1
+    rdf:type OntoCAPEPha:Molarity;
+    OntoCAPEUpp:hasValue SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1;
+.
+
+SinglePhase:PhaseComponent_7_Property_1_ScalarValue_1
+    rdf:type OntoCAPEUpp:ScalarValue;
+    OntoCAPEUpp:hasUnitOfMeasure om:molePerLitre;
+    OntoCAPEUpp:numericalValue "17.1"^^xsd:double;
+.
+
+SinglePhase:Phase_1
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_1;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_1;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_1;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_1;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6;
+.
+
+SinglePhase:Composition_1
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_1_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_1;
+.
+
+SinglePhase:Phase_2
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_2;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_2;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_2;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_6_2;
+.
+
+SinglePhase:Composition_2
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_2_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_6_Property_2;
+.
+
+SinglePhase:Phase_3
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:InputChemical_3;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:InputChemical_3;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_3;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_5;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_7;
+.
+
+SinglePhase:Composition_3
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_5_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_7_Property_1;
+.
+
+SinglePhase:Phase_4
+    rdf:type OntoCAPEPha:SinglePhase;
+    OntoCAPEMat:representsThermodynamicBehavior exp1:OutputChemical_4;
+    OntoCAPEMat:representsThermodynamicBehavior exp2:OutputChemical_4;
+    OntoCAPEMat:representsThermodynamicBehavior exp3:OutputChemical_4;
+    OntoCAPEMat:representsThermodynamicBehavior exp4:OutputChemical_4;
+    OntoCAPEMat:representsThermodynamicBehavior exp5:OutputChemical_4;
+    OntoCAPEPha:hasStateOfAggregation OntoCAPEPha:liquid;
+    OntoCAPEPha:has_composition SinglePhase:Composition_4;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_3;
+    OntoCAPEUpp:isComposedOfSubsystem SinglePhase:PhaseComponent_4;
+.
+
+SinglePhase:Composition_4
+    rdf:type OntoCAPEPha:Composition;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_3_Property_1;
+    OntoCAPEUpp:comprisesDirectly SinglePhase:PhaseComponent_4_Property_1;
+.

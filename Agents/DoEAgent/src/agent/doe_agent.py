@@ -217,7 +217,7 @@ def exampleEntryPoint():
 
 flask_app = Flask(__name__)
 
-doe_agent_config = DoEAgentConfig(str(Path(__file__).absolute().parent) + '/conf/doeagent_properties.json')
+doe_agent_config = DoEAgentConfig(str(Path(__file__).absolute().parent.parent) + '/conf/doeagent_properties.json')
 
 app = DoEAgent(flask_app, doe_agent_config.ONTOAGENT_SERVICE, doe_agent_config.PERIODIC_TIMESCALE, doe_agent_config.DERIVATION_INSTANCE_BASE_URL, doe_agent_config.SPARQL_QUERY_ENDPOINT)
 app.add_url_pattern('/', 'root', default, methods=['GET'])

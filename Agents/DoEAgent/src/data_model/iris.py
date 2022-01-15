@@ -12,6 +12,12 @@ OM_HASVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasValu
 OM_HASNUMERICALVALUE = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue'
 OM_HASUNIT = 'http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit'
 
+###--- Common IRI for Time ---###
+TIME_HASTIME = 'http://www.w3.org/2006/time#hasTime'
+TIME_NUMERICPOSITION = 'http://www.w3.org/2006/time#numericPosition'
+TIME_HASTRS = 'http://www.w3.org/2006/time#hasTRS'
+TIME_INTIMEPOSITION = 'http://www.w3.org/2006/time#inTimePosition'
+
 ###--- Common IRI for OntoAgent ---###
 ONTOAGENT_HASOPERATION = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasOperation'
 ONTOAGENT_HASINPUT = 'http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasInput'
