@@ -19,6 +19,8 @@ services:
   email-agent:
     image: docker.cmclinnovations.com/email-agent:1.0.0-SNAPSHOT
     container_name: "email-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     hostname: email-agent
     pull_policy: if_not_present
     restart: unless-stopped
@@ -27,14 +29,9 @@ services:
   gas-grid-agent:
     image: docker.cmclinnovations.com/gas-grid-agent-$MODE:1.0.0-SNAPSHOT
     container_name: "gas-grid-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     mem_limit: 2g
-    pull_policy: if_not_present
-    restart: unless-stopped
-    
-  # Flood Agent
-  flood-agent:
-    image: docker.cmclinnovations.com/flood-agent-$MODE:1.0.0-SNAPSHOT
-    container_name: "flood-agent${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -42,6 +39,8 @@ services:
   jps-chatbot:
     image: docker.cmclinnovations.com/jps-chatbot:1.0.0-SNAPSHOT
     container_name: "jps-chatbot${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -49,6 +48,8 @@ services:
   jps-ldf:
     image: docker.cmclinnovations.com/jps-ldf:1.0.0-SNAPSHOT
     container_name: "jps-ldf${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -60,6 +61,8 @@ services:
   #   container_name: "kinetics-agent${CONTAINER_NAME_SUFFIX}"
   #   depends_on:
   #     - "srm-driver"
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
   #   pull_policy: if_not_present
   #   restart: unless-stopped
   #   volumes:
@@ -70,6 +73,8 @@ services:
   oscml-agent:
     image: docker.cmclinnovations.com/oscml_agent:1.0.0-SNAPSHOT
     container_name: "oscml-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -83,6 +88,8 @@ services:
   #   container_name: "slurm${CONTAINER_NAME_SUFFIX}"
   #   depends_on:
   #     - "srm-driver"
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
   #   env_file:
   #     - Slurm/slurm-variables.env
   #   privileged: true
@@ -98,6 +105,8 @@ services:
   # srm-driver:
   #   image: docker.cmclinnovations.com/srm-driver:1.0.0-SNAPSHOT
   #   container_name: "srm-driver${CONTAINER_NAME_SUFFIX}"
+  #   environment:
+  #     LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
   #   hostname: "srm-driver"
   #   mac_address: "1a:2b:3c:4d:5e:6f"
   #   pull_policy: if_not_present
@@ -109,6 +118,8 @@ services:
   stdc-agent:
     image: docker.cmclinnovations.com/stdc_agent:1.0.0-SNAPSHOT
     container_name: "stdc-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -116,6 +127,8 @@ services:
   weather-agent:
     image: docker.cmclinnovations.com/weather-agent:1.0.0-SNAPSHOT
     container_name: "weather-agent${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     secrets:

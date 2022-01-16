@@ -10,7 +10,7 @@
     
     <!-- Please refer to the Versioning page on TheWorldAvatar wiki for
     details on how version numbers should be selected -->
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.5.0-SNAPSHOT</version>
 
     <!-- Project Properties -->
     <properties>
