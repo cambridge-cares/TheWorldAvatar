@@ -7,7 +7,7 @@ from gensim.models import CoherenceModel
 from nltk.stem import PorterStemmer
 import spacy
 import logging
-from LDA.location import LDA_DIR
+from .location import LDA_DIR
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.DEBUG)
 

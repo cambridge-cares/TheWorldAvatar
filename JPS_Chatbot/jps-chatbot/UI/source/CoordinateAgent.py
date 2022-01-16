@@ -2,14 +2,22 @@ import json
 import random
 import time
 from pprint import pprint
-
-from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
-from util.StopWords import removeStopWords
-from Wikidata_Query.WikiQueryInterface import WikiQueryInterface
-from JPS_Query.JPSQueryInterface import JPSQueryInterface
-from Agent_Query.AgentQueryInterface import AgentQueryInterface
-from LDA.LDA_classifier import LDAClassifier
-from Agent_Query.AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage, MarieError
+if __name__ == '__main__':
+    from util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
+    from util.StopWords import removeStopWords
+    from Wikidata_Query.WikiQueryInterface import WikiQueryInterface
+    from JPS_Query.JPSQueryInterface import JPSQueryInterface
+    from Agent_Query.AgentQueryInterface import AgentQueryInterface
+    from LDA.LDA_classifier import LDAClassifier
+    from Agent_Query.AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage, MarieError
+else:
+    from .util.ModelLoader import AGENT_NLU_MODEL, WIKI_NLU_MODEL, JPS_NLU_MODEL
+    from .util.StopWords import removeStopWords
+    from .Wikidata_Query.WikiQueryInterface import WikiQueryInterface
+    from .JPS_Query.JPSQueryInterface import JPSQueryInterface
+    from .Agent_Query.AgentQueryInterface import AgentQueryInterface
+    from .LDA.LDA_classifier import LDAClassifier
+    from .Agent_Query.AgentUtil.util.MarieLogger import MarieIOLog, MarieMessage, MarieError
 
 class CoordinateAgent:
     def __init__(self):

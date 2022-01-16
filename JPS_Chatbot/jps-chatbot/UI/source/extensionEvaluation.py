@@ -1,18 +1,20 @@
 # import pce and stdc evaluation set
 # 1. Evaluate accuracy of agent classification and ner, with mode "NLP_DEBUG"
 import json
+import os
 from pprint import pprint
-
 from CoordinateAgent import CoordinateAgent
+from Evaluation_data.location import AGENT_EVALUATION_DIR
 
 ca = CoordinateAgent()
 
-stdc_dict = json.loads(open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\stdc_dictionary').read())
+# load dictionaries containing both the question and the correct results (NER)
+# ====================================================================================
+stdc_dict = json.loads(open(os.path.join(AGENT_EVALUATION_DIR, r'stdc_dictionary')).read())
 thermo_agent_questions = [o['question'] for o in stdc_dict]
-pce_dict = json.loads(open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\pce_dictionary').read())
-
-
-# pce_agent_questions = [o['question'] for o in pce_dict]
+pce_dict = json.loads(open(os.path.join(AGENT_EVALUATION_DIR, r'pce_dictionary')).read())
+pce_agent_questions = [o['question'] for o in pce_dict]
+# ====================================================================================
 
 # =====================================================================
 # Evaluate the intent classification
@@ -193,11 +195,7 @@ from CoordinateAgent import CoordinateAgent
 
 with open('NLP results', 'w') as f:
     f.write('=======================')
-ca = CoordinateAgent()
-stdc_dict = json.loads(open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\stdc_dictionary').read())
-thermo_agent_questions = [o['question'] for o in stdc_dict]
-pce_dict = json.loads(open(r'C:\TWA\TheWorldAvatar\JPS_Chatbot\jps-chatbot\UI\source\pce_dictionary').read())
-pce_agent_questions = [o['question'] for o in pce_dict]
+
 
 thermo_result_dictionary = []
 

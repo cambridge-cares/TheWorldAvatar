@@ -2,8 +2,13 @@ import json
 import time
 from pprint import pprint
 
-from CoordinateAgent import CoordinateAgent
-from dashboard.Messenger import Messenger
+if __name__ == '__main__':
+
+    from CoordinateAgent import CoordinateAgent
+    from dashboard.Messenger import Messenger
+else:
+    from .CoordinateAgent import CoordinateAgent
+    from .dashboard.Messenger import Messenger
 
 
 class FullTest:
