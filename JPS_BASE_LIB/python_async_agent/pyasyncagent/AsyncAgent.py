@@ -1,19 +1,15 @@
-from flask import Flask, jsonify, request
-import json
-# import agentlogging
 from flask_apscheduler import APScheduler
+from flask import Flask
+import json
+
+import agentlogging
+
 from pyasyncagent.gateway import jpsBaseLibGW
 
-# create a JVM module view and use it to import the required java classes
-# TODO should this be part of AsyncAgent class?
-# jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-# jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
-# jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.derivation.*")
-
-def async_hello(whom):
-    print('Async hello %s!' % whom)
-
 class FlaskConfig(object):
+    """
+        This class provides the configuration for flask app object. Each config should be provided as constant. For more information, visit https://flask.palletsprojects.com/en/2.0.x/config/.
+    """
     SCHEDULER_API_ENABLED = True
 
 class AsyncAgent(object):
@@ -26,8 +22,22 @@ class AsyncAgent(object):
         kg_url: str,
         kg_user: str = None,
         kg_password: str = None,
-        # derivationClient,
-        flask_config: FlaskConfig = FlaskConfig()):
+        flask_config: FlaskConfig = FlaskConfig(),
+        logger_name: str = "dev"):
+        """
+            This method initialises the asynchronous agent.
+
+            Arguments:
+                app - flask app object, an example: app = Flask(__name__)
+                agent_iri - OntoAgent:Service IRI of the asynchronous agent, an example: "http://www.example.com/triplestore/agents/Service__XXXAgent#Service"
+                time_interval - time interval between two runs of derivation monitoring job (in SECONDS)
+                derivation_instance_base_url - namespace to be used when creating derivation instance, an example: "http://www.example.com/triplestore/repository/"
+                kg_url - SPARQL query/update endpoint, an example: "http://localhost:8080/blazegraph/namespace/triplestore/sparql"
+                kg_user - username used to access the SPARQL query/update endpoint specified by kg_url
+                kg_password - password that set for the kg_user used to access the SPARQL query/update endpoint specified by kg_url
+                flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
+                logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/utils/python-utils/agentlogging/logging.py
+        """
 
         # create a JVM module view and use it to import the required java classes
         self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
@@ -57,81 +67,115 @@ class AsyncAgent(object):
             self.storeClient = self.jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl, self.kgUser, self.kgPassword)
         self.derivationClient = self.jpsBaseLib_view.DerivationClient(self.storeClient, derivation_instance_base_url)
 
+        self.logger = agentlogging.get_logger(logger_name)
+        self.logger.info(
+            "AsyncAgent <%s> is initialised to monitor derivations in triple store <%s> with a time interval of %d seconds." % (self.agentIRI, self.kgUrl, self.time_interval)
+        )
 
-        # agent iri, time interval, derivation base url, kg url, kg user, kg password
-
-        # self.interval_task_id = 'interval-task-id'
-        # self.time_interval = 5
-        # self.agentIRI = 'http://www.theworldavatar.com/kb/agents/Service__DoE#Service' # for testing purpose, will be provided as part of config
-        # self.kgUrl = 'http://kg.cmclinnovations.com:81/blazegraph/namespaces/testontorxn/sparql' # for testing purpose
-        # Initialise the derivationClient with SPARQL Query and Update endpoint
-        # self.storeClient = jpsBaseLib_view.RemoteStoreClient(self.kgUrl, self.kgUrl)
-        # self.derivationClient = jpsBaseLib_view.DerivationClient(self.storeClient)
-        # self.derivationClient = derivationClient
-    
-    # def configs(self, **configs):
-    #     for config, value in configs:
-    #         self.app.config[config.upper()] = value
-    
     def add_url_pattern(self, url_pattern=None, url_pattern_name=None, function=None, methods=['GET'], *args, **kwargs):
+        """
+            This method is a wrapper of add_url_rule method of Flask object that adds customised URL Pattern to asynchronous agent.
+            For more information, visit https://flask.palletsprojects.com/en/2.0.x/api/#flask.Flask.add_url_rule.
+
+            Arguments:
+                url_pattern - the endpoint url to associate with the rule and view function
+                url_pattern_name - the name of the endpoint
+                function - the view function to associate with the endpoint
+                methods - HTTP request methods, default to ['GET']
+        """
         self.app.add_url_rule(url_pattern, url_pattern_name, function, methods=methods, *args, **kwargs)
-    
+        self.logger.info("A URL Pattern <%s> is added." % (url_pattern))
+
     def monitorDerivations(self):
+        """
+            This method monitors the status of the derivation that "isDerivedUsing" AsyncAgent.
+
+            When it detects the status is "PendingUpdate", the agent will check its immediate upstream derivations.
+            Once all its immediate upstream derivations are up-to-date, the agent marks the status as "Requested".
+
+            When it detects the status is "Requested", the agent will mark the status as "InProgress" and start the job.
+            Once the job is finished, the agent marks the status as "Finished" and attaches the new derived IRI to it via "hasNewDerivedIRI".
+
+            When it detects the status is "InProgress", the currently implementation just passes.
+
+            When it detects the status is "Finished", the agent deletes the old entities,
+            reconnects the new instances (previously attached to the status via "hasNewDerivedIRI") with the original derivation,
+            cleans up all the status, and finally updates the timestamp of the derivation.
+            All these processing steps at the `Finished` status are taken care of by method
+            `uk.ac.cam.cares.jps.base.derivation.DerivationClient.cleanUpFinishedDerivationUpdate(String)`.
+        """
+
         # Below codes follow the logic as defined in AsynAgent.java in JPS_BASE_LIB
         # for more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/AsynAgent.java
-        derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(self.agentIRI)
 
+        # Retrieves a list of derivations and their status type that "isDerivedUsing" AsyncAgent
+        derivationAndStatusType = self.derivationClient.getDerivationsAndStatusType(self.agentIRI)
+        if bool(derivationAndStatusType):
+            self.logger.info("A list of derivations that <isDerivedUsing> <%s> are retrieved: %s." % (self.agentIRI, derivationAndStatusType))
+        else:
+            self.logger.info("Currently, no derivation <isDerivedUsing> <%s>." % (self.agentIRI))
+
+        # Iterate over the list of derivation, and do different things depend on the derivation status
         for derivation in derivationAndStatusType:
             statusType = str(derivationAndStatusType[derivation])
+            self.logger.info("Derivation <%s> has status type: %s." % (derivation, statusType))
+
+            # If "PendingUpdate", check the immediate upstream derivations if they are up-to-date
             if statusType == 'PENDINGUPDATE':
                 self.derivationClient.checkAtPendingUpdate(derivation)
+
+            # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
             elif statusType == 'REQUESTED':
                 agentInputs = str(self.derivationClient.retrieveAgentInputs(derivation, self.agentIRI))
+                self.logger.info("Agent <%s> retrieved inputs of derivation <%s>: %s." % (self.agentIRI, derivation, agentInputs))
+
                 self.derivationClient.markAsInProgress(derivation)
-                print(agentInputs)
-                print(type(agentInputs))
+                self.logger.info("Derivation <%s> is in progress." % (derivation))
+
                 newDerivedIRI = self.setupJob(agentInputs)
+                self.logger.info("Derivation <%s> generated new derived IRI: <%s>." % (derivation, ">, <".join(newDerivedIRI)))
+
                 self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
+
+            # If "InProgress", pass
             elif statusType == 'INPROGRESS':
                 pass
+
+            # If "Finished", do all the clean-up steps
             elif statusType == 'FINISHED':
                 self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
+                self.logger.info("Derivation <%s> is now cleand up." % (derivation))
+
+            # If anything else, pass
             else:
+                self.logger.info("Derivation <%s> has unhandled status type: %s." % (derivation, statusType))
                 pass
 
-        # # Retrieves a list of derivation that "isDerivedUsing" DoE Agent
-        # list_of_derivation = self.derivationClient.getDerivations(self.agentIRI)
-
-        # # Iterate over the list of derivation, and do different things depend on the derivation status
-        # for derivation in list_of_derivation:
-        #     # check if the derivation is an instance of asynchronous derivation
-        #     if (self.derivationClient.isDerivedAsynchronous(derivation)):
-        #         if (self.derivationClient.isPendingUpdate(derivation)):
-        #             self.derivationClient.checkAtPendingUpdate(derivation)
-        #         # If "Requested", retrieve inputs, marks as "InProgress", start job, update status at job completion
-        #         elif (self.derivationClient.isRequested(derivation)):
-        #             agentInputs = self.derivationClient.retrieveAgentInputs(derivation, self.agentIRI)
-        #             self.derivationClient.markAsInProgress(derivation)
-        #             newDerivedIRI = self.setupjob(json.loads(str(agentInputs)))
-        #             self.derivationClient.updateStatusAtJobCompletion(derivation, newDerivedIRI)
-        #         # If "InProgress", pass
-        #         elif (self.derivationClient.isInProgress(derivation)):
-        #             # at the moment the design is the agent just pass when it's detected as "InProgress"
-        #             pass
-        #         # If "Finished", do all the clean-up steps
-        #         elif (self.derivationClient.isFinished(derivation)):
-        #             self.derivationClient.cleanUpFinishedDerivationUpdate(derivation)
-        #     else:
-    	# 		# TODO ideally this should call the update or other functions in synchronous derivation function
-    	# 		# LOGGER.info("Derivation instance <" + derivation + "> is not an asynchronous derivation.");
-        #         pass
-    
     def setupJob(self, agentInputs) -> list:
+        """
+            This method sets up the job to update the derivation. Developer shall override this when writing new asynchronous agent based on AsyncAgent class.
+
+            Arguments:
+                agentInputs - a JSON/dictionary of the derivation inputs, an example:
+                                {
+                                    "agent_input": {
+                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_1": "https://www.example.com/triplestore/repository/Concept_1/Instance_1",
+                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_2": "https://www.example.com/triplestore/repository/Concept_2/Instance_2",
+                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_3":
+                                        ["https://www.example.com/triplestore/repository/Concept_3/Instance_3_1", "https://www.example.com/triplestore/repository/Concept_3/Instance_3_2"],
+                                    "https://www.example.com/triplestore/repository/Ontology.owl#Concept_4": "https://www.example.com/triplestore/repository/Concept_4/Instance_4"
+                                    }
+                                }
+        """
         createdIRI = []
         return createdIRI
 
     def run(self, **kwargs):
+        """
+            This method starts the periodical job to monitor derivation, also runs the flask app as an HTTP servlet.
+        """
         self.scheduler.init_app(self.app)
         self.scheduler.add_job(id='monitor_derivations', func=self.monitorDerivations, trigger='interval', seconds=self.time_interval)
         self.scheduler.start()
+        self.logger.info("Monitor derivations job is started with a time interval of %d seconds." % (self.time_interval))
         self.app.run(**kwargs)
