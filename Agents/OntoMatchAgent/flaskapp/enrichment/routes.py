@@ -19,15 +19,15 @@ def api():
         addr = request.args['addr']
         add_knowledge = request.args['add_knowledge']
 
-        verifier.verifyRelativePathExists(addr)
-        verifier.verifyChoice(add_knowledge, ["False","ontomatch.knowledge.geocoding"])
+        verifier.verifyRelativePathExists(addr,os.getcwd())
+        verifier.verifyChoice(add_knowledge, ["False","ontomatch.knowledge.geocoding","ontomatch.knowledge.geoNames"])
     except Exception as ex:
         print(ex)
         return jsonify({'errormsg': 'Invalid request'}), 400
 
     try:
         # Run the agent
-        enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=False)
+        enriched, handle = ontomatch.knowledge.enrichment.Agent().start(addr, add_knowledge, http=True)
         response = {}
         response["enriched"] = enriched
         response["handle"] = handle

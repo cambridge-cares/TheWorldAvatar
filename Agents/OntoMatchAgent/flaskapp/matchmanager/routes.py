@@ -29,7 +29,7 @@ def api():
         return jsonify({'errormsg': 'Invalid request\n'+traceback.format_exc()}), 400
     try:
         # Run the agent
-        agent.start(config_handle, src_graph_handle, tgt_graph_handle)
+        agent.start(config_handle, src_graph_handle, tgt_graph_handle, True)
 
         return jsonify({"result": {"done":True}})
 

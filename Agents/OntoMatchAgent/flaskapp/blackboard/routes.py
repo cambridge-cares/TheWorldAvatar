@@ -28,8 +28,7 @@ def read():
     # Run the agent
     try:
         object = ontomatch.utils.blackboard.Agent().read(handle)
-        response = {}
-        response["object"] = object
+        response = object
         return jsonify({"result": response})
 
     except Exception as ex:

@@ -15,12 +15,12 @@ class caller():
         if method == "POST":
             r = requests.post(IRI,params=params)
         elif method == "GET":
-            r = requests.post(IRI,params=params)
+            r = requests.get(IRI,params=params)
         else:
             raise Exception("Invalid request. Invalid http method")
         if r.status_code != 200:
             raise ConnectionError()
-        data = r.json
+        data = r.json()
         #{"result":{'': ,...}}
         return data['result']
 

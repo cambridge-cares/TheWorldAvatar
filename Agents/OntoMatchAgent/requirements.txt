@@ -4,7 +4,7 @@ more-itertools==7.0.0
 numpy==1.21.2
 nltk==3.4.1
 Owlready2==0.31
-rdflib==4.2.2
+rdflib==6.0.2
 requests==2.22.0
 scipy==1.7.1
 -e git+https://github.com/casics/spiral.git@a10fcd3afbd4c28e917cc0056d6f646cc2e9bd44#egg=spiral
@@ -12,4 +12,6 @@ pathos==0.2.3
 pandas==1.2.4
 tqdm==4.49.0
 pyyaml==5.3.1
-p4jps==1.0.10
+flask==2.0.2
+xgboost==1.5.1
+sentence-transformers==2.1.0

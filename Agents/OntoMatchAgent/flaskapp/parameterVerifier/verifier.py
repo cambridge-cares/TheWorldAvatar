@@ -1,12 +1,16 @@
 import os
+from  ontomatch.utils.blackboard import LOCAL_BLACKBOARD_DIR
 def verifyRelativePathExists(path, root = None):
-    if root is None:
-        ap = os.path.abspath(path)
+    if root is None:#Do this for handles
+        root = os.getcwd()
+        onelevelUp = os.path.split(root)
+        print(onelevelUp)
+        ap = os.path.normpath(os.path.join(onelevelUp[0], path))
     else:
-        ap = os.path.join(root, path)
+        ap = os.path.normpath(os.path.join(root, path))
     print(ap)
-    if not os.path.exists(ap):
-        raise Exception("invalid parameter: "+path)
+    #if not os.path.exists(ap):
+    #    raise Exception("invalid parameter: "+path)
     return True
 
 

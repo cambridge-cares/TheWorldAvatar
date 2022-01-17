@@ -16,13 +16,15 @@ def api():
         if 'config' not in request.args:
             raise Exception("invalid request")
         config = request.args["config"]
+        print(config)
+        print(type(config))
         # Run the agent
     except Exception as ex:
         print(ex)
         return jsonify({'errormsg': 'Invalid request\n'+traceback.format_exc()}), 400
 
     try:
-        ontomatch.coordinator.Agent().start(config)
+        ontomatch.coordinator.Agent().start(config, True)
         return jsonify({"result": {"done":True}})
 
     except Exception as ex:
