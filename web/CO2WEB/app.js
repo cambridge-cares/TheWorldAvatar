@@ -144,7 +144,6 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
 const io = require('socket.io')(http, {'pingInterval': 200000, 'pingTimeout': 500000});
 io.set('transports', ['websocket','polling']);
 
