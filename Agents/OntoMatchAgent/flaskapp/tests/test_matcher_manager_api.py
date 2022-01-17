@@ -1,7 +1,7 @@
 import json
 import pytest
 
-from flaskapp import create_app
+from flaskapp.wsgi import create_app
 import ontomatch.utils.util
 @pytest.fixture
 def client():

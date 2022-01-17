@@ -2,7 +2,7 @@
 import json
 import pytest
 
-from flaskapp import create_app
+from flaskapp.wsgi  import create_app
 
 @pytest.fixture
 def client():
@@ -43,6 +43,5 @@ def test_blackboard_post_get(client):
     rd = json.loads(rv.data)
     content = json.dumps({"test":True})
     assert "result" in rd
-    assert "object" in rd["result"]
-    assert "test" in rd["result"]["object"]
-    assert rd["result"]["object"] == content
+    assert "test" in rd["result"]
+    assert rd["result"] == content

@@ -3,8 +3,8 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "../data/power_plant_DEU/kwl.pkl",
-	"tgt": "../data/power_plant_DEU/gppd_DEU.pkl"
+	"src": "./data/power_plant_DEU/kwl.pkl",
+	"tgt": "./data/power_plant_DEU/gppd_DEU.pkl"
 },
 "pre_processing":{
 	"add_knowledge": null
@@ -60,6 +60,6 @@
 },
 "post_processing":{
 	"dump": "./scores",
-	"evaluation_file": "../data/power_plant_DEU/matches_power_plant_DEU.csv"
+	"evaluation_file": "./data/power_plant_DEU/matches_power_plant_DEU.csv"
 }
 }
