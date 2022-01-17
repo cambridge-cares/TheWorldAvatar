@@ -183,37 +183,49 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         df_scores = manager.get_scores()
         df_max_scores = manager.get_max_scores_1()
-        self.df_total_scores, self.df_total_best_scores = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
-        self.df_total_best_scores_1 = self.df_total_best_scores
+        self.df_total_scores, self.df_total_best_scores_1 = self.calculate_auto_calibrated_total_scores(df_scores, df_max_scores, property_mapping, delta)
+        self.df_total_best_scores = self.df_total_best_scores_1
 
         if symmetric:
             df_max_scores_2 = manager.get_max_scores_2()
             df_scores_2 = manager.get_scores()
-            _, df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
-            self.df_total_best_scores_2 = df_total_best_scores_2
-            # combine best score pairs from df_total_best_scores and df_total_best_scores_2
-            self.df_total_best_scores = self.combine_total_best_scores(self.df_total_best_scores, df_total_best_scores_2)
 
-            #211226 remove some multi-index
-            index_inter = self.df_total_best_scores.index.intersection(self.df_total_scores.index)
-            self.df_total_best_scores = self.df_total_best_scores.loc[index_inter]
+            df_total_scores_2, self.df_total_best_scores_2 = self.calculate_auto_calibrated_total_scores(df_scores_2, df_max_scores_2, property_mapping, delta, dataset_id=2)
+            self.df_total_scores = self.combine(self.df_total_scores, df_total_scores_2)
+            mask = (self.df_total_scores['best'])
+            self.df_total_best_scores = self.df_total_scores[mask].copy()
 
-            self.df_total_scores.at[self.df_total_best_scores.index, 'best'] = True
-            assert len(self.df_total_scores[self.df_total_scores['best']]) == len(self.df_total_best_scores)
-            logging.debug('number of total best scores=%s', len(self.df_total_best_scores))
-            self.df_total_scores.at[self.df_total_best_scores.index, 'score'] = self.df_total_best_scores
-
-        #211226 don't set non-best total scores to 0 here (only for eval)
-        #mask = ~(self.df_total_scores['best'])
-        #self.df_total_scores.at[mask, 'score'] = 0
-        logging.debug('number of best=%s, nonbest=%s', len(self.df_total_scores[self.df_total_scores['score'] >=0]), len(self.df_total_scores[self.df_total_scores['score'] < 0]))
+        logging.debug('total scores=%s, best total scores=%s', len(self.df_total_scores), len(self.df_total_best_scores))
 
         estimated_threshold = self.estimate_best_threshold(self.df_total_scores, delta, threshold_ratio, log=True)
+
+        mask = ~(self.df_total_scores['best'])
+        self.df_total_scores.at[mask, 'score'] = 0
 
         if params_post_processing:
             postprocess(params_post_processing, self, estimated_threshold=estimated_threshold)
 
         return self.df_total_scores, self.df_total_best_scores
+
+    def combine(self, df_total_1, df_total_2):
+
+        best_total_1 = df_total_1[df_total_1['best']].index
+        best_total_2 = df_total_2[df_total_2['best']].index
+        logging.info('combining total scores, total_1=%s, total_2=%s, best_total_1=%s, best_total_2=%s', len(df_total_1), len(df_total_2), len(best_total_1), len(best_total_2))
+
+        df_combined = df_total_1[['score', 'best']].copy()
+        for idx, row in tqdm(df_total_2.iterrows()):
+            score_1 =  df_total_1.loc[idx, 'score']
+            best_1 = df_total_1.loc[idx, 'best']
+            #best_1 = (idx in best_total_1)
+            score_2 = row['score']
+            best_2 = row['best']
+            #best_2 = (idx in best_total_2)
+            df_combined.at[idx, 'score'] = max(score_1, score_2)
+            df_combined.at[idx, 'best'] = (best_1 | best_2)
+
+        return df_combined
+
 
     def read_matches_minus_fn(self, match_file):
         index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
@@ -303,6 +315,8 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
         df_max_2['purge'] = False
         idx_1_unique = df_max_1.index.unique()
 
+        logging.debug('idx_1_unique=%s', len(idx_1_unique))
+
         for idx_1 in tqdm(idx_1_unique):
             row_1 = df_max_1.loc[idx_1]
 
@@ -356,48 +370,6 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
         return df_max_1, df_max_2
 
-    def combine_total_best_scores(self, df_total_1, df_total_2):
-        df_combined = df_total_1[['score']].copy()
-        logging.info('combining total best scores, total_1=%s, total_2=%s', len(df_total_1), len(df_total_2))
-
-        index_1 = df_combined.index
-
-        # just for debugging: related to flipping test test_auto_calibration_with_geo_coordinates
-        #index_diff = df_total_2.index.difference(df_total_1.index)
-        #index_diff_test = df_total_2.index.difference(index_1)
-        #count_virtual_1 = 0
-        #count_virtual_2 = 0
-        #for idx1, idx2 in index_1:
-        #    if idx2 == 'virtual':
-        #        count_virtual_1 += 1
-        #for idx1, idx2 in df_total_2.index:
-        #    if idx1 == 'virtual':
-        #        count_virtual_2 += 1
-        #logging.debug('combined init=%s, index init=%s, diff=%s, diff_test=%s, v1=%s, v2=%s',
-        #        len(df_combined), len(index_1), len(index_diff), len(index_diff_test), count_virtual_1, count_virtual_2)
-
-        count = 0
-        rows = []
-
-        for idx, row in tqdm(df_total_2.iterrows()):
-            score_2 = row['score']
-            if idx in index_1:
-                count += 1
-                score_1 = df_combined.loc[idx]['score']
-                df_combined.at[idx, 'score'] = max(score_1, score_2)
-                #211226 F1 instead of max
-                #df_combined.at[idx, 'score'] = 2 * score_1 * score_2 / (score_1 + score_2)
-            else:
-                rows.append({'idx_1': idx[0], 'idx_2': idx[1], 'score': score_2})
-
-        if len(rows) > 0:
-            df_diff = pd.DataFrame(rows)
-            df_diff.set_index(['idx_1', 'idx_2'], inplace=True)
-            df_combined = pd.concat([df_combined, df_diff])
-
-        logging.debug('combined total best scores, count=%s, rows=%s, df_combined=%s', count, len(rows), len(df_combined))
-        return df_combined
-
     def calculate_auto_calibrated_total_scores_for_index(self, df_scores, sliding_counts, property_mapping, idx_1, skip_column_number = 1):
         best_score = 0
         best_pos = None
@@ -450,9 +422,12 @@ class InstanceMatcherWithAutoCalibration(InstanceMatcherBase):
 
             if score > best_score or best_pos is None:
                 best_score = score
-                best_pos = pos
+                best_pos = [pos]
+            elif score == best_score and (best_pos is not None):
+                best_pos.append(pos)
 
-        total_score_rows[best_pos]['best'] = True
+        for pos in best_pos:
+            total_score_rows[pos]['best'] = True
 
         return total_score_rows
 
@@ -686,9 +661,6 @@ def evaluate(match_file, test_file, matcher, train_set=None, hint='', estimated_
     index_matches = ontomatch.evaluate.read_match_file_as_index_set(match_file, linktypes = [1, 2, 3, 4, 5])
     df_scores = matcher.get_scores()
     if isinstance(matcher, ontomatch.instancematching.InstanceMatcherWithAutoCalibration):
-        #211226 for eval, set non-best total scores to 0
-        mask = ~(df_scores['best'])
-        df_scores.at[mask, 'score'] = 0
 
         logging.info('test_file=%s', test_file)
         if test_file:

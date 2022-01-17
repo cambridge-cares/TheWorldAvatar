@@ -8,7 +8,7 @@
 },
 "pre_processing":{
 	"http": true,
-	"add_knowledge": "ontomatch.knowledge.geoNames"
+	"add_knowledge": "ontomatch.knowledge.geocoding"
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",
