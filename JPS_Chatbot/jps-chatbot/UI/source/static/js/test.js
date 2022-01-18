@@ -1,22 +1,22 @@
 /*
  * Copyright (c) CMCL Innovations - All Rights Reserved
- *  
- * This application and all inherent data, source files, information and graphics are 
- * the copyright and sole property of Computational Modelling Cambridge Ltd (CMCL Innovations). 
- *  
- * Any unauthorised redistribution or reproduction of part, or all, of the contents of this 
- * applicationin any form is prohibited under UK Copyright Law. You may not, except with the 
+ *
+ * This application and all inherent data, source files, information and graphics are
+ * the copyright and sole property of Computational Modelling Cambridge Ltd (CMCL Innovations).
+ *
+ * Any unauthorised redistribution or reproduction of part, or all, of the contents of this
+ * applicationin any form is prohibited under UK Copyright Law. You may not, except with the
  * express written permission of CMCL Innovations, distribute or commercially exploit this
  * application or it's content. All other rights reserved.
- *  
+ *
  * For more information please contact support@cmclinnovations.com
- * 
+ *
  * ------------------------------------------------------------
- * 
+ *
  * This script contains functionality for the Marie chemistry chatbot,
  * including selection of random questions, submitting requests, and
  * parsing the resulting data for HTML display.
- * 
+ *
  */
 
 // Variables accessed throughout the script
@@ -96,7 +96,7 @@ function pipeQuestion(question) {
 	document.getElementById('input-field').value = question;
 	$('#input-field').css("color", "inherit");
 	window.scrollTo(0, 0);
-	
+
 	// Fire query automatically (requested by MK)
 	askQuestion();
 }
@@ -121,7 +121,7 @@ function shuffleQuestion() {
 function resetResults() {
 	let spinner = imageDir + "spinner.svg";
 	let html = "<img src=\"" + spinner + "\" style=\"vertical-align: middle;\" width=\"22px\">  Loading, please wait...";
-	
+
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
 }
@@ -130,58 +130,16 @@ function resetResults() {
 /*
  Send the current question to the chatbot.
  */
-function askQuestion() {
-	if(asking > 0) {
-		// No concurrent questions
-		return;
-	}
-	
-	resetResults();
-	let spinner = imageDir + "spinner.svg";
-	
-	// Make the ask button into a loading spinner
-	let askButton = document.getElementById("ask-button");
-	let imgTags = askButton.getElementsByTagName("img");
-	imgTags.item(0).src = spinner;
+ function askQuestion() {
 
-	// Get the question currently within the input-field
-	let inputField = document.getElementById('input-field');
-	let question = inputField.value;
-
-	if (question == "") {
-		// Show an error
-		$('#input-field').val("Please enter a question before submitting.");
-		$('#input-field').css("color", "red");
-		imgTags.item(0).src = imageDir + "search.svg";
-		return;
-	}
-
-	
-	// Build the URL for the question
-	question = question.replace('	', ' ');
-	question = question.replace(/[/+]/g, 'add_sign');
-
-	var promises = [];
-	
-	asking = 1;
 	// Make the request for the world avatar
-	makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
-
-	// Reset the search button when all requests are complete
-	$.when.apply($, promises).then(function() {
-		// Revert button to search icon
-		let askButton = document.getElementById("ask-button");
-		let imgTags = askButton.getElementsByTagName("img");
-		imgTags.item(0).src = imageDir + "search.svg";
-		$('#input-field').css("color", "inherit");
-	}, function() {
-		// Error occurred, dealt with elsewhere
-	});
-
+	// makeRequest(question, "worldavatar", "json", processChatbotResults, promises);
+    console.log('Asked')
+    let result = a1;
+    processChatbotResults(result);
 	// Show the results row
-	resultsRow.style.display = "block";	
+	resultsRow.style.display = "block";
 }
-
 
 /*
  Make a single HTTP request to the chatbot.
@@ -233,10 +191,13 @@ function processChatbotResults(rawResults) {
 				jsonData = rawResults;
 			}
 		}
-
+        console.log('Data in 194', jsonData);
 		if ('attribute' in jsonData || 'multiple_results' in jsonData) {
+            console.log('here we go, got the data')
 			process_matrix_data(jsonData);
-		} else {
+		}
+
+
 			if (Array.isArray(jsonData)) {
 				// JSON array
 				chatbotResults = parseJSONArray(jsonData);
@@ -244,7 +205,7 @@ function processChatbotResults(rawResults) {
 				// JSON object
 				chatbotResults = parseJSONObject(jsonData);
 			}
-		}
+
 
 
 	}
@@ -348,7 +309,7 @@ function toTable(valueSet) {
 		for (var key in valueSet) {
 			let values = valueSet[key];
 			let value = values[r];
-			
+
 			html += "<td>";
 
 			if(isValidURL(String(value))) {
@@ -388,15 +349,15 @@ function toTable(valueSet) {
 function isValidURL(possibleURL) {
 	if(possibleURL.startsWith("http:") || possibleURL.startsWith("https:")) {
 		let url;
-		
+
 		try {
 			url = new URL(possibleURL);
 			return true;
 		} catch (error) {
-			return false;  
+			return false;
 		}
 	}
-  
+
 	return false;
 }
 
@@ -510,7 +471,7 @@ function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed
         $('<div>', {
             id: element_id,
             class: 'chart',
-        }).appendTo('#chatbot-results');
+        }).appendTo('#chart_div');
 
 
       $(element_id).ready(function() {
@@ -574,3 +535,180 @@ function makeTable(matrix_set){
     });
 
 }
+
+a1 =  {
+    "value": [
+        "-205.69",
+        "-206.12",
+        "-230.14",
+        "-255.35",
+        "-281.58",
+        "-308.70",
+        "-336.64",
+        "-365.32",
+        "-394.68",
+        "-455.23",
+        "-550.13",
+        "-615.76",
+        "-717.35",
+        "-893.90",
+        "-1078.17",
+        "-1269.01",
+        "-1465.55",
+        "-1667.13",
+        "-1873.21"
+    ],
+    "unit": "kJ/mol",
+    "temperature": {
+        "value": [
+            "298.15",
+            "300.00",
+            "400.00",
+            "500.00",
+            "600.00",
+            "700.00",
+            "800.00",
+            "900.00",
+            "1000.00",
+            "1200.00",
+            "1500.00",
+            "1700.00",
+            "2000.00",
+            "2500.00",
+            "3000.00",
+            "3500.00",
+            "4000.00",
+            "4500.00",
+            "5000.00"
+        ],
+        "unit": "K"
+    },
+    "pressure": {
+        "value": "101325.00",
+        "unit": "Pa"
+    },
+    "attribute": "gibbs energy"
+};
+a2 = {
+    "multiple_results": [
+        {
+            "value": [
+                "28.73",
+                "28.81",
+                "32.85",
+                "36.09",
+                "38.73",
+                "40.92",
+                "42.75",
+                "44.28",
+                "45.56",
+                "47.53",
+                "49.47",
+                "50.35",
+                "51.27",
+                "52.20",
+                "52.74",
+                "53.07",
+                "53.29",
+                "53.45",
+                "53.56"
+            ],
+            "unit": "J/mol/K",
+            "temperature": {
+                "value": [
+                    "298.15",
+                    "300.00",
+                    "400.00",
+                    "500.00",
+                    "600.00",
+                    "700.00",
+                    "800.00",
+                    "900.00",
+                    "1000.00",
+                    "1200.00",
+                    "1500.00",
+                    "1700.00",
+                    "2000.00",
+                    "2500.00",
+                    "3000.00",
+                    "3500.00",
+                    "4000.00",
+                    "4500.00",
+                    "5000.00"
+                ],
+                "unit": "K"
+            },
+            "pressure": {
+                "value": "101325.00",
+                "unit": "Pa"
+            },
+            "attribute": "heat capacity at constant volume"
+        },
+        {
+            "value": [
+                "37.04",
+                "37.13",
+                "41.17",
+                "44.40",
+                "47.05",
+                "49.24",
+                "51.07",
+                "52.59",
+                "53.87",
+                "55.84",
+                "57.79",
+                "58.66",
+                "59.58",
+                "60.51",
+                "61.05",
+                "61.38",
+                "61.61",
+                "61.76",
+                "61.87"
+            ],
+            "unit": "J/mol/K",
+            "temperature": {
+                "value": [
+                    "298.15",
+                    "300.00",
+                    "400.00",
+                    "500.00",
+                    "600.00",
+                    "700.00",
+                    "800.00",
+                    "900.00",
+                    "1000.00",
+                    "1200.00",
+                    "1500.00",
+                    "1700.00",
+                    "2000.00",
+                    "2500.00",
+                    "3000.00",
+                    "3500.00",
+                    "4000.00",
+                    "4500.00",
+                    "5000.00"
+                ],
+                "unit": "K"
+            },
+            "pressure": {
+                "value": "101325.00",
+                "unit": "Pa"
+            },
+            "attribute": "heat capacity at constant pressure"
+        }
+    ]
+};
+a3 = {
+    "value": "37.13",
+    "unit": "J/mol/K",
+    "temperature": {
+        "value": "300.00",
+        "unit": "K"
+    },
+    "pressure": {
+        "value": "101325.00",
+        "unit": "Pa"
+    },
+    "attribute": "heat capacity at constant pressure"
+};
