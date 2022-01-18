@@ -7,9 +7,12 @@
 
 	<!-- External CSS -->
 	<link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.css' rel='stylesheet' />
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.0/themes/base/jquery-ui.css">
 
 	<!-- External JS -->
-	<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js'></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+  	<script src="https://code.jquery.com/ui/1.13.0/jquery-ui.js"></script>
+
 	<script src='https://api.mapbox.com/mapbox-gl-js/v2.3.0/mapbox-gl.js'></script>
 	<script src="https://cdn.jsdelivr.net/npm/moment@2.29.1"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.5.1/chart.js"></script>
@@ -41,13 +44,18 @@
 
 	<!-- Implementation specific -->
 	<script src='./local_icons.js'></script>
-</head>
+	<script src='./camera.js'></script>
 </head>
 
 <body>
 	<!-- Element the MapBox map will be added to -->
 	<div id='map'></div>
 	<div id="tiltShift"></div>
+	
+	<!-- Popup element for developer only animation controls -->
+	<div id="animationDialog" style="display: none;">
+		<p>I am a dialog!</p>
+	</div>
 
 	<!-- Element the map controls will be added to (normally on the left) -->
 	<div id="controlsContainer"></div>
@@ -93,6 +101,10 @@
 			let map = new mapboxgl.Map({ container: "map" });
 			manager.initialiseMap(map);
 			var iconHandler = new IconHandler(map);
+
+			// TEST
+			setupDetection(map);
+			// TEST
 
 			// Provide some default content for the side panel
 			let title = `<h1>Example Visualisation</h1>`;
