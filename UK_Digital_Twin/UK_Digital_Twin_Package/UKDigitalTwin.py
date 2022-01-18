@@ -25,6 +25,8 @@ class UKDigitalTwin:
     
     """Location"""
     UK = "United_Kingdom"
+    GB = "Great_Britain"
+    NI = "Northern_Ireland"
     
     """ Node Names """
     baseURL = "http://www.theworldavatar.com/kb"    
