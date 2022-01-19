@@ -1,15 +1,12 @@
 package uk.ac.cam.cares.jps.semakaupv;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
@@ -26,7 +23,6 @@ import com.cmclinnovations.mods.api.MoDSAPI;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -52,7 +48,9 @@ public class SemakauPV extends JPSAgent {
 	}
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	validateInput(requestParams);
+    	if (!validateInput(requestParams)) {
+    		throw new BadRequestException("SemakauPVAgent: Input parameters not found.\n");
+    	}
     	String ENIRI=requestParams.getString("electricalnetwork");
 		String irradSensorIRI=requestParams.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
@@ -60,7 +58,7 @@ public class SemakauPV extends JPSAgent {
 		//TODO: This is hardcoded; but I don't know what other PVs there could be. 
 		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/",
 				"PV-002.owl","EBus-006.owl");
-		return result;
+		return new JSONObject();
     }
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
@@ -74,12 +72,8 @@ public class SemakauPV extends JPSAgent {
 	        boolean r = InputValidator.checkIfValidIRI(iriofirrF);
             return q&r;
         } catch (JSONException ex) {
-        	ex.printStackTrace();
         	return false;
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-            return false;
-        }
+        } 
     }
 
 	/** reads the topnode into an OntModel of all its subsystems. 
@@ -177,7 +171,7 @@ public class SemakauPV extends JPSAgent {
 					xvalue.add(P);
 					String[]content={"property-"+d+"="+P}; //calculated by irr*area*efficiency
 					inputcsv.add(content);
-					System.out.println("P calculated= "+P);//hardcoded value before is 0.34840962
+//					System.out.println("P calculated= "+P);//hardcoded value before is 0.34840962
 					
 				} else {
 					xvalue.add(0.75);
@@ -226,13 +220,13 @@ public class SemakauPV extends JPSAgent {
 
 		//make content of the output
 		List<Double> yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData); // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam" and the input xData that was collected before
-		System.out.println("Success!");														
-		System.out.println("yData thetaPV1=" + yData.get(29));   //43 for pv2   //57 for pv3
-		System.out.println("yData VoltagePV1=" + yData.get(30));
-		System.out.println("yData PLoadPV1=" + yData.get(31));//usually=0
-		System.out.println("yData QLoadPV1=" + yData.get(32));//usually=0
-		System.out.println("yData PGenPV1=" + yData.get(33));
-		System.out.println("yData QGenPV1=" + yData.get(34)); //48for pv2 //62 for pv3
+//		System.out.println("Success!");														
+//		System.out.println("yData thetaPV1=" + yData.get(29));   //43 for pv2   //57 for pv3
+//		System.out.println("yData VoltagePV1=" + yData.get(30));
+//		System.out.println("yData PLoadPV1=" + yData.get(31));//usually=0
+//		System.out.println("yData QLoadPV1=" + yData.get(32));//usually=0
+//		System.out.println("yData PGenPV1=" + yData.get(33));
+//		System.out.println("yData QGenPV1=" + yData.get(34)); //48for pv2 //62 for pv3
 		
 		String[]testarray= {""+yData.get(29),""+yData.get(30),""+yData.get(33),""+yData.get(34)};
 		int count=0;

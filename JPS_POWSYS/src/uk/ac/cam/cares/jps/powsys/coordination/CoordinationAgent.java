@@ -13,7 +13,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/startsimulation", "/processresult", "/processresultwithpf", "/processresultwithopf" })
@@ -32,7 +31,9 @@ public class CoordinationAgent extends JPSAgent implements Prefixes, Paths {
     }
     @Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-	
+    	if (!validateInput(requestParams)) {
+			throw new JSONException ("CoordinationAgent: Input parameters not found.\n");
+		}
 		String path = requestParams.getString("path");
 
 		if (path.contains("/startsimulation") ){
@@ -72,8 +73,7 @@ public class CoordinationAgent extends JPSAgent implements Prefixes, Paths {
           
           return InputValidator.checkIfValidIRI(iriofnetwork) ;
           } catch (JSONException ex) {
-            ex.printStackTrace();
-            throw new JSONException("electrical network not found");
+            return false;
           }
       }
 	public void startSimulation(JSONObject jo) {

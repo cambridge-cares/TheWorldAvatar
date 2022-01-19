@@ -35,8 +35,8 @@ $(document).ready(function(){
     //-----------------------------------------------------------------------------------//
 
 	document.getElementById("plantSelection").addEventListener("change", retrieveSelectedPlantParams);
-	document.getElementById("startSimButton").addEventListener("click", processInputs, false);
-	//document.getElementById("startSimButton").addEventListener("click", replaceResults, false);
+	//document.getElementById("startSimButton").addEventListener("click", processInputs, false);
+	document.getElementById("startSimButton").addEventListener("click", replaceResults, false);
 	$.getJSON('/JPS_ARBITRAGE/retrieveUtilityPrices',
 		{
 			individuals: "V_Price_CoolingWater_001,V_Price_FuelGas_001,V_Price_Electricity_001"

@@ -1,13 +1,17 @@
 package com.cmclinnovations.ontochemexp.model.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rdf4j.RDF4JException;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -15,12 +19,24 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.repository.manager.RepositoryManager;
+import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.JSONObject;
+import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLIndividual;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.slf4j.Logger;
 
 import com.cmclinnovations.ontochemexp.model.converter.prime.PrimeConverter;
 import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
+
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
+import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
 
 /**
  * A utility class that supports the following functionalities:<p>
@@ -258,20 +274,46 @@ public class PrimeConverterUtils extends PrimeConverter{
 	}
 	
 	
-	public static String retrieveSpeciesIRI(String speciesFileIRI) throws OntoChemExpException {
+	public static String retrieveSpeciesIRIFromPrimeID(String speciesFileIRI) throws OntoChemExpException {
 		if (speciesFileIRI.trim().startsWith("<") || speciesFileIRI.trim().endsWith(">")) {
 			speciesFileIRI = speciesFileIRI.replace("<", "").replace(">", "");
 		}
-		String uniqueSpeciesIRI = new String();
-		String queryString = formSpeciesIRIQuery(speciesFileIRI);
-		List<List<String>> testResults = queryRepository(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), queryString);
-		if (testResults.size() == 2) {
-			uniqueSpeciesIRI = testResults.get(1).get(0);
+		String queryString = formSpeciesIRIQueryFromPrimeID(speciesFileIRI);
+
+		return retrieveSpeciesIRI(queryString);
+	}
+	
+	public static String retrieveSpeciesIRIFromInChI(String inchi) throws OntoChemExpException {
+		if (inchi.trim().toLowerCase().startsWith("1s/") || inchi.trim().toLowerCase().startsWith("1/")) {
+			inchi = "InChI=".concat(inchi);
+		}
+		String queryString = formSpeciesIRIQueryFromInChI(inchi);
+		return retrieveSpeciesIRI(queryString);
+	}
+	
+	public static String retrieveSpeciesIRI(String queryString) throws OntoChemExpException {
+		KnowledgeRepository kr = new KnowledgeRepository();
+		String results = new String();
+		try {
+			if (ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL().toLowerCase().contains("rdf4j")) {
+				results = kr.query(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), 
+						RDFStoreType.RDF4J, queryString);
+			} else if (ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL().toLowerCase().contains("blazegraph")) {
+				results = kr.query(ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBServerURL(), ontoChemExpKB.getOntoSpeciesUniqueSpeciesIRIKBRepositoryID(), 
+						RDFStoreType.BLAZEGRAPH, queryString);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		JSONObject json = new JSONObject(results);
+		String uniqueSpeciesIRI = new String("");
+		if (json.has("results")) {
+			uniqueSpeciesIRI = json.getJSONObject("results").getJSONArray("bindings").getJSONObject(0).getJSONObject("speciesIRI").get("value").toString();
 		}
 		return uniqueSpeciesIRI;
 	}
 	
-	private static String formSpeciesIRIQuery(String partialSpeciesIRI) {
+	private static String formSpeciesIRIQueryFromPrimeID(String partialSpeciesIRI) {
 		String queryString = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n";
 		queryString = queryString.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
 		queryString = queryString.concat("SELECT ?species \n");
@@ -282,105 +324,254 @@ public class PrimeConverterUtils extends PrimeConverter{
 		return queryString;
 	}
 	
+	private static String formSpeciesIRIQueryFromInChI(String inchi) {
+		String queryString = "PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n";
+		queryString = queryString.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n");
+		queryString = queryString.concat("SELECT ?speciesIRI \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?speciesIRI rdf:type OntoSpecies:Species . \n");
+		queryString = queryString.concat("    ?speciesIRI OntoSpecies:inChI ?Inchi . \n");
+		queryString = queryString.concat("    FILTER REGEX(REPLACE(str(?Inchi), \"InChI=1S\", \"InChI=1\"), REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(\"")
+				.concat(inchi).concat("\", \"InChI=1S\",\"InChI=1\"), \"/t.+\", \"\"), \"/b.+\", \"\"), \"\\\\(\", \"\\\\\\\\(\"), \"\\\\)\", \"\\\\\\\\)\"), \"i\") \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
 	/**
-	 * Query a given repository using a given SPARQL query string. 
 	 * 
-	 * @param serverURL
-	 * @param repositoryID
-	 * @param queryString
+	 * @param aboxFileName
+	 * @param aboxFilePath
 	 * @return
 	 * @throws OntoChemExpException
 	 */
-	public static List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString) throws OntoChemExpException {
-		List<List<String>> processedResultList = new ArrayList<List<String>>();
-		
+	public static String uploadExperiment(String aboxFileName, String aboxFilePath) throws OntoChemExpException {
+		loadOntology(ontoChemExpKB.getUploadTripleStoreServerURL(), aboxFileName, aboxFilePath, ontoChemExpKB.getOntoChemExpKbURL(), ontoChemExpKB.getUploadTripleStoreRepositoryOntoChemExp());
+		return ontoChemExpKB.getOntoChemExpKbURL().concat(aboxFileName);
+	}
+	
+	/**
+	 * Loads an abox to the ontology KB repository. It also creates</br>
+	 * a context, which is a necessary feature to delete the abox</br>
+	 * if user wants.
+	 * 
+	 * @param serverURL
+	 * @param aboxFileName
+	 * @param aboxFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoChemExpException
+	 */
+	public static void loadOntology(String serverURL, String aboxFileName, String aboxFilePath, String baseURI, 
+			String repositoryID) throws OntoChemExpException {
+		checkUploadParameterValidity(serverURL, aboxFileName, aboxFilePath, baseURI, repositoryID);
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
 			repo.initialize();
 			RepositoryConnection con = repo.getConnection();
-			
+			ValueFactory f = repo.getValueFactory();
+			org.eclipse.rdf4j.model.IRI context = f.createIRI(baseURI.concat(aboxFileName));
 			try {
-				TupleQuery queryResult = con.prepareTupleQuery(queryString);
-				try (TupleQueryResult result = queryResult.evaluate()) {
-					processResult(result, processedResultList);
-				} finally {
-					repo.shutDown();
-				}
-			} catch (Exception e) {
-				logger.error("Exception occurred.");
-				e.printStackTrace();
-				throw new OntoChemExpException("Exception occurred");
+				URL url = new URL("file:/".concat(aboxFilePath).concat(aboxFileName));
+				con.add(url, url.toString(), RDFFormat.RDFXML, context);
 			} finally {
-				logger.info("Executed the command to close the connection to the repository.");
 				con.close();
 			}
 		} catch (RDF4JException e) {
 			logger.error("RDF4JException occurred.");
 			e.printStackTrace();
-			throw new OntoChemExpException("RDF4JException occurred.");
-		}
-		return processedResultList;
-	}
-	
-	private static void processResult(TupleQueryResult result, List<List<String>> processedResultList) {
-		List<String> columnTitles = new ArrayList<>();
-		for (String bindingName : result.getBindingNames()) {
-			columnTitles.add(bindingName);
-		}
-		processedResultList.add(columnTitles);
-		while (result.hasNext()) {
-			BindingSet solution = result.next();
-			
-			List<String> processedResult = new ArrayList<>();
-			for (String bindingName : solution.getBindingNames()) {
-				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
-			}
-			processedResultList.add(processedResult);
+		} catch (IOException e) {
+			logger.error("IOException occurred.");
+			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * Removes the following XML Schema data types from a string:</br>
-	 * 1. string</br>
-	 * 2. integer</br>
-	 * 3. float</br>
-	 * 4. double.
+	 * Checks the validity of the following parameters:</br>
+	 * 1. The Server URL.</br>
+	 * 2. The abox file name.</br>
+	 * 3. The abox file path.</br>
+	 * 4. The base URL.</br>
+	 * 5. The Knowledge Base repository ID.
 	 * 
-	 * @param value
-	 * @return
+	 * @param serverURL
+	 * @param aboxFileName
+	 * @param aboxFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoChemExpException
 	 */
-	private static String removeDataType(String value) {
-		String stringType = "^^<http://www.w3.org/2001/XMLSchema#string>";
-		String integerType = "^^<http://www.w3.org/2001/XMLSchema#integer>";
-		String floatType = "^^<http://www.w3.org/2001/XMLSchema#float>";
-		String doubleType = "^^<http://www.w3.org/2001/XMLSchema#double>";
-		if (value.contains(stringType)) {
-			value = value.replace(stringType, "");
-		} else if (value.contains(integerType)) {
-			value = value.replace(integerType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.contains(floatType)) {
-			value = value.replace(floatType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.contains(doubleType)) {
-			value = value.replace(doubleType, "");
-			value = replaceInvertedComma(value);
-		} else if (value.startsWith("\"") || value.endsWith("\"")) {
-			value = value.replace("\"", "");
+	private static void checkUploadParameterValidity(String serverURL, String aboxFileName, String aboxFilePath,
+			String baseURI, String repositoryID) throws OntoChemExpException {
+		checkURLValidity(serverURL, "The server URL");
+		checkStringValidity(aboxFileName, "The abox file name");
+		checkFilePathValidity(aboxFilePath, "The abox file path");
+		checkURLValidity(baseURI, "The base IRI");
+		checkStringValidity(repositoryID, "The repository ID");
+	}
+	
+	/**
+	 * Checks the validity of a URL.
+	 * 
+	 * @param url
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkURLValidity(String url, String message) throws OntoChemExpException {
+		if (url == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat("is null."));
+			}
 		}
-		return value;
+		if (url.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+		if (!IRI.create(url).isIRI()) {
+			throw new OntoChemExpException(message.concat(" is not valid."));
+		}
 	}
 
 	/**
-	 * Removes inverted commas from a string.
+	 * Checks the validity of a string value.</br>
+	 * It checks whether the string value is null or empty.
 	 * 
-	 * @param value
+	 * @param string
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkStringValidity(String string, String message) throws OntoChemExpException {
+		if (string == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat(" is null."));
+			}
+		}
+		if (string.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+	}
+
+	/**
+	 * Checks the validity of a file system file path.</br>
+	 * It checks whether the path is valid file path, null or empty.
+	 * 
+	 * @param path
+	 * @param message
+	 * @throws OntoException
+	 */
+	private static void checkFilePathValidity(String path, String message) throws OntoChemExpException {
+		File file = new File(path);
+		if (path == null) {
+			if (message != null) {
+				throw new OntoChemExpException(message.concat(" is null."));
+			}
+		}
+		if (path.isEmpty()) {
+			throw new OntoChemExpException(message.concat(" is empty."));
+		}
+		if (!file.exists()) {
+//			throw new OntoException("The following file does not exist:"+path);
+		}
+	}
+	
+	public static OWLIndividual createIndividualFromOtherOntology(String tboxPath, String clasName, String instance) throws OntoChemExpException {
+		OWLClass claz = createOWLClass(dataFactory, tboxPath, clasName);
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		// Adds to the ontology the instance of the class
+		manager.applyChange(new AddAxiom(ontology, dataFactory.getOWLClassAssertionAxiom(claz, individual)));
+		return individual;
+	}
+	
+	public static void addObjectPropertyFromOtherOntology(String objectPropertyPath, String domainInstanceName, String rangeInstanceName) throws OntoChemExpException {
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(objectPropertyPath);
+		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
+		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainIndividual, rangeIndividual)));
+	}
+	
+	public static void addObjectPropertyFromOtherOntology(String basePath, String objectPropertyName, String domainInstanceName, String rangeInstanceName) throws OntoChemExpException {
+		OWLObjectProperty objectProperty = dataFactory.getOWLObjectProperty(basePath.concat(HASH).concat(objectPropertyName));
+		OWLIndividual domainIndividual = createOWLIndividual(dataFactory, basePathABox, domainInstanceName);
+		OWLIndividual rangeIndividual = createOWLIndividual(dataFactory, basePathABox, rangeInstanceName);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLObjectPropertyAssertionAxiom(objectProperty, domainIndividual, rangeIndividual)));
+	}
+	
+	public static void addDataPropertyFromOtherOntology(String basePath, String instance, String dataPropertyName, String dataPropertyValue, String propertyType) throws OntoChemExpException {
+		OWLIndividual individual = createOWLIndividual(dataFactory, basePathABox, instance);
+		OWLLiteral literal = createOWLLiteral(dataFactory, dataPropertyValue, propertyType);
+		OWLDataProperty dataPropertyCreated = createOWLDataProperty(dataFactory, basePath, dataPropertyName, HASH);
+		manager.applyChange(new AddAxiom(ontology, 
+				dataFactory.getOWLDataPropertyAssertionAxiom(dataPropertyCreated, individual, literal)));
+	}
+	
+	/**
+	 * Create ontology class. 
+	 * 
+	 * @param ontoFactory
+	 * @param owlFilePath baseTBoxPath
+	 * @param className
 	 * @return
 	 */
-	private static String replaceInvertedComma(String value) {
-		if (value.contains("\"")) {
-			value = value.replace("\"", "");
+	private static OWLClass createOWLClass(OWLDataFactory ontoFactory, String owlFilePath, String className) {
+		if (className != null && (className.trim().startsWith("http://") || className.trim().startsWith("https://"))) {
+			return ontoFactory.getOWLClass(className.trim());
 		}
-		return value;
+		return ontoFactory.getOWLClass(owlFilePath.concat("#").concat(className));
+	}
+	
+	/**
+	 * 
+	 * @param ontoFactory
+	 * @param owlFilePath
+	 * @param individualName
+	 * @return
+	 */
+	private static OWLIndividual createOWLIndividual(OWLDataFactory ontoFactory, String owlFilePath, String individualName) {
+		if (individualName != null && (individualName.trim().startsWith("http://") || individualName.trim().startsWith("https://"))) {
+			return ontoFactory.getOWLNamedIndividual(individualName.trim());
+		}
+		return ontoFactory.getOWLNamedIndividual(owlFilePath.concat(BACKSLASH).concat(individualName));
+	}
+	
+	/**
+	 * 
+	 * @param dataFactory
+	 * @param iri
+	 * @param propertyName
+	 * @param separator
+	 * @return
+	 */
+	private static OWLDataProperty createOWLDataProperty(OWLDataFactory dataFactory, String iri, String propertyName, String separator) {
+		if (propertyName != null && (propertyName.trim().startsWith("http://") || propertyName.trim().startsWith("https://"))) {
+			return dataFactory.getOWLDataProperty(propertyName.trim());
+		}
+		return dataFactory.getOWLDataProperty(iri.concat(separator).concat(propertyName));
+	}
+	
+	/**
+	 * 
+	 * @param ontoFactory
+	 * @param literal
+	 * @param propertyType
+	 * @return
+	 * @throws OntoChemExpException
+	 */
+	private static OWLLiteral createOWLLiteral(OWLDataFactory ontoFactory, String literal, String propertyType) throws OntoChemExpException {
+		if (propertyType.equalsIgnoreCase("string")) {
+			return ontoFactory.getOWLLiteral(literal);
+		} else if (propertyType.equalsIgnoreCase("integer")) {
+			try {
+				return ontoFactory.getOWLLiteral(Integer.parseInt(literal));
+			} catch (NumberFormatException e) {
+				throw new OntoChemExpException("The following value is not an integer:"+literal);
+			}
+		} else if (propertyType.equalsIgnoreCase("float")) {
+			try {
+				return ontoFactory.getOWLLiteral(Float.parseFloat(literal));
+			} catch (NumberFormatException e) {
+				throw new OntoChemExpException("The following value is not a float:"+literal);
+			}
+		}
+		return ontoFactory.getOWLLiteral(literal);
 	}
 }

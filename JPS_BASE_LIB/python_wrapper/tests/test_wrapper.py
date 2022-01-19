@@ -1,39 +1,125 @@
-import unittest
-from py4jps import JPSGateway
+import pytest
+from py4jps.resources import JpsBaseLib
+from py4j.java_gateway import GatewayParameters
 from os import path
+import json
 
-class TestWrapper(unittest.TestCase):
+def test_JGLGkwargs():
+    # ===============================================================================================
+    # sub test 1 - checks most important params, except enable_auth = True, as it does not work with the
+    #              eager_load = True option
+    # JGkwargs
+    eager_load = True   # py4j default is False, tested if can be changed to True
+    auto_field = True   # py4j default is False, tested if can be changed to True
+    auth_token = True   # py4j default is None, shouldn't be set by a user, tested if removed correctly
+    auto_convert = True # py4j default is False, tested if can be changed to True
+    auto_close = False  # py4j default is True, tested if can be changed to False
+    # LGkwargs
+    jarpath = 'dummyPath' # tested if correctly removed from the LGkwargs
+    port = 49154 # tested if correctly set by the launch_gateway call
 
-    def fileReading(self):
-        jps = JPSGateway()
-        jps.start()
-        module1_view = jps.createModuleView()
-        jps.importPackages(module1_view,'uk.ac.cam.cares.jps.base.util.*')
+    # instantiate jsp gatway object using the JGkwargs values defined above
+    jpsGW = JpsBaseLib(**{'eager_load': eager_load,
+                        'java_process': 1,
+                        'auto_convert': auto_convert,
+                        'gateway_parameters':{
+                            'auto_field':auto_field, 'port':port,
+                            'auth_token': auth_token,
+                            'auto_convert': auto_convert,
+                            'auto_close': auto_close,
+                            'eager_load': eager_load}
+                        })
+    # check user provided JGkwargs pre-processing
+    assert ('java_process' not in jpsGW._gatewayUserParams)
+    assert ('auth_token' not in jpsGW._gatewayUserParams['gateway_parameters'])
+    assert jpsGW._gatewayUserParams['eager_load'] == eager_load
+    assert jpsGW._gatewayUserParams['auto_convert'] == auto_convert
+    assert jpsGW._gatewayUserParams['gateway_parameters']['auto_convert'] == auto_convert
+    assert jpsGW._gatewayUserParams['gateway_parameters']['auto_field'] == auto_field
+    assert jpsGW._gatewayUserParams['gateway_parameters']['auto_close'] == auto_close
+    assert ('port' not in jpsGW._gatewayUserParams['gateway_parameters'])
 
-        FileUtil = module1_view.FileUtil
-        file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
-        self.assertEqual("test file1", file_str)
-        jps.shutdown()
+    # launch the gateway with the LGkwargs values defined above
+    jpsGW.launchGateway(**{'port':port, 'jarpath':jarpath})
 
-    def remoteKGquery(self):
-        jps = JPSGateway()
-        jps.start()
-        module1_view = jps.createModuleView()
-        jps.importPackages(module1_view,"uk.ac.cam.cares.jps.base.query.*")
+    # check adding connection params to JGkwargs
+    assert ('java_process' in jpsGW._gatewayUserParams)
+    assert jpsGW.jarPath != jarpath # check if dummy jarpath removed
+    # check for correct gateway_parameters type conversion
+    assert isinstance(jpsGW._gatewayUserParams['gateway_parameters'], GatewayParameters)
+    JGparams = jpsGW._gatewayUserParams['gateway_parameters']
+    # check paratemers values
+    assert JGparams.port == port
+    assert JGparams.auto_convert == auto_convert
+    assert JGparams.auto_field == auto_field
+    assert JGparams.auto_close == auto_close
+    assert JGparams.eager_load == eager_load
 
-        KGRouter = module1_view.KGRouter
-        KGClient = KGRouter.getKnowledgeBaseClient(KGRouter.HTTP_KB_PREFIX+'ontokin', True, False)
-        response = KGClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
-                                        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
-                                        WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
-        jps.shutdown()
+    # now check if the internal py4j gateway params match the user settings
+    py4jGWparams = jpsGW.gateway.gateway_parameters
+    assert py4jGWparams.port == port
+    assert py4jGWparams.auto_convert == auto_convert
+    assert py4jGWparams.auto_field == auto_field
+    assert py4jGWparams.auto_close == auto_close
+    assert py4jGWparams.eager_load == eager_load
 
-def runTests():
-    suite = unittest.TestSuite()
-    suite.addTest(TestWrapper('fileReading'))
-    suite.addTest(TestWrapper('remoteKGquery'))
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+    jpsGW.shutdown()
+    # ===============================================================================================
+    # sub test 2  - checks the enable_auth = True option
+    # LGkwargs
+    enable_auth = True  # py4j default is False, tested if can be changed to True
+    jpsGW = JpsBaseLib()
+    jpsGW.launchGateway(**{'enable_auth': enable_auth})
 
-if __name__ == '__main__':
-    runTests()
+    # check user provided JGkwargs pre-processing
+    JGparams = jpsGW._gatewayUserParams['gateway_parameters']
+    assert (JGparams.auth_token is not None) == enable_auth
+    # now check if the internal py4j gateway params match the user settings
+    py4jGWparams = jpsGW.gateway.gateway_parameters
+    assert (py4jGWparams.auth_token is not None) == enable_auth
+
+def test_fileReading():
+    jpsGW = JpsBaseLib()
+    jpsGW.launchGateway()
+    jpsGW_view = jpsGW.createModuleView()
+    jpsGW.importPackages(jpsGW_view,'uk.ac.cam.cares.jps.base.util.*')
+
+    FileUtil = jpsGW_view.FileUtil
+    file_str = FileUtil.readFileLocally(path.abspath(path.join(path.dirname(__file__),'test_file1.txt')))
+    assert "test file1" == file_str
+    jpsGW.shutdown()
+
+def test_remoteKGquery():
+    jpsGW = JpsBaseLib()
+    jpsGW.launchGateway()
+    jpsGW_view = jpsGW.createModuleView()
+    jpsGW.importPackages(jpsGW_view,"uk.ac.cam.cares.jps.base.query.*")
+
+    StoreRouter = jpsGW_view.StoreRouter
+    StoreClient = StoreRouter.getStoreClient('http://kb/ontokin', True, False)
+    response = StoreClient.executeQuery(("PREFIX ontokin: <http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#> \
+                                    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>	SELECT ?mechanismIRI \
+                                    WHERE	{ ?mechanismIRI rdf:type ontokin:ReactionMechanism .} LIMIT 10"))
+    response = json.loads(str(response))
+    jpsGW.shutdown()
+
+def test_javaPythonObjConversion():
+    jpsGW = JpsBaseLib()
+    jpsGW.launchGateway()
+    jpsGW_view = jpsGW.createModuleView()
+    jpsGW.importPackages(jpsGW_view,'uk.ac.cam.cares.jps.base.util.*')
+
+    # craete the Java File object instance
+    javaFolder = jpsGW_view.java.io.File(path.abspath(path.join(path.dirname(__file__))))
+    # create a FileUtil instance in order to access its non static methods
+    FileUtil = jpsGW_view.FileUtil()
+    # call the getDirectoryFiles method
+    # note that passed [".txt"] Python list is automatically converted to the Java List<String> instance
+    fileListArray = FileUtil.getDirectoryFiles(javaFolder, [".txt"])
+    # note that the returned value type is ArrayList<File>, so one needs to know a bit of Java
+    # to access its values
+    retFilesList = []
+    for i in range(fileListArray.size()):
+        retFilesList.append(fileListArray.get(i).toString())
+
+    assert retFilesList == [path.join(path.abspath(path.join(path.dirname(__file__))), 'test_file1.txt')]

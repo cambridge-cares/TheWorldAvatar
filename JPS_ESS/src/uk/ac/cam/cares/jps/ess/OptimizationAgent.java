@@ -20,24 +20,19 @@ import uk.ac.cam.cares.jps.base.util.InputValidator;
 
 @WebServlet(urlPatterns = { "/OptimizationAgent"})
 /** returns appropriate Battery Agent based on criteria
- * 
- * @author Laura Ong
+ * There's only one return (based on total losses, given by locateBattery)
+ * But more options should be given. 
  *
  */
 public class OptimizationAgent extends JPSAgent {
 	
-	//suggesting the optimization model used based on storage technology chosen
-	
 	private static final long serialVersionUID = 1L;
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams) {
-	    requestParams = processRequestParameters(requestParams, null);
-	    return requestParams;
-	}
-	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+	    if (!validateInput(requestParams)) {
+			throw new BadRequestException();
+		}
 		String path="JPS_ESS/LocateBattery"; //later can be queried from the agent descriptions
-		
 		String gencoordinate = new SelectBuilder()
 				.addPrefix("j6", "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#")
 				.addPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#")
@@ -46,15 +41,12 @@ public class OptimizationAgent extends JPSAgent {
 				.addWhere("?entity","j6:hasStateOfCharge", "?dt")
 				.addWhere("?class", "rdfs:subClassOf","?parent")
 				.buildString();
-		boolean validity = validateInput(requestParams);
-		if (validity == false) {
-			throw new JSONException("INPUT no longer valid");
-		}
+		
 		String batIRI=requestParams.getString("storage");		
 		String localUrl = ScenarioHelper.cutHash(batIRI);
 		localUrl = ResourcePathConverter.convert(localUrl);
 		ResultSet resultSet = JenaHelper.queryUrl(localUrl, gencoordinate);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);System.out.println(result);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
@@ -64,22 +56,20 @@ public class OptimizationAgent extends JPSAgent {
 			}		
 		JSONObject resultofOptimization=new JSONObject();
 		resultofOptimization.put("optimization",path);
-		return resultofOptimization;
-		
-		
+		return resultofOptimization;		
 	}
+	
 	@Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
-            throw new BadRequestException();
+            return false;
         }
         try {
 	        String storageFormat = requestParams.getString("storage");
 	        boolean q = InputValidator.checkIfValidIRI(storageFormat);
 	        return q;
-        }catch (Exception ex) {
-        	ex.printStackTrace();
+        }catch (JSONException ex) {
+            return false;
         }
-        return false;
 	}	
 }

@@ -27,12 +27,13 @@ public class SemakauVisualization extends JPSAgent {
 	}
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request){
-		validateInput(requestParams);
+		if (!validateInput(requestParams)) {
+			throw new BadRequestException("SemakauVisualizationAgent: Input parameters not found.\n");
+		}
 		String irradiationsensorIRI=requestParams.getString("irradiationsensor");
 		String pvgeneratorIRI=requestParams.optString("pvgenerator","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl#PV-002");
 		String busIRI=requestParams.optString("ebus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl#EBus-006");
 		JSONObject responseParams =  graphDataPoints(irradiationsensorIRI, pvgeneratorIRI, busIRI);
-		System.gc();
 		return responseParams;
 	}
 	@Override
@@ -48,12 +49,9 @@ public class SemakauVisualization extends JPSAgent {
             String busIRI=requestParams.getString("ebus");
 	        boolean w = InputValidator.checkIfValidIRI(busIRI);
             return q&r&w;
-        } catch (JSONException ex) {
-        	ex.printStackTrace();
-        } catch (Exception ex) {
-        	ex.printStackTrace();
-        }
-        return false;
+        } catch (JSONException ex) {        	
+        	return false;
+        } 
     }
 	/** extracts all graph data from IRIs and dumps in JSON Object
 	 * 

@@ -1,0 +1,81 @@
+page-inject {
+  border: 1px solid #ccc;
+  display: inline-flex;
+}
+
+page-inject .pi-wrapper {
+  align-items: center;
+  display: inline-flex;
+  margin: 8px 16px;
+}
+
+page-inject .pi-wrapper > * {
+  margin-left: 16px;
+}
+
+page-inject .pi-wrapper > :first-child {
+  margin-left: 0;
+}
+
+page-inject .pi-wrapper > *:before {
+  margin-right: 16px;
+  content: '|';
+}
+
+page-inject .pi-wrapper > *:first-child:before {
+  display: none;
+}
+
+page-inject .pi-type {
+  font-weight: 700;
+}
+
+page-inject .pi-route-settings {
+  cursor: pointer;
+  height: 24px;
+  margin-left: 4px;
+  margin-top: -2px;
+  transition: opacity .2s ease, color .2s ease;
+  width: 24px;
+}
+
+page-inject:hover .pi-route-settings {
+  color: #ffc83d;
+}
+
+page-inject .pi-route-settings:hover,
+page-inject.ck-widget_selected .pi-route-settings {
+  color: #1f89e5;
+}
+
+page-inject.ck-widget_selected .pi-route-settings:hover {
+  opacity: .5;
+}
+
+page-inject .pi-settings {
+  align-items: center;
+  border-left: 1px solid #ccc;
+  display: inline-flex;
+  padding: 0 8px;
+}
+
+page-inject .pi-settings svg {
+  cursor: pointer;
+  height: 24px;
+  margin-left: auto;
+  transition: opacity .2s ease, color .2s ease;
+  width: 24px;
+}
+
+page-inject:hover .pi-settings svg {
+  color: #ffc83d;
+}
+
+page-inject .pi-settings svg:hover,
+page-inject.ck-widget_selected .pi-settings svg {
+  color: #1f89e5;
+}
+
+page-inject.ck-widget_selected .pi-settings svg:hover {
+  opacity: .5;
+}

@@ -1,0 +1,279 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#"
+     xml:base="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:OntoDSV="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 February 2021</dc:date>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">6258c44570dd8dc819f9f60ff250492d5c8ca1d1</gitCommitHash>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDSV is an ontology used to describe the contents of a DSV file. It should provide sufficient information on how to read the file.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</owl:versionInfo>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasColumn -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasColumn">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#column"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasDelimiter -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasDelimiter">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#delimiter"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasFileName -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasFileName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#fileName"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasNumberOfColumns -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasNumberOfColumns">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfColumns"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasNumberOfRows -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasNumberOfRows">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfRows"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasTime -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#time"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasTimeRange -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#hasTimeRange">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeRange"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#maxTime -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#maxTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeRange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Developed for ship data, time stamp is in unix time</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#minTime -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#minTime">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeRange"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Developed for ship data, time stamp is in unix time</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#name -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#name">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#column"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#delimiter"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#fileName"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeStamp -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeStamp">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#time"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#column -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#column">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Column of the CSV file</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#delimiter -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#delimiter">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#dsvFile">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#fileName -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#fileName">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Full path to the CSV file</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfColumns -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfColumns">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of columns in the CSV file</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfRows -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#numberOfRows">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Number of rows in the CSV file</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#time -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#time">
+        <rdfs:subClassOf rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time stamp of the CSV file</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeRange -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl#timeRange">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time range of a time series data</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kb/ontodsv/OntoDSV.owl</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+    
+
+
+    <!-- http://www.w3.org/2006/time#Instant -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#Instant"/>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 5.1.0.2017-03-29T23:31:42Z) https://github.com/owlcs/owlapi/ -->
+
+

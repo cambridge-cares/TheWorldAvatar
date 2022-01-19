@@ -13,6 +13,11 @@ public class CommonPropertiesPropertyParser extends PrimeConverter implements IC
 		parsePropertyLabel(qName, attributes);
 		parsePropertyUnits(qName, attributes);
 		parsePropertyDescription(qName, attributes);
+		parsePropertySourceType(qName, attributes);
+		parsePropertyReference(qName, attributes);
+		parsePropertyBound(qName, attributes);
+		parsePropertyKind(qName, attributes);
+		parsePropertyMethod(qName, attributes);
 	}
 
 	private void parseProperty(String qName, Attributes attributes) {
@@ -74,5 +79,60 @@ public class CommonPropertiesPropertyParser extends PrimeConverter implements IC
 				commonPropertiesPropertyParseStatus.setProperty(true);
 			}
 		}
-	}	
+	}
+	
+	private void parsePropertySourceType(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
+			String sourceType = attributes.getValue(primeVocabulary.getAttribSourceType());
+			if (sourceType != null) {
+				commonPropertiesProperty.setSourceType(sourceType);
+				commonPropertiesPropertyParseStatus.setSourceType(true);
+				commonPropertiesPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyReference(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
+			String reference = attributes.getValue(primeVocabulary.getAttribReference());
+			if (reference != null) {
+				commonPropertiesProperty.setReference(reference);
+				commonPropertiesPropertyParseStatus.setReference(true);
+				commonPropertiesPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyBound(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
+			String bound = attributes.getValue(primeVocabulary.getAttribBound());
+			if (bound != null) {
+				commonPropertiesProperty.setBound(bound);
+				commonPropertiesPropertyParseStatus.setBound(true);
+				commonPropertiesPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyKind(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
+			String kind = attributes.getValue(primeVocabulary.getAttribKind());
+			if (kind != null) {
+				commonPropertiesProperty.setKind(kind);;
+				commonPropertiesPropertyParseStatus.setKind(true);
+				commonPropertiesPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
+	
+	private void parsePropertyMethod(String qName, Attributes attributes) {
+		if (qName.equalsIgnoreCase(primeVocabulary.getElemProperty()) && inCommonProperties) {
+			String method = attributes.getValue(primeVocabulary.getAttribMethod());
+			if (method != null) {
+				commonPropertiesProperty.setMethod(method);
+				commonPropertiesPropertyParseStatus.setMethod(true);
+				commonPropertiesPropertyParseStatus.setProperty(true);
+			}
+		}
+	}
 }

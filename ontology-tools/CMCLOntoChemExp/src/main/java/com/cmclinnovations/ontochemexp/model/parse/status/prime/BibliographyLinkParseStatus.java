@@ -4,6 +4,7 @@ public class BibliographyLinkParseStatus {
 	boolean bibliographyLink = false;
 	boolean preferredKey = false;
 	boolean primeID = false;
+	boolean doi = false;
 
 	public boolean isBibliographyLink() {
 		return bibliographyLink;
@@ -27,5 +28,13 @@ public class BibliographyLinkParseStatus {
 
 	public void setPrimeID(boolean primeID) {
 		this.primeID = primeID;
+	}
+
+	public boolean isDoi() {
+		return doi;
+	}
+
+	public void setDoi(boolean doi) {
+		this.doi = doi;
 	}
 }

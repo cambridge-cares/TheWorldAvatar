@@ -40,13 +40,4 @@ public class TestKeyValueManager extends TestCase {
 		assertTrue(ok);
 	}
 	
-	public void testUnknownKeyFromPropertyFile() {
-		boolean jpsruntimeexc = false;
-		try {
-			KeyValueManager.get("unknown");
-		} catch (JPSRuntimeException e) {
-			jpsruntimeexc = true;
-		}
-		assertTrue(jpsruntimeexc);
-	}
 }

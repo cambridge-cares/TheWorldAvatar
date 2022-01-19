@@ -1,198 +1,202 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-Reaction Mechanism,Class,,,,,,"A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Mechanism Representation Language,Class,,,,,,A representation language specialised for the codification of chemical kinetic reaction mechanisms.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Phase,Class,,,,,,"A phase of a substance is a form of matter that is uniform throughout in chemical composition and state (i.e. a particular solid, liquid, or gas).",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Bulk Phase,Class,Phase,IS-A,,,,A solid phase that is contiguous with site phases and remote from the gas phase.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Site Phase,Class,Phase,IS-A,,,,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Gas Phase,Class,Phase,IS-A,,,,A continuous gaseous phase.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Material,Class,,,,,,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Element Number,Class,,,,,,A number indicating the multiplicity of an element in a species.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Element Metadata,Class,,,,,,Metadata of an element.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Species,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies,EQUIVALENT-TO,,,,"An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Species Metadata,Class,,,,,,Metadata of a species.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,Class,,,,,,"Specifies the thermodynamic model used to calculate quantities such as heat capacity, enthalpy and entropy.",http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl
-Transport Model,Class,,,,,,"Specifies the transport model used to calculate quantities such as viscosity, thermal conductivity and diffusion coefficients.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-NASA,Class,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,IS-A,,,,The NASA polynomial parameterisation used to compute the reference-state thermodynamic properties of a species within a specified temperature range.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Product,Class,Species,IS-A,,,,A name-quantity pair that defines the name and corresponding stoichiometric coefficient of a chemical species or molecular entity participating in the reverse reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Reactant,Class,Species,IS-A,,,,A name-quantity pair that defines the name and corresponding stoichiometric coefficient of a chemical species or molecular entity participating in the forward reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Class,,,,,,"A process in which one or more substances, the reactants, are converted to one or more new and entirely different substances, the products. In chemistry, substances are either chemical elements or compounds. A chemical reaction rearranges the constituent atoms of the reactants to create different substances as products.",http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-Reaction Metadata,Class,,,,,,Metadata of a reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Reaction Order,Class,,,,,,The order of reaction with resepct to a species. The value of the reaction order for the species is exactly the same as its stoichometric coefficient in mass-action kinetics.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,Class,,,,,,The ratio in which the reactants combine and the corresponding proportion of products participating in a chemical reaction are modelled using a stoichiometric coefficient.,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-Gas Phase Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,A chemical reaction that occurs in the gas phase.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Surface Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that involves an adsorbed species or desorption of products into the gas phase, or adsorption of reactants from the gas phase onto the surface.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Arrhenius Reaction,Class,Gas Phase Reaction,IS-A,,,,A gas-phase reaction that is described by an Arrhenius law.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Landau Teller Reaction,Class,Gas Phase Reaction,IS-A,,,,A reaction that has a Landau-Teller reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Three Body Reaction,Class,Gas Phase Reaction,IS-A,,,,A gas-phase reaction that involves an inert third body. The third body is required to ensure conservation of both energy and momentum in a reaction in which two species react to form a single product.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Pressure Dependent Reaction,Class,Three Body Reaction,IS-A,,,,A reaction that includes a pressure-dependent reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Fall Off Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a fall-off reaction rate model. The fall-off model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Lindemann Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes a Lindemann fall-off reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Troe Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes a Troe fall-off reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-SRI Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes an SRI fall-off reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-PLOG Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a PLOG reaction rate model. The PLOG reaction rate model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-CHEB Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a CHEB (Chebyshev) reaction rate model. The CHEB reaction rate model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Surface Coverage Reaction,Class,Surface Reaction,IS-A,,,,A surface reaction that has a coverage-dependent reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Sticking Coefficient Reaction,Class,Surface Reaction,IS-A,,,,A surface reaction that is described by a sticking coefficient rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Forward Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that proceeds in the forward direction, so producing products from reactants.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Reverse Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that proceeds in the reverse direction, so producing reactants from products.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Rate Coefficient,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient,EQUIVALENT-TO,,,,The coefficients used to evaluate the reaction rate expression.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Arrhenius Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the Arrhenius part of a reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Fall Off Model Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the fall-off part of a reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Coverage Dependency,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the coverage-dependent part of a surface reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Sticking Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the sticking coefficient part of a surface reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-CHEB Rate Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the CHEB (Chebyshev) part of a reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Landau Teller Rate Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the Landau-Teller part of a reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Third Body Efficiency,Class,,,,,,An efficiency that indicates the effectiveness of a species that acts as a third body in a pressure dependent reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/Person,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/Organization,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1
-Reference,Class,,,,,,"A note describing the journal, conference proceedings or preprint where a document was published.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://purl.org/ontology/bibo/Journal,Class,,,,,,Describes the title and ISSN of a journal.,http://purl.org/ontology/bibo
-Publication Specification,Class,,,,,,"Specification of a publication for describing its author(s), title, year of publication, journal or conference, publisher, etc.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Journal Specification,Class,Publication Specification,IS-A,,,,Specification of a journal describing the page number and volume.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Proceedings Specification,Class,Publication Specification,IS-A,,,,Specification of a conference.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-Preprint Specification,Class,Publication Specification,IS-A,,,,Specification of a preprint.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-ElementNumber,Class,,,,,,A number indicating the multiplicity of an element in a species.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-specifies,Object Property,,,Journal Specification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Creator,Object Property,,,Reaction Mechanism,http://xmlns.com/foaf/0.1/Agent,only,A relation between a chemical kinetic reaction mechanism and the agent that created the mechanism.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Publication Specification,Object Property,,,Reference,Publication Specification,only,"A relation between a reference and a publication specification that can be a journal specification, a proceedings specification or a preprint specification.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://purl.org/dc/terms/contributor,Object Property,,,Reference,http://xmlns.com/foaf/0.1/Agent,only,,http://purl.org/dc/terms/contributor
-has Reference,Object Property,,,Reaction Mechanism UNION http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,Reference,,Connects a reaction mechanism to a reference that describes where the mechanism was published.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-exists In,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-contained In,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Element,Object Property,,,Species,Element,only,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Thermo Model,Object Property,,,Species,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,,A relation between a species and its thermo(dynamic) data model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-belongs To Material,Object Property,,,Surface Reaction,Material,only,A relation between a surface reaction and the material that is involved in the reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-belongs To Phase,Object Property,,,Gas Phase Reaction,Gas Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-belongs To Phase,Object Property,,,Surface Reaction,Site Phase UNION Bulk Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-belongs To Phase,Object Property,,,Species,Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-extracted From,Object Property,,,Reaction Mechanism,Mechanism Representation Language,,A relation between a chemical kinetic reaction mechanism and the language from which the mechanism is extracted (to represent this using OWL).,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-applies To,Object Property,,,Reaction Order,Product UNION Reactant,only,A relation from a reaction order to a reactant/product to which the order is applicable.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Arrhenius Coefficient,Object Property,,,Arrhenius Reaction,Arrhenius Coefficient,only,A relation that defines that a reaction has coefficients for an Arrhenius reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Coverage Dependency,Object Property,,,Surface Coverage Reaction,Coverage Dependency,only,A relation that defines that a surface reaction has coefficients for a coverage-dependent reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has CHEB Rate Coefficient,Object Property,,,CHEB Reaction,CHEB Rate Coefficient,only,A relation that defines that a reaction has coefficients for a CHEB (Chebyshev) reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Landau Teller Dependency,Object Property,,,Landau Teller Reaction,Landau Teller Rate Coefficient,only,A relation that defines that a reaction has coefficients for a Landau-Teller reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Third Body Efficiency,Object Property,,,Three Body Reaction,Third Body Efficiency,only,A relation between a species that participates in a chemical reaction and the third body efficiency of the species in the reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Element Metadata,Object Property,,,Element,Element Metadata,only,A relation between an element and its metadata.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Element Number,Object Property,,,Species,Element Number,only,A relation that defines the number of atoms of a given element contained in a species or molecular entity.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Fall Off Model Coefficient,Object Property,,,Fall Off Reaction,Fall Off Model Coefficient,only,A relation that defines that a reaction has coefficients for a fall-off reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Product,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reactant,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-has Reaction Metadata,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reaction Metadata,only,A relation between a chemical reaction and its metadata.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reaction Order,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reaction Order,only,A relation between a species that participates in a chemical reaction and the reaction order with respect to the species.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Species,Object Property,,,Sticking Coefficient UNION Coverage Dependency UNION Third Body Efficiency,Species,,"A relation that connects a coverage-dependent reaction rate model, sticking coefficient reaction rate model or third body efficiency to a species that participates in the (coverage-dependent, sticking coefficient or third body efficiency) model.",http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Species Metadata,Object Property,,,Species,Species Metadata,only,A relation between a species and its metadata.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Sticking Coefficient,Object Property,,,Sticking Coefficient Reaction,Sticking Coefficient,only,A relation that defines that a surface reaction has coefficients for a sticking coefficient reaction rate model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Named Third Body,Object Property,,,Three Body Reaction,Species UNION http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,only,A relation that defines that a fall-off reaction rate model is defined in terms of a named third body.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasStoichiometricCoefficient,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-has Transport Model,Object Property,,,Species,Transport Model,,A relation between a species and its transport data model.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#indicatesMultiplicityOf,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,Reactant UNION Product,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-indicates Number Of,Object Property,,,Element Number,Element,only,A relation that defines the number of atoms of a given element contained in a species or molecular entity.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-participates In,Object Property,,,Reactant,Forward Reaction,only,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-participates In,Object Property,,,Product,Reverse Reaction,,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.w3.org/2002/07/owl#sameAs,Object Property,,,Reactant UNION Product,Species,,,http://www.w3.org/2002/07/owl
-http://www.w3.org/2002/07/owl#versionInfo,Data Property,,,Mechanism Representation Language,String,,,http://www.w3.org/2002/07/owl
-efficiency,Data Property,,,,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,,,,String,,,http://www.w3.org/2000/01/rdf-schema
-hasCommit,Data Property,,,Mechanism Representation Language,String,,test comment,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Source Comment,Data Property,,,,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-requires Reaction Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-requires Species Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.opengis.net/ont/geosparql#dimension,Data Property,,,Phase,Integer,,,http://www.opengis.net/ont/geosparql
-http://purl.org/dc/elements/1.1/identifier,Data Property,,,,String,,,http://purl.org/dc/elements
-has Chemical Element Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Chemical Species Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Chemical Species Array,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Chemical Reaction Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Phase Thermo State,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Type Of Thermo Model,Data Property,,,Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Site Density,Data Property,,,Site Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Site Density Units,Data Property,,,Site Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Type Of Kinetics Model,Data Property,,,Gas Phase UNION Site Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Type Of Transport Model,Data Property,,,Phase UNION Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Phase Array,Data Property,,,Bulk Phase UNION Site Phase,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Element Data Case Sensitive,Data Property,,,Element Metadata,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,,String,,,http://www.w3.org/2000/01/rdf-schema
-has Atomic Mass,Data Property,,,Element,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Atomic Mass Units,Data Property,,,Element,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Expected Phase,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Note,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Occupancy,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Occupancy Units,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Bulk Species Density,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Bulk Species Density Units,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Number Of Element,Data Property,,,Element Number,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#stoichiometricValue,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,String,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl
-has Thermo Comment,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Maximum Temperature,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Minimum Temperature,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pressure,Data Property,,,NASA,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Number Of Coefficients,Data Property,,,NASA UNION Fall Off Model Coefficient,Integer,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Species Geometry,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Species Geometry Title,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Lennard Jones Well Depth,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Lennard Jones Well Depth Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Lennard Jones Diameter,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Lennard Jones Diameter Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Dipole Moment,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Dipole Moment Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Polarizability,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Polarizability Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Rotational Relaxation Collision Number,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Rotational Relaxation Collision Number Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Species Data Case Sensitive,Data Property,,,Species Metadata,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Reaction Data Case Sensitive,Data Property,,,Reaction Metadata,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Reversible,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Landau Teller Reaction,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-may Not Conserve Site,Data Property,,,Surface Reaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Duplicate,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Defined Via Partial Pressure,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Defined Via Site Fractions,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Equation,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reaction Order Direction,Data Property,,,Reaction Order,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-is Motz Wise Correction Applicable,Data Property,,,Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pre Exponential Factor,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pre Exponential Factor Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Temperature Exponent,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Temperature Exponent Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Activation Energy,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Activation Energy Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reference Pressure,Data Property,,,Arrhenius Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reference Pressure Units,Data Property,,,Arrhenius Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pre Exponential Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pre Exponential Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reaction Order Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Reaction Order Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Exponential Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Exponential Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Landau Teller Coefficient B,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Landau Teller Coefficient B Units,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Landau Teller Coefficient C,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Landau Teller Coefficient C Units,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Third Body Efficiency Value,Data Property,,,Third Body Efficiency,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Default Third Body Efficiency Value,Data Property,,,Three Body Reaction,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Coefficient Values,Data Property,,,NASA UNION Fall Off Model Coefficient UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Minimum Pressure,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Minimum Pressure Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Maximum Pressure,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Maximum Pressure Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Minimum Temperature Units,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Maximum Temperature Units,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Temperature Points,Data Property,,,CHEB Rate Coefficient,Integer,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has Pressure Points,Data Property,,,CHEB Rate Coefficient,Integer,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has CHEB Coefficient Values,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-has CHEB Coefficient Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-http://purl.org/ontology/bibo/volume,Data Property,,,Journal Specification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/ontology/bibo/pageStart,Data Property,,,Publication Specification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/ontology/bibo/pageEnd,Data Property,,,Publication Specification,Integer,,,http://purl.org/ontology/bibo
-http://purl.org/dc/terms/publisher,Data Property,,,Publication Specification,String,,,http://purl.org/dc/terms
-http://purl.org/dc/terms/title,Data Property,,,Reference UNION http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/dc/terms
-http://purl.org/ontology/bibo/issn,Data Property,,,http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/ontology/bibo
-http://xmlns.com/foaf/0.1/familyName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/givenName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
-http://xmlns.com/foaf/0.1/name,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1
-hasQuantumCalculationIRI,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-hasUniqueSpeciesIRI,Data Property,,,Species,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-hasNumberOfElement,Data Property,,,ElementNumber,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
-hasThermoAgentIRI,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,String,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Reaction Mechanism,Class,,,,,,"A reaction mechanism refers to a set of elementary reactions with specific rate laws, for example to model the combustion of hydrogen.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Mechanism Representation Language,Class,,,,,,A representation language specialised for the codification of chemical kinetic reaction mechanisms.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Phase,Class,,,,,,"A phase of a substance is a form of matter that is uniform throughout in chemical composition and state (i.e. a particular solid, liquid, or gas).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Bulk Phase,Class,Phase,IS-A,,,,A solid phase that is contiguous with site phases and remote from the gas phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Site Phase,Class,Phase,IS-A,,,,A phase that exists at the interface between the gas phase and a bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Gas Phase,Class,Phase,IS-A,,,,A continuous gaseous phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Liquid Phase,Class,Phase,IS-A,,,,"The structural phase of matter in which the thermal mobility of molecules or atoms is comparable with the cohesiveness, having them connected but fluid in a mass [Wikitionary].",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Solid Phase,Class,Phase,IS-A,,,,"The structural phase of matter in which the cohesive force of matter is strong enough to keep the molecules or atoms in the given positions, restraining the thermal mobility [Wikitionary].",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Material,Class,,,,,,A substance that contains at least one site or bulk phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Element,Class,,,,,,An atom or isotope.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Element Number,Class,,,,,,A number indicating the multiplicity of an element in a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Element Metadata,Class,,,,,,Metadata of an element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Species,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies,EQUIVALENT-TO,,,,"An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Species Metadata,Class,,,,,,Metadata of a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,Class,,,,,,"Specifies the thermodynamic model used to calculate quantities such as heat capacity, enthalpy and entropy.",http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl,
+Transport Model,Class,,,,,,"Specifies the transport model used to calculate quantities such as viscosity, thermal conductivity and diffusion coefficients.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+NASA,Class,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,IS-A,,,,The NASA polynomial parameterisation used to compute the reference-state thermodynamic properties of a species within a specified temperature range.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Product,Class,Species,IS-A,,,,A name-quantity pair that defines the name and corresponding stoichiometric coefficient of a chemical species or molecular entity participating in the reverse reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Reactant,Class,Species,IS-A,,,,A name-quantity pair that defines the name and corresponding stoichiometric coefficient of a chemical species or molecular entity participating in the forward reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Class,,,,,,"A process in which one or more substances, the reactants, are converted to one or more new and entirely different substances, the products. In chemistry, substances are either chemical elements or compounds. A chemical reaction rearranges the constituent atoms of the reactants to create different substances as products.",http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+Reaction Metadata,Class,,,,,,Metadata of a reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Reaction Order,Class,,,,,,The order of reaction with resepct to a species. The value of the reaction order for the species is exactly the same as its stoichometric coefficient in mass-action kinetics.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,Class,,,,,,The ratio in which the reactants combine and the corresponding proportion of products participating in a chemical reaction are modelled using a stoichiometric coefficient.,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+Gas Phase Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,A chemical reaction that occurs in the gas phase.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Surface Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that involves an adsorbed species or desorption of products into the gas phase, or adsorption of reactants from the gas phase onto the surface.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Arrhenius Reaction,Class,Gas Phase Reaction,IS-A,,,,A gas-phase reaction that is described by an Arrhenius law.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Landau Teller Reaction,Class,Gas Phase Reaction,IS-A,,,,A reaction that has a Landau-Teller reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Three Body Reaction,Class,Gas Phase Reaction,IS-A,,,,A gas-phase reaction that involves an inert third body. The third body is required to ensure conservation of both energy and momentum in a reaction in which two species react to form a single product.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Pressure Dependent Reaction,Class,Three Body Reaction,IS-A,,,,A reaction that includes a pressure-dependent reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Fall Off Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a fall-off reaction rate model. The fall-off model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Lindemann Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes a Lindemann fall-off reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Troe Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes a Troe fall-off reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+SRI Reaction,Class,Fall Off Reaction,IS-A,,,,A reaction that includes an SRI fall-off reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+PLOG Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a PLOG reaction rate model. The PLOG reaction rate model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+CHEB Reaction,Class,Pressure Dependent Reaction,IS-A,,,,A reaction that has a CHEB (Chebyshev) reaction rate model. The CHEB reaction rate model can be used to describe pressure-dependent reaction rates.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Surface Coverage Reaction,Class,Surface Reaction,IS-A,,,,A surface reaction that has a coverage-dependent reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Sticking Coefficient Reaction,Class,Surface Reaction,IS-A,,,,A surface reaction that is described by a sticking coefficient rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Forward Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that proceeds in the forward direction, so producing products from reactants.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Reverse Reaction,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,IS-A,,,,"A chemical reaction that proceeds in the reverse direction, so producing reactants from products.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Rate Coefficient,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient,EQUIVALENT-TO,,,,The coefficients used to evaluate the reaction rate expression.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Arrhenius Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the Arrhenius part of a reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Fall Off Model Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the fall-off part of a reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Coverage Dependency,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the coverage-dependent part of a surface reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Sticking Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the sticking coefficient part of a surface reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+CHEB Rate Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the CHEB (Chebyshev) part of a reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Landau Teller Rate Coefficient,Class,Rate Coefficient,IS-A,,,,The coefficients used to evaluate the Landau-Teller part of a reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Third Body Efficiency,Class,,,,,,An efficiency that indicates the effectiveness of a species that acts as a third body in a pressure dependent reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://xmlns.com/foaf/0.1/Agent,Class,,,,,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/Person,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/Organization,Class,http://xmlns.com/foaf/0.1/Agent,IS-A,,,,,http://xmlns.com/foaf/0.1,
+Reference,Class,,,,,,"A note describing the journal, conference proceedings or preprint where a document was published.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://purl.org/ontology/bibo/Journal,Class,,,,,,Describes the title and ISSN of a journal.,http://purl.org/ontology/bibo,
+Publication Specification,Class,,,,,,"Specification of a publication for describing its author(s), title, year of publication, journal or conference, publisher, etc.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Journal Specification,Class,Publication Specification,IS-A,,,,Specification of a journal describing the page number and volume.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Proceedings Specification,Class,Publication Specification,IS-A,,,,Specification of a conference.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+Preprint Specification,Class,Publication Specification,IS-A,,,,Specification of a preprint.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+ElementNumber,Class,,,,,,A number indicating the multiplicity of an element in a species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+specifies,Object Property,,,Journal Specification,http://purl.org/ontology/bibo/Journal,only,"A relation between a journal specification that describes the page number and volume, and the journal that describes its title and ISSN.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Creator,Object Property,,,Reaction Mechanism,http://xmlns.com/foaf/0.1/Agent,only,A relation between a chemical kinetic reaction mechanism and the agent that created the mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Publication Specification,Object Property,,,Reference,Publication Specification,only,"A relation between a reference and a publication specification that can be a journal specification, a proceedings specification or a preprint specification.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://purl.org/dc/terms/contributor,Object Property,,,Reference,http://xmlns.com/foaf/0.1/Agent,only,,http://purl.org/dc/terms/contributor,
+has Reference,Object Property,,,Reaction Mechanism UNION http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,Reference,,Connects a reaction mechanism to a reference that describes where the mechanism was published.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+exists In,Object Property,,,Site Phase UNION Bulk Phase,Material,only,A relation between a site phase or bulk phase and a material in which they exist.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+contained In,Object Property,,,Gas Phase UNION Material,Reaction Mechanism,exactly 1,A relation that identifies that a gas phase or material is contained in a reaction mechanism.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Element,Object Property,,,Species,Element,only,A relation that defines that a species or molecular entity contains a chemical element.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Thermo Model,Object Property,,,Species,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,,A relation between a species and its thermo(dynamic) data model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+belongs To Material,Object Property,,,Surface Reaction,Material,only,A relation between a surface reaction and the material that is involved in the reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+belongs To Phase,Object Property,,,Gas Phase Reaction,Gas Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+belongs To Phase,Object Property,,,Surface Reaction,Site Phase UNION Bulk Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+belongs To Phase,Object Property,,,Species,Phase,only,A relation between a gas-phase reaction and the gas-phase that is involved in the reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+extracted From,Object Property,,,Reaction Mechanism,Mechanism Representation Language,,A relation between a chemical kinetic reaction mechanism and the language from which the mechanism is extracted (to represent this using OWL).,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+applies To,Object Property,,,Reaction Order,Product UNION Reactant,only,A relation from a reaction order to a reactant/product to which the order is applicable.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Arrhenius Coefficient,Object Property,,,Arrhenius Reaction,Arrhenius Coefficient,only,A relation that defines that a reaction has coefficients for an Arrhenius reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Coverage Dependency,Object Property,,,Surface Coverage Reaction,Coverage Dependency,only,A relation that defines that a surface reaction has coefficients for a coverage-dependent reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has CHEB Rate Coefficient,Object Property,,,CHEB Reaction,CHEB Rate Coefficient,only,A relation that defines that a reaction has coefficients for a CHEB (Chebyshev) reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Landau Teller Dependency,Object Property,,,Landau Teller Reaction,Landau Teller Rate Coefficient,only,A relation that defines that a reaction has coefficients for a Landau-Teller reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Third Body Efficiency,Object Property,,,Three Body Reaction,Third Body Efficiency,only,A relation between a species that participates in a chemical reaction and the third body efficiency of the species in the reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Element Metadata,Object Property,,,Element,Element Metadata,only,A relation between an element and its metadata.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Element Number,Object Property,,,Species,Element Number,only,A relation that defines the number of atoms of a given element contained in a species or molecular entity.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Fall Off Model Coefficient,Object Property,,,Fall Off Reaction,Fall Off Model Coefficient,only,A relation that defines that a reaction has coefficients for a fall-off reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasProduct,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Product,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasReactant,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reactant,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+has Reaction Metadata,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reaction Metadata,only,A relation between a chemical reaction and its metadata.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reaction Order,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,Reaction Order,only,A relation between a species that participates in a chemical reaction and the reaction order with respect to the species.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Species,Object Property,,,Sticking Coefficient UNION Coverage Dependency UNION Third Body Efficiency,Species,,"A relation that connects a coverage-dependent reaction rate model, sticking coefficient reaction rate model or third body efficiency to a species that participates in the (coverage-dependent, sticking coefficient or third body efficiency) model.",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Species Metadata,Object Property,,,Species,Species Metadata,only,A relation between a species and its metadata.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Sticking Coefficient,Object Property,,,Sticking Coefficient Reaction,Sticking Coefficient,only,A relation that defines that a surface reaction has coefficients for a sticking coefficient reaction rate model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Named Third Body,Object Property,,,Three Body Reaction,Species UNION http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,only,A relation that defines that a fall-off reaction rate model is defined in terms of a named third body.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasStoichiometricCoefficient,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+has Transport Model,Object Property,,,Species,Transport Model,,A relation between a species and its transport data model.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#indicatesMultiplicityOf,Object Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,Reactant UNION Product,only,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+indicates Number Of,Object Property,,,Element Number,Element,only,A relation that defines the number of atoms of a given element contained in a species or molecular entity.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+participates In,Object Property,,,Reactant,Forward Reaction,only,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+participates In,Object Property,,,Product,Reverse Reaction,,A relation that defines that a species participates as a reactant in a reaction. The relationship can also exist between a species that is a product (of the forward reaction) that participates in the reverse reaction.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.w3.org/2002/07/owl#sameAs,Object Property,,,Reactant UNION Product,Species,,,http://www.w3.org/2002/07/owl,
+http://www.w3.org/2002/07/owl#versionInfo,Data Property,,,Mechanism Representation Language,String,,,http://www.w3.org/2002/07/owl,
+efficiency,Data Property,,,,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+hasCommit,Data Property,,,Mechanism Representation Language,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Source Comment,Data Property,,,,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+requires Reaction Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+requires Species Validation,Data Property,,,Reaction Mechanism,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.opengis.net/ont/geosparql#dimension,Data Property,,,Phase,Integer,,,http://www.opengis.net/ont/geosparql,
+http://purl.org/dc/elements/1.1/identifier,Data Property,,,,String,,,http://purl.org/dc/elements,
+has Chemical Element Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Chemical Species Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Chemical Species Array,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Chemical Reaction Array Id,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Phase Thermo State,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Type Of Thermo Model,Data Property,,,Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Site Density,Data Property,,,Site Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Site Density Units,Data Property,,,Site Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Type Of Kinetics Model,Data Property,,,Gas Phase UNION Site Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Type Of Transport Model,Data Property,,,Phase UNION Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Phase Array,Data Property,,,Bulk Phase UNION Site Phase,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Element Data Case Sensitive,Data Property,,,Element Metadata,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Atomic Mass,Data Property,,,Element,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Atomic Mass Units,Data Property,,,Element,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Expected Phase,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Note,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Occupancy,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Occupancy Units,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Bulk Species Density,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Bulk Species Density Units,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Number Of Element,Data Property,,,Element Number,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#stoichiometricValue,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#StoichiometricCoefficient,String,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl,
+has Thermo Comment,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Maximum Temperature,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Minimum Temperature,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pressure,Data Property,,,NASA,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Number Of Coefficients,Data Property,,,NASA UNION Fall Off Model Coefficient,Integer,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Species Geometry,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Species Geometry Title,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Lennard Jones Well Depth,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Lennard Jones Well Depth Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Lennard Jones Diameter,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Lennard Jones Diameter Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Dipole Moment,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Dipole Moment Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Polarizability,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Polarizability Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Rotational Relaxation Collision Number,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Rotational Relaxation Collision Number Units,Data Property,,,Transport Model,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Species Data Case Sensitive,Data Property,,,Species Metadata,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Reaction Data Case Sensitive,Data Property,,,Reaction Metadata,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Reversible,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Landau Teller Reaction,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+may Not Conserve Site,Data Property,,,Surface Reaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Duplicate,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Defined Via Partial Pressure,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Defined Via Site Fractions,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Equation,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reaction Order Direction,Data Property,,,Reaction Order,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+is Motz Wise Correction Applicable,Data Property,,,Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pre Exponential Factor,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pre Exponential Factor Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Temperature Exponent,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Temperature Exponent Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Activation Energy,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Activation Energy Units,Data Property,,,Arrhenius Coefficient UNION Sticking Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reference Pressure,Data Property,,,Arrhenius Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reference Pressure Units,Data Property,,,Arrhenius Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pre Exponential Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pre Exponential Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reaction Order Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Reaction Order Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Exponential Modifier,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Exponential Modifier Units,Data Property,,,Coverage Dependency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Landau Teller Coefficient B,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Landau Teller Coefficient B Units,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Landau Teller Coefficient C,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Landau Teller Coefficient C Units,Data Property,,,Landau Teller Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Third Body Efficiency Value,Data Property,,,Third Body Efficiency,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Default Third Body Efficiency Value,Data Property,,,Three Body Reaction,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Coefficient Values,Data Property,,,NASA UNION Fall Off Model Coefficient UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Minimum Pressure,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Minimum Pressure Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Maximum Pressure,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Maximum Pressure Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Minimum Temperature Units,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Maximum Temperature Units,Data Property,,,NASA UNION CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Temperature Points,Data Property,,,CHEB Rate Coefficient,Integer,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has Pressure Points,Data Property,,,CHEB Rate Coefficient,Integer,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has CHEB Coefficient Values,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+has CHEB Coefficient Units,Data Property,,,CHEB Rate Coefficient,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+http://purl.org/ontology/bibo/volume,Data Property,,,Journal Specification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/ontology/bibo/pageStart,Data Property,,,Publication Specification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/ontology/bibo/pageEnd,Data Property,,,Publication Specification,Integer,,,http://purl.org/ontology/bibo,
+http://purl.org/dc/terms/publisher,Data Property,,,Publication Specification,String,,,http://purl.org/dc/terms,
+http://purl.org/dc/terms/title,Data Property,,,Reference UNION http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/dc/terms,
+http://purl.org/ontology/bibo/issn,Data Property,,,http://purl.org/ontology/bibo/Journal,String,,,http://purl.org/ontology/bibo,
+http://xmlns.com/foaf/0.1/familyName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/givenName,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,
+http://xmlns.com/foaf/0.1/name,Data Property,,,http://xmlns.com/foaf/0.1/Person,String,,,http://xmlns.com/foaf/0.1,
+hasQuantumCalculationIRI,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+hasUniqueSpeciesIRI,Data Property,,,Species,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+hasNumberOfElement,Data Property,,,ElementNumber,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,
+hasThermoAgentIRI,Data Property,,,http://www.theworldavatar.com/ontology/ontocape/model/property_models.owl#ThermoModel,String,,,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,

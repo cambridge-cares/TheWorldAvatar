@@ -1,5 +1,5 @@
-import sys
 import subprocess
+import os
 
 GAUSSIAN = "gaussian"
 CCPACKAGES = [GAUSSIAN]
@@ -22,6 +22,11 @@ def get_ccattr(logFile,attr,subattr='',default='unknown'):
     return ccattr
 
 def get_ccpackage(logFile,default='unknown'):
+    cwd=os.getcwd()
+    outDir=os.path.dirname(logFile)
+    baseName=os.path.basename(logFile)
+    os.chdir(outDir)
     ccpackage = default
-    ccpackage = get_ccattr(logFile,"metadata","package")
+    ccpackage = get_ccattr(baseName,"metadata","package")
+    os.chdir(cwd)
     return ccpackage

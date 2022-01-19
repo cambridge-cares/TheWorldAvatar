@@ -1,0 +1,58 @@
+{
+    "Empirical formula": "C1O2",
+    "Atom counts": {
+        "C": 1,
+        "O": 2
+    },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0107,
+        15.999491,
+        15.999491
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RQCISD-FC",
+    "Basis set": "CC-pVDZ",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -3.55536,
+            -0.51345,
+            0.0
+        ],
+        [
+            -4.65534,
+            -0.52079,
+            0.0
+        ],
+        [
+            -2.45539,
+            -0.50613,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
+    "Rotational constants": [
+        13.0563072
+    ],
+    "Rotational constants number": 1,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -188.1094696499999,
+    "HOMO energy": -0.53871,
+    "HOMO-1 energy": -0.53871,
+    "HOMO-2 energy": -0.73586,
+    "LUMO energy": 0.26755,
+    "LUMO+1 energy": 0.26755,
+    "LUMO+2 energy": 0.26919,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 17:25:17 2020",
+    "Log file name": "co2_qci_g09.log"
+}

@@ -77,14 +77,10 @@ public class MenTableAgent extends JPSAgent{
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	
-		logger.info("MEN_Table Agent start");
-		boolean validated = validateInput( requestParams);
-		if (validated== false) {
-			logger.info("MEN_Table Agent stop");
-			JSONObject error404 = new JSONObject();
-			error404.put("Error", "non-valid input reached. Please try again. ");
-			return error404;
+		if (!validateInput(requestParams)) {
+			throw new BadRequestException();
 		}
+		
 		// read form fields	
 		double carbontax = 0.0;
 		double interestfactor = 1.0;
@@ -214,11 +210,9 @@ public class MenTableAgent extends JPSAgent{
         		}
         	
     	} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return false;
 		}
     	 if (intMarketBool &&carbBool&&intBool && yrBool== true) {
     		 return true;

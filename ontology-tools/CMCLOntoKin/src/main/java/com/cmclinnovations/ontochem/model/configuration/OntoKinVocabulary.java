@@ -659,6 +659,9 @@ public class OntoKinVocabulary {
 	@Value("${ontokin.equivalent-to.relation}")
 	private String equivalentToRelation;
 	
+	@Value("${ontokin.inverse-of.relation}")
+	private String inverseOfRelation;
+	
 	@Value("${ontokin.version.no}")
 	private String annotationPropertyValueOfVersion;
 	
@@ -2337,6 +2340,14 @@ public class OntoKinVocabulary {
 
 	public void setEquivalentToRelation(String equivalentToRelation) {
 		this.equivalentToRelation = equivalentToRelation;
+	}
+	
+	public String getInverseOfRelation() {
+		return inverseOfRelation;
+	}
+
+	public void setInverseOfRelation(String inverseOfRelation) {
+		this.inverseOfRelation = inverseOfRelation;
 	}
 
 	public String getAnnotationPropertyValueOfVersion() {

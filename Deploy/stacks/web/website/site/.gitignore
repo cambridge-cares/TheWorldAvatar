@@ -1,0 +1,12 @@
+# Grav Specific
+.sass-cache
+composer.lock
+cache/*
+bin/*
+
+# OS Generated
+.DS_Store*
+ehthumbs.db
+Icon?
+Thumbs.db
+*.swp

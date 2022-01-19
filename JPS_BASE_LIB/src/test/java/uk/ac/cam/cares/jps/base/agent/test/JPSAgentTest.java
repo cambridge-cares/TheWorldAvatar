@@ -6,7 +6,6 @@ import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.ws.rs.BadRequestException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -31,7 +30,7 @@ public class JPSAgentTest extends TestCase {
 
     public void testNewPSAgentMethods() {
         JPSAgent jpsa = new JPSAgent();
-        assertEquals(3, jpsa.getClass().getDeclaredMethods().length);
+        assertEquals(5, jpsa.getClass().getDeclaredMethods().length);
     }
 
     public void testProcessRequestParameters() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {

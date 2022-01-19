@@ -1,0 +1,98 @@
+{
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RB3LYP",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            -0.81537
+        ],
+        [
+            0.0,
+            0.0,
+            0.81537
+        ],
+        [
+            1.018496,
+            0.0,
+            1.213512
+        ],
+        [
+            -0.509246,
+            -0.882045,
+            1.213512
+        ],
+        [
+            -0.509249,
+            0.882044,
+            1.213511
+        ],
+        [
+            0.509249,
+            -0.882044,
+            -1.213511
+        ],
+        [
+            0.509246,
+            0.882045,
+            -1.213512
+        ],
+        [
+            -1.018496,
+            0.0,
+            -1.213512
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        80.5678459,
+        18.0511645,
+        18.0511561
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -79.8259953525,
+    "HOMO energy": -0.34806,
+    "HOMO-1 energy": -0.3482,
+    "HOMO-2 energy": -0.3482,
+    "LUMO energy": 0.10678,
+    "LUMO+1 energy": 0.14505,
+    "LUMO+2 energy": 0.16897,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Wed Jun 16 17:39:17 2021",
+    "Log file name": "ethane_1_rigid.log",
+    "SpeciesIRI": "test_species_iri",
+    "EntryIRI": "http://www.theworldavatar.com/kb/ontocompchem/G09_testID-111-111-111",
+    "EntryUUID": "testID-111-111-111"
+}

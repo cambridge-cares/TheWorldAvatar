@@ -1,4 +1,6 @@
 Source,Type,Target,Relation,Value,Data Type
+ABoxOntoLandUse,Ontology,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl,http://www.w3.org/2002/07/owl#imports,,
+ABoxOntoLandUse,Ontology,http://www.theworldavatar.com/kb/ontolanduse,base,,
 England,Instance,Administrative Division,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,England,,England is a country that is part of the United Kingdom. It shares land borders with Wales to its west and Scotland to its north. The Irish Sea lies northwest of England and the Celtic Sea to the southwest. England is separated from continental Europe by the North Sea to the east and the English Channel to the south.,string
 Cereal Crop,Instance,Land Cover,,,
@@ -85,9 +87,7 @@ SR01,Instance,Permanent Crops ,http://www.theworldavatar.com/ontology/ontolandus
 TG01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,TG01,,All land you are planning to count as temporary grassland for BPS. Also use this code for strips and margins of temporary grassland if you want these to count towards your total area of grassland to meet a greening exemption or as a single ‘crop’ for crop diversification.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,TG01,,TG01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,TG01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,TG01,,Temporary grassland,string
-TG01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 TG01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 TG01,Instance,"Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Strips, Hedges and Arable Land Exempt from Greening",http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 FA01,Instance,Land Use Code,,,
@@ -101,49 +101,36 @@ FA01,Instance,"Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Stri
 BF11,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF11,,A hedge that you want to use as part of your ecological focus area. Use ‘BF11 ­ Half Hedge’ for the inside half of a hedge in land parcel.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF11,,BF11,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF11,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF11,,Half Hedge,string
-BF11,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF11,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF11,Instance,"Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Strips, Hedges and Arable Land Exempt from Greening",http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF12,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF12,,Use ‘BF12 ­ Adjacent Hedge’ as well as BF11 if you to want to add the other ‘outside’ half of the hedge but it can’t be claimed in another arable land parcel.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF12,,BF12,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF12,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF12,,Adjacent Hedge,string
-BF12,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF12,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF12,Instance,"Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Strips, Hedges and Arable Land Exempt from Greening",http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF15,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF15,,"A buffer strip of permanent grassland, temporary grassland or fallow land that you want to use as part of your ecological focus area. For paper application you will not need to use this code as you must enter a length in the correct column in Part D.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF15,,BF15,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF15,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF15,,Buffer Strip,string
-BF15,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF15,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF15,Instance,"Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Strips, Hedges and Arable Land Exempt from Greening",http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC97,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC97,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC97,,AC97,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC97,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC97,,Aster (Chinese),string
-AC97,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC97,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC97,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC46,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC46,,Includes Aubergine and Eggplant,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC46,,AC46,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC46,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC46,,Aubergine-type arable crop,string
-AC46,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC46,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC46,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC53,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC53,,Includes Banana squash and Buttercup squash,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC53,,AC53,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC53,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC53,,Banana squash-type arable crop,string
-AC53,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC53,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC53,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC01,Instance,Land Use Code,,,
@@ -165,9 +152,7 @@ AC63,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC02,,Includes all Basils,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC02,,AC02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC02,,Basil-type arable crop,string
-AC02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC02,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC03,Instance,Land Use Code,,,
@@ -205,9 +190,7 @@ AC05,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC54,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC54,,"Includes Butternut squash, Cheese pumpkin",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC54,,AC54,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC54,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC54,,Butternut squash-type arable crop,string
-AC54,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC54,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC54,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC34,Instance,Land Use Code,,,
@@ -229,9 +212,7 @@ AC70,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC73,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC73,,"Includes Camelina, gold-of-pleasure, false flax",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC73,,AC73,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC73,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC73,,Camelina-type arable crop,string
-AC73,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC73,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC73,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC06,Instance,Land Use Code,,,
@@ -253,9 +234,7 @@ AC07,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC08,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC08,,"Includes Celeriac, Celery",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC08,,AC08,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC08,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC08,,Celery-type arable crop,string
-AC08,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC08,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC08,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC09,Instance,Land Use Code,,,
@@ -269,9 +248,7 @@ AC09,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC48,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC48,,"Includes Bishop's crown chilli, Lemon drop chilli",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC48,,AC48,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC48,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC48,,Chilli-type arable crop,string
-AC48,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC48,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC48,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC71,Instance,Land Use Code,,,
@@ -285,25 +262,19 @@ AC71,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC77,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC77,,Includes Corn chamomile,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC77,,AC77,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC77,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC77,,Corn chamomile- type arable crop,string
-AC77,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC77,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC77,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC78,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC78,,Includes Corn cockle,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC78,,AC78,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC78,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC78,,Corn cockle- type arable crop,string
-AC78,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC78,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC78,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC79,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC79,,Includes Corn flower,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC79,,AC79,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC79,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC79,,Corn flower- type arable crop,string
-AC79,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC79,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC79,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC72,Instance,Land Use Code,,,
@@ -317,33 +288,25 @@ AC72,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC80,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC80,,Includes Corn marigold,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC80,,AC80,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC80,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC80,,Corn marigold- type arable crop,string
-AC80,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC80,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC80,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC39,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC39,,"Includes Crambe, Seakale",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC39,,AC39,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC39,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC39,,Crambe-type arable crop,string
-AC39,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC39,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC39,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC89,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC89,,Includes Garden Cress. Use CW01 for Watercress,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC89,,AC89,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC89,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC89,,Cress-type arable crop (excluding Watercress),string
-AC89,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC89,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC89,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC56,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC56,,Includes Cucumber,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC56,,AC56,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC56,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC56,,Cucumber- type arable crop,string
-AC56,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC56,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC56,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC10,Instance,Land Use Code,,,
@@ -357,57 +320,42 @@ AC10,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC11,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC11,,Includes Dill,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC11,,AC11,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC11,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC11,,Dill-type arable crop,string
-AC11,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC11,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC11,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC91,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC91,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC91,,AC91,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC91,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC91,,Echium,string
-AC91,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC91,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC91,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC12,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC12,,Includes Evening primrose,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC12,,AC12,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC12,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC12,,Evening primrose-type arable crop,string
-AC12,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC12,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC12,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC13,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC13,,Includes Fennel,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC13,,AC13,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC13,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC13,,Fennel-type arable crop,string
-AC13,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC13,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC13,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC82,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC82,,Includes Forget-me-not,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC82,,AC82,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC82,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC82,,Field forget-me-not-type arable crop,string
-AC82,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC82,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC82,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC83,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC83,,Includes Fox-glove,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC83,,AC83,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC83,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC83,,Fox-glove-type arable crop,string
-AC83,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC83,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC83,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC76,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC76,,"Includes Chamomile, German Chamomile, Hungarian Chamomile, Kamilla, Wild Chamomile, Scentless Mayweed",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC76,,AC76,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC76,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC76,,German chamomile-type arable crop,string
-AC76,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC76,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC76,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC90,Instance,Land Use Code,,,
@@ -421,17 +369,13 @@ AC90,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC84,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC84,,Includes Hay-rattle,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC84,,AC84,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC84,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC84,,Hay rattle-type arable crop,string
-AC84,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC84,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC84,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC85,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC85,,Includes Hedge bedstraw,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC85,,AC85,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC85,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC85,,Hedge bedstraw-type arable crop,string
-AC85,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC85,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC85,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC14,Instance,Land Use Code,,,
@@ -445,25 +389,18 @@ AC14,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC42,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC42,,Includes Horseradish (Cochlearia armoracia),string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC42,,AC42,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC42,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC42,,Horseradish- type arable crop,string
-AC42,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC42,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC42,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC51,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC51,,Includes Japanese pie squash,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC51,,AC51,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC51,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC51,,Japanese pie squash-type arable crop,string
-AC51,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC51,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC51,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC98,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC98,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC98,,AC98,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC98,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC98,,Larkspur,string
-AC98,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC98,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC98,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC15,Instance,Land Use Code,,,
@@ -501,9 +438,7 @@ AC17,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC57,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC57,,Includes Melons other than Water melon,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC57,,AC57,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC57,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC57,,Melon-type arable crop,string
-AC57,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC57,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC57,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC18,Instance,Land Use Code,,,
@@ -563,11 +498,8 @@ AC38,Instance,Cereal Crops,http://www.theworldavatar.com/ontology/ontolanduse/On
 AC38,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC38,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC99,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC99,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC99,,AC99,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC99,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC99,,Nigella,string
-AC99,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC99,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC99,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC19,Instance,Land Use Code,,,
@@ -589,9 +521,7 @@ AC65,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC75,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC75,,"Includes Oca, New Zealand Yam",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC75,,AC75,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC75,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC75,,Oca-type arable crop,string
-AC75,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC75,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC75,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC36,Instance,Land Use Code,,,
@@ -621,9 +551,7 @@ AC20,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC21,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC21,,"Includes Oregano, Marjoram",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC21,,AC21,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC21,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC21,,Oregano-type arable crop,string
-AC21,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC21,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC21,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC22,Instance,Land Use Code,,,
@@ -645,9 +573,7 @@ AC23,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC47,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC47,,"Includes Bell pepper, Chilli pepper",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC47,,AC47,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC47,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC47,,Pepper-type arable crop,string
-AC47,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC47,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC47,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC74,Instance,Land Use Code,,,
@@ -677,9 +603,7 @@ AC44,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC87,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC87,,Includes Quinoa,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC87,,AC87,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC87,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC87,,Quinoa-type arable crop,string
-AC87,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC87,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC87,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC41,Instance,Land Use Code,,,
@@ -693,9 +617,7 @@ AC41,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC40,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC40,,Includes Rocket,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC40,,AC40,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC40,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC40,,Rocket-type arable crop,string
-AC40,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC40,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC40,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC24,Instance,Land Use Code,,,
@@ -715,7 +637,6 @@ AC68,Instance,Cereal Crops,http://www.theworldavatar.com/ontology/ontolanduse/On
 AC68,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC68,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC100,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC100,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC100,,AC100,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC100,,Italian Ryegrass,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC100,,Rygrass (Italian) (Solanum sisymbriifolium),string
@@ -725,17 +646,12 @@ AC100,Instance,Arable land: arable crops for crop diversification,http://www.the
 AC25,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC25,,"Includes Clary sage, Sages",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC25,,AC25,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC25,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC25,,Sage-type arable crop,string
-AC25,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC25,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC25,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC96,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC96,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC96,,AC96,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC96,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC96,,Samphire,string
-AC96,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC96,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC96,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC52,Instance,Land Use Code,,,
@@ -747,7 +663,6 @@ AC52,Instance,Cereal Crops,http://www.theworldavatar.com/ontology/ontolanduse/On
 AC52,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC52,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC92,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC92,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC92,,AC92,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC92,,Sorghum,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC92,,Sorghum,string
@@ -779,11 +694,8 @@ AC27,Instance,Cereal Crops,http://www.theworldavatar.com/ontology/ontolanduse/On
 AC27,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC27,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC93,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC93,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC93,,AC93,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC93,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC93,,Sticky Nightshade (Solanum sisymbriifolium),string
-AC93,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC93,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC93,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC88,Instance,Land Use Code,,,
@@ -797,13 +709,10 @@ AC88,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC28,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC28,,Includes Sweet potato; use AC44 for Potato,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC28,,AC28,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC28,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC28,,Sweet potato-type arable crop,string
-AC28,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC28,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC28,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC94,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC94,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC94,,AC94,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC94,,Sweet William,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC94,,Sweet William,string
@@ -813,25 +722,19 @@ AC94,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC86,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC86,,Includes Teasel,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC86,,AC86,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC86,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC86,,Teasel-type arable crop,string
-AC86,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC86,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC86,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC29,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC29,,Includes all thymes,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC29,,AC29,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC29,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC29,,Thyme-type arable crop,string
-AC29,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC29,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC29,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC43,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC43,,Includes Tobacco,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC43,,AC43,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC43,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC43,,Tobacco-type arable crop,string
-AC43,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC43,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC43,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC45,Instance,Land Use Code,,,
@@ -845,9 +748,7 @@ AC45,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC49,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC49,,Includes Tree chilli,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC49,,AC49,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC49,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC49,,Tree chilli-type arable crop,string
-AC49,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC49,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC49,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC30,Instance,Land Use Code,,,
@@ -869,9 +770,7 @@ AC69,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC31,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC31,,Includes all tulips,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC31,,AC31,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC31,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC31,,Tulip-type arable crop,string
-AC31,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC31,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC31,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC35,Instance,Land Use Code,,,
@@ -883,27 +782,20 @@ AC35,Instance,Cereal Crops,http://www.theworldavatar.com/ontology/ontolanduse/On
 AC35,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC35,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC95,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC95,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC95,,AC95,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC95,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC95,,Wallflower,string
-AC95,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC95,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC95,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC55,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC55,,Includes Water melon,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC55,,AC55,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC55,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC55,,Water melon-type arable crop,string
-AC55,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC55,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC55,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CW01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CW01,,Includes Watercress,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CW01,,CW01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CW01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CW01,,Watercress - arable crop under water,string
-CW01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CW01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CW01,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC32,Instance,Land Use Code,,,
@@ -925,17 +817,13 @@ AC66,Instance,Arable land: arable crops for crop diversification,http://www.thew
 AC33,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC33,,Includes Yam,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC33,,AC33,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC33,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC33,,Yam-type arable crop,string
-AC33,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC33,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC33,Instance,Arable land: arable crops for crop diversification,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG10,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG10,,Includes Bird's foot trefoil,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG10,,LG10,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG10,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG10,,Bird's foot trefoil-type leguminous and nitrogen- fixing crop,string
-LG10,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG10,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG10,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG01,Instance,Land Use Code,,,
@@ -997,9 +885,7 @@ LG04,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversi
 LG05,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG05,,Includes Lentils.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG05,,LG05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG05,,Lentil-type leguminous and nitrogen-fixing crop,string
-LG05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG05,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG11,Instance,Land Use Code,,,
@@ -1040,27 +926,21 @@ LG17,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG17,,"Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
 These land uses will count for both crop diversification and ecological focus area.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG17,,LG17,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG17,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG17,,Mixed crop - leguminous only 3,string
-LG17,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG17,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG17,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG18,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG18,,"Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
 These land uses will count for both crop diversification and ecological focus area.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG18,,LG18,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG18,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG18,,Mixed crop - leguminous only 4,string
-LG18,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG18,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG18,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG19,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG19,,"Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
 These land uses will count for both crop diversification and ecological focus area.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG19,,LG19,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG19,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG19,,Mixed crop - leguminous only 5,string
-LG19,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG19,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG19,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 LG07,Instance,Land Use Code,,,
@@ -1098,17 +978,13 @@ LG08,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversi
 LG12,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,LG12,,Includes sweet clover.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG12,,LG12,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,LG12,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,LG12,,Sweet clover-type leguminous and nitrogen-fixing crop,string
-LG12,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 LG12,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 LG12,Instance,Arable land: leguminous and nitrogen-fixing crops for crop diversification and ecological focus areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CA01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CA01,,Any catch crop that is eligible under the ecological focus area rule. Read the BPS 2017 scheme rules (https://www.gov.uk/guidance/bps-2017) for more information.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CA01,,CA01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CA01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CA01,,Catch Crop,string
-CA01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CA01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CA01,Instance,Arable Land: Catch and Cover Crops for Ecological Focus Areas,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CA02,Instance,Land Use Code,,,
@@ -1122,42 +998,32 @@ CA02,Instance,Arable Land: Catch and Cover Crops for Ecological Focus Areas,http
 NA02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NA02,,"An area of land which is normally agricultural but the intensity, nature, duration, and timing of non­agricultural activity significantly interferes with agricultural activity.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NA02,,NA02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NA02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NA02,,Ineligible area or feature which is temporary and likely to change over time (Non-Agricultural Area),string
-NA02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NA02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NA02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MT05,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MT05,,"Airstrip – a stretch of land which has been cleared so that light aircraft can take off and land. Airport – an area of land where aircraft land and take off and which provides facilities for handling passengers, air freight and servicing aircraft.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT05,,MT05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MT05,,Airstrip/airports,string
-MT05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MT05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MT05,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 PL01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,PL01,,"This code should only be used for banks which are inaccessible or not protected under cross compliance.
 A bank is a raised linear feature that is artificially constructed and predominantly made up of earth. A bank can have a vegetated, bare earth or stone surface.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,PL01,,PL01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,PL01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,PL01,,Non-utilised Bank,string
-PL01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 PL01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 PL01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW07,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW07,,"An area of land that is normally waterlogged throughout the year and consists of spongy moss and peat. Bogs most often occur in low lying flat areas with poor drainage, and in upland areas of high rainfall.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW07,,IW07,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW07,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW07,,Bog,string
-IW07,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW07,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW07,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 RO03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RO03,,"An area of large, rounded rocks that are weathered or water-worn and have a diameter that is greater than 0.2 metres.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO03,,RO03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RO03,,Boulders,string
-RO03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RO03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RO03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 HE02,Instance,Land Use Code,,,
@@ -1171,122 +1037,92 @@ HE02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,htt
 CF01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CF01,,"A feature representing a steep rock face, most commonly occurring where the land meets the sea. Cliffs may be semi-natural, in the case of disused mineral workings, or manmade in the case of rock faces resulting from construction activity.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF01,,CF01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CF01,,Cliff,string
-CF01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CF01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CF01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB01,,"A building used for livestock husbandry, cultivation or the storage of crops, feed and machinery, and associated residences, i.e. farmhouses.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB01,,AB01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB01,,Farm building,string
-AB01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB09,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB09,,"The open ground, generally of hard standing or compacted earth, surrounding farm buildings.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB09,,AB09,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB09,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB09,,Farmyard,string
-AB09,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB09,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB09,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW06,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW06,,An area of low and flat waterlogged land.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW06,,IW06,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW06,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW06,,"Fen, marsh and swamp",string
-IW06,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW06,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW06,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NT01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NT01,,A track with a grass or manmade surface that is used for horses to gallop on when being trained for horse racing. Grass gallops can exceptionally be considered part of the agricultural area of a land parcel but only if the applicant can prove that the non-agricultural activity does not significantly interfere with agricultural activity.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NT01,,NT01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NT01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NT01,,Gallop,string
-NT01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NT01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NT01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 UT06,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,UT06,,A type of permanent infrastructure on land that is not covered by other utility classifications. Examples include water tanks and butts.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT06,,UT06,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT06,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,UT06,,General Utility,string
-UT06,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 UT06,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 UT06,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB06,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB06,,"A horticultural building constructed largely of glass, which is on a hard standing or used to grow ineligible crops.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB06,,AB06,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB06,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB06,,"Glasshouse, including polytunnels",string
-AB06,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB06,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB06,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 RL04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RL04,,"Bunkers, greens, fairways and areas of rough that are part of the playing course. Includes putting greens and driving ranges.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RL04,,RL04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RL04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RL04,,Golf course,string
-RL04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RL04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RL04,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 HS01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,HS01,,"A manmade, open ground surface built using aggregate, concrete-type construction materials.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,HS01,,HS01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,HS01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,HS01,,Hard standing,string
-HS01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 HS01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 HS01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 HE03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,HE03,,"A permanent pile of farm produce or refuse, for example straw, manure, compost, hay or silage. A heap is permanent if it has been kept at the same location for 3 years or more.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,HE03,,HE03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,HE03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,HE03,,Heap,string
-HE03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 HE03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 HE03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MW04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MW04,,An area of sand or mud uncovered at low tide.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW04,,MW04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MW04,,Intertidal habitats,string
-MW04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MW04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MW04,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MS04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MS04,,A site used for mineral extraction. Includes both currently operational and disused sites.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MS04,,MS04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MS04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MS04,,Mineral extraction site,string
-MS04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MS04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MS04,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CM01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CM01,,"This code should only be used for an area of land which is permanently used for peat production. An area of land is permanently used for peat production if the production has taken (or will take) place for 3 years or more.
 Peat production is an area of land used for peat extraction.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CM01,,CM01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CM01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CM01,,Peat production,string
-CM01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CM01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CM01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WF03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WF03,,"An area of fresh water, often artificially constructed, which is smaller than a lake. Includes artificially created scrapes which are winter feeding areas for wading birds.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WF03,,WF03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WF03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WF03,,Pond,string
-WF03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WF03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WF03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MT04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MT04,,"Steel bar or continuous line of bars laid on the ground, usually forming a track used for the movement of trains.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT04,,MT04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MT04,,Railway,string
-MT04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MT04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MT04,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MW03,Instance,Land Use Code,,,
@@ -1294,57 +1130,43 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MW03,,"This code shou
 Grazeable reed beds in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
 A reed bed is an area of tall, stiff marsh or water grass of various kinds.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW03,,MW03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MW03,,Reed bed,string
-MW03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MW03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MW03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NR01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NR01,,"Residential dwellings, including domestic outbuildings.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NR01,,NR01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NR01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NR01,,"Residential dwelling, house",string
-NR01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NR01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NR01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WO17,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WO17,,A garden making up part of a residential dwelling.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WO17,,WO17,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WO17,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WO17,,Residential garden,string
-WO17,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WO17,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WO17,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MT03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MT03,,"A metalled or surfaced way that is clearly marked, permanent and forms part of a wider road network with, for example, road markings, road names or road numbers.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT03,,MT03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MT03,,Road,string
-MT03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MT03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MT03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 RO04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RO04,,A protrusion of rocks above the ground in a conspicuous form.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO04,,RO04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RO04,,Rocky outcrop,string
-RO04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RO04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RO04,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CF03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CF03,,An area of sand dunes (ridges of sand created by the wind).,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF03,,CF03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CF03,,Sand dunes,string
-CF03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CF03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CF03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MW05,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MW05,,A coastal area with a sodium chloride content of at least 0.5%.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW05,,MW05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MW05,,Saline habitats,string
-MW05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MW05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MW05,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MW01,Instance,Land Use Code,,,
@@ -1352,18 +1174,14 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MW01,,"This code shou
 Grazeable salt marsh in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
 Salt marsh is an area of coastal grassland which is frequently inundated by the sea.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW01,,MW01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MW01,,Salt marsh,string
-MW01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MW01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MW01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF02,,"Scattered bracken - areas of bracken which are scattered in a land parcel, are not kept in a state suitable for grazing or are in an area where grasses and other herbaceous forage are not predominant.
 Scattered heather - areas of heather which are scattered in a land parcel and are not kept in a state suitable for grazing.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF02,,NF02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF02,,Scattered bracken or heather,string
-NF02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF08,Instance,Land Use Code,,,
@@ -1371,9 +1189,7 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF08,,"This code can 
 This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as 'notional features'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF08,,NF08,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF08,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF08,,Scattered features - mixed,string
-NF08,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF08,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF08,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF07,Instance,Land Use Code,,,
@@ -1381,9 +1197,7 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF07,,"Any manmade fe
 This code should be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as notional features.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF07,,NF07,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF07,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF07,,Scattered manmade features,string
-NF07,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF07,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF07,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF06,Instance,Land Use Code,,,
@@ -1391,9 +1205,7 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF06,,"Natural featur
 This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as 'notional features'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF06,,NF06,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF06,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF06,,Scattered natural features,string
-NF06,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF06,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF06,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF01,Instance,Land Use Code,,,
@@ -1401,9 +1213,7 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF01,,"Any naturally 
 This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as 'notional features'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF01,,NF01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF01,,Scattered rock,string
-NF01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF03,Instance,Land Use Code,,,
@@ -1413,9 +1223,7 @@ Scattered scrub which is grazeable and in an area where grasses and other herbac
 This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as 'notional features'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF03,,NF03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF03,,Scattered scrub,string
-NF03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF05,Instance,Land Use Code,,,
@@ -1423,17 +1231,13 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF05,,"Any naturally 
 This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
 Scattered features are also referred to as 'notional features'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF05,,NF05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF05,,Scattered water features,string
-NF05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF05,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 RO02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RO02,,A mass of loose stones on the side of a steep rock face.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO02,,RO02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RO02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RO02,,Scree,string
-RO02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RO02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RO02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WO25,Instance,Land Use Code,,,
@@ -1441,17 +1245,13 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WO25,,"This code shou
 Grazeable scrub in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
 Scrub is an area of shrubs and bushes, including Rhododendrons, Gorse, Briar and Broom. See also 'Scattered scrub'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WO25,,WO25,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WO25,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WO25,,Scrub,string
-WO25,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WO25,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WO25,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW05,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW05,,"An area of small, rounded pebbles.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW05,,IW05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW05,,Shingle,string
-IW05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW05,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BB01,Instance,Land Use Code,,,
@@ -1459,67 +1259,51 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BB01,,"This code shou
 Stone walls protected under cross compliance should be coded using the land use code for the main land use of the parcel.
 A stone wall is a wall structure built with stones, traditionally with loose field stones and mortar.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BB01,,BB01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BB01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BB01,,Stone wall,string
-BB01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BB01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BB01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 UT01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,UT01,,"An area taken up by solar panels and solar panel arrays.
 Land parcels which contain solar panels are ineligible for BPS. If the panels are concentrated in one end of a field, the rest of the land can be eligible if the 2 areas are registered as individual land parcels and separated by a permanent boundary.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT01,,UT01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,UT01,,Solar panels,string
-UT01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 UT01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 UT01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 RL03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RL03,,An area used for permanent sports and recreational purposes.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RL03,,RL03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RL03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RL03,,Sports and recreation,string
-RL03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RL03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RL03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 SA02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,SA02,,"An area of bare earth that is used for storage purposes. Includes storage of farm-related machinery, hay bales, etc.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,SA02,,SA02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,SA02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,SA02,,Storage area,string
-SA02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 SA02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 SA02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 ST05,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,ST05,,A manmade structure that is not described under any other land use code. Examples include animal shelters or polytunnels on a hard standing.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,ST05,,ST05,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,ST05,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,ST05,,Structure,string
-ST05,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 ST05,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 ST05,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MW02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MW02,,Tidal areas other than salt marshes.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW02,,MW02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MW02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MW02,,Tidal areas,string
-MW02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MW02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MW02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NT03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NT03,,"This code should only be used for a natural, unsurfaced track or path which is not used as part of the agricultural activity carried out on the land parcel or is part of a transport network entering and exiting the land parcel.
 Natural paths and tracks which are used as part of the agricultural activity carried out on the land parcel and are not part of a transport network entering and exiting the land parcel should be coded using the land use code for the main land use of the parcel.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NT03,,NT03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NT03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NT03,,Track - natural surface,string
-NT03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NT03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NT03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 MT01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,MT01,,"A metalled or surfaced way that is clearly marked and permanent. Includes any manmade surface, such as areas of asphalt, concrete and gravel.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT01,,MT01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,MT01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,MT01,,Manmade track (Metalled),string
-MT01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 MT01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 MT01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CM02,Instance,Land Use Code,,,
@@ -1527,26 +1311,20 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CM02,,"This code shou
 Turf for later replanting will be considered part of the agricultural area of the land parcel and should be coded as either permanent grassland or temporary grassland.
 Turf production is a site used for the production of turf, a surface layer of earth containing a dense growth of grass and its roots.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CM02,,CM02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CM02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CM02,,Turf production,string
-CM02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CM02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CM02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 CF02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,CF02,,An area of water-worn pebbles which supports growth of vegetation.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF02,,CF02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,CF02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,CF02,,Vegetated shingle,string
-CF02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 CF02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 CF02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WF01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WF01,,"This code should only be used for a drain, ditch or dyke which is inside the land parcel and is not part of the parcel boundary.
 A drain, ditch or dyke is an artificial channel used to carry excess water from low-lying areas.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WF01,,WF01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WF01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WF01,,"Watercourse - ditch, drain or dyke",string
-WF01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WF01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WF01,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW02,Instance,Land Use Code,,,
@@ -1554,9 +1332,7 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW02,,"This code shou
 - is inside the land parcel and is not part of the parcel boundary. - is less than 4 metres wide over the majority of its length.
 A river or stream is a body of water flowing in a definite channel towards the sea, a lake or into another river.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW02,,IW02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW02,,Watercourse - river or stream (Rivers and Streams Type 2),string
-IW02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW02,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW03,Instance,Land Use Code,,,
@@ -1565,17 +1341,13 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW03,,"This code shou
 - is greater than, or equal to, 4 metres wide over the majority of its length
 A river or stream is a body of water flowing in a definite channel towards the sea, a lake or into another river.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW03,,IW03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW03,,Watercourse - river or stream (Rivers and Streams Type 3),string
-IW03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW03,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 UT07,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,UT07,,A site where water is treated and supplied.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT07,,UT07,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,UT07,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,UT07,,Water treatment works,string
-UT07,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 UT07,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 UT07,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WO12,Instance,Land Use Code,,,
@@ -1589,33 +1361,25 @@ WO12,Instance,Non-Agricultural Areas and Features on Otherwise Eligible Land,htt
 RD01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,RD01,,"Non-agricultural land, for example woodland, which is at your disposal and remains eligible for BPS because it is under a suitable Rural Development Programme agreement or the National Forest Changing Landscape Scheme and was used with entitlements to claim SPS in 2008.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,RD01,,RD01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,RD01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,RD01,,Non-agricultural Land,string
-RD01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 RD01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 RD01,Instance,Non-agricultural land under a Rural Development Programme agreement or the National Forest Changing Landscapes Scheme,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 ES01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,ES01,,This code does not relate to land and is for RPA use only.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,ES01,,ES01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,ES01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,ES01,,Real estate services,string
-ES01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 ES01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 ES01,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NF04,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NF04,,"If the area with scattered trees in is eligible, you don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in. If the area with scattered trees in is ineligible, use the code 'WO12 - Ineligible woodland'.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF04,,NF04,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,NF04,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NF04,,Scattered trees,string
-NF04,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NF04,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NF04,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AS01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AS01,,Use the code which best describes the land which the archaeological site is on.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AS01,,AS01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AS01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AS01,,Archaeological site,string
-AS01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AS01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AS01,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 PL02,Instance,Land Use Code,,,
@@ -1623,240 +1387,179 @@ http://www.w3.org/2000/01/rdf-schema#comment,Data Property,PL02,,"If the area is
 PG01 - Permanent Grassland
 If the area is ineligible, use the relevant code from the 'Non-agricultural areas and features on otherwise eligible land' list above.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,PL02,,PL02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,PL02,,,string
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,PL02,,,string
-PL02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 PL02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 PL02,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF01,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF01,,BF01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF01,,Stone wall protected under cross compliance,string
-BF01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF01,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF02,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF02,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF02,,BF02,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF02,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF02,,Hedge protected under cross compliance,string
-BF02,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF02,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF02,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB03,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB03,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB03,,AB03,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB03,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB03,,Animal shelter on bare soil,string
-AB03,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB03,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB03,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW01,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW01,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW01,,IW01,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW01,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW01,,Rivers and streams less than 4 metres in width and forming part of a boundary (type 1),string
-IW01,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW01,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 IW11,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,IW11,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW11,,IW11,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,IW11,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,IW11,,Drain/Ditch/Dyke less than 4 metres in width and forming part of a boundary,string
-IW11,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 IW11,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 IW11,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF08,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF08,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF08,,BF08,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF08,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF08,,Bank,string
-BF08,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF08,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF08,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 BF16,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,BF16,,"You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF16,,BF16,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,BF16,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,BF16,,Fence,string
-BF16,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 BF16,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 BF16,Instance,Codes you must not use,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB1,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB1,,"as per rest of cropping, FA01 or TG01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB1,,AB1,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB1,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB1,,Nectar flower mix,string
-AB1,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB1,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB1,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB3,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB3,,Record as per rest of field cropping,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB3,,AB3,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB3,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB3,,Beetle banks,string
-AB3,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB3,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB3,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB4,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB4,,Record as per rest of field cropping,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB4,,AB4,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB4,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB4,,Skylark plots,string
-AB4,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB4,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB4,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB5,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB5,,FA01,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB5,,AB5,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB5,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB5,,Nesting plots for lapwing and stone curlew,string
-AB5,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB5,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB5,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB6,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB6,,FA01,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB6,,AB6,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB6,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB6,,Enhanced overwinter stubble,string
-AB6,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB6,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB6,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB8,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB8,,"as per rest of cropping, TG01 or FA01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB8,,AB8,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB8,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB8,,Flower rich margins and plots,string
-AB8,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB8,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB8,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB9,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB9,,AC58 to AC62 or FA01 if declared for EFA fallow.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB9,,AB9,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB9,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB9,,Winter bird food,string
-AB9,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB9,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB9,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB11,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB11,,FA01 meeting some of the management requirements may mean land in this option will not qualify as EFA fallow.,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB11,,AB11,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB11,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB11,,Cultivated areas for arable plants,string
-AB11,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB11,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB11,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB15,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB15,,TG01 for years not in arable cropping,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB15,,AB15,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB15,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB15,,Two year sown legume fallow,string
-AB15,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB15,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB15,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AB16,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AB16,,AC58 to AC62 in the years when the mix is established,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB16,,AB16,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,AB16,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AB16,,Autumn sown bumblebird mix,string
-AB16,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AB16,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AB16,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WD3,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WD3,,Record as per rest of field cropping,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WD3,,WD3,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WD3,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WD3,,Woodland edges on arable land,string
-WD3,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WD3,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WD3,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 HS2,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,HS2,,TG01 and then PG01 after 5 years,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,HS2,,HS2,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,HS2,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,HS2,,Take historic and archaeological features out of cultivation,string
-HS2,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 HS2,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 HS2,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 SW1,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,SW1,,"Record as per rest of field cropping, TG01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW1,,SW1,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW1,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,SW1,,4 to 6 metre buffer strip on cultivated land,string
-SW1,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 SW1,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 SW1,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 OP2,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,OP2,,AC58 to AC62,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,OP2,,OP2,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,OP2,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,OP2,,Organic wild bird seed mixture,string
-OP2,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 OP2,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 OP2,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 SW3,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,SW3,,"Record as per rest of field cropping, TG01 or PG01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW3,,SW3,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW3,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,SW3,,In-field grass strips,string
-SW3,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 SW3,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 SW3,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 SW4,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,SW4,,"Record as per rest of cropping, TG01 or PG01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW4,,SW4,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW4,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,SW4,,12 to 24 metre watercourse buffer strips on cultivated land,string
-SW4,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 SW4,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 SW4,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 SW6,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,SW6,,As per the rest of the field cropping during the period 1 May to 30 June,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW6,,SW6,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,SW6,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,SW6,,Winter cover crops,string
-SW6,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 SW6,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 SW6,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WT2,Instance,Land Use Code,,,
 http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WT2,,"Record as per rest of cropping, TG01 or PG01",string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WT2,,WT2,string
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,WT2,,,string
 http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WT2,,Buffering in-field ponds and ditches on arable land,string
-WT2,Instance,,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WT2,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WT2,Instance,Codes for Countryside Stewardship options with multiple crops,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 HEAT,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,HEAT,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,HEAT,,HEAT,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,HEAT,,Heather,string
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,HEAT,,,string
 HEAT,Instance,Grassland,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 HEAT,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 HEAT,Instance,CROME Code,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 NA01,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,NA01,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NA01,,NA01,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,NA01,,Non-vegetated or sparsely-vegetated Land,string
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,NA01,,,string
 NA01,Instance,Non-Agricultural Land,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 NA01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 NA01,Instance,CROME Code,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 WA01,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,WA01,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WA01,,WA01,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,WA01,,Water,string
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,WA01,,,string
 WA01,Instance,Water,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 WA01,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 WA01,Instance,CROME Code,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
 AC00,Instance,Land Use Code,,,
-http://www.w3.org/2000/01/rdf-schema#comment,Data Property,AC00,,,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC00,,AC00,string
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,AC00,,Unknown or Mixed Vegetation,string
-http://www.w3.org/2004/02/skos/core#altLabel,Data Property,AC00,,,string
 AC00,Instance,Unknown Vegetation Or Mixed Vegetation,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#isConnectedTo,,
 AC00,Instance,England,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#usedIn,,
 AC00,Instance,CROME Code,http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#hasLandUseType,,
