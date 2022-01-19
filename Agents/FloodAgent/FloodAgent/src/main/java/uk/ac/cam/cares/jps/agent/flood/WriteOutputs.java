@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.flood.objects.Station;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -32,7 +33,7 @@ public class WriteOutputs {
     
     // output files
     private static String dataFolder = "data";
-    private static String fixedDirectory = "fixed";
+    private static String mainDirectory = "main";
     
     // err msg
     private static final String ARG_MISMATCH = "Only one date argument is allowed";
@@ -71,66 +72,75 @@ public class WriteOutputs {
     	}
     	
     	// create directory
-    	File directories = new File(Paths.get(Config.outputdir, dataFolder, fixedDirectory).toString());
+    	File directories = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory).toString());
     	if (!directories.exists()) {
     		directories.mkdirs();
     	}
     	writeOverallMetaFile();
     	writeLayerTree();
-    	writeFixedMeta(date);
+    	writeMainMeta(date);
     	
-    	List<List<?>> queryResults = sparqlClient.getStationsWithCoordinates();
-    	writeStationsToGeojson(queryResults);
-    	writeStationsMeta(queryResults);
-    	writeTimeSeriesJson(date);
+    	String southwest = System.getenv("SOUTH_WEST");
+    	String northeast = System.getenv("NORTH_EAST");
+    	
+    	List<Station> stations;
+    	if (southwest != null && northeast != null) {
+    		stations = sparqlClient.getStationsWithCoordinates(southwest, northeast);
+    	} else {
+    		stations = sparqlClient.getStationsWithCoordinates();
+    	}
+    	
+    	writeStationsToGeojson(stations);
+    	writeStationsMeta(stations);
+    	writeTimeSeriesJson(stations, date);
 	}
 	
 	static void writeOverallMetaFile() {
 		double[] mapcentre = {0.3976, 52.7543};
-	    String selectionsTitle = "Current Scenario:";
 	    
-        File file = new File(Paths.get(Config.outputdir, dataFolder, "overall-meta.json").toString());
+        File file = new File(Paths.get(Config.outputdir, dataFolder, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
-		json.put("name", "Flood monitoring stations");
-		json.put("description", "Locations of stations");
-		json.put("apiKey", Config.apiKey);
-		json.put("defaultCenter", mapcentre);
-		json.put("defaultZoom", 8);
-		json.put("selectionsTitle", selectionsTitle);
-		json.put("fixedDirectory", fixedDirectory);
-		json.put("defaultBearing", 0.0);
-		json.put("defaultPitch", 0.0);
+		JSONObject global = new JSONObject();
+		global.put("defaultCenter", mapcentre);
+		global.put("defaultZoom", 8.75);
+		global.put("defaultBearing", 0.0);
+		global.put("defaultPitch", 0.0);
+
+		JSONObject local = new JSONObject();
+		local.put("label", "Group");
+		JSONArray groups = new JSONArray();
+		JSONObject group1 = new JSONObject();
+		group1.put("name", "Main");
+		group1.put("directory", mainDirectory);
+		groups.put(group1);
+		local.put("groups", groups);
+
+		json.put("global", global);
+		json.put("local", local);
 		
 		// write to file
 		writeToFile(file, json.toString(4));
 	}
 	
 	static void writeLayerTree() {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, "layer-tree.json").toString());
-		
-		JSONObject assets = new JSONObject();
-		assets.put("groupName", "Assets");
+		File file = new File(Paths.get(Config.outputdir, dataFolder, "tree.json").toString());
 		
 		JSONArray layers = new JSONArray();
 		
 		// layer tree
 		JSONObject layer = new JSONObject();
-		layer.put("layerName", "stations");
+		layer.put("layerName", "River stations");
 		layer.put("defaultState", "visible");
 		layer.put("layerIDs", new JSONArray().put("stations"));
 		layers.put(layer);
 		
-		assets.put("layers", layers);
-		
-		JSONArray allLayer = new JSONArray().put(assets);
-		
 		// write to file
-		writeToFile(file, allLayer.toString(4));
+		writeToFile(file, layers.toString(4));
 	}
 	
-	static void writeFixedMeta(LocalDate date) {
-		File file = new File(Paths.get(Config.outputdir, dataFolder, fixedDirectory, "meta.json").toString());
+	static void writeMainMeta(LocalDate date) {
+		File file = new File(Paths.get(Config.outputdir, dataFolder, mainDirectory, "meta.json").toString());
 		
 		JSONObject json = new JSONObject();
 		
@@ -138,7 +148,7 @@ public class WriteOutputs {
 			
 		JSONObject dataSet = new JSONObject();
 		dataSet.put("name", "stations");
-		dataSet.put("locationFile", "flood-stations.geojson");
+		dataSet.put("dataLocation", "flood-stations.geojson");
 		dataSet.put("locationType", "point");
 		dataSet.put("metaFiles", new JSONArray().put("stationsmeta.json"));
 		dataSet.put("timeseriesFiles", new JSONArray().put("flood-" + date + "-timeseries.json"));
@@ -155,21 +165,15 @@ public class WriteOutputs {
 	 * location of file - Config.outputdir
 	 * name of file  - stations.geojson
 	 */
-	static void writeStationsToGeojson(List<List<?>> queryResults) {
-		File geojsonfile = new File(Paths.get(Config.outputdir,dataFolder, fixedDirectory,"flood-stations.geojson").toString());
+	static void writeStationsToGeojson(List<Station> stations) {
+		File geojsonfile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-stations.geojson").toString());
 		
 		// create geojson file
 		JSONObject featureCollection = new JSONObject();
 		featureCollection.put("type", "FeatureCollection");
 		JSONArray features = new JSONArray();
 		
-		// List with three lists, 0 - station names, 1 - lat, 2 - lon, 3 - id		
-		List<String> station_names = (List<String>) queryResults.get(0);
-		List<Double> lat_values = (List<Double>) queryResults.get(1);
-		List<Double> lon_values = (List<Double>) queryResults.get(2);
-		List<Integer> ids = (List<Integer>) queryResults.get(3);
-		
-		for (int i = 0; i < queryResults.get(0).size(); i++) {
+		for (Station station : stations) {
 			// each station will be a feature within FeatureCollection
 			JSONObject feature = new JSONObject();
 			
@@ -177,11 +181,11 @@ public class WriteOutputs {
 			feature.put("type", "Feature");
 			
 			//id for mapbox
-			feature.put("id", ids.get(i));
+			feature.put("id", station.getVisId());
 			
 			//properties (display name and styling)
 			JSONObject property = new JSONObject();
-			property.put("displayName", station_names.get(i));
+			property.put("displayName", station.getName());
 			property.put("circle-color", "rgb(204,41,41)");
 			property.put("circle-stroke-width", 1);
 			property.put("circle-stroke-color", "#000000"); // black
@@ -190,7 +194,7 @@ public class WriteOutputs {
 			// geometry
 			JSONObject geometry = new JSONObject();
 			geometry.put("type", "Point");
-			geometry.put("coordinates", Arrays.asList(lon_values.get(i), lat_values.get(i)));
+			geometry.put("coordinates", Arrays.asList(station.getLon(), station.getLat()));
 			feature.put("geometry", geometry);
 			
 			// add to main array
@@ -203,19 +207,16 @@ public class WriteOutputs {
 		writeToFile(geojsonfile, featureCollection.toString(4));
 	}
 	
-	static void writeStationsMeta(List<List<?>> queryResults) {
-		File metafile = new File(Paths.get(Config.outputdir,dataFolder, fixedDirectory,"stationsmeta.json").toString());
-		
-		List<String> station_names = (List<String>) queryResults.get(0);
-		List<Integer> ids = (List<Integer>) queryResults.get(3);
+	static void writeStationsMeta(List<Station> stations) {
+		File metafile = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"stationsmeta.json").toString());
 		
 		JSONArray metaDataCollection = new JSONArray();
 		
-		for (int i = 0; i < queryResults.get(0).size(); i++) {
+		for (Station station : stations) {
 			// meta
 			JSONObject metadata = new JSONObject();
-			metadata.put("id", ids.get(i));
-			metadata.put("name",station_names.get(i));
+			metadata.put("id", station.getVisId());
+			metadata.put("name",station.getName());
 			metaDataCollection.put(metadata);
 		}
 		
@@ -227,11 +228,11 @@ public class WriteOutputs {
 	 * writes out data for a specific date
 	 * @param date
 	 */
-	static void writeTimeSeriesJson(LocalDate date) {
+	static void writeTimeSeriesJson(List<Station> stations, LocalDate date) {
 		// write to file 
-		File file = new File(Paths.get(Config.outputdir,dataFolder, fixedDirectory,"flood-" + date + "-timeseries.json").toString());
+		File file = new File(Paths.get(Config.outputdir,dataFolder, mainDirectory,"flood-" + date + "-timeseries.json").toString());
 
-		List<String> measures = sparqlClient.getMeasures();
+		List<String> measures = sparqlClient.getMeasures(stations);
 		Instant lowerbound = date.atStartOfDay(ZoneOffset.UTC).toInstant();
 		Instant upperbound = date.plusDays(1).atStartOfDay(ZoneOffset.UTC).toInstant().minusSeconds(1);
 		
