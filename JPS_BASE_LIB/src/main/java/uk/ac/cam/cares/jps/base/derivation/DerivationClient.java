@@ -330,9 +330,14 @@ public class DerivationClient {
 	 * @param agentIRI
 	 * @return
 	 */
-	public JSONObject retrieveAgentInputs(String derivation, String agentIRI) {
+	public JSONObject retrieveAgentInputIRIs(String derivation, String agentIRI) {
 		JSONObject agentInputs = new JSONObject();
 		agentInputs.put(AGENT_INPUT_KEY, this.sparqlClient.getInputsMapToAgent(derivation, agentIRI));
+		
+		// mark derivation status as InProgress
+		// record timestamp at the point the derivation status is marked as InProgress
+		this.sparqlClient.updateStatusBeforeSetupJob(derivation);
+		
 		return agentInputs;
 	}
 	
@@ -448,7 +453,11 @@ public class DerivationClient {
 		this.sparqlClient.deleteStatus(derivation);
 		
 		// if there are no errors, assume update is successful
-		this.sparqlClient.updateTimeStamp(derivation);
+		// retrieve the recorded value in {<derivation> <retrievedInputsAt> timestamp}
+		// also delete it after value retrieved
+		Map<String, Long> derivationTime_map = this.sparqlClient.retrieveInputReadTimestamp(derivation);
+		// update timestamp with the retrieved value
+		this.sparqlClient.updateTimestamps(derivationTime_map);
 		LOGGER.info("Updated timestamp of <" + derivation + ">");
 	}
 	
@@ -469,31 +478,7 @@ public class DerivationClient {
 	public StatusType getStatusType(String derivation) {
 		return this.sparqlClient.getStatusType(derivation);
 	}
-	
-	/**
-	 * Marks the derivation status as "PendingUpdate".
-	 * @param derivation
-	 */
-	public void markAsPendingUpdate(String derivation) {
-		this.sparqlClient.markAsPendingUpdate(derivation);
-	}
-	
-	/**
-	 * Marks the derivation status as "Requested".
-	 * @param derivation
-	 */
-	public void markAsRequested(String derivation) {
-		this.sparqlClient.markAsRequested(derivation);
-	}
 
-	/**
-	 * Marks the derivation status as "InProgress".
-	 * @param derivation
-	 */
-	public void markAsInProgress(String derivation) {
-		this.sparqlClient.markAsInProgress(derivation);
-	}
-	
 	/**
 	 * Gets the new derived IRI at derivation update (job) completion.
 	 * @param derivation
