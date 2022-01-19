@@ -380,7 +380,7 @@ public class DerivationClient {
 	 * This method checks at the status "PendingUpdate" to decide whether change it to "Requested".
 	 * @param derivation
 	 */
-	public void checkAtPendingUpdate(String derivation) {
+	public List<String> checkAtPendingUpdate(String derivation) {
 		// get a list of upstream derivations that need an update
 		// (IMMEDIATE upstream derivations in the chain - <derivation> <isDerivedFrom>/<belongsTo> <upstreamDerivation>)
 		// if all IMMEDIATE upstream derivations are up-to-date,
@@ -393,6 +393,8 @@ public class DerivationClient {
 		if (upstreamDerivationsNeedUpdate.isEmpty()) {
 			this.sparqlClient.markAsRequested(derivation);
 		}
+
+		return upstreamDerivationsNeedUpdate;
 	}
 	
 	/**
