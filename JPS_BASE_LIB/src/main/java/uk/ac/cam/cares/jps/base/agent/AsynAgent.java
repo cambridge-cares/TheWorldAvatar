@@ -77,8 +77,7 @@ public class AsynAgent extends JPSAgent implements AsynAgentInterface {
 				devClient.checkAtPendingUpdate(derivation);
 				break;
 			case REQUESTED:
-				JSONObject agentInputs = devClient.retrieveAgentInputs(derivation, agentIRI);
-				devClient.markAsInProgress(derivation);
+				JSONObject agentInputs = devClient.retrieveAgentInputIRIs(derivation, agentIRI);
 				List<String> newDerivedIRI = setupJob(agentInputs);
 				devClient.updateStatusAtJobCompletion(derivation, newDerivedIRI);
 				break;
