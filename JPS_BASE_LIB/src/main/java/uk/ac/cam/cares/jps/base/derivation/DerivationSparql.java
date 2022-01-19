@@ -1743,7 +1743,7 @@ public class DerivationSparql{
 	 * @param derivation
 	 * @return
 	 */
-	Map<String, Long> retireveInputReadTimestamp(String derivation) {
+	Map<String, Long> retrieveInputReadTimestamp(String derivation) {
 		Map<String, Long> derivationTime_map = new HashMap<>();
 		
 		String queryKey = "timestamp";

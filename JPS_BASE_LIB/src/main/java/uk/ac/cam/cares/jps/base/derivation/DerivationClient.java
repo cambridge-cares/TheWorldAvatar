@@ -455,7 +455,7 @@ public class DerivationClient {
 		// if there are no errors, assume update is successful
 		// retrieve the recorded value in {<derivation> <retrievedInputsAt> timestamp}
 		// also delete it after value retrieved
-		Map<String, Long> derivationTime_map = this.sparqlClient.retireveInputReadTimestamp(derivation);
+		Map<String, Long> derivationTime_map = this.sparqlClient.retrieveInputReadTimestamp(derivation);
 		// update timestamp with the retrieved value
 		this.sparqlClient.updateTimestamps(derivationTime_map);
 		LOGGER.info("Updated timestamp of <" + derivation + ">");
