@@ -121,10 +121,10 @@ public class JPSMatlabAgent extends JPSAgent {
       MetaDataAnnotator.annotateWithTimeAndAgent(
           pathToFrequency, gettingFilecreationtime(dest), MATLAB_AGENT_URL);
       JSONObject jObject = new JSONObject();
-      String resultStart =
-          AgentCaller.executeGetWithJsonParameter(
-              "ElChemoAgent/SpinElectrical", jObject.toString());
-      System.out.println(resultStart);
+      //String resultStart =
+          //AgentCaller.executeGetWithJsonParameter(
+              //"ElChemoAgent/SpinElectrical", jObject.toString());
+      //System.out.println(resultStart);
     }
     return responseParams;
   }
@@ -261,7 +261,7 @@ public class JPSMatlabAgent extends JPSAgent {
     } catch (IOException exception) {
       throw new JPSRuntimeException(exception.getMessage());
     }
-    String creationDate = new String(attributes.creationTime().toString());
+    String creationDate = attributes.creationTime().toString();
     return (creationDate);
   }
 

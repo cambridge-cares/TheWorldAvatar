@@ -2,10 +2,6 @@
 .sass-cache
 composer.lock
 cache/*
-assets/*
-logs/*
-images/*
-user/data/*
 
 # OS Generated
 .DS_Store*

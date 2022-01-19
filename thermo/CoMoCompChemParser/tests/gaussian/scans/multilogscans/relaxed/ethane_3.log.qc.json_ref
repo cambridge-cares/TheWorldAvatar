@@ -1,0 +1,95 @@
+{
+    "Empirical formula": "C2H6",
+    "Atom counts": {
+        "C": 2,
+        "H": 6
+    },
+    "Atom types": [
+        "C",
+        "C",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H",
+        "H"
+    ],
+    "Atomic masses": [
+        12.0107,
+        12.0107,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783,
+        1.00783
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RB3LYP",
+    "Basis set": "6-31G(d)",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.86537,
+            5e-06,
+            -6e-06
+        ],
+        [
+            -0.86537,
+            -5e-06,
+            6e-06
+        ],
+        [
+            -1.222085,
+            0.196522,
+            -1.013616
+        ],
+        [
+            -1.22206,
+            0.779557,
+            0.677012
+        ],
+        [
+            -1.222082,
+            -0.976093,
+            0.33659
+        ],
+        [
+            1.222082,
+            0.976093,
+            -0.33659
+        ],
+        [
+            1.22206,
+            -0.779557,
+            -0.677012
+        ],
+        [
+            1.222085,
+            -0.196522,
+            1.013616
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "nonlinear",
+    "Rotational constants": [
+        78.397854,
+        16.7195665,
+        16.7194936
+    ],
+    "Rotational constants number": 3,
+    "Rotational constants unit": "GHZ",
+    "Electronic energy": -79.8166270313,
+    "HOMO energy": -0.32329,
+    "HOMO-1 energy": -0.35702,
+    "HOMO-2 energy": -0.35703,
+    "LUMO energy": 0.10498,
+    "LUMO+1 energy": 0.13085,
+    "LUMO+2 energy": 0.176,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Mon May 24 17:12:18 2021",
+    "Log file name": "ethane_3.log"
+}

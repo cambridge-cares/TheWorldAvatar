@@ -184,13 +184,15 @@ public class SpinChemical extends JPSAgent {
     System.out.println("Constraint violations:");
     for (ConstraintViolation cv : cvs) {
       System.out.println(
-          " - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
+              " - at " + SPINLabels.get().getLabel(cv.getRoot()) + ": " + cv.getMessage());
     }
 
     /** Run constraints on a single instance only */
-    Resource person = cvs.get(0).getRoot();
-    List<ConstraintViolation> localCVS = SPINConstraints.check(person, null);
-    System.out.println(
-        "Constraint violations for " + SPINLabels.get().getLabel(person) + ": " + localCVS.size());
+    if (cvs.size() > 0) {
+      Resource instance = cvs.get(0).getRoot();
+      List<ConstraintViolation> localCVS = SPINConstraints.check(instance, null);
+      System.out.println(
+              "Constraint violations for " + SPINLabels.get().getLabel(instance) + ": " + localCVS.size());
+    }
   }
 }

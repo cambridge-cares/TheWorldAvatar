@@ -1,0 +1,68 @@
+{
+    "Empirical formula": "C1O2",
+    "Atom counts": {
+        "C": 1,
+        "O": 2
+    },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0,
+        15.9949146,
+        15.9949146
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "RHF",
+    "Basis set": "STO-3G",
+    "Spin multiplicity": 1,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            -3.555363,
+            -0.513457,
+            0.0
+        ],
+        [
+            -4.743266,
+            -0.521373,
+            0.0
+        ],
+        [
+            -2.367461,
+            -0.505541,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
+    "Rotational symmetry number": 1.0,
+    "Rotational constants": [
+        11.195007
+    ],
+    "Rotational constants number": 1,
+    "Rotational constants unit": "GHZ",
+    "Frequencies": [
+        566.0809,
+        566.0809,
+        1435.4183,
+        2536.1369
+    ],
+    "Frequencies number": 4,
+    "Frequencies unit": "cm^-1",
+    "Electronic energy": -185.068390609,
+    "Electronic and ZPE energy": -185.056763,
+    "HOMO energy": -0.38767,
+    "HOMO-1 energy": -0.38767,
+    "HOMO-2 energy": -0.58316,
+    "LUMO energy": 0.31061,
+    "LUMO+1 energy": 0.31061,
+    "LUMO+2 energy": 0.53747,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Fri Jul 17 16:26:12 2020",
+    "Log file name": "co2_calcall_g09.log"
+}

@@ -13,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 public class Utils{
-	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
+	private static Logger LOGGER = LogManager.getLogger(Utils.class);	
 	public static long previousTimeStamp;
 	
 	/**
@@ -85,7 +85,7 @@ public class Utils{
 		try {
 			status = isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()), slurmJobProperty);
 		} catch (Exception e) {
-			logger.info("SlurmJobAPI: failed to check the status of the job with ID " + jobFolder.getName());
+			LOGGER.info("SlurmJobAPI: failed to check the status of the job with ID " + jobFolder.getName());
 		}
 		return status;
 	}
@@ -113,7 +113,7 @@ public class Utils{
 		try{
 			status = isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 		}catch(Exception e){
-			logger.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName());
+			LOGGER.info("SlurmJobAPI: failed to check the status of the job with ID "+jobFolder.getName());
 		}
 		return status;
 	}
@@ -510,7 +510,7 @@ public class Utils{
 		   return address.toString().replace("/", "_");
 		} catch (UnknownHostException e){
 		    e.printStackTrace();
-		    logger.error("SlurmJobAPI: The host address is unknown as InetAddress.getLocalHost() threw an exception.");
+		    LOGGER.error("SlurmJobAPI: The host address is unknown as InetAddress.getLocalHost() threw an exception.");
 		}
 		return null;
 	}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app 
+		xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+		xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
+		metadata-complete="false" 
+		version="3.1">
+
+	<display-name>access-agent</display-name>
+
+	<servlet>
+		<servlet-name>AccessAgentServlet</servlet-name>
+		<servlet-class>uk.ac.cam.cares.jps.accessagent.AccessAgent</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>AccessAgentServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>

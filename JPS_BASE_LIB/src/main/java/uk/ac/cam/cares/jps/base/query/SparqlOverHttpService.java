@@ -16,10 +16,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.CDL;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.KnowledgeBaseClientInterface;
+import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 
 public class SparqlOverHttpService {
 	
@@ -35,7 +35,7 @@ public class SparqlOverHttpService {
 	private String sparqlServiceURIForUpdate = null;
 	
 	// Declared the kbClient variable
-	private KnowledgeBaseClientInterface kbClient;
+	private StoreClientInterface kbClient;
 	
 	public SparqlOverHttpService(String datasetUrl) {
 		
@@ -91,7 +91,7 @@ public class SparqlOverHttpService {
 	 */
 	public String executePost(String messageBody) throws SQLException{
 
-		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
+		URI uri = Http.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
 		//request.setHeader(HttpHeaders.ACCEPT, AgentCaller.MediaType.TEXT_CSV.type);
 		
@@ -100,7 +100,7 @@ public class SparqlOverHttpService {
 			messageBody = "update=" + messageBody;
 			//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/sparql-update");
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new RemoteKnowledgeBaseClient();
+			kbClient = new RemoteStoreClient();
 			if(sparqlServiceURIForUpdate==null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for update is null. Provide a valid URI.");
 			}
@@ -172,9 +172,9 @@ public class SparqlOverHttpService {
 
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
-			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
+			uri = Http.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else if(RDFStoreType.BLAZEGRAPH.equals(type)){
-			kbClient = new RemoteKnowledgeBaseClient();
+			kbClient = new RemoteStoreClient();
 			if(sparqlServiceURIForQuery == null){
 				throw new SQLException("SparqlOverHttpService: SPARQL service URI for query is null. Provide a valid URI.");
 			}
@@ -192,7 +192,7 @@ public class SparqlOverHttpService {
 			}
 
 		}else {
-			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
+			uri = Http.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}
 		HttpGet request = new HttpGet(uri);
 		request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
